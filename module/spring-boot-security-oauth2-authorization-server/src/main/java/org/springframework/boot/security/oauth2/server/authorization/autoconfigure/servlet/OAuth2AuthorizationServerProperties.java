@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -32,6 +34,7 @@ import org.springframework.util.StringUtils;
  * OAuth 2.0 Authorization Server properties.
  *
  * @author Steve Riesenberg
+ * @author Florian Lemaire
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.authorizationserver")
@@ -40,14 +43,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	/**
 	 * URL of the Authorization Server's Issuer Identifier.
 	 */
-	private String issuer;
+	private @Nullable String issuer;
 
 	/**
 	 * Whether multiple issuers are allowed per host. Using path components in the URL of
 	 * the issuer identifier enables supporting multiple issuers per host in a
 	 * multi-tenant hosting configuration.
 	 */
-	private boolean multipleIssuersAllowed = false;
+	private boolean multipleIssuersAllowed;
 
 	/**
 	 * Registered clients of the Authorization Server.
@@ -67,11 +70,11 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		this.multipleIssuersAllowed = multipleIssuersAllowed;
 	}
 
-	public String getIssuer() {
+	public @Nullable String getIssuer() {
 		return this.issuer;
 	}
 
-	public void setIssuer(String issuer) {
+	public void setIssuer(@Nullable String issuer) {
 		this.issuer = issuer;
 	}
 
@@ -145,6 +148,11 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		private String tokenIntrospectionUri = "/oauth2/introspect";
 
 		/**
+		 * Authorization Server's OAuth 2.0 Pushed Authorization Request Endpoint.
+		 */
+		private String pushedAuthorizationRequestUri = "/oauth2/par";
+
+		/**
 		 * OpenID Connect 1.0 endpoints.
 		 */
 		@NestedConfigurationProperty
@@ -204,6 +212,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 
 		public void setTokenIntrospectionUri(String tokenIntrospectionUri) {
 			this.tokenIntrospectionUri = tokenIntrospectionUri;
+		}
+
+		public String getPushedAuthorizationRequestUri() {
+			return this.pushedAuthorizationRequestUri;
+		}
+
+		public void setPushedAuthorizationRequestUri(String pushedAuthorizationRequestUri) {
+			this.pushedAuthorizationRequestUri = pushedAuthorizationRequestUri;
 		}
 
 		public OidcEndpoint getOidc() {
@@ -273,24 +289,24 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 * Whether the client is required to provide a proof key challenge and verifier
 		 * when performing the Authorization Code Grant flow.
 		 */
-		private boolean requireProofKey = false;
+		private boolean requireProofKey = true;
 
 		/**
 		 * Whether authorization consent is required when the client requests access.
 		 */
-		private boolean requireAuthorizationConsent = false;
+		private boolean requireAuthorizationConsent;
 
 		/**
 		 * URL for the client's JSON Web Key Set.
 		 */
-		private String jwkSetUri;
+		private @Nullable String jwkSetUri;
 
 		/**
 		 * JWS algorithm that must be used for signing the JWT used to authenticate the
 		 * client at the Token Endpoint for the {@code private_key_jwt} and
 		 * {@code client_secret_jwt} authentication methods.
 		 */
-		private String tokenEndpointAuthenticationSigningAlgorithm;
+		private @Nullable String tokenEndpointAuthenticationSigningAlgorithm;
 
 		/**
 		 * Token settings of the registered client.
@@ -318,19 +334,20 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 			this.requireAuthorizationConsent = requireAuthorizationConsent;
 		}
 
-		public String getJwkSetUri() {
+		public @Nullable String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		public void setJwkSetUri(@Nullable String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getTokenEndpointAuthenticationSigningAlgorithm() {
+		public @Nullable String getTokenEndpointAuthenticationSigningAlgorithm() {
 			return this.tokenEndpointAuthenticationSigningAlgorithm;
 		}
 
-		public void setTokenEndpointAuthenticationSigningAlgorithm(String tokenEndpointAuthenticationSigningAlgorithm) {
+		public void setTokenEndpointAuthenticationSigningAlgorithm(
+				@Nullable String tokenEndpointAuthenticationSigningAlgorithm) {
 			this.tokenEndpointAuthenticationSigningAlgorithm = tokenEndpointAuthenticationSigningAlgorithm;
 		}
 
@@ -348,17 +365,17 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		/**
 		 * Client ID of the registration.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Client secret of the registration. May be left blank for a public client.
 		 */
-		private String clientSecret;
+		private @Nullable String clientSecret;
 
 		/**
 		 * Name of the client.
 		 */
-		private String clientName;
+		private @Nullable String clientName;
 
 		/**
 		 * Client authentication method(s) that the client may use.
@@ -385,27 +402,27 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 */
 		private Set<String> scopes = new HashSet<>();
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getClientSecret() {
+		public @Nullable String getClientSecret() {
 			return this.clientSecret;
 		}
 
-		public void setClientSecret(String clientSecret) {
+		public void setClientSecret(@Nullable String clientSecret) {
 			this.clientSecret = clientSecret;
 		}
 
-		public String getClientName() {
+		public @Nullable String getClientName() {
 			return this.clientName;
 		}
 
-		public void setClientName(String clientName) {
+		public void setClientName(@Nullable String clientName) {
 			this.clientName = clientName;
 		}
 

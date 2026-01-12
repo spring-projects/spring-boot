@@ -19,10 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.context.properties;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
@@ -117,11 +120,11 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getContexts()
-				.get(context.getId())
-				.getBeans()
-				.get("testProperties")
-				.getProperties();
+			ContextConfigurationPropertiesDescriptor contextDescriptor = properties.getContexts().get(context.getId());
+			assertThat(contextDescriptor).isNotNull();
+			ConfigurationPropertiesBeanDescriptor testProperties = contextDescriptor.getBeans().get("testProperties");
+			assertThat(testProperties).isNotNull();
+			Map<String, @Nullable Object> nestedProperties = testProperties.getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
 			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);

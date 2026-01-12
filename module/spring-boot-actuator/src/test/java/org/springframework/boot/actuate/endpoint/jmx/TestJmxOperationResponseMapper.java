@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Test {@link JmxOperationResponseMapper} implementation.
  *
@@ -24,7 +26,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 class TestJmxOperationResponseMapper implements JmxOperationResponseMapper {
 
 	@Override
-	public Object mapResponse(Object response) {
+	public @Nullable Object mapResponse(@Nullable Object response) {
 		return response;
 	}
 

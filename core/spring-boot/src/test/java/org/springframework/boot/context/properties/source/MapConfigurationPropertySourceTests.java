@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class MapConfigurationPropertySourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMapIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MapConfigurationPropertySource(null))
 			.withMessageContaining("'map' must not be null");
@@ -49,6 +51,7 @@ class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void putAllWhenMapIsNullShouldThrowException() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		assertThatIllegalArgumentException().isThrownBy(() -> source.putAll(null))
@@ -101,7 +104,7 @@ class MapConfigurationPropertySourceTests {
 
 	}
 
-	private Object getValue(ConfigurationPropertySource source, String name) {
+	private @Nullable Object getValue(ConfigurationPropertySource source, String name) {
 		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
 	}

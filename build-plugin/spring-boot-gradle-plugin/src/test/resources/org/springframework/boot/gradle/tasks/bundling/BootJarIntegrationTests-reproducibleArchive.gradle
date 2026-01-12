@@ -21,6 +21,8 @@ plugins {
 
 bootJar {
 	mainClass = 'com.example.Application'
-	preserveFileTimestamps = false
-	reproducibleFileOrder = true
+	if (GradleVersion.current().compareTo(GradleVersion.version("9.0.0-rc-1")) < 0) {
+		preserveFileTimestamps = false
+		reproducibleFileOrder = true
+	}
 }

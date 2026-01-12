@@ -23,6 +23,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.mock;
 class JarTypeFilterTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test
@@ -61,11 +63,16 @@ class JarTypeFilterTests {
 	}
 
 	@Test
+	void whenArtifactHasDevelopmentToolJarTypeThenItIsExcluded() {
+		assertThat(new JarTypeFilter().filter(createArtifact("development-tool"))).isTrue();
+	}
+
+	@Test
 	void whenArtifactHasNoManifestFileThenItIsIncluded() {
 		assertThat(new JarTypeFilter().filter(createArtifactWithNoManifest())).isFalse();
 	}
 
-	private Artifact createArtifact(String springBootJarType) {
+	private Artifact createArtifact(@Nullable String springBootJarType) {
 		Path jarPath = this.temp.resolve("test.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");

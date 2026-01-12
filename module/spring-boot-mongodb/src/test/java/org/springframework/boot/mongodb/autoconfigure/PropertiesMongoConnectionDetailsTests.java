@@ -19,6 +19,7 @@ package org.springframework.boot.mongodb.autoconfigure;
 import java.util.List;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoCredential;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,9 +57,11 @@ class PropertiesMongoConnectionDetailsTests {
 		ConnectionString connectionString = this.connectionDetails.getConnectionString();
 		assertThat(connectionString.getUsername()).isEqualTo("user");
 		assertThat(connectionString.getPassword()).isEmpty();
-		assertThat(connectionString.getCredential().getUserName()).isEqualTo("user");
-		assertThat(connectionString.getCredential().getPassword()).isEmpty();
-		assertThat(connectionString.getCredential().getSource()).isEqualTo("test");
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getUserName()).isEqualTo("user");
+		assertThat(credential.getPassword()).isEmpty();
+		assertThat(credential.getSource()).isEqualTo("test");
 	}
 
 	@Test
@@ -68,9 +71,11 @@ class PropertiesMongoConnectionDetailsTests {
 		ConnectionString connectionString = this.connectionDetails.getConnectionString();
 		assertThat(connectionString.getUsername()).isEqualTo("user");
 		assertThat(connectionString.getPassword()).isEqualTo("secret".toCharArray());
-		assertThat(connectionString.getCredential().getUserName()).isEqualTo("user");
-		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
-		assertThat(connectionString.getCredential().getSource()).isEqualTo("test");
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getUserName()).isEqualTo("user");
+		assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
+		assertThat(credential.getSource()).isEqualTo("test");
 	}
 
 	@Test
@@ -100,8 +105,10 @@ class PropertiesMongoConnectionDetailsTests {
 		this.properties.setAuthenticationDatabase("authdb");
 		ConnectionString connectionString = this.connectionDetails.getConnectionString();
 		assertThat(connectionString.getDatabase()).isEqualTo("db");
-		assertThat(connectionString.getCredential().getSource()).isEqualTo("authdb");
-		assertThat(connectionString.getCredential().getUserName()).isEqualTo("user");
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getSource()).isEqualTo("authdb");
+		assertThat(credential.getUserName()).isEqualTo("user");
 	}
 
 	@Test

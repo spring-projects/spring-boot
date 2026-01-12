@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.incremental;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
-@ConfigurationProperties("foo")
+@TestConfigurationProperties("foo")
 public class FooProperties {
 
 	private String name;

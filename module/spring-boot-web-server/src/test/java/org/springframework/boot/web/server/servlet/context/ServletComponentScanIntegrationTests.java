@@ -25,9 +25,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -53,9 +55,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ServletComponentScanIntegrationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
+	private @Nullable AnnotationConfigServletWebServerApplicationContext context;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@AfterEach
@@ -70,9 +73,10 @@ class ServletComponentScanIntegrationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getServletContext().getFilterRegistrations()).hasSize(1)
-			.containsKey(TestFilter.class.getName());
-		assertThat(this.context.getServletContext().getServletRegistrations()).hasSize(2)
+		ServletContext servletContext = this.context.getServletContext();
+		assertThat(servletContext).isNotNull();
+		assertThat(servletContext.getFilterRegistrations()).hasSize(1).containsKey(TestFilter.class.getName());
+		assertThat(servletContext.getServletRegistrations()).hasSize(2)
 			.containsKeys(TestServlet.class.getName(), TestMultipartServlet.class.getName());
 		assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getWebListenerClassNames())
 			.containsExactly(TestListener.class.getName());
@@ -87,10 +91,10 @@ class ServletComponentScanIntegrationTests {
 			this.context.setClassLoader(classLoader);
 			this.context.register(TestConfiguration.class);
 			this.context.refresh();
-			assertThat(this.context.getServletContext().getFilterRegistrations()).hasSize(1)
-				.containsKey(TestFilter.class.getName());
-			assertThat(this.context.getServletContext().getServletRegistrations()).hasSize(1)
-				.containsKeys(TestServlet.class.getName());
+			ServletContext servletContext = this.context.getServletContext();
+			assertThat(servletContext).isNotNull();
+			assertThat(servletContext.getFilterRegistrations()).hasSize(1).containsKey(TestFilter.class.getName());
+			assertThat(servletContext.getServletRegistrations()).hasSize(1).containsKeys(TestServlet.class.getName());
 			assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getWebListenerClassNames())
 				.containsExactly(TestListener.class.getName());
 		}

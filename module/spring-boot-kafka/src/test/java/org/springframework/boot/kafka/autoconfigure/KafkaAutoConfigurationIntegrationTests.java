@@ -29,6 +29,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -48,6 +49,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.retrytopic.DestinationTopic;
 import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.condition.EmbeddedKafkaCondition;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.messaging.handler.annotation.Header;
@@ -71,7 +73,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void close() {
@@ -85,14 +87,14 @@ class KafkaAutoConfigurationIntegrationTests {
 	void testEndToEnd() throws Exception {
 		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.consumer.auto-offset-reset=earliest");
-		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
+		KafkaTemplate<String, String> template = getContext().getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
-		Listener listener = this.context.getBean(Listener.class);
+		Listener listener = getContext().getBean(Listener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
 		assertThat(listener.received).isEqualTo("bar");
 
-		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
+		DefaultKafkaProducerFactory producerFactory = getContext().getBean(DefaultKafkaProducerFactory.class);
 		Producer producer = producerFactory.createProducer();
 		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC)).hasSize(10);
 		producer.close();
@@ -106,12 +108,12 @@ class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.backoff.delay=100ms",
 				"spring.kafka.retry.topic.backoff.multiplier=2", "spring.kafka.retry.topic.backoff.max-delay=300ms",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
-		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
+		RetryTopicConfiguration configuration = getContext().getBean(RetryTopicConfiguration.class);
 		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
 			.containsExactly(0L, 100L, 200L, 300L, 0L);
-		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
+		KafkaTemplate<String, String> template = getContext().getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
-		RetryListener listener = this.context.getBean(RetryListener.class);
+		RetryListener listener = getContext().getBean(RetryListener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived)
 			.containsExactly("foo", "bar");
@@ -126,7 +128,7 @@ class KafkaAutoConfigurationIntegrationTests {
 	void testStreams() {
 		load(KafkaStreamsConfig.class, "spring.application.name:my-app",
 				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString());
-		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup()).isTrue();
+		assertThat(getContext().getBean(StreamsBuilderFactoryBean.class).isAutoStartup()).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -144,7 +146,15 @@ class KafkaAutoConfigurationIntegrationTests {
 	}
 
 	private String getEmbeddedKafkaBrokersAsString() {
-		return EmbeddedKafkaCondition.getBroker().getBrokersAsString();
+		EmbeddedKafkaBroker broker = EmbeddedKafkaCondition.getBroker();
+		assertThat(broker).isNotNull();
+		return broker.getBrokersAsString();
+	}
+
+	private AnnotationConfigApplicationContext getContext() {
+		AnnotationConfigApplicationContext context = this.context;
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -183,9 +193,9 @@ class KafkaAutoConfigurationIntegrationTests {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private volatile String received;
+		private volatile @Nullable String received;
 
-		private volatile String key;
+		private volatile @Nullable String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
 		void listen(String foo, @Header(KafkaHeaders.RECEIVED_KEY) String key) {
@@ -202,9 +212,9 @@ class KafkaAutoConfigurationIntegrationTests {
 
 		private final List<String> topics = new ArrayList<>();
 
-		private volatile String received;
+		private volatile @Nullable String received;
 
-		private volatile String key;
+		private volatile @Nullable String key;
 
 		@KafkaListener(topics = TEST_RETRY_TOPIC)
 		void listen(String foo, @Header(KafkaHeaders.RECEIVED_KEY) String key,
@@ -220,11 +230,11 @@ class KafkaAutoConfigurationIntegrationTests {
 			return this.topics;
 		}
 
-		private String getReceived() {
+		private @Nullable String getReceived() {
 			return this.received;
 		}
 
-		private String getKey() {
+		private @Nullable String getKey() {
 			return this.key;
 		}
 

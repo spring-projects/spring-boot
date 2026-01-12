@@ -17,6 +17,7 @@
 package org.springframework.boot.r2dbc.autoconfigure;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -58,8 +59,8 @@ public final class R2dbcInitializationAutoConfiguration {
 				properties);
 	}
 
-	private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory, String username,
-			String password) {
+	private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory,
+			@Nullable String username, @Nullable String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			return ConnectionFactoryBuilder.derivedFrom(connectionFactory)
 				.username(username)

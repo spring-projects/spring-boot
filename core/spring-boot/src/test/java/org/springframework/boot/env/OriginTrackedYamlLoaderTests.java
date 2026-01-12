@@ -24,12 +24,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
@@ -48,7 +50,7 @@ class OriginTrackedYamlLoaderTests {
 
 	private OriginTrackedYamlLoader loader;
 
-	private List<Map<String, Object>> result;
+	private @Nullable List<Map<String, Object>> result;
 
 	@BeforeEach
 	void setUp() {
@@ -60,6 +62,7 @@ class OriginTrackedYamlLoaderTests {
 	@WithTestYamlResource
 	void processSimpleKey() {
 		OriginTrackedValue value = getValue("name");
+		assertThat(value).isNotNull();
 		assertThat(value).hasToString("Martin D'vloper");
 		assertThat(getLocation(value)).isEqualTo("3:7");
 	}
@@ -70,10 +73,13 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue perl = getValue("languages.perl");
 		OriginTrackedValue python = getValue("languages.python");
 		OriginTrackedValue pascal = getValue("languages.pascal");
+		assertThat(perl).isNotNull();
 		assertThat(perl).hasToString("Elite");
 		assertThat(getLocation(perl)).isEqualTo("13:11");
+		assertThat(python).isNotNull();
 		assertThat(python).hasToString("Elite");
 		assertThat(getLocation(python)).isEqualTo("14:13");
+		assertThat(pascal).isNotNull();
 		assertThat(pascal).hasToString("Lame");
 		assertThat(getLocation(pascal)).isEqualTo("15:13");
 	}
@@ -85,12 +91,16 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue orange = getValue("foods[1]");
 		OriginTrackedValue strawberry = getValue("foods[2]");
 		OriginTrackedValue mango = getValue("foods[3]");
+		assertThat(apple).isNotNull();
 		assertThat(apple).hasToString("Apple");
 		assertThat(getLocation(apple)).isEqualTo("8:7");
+		assertThat(orange).isNotNull();
 		assertThat(orange).hasToString("Orange");
 		assertThat(getLocation(orange)).isEqualTo("9:7");
+		assertThat(strawberry).isNotNull();
 		assertThat(strawberry).hasToString("Strawberry");
 		assertThat(getLocation(strawberry)).isEqualTo("10:7");
+		assertThat(mango).isNotNull();
 		assertThat(mango).hasToString("Mango");
 		assertThat(getLocation(mango)).isEqualTo("11:7");
 	}
@@ -99,6 +109,7 @@ class OriginTrackedYamlLoaderTests {
 	@WithTestYamlResource
 	void processMultiline() {
 		OriginTrackedValue education = getValue("education");
+		assertThat(education).isNotNull();
 		assertThat(education).hasToString("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
 		assertThat(getLocation(education)).isEqualTo("16:12");
 	}
@@ -110,12 +121,16 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue url = getValue("example.foo[0].url");
 		OriginTrackedValue bar1 = getValue("example.foo[0].bar[0].bar1");
 		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
+		assertThat(name).isNotNull();
 		assertThat(name).hasToString("springboot");
 		assertThat(getLocation(name)).isEqualTo("22:15");
+		assertThat(url).isNotNull();
 		assertThat(url).hasToString("https://springboot.example.com/");
 		assertThat(getLocation(url)).isEqualTo("23:14");
+		assertThat(bar1).isNotNull();
 		assertThat(bar1).hasToString("baz");
 		assertThat(getLocation(bar1)).isEqualTo("25:19");
+		assertThat(bar2).isNotNull();
 		assertThat(bar2).hasToString("bling");
 		assertThat(getLocation(bar2)).isEqualTo("26:19");
 	}
@@ -126,10 +141,13 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue empty = getValue("empty");
 		OriginTrackedValue nullValue = getValue("null-value");
 		OriginTrackedValue emptyList = getValue("emptylist");
+		assertThat(empty).isNotNull();
 		assertThat(empty.getValue()).isEqualTo("");
 		assertThat(getLocation(empty)).isEqualTo("27:8");
+		assertThat(nullValue).isNotNull();
 		assertThat(nullValue.getValue()).isEqualTo("");
 		assertThat(getLocation(nullValue)).isEqualTo("28:13");
+		assertThat(emptyList).isNotNull();
 		assertThat(emptyList.getValue()).isEqualTo("");
 		assertThat(getLocation(emptyList)).isEqualTo("29:12");
 	}
@@ -231,7 +249,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getValue(String name) {
+	private <T> @Nullable T getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();
 		}
@@ -239,7 +257,11 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	private String getLocation(OriginTrackedValue value) {
-		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
+		TextResourceOrigin origin = (TextResourceOrigin) value.getOrigin();
+		assertThat(origin).isNotNull();
+		Location location = origin.getLocation();
+		assertThat(location).isNotNull();
+		return location.toString();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

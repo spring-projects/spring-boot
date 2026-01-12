@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -140,7 +141,9 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 
 	private String pathToResource(String resource) throws URISyntaxException {
 		URL url = getClass().getResource(resource);
-		return Paths.get(url.toURI()).getParent().toAbsolutePath().toString();
+		Path parent = Paths.get(url.toURI()).getParent();
+		assertThat(parent).isNotNull();
+		return parent.toAbsolutePath().toString();
 	}
 
 }

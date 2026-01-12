@@ -27,11 +27,13 @@ import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,32 +52,39 @@ abstract class AbstractDevToolsIntegrationTests {
 	protected final JvmLauncher javaLauncher = new JvmLauncher();
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	protected static File temp;
 
-	protected LaunchedApplication launchedApplication;
+	private @Nullable LaunchedApplication launchedApplication;
 
-	protected void launchApplication(ApplicationLauncher applicationLauncher, String... args) throws Exception {
+	protected LaunchedApplication launchApplication(ApplicationLauncher applicationLauncher, String... args)
+			throws Exception {
 		this.serverPortFile.delete();
 		this.launchedApplication = applicationLauncher.launchApplication(this.javaLauncher, this.serverPortFile, args);
+		return this.launchedApplication;
 	}
 
 	@AfterEach
 	void stopApplication() throws InterruptedException {
+		Assert.notNull(this.launchedApplication, "Application has not been launched");
 		this.launchedApplication.stop();
 	}
 
 	protected int awaitServerPort() throws Exception {
+		LaunchedApplication launchedApplication = this.launchedApplication;
+		Assert.notNull(launchedApplication, "Application has not been launched");
 		int port = Awaitility.waitAtMost(Duration.ofMinutes(3))
-			.until(() -> new ApplicationState(this.serverPortFile, this.launchedApplication),
+			.until(() -> new ApplicationState(this.serverPortFile, launchedApplication),
 					ApplicationState::hasServerPort)
 			.getServerPort();
 		this.serverPortFile.delete();
-		this.launchedApplication.restartRemote(port);
+		launchedApplication.restartRemote(port);
 		Thread.sleep(1000);
 		return port;
 	}
 
 	protected ControllerBuilder controller(String name) {
+		Assert.notNull(this.launchedApplication, "Application has not been launched");
 		return new ControllerBuilder(name, this.launchedApplication.getClassesDirectory());
 	}
 

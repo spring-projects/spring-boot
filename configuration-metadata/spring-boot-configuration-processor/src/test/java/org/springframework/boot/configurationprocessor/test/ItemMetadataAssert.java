@@ -16,9 +16,12 @@
 
 package org.springframework.boot.configurationprocessor.test;
 
+import java.util.function.Function;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
-import org.assertj.core.internal.Objects;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ObjectAssert;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
@@ -28,34 +31,33 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  * AssertJ assert for {@link ItemMetadata}.
  *
  * @author Stephane Nicoll
+ * @author Stefano Cordio
  */
 public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemMetadata>
 		implements AssertProvider<ItemMetadataAssert> {
 
-	private static final Objects objects = Objects.instance();
-
 	public ItemMetadataAssert(ItemMetadata itemMetadata) {
 		super(itemMetadata, ItemMetadataAssert.class);
-		objects.assertNotNull(this.info, itemMetadata);
+		isNotNull();
 	}
 
 	public ItemMetadataAssert isProperty() {
-		objects.assertEqual(this.info, this.actual.isOfItemType(ItemType.PROPERTY), true);
+		extracting((actual) -> actual.isOfItemType(ItemType.PROPERTY)).isEqualTo(true);
 		return this;
 	}
 
 	public ItemMetadataAssert isGroup() {
-		objects.assertEqual(this.info, this.actual.isOfItemType(ItemType.GROUP), true);
+		extracting((actual) -> actual.isOfItemType(ItemType.GROUP)).isEqualTo(true);
 		return this;
 	}
 
 	public ItemMetadataAssert hasName(String name) {
-		objects.assertEqual(this.info, this.actual.getName(), name);
+		extracting(ItemMetadata::getName).isEqualTo(name);
 		return this;
 	}
 
 	public ItemMetadataAssert hasType(String type) {
-		objects.assertEqual(this.info, this.actual.getType(), type);
+		extracting(ItemMetadata::getType).isEqualTo(type);
 		return this;
 	}
 
@@ -64,7 +66,7 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 	}
 
 	public ItemMetadataAssert hasDescription(String description) {
-		objects.assertEqual(this.info, this.actual.getDescription(), description);
+		extracting(ItemMetadata::getDescription).isEqualTo(description);
 		return this;
 	}
 
@@ -73,7 +75,7 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 	}
 
 	public ItemMetadataAssert hasSourceType(String type) {
-		objects.assertEqual(this.info, this.actual.getSourceType(), type);
+		extracting(ItemMetadata::getSourceType).isEqualTo(type);
 		return this;
 	}
 
@@ -81,13 +83,13 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 		return hasSourceType(type.getName());
 	}
 
-	public ItemMetadataAssert hasSourceMethod(String type) {
-		objects.assertEqual(this.info, this.actual.getSourceMethod(), type);
+	public ItemMetadataAssert hasSourceMethod(String method) {
+		extracting(ItemMetadata::getSourceMethod).isEqualTo(method);
 		return this;
 	}
 
 	public ItemMetadataAssert hasDefaultValue(Object defaultValue) {
-		objects.assertEqual(this.info, this.actual.getDefaultValue(), defaultValue);
+		extracting(ItemMetadata::getDefaultValue).isEqualTo(defaultValue);
 		return this;
 	}
 
@@ -97,27 +99,28 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 	}
 
 	public ItemMetadataAssert isDeprecatedWithReason(String reason) {
-		ItemDeprecation deprecation = assertItemDeprecation();
-		objects.assertEqual(this.info, deprecation.getReason(), reason);
+		assertItemDeprecation().extracting(ItemDeprecation::getReason).isEqualTo(reason);
 		return this;
 	}
 
 	public ItemMetadataAssert isDeprecatedWithReplacement(String replacement) {
-		ItemDeprecation deprecation = assertItemDeprecation();
-		objects.assertEqual(this.info, deprecation.getReplacement(), replacement);
+		assertItemDeprecation().extracting(ItemDeprecation::getReplacement).isEqualTo(replacement);
 		return this;
 	}
 
 	public ItemMetadataAssert isNotDeprecated() {
-		objects.assertNull(this.info, this.actual.getDeprecation());
+		extracting(ItemMetadata::getDeprecation).isNull();
 		return this;
 	}
 
-	private ItemDeprecation assertItemDeprecation() {
-		ItemDeprecation deprecation = this.actual.getDeprecation();
-		objects.assertNotNull(this.info, deprecation);
-		objects.assertNull(this.info, deprecation.getLevel());
-		return deprecation;
+	private ObjectAssert<ItemDeprecation> assertItemDeprecation() {
+		ObjectAssert<ItemDeprecation> itemDeprecationAssert = extracting(ItemMetadata::getDeprecation);
+		itemDeprecationAssert.extracting(ItemDeprecation::getLevel).isNull();
+		return itemDeprecationAssert;
+	}
+
+	private <T> ObjectAssert<T> extracting(Function<ItemMetadata, T> extractor) {
+		return extracting(extractor, Assertions::assertThat);
 	}
 
 	@Override

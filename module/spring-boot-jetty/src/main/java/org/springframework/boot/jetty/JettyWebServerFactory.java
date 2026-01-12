@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import org.eclipse.jetty.ee10.webapp.Configuration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.Configuration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -38,8 +38,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -54,7 +56,7 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 
 	private int acceptors = -1;
 
-	private ThreadPool threadPool;
+	private @Nullable ThreadPool threadPool;
 
 	private int selectors = -1;
 
@@ -160,12 +162,12 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
 	 * @return a Jetty {@link ThreadPool} or {@code null}
 	 */
-	public ThreadPool getThreadPool() {
+	public @Nullable ThreadPool getThreadPool() {
 		return this.threadPool;
 	}
 
 	@Override
-	public void setThreadPool(ThreadPool threadPool) {
+	public void setThreadPool(@Nullable ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
 
@@ -182,8 +184,8 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 		return this.createConnector(address, server, null, null, null);
 	}
 
-	protected AbstractConnector createConnector(InetSocketAddress address, Server server, Executor executor,
-			Scheduler scheduler, ByteBufferPool pool) {
+	protected AbstractConnector createConnector(InetSocketAddress address, Server server, @Nullable Executor executor,
+			@Nullable Scheduler scheduler, @Nullable ByteBufferPool pool) {
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSendServerVersion(false);
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
@@ -200,8 +202,10 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 	}
 
 	protected void customizeSsl(Server server, InetSocketAddress address) {
-		Assert.state(getSsl().getServerNameBundles().isEmpty(), "Server name SSL bundles are not supported with Jetty");
-		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
+		Ssl ssl = getSsl();
+		Assert.state(ssl != null, "'ssl' must not be null");
+		Assert.state(ssl.getServerNameBundles().isEmpty(), "Server name SSL bundles are not supported with Jetty");
+		new SslServerCustomizer(getHttp2(), address, ssl.getClientAuth(), getSslBundle()).customize(server);
 	}
 
 	protected Handler addHandlerWrappers(Handler handler) {

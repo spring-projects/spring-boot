@@ -296,7 +296,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	}
 
 	@Test
-	void getWirhAdditionalContextInterfaceHasCorrectInstanceOf() {
+	void getWithAdditionalContextInterfaceHasCorrectInstanceOf() {
 		getWithAdditionalContextInterface()
 			.run((context) -> assertThat(context).isInstanceOf(AdditionalContextInterface.class));
 	}

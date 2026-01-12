@@ -20,9 +20,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.util.GradleVersion;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
@@ -42,7 +45,8 @@ import org.springframework.boot.gradle.util.VersionExtractor;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
-	private static final String SPRING_BOOT_VERSION = VersionExtractor.forClass(DependencyManagementPluginAction.class);
+	private static final @Nullable String SPRING_BOOT_VERSION = VersionExtractor
+		.forClass(DependencyManagementPluginAction.class);
 
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
@@ -113,9 +117,18 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		verifyGradleVersion();
 		createExtension(project);
 		Configuration bootArchives = createBootArchivesConfiguration(project);
 		registerPluginActions(project, bootArchives);
+	}
+
+	private void verifyGradleVersion() {
+		GradleVersion currentVersion = GradleVersion.current();
+		if (currentVersion.compareTo(GradleVersion.version("8.14")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 8.x (8.14 or later) or 9.x. "
+					+ "The current version is " + currentVersion);
+		}
 	}
 
 	private void createExtension(Project project) {
@@ -135,7 +148,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
 				new ApplicationPluginAction(), new KotlinPluginAction(), new NativeImagePluginAction(),
-				new CycloneDxPluginAction());
+				new CyclonedxPluginAction());
 		for (PluginApplicationAction action : actions) {
 			withPluginClassOfAction(action,
 					(pluginClass) -> project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project)));

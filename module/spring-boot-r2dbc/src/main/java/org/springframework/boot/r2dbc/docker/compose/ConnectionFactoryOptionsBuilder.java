@@ -22,6 +22,7 @@ import java.util.Map;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.util.Assert;
@@ -54,7 +55,8 @@ class ConnectionFactoryOptionsBuilder {
 		this.sourcePort = containerPort;
 	}
 
-	ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
+	ConnectionFactoryOptions build(RunningService service, String database, @Nullable String user,
+			@Nullable String password) {
 		Assert.notNull(service, "'service' must not be null");
 		Assert.notNull(database, "'database' must not be null");
 		ConnectionFactoryOptions.Builder builder = ConnectionFactoryOptions.builder()
@@ -89,7 +91,7 @@ class ConnectionFactoryOptionsBuilder {
 		Map<String, String> result = new LinkedHashMap<>();
 		for (String parameter : StringUtils.commaDelimitedListToStringArray(parameters)) {
 			String[] parts = parameter.split("=");
-			Assert.state(parts.length == 2, () -> "'parameters' [%s] must cotain parsable value".formatted(parameter));
+			Assert.state(parts.length == 2, () -> "'parameters' [%s] must contain parsable value".formatted(parameter));
 			result.put(parts[0], parts[1]);
 		}
 		return Collections.unmodifiableMap(result);

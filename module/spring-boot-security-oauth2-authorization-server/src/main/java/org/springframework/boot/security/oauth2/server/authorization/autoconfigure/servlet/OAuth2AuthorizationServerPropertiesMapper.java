@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
  * Maps {@link OAuth2AuthorizationServerProperties} to Authorization Server types.
  *
  * @author Steve Riesenberg
+ * @author Florian Lemaire
  */
 final class OAuth2AuthorizationServerPropertiesMapper {
 
@@ -48,7 +49,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 	}
 
 	AuthorizationServerSettings asAuthorizationServerSettings() {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
 		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
@@ -61,6 +62,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		map.from(endpoint::getJwkSetUri).to(builder::jwkSetEndpoint);
 		map.from(endpoint::getTokenRevocationUri).to(builder::tokenRevocationEndpoint);
 		map.from(endpoint::getTokenIntrospectionUri).to(builder::tokenIntrospectionEndpoint);
+		map.from(endpoint::getPushedAuthorizationRequestUri).to(builder::pushedAuthorizationRequestEndpoint);
 		map.from(oidc::getLogoutUri).to(builder::oidcLogoutEndpoint);
 		map.from(oidc::getClientRegistrationUri).to(builder::oidcClientRegistrationEndpoint);
 		map.from(oidc::getUserInfoUri).to(builder::oidcUserInfoEndpoint);
@@ -76,7 +78,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 
 	private RegisteredClient getRegisteredClient(String registrationId, Client client) {
 		Registration registration = client.getRegistration();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		RegisteredClient.Builder builder = RegisteredClient.withId(registrationId);
 		map.from(registration::getClientId).to(builder::clientId);
 		map.from(registration::getClientSecret).to(builder::clientSecret);

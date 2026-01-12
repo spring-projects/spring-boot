@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.data.sql.h2webconsole.springsecurity;
 
-import org.springframework.boot.security.autoconfigure.servlet.PathRequest;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -34,7 +34,7 @@ public class DevProfileSecurityConfiguration {
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) {
 		http.securityMatcher(PathRequest.toH2Console());
 		http.authorizeHttpRequests(yourCustomAuthorization());
 		http.csrf(CsrfConfigurer::disable);

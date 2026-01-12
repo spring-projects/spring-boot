@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.remote.server;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.server.ServerHttpRequest;
 
 /**
@@ -33,6 +35,6 @@ public interface HandlerMapper {
 	 * @param request the request
 	 * @return a {@link Handler} or {@code null}
 	 */
-	Handler getHandler(ServerHttpRequest request);
+	@Nullable Handler getHandler(ServerHttpRequest request);
 
 }

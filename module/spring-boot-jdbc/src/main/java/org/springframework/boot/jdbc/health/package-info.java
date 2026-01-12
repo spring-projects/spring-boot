@@ -17,4 +17,7 @@
 /**
  * Health integration for JDBC.
  */
+@NullMarked
 package org.springframework.boot.jdbc.health;
+
+import org.jspecify.annotations.NullMarked;

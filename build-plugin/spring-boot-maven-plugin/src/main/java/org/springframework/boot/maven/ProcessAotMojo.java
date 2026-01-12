@@ -28,6 +28,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.ObjectUtils;
 
@@ -50,24 +51,28 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	 * the archive.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File classesDirectory;
 
 	/**
 	 * Directory containing the generated sources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/sources", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedSources;
 
 	/**
 	 * Directory containing the generated resources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/resources", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedResources;
 
 	/**
 	 * Directory containing the generated classes.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedClasses;
 
 	/**
@@ -75,18 +80,20 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	 * the first compiled class found that contains a 'main' method will be used.
 	 */
 	@Parameter(property = "spring-boot.aot.main-class")
-	private String mainClass;
+	private @Nullable String mainClass;
 
 	/**
 	 * Application arguments that should be taken into account for AOT processing.
 	 */
 	@Parameter
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private String[] arguments;
 
 	/**
 	 * Spring profiles to take into account for AOT processing.
 	 */
 	@Parameter
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private String[] profiles;
 
 	@Inject
@@ -123,7 +130,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 
 	private URL[] getClassPath() throws Exception {
 		File[] directories = new File[] { this.classesDirectory, this.generatedClasses };
-		return getClassPath(directories, new ExcludeTestScopeArtifactFilter());
+		return getClassPath(directories, new ExcludeTestScopeArtifactFilter(), DEVTOOLS_EXCLUDE_FILTER);
 	}
 
 	private RunArguments resolveArguments() {

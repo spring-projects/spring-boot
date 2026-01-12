@@ -36,7 +36,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 
 	private final @Nullable FlywayMigrationStrategy migrationStrategy;
 
-	private int order = 0;
+	private int order;
 
 	/**
 	 * Create a new {@link FlywayMigrationInitializer} instance.

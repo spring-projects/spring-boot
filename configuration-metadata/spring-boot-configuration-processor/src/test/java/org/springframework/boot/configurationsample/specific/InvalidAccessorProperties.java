@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Demonstrates that invalid accessors are ignored.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("config")
+@TestConfigurationProperties("config")
 public class InvalidAccessorProperties {
 
 	private String name;

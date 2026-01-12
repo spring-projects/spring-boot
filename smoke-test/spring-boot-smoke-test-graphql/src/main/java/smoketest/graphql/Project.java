@@ -18,6 +18,8 @@ package smoketest.graphql;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 public class Project {
 
 	private String slug;
@@ -46,7 +48,7 @@ public class Project {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) {
 			return true;
 		}

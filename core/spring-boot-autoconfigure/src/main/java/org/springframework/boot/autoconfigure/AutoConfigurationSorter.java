@@ -202,17 +202,21 @@ class AutoConfigurationSorter {
 		}
 
 		Set<String> getBefore() {
-			if (this.before == null) {
-				this.before = getClassNames("AutoConfigureBefore", AutoConfigureBefore.class);
+			Set<String> before = this.before;
+			if (before == null) {
+				before = getClassNames("AutoConfigureBefore", AutoConfigureBefore.class);
+				this.before = before;
 			}
-			return this.before;
+			return before;
 		}
 
 		Set<String> getAfter() {
-			if (this.after == null) {
-				this.after = getClassNames("AutoConfigureAfter", AutoConfigureAfter.class);
+			Set<String> after = this.after;
+			if (after == null) {
+				after = getClassNames("AutoConfigureAfter", AutoConfigureAfter.class);
+				this.after = after;
 			}
-			return this.after;
+			return after;
 		}
 
 		private Set<String> getClassNames(String metadataKey, Class<? extends Annotation> annotation) {
@@ -244,7 +248,12 @@ class AutoConfigurationSorter {
 			}
 			Map<String, @Nullable Object> attributes = getAnnotationMetadata()
 				.getAnnotationAttributes(AutoConfigureOrder.class.getName());
-			return (attributes != null) ? (Integer) attributes.get("value") : AutoConfigureOrder.DEFAULT_ORDER;
+			if (attributes != null) {
+				Integer value = (Integer) attributes.get("value");
+				Assert.state(value != null, "'value' must not be null");
+				return value;
+			}
+			return AutoConfigureOrder.DEFAULT_ORDER;
 		}
 
 		private boolean wasProcessed() {
@@ -258,23 +267,29 @@ class AutoConfigurationSorter {
 			if (attributes == null) {
 				return Collections.emptySet();
 			}
-			Set<String> value = new LinkedHashSet<>();
-			Collections.addAll(value, (String[]) attributes.get("value"));
-			Collections.addAll(value, (String[]) attributes.get("name"));
-			return value;
+			Set<String> result = new LinkedHashSet<>();
+			String[] value = (String[]) attributes.get("value");
+			String[] name = (String[]) attributes.get("name");
+			Assert.state(value != null, "'value' must not be null");
+			Assert.state(name != null, "'name' must not be null");
+			Collections.addAll(result, value);
+			Collections.addAll(result, name);
+			return result;
 		}
 
 		private AnnotationMetadata getAnnotationMetadata() {
-			if (this.annotationMetadata == null) {
+			AnnotationMetadata annotationMetadata = this.annotationMetadata;
+			if (annotationMetadata == null) {
 				try {
 					MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(this.className);
-					this.annotationMetadata = metadataReader.getAnnotationMetadata();
+					annotationMetadata = metadataReader.getAnnotationMetadata();
+					this.annotationMetadata = annotationMetadata;
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException("Unable to read meta-data for class " + this.className, ex);
 				}
 			}
-			return this.annotationMetadata;
+			return annotationMetadata;
 		}
 
 	}

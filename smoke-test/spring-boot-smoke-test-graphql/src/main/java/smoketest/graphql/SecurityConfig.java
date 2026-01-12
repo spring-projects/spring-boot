@@ -35,7 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
 	@Bean
-	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
+	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) {
 		return http.csrf(CsrfConfigurer::disable)
 			// Demonstrate that method security works
 			// Best practice to use both for defense in depth

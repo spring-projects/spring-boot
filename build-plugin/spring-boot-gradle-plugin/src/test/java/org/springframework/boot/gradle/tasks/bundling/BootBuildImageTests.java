@@ -30,8 +30,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
-import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
@@ -201,7 +201,9 @@ class BootBuildImageTests {
 	@Test
 	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
 		this.buildImage.getRunImage().set("example.com/test/run:1.0");
-		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
+		ImageReference runImage = this.buildImage.createRequest().getRunImage();
+		assertThat(runImage).isNotNull();
+		assertThat(runImage.getName()).isEqualTo("test/run");
 	}
 
 	@Test

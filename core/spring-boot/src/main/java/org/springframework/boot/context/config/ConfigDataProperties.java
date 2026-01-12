@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -52,7 +53,8 @@ class ConfigDataProperties {
 	 * @param activate the activate properties
 	 */
 	ConfigDataProperties(@Nullable @Name("import") List<ConfigDataLocation> imports, @Nullable Activate activate) {
-		this.imports = (imports != null) ? imports : Collections.emptyList();
+		this.imports = (imports != null) ? imports.stream().filter(ConfigDataLocation::isNotEmpty).toList()
+				: Collections.emptyList();
 		this.activate = activate;
 	}
 
@@ -99,14 +101,14 @@ class ConfigDataProperties {
 
 		private final @Nullable CloudPlatform onCloudPlatform;
 
-		private final String[] onProfile;
+		private final String @Nullable [] onProfile;
 
 		/**
 		 * Create a new {@link Activate} instance.
 		 * @param onCloudPlatform the cloud platform required for activation
 		 * @param onProfile the profile expression required for activation
 		 */
-		Activate(@Nullable CloudPlatform onCloudPlatform, String[] onProfile) {
+		Activate(@Nullable CloudPlatform onCloudPlatform, String @Nullable [] onProfile) {
 			this.onProfile = onProfile;
 			this.onCloudPlatform = onCloudPlatform;
 		}
@@ -137,6 +139,7 @@ class ConfigDataProperties {
 		}
 
 		private boolean matchesActiveProfiles(Predicate<String> activeProfiles) {
+			Assert.state(this.onProfile != null, "'this.onProfile' must not be null");
 			return org.springframework.core.env.Profiles.of(this.onProfile).matches(activeProfiles);
 		}
 

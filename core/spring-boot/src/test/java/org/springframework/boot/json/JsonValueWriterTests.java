@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
@@ -296,7 +297,7 @@ class JsonValueWriterTests {
 					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
 	}
 
-	private <V> String write(V value) {
+	private <V> String write(@Nullable V value) {
 		return doWrite((valueWriter) -> valueWriter.write(value));
 	}
 

@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -262,7 +263,7 @@ class JdbcTemplateAutoConfigurationTests {
 
 	static class DataSourceInitializationValidator {
 
-		private final Integer count;
+		private final @Nullable Integer count;
 
 		DataSourceInitializationValidator(JdbcTemplate jdbcTemplate) {
 			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from BAR", Integer.class);

@@ -82,7 +82,7 @@ public class DeferredLogs implements DeferredLogFactory {
 	public void switchOverAll() {
 		synchronized (this.lines) {
 			for (Line line : this.lines) {
-				DeferredLog.logTo(line.getDestination(), line.getLevel(), line.getMessage(), line.getThrowable());
+				line.getLevel().log(line.getDestination(), line.getMessage(), line.getThrowable());
 			}
 			for (DeferredLog logger : this.loggers) {
 				logger.switchOver();

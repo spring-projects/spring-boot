@@ -33,6 +33,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -125,12 +127,12 @@ final class ClassPath {
 	 * @param urls the class path URLs
 	 * @return a new {@link ClassPath} instance
 	 */
-	static ClassPath of(UnaryOperator<String> getSystemProperty, List<URL> urls) {
+	static ClassPath of(UnaryOperator<@Nullable String> getSystemProperty, List<URL> urls) {
 		boolean preferArgFile = urls.size() > 1 && isWindows(getSystemProperty);
 		return new ClassPath(preferArgFile, urls.stream().map(ClassPath::toPathString).collect(JOIN_BY_PATH_SEPARATOR));
 	}
 
-	private static boolean isWindows(UnaryOperator<String> getSystemProperty) {
+	private static boolean isWindows(UnaryOperator<@Nullable String> getSystemProperty) {
 		String os = getSystemProperty.apply("os.name");
 		return StringUtils.hasText(os) && os.toLowerCase(Locale.ROOT).contains("win");
 	}

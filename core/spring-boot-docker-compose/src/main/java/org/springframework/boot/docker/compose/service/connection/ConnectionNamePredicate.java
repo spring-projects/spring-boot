@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  * {@link Predicate} that matches against connection name.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource> {
 
@@ -47,7 +48,7 @@ class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource
 
 	private String getActual(RunningService service) {
 		String label = service.labels().get("org.springframework.boot.service-connection");
-		return (label != null) ? asCanonicalName(label) : service.image().getName();
+		return asCanonicalName((label != null) ? label : service.image().getName());
 	}
 
 	private String asCanonicalName(String name) {

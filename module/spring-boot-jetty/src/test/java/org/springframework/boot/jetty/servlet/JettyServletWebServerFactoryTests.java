@@ -42,15 +42,15 @@ import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
-import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
-import org.eclipse.jetty.ee10.webapp.Configuration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee11.servlet.ServletHolder;
+import org.eclipse.jetty.ee11.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee11.webapp.Configuration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
@@ -58,6 +58,7 @@ import org.eclipse.jetty.util.ClassMatcher;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -123,7 +124,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Override
-	protected JspServlet getJspServlet() throws Exception {
+	protected @Nullable JspServlet getJspServlet() throws Exception {
 		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		ServletHolder holder = context.getServletHandler().getServlet("jsp");
 		if (holder == null) {
@@ -141,7 +142,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Override
-	protected Charset getCharset(Locale locale) {
+	protected @Nullable Charset getCharset(Locale locale) {
 		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
@@ -314,7 +315,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		catch (NoSuchMethodError ex) {
 			Method getSslContextFactory = ReflectionUtils.findMethod(connectionFactory.getClass(),
 					"getSslContextFactory");
-			return (SslContextFactory) ReflectionUtils.invokeMethod(getSslContextFactory, connectionFactory);
+			assertThat(getSslContextFactory).isNotNull();
+			SslContextFactory sslContextFactory = (SslContextFactory) ReflectionUtils.invokeMethod(getSslContextFactory,
+					connectionFactory);
+			assertThat(sslContextFactory).isNotNull();
+			return sslContextFactory;
 		}
 	}
 
@@ -528,6 +533,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 				// Jetty 10
 				Method addEventListener = ReflectionUtils.findMethod(context.getClass(), "addEventListener",
 						EventListener.class);
+				assertThat(addEventListener).isNotNull();
 				ReflectionUtils.invokeMethod(addEventListener, context, eventListener);
 			}
 		});
@@ -565,9 +571,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		factory.setMaxConnections(1);
 		this.webServer = factory.getWebServer();
 		Server server = ((JettyWebServer) this.webServer).getServer();
-		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
-		assertThat(connectionLimit.getMaxConnections()).isOne();
+		assertThat(connectionLimit.getMaxNetworkConnectionCount()).isOne();
 	}
 
 	@Test
@@ -577,7 +583,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		this.webServer = factory.getWebServer();
 		Server server = ((JettyWebServer) this.webServer).getServer();
 		assertThat(server.getConnectors()).isEmpty();
-		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
 		assertThat(connectionLimit).extracting("_connectors")
 			.asInstanceOf(InstanceOfAssertFactories.list(AbstractConnector.class))
 			.hasSize(1);

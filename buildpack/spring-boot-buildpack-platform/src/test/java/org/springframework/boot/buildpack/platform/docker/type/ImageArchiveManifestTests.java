@@ -16,7 +16,6 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImageArchiveManifestTests extends AbstractJsonTests {
 
 	@Test
-	void getLayersReturnsLayers() throws Exception {
+	void getLayersReturnsLayers() {
 		String content = getContentAsString("image-archive-manifest.json");
 		ImageArchiveManifest manifest = getManifest(content);
 		List<String> expectedLayers = new ArrayList<>();
@@ -49,7 +48,7 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getLayersWithNoLayersReturnsEmptyList() throws Exception {
+	void getLayersWithNoLayersReturnsEmptyList() {
 		String content = "[{\"Layers\": []}]";
 		ImageArchiveManifest manifest = getManifest(content);
 		assertThat(manifest.getEntries()).hasSize(1);
@@ -57,14 +56,14 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getLayersWithEmptyManifestReturnsEmptyList() throws Exception {
+	void getLayersWithEmptyManifestReturnsEmptyList() {
 		String content = "[]";
 		ImageArchiveManifest manifest = getManifest(content);
 		assertThat(manifest.getEntries()).isEmpty();
 	}
 
-	private ImageArchiveManifest getManifest(String content) throws IOException {
-		return new ImageArchiveManifest(getObjectMapper().readTree(content));
+	private ImageArchiveManifest getManifest(String content) {
+		return new ImageArchiveManifest(getJsonMapper().readTree(content));
 	}
 
 }

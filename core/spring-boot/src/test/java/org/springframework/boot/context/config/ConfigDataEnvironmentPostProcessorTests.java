@@ -19,11 +19,12 @@ package org.springframework.boot.context.config;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.TestApplicationEnvironment;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.PropertySource;
@@ -51,13 +52,15 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	private final SpringApplication application = new SpringApplication();
 
-	private ConfigDataEnvironment configDataEnvironment;
+	private @Nullable ConfigDataEnvironment configDataEnvironment;
 
-	private ConfigDataEnvironmentPostProcessor postProcessor;
+	private @Nullable ConfigDataEnvironmentPostProcessor postProcessor;
 
 	@Test
 	void postProcessEnvironmentWhenNoLoaderCreatesDefaultLoaderInstance() {
 		setupMocksAndSpies();
+		assertThat(this.configDataEnvironment).isNotNull();
+		assertThat(this.postProcessor).isNotNull();
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.postProcessor).should()
@@ -70,6 +73,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void postProcessEnvironmentWhenCustomLoaderUsesSpecifiedLoaderInstance() {
 		setupMocksAndSpies();
+		assertThat(this.configDataEnvironment).isNotNull();
+		assertThat(this.postProcessor).isNotNull();
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
 		this.application.setResourceLoader(resourceLoader);
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
@@ -83,6 +88,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void postProcessEnvironmentWhenHasAdditionalProfilesOnSpringApplicationUsesAdditionalProfiles() {
 		setupMocksAndSpies();
+		assertThat(this.configDataEnvironment).isNotNull();
+		assertThat(this.postProcessor).isNotNull();
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
@@ -95,6 +102,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void postProcessEnvironmentWhenNoActiveProfiles() {
 		setupMocksAndSpies();
+		assertThat(this.configDataEnvironment).isNotNull();
+		assertThat(this.postProcessor).isNotNull();
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(ResourceLoader.class), any());
@@ -113,7 +122,9 @@ class ConfigDataEnvironmentPostProcessorTests {
 		assertThat(this.environment.getPropertySources()).hasSizeGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources()).isNotEmpty();
-		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
+		Profiles profiles = listener.getProfiles();
+		assertThat(profiles).isNotNull();
+		assertThat(profiles.getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
 			.isTrue();
 	}
@@ -147,7 +158,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.postProcessor = spy(new ConfigDataEnvironmentPostProcessor(Supplier::get, new DefaultBootstrapContext()));
 	}
 
-	private boolean hasDevProfile(ConfigDataResource resource) {
+	private boolean hasDevProfile(@Nullable ConfigDataResource resource) {
 		return (resource instanceof StandardConfigDataResource standardResource)
 				&& "dev".equals(standardResource.getProfile());
 	}

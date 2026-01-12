@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
-import org.springframework.boot.session.endpoint.SessionsEndpoint;
+import org.springframework.boot.session.actuate.endpoint.SessionsEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -34,7 +34,6 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +50,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
 class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final Session sessionOne = createSession(Instant.now().minusSeconds(60 * 60 * 12),

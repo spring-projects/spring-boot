@@ -19,7 +19,8 @@ package org.springframework.boot.jetty.autoconfigure.servlet;
 import java.util.Map;
 
 import jakarta.servlet.Filter;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
+import jakarta.servlet.ServletContext;
+import org.eclipse.jetty.ee11.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 
@@ -75,9 +76,11 @@ class JettyServletWebServerAutoConfigurationTests extends AbstractServletWebServ
 
 	@Test
 	void jettyWebSocketUpgradeFilterIsAddedToServletContex() {
-		this.serverRunner.run((context) -> assertThat(
-				context.getServletContext().getFilterRegistration(WebSocketUpgradeFilter.class.getName()))
-			.isNotNull());
+		this.serverRunner.run((context) -> {
+			ServletContext servletContext = context.getServletContext();
+			assertThat(servletContext).isNotNull();
+			assertThat(servletContext.getFilterRegistration(WebSocketUpgradeFilter.class.getName())).isNotNull();
+		});
 	}
 
 	@Test

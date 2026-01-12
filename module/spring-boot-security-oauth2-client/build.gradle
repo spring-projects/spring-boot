@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Security OAuth2 Client"
@@ -32,14 +33,23 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-reactor"))
+	optional(project(":module:spring-boot-webflux-test"))
+	optional(project(":module:spring-boot-webmvc-test"))
 
-	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-webmvc"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("tools.jackson.core:jackson-databind")
+
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.springframework:spring-webflux")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

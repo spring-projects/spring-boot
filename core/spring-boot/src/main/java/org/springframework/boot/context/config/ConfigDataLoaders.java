@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -79,8 +79,10 @@ class ConfigDataLoaders {
 		return Collections.unmodifiableList(resourceTypes);
 	}
 
-	private @Nullable Class<?> getResourceType(ConfigDataLoader<?> loader) {
-		return ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
+	private Class<?> getResourceType(ConfigDataLoader<?> loader) {
+		Class<?> generic = ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
+		Assert.state(generic != null, "'generic' must not be null");
+		return generic;
 	}
 
 	/**

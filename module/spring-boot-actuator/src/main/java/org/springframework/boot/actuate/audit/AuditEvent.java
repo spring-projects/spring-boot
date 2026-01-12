@@ -53,7 +53,7 @@ public class AuditEvent implements Serializable {
 
 	private final String type;
 
-	private final Map<String, Object> data;
+	private final Map<String, @Nullable Object> data;
 
 	/**
 	 * Create a new audit event for the current time.
@@ -61,7 +61,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data
 	 */
-	public AuditEvent(String principal, String type, Map<String, Object> data) {
+	public AuditEvent(@Nullable String principal, String type, Map<String, @Nullable Object> data) {
 		this(Instant.now(), principal, type, data);
 	}
 
@@ -72,7 +72,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data in the form 'key=value' or simply 'key'
 	 */
-	public AuditEvent(String principal, String type, String... data) {
+	public AuditEvent(@Nullable String principal, String type, String... data) {
 		this(Instant.now(), principal, type, convert(data));
 	}
 
@@ -83,7 +83,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data
 	 */
-	public AuditEvent(Instant timestamp, @Nullable String principal, String type, Map<String, Object> data) {
+	public AuditEvent(Instant timestamp, @Nullable String principal, String type, Map<String, @Nullable Object> data) {
 		Assert.notNull(timestamp, "'timestamp' must not be null");
 		Assert.notNull(type, "'type' must not be null");
 		this.timestamp = timestamp;
@@ -92,8 +92,8 @@ public class AuditEvent implements Serializable {
 		this.data = Collections.unmodifiableMap(data);
 	}
 
-	private static Map<String, Object> convert(String[] data) {
-		Map<String, Object> result = new HashMap<>();
+	private static Map<String, @Nullable Object> convert(String[] data) {
+		Map<String, @Nullable Object> result = new HashMap<>();
 		for (String entry : data) {
 			int index = entry.indexOf('=');
 			if (index != -1) {
@@ -135,7 +135,7 @@ public class AuditEvent implements Serializable {
 	 * Returns the event data.
 	 * @return the event data
 	 */
-	public Map<String, Object> getData() {
+	public Map<String, @Nullable Object> getData() {
 		return this.data;
 	}
 

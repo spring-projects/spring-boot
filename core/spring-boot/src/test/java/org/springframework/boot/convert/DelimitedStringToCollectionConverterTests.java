@@ -16,11 +16,13 @@
 
 package org.springframework.boot.convert;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -45,7 +47,8 @@ class DelimitedStringToCollectionConverterTests {
 	@ConversionServiceTest
 	void matchesWhenTargetIsNotAnnotatedShouldReturnTrue(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noAnnotation"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("noAnnotation"), 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
 			.isTrue();
 	}
@@ -53,7 +56,8 @@ class DelimitedStringToCollectionConverterTests {
 	@ConversionServiceTest
 	void matchesWhenHasAnnotationAndNoElementTypeShouldReturnTrue(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noElementType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("noElementType"), 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
 			.isTrue();
 	}
@@ -61,8 +65,8 @@ class DelimitedStringToCollectionConverterTests {
 	@ConversionServiceTest
 	void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("nonConvertibleElementType"), 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToCollectionConverter(conversionService).matches(sourceType, targetType))
 			.isFalse();
 	}
@@ -71,7 +75,8 @@ class DelimitedStringToCollectionConverterTests {
 	@SuppressWarnings("unchecked")
 	void convertWhenHasNoElementTypeShouldReturnTrimmedString(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noElementType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("noElementType"), 0);
+		assertThat(targetType).isNotNull();
 		Collection<String> converted = (Collection<String>) conversionService.convert(" a |  b| c  ", sourceType,
 				targetType);
 		assertThat(converted).containsExactly("a", "b", "c");
@@ -81,7 +86,8 @@ class DelimitedStringToCollectionConverterTests {
 	@SuppressWarnings("unchecked")
 	void convertWhenHasDelimiterOfNoneShouldReturnWholeString(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "delimiterNone"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("delimiterNone"), 0);
+		assertThat(targetType).isNotNull();
 		List<String> converted = (List<String>) conversionService.convert("a,b,c", sourceType, targetType);
 		assertThat(converted).containsExactly("a,b,c");
 	}
@@ -90,7 +96,8 @@ class DelimitedStringToCollectionConverterTests {
 	@ConversionServiceTest
 	void convertWhenHasCollectionObjectTypeShouldUseCollectionObjectType(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "specificType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("specificType"), 0);
+		assertThat(targetType).isNotNull();
 		MyCustomList<String> converted = (MyCustomList<String>) conversionService.convert("a*b", sourceType,
 				targetType);
 		assertThat(converted).containsExactly("a", "b");
@@ -99,8 +106,8 @@ class DelimitedStringToCollectionConverterTests {
 	@Test
 	void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("convertibleElementType"), 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToCollectionConverter(new ApplicationConversionService()).matches(sourceType,
 				targetType))
 			.isTrue();
@@ -110,11 +117,17 @@ class DelimitedStringToCollectionConverterTests {
 	@SuppressWarnings("unchecked")
 	void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		TypeDescriptor targetType = TypeDescriptor.nested(getField("convertibleElementType"), 0);
+		assertThat(targetType).isNotNull();
 		List<Integer> converted = (List<Integer>) new ApplicationConversionService().convert(" 1 |  2| 3  ", sourceType,
 				targetType);
 		assertThat(converted).containsExactly(1, 2, 3);
+	}
+
+	private Field getField(String fieldName) {
+		Field field = ReflectionUtils.findField(Values.class, fieldName);
+		assertThat(field).isNotNull();
+		return field;
 	}
 
 	static Stream<? extends Arguments> conversionServices() {
@@ -124,23 +137,23 @@ class DelimitedStringToCollectionConverterTests {
 
 	static class Values {
 
-		List<String> noAnnotation;
+		@Nullable List<String> noAnnotation;
 
 		@SuppressWarnings("rawtypes")
 		@Delimiter("|")
-		List noElementType;
+		@Nullable List noElementType;
 
 		@Delimiter("|")
-		List<Integer> convertibleElementType;
+		@Nullable List<Integer> convertibleElementType;
 
 		@Delimiter("|")
-		List<NonConvertible> nonConvertibleElementType;
+		@Nullable List<NonConvertible> nonConvertibleElementType;
 
 		@Delimiter(Delimiter.NONE)
-		List<String> delimiterNone;
+		@Nullable List<String> delimiterNone;
 
 		@Delimiter("*")
-		MyCustomList<String> specificType;
+		@Nullable MyCustomList<String> specificType;
 
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -33,7 +35,8 @@ public sealed interface DockerConnectionConfiguration {
 	 * @param secure if connection is secure
 	 * @param certificatePath a path to the certificate used for secure connections
 	 */
-	record Host(String address, boolean secure, String certificatePath) implements DockerConnectionConfiguration {
+	record Host(String address, boolean secure,
+			@Nullable String certificatePath) implements DockerConnectionConfiguration {
 
 		public Host(String address) {
 			this(address, false, null);

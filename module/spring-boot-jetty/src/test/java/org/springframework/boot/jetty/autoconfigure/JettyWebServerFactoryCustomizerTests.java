@@ -26,7 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -288,15 +288,15 @@ class JettyWebServerFactoryCustomizerTests {
 	@Test
 	void defaultMaxHttpResponseHeaderSize() {
 		JettyWebServer server = customizeAndGetServer();
-		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
-		assertThat(responseHeaderSizes).containsOnly(8192);
+		List<Integer> responseHeaderSizes = getMaxResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(16384);
 	}
 
 	@Test
 	void customizeMaxHttpResponseHeaderSize() {
 		bind("server.jetty.max-http-response-header-size=2KB");
 		JettyWebServer server = customizeAndGetServer();
-		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
+		List<Integer> responseHeaderSizes = getMaxResponseHeaderSizes(server);
 		assertThat(responseHeaderSizes).containsOnly(2048);
 	}
 
@@ -304,16 +304,16 @@ class JettyWebServerFactoryCustomizerTests {
 	void customMaxHttpResponseHeaderSizeIgnoredIfNegative() {
 		bind("server.jetty.max-http-response-header-size=-1");
 		JettyWebServer server = customizeAndGetServer();
-		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
-		assertThat(responseHeaderSizes).containsOnly(8192);
+		List<Integer> responseHeaderSizes = getMaxResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(16384);
 	}
 
 	@Test
 	void customMaxHttpResponseHeaderSizeIgnoredIfZero() {
 		bind("server.jetty.max-http-response-header-size=0");
 		JettyWebServer server = customizeAndGetServer();
-		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
-		assertThat(responseHeaderSizes).containsOnly(8192);
+		List<Integer> responseHeaderSizes = getMaxResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(16384);
 	}
 
 	@Test
@@ -351,8 +351,8 @@ class JettyWebServerFactoryCustomizerTests {
 		return getHeaderSizes(server, HttpConfiguration::getRequestHeaderSize);
 	}
 
-	private List<Integer> getResponseHeaderSizes(JettyWebServer server) {
-		return getHeaderSizes(server, HttpConfiguration::getResponseHeaderSize);
+	private List<Integer> getMaxResponseHeaderSizes(JettyWebServer server) {
+		return getHeaderSizes(server, HttpConfiguration::getMaxResponseHeaderSize);
 	}
 
 	private List<Integer> getHeaderSizes(JettyWebServer server, Function<HttpConfiguration, Integer> provider) {
@@ -378,7 +378,9 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	private BlockingQueue<?> getQueue(ThreadPool threadPool) {
-		return ReflectionTestUtils.invokeMethod(threadPool, "getQueue");
+		BlockingQueue<?> queue = ReflectionTestUtils.invokeMethod(threadPool, "getQueue");
+		assertThat(queue).isNotNull();
+		return queue;
 	}
 
 	private void bind(String... inlinedProperties) {

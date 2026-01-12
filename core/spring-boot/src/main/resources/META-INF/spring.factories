@@ -40,17 +40,17 @@ org.springframework.context.ApplicationListener=\
 org.springframework.boot.ClearCachesApplicationListener,\
 org.springframework.boot.builder.ParentContextCloserApplicationListener,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
-org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.logging.LoggingApplicationListener,\
-org.springframework.boot.env.EnvironmentPostProcessorApplicationListener
+org.springframework.boot.support.AnsiOutputApplicationListener,\
+org.springframework.boot.support.EnvironmentPostProcessorApplicationListener
 
 # Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.EnvironmentPostProcessor=\
 org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor,\
-org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor,\
-org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,\
-org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor
+org.springframework.boot.support.RandomValuePropertySourceEnvironmentPostProcessor,\
+org.springframework.boot.support.SpringApplicationJsonEnvironmentPostProcessor,\
+org.springframework.boot.support.SystemEnvironmentPropertySourceEnvironmentPostProcessor
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\

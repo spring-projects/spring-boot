@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +32,7 @@ class DeferredLogFactoryTests {
 
 	private final DeferredLogFactory factory = (supplier) -> this.log = supplier.get();
 
-	private Log log;
+	private @Nullable Log log;
 
 	@Test
 	void getLogFromClassCreatesLogSupplier() {

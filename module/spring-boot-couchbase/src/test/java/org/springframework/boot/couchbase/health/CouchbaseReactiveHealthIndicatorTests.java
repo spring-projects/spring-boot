@@ -60,6 +60,7 @@ class CouchbaseReactiveHealthIndicatorTests {
 		given(reactiveCluster.diagnostics()).willReturn(Mono.just(diagnostics));
 		given(cluster.reactive()).willReturn(reactiveCluster);
 		Health health = healthIndicator.health().block(Duration.ofSeconds(30));
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
 		assertThat(health.getDetails()).containsKey("endpoints");
@@ -85,6 +86,7 @@ class CouchbaseReactiveHealthIndicatorTests {
 		given(reactiveCluster.diagnostics()).willReturn(Mono.just(diagnostics));
 		given(cluster.reactive()).willReturn(reactiveCluster);
 		Health health = healthIndicator.health().block(Duration.ofSeconds(30));
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
 		assertThat(health.getDetails()).containsKey("endpoints");

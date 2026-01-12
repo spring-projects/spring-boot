@@ -17,7 +17,7 @@
 package smoketest.secure.jersey;
 
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.EndpointRequest;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -46,7 +46,7 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+	SecurityFilterChain configure(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))

@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -38,7 +40,7 @@ class BuildOwner implements Owner {
 
 	private final long gid;
 
-	BuildOwner(Map<String, String> env) {
+	BuildOwner(Map<String, @Nullable String> env) {
 		this.uid = getValue(env, USER_PROPERTY_NAME);
 		this.gid = getValue(env, GROUP_PROPERTY_NAME);
 	}
@@ -48,7 +50,7 @@ class BuildOwner implements Owner {
 		this.gid = gid;
 	}
 
-	private long getValue(Map<String, String> env, String name) {
+	private long getValue(Map<String, @Nullable String> env, String name) {
 		String value = env.get(name);
 		Assert.state(StringUtils.hasText(value),
 				() -> "Missing '" + name + "' value from the builder environment '" + env + "'");
@@ -83,7 +85,7 @@ class BuildOwner implements Owner {
 	 * @return a {@link BuildOwner} instance extracted from the env
 	 * @throws IllegalStateException if the env does not contain the correct CNB variables
 	 */
-	static BuildOwner fromEnv(Map<String, String> env) {
+	static BuildOwner fromEnv(Map<String, @Nullable String> env) {
 		Assert.notNull(env, "'env' must not be null");
 		return new BuildOwner(env);
 	}

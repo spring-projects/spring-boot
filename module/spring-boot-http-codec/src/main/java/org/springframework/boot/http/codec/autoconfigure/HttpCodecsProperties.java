@@ -16,6 +16,8 @@
 
 package org.springframework.boot.http.codec.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
 
@@ -24,7 +26,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
- * @since 3.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.codecs")
 public class HttpCodecsProperties {
@@ -40,7 +42,7 @@ public class HttpCodecsProperties {
 	 * WebClient instances. By default this is not set, in which case individual codec
 	 * defaults apply. Most codecs are limited to 256K by default.
 	 */
-	private DataSize maxInMemorySize;
+	private @Nullable DataSize maxInMemorySize;
 
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
@@ -50,11 +52,11 @@ public class HttpCodecsProperties {
 		this.logRequestDetails = logRequestDetails;
 	}
 
-	public DataSize getMaxInMemorySize() {
+	public @Nullable DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
-	public void setMaxInMemorySize(DataSize maxInMemorySize) {
+	public void setMaxInMemorySize(@Nullable DataSize maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
 	}
 

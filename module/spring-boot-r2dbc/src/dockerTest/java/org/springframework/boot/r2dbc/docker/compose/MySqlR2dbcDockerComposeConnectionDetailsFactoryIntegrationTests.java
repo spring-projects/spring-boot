@@ -38,11 +38,6 @@ class MySqlR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "mysql-bitnami-compose.yaml", image = TestImage.BITNAMI_MYSQL)
-	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-	}
-
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=mysql",

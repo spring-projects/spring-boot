@@ -167,7 +167,7 @@ public class DeferredLog implements Log {
 	private void log(LogLevel level, Object message, @Nullable Throwable t) {
 		synchronized (this.lines) {
 			if (this.destination != null) {
-				logTo(this.destination, level, message, t);
+				level.log(this.destination, message, t);
 			}
 			else {
 				this.lines.add(this.destinationSupplier, level, message, t);
@@ -218,7 +218,7 @@ public class DeferredLog implements Log {
 	public void replayTo(Log destination) {
 		synchronized (this.lines) {
 			for (Line line : this.lines) {
-				logTo(destination, line.getLevel(), line.getMessage(), line.getThrowable());
+				line.getLevel().log(destination, line.getMessage(), line.getThrowable());
 			}
 			this.lines.clear();
 		}
@@ -245,17 +245,6 @@ public class DeferredLog implements Log {
 			deferredLog.replayTo(destination);
 		}
 		return destination;
-	}
-
-	static void logTo(Log log, LogLevel level, Object message, @Nullable Throwable throwable) {
-		switch (level) {
-			case TRACE -> log.trace(message, throwable);
-			case DEBUG -> log.debug(message, throwable);
-			case INFO -> log.info(message, throwable);
-			case WARN -> log.warn(message, throwable);
-			case ERROR -> log.error(message, throwable);
-			case FATAL -> log.fatal(message, throwable);
-		}
 	}
 
 	static class Lines implements Iterable<Line> {

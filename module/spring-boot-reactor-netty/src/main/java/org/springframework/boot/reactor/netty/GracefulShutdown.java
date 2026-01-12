@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.netty.DisposableServer;
 
 import org.springframework.boot.web.server.GracefulShutdownCallback;
@@ -35,13 +36,13 @@ final class GracefulShutdown {
 
 	private static final Log logger = LogFactory.getLog(GracefulShutdown.class);
 
-	private final Supplier<DisposableServer> disposableServer;
+	private final Supplier<@Nullable DisposableServer> disposableServer;
 
-	private volatile Thread shutdownThread;
+	private volatile @Nullable Thread shutdownThread;
 
 	private volatile boolean shuttingDown;
 
-	GracefulShutdown(Supplier<DisposableServer> disposableServer) {
+	GracefulShutdown(Supplier<@Nullable DisposableServer> disposableServer) {
 		this.disposableServer = disposableServer;
 	}
 
@@ -51,8 +52,9 @@ final class GracefulShutdown {
 			return;
 		}
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-		this.shutdownThread = new Thread(() -> doShutdown(callback, server), "netty-shutdown");
-		this.shutdownThread.start();
+		Thread shutdownThread = new Thread(() -> doShutdown(callback, server), "netty-shutdown");
+		this.shutdownThread = shutdownThread;
+		shutdownThread.start();
 	}
 
 	private void doShutdown(GracefulShutdownCallback callback, DisposableServer server) {

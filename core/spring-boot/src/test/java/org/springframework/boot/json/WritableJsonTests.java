@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class WritableJsonTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
@@ -82,6 +83,7 @@ class WritableJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void toResourceWithCharsetWhenOutIsNullThrowsException() {
 		WritableJson writable = (out) -> out.append("{}");
 		assertThatIllegalArgumentException().isThrownBy(() -> writable.toResource(null, StandardCharsets.UTF_8))
@@ -89,6 +91,7 @@ class WritableJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void toResourceWithCharsetWhenCharsetIsNullThrowsException() {
 		File file = new File(this.temp, "out.json");
 		WritableJson writable = (out) -> out.append("{}");
@@ -113,6 +116,7 @@ class WritableJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void toOutputStreamWithCharsetWhenOutIsNullThrowsException() {
 		WritableJson writable = (out) -> out.append("{}");
 		assertThatIllegalArgumentException().isThrownBy(() -> writable.toOutputStream(null, StandardCharsets.UTF_8))
@@ -120,6 +124,7 @@ class WritableJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void toOutputStreamWithCharsetWhenCharsetIsNullThrowsException() {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		WritableJson writable = (out) -> out.append("{}");
@@ -136,6 +141,7 @@ class WritableJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void toWriterWhenWriterIsNullThrowsException() {
 		WritableJson writable = (out) -> out.append("{}");
 		assertThatIllegalArgumentException().isThrownBy(() -> writable.toWriter(null))

@@ -18,6 +18,7 @@ package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CompositeHandlerExceptionResolverTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -50,16 +51,19 @@ class CompositeHandlerExceptionResolverTests {
 	@Test
 	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
+		assertThat(this.context).isNotNull();
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 			.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
 				new HttpRequestMethodNotSupportedException("POST"));
+		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
 	}
 
 	@Test
 	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
+		assertThat(this.context).isNotNull();
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 			.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
 		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("POST");
@@ -99,8 +103,8 @@ class CompositeHandlerExceptionResolverTests {
 	static class TestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 		@Override
-		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-				Exception ex) {
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
+				@Nullable Object handler, Exception ex) {
 			return new ModelAndView("test-view");
 		}
 

@@ -5,8 +5,9 @@
       "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
       "type": "java.lang.String",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
-        "level": "error"
+        "since": "3.0.0"
       }
     }
   ]

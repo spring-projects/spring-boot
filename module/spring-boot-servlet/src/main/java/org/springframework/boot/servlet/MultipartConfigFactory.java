@@ -17,6 +17,7 @@
 package org.springframework.boot.servlet;
 
 import jakarta.servlet.MultipartConfigElement;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.unit.DataSize;
 
@@ -28,19 +29,19 @@ import org.springframework.util.unit.DataSize;
  */
 public class MultipartConfigFactory {
 
-	private String location;
+	private @Nullable String location;
 
-	private DataSize maxFileSize;
+	private @Nullable DataSize maxFileSize;
 
-	private DataSize maxRequestSize;
+	private @Nullable DataSize maxRequestSize;
 
-	private DataSize fileSizeThreshold;
+	private @Nullable DataSize fileSizeThreshold;
 
 	/**
 	 * Sets the directory location where files will be stored.
 	 * @param location the location
 	 */
-	public void setLocation(String location) {
+	public void setLocation(@Nullable String location) {
 		this.location = location;
 	}
 
@@ -48,7 +49,7 @@ public class MultipartConfigFactory {
 	 * Sets the maximum {@link DataSize size} allowed for uploaded files.
 	 * @param maxFileSize the maximum file size
 	 */
-	public void setMaxFileSize(DataSize maxFileSize) {
+	public void setMaxFileSize(@Nullable DataSize maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
 
@@ -56,7 +57,7 @@ public class MultipartConfigFactory {
 	 * Sets the maximum {@link DataSize} allowed for multipart/form-data requests.
 	 * @param maxRequestSize the maximum request size
 	 */
-	public void setMaxRequestSize(DataSize maxRequestSize) {
+	public void setMaxRequestSize(@Nullable DataSize maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
 
@@ -64,7 +65,7 @@ public class MultipartConfigFactory {
 	 * Sets the {@link DataSize size} threshold after which files will be written to disk.
 	 * @param fileSizeThreshold the file size threshold
 	 */
-	public void setFileSizeThreshold(DataSize fileSizeThreshold) {
+	public void setFileSizeThreshold(@Nullable DataSize fileSizeThreshold) {
 		this.fileSizeThreshold = fileSizeThreshold;
 	}
 
@@ -87,7 +88,7 @@ public class MultipartConfigFactory {
 	 * @param defaultValue the default value if the size is {@code null} or negative
 	 * @return the amount of bytes to use
 	 */
-	private long convertToBytes(DataSize size, int defaultValue) {
+	private long convertToBytes(@Nullable DataSize size, int defaultValue) {
 		if (size != null && !size.isNegative()) {
 			return size.toBytes();
 		}

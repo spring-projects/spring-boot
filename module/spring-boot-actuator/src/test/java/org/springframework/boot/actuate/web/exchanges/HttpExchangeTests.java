@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
@@ -50,17 +51,17 @@ class HttpExchangeTests {
 
 	private static final HttpHeaders SET_COOKIE_HEADER = ofSingleHttpHeader(HttpHeaders.SET_COOKIE, "test=test");
 
-	private static final Supplier<Principal> NO_PRINCIPAL = () -> null;
+	private static final Supplier<@Nullable Principal> NO_PRINCIPAL = () -> null;
 
-	private static final Supplier<String> NO_SESSION_ID = () -> null;
+	private static final Supplier<@Nullable String> NO_SESSION_ID = () -> null;
 
-	private static final Supplier<Principal> WITH_PRINCIPAL = () -> {
+	private static final Supplier<@Nullable Principal> WITH_PRINCIPAL = () -> {
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		return principal;
 	};
 
-	private static final Supplier<String> WITH_SESSION_ID = () -> "JSESSION_123";
+	private static final Supplier<@Nullable String> WITH_SESSION_ID = () -> "JSESSION_123";
 
 	@Test
 	void getTimestampReturnsTimestamp() {

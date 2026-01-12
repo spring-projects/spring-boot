@@ -21,11 +21,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.mongodb.MongoClientSettings;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,17 +45,6 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  */
 abstract class MongoClientFactorySupportTests<T> {
-
-	@Test
-	void canBindCharArrayPassword() {
-		// gh-1572
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.password:word").applyTo(context);
-		context.register(Config.class);
-		context.refresh();
-		MongoProperties properties = context.getBean(MongoProperties.class);
-		assertThat(properties.getPassword()).isEqualTo("word".toCharArray());
-	}
 
 	@Test
 	void allMongoClientSettingsCanBeSet() {
@@ -101,16 +89,6 @@ abstract class MongoClientFactorySupportTests<T> {
 		then(customizer).should().customize(any(MongoClientSettings.Builder.class));
 	}
 
-	@Test
-	void canBindAutoIndexCreation() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.autoIndexCreation:true").applyTo(context);
-		context.register(Config.class);
-		context.refresh();
-		MongoProperties properties = context.getBean(MongoProperties.class);
-		assertThat(properties.isAutoIndexCreation()).isTrue();
-	}
-
 	protected T createMongoClient(MongoClientSettings settings) {
 		return createMongoClient(null, settings);
 	}
@@ -120,7 +98,7 @@ abstract class MongoClientFactorySupportTests<T> {
 				MongoClientSettings.builder().build());
 	}
 
-	protected abstract T createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+	protected abstract T createMongoClient(@Nullable List<MongoClientSettingsBuilderCustomizer> customizers,
 			MongoClientSettings settings);
 
 	protected abstract MongoClientSettings getClientSettings(T client);

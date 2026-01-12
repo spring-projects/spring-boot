@@ -18,6 +18,7 @@ package org.springframework.boot.logging.structured;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,6 +30,7 @@ import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -36,6 +38,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor}.
@@ -107,7 +110,7 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessorTests 
 		assertThat(contribution).isNull();
 	}
 
-	private BeanFactoryInitializationAotContribution getContribution(ConfigurableEnvironment environment) {
+	private @Nullable BeanFactoryInitializationAotContribution getContribution(ConfigurableEnvironment environment) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.setEnvironment(environment);
 			context.refresh();
@@ -118,7 +121,7 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessorTests 
 
 	private RuntimeHints getRuntimeHints(BeanFactoryInitializationAotContribution contribution) {
 		TestGenerationContext generationContext = new TestGenerationContext();
-		contribution.applyTo(generationContext, null);
+		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
 		return generationContext.getRuntimeHints();
 	}
 

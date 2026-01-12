@@ -19,6 +19,8 @@ package org.springframework.boot.jarmode.tools;
 import java.io.PrintStream;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.loader.jarmode.JarMode;
 
 /**
@@ -37,7 +39,7 @@ public class ToolsJarMode implements JarMode {
 		this(null, null);
 	}
 
-	public ToolsJarMode(Context context, PrintStream out) {
+	public ToolsJarMode(@Nullable Context context, @Nullable PrintStream out) {
 		this.context = (context != null) ? context : new Context();
 		this.out = (out != null) ? out : System.out;
 	}

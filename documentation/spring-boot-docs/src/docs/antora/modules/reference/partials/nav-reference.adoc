@@ -39,6 +39,7 @@
 
 ** xref:reference:io/index.adoc[]
 *** xref:reference:io/caching.adoc[]
+*** xref:reference:io/spring-batch.adoc[]
 *** xref:reference:io/hazelcast.adoc[]
 *** xref:reference:io/quartz.adoc[]
 *** xref:reference:io/email.adoc[]
@@ -57,6 +58,7 @@
 *** xref:reference:messaging/websockets.adoc[]
 
 ** xref:reference:testing/index.adoc[]
+*** xref:reference:testing/test-modules.adoc[]
 *** xref:reference:testing/test-scope-dependencies.adoc[]
 *** xref:reference:testing/spring-applications.adoc[]
 *** xref:reference:testing/spring-boot-applications.adoc[]
@@ -65,7 +67,7 @@
 
 ** xref:reference:packaging/index.adoc[]
 *** xref:reference:packaging/efficient.adoc[]
-*** xref:reference:packaging/class-data-sharing.adoc[]
+*** xref:reference:packaging/aot-cache.adoc[]
 *** xref:reference:packaging/aot.adoc[]
 *** xref:reference:packaging/native-image/index.adoc[]
 **** xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[]

@@ -55,7 +55,11 @@ public class CustomerController {
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<EntityModel<Customer>> showCustomer(@PathVariable Long id) {
-		EntityModel<Customer> resource = EntityModel.of(this.repository.findOne(id));
+		Customer customer = this.repository.findOne(id);
+		if (customer == null) {
+			return ResponseEntity.notFound().build();
+		}
+		EntityModel<Customer> resource = EntityModel.of(customer);
 		resource.add(this.entityLinks.linkToItemResource(Customer.class, id));
 		return new ResponseEntity<>(resource, HttpStatus.OK);
 	}

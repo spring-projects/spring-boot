@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.audit.listener;
 import java.time.Instant;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.util.Assert;
@@ -41,7 +43,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(String, String, Map)
 	 */
-	public AuditApplicationEvent(String principal, String type, Map<String, Object> data) {
+	public AuditApplicationEvent(String principal, String type, Map<String, @Nullable Object> data) {
 		this(new AuditEvent(principal, type, data));
 	}
 
@@ -66,7 +68,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(Instant, String, String, Map)
 	 */
-	public AuditApplicationEvent(Instant timestamp, String principal, String type, Map<String, Object> data) {
+	public AuditApplicationEvent(Instant timestamp, String principal, String type, Map<String, @Nullable Object> data) {
 		this(new AuditEvent(timestamp, principal, type, data));
 	}
 

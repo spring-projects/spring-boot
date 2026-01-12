@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.boot.webflux.error.DefaultErrorAttributes;
 import org.springframework.boot.webflux.error.ErrorAttributes;
@@ -49,14 +48,8 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @AutoConfiguration(before = WebFluxAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
-@EnableConfigurationProperties({ ServerProperties.class, WebProperties.class })
+@EnableConfigurationProperties(WebProperties.class)
 public final class ErrorWebFluxAutoConfiguration {
-
-	private final ServerProperties serverProperties;
-
-	ErrorWebFluxAutoConfiguration(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
@@ -65,7 +58,7 @@ public final class ErrorWebFluxAutoConfiguration {
 			ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer,
 			ApplicationContext applicationContext) {
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
-				webProperties.getResources(), this.serverProperties.getError(), applicationContext);
+				webProperties.getResources(), webProperties.getError(), applicationContext);
 		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().toList());
 		exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
 		exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());

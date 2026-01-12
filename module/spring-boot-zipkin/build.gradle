@@ -37,10 +37,18 @@ dependencies {
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

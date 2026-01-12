@@ -21,9 +21,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -37,20 +36,20 @@ import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.webmvc.actuate.endpoint.web.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.webmvc.actuate.endpoint.web.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
@@ -58,7 +57,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -77,6 +77,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnBean({ DispatcherServlet.class, WebEndpointsSupplier.class })
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
+
+	private static final List<MediaType> MEDIA_TYPES = Collections
+		.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -150,49 +153,86 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(EndpointObjectMapper.class)
+	@ConditionalOnBean(EndpointJsonMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	static EndpointObjectMapperWebMvcConfigurer endpointObjectMapperWebMvcConfigurer(
-			EndpointObjectMapper endpointObjectMapper) {
-		return new EndpointObjectMapperWebMvcConfigurer(endpointObjectMapper);
+	static EndpointJsonMapperWebMvcConfigurer endpointJsonMapperWebMvcConfigurer(
+			EndpointJsonMapper endpointJsonMapper) {
+		return new EndpointJsonMapperWebMvcConfigurer(endpointJsonMapper);
+	}
+
+	@Bean
+	@SuppressWarnings("removal")
+	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static EndpointJackson2ObjectMapperWebMvcConfigurer endpointJackson2ObjectMapperWebMvcConfigurer(
+			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJsonMapper) {
+		return new EndpointJackson2ObjectMapperWebMvcConfigurer(endpointJsonMapper);
 	}
 
 	/**
-	 * {@link WebMvcConfigurer} to apply {@link EndpointObjectMapper} for
-	 * {@link OperationResponseBody} to
-	 * {@link org.springframework.http.converter.json.MappingJackson2HttpMessageConverter}
-	 * instances.
+	 * {@link WebMvcConfigurer} to apply {@link EndpointJsonMapper} for
+	 * {@link OperationResponseBody} to {@link JacksonJsonHttpMessageConverter} instances.
 	 */
-	@SuppressWarnings("removal")
-	static class EndpointObjectMapperWebMvcConfigurer implements WebMvcConfigurer {
+	static class EndpointJsonMapperWebMvcConfigurer implements WebMvcConfigurer {
 
-		private static final List<MediaType> MEDIA_TYPES = Collections
-			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+		private final EndpointJsonMapper mapper;
 
-		private final EndpointObjectMapper endpointObjectMapper;
-
-		EndpointObjectMapperWebMvcConfigurer(EndpointObjectMapper endpointObjectMapper) {
-			this.endpointObjectMapper = endpointObjectMapper;
+		EndpointJsonMapperWebMvcConfigurer(EndpointJsonMapper mapper) {
+			this.mapper = mapper;
 		}
 
 		@Override
-		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-			for (HttpMessageConverter<?> converter : converters) {
-				if (converter instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
-					configure(mappingJackson2HttpMessageConverter);
+		public void configureMessageConverters(ServerBuilder builder) {
+			builder.configureMessageConverters((converter) -> {
+				if (converter instanceof JacksonJsonHttpMessageConverter jacksonConverter) {
+					configure(jacksonConverter);
 				}
-			}
+			});
 		}
 
-		@SuppressWarnings("removal")
+		private void configure(JacksonJsonHttpMessageConverter converter) {
+			converter.registerMappersForType(OperationResponseBody.class, (associations) -> {
+				JsonMapper jsonMapper = this.mapper.get();
+				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
+			});
+		}
+
+	}
+
+	/**
+	 * {@link WebMvcConfigurer} to apply
+	 * {@link org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper}
+	 * for {@link OperationResponseBody} to
+	 * {@link org.springframework.http.converter.json.MappingJackson2HttpMessageConverter}
+	 * instances.
+	 *
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+	 */
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class EndpointJackson2ObjectMapperWebMvcConfigurer implements WebMvcConfigurer {
+
+		private final org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper mapper;
+
+		EndpointJackson2ObjectMapperWebMvcConfigurer(
+				org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper mapper) {
+			this.mapper = mapper;
+		}
+
+		@Override
+		public void configureMessageConverters(ServerBuilder builder) {
+			builder.configureMessageConverters((converter) -> {
+				if (converter instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter jacksonConverter) {
+					configure(jacksonConverter);
+				}
+			});
+		}
+
 		private void configure(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter) {
-			this.endpointObjectMapper.getSupportedTypes()
-				.forEach((type) -> converter.registerObjectMappersForType(type, this::registerForAllMimeTypes));
-		}
-
-		private void registerForAllMimeTypes(Map<MediaType, ObjectMapper> registrar) {
-			ObjectMapper objectMapper = this.endpointObjectMapper.get();
-			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, objectMapper));
+			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
+				com.fasterxml.jackson.databind.ObjectMapper jsonMapper = this.mapper.get();
+				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
+			});
 		}
 
 	}

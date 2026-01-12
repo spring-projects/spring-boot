@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.remote.server;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.util.Assert;
 
@@ -45,7 +47,7 @@ public class UrlHandlerMapper implements HandlerMapper {
 	}
 
 	@Override
-	public Handler getHandler(ServerHttpRequest request) {
+	public @Nullable Handler getHandler(ServerHttpRequest request) {
 		if (this.requestUri.equals(request.getURI().getPath())) {
 			return this.handler;
 		}

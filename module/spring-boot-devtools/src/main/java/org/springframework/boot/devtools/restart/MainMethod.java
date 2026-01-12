@@ -19,6 +19,8 @@ package org.springframework.boot.devtools.restart;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -57,10 +59,10 @@ class MainMethod {
 		return className.startsWith("org.springframework.boot.loader.");
 	}
 
-	private Method getMainMethod(StackTraceElement element) {
+	private @Nullable Method getMainMethod(StackTraceElement element) {
 		try {
 			Class<?> elementClass = Class.forName(element.getClassName());
-			Method method = elementClass.getDeclaredMethod("main", String[].class);
+			Method method = getMainMethod(elementClass);
 			if (Modifier.isStatic(method.getModifiers())) {
 				return method;
 			}
@@ -69,6 +71,15 @@ class MainMethod {
 			// Ignore
 		}
 		return null;
+	}
+
+	private static Method getMainMethod(Class<?> clazz) throws Exception {
+		try {
+			return clazz.getDeclaredMethod("main", String[].class);
+		}
+		catch (NoSuchMethodException ex) {
+			return clazz.getDeclaredMethod("main");
+		}
 	}
 
 	/**

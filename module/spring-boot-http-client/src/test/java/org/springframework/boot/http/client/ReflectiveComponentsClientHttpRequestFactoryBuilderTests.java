@@ -20,6 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpMethod;
@@ -47,23 +48,21 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	void connectWithSslBundle(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set SSL bundler using reflection");
 	}
 
 	@Override
 	void redirectFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(HttpRedirects.FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}
 
 	@Override
 	void redirectDontFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}
@@ -81,56 +80,49 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Test
 	void buildWithClassWhenHasConnectTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(60));
 		TestClientHttpRequestFactory requestFactory = ofTestRequestFactory().build(settings);
 		assertThat(requestFactory.connectTimeout).isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
 	@Test
 	void buildWithClassWhenHasReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(90));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofSeconds(90));
 		TestClientHttpRequestFactory requestFactory = ofTestRequestFactory().build(settings);
 		assertThat(requestFactory.readTimeout).isEqualTo(Duration.ofSeconds(90).toMillis());
 	}
 
 	@Test
 	void buildWithClassWhenUnconfigurableTypeWithConnectTimeoutThrowsException() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(60));
 		assertThatIllegalStateException().isThrownBy(() -> ofUnconfigurableRequestFactory().build(settings))
 			.withMessageContaining("suitable setConnectTimeout method");
 	}
 
 	@Test
 	void buildWithClassWhenUnconfigurableTypeWithReadTimeoutThrowsException() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofSeconds(60));
 		assertThatIllegalStateException().isThrownBy(() -> ofUnconfigurableRequestFactory().build(settings))
 			.withMessageContaining("suitable setReadTimeout method");
 	}
 
 	@Test
 	void buildWithClassWhenDeprecatedMethodsTypeWithConnectTimeoutThrowsException() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(60));
 		assertThatIllegalStateException().isThrownBy(() -> ofDeprecatedMethodsRequestFactory().build(settings))
 			.withMessageContaining("setConnectTimeout method marked as deprecated");
 	}
 
 	@Test
 	void buildWithClassWhenDeprecatedMethodsTypeWithReadTimeoutThrowsException() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofSeconds(60));
 		assertThatIllegalStateException().isThrownBy(() -> ofDeprecatedMethodsRequestFactory().build(settings))
 			.withMessageContaining("setReadTimeout method marked as deprecated");
 	}
 
 	@Test
 	void buildWithSupplierWhenWrappedRequestFactoryTypeWithConnectTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofMillis(1234));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofMillis(1234));
 		SimpleClientHttpRequestFactory wrappedRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder
 			.of(() -> new BufferingClientHttpRequestFactory(wrappedRequestFactory))
@@ -141,8 +133,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Test
 	void buildWithSupplierWhenWrappedRequestFactoryTypeWithReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofMillis(1234));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofMillis(1234));
 		SimpleClientHttpRequestFactory wrappedRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder
 			.of(() -> new BufferingClientHttpRequestFactory(wrappedRequestFactory))
@@ -153,7 +144,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Test
 	void buildWithClassWhenHasMultipleTimeoutSettersFavorsDurationMethods() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+		HttpClientSettings settings = HttpClientSettings.defaults()
 			.withConnectTimeout(Duration.ofSeconds(1))
 			.withReadTimeout(Duration.ofSeconds(2));
 		IntAndDurationTimeoutsClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder
@@ -179,12 +170,16 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(ClientHttpRequestFactory requestFactory) {
-		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient.getConnectTimeout();
 	}
 
 	@Override
 	protected long readTimeout(ClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(field).isNotNull();
+		return (long) field;
 	}
 
 	public static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {
@@ -244,9 +239,9 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 		private int connectTimeout;
 
-		private Duration readTimeoutDuration;
+		private @Nullable Duration readTimeoutDuration;
 
-		private Duration connectTimeoutDuration;
+		private @Nullable Duration connectTimeoutDuration;
 
 		@Override
 		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) {
@@ -261,11 +256,11 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 			this.readTimeout = timeout;
 		}
 
-		public void setConnectTimeout(Duration timeout) {
+		public void setConnectTimeout(@Nullable Duration timeout) {
 			this.connectTimeoutDuration = timeout;
 		}
 
-		public void setReadTimeout(Duration timeout) {
+		public void setReadTimeout(@Nullable Duration timeout) {
 			this.readTimeoutDuration = timeout;
 		}
 

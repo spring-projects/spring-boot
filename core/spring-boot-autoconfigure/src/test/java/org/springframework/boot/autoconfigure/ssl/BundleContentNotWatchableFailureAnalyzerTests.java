@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -32,6 +33,7 @@ class BundleContentNotWatchableFailureAnalyzerTests {
 	@Test
 	void shouldAnalyze() {
 		FailureAnalysis failureAnalysis = performAnalysis(null);
+		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getDescription()).isEqualTo(
 				"The content of 'name' is not watchable. Only 'file:' resources are watchable, but 'classpath:resource.pem' has been set");
 		assertThat(failureAnalysis.getAction())
@@ -42,11 +44,12 @@ class BundleContentNotWatchableFailureAnalyzerTests {
 	@Test
 	void shouldAnalyzeWithBundle() {
 		FailureAnalysis failureAnalysis = performAnalysis("bundle-1");
+		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getDescription()).isEqualTo(
 				"The content of 'name' from bundle 'bundle-1' is not watchable'. Only 'file:' resources are watchable, but 'classpath:resource.pem' has been set");
 	}
 
-	private FailureAnalysis performAnalysis(String bundle) {
+	private @Nullable FailureAnalysis performAnalysis(@Nullable String bundle) {
 		BundleContentNotWatchableException failure = new BundleContentNotWatchableException(
 				new BundleContentProperty("name", "classpath:resource.pem"));
 		if (bundle != null) {

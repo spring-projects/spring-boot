@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.awaitility.Awaitility;
-import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.Disabled;
@@ -72,6 +72,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
@@ -79,6 +80,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -148,9 +150,9 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		factory.setMaxConnections(1);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		Server server = ((JettyWebServer) this.webServer).getServer();
-		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
-		assertThat(connectionLimit.getMaxConnections()).isOne();
+		assertThat(connectionLimit.getMaxNetworkConnectionCount()).isOne();
 	}
 
 	@Test

@@ -82,7 +82,7 @@ public final class MongoReactiveAutoConfiguration {
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails,
-					properties.getUuidRepresentation());
+					properties.getRepresentation().getUuid());
 		}
 
 	}
@@ -117,8 +117,9 @@ public final class MongoReactiveAutoConfiguration {
 		@Override
 		public void customize(Builder builder) {
 			if (!isCustomTransportConfiguration(this.settings.getIfAvailable())) {
-				this.eventLoopGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
-				builder.transportSettings(TransportSettings.nettyBuilder().eventLoopGroup(this.eventLoopGroup).build());
+				EventLoopGroup eventLoopGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+				this.eventLoopGroup = eventLoopGroup;
+				builder.transportSettings(TransportSettings.nettyBuilder().eventLoopGroup(eventLoopGroup).build());
 			}
 		}
 

@@ -17,4 +17,7 @@
 /**
  * JPA Support classes.
  */
+@NullMarked
 package org.springframework.boot.jpa;
+
+import org.jspecify.annotations.NullMarked;

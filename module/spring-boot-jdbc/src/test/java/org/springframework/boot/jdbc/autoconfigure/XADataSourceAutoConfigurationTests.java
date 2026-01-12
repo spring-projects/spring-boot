@@ -21,6 +21,7 @@ import javax.sql.XADataSource;
 
 import com.ibm.db2.jcc.DB2XADataSource;
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.postgresql.xa.PGXADataSource;
 
@@ -161,7 +162,7 @@ class XADataSourceAutoConfigurationTests {
 
 	static class MockXADataSourceWrapper implements XADataSourceWrapper {
 
-		private XADataSource dataSource;
+		private @Nullable XADataSource dataSource;
 
 		@Override
 		public DataSource wrapDataSource(XADataSource dataSource) {
@@ -169,7 +170,7 @@ class XADataSourceAutoConfigurationTests {
 			return mock(DataSource.class);
 		}
 
-		XADataSource getXaDataSource() {
+		@Nullable XADataSource getXaDataSource() {
 			return this.dataSource;
 		}
 

@@ -16,13 +16,14 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -44,7 +45,8 @@ import org.springframework.util.StringUtils;
 public class OpenTelemetryResourceAttributes {
 
 	/**
-	 * Default value for service name if {@code service.name} is not set.
+	 * Default value for service name. Used if {@code service.name} is not set and no name
+	 * can be deduced from the running application.
 	 */
 	private static final String DEFAULT_SERVICE_NAME = "unknown_service";
 
@@ -52,14 +54,14 @@ public class OpenTelemetryResourceAttributes {
 
 	private final Map<String, String> resourceAttributes;
 
-	private final Function<String, String> systemEnvironment;
+	private final Function<String, @Nullable String> systemEnvironment;
 
 	/**
 	 * Creates a new instance of {@link OpenTelemetryResourceAttributes}.
 	 * @param environment the environment
 	 * @param resourceAttributes user-provided resource attributes to be used
 	 */
-	public OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes) {
+	public OpenTelemetryResourceAttributes(Environment environment, @Nullable Map<String, String> resourceAttributes) {
 		this(environment, resourceAttributes, null);
 	}
 
@@ -69,8 +71,8 @@ public class OpenTelemetryResourceAttributes {
 	 * @param resourceAttributes user-provided resource attributes to be used
 	 * @param systemEnvironment a function to retrieve environment variables by name
 	 */
-	OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes,
-			Function<String, String> systemEnvironment) {
+	OpenTelemetryResourceAttributes(Environment environment, @Nullable Map<String, String> resourceAttributes,
+			@Nullable Function<String, @Nullable String> systemEnvironment) {
 		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.resourceAttributes = (resourceAttributes != null) ? resourceAttributes : Collections.emptyMap();
@@ -106,7 +108,7 @@ public class OpenTelemetryResourceAttributes {
 		return this.environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
 	}
 
-	private String getServiceNamespace() {
+	private @Nullable String getServiceNamespace() {
 		return this.environment.getProperty("spring.application.group");
 	}
 
@@ -127,7 +129,7 @@ public class OpenTelemetryResourceAttributes {
 			if (index > 0) {
 				String key = attribute.substring(0, index);
 				String value = attribute.substring(index + 1);
-				attributes.put(key.trim(), decode(value.trim()));
+				attributes.put(key.trim(), StringUtils.uriDecode(value.trim(), StandardCharsets.UTF_8));
 			}
 		}
 		String otelServiceName = getEnv("OTEL_SERVICE_NAME");
@@ -137,47 +139,8 @@ public class OpenTelemetryResourceAttributes {
 		return attributes;
 	}
 
-	private String getEnv(String name) {
+	private @Nullable String getEnv(String name) {
 		return this.systemEnvironment.apply(name);
-	}
-
-	/**
-	 * Decodes a percent-encoded string. Converts sequences like '%HH' (where HH
-	 * represents hexadecimal digits) back into their literal representations.
-	 * <p>
-	 * Inspired by {@code org.apache.commons.codec.net.PercentCodec}.
-	 * @param value value to decode
-	 * @return the decoded string
-	 */
-	private static String decode(String value) {
-		if (value.indexOf('%') < 0) {
-			return value;
-		}
-		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-		ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-			if (b != '%') {
-				out.write(b);
-				continue;
-			}
-			int u = decodeHex(bytes, i + 1);
-			int l = decodeHex(bytes, i + 2);
-			if (u >= 0 && l >= 0) {
-				out.write((u << 4) + l);
-			}
-			else {
-				throw new IllegalArgumentException(
-						"Failed to decode percent-encoded characters at index %d in the value: '%s'".formatted(i,
-								value));
-			}
-			i += 2;
-		}
-		return out.toString(StandardCharsets.UTF_8);
-	}
-
-	private static int decodeHex(byte[] bytes, int index) {
-		return (index < bytes.length) ? Character.digit(bytes[index], 16) : -1;
 	}
 
 }

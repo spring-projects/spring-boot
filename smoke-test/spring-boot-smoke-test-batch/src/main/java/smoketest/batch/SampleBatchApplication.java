@@ -22,11 +22,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootApplication
 public class SampleBatchApplication {
@@ -42,8 +41,8 @@ public class SampleBatchApplication {
 	}
 
 	@Bean
-	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
-		return new StepBuilder("step1", jobRepository).tasklet(tasklet, transactionManager).build();
+	Step step1(JobRepository jobRepository, Tasklet tasklet) {
+		return new StepBuilder("step1", jobRepository).tasklet(tasklet).build();
 	}
 
 	public static void main(String[] args) {

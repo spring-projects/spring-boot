@@ -16,6 +16,8 @@
 
 package org.springframework.boot.sendgrid.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -31,31 +33,27 @@ public class SendGridProperties {
 	/**
 	 * SendGrid API key.
 	 */
-	private String apiKey;
+	private @Nullable String apiKey;
 
 	/**
 	 * Proxy configuration.
 	 */
-	private Proxy proxy;
+	private @Nullable Proxy proxy;
 
-	public String getApiKey() {
+	public @Nullable String getApiKey() {
 		return this.apiKey;
 	}
 
-	public void setApiKey(String apiKey) {
+	public void setApiKey(@Nullable String apiKey) {
 		this.apiKey = apiKey;
 	}
 
-	public Proxy getProxy() {
+	public @Nullable Proxy getProxy() {
 		return this.proxy;
 	}
 
-	public void setProxy(Proxy proxy) {
+	public void setProxy(@Nullable Proxy proxy) {
 		this.proxy = proxy;
-	}
-
-	public boolean isProxyConfigured() {
-		return this.proxy != null && this.proxy.getHost() != null && this.proxy.getPort() != null;
 	}
 
 	public static class Proxy {
@@ -63,26 +61,26 @@ public class SendGridProperties {
 		/**
 		 * SendGrid proxy host.
 		 */
-		private String host;
+		private @Nullable String host;
 
 		/**
 		 * SendGrid proxy port.
 		 */
-		private Integer port;
+		private @Nullable Integer port;
 
-		public String getHost() {
+		public @Nullable String getHost() {
 			return this.host;
 		}
 
-		public void setHost(String host) {
+		public void setHost(@Nullable String host) {
 			this.host = host;
 		}
 
-		public Integer getPort() {
+		public @Nullable Integer getPort() {
 			return this.port;
 		}
 
-		public void setPort(Integer port) {
+		public void setPort(@Nullable Integer port) {
 			this.port = port;
 		}
 

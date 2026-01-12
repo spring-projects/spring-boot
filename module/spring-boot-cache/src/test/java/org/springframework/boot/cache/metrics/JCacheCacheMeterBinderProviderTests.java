@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
 class JCacheCacheMeterBinderProviderTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private javax.cache.Cache<Object, Object> nativeCache;
 
 	@Test
@@ -53,6 +54,20 @@ class JCacheCacheMeterBinderProviderTests {
 		JCacheCache cache = new JCacheCache(this.nativeCache);
 		MeterBinder meterBinder = new JCacheCacheMeterBinderProvider().getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(JCacheMetrics.class);
+		assertThat(meterBinder).extracting("registerCacheRemovalsAsFunctionCounter").isEqualTo(false);
+	}
+
+	@Test
+	void jCacheCacheProviderRegisteringRemovalsAsAFunctionCounter() throws URISyntaxException {
+		javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
+		given(cacheManager.getURI()).willReturn(new URI("/test"));
+		given(this.nativeCache.getCacheManager()).willReturn(cacheManager);
+		given(this.nativeCache.getName()).willReturn("test");
+		JCacheCache cache = new JCacheCache(this.nativeCache);
+		MeterBinder meterBinder = new JCacheCacheMeterBinderProvider(true).getMeterBinder(cache,
+				Collections.emptyList());
+		assertThat(meterBinder).isInstanceOf(JCacheMetrics.class);
+		assertThat(meterBinder).extracting("registerCacheRemovalsAsFunctionCounter").isEqualTo(true);
 	}
 
 }

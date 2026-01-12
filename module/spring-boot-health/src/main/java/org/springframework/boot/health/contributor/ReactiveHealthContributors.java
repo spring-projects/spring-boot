@@ -19,8 +19,10 @@ package org.springframework.boot.health.contributor;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -36,7 +38,7 @@ public interface ReactiveHealthContributors extends Iterable<ReactiveHealthContr
 	 * @param name the name of the contributor
 	 * @return a contributor instance or {@code null}
 	 */
-	ReactiveHealthContributor getContributor(String name);
+	@Nullable ReactiveHealthContributor getContributor(String name);
 
 	@Override
 	default Iterator<Entry> iterator() {
@@ -75,7 +77,8 @@ public interface ReactiveHealthContributors extends Iterable<ReactiveHealthContr
 	 * @return the adapted contributor
 	 * @see ReactiveHealthContributor#adapt(HealthContributor)
 	 */
-	static ReactiveHealthContributors adapt(HealthContributors contributors) {
+	@Contract("!null -> !null")
+	static @Nullable ReactiveHealthContributors adapt(@Nullable HealthContributors contributors) {
 		return (contributors != null) ? new HealthContributorsAdapter(contributors) : null;
 	}
 

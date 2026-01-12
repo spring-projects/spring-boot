@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import groovy.text.markup.BaseTemplate;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
@@ -54,11 +55,6 @@ public class GroovyTemplateProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Whether to enable MVC view resolution for this technology.
-	 */
-	private boolean enabled = true;
-
-	/**
 	 * Whether to enable template caching.
 	 */
 	private boolean cache;
@@ -76,7 +72,7 @@ public class GroovyTemplateProperties {
 	/**
 	 * View names that can be resolved.
 	 */
-	private String[] viewNames;
+	private String @Nullable [] viewNames;
 
 	/**
 	 * Whether to check that the templates location exists.
@@ -102,19 +98,19 @@ public class GroovyTemplateProperties {
 	 * Whether all request attributes should be added to the model prior to merging with
 	 * the template.
 	 */
-	private boolean exposeRequestAttributes = false;
+	private boolean exposeRequestAttributes;
 
 	/**
 	 * Whether all HttpSession attributes should be added to the model prior to merging
 	 * with the template.
 	 */
-	private boolean exposeSessionAttributes = false;
+	private boolean exposeSessionAttributes;
 
 	/**
 	 * Whether HttpServletRequest attributes are allowed to override (hide) controller
 	 * generated model attributes of the same name.
 	 */
-	private boolean allowRequestOverride = false;
+	private boolean allowRequestOverride;
 
 	/**
 	 * Whether to expose a RequestContext for use by Spring's macro library, under the
@@ -126,7 +122,7 @@ public class GroovyTemplateProperties {
 	 * Whether HttpSession attributes are allowed to override (hide) controller generated
 	 * model attributes of the same name.
 	 */
-	private boolean allowSessionOverride = false;
+	private boolean allowSessionOverride;
 
 	/**
 	 * Whether models that are assignable to CharSequence are escaped automatically.
@@ -141,7 +137,7 @@ public class GroovyTemplateProperties {
 	/**
 	 * String used for auto-indents.
 	 */
-	private String autoIndentString;
+	private @Nullable String autoIndentString;
 
 	/**
 	 * Whether new lines are rendered automatically.
@@ -156,7 +152,7 @@ public class GroovyTemplateProperties {
 	/**
 	 * Encoding used to write the declaration heading.
 	 */
-	private String declarationEncoding;
+	private @Nullable String declarationEncoding;
 
 	/**
 	 * Whether elements without a body should be written expanded (&lt;br&gt;&lt;/br&gt;)
@@ -167,12 +163,12 @@ public class GroovyTemplateProperties {
 	/**
 	 * Default locale for template resolution.
 	 */
-	private Locale locale;
+	private @Nullable Locale locale;
 
 	/**
 	 * String used to write a new line. Defaults to the system's line separator.
 	 */
-	private String newLineString;
+	private @Nullable String newLineString;
 
 	/**
 	 * Template path.
@@ -184,14 +180,6 @@ public class GroovyTemplateProperties {
 	 */
 	private boolean useDoubleQuotes;
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	public boolean isCheckTemplateLocation() {
 		return this.checkTemplateLocation;
 	}
@@ -200,11 +188,11 @@ public class GroovyTemplateProperties {
 		this.checkTemplateLocation = checkTemplateLocation;
 	}
 
-	public String[] getViewNames() {
+	public String @Nullable [] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	public void setViewNames(String @Nullable [] viewNames) {
 		this.viewNames = viewNames;
 	}
 
@@ -234,7 +222,7 @@ public class GroovyTemplateProperties {
 		return this.charset;
 	}
 
-	public String getCharsetName() {
+	public @Nullable String getCharsetName() {
 		return (this.charset != null) ? this.charset.name() : null;
 	}
 
@@ -258,11 +246,11 @@ public class GroovyTemplateProperties {
 		this.autoIndent = autoIndent;
 	}
 
-	public String getAutoIndentString() {
+	public @Nullable String getAutoIndentString() {
 		return this.autoIndentString;
 	}
 
-	public void setAutoIndentString(String autoIndentString) {
+	public void setAutoIndentString(@Nullable String autoIndentString) {
 		this.autoIndentString = autoIndentString;
 	}
 
@@ -282,11 +270,11 @@ public class GroovyTemplateProperties {
 		this.baseTemplateClass = baseTemplateClass;
 	}
 
-	public String getDeclarationEncoding() {
+	public @Nullable String getDeclarationEncoding() {
 		return this.declarationEncoding;
 	}
 
-	public void setDeclarationEncoding(String declarationEncoding) {
+	public void setDeclarationEncoding(@Nullable String declarationEncoding) {
 		this.declarationEncoding = declarationEncoding;
 	}
 
@@ -298,19 +286,19 @@ public class GroovyTemplateProperties {
 		this.expandEmptyElements = expandEmptyElements;
 	}
 
-	public Locale getLocale() {
+	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(Locale locale) {
+	public void setLocale(@Nullable Locale locale) {
 		this.locale = locale;
 	}
 
-	public String getNewLineString() {
+	public @Nullable String getNewLineString() {
 		return this.newLineString;
 	}
 
-	public void setNewLineString(String newLineString) {
+	public void setNewLineString(@Nullable String newLineString) {
 		this.newLineString = newLineString;
 	}
 
@@ -407,8 +395,9 @@ public class GroovyTemplateProperties {
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());
 		resolver.setCache(isCache());
-		if (getContentType() != null) {
-			resolver.setContentType(getContentType().toString());
+		MimeType contentType = getContentType();
+		if (contentType != null) {
+			resolver.setContentType(contentType.toString());
 		}
 		resolver.setViewNames(getViewNames());
 		resolver.setExposeRequestAttributes(isExposeRequestAttributes());

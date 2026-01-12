@@ -27,6 +27,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -118,7 +119,7 @@ final class TarGzipBuildpack implements Buildpack {
 	 * @param reference the buildpack reference
 	 * @return the resolved {@link Buildpack} or {@code null}
 	 */
-	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
+	static @Nullable Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		Path path = reference.asPath();
 		if (path != null && Files.exists(path) && Files.isRegularFile(path)) {
 			return new TarGzipBuildpack(path);

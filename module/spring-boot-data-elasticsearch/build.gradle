@@ -28,7 +28,7 @@ description = "Spring Boot Data Elasticsearch"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-elasticsearch"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.data:spring-data-elasticsearch")
 
 	optional(project(":core:spring-boot-autoconfigure"))
@@ -40,8 +40,8 @@ dependencies {
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:elasticsearch")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -50,4 +50,12 @@ dependencies {
 	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Deprecated configuration properties.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @deprecated deprecated
  */
 @Deprecated
-@ConfigurationProperties("deprecated")
+@TestConfigurationProperties("deprecated")
 public class DeprecatedProperties {
 
 	private String name;

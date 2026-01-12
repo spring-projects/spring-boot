@@ -44,4 +44,8 @@ class Table {
 		asciidoc.appendln("|===");
 	}
 
+	boolean isEmpty() {
+		return this.rows.isEmpty();
+	}
+
 }

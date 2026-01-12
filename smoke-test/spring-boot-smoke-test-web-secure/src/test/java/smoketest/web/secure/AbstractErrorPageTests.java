@@ -16,11 +16,12 @@
 
 package smoketest.web.secure;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
+@AutoConfigureTestRestTemplate
 abstract class AbstractErrorPageTests {
 
 	@Autowired
@@ -71,7 +73,8 @@ abstract class AbstractErrorPageTests {
 			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Not Found");
+		assertThat(jsonResponse).isNotNull();
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Not Found");
 	}
 
 	@Test
@@ -89,7 +92,8 @@ abstract class AbstractErrorPageTests {
 			.exchange(this.pathPrefix + "/fail", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Internal Server Error");
+		assertThat(jsonResponse).isNotNull();
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Internal Server Error");
 	}
 
 	@Test

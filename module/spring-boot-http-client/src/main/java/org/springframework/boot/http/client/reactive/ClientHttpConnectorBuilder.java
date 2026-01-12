@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -56,7 +59,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpConnector}.
 	 */
-	T build(ClientHttpConnectorSettings settings);
+	T build(@Nullable HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpConnectorBuilder} that applies the given customizer
@@ -182,7 +185,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * @param classLoader the class loader to use for detection
 	 * @return the most suitable {@link ClientHttpConnectorBuilder} for the classpath
 	 */
-	static ClientHttpConnectorBuilder<? extends ClientHttpConnector> detect(ClassLoader classLoader) {
+	static ClientHttpConnectorBuilder<? extends ClientHttpConnector> detect(@Nullable ClassLoader classLoader) {
 		if (ReactorClientHttpConnectorBuilder.Classes.present(classLoader)) {
 			return reactor();
 		}

@@ -42,25 +42,32 @@ include-code::MyOutputCaptureTests[]
 [[testing.utilities.test-rest-template]]
 == TestRestTemplate
 
-javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
+javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
+It's provided by the `spring-boot-resttestclient` module.
+A dependency on `spring-boot-restclient` is also required.
+Take care when adding this dependency as it will enable auto-configuration for `RestClient.Builder`.
+If your main code uses `RestClient.Builder`, declare the `spring-boot-restclient` dependency so that it is on your application's main classpath and not only on its test classpath.
+
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
 In either case, the template is fault tolerant.
 This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
 Instead, such errors can be detected through the returned javadoc:org.springframework.http.ResponseEntity[] and its status code.
 
-TIP: Spring Framework 5.0 provides a new javadoc:org.springframework.test.web.reactive.server.WebTestClient[] that works for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-webflux-tests[WebFlux integration tests] and both xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[WebFlux and MVC end-to-end testing].
-It provides a fluent API for assertions, unlike javadoc:org.springframework.boot.test.web.client.TestRestTemplate[].
+If you need fluent API for assertions, consider using javadoc:org.springframework.test.web.servlet.client.RestTestClient[] that works with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environments] and xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[end-to-end tests].
+
+If you are using Spring WebFlux, consider the javadoc:org.springframework.test.web.reactive.server.WebTestClient[] that provides a similar API and works with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environments], xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-webflux-tests[WebFlux integration tests], and xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[end-to-end tests].
 
 It is recommended, but not mandatory, to use the Apache HTTP Client (version 5.1 or better).
-If you have that on your classpath, the javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] responds by configuring the client appropriately.
+If you have that on your classpath, the javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] responds by configuring the client appropriately.
 If you do use Apache's HTTP client it is configured to ignore cookies (so the template is stateless).
 
-javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] can be instantiated directly in your integration tests, as shown in the following example:
+javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] can be instantiated directly in your integration tests, as shown in the following example:
 
 include-code::MyTests[]
 
-Alternatively, if you use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] and start using it.
-If necessary, additional customizations can be applied through the javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] bean.
+Alternatively, if you use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] by annotating the test class with javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate[format=annotation].
+If necessary, additional customizations can be applied through the javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] bean.
+
 Any URLs that do not specify a host and port automatically connect to the embedded server, as shown in the following example:
 
 include-code::MySpringBootTests[]

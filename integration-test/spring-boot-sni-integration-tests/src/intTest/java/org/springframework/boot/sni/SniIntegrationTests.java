@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SniIntegrationTests {
 
 	private static final Map<String, String> SERVER_START_MESSAGES = Map.ofEntries(Map.entry("netty", "Netty started"),
-			Map.entry("tomcat", "Tomcat initialized"), Map.entry("undertow", "starting server: Undertow"));
+			Map.entry("tomcat", "Tomcat initialized"));
 
 	public static final String PRIMARY_SERVER_NAME = "hello.example.com";
 
@@ -53,7 +53,7 @@ class SniIntegrationTests {
 	private static final Network SHARED_NETWORK = Network.newNetwork();
 
 	@ParameterizedTest
-	@CsvSource({ "reactive,netty", "reactive,tomcat", "servlet,tomcat", "reactive,undertow", "servlet,undertow" })
+	@CsvSource({ "reactive,netty", "reactive,tomcat", "servlet,tomcat" })
 	void home(String webStack, String server) {
 		try (ApplicationContainer serverContainer = new ServerApplicationContainer(webStack, server)) {
 			serverContainer.start();
@@ -82,7 +82,7 @@ class SniIntegrationTests {
 		assertThat(clientLogs).contains("Calling server at 'https://" + serverName + ":8443/'")
 			.contains("Hello from https://" + serverName + ":8443/");
 		assertThat(clientLogs).contains("Calling server actuator at 'https://" + serverName + ":8444/actuator/health'")
-			.contains("{\"status\":\"UP\"}");
+			.contains("\"status\":\"UP\"");
 	}
 
 	static final class ClientApplicationContainer extends ApplicationContainer {

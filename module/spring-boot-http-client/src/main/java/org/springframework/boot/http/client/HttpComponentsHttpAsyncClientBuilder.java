@@ -29,6 +29,7 @@ import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -54,7 +55,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 
 	private final Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer;
 
-	private final Function<SslBundle, TlsStrategy> tlsStrategyFactory;
+	private final Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory;
 
 	public HttpComponentsHttpAsyncClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
@@ -65,7 +66,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 			Consumer<PoolingAsyncClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
-			Function<SslBundle, TlsStrategy> tlsStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.connectionConfigCustomizer = connectionConfigCustomizer;
@@ -123,7 +124,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
 	 */
 	public HttpComponentsHttpAsyncClientBuilder withTlsStrategyFactory(
-			Function<SslBundle, TlsStrategy> tlsStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory) {
 		Assert.notNull(tlsStrategyFactory, "'tlsStrategyFactory' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, tlsStrategyFactory);
@@ -150,8 +151,8 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link CloseableHttpAsyncClient} instance
 	 */
-	public CloseableHttpAsyncClient build(HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+	public CloseableHttpAsyncClient build(@Nullable HttpClientSettings settings) {
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create()
 			.useSystemProperties()
 			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
@@ -164,16 +165,16 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	private PoolingAsyncClientConnectionManager createConnectionManager(HttpClientSettings settings) {
 		PoolingAsyncClientConnectionManagerBuilder builder = PoolingAsyncClientConnectionManagerBuilder.create()
 			.useSystemProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultConnectionConfig(createConnectionConfig(settings));
-		map.from(settings::sslBundle).as(this.tlsStrategyFactory).to(builder::setTlsStrategy);
+		map.from(settings::sslBundle).as(this.tlsStrategyFactory::apply).to(builder::setTlsStrategy);
 		this.connectionManagerCustomizer.accept(builder);
 		return builder.build();
 	}
 
 	private ConnectionConfig createConnectionConfig(HttpClientSettings settings) {
 		ConnectionConfig.Builder builder = ConnectionConfig.custom();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout)
 			.as(Duration::toMillis)
 			.to((timeout) -> builder.setConnectTimeout(timeout, TimeUnit.MILLISECONDS));

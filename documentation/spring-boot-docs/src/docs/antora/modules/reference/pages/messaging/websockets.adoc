@@ -1,7 +1,7 @@
 [[messaging.websockets]]
 = WebSockets
 
-Spring Boot provides WebSockets auto-configuration for embedded Tomcat, Jetty, and Undertow.
+Spring Boot provides WebSockets auto-configuration for embedded Tomcat and Jetty.
 If you deploy a war file to a standalone container, Spring Boot assumes that the container is responsible for the configuration of its WebSocket support.
 
 Spring Framework provides {url-spring-framework-docs}/web/websocket.html[rich WebSocket support] for MVC web applications that can be easily accessed through the `spring-boot-starter-websocket` module.

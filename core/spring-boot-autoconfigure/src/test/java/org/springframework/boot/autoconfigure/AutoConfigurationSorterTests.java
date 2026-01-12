@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -251,10 +252,14 @@ class AutoConfigurationSorterTests {
 	}
 
 	private void addAutoConfigureAfter(Properties properties, String className, AnnotationMetadata annotationMetadata) {
-		Map<String, Object> autoConfigureAfter = annotationMetadata
+		Map<String, @Nullable Object> autoConfigureAfter = annotationMetadata
 			.getAnnotationAttributes(AutoConfigureAfter.class.getName(), true);
 		if (autoConfigureAfter != null) {
-			String value = merge((String[]) autoConfigureAfter.get("value"), (String[]) autoConfigureAfter.get("name"));
+			String[] valueAttribute = (String[]) autoConfigureAfter.get("value");
+			String[] nameAttribute = (String[]) autoConfigureAfter.get("name");
+			assertThat(valueAttribute).isNotNull();
+			assertThat(nameAttribute).isNotNull();
+			String value = merge(valueAttribute, nameAttribute);
 			if (!value.isEmpty()) {
 				properties.put(className + ".AutoConfigureAfter", value);
 			}
@@ -263,11 +268,14 @@ class AutoConfigurationSorterTests {
 
 	private void addAutoConfigureBefore(Properties properties, String className,
 			AnnotationMetadata annotationMetadata) {
-		Map<String, Object> autoConfigureBefore = annotationMetadata
+		Map<String, @Nullable Object> autoConfigureBefore = annotationMetadata
 			.getAnnotationAttributes(AutoConfigureBefore.class.getName(), true);
 		if (autoConfigureBefore != null) {
-			String value = merge((String[]) autoConfigureBefore.get("value"),
-					(String[]) autoConfigureBefore.get("name"));
+			String[] valueAttribute = (String[]) autoConfigureBefore.get("value");
+			String[] nameAttribute = (String[]) autoConfigureBefore.get("name");
+			assertThat(valueAttribute).isNotNull();
+			assertThat(nameAttribute).isNotNull();
+			String value = merge(valueAttribute, nameAttribute);
 			if (!value.isEmpty()) {
 				properties.put(className + ".AutoConfigureBefore", value);
 			}
@@ -275,7 +283,7 @@ class AutoConfigurationSorterTests {
 	}
 
 	private void addAutoConfigureOrder(Properties properties, String className, AnnotationMetadata annotationMetadata) {
-		Map<String, Object> autoConfigureOrder = annotationMetadata
+		Map<String, @Nullable Object> autoConfigureOrder = annotationMetadata
 			.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 		if (autoConfigureOrder != null) {
 			Integer order = (Integer) autoConfigureOrder.get("order");

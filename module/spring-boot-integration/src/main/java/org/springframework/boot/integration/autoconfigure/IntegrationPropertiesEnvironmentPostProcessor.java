@@ -21,8 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.origin.Origin;
@@ -101,13 +103,15 @@ class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostPr
 		}
 
 		@Override
-		public Object getProperty(String name) {
-			return this.delegate.getProperty(KEYS_MAPPING.get(name));
+		public @Nullable Object getProperty(String name) {
+			String mapped = KEYS_MAPPING.get(name);
+			return (mapped != null) ? this.delegate.getProperty(mapped) : null;
 		}
 
 		@Override
-		public Origin getOrigin(String key) {
-			return this.delegate.getOrigin(KEYS_MAPPING.get(key));
+		public @Nullable Origin getOrigin(String key) {
+			String mapped = KEYS_MAPPING.get(key);
+			return (mapped != null) ? this.delegate.getOrigin(mapped) : null;
 		}
 
 	}

@@ -18,6 +18,8 @@ package org.springframework.boot.r2dbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -37,18 +39,21 @@ class MariaDbEnvironment {
 
 	private final String database;
 
-	MariaDbEnvironment(Map<String, String> env) {
+	MariaDbEnvironment(Map<String, @Nullable String> env) {
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
 	}
 
-	private String extractUsername(Map<String, String> env) {
+	private String extractUsername(Map<String, @Nullable String> env) {
 		String user = env.get("MARIADB_USER");
-		return (user != null) ? user : env.getOrDefault("MYSQL_USER", "root");
+		if (user == null) {
+			user = env.get("MYSQL_USER");
+		}
+		return (user != null) ? user : "root";
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private String extractPassword(Map<String, @Nullable String> env) {
 		Assert.state(!env.containsKey("MARIADB_RANDOM_ROOT_PASSWORD"), "MARIADB_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_HASH"), "MARIADB_ROOT_PASSWORD_HASH is not supported");
@@ -62,7 +67,7 @@ class MariaDbEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private String extractDatabase(Map<String, String> env) {
+	private String extractDatabase(Map<String, @Nullable String> env) {
 		String database = env.get("MARIADB_DATABASE");
 		database = (database != null) ? database : env.get("MYSQL_DATABASE");
 		Assert.state(database != null, "No MARIADB_DATABASE defined");

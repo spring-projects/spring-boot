@@ -61,8 +61,6 @@ public abstract class AutoConfigurationMetadata extends DefaultTask {
 	private FileCollection classesDirectories;
 
 	public AutoConfigurationMetadata() {
-		getProject().getConfigurations()
-			.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 		this.moduleName = getProject().getName();
 	}
 

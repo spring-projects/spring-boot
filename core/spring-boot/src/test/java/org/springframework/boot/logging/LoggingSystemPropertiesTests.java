@@ -232,6 +232,21 @@ class LoggingSystemPropertiesTests {
 			.isEqualTo("ecs");
 	}
 
+	@Test
+	void shouldSetConsoleLevelThresholdToOffWhenConsoleLoggingDisabled() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.console.enabled", "false")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName()))
+			.isEqualTo("OFF");
+	}
+
+	@Test
+	void shouldNotChangeConsoleLevelThresholdWhenConsoleLoggingEnabled() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.console.enabled", "true")
+			.withProperty("logging.threshold.console", "TRACE")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName()))
+			.isEqualTo("TRACE");
+	}
+
 	private Environment environment(String key, Object value) {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addLast(new MapPropertySource("test", Collections.singletonMap(key, value)));

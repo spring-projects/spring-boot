@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -28,6 +29,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public enum WebApplicationType {
@@ -53,23 +55,28 @@ public enum WebApplicationType {
 	private static final String[] SERVLET_INDICATOR_CLASSES = { "jakarta.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
-	private static final String WEBMVC_INDICATOR_CLASS = "org.springframework.web.servlet.DispatcherServlet";
-
-	private static final String WEBFLUX_INDICATOR_CLASS = "org.springframework.web.reactive.DispatcherHandler";
-
-	private static final String JERSEY_INDICATOR_CLASS = "org.glassfish.jersey.servlet.ServletContainer";
-
-	static WebApplicationType deduceFromClasspath() {
-		if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null) && !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
-				&& !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
-			return WebApplicationType.REACTIVE;
-		}
-		for (String className : SERVLET_INDICATOR_CLASSES) {
-			if (!ClassUtils.isPresent(className, null)) {
-				return WebApplicationType.NONE;
+	/**
+	 * Deduce the {@link WebApplicationType} from the current classpath.
+	 * @return the deduced web application
+	 * @since 4.0.1
+	 */
+	public static WebApplicationType deduce() {
+		for (Deducer deducer : SpringFactoriesLoader.forDefaultResourceLocation().load(Deducer.class)) {
+			WebApplicationType deduced = deducer.deduceWebApplicationType();
+			if (deduced != null) {
+				return deduced;
 			}
 		}
-		return WebApplicationType.SERVLET;
+		return isServletApplication() ? WebApplicationType.SERVLET : WebApplicationType.NONE;
+	}
+
+	private static boolean isServletApplication() {
+		for (String servletIndicatorClass : SERVLET_INDICATOR_CLASSES) {
+			if (!ClassUtils.isPresent(servletIndicatorClass, null)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	static class WebApplicationTypeRuntimeHints implements RuntimeHintsRegistrar {
@@ -79,9 +86,6 @@ public enum WebApplicationType {
 			for (String servletIndicatorClass : SERVLET_INDICATOR_CLASSES) {
 				registerTypeIfPresent(servletIndicatorClass, classLoader, hints);
 			}
-			registerTypeIfPresent(JERSEY_INDICATOR_CLASS, classLoader, hints);
-			registerTypeIfPresent(WEBFLUX_INDICATOR_CLASS, classLoader, hints);
-			registerTypeIfPresent(WEBMVC_INDICATOR_CLASS, classLoader, hints);
 		}
 
 		private void registerTypeIfPresent(String typeName, @Nullable ClassLoader classLoader, RuntimeHints hints) {
@@ -89,6 +93,23 @@ public enum WebApplicationType {
 				hints.reflection().registerType(TypeReference.of(typeName));
 			}
 		}
+
+	}
+
+	/**
+	 * Strategy that may be implemented by a module that can deduce the
+	 * {@link WebApplicationType}.
+	 *
+	 * @since 4.0.1
+	 */
+	@FunctionalInterface
+	public interface Deducer {
+
+		/**
+		 * Deduce the web application type.
+		 * @return the deduced web application type or {@code null}
+		 */
+		@Nullable WebApplicationType deduceWebApplicationType();
 
 	}
 

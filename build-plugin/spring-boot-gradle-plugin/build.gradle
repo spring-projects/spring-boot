@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import org.gradle.plugins.ide.eclipse.EclipsePlugin
 import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.Library
 
@@ -42,8 +41,7 @@ dependencies {
 	dockerTestImplementation(gradleTestKit())
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	implementation(project(":buildpack:spring-boot-buildpack-platform"))
 	implementation(project(":loader:spring-boot-loader-tools"))
@@ -53,14 +51,13 @@ dependencies {
 
 	optional("org.graalvm.buildtools:native-gradle-plugin")
 	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
-		exclude(group: "org.apache.maven", module: "maven-core")
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 
 	testImplementation(project(":test-support:spring-boot-gradle-test-support"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
-	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.tngtech.archunit:archunit-junit5:1.4.0")
 	testImplementation("net.java.dev.jna:jna-platform")
 	testImplementation("org.apache.commons:commons-compress")
@@ -70,6 +67,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.tomlj:tomlj:1.0.0")
+	testImplementation("tools.jackson.core:jackson-databind")
 }
 
 repositories {
@@ -163,4 +161,12 @@ plugins.withType(EclipsePlugin) {
 			}
 		}
 	}
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

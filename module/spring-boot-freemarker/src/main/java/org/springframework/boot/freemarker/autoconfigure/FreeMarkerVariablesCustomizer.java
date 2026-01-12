@@ -24,8 +24,9 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the FreeMarker
- * variables used as {@link Configuration#getSharedVariableNames() shared variables}
- * before it is used by an auto-configured {@link FreeMarkerConfigurationFactory}.
+ * {@link Configuration#getSharedVariableNames() shared variables} to fine-tune their
+ * auto-configuration before they are used by an auto-configured
+ * {@link FreeMarkerConfigurationFactory}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

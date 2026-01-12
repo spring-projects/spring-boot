@@ -19,7 +19,7 @@ package org.springframework.boot.docs.io.restclient.restclient.ssl.settings;
 import java.time.Duration;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,7 @@ public class MyService {
 	private final RestClient restClient;
 
 	public MyService(RestClient.Builder restClientBuilder, SslBundles sslBundles) {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings
-			.ofSslBundle(sslBundles.getBundle("mybundle"))
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundles.getBundle("mybundle"))
 			.withReadTimeout(Duration.ofMinutes(2));
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.detect().build(settings);
 		this.restClient = restClientBuilder.baseUrl("https://example.org").requestFactory(requestFactory).build();

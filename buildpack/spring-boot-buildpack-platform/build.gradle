@@ -28,13 +28,20 @@ dependencies {
 
 	dockerTestRuntimeOnly("org.testcontainers:testcontainers")
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	implementation("net.java.dev.jna:jna-platform")
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.springframework:spring-core")
 	implementation("org.tomlj:tomlj:1.0.0")
+	implementation("tools.jackson.core:jackson-databind")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

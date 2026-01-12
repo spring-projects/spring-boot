@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Properties with a simple prefix.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("simple")
+@TestConfigurationProperties("simple")
 public class SimplePrefixValueProperties {
 
 	private String name;

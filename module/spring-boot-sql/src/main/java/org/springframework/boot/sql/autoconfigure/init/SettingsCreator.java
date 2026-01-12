@@ -19,6 +19,8 @@ package org.springframework.boot.sql.autoconfigure.init;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
@@ -44,7 +46,7 @@ final class SettingsCreator {
 		return settings;
 	}
 
-	private static List<String> scriptLocations(List<String> locations, String fallback, String platform) {
+	private static List<String> scriptLocations(@Nullable List<String> locations, String fallback, String platform) {
 		if (locations != null) {
 			return locations;
 		}

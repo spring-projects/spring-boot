@@ -16,18 +16,18 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * A simple endpoint with no default override, with the same id as {@link SimpleEndpoint}.
  *
  * @author Moritz Halbritter
  */
-@Endpoint(id = "simple")
+@TestEndpoint(id = "simple")
 public class SimpleEndpoint2 {
 
-	@ReadOperation
+	@TestReadOperation
 	public String invoke() {
 		return "test";
 	}

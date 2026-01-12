@@ -18,9 +18,11 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.Assert;
 
 /**
  * A class that represents credentials for a server as returned from a
@@ -40,13 +42,25 @@ class Credential extends MappedObject {
 
 	private final String secret;
 
-	private final String serverUrl;
+	private final @Nullable String serverUrl;
 
 	Credential(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.username = valueAt("/Username", String.class);
-		this.secret = valueAt("/Secret", String.class);
+		this.username = extractUsername();
+		this.secret = extractSecret();
 		this.serverUrl = valueAt("/ServerURL", String.class);
+	}
+
+	private String extractSecret() {
+		String result = valueAt("/Secret", String.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
+	}
+
+	private String extractUsername() {
+		String result = valueAt("/Username", String.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	String getUsername() {
@@ -57,7 +71,7 @@ class Credential extends MappedObject {
 		return this.secret;
 	}
 
-	String getServerUrl() {
+	@Nullable String getServerUrl() {
 		return this.serverUrl;
 	}
 

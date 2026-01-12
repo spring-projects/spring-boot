@@ -18,6 +18,8 @@ package org.springframework.boot.restclient;
 
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
 
@@ -33,9 +35,9 @@ class BasicAuthentication {
 
 	private final String password;
 
-	private final Charset charset;
+	private final @Nullable Charset charset;
 
-	BasicAuthentication(String username, String password, Charset charset) {
+	BasicAuthentication(String username, String password, @Nullable Charset charset) {
 		Assert.notNull(username, "'username' must not be null");
 		Assert.notNull(password, "'password' must not be null");
 		this.username = username;

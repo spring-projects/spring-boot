@@ -18,6 +18,8 @@ package org.springframework.boot.hazelcast.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Hazelcast environment details.
  *
@@ -25,13 +27,13 @@ import java.util.Map;
  */
 class HazelcastEnvironment {
 
-	private final String clusterName;
+	private final @Nullable String clusterName;
 
-	HazelcastEnvironment(Map<String, String> env) {
+	HazelcastEnvironment(Map<String, @Nullable String> env) {
 		this.clusterName = env.get("HZ_CLUSTERNAME");
 	}
 
-	String getClusterName() {
+	@Nullable String getClusterName() {
 		return this.clusterName;
 	}
 

@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing invalid method configuration.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("something")
+@TestConfigurationProperties("something")
 public class InvalidMethodConfig {
 
 	private String name;
@@ -36,7 +36,7 @@ public class InvalidMethodConfig {
 		this.name = name;
 	}
 
-	@ConfigurationProperties("invalid")
+	@TestConfigurationProperties("invalid")
 	InvalidMethodConfig foo() {
 		return new InvalidMethodConfig();
 	}

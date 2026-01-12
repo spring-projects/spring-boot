@@ -29,10 +29,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -83,16 +85,14 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 
 	@Test
 	void buildWhenHasConnectTimeout() {
-		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(60));
 		T connector = this.builder.build(settings);
 		assertThat(connectTimeout(connector)).isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
 	@Test
 	void buildWhenHadReadTimeout() {
-		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(120));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofSeconds(120));
 		T connector = this.builder.build(settings);
 		assertThat(readTimeout(connector)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
@@ -114,8 +114,7 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			assertThatExceptionOfType(WebClientRequestException.class)
 				.isThrownBy(() -> getResponse(insecureConnector, insecureRequest))
 				.withCauseInstanceOf(SSLHandshakeException.class);
-			ClientHttpConnector secureConnector = this.builder
-				.build(ClientHttpConnectorSettings.ofSslBundle(sslBundle()));
+			ClientHttpConnector secureConnector = this.builder.build(HttpClientSettings.ofSslBundle(sslBundle()));
 			ClientRequest secureRequest = createRequest(httpMethod, uri);
 			ClientResponse secureResponse = getResponse(secureConnector, secureRequest);
 			assertThat(secureResponse.bodyToMono(String.class).block())
@@ -138,8 +137,8 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("https://localhost:%s".formatted(port));
-			ClientHttpConnector secureConnector = this.builder.build(ClientHttpConnectorSettings
-				.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
+			ClientHttpConnector secureConnector = this.builder.build(
+					HttpClientSettings.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
 			ClientRequest secureRequest = createRequest(httpMethod, uri);
 			assertThatExceptionOfType(WebClientRequestException.class)
 				.isThrownBy(() -> getResponse(secureConnector, secureRequest))
@@ -159,20 +158,18 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectFollow(String httpMethod) throws Exception {
-		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
-			.withRedirects(HttpRedirects.FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectDontFollow(String httpMethod) throws Exception {
-		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
-			.withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	protected final void testRedirect(ClientHttpConnectorSettings settings, HttpMethod httpMethod,
+	protected final void testRedirect(@Nullable HttpClientSettings settings, HttpMethod httpMethod,
 			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException {
 		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
@@ -204,7 +201,9 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 	}
 
 	private ClientResponse getResponse(ClientHttpConnector connector, ClientRequest request) {
-		return ExchangeFunctions.create(connector).exchange(request).block();
+		ClientResponse response = ExchangeFunctions.create(connector).exchange(request).block();
+		assertThat(response).isNotNull();
+		return response;
 	}
 
 	private Ssl ssl(String... ciphers) {

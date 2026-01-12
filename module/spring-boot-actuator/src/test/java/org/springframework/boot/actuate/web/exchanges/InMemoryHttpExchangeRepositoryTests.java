@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,9 +35,9 @@ import static org.mockito.Mockito.mock;
  */
 class InMemoryHttpExchangeRepositoryTests {
 
-	private static final Supplier<Principal> NO_PRINCIPAL = () -> null;
+	private static final Supplier<@Nullable Principal> NO_PRINCIPAL = () -> null;
 
-	private static final Supplier<String> NO_SESSION_ID = () -> null;
+	private static final Supplier<@Nullable String> NO_SESSION_ID = () -> null;
 
 	private final InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 

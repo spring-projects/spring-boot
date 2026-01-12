@@ -20,14 +20,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties without lombok annotations at element level.
  *
  * @author Jonas Keßler
  */
-@ConfigurationProperties("accesslevel")
+@TestConfigurationProperties("accesslevel")
+@SuppressWarnings("deprecation")
 public class LombokAccessLevelProperties {
 
 	@Getter(AccessLevel.PUBLIC)

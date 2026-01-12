@@ -55,7 +55,7 @@ public class EndpointMBean implements DynamicMBean {
 
 	private final JmxOperationResponseMapper responseMapper;
 
-	private final ClassLoader classLoader;
+	private final @Nullable ClassLoader classLoader;
 
 	private final ExposableJmxEndpoint endpoint;
 
@@ -63,7 +63,8 @@ public class EndpointMBean implements DynamicMBean {
 
 	private final Map<String, JmxOperation> operations;
 
-	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader, ExposableJmxEndpoint endpoint) {
+	EndpointMBean(JmxOperationResponseMapper responseMapper, @Nullable ClassLoader classLoader,
+			ExposableJmxEndpoint endpoint) {
 		Assert.notNull(responseMapper, "'responseMapper' must not be null");
 		Assert.notNull(endpoint, "'endpoint' must not be null");
 		this.responseMapper = responseMapper;

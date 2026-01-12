@@ -17,7 +17,6 @@
 package org.springframework.boot.build.context.properties;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Configuration properties read from one or more
@@ -56,20 +55,15 @@ final class ConfigurationProperties {
 
 	@SuppressWarnings("unchecked")
 	static ConfigurationProperties fromFiles(Iterable<File> files) {
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			List<ConfigurationProperty> properties = new ArrayList<>();
-			for (File file : files) {
-				Map<String, Object> json = objectMapper.readValue(file, Map.class);
-				for (Map<String, Object> property : (List<Map<String, Object>>) json.get("properties")) {
-					properties.add(ConfigurationProperty.fromJsonProperties(property));
-				}
+		JsonMapper jsonMapper = new JsonMapper();
+		List<ConfigurationProperty> properties = new ArrayList<>();
+		for (File file : files) {
+			Map<String, Object> json = jsonMapper.readValue(file, Map.class);
+			for (Map<String, Object> property : (List<Map<String, Object>>) json.get("properties")) {
+				properties.add(ConfigurationProperty.fromJsonProperties(property));
 			}
-			return new ConfigurationProperties(properties);
 		}
-		catch (IOException ex) {
-			throw new RuntimeException("Failed to load configuration metadata", ex);
-		}
+		return new ConfigurationProperties(properties);
 	}
 
 }

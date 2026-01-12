@@ -21,10 +21,11 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.http.client.redirects=dont-follow")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.http.clients.redirects=dont-follow")
+@AutoConfigureTestRestTemplate
 class SampleWebUiApplicationTests {
 
 	@Autowired
@@ -60,6 +62,7 @@ class SampleWebUiApplicationTests {
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
 		URI location = this.restTemplate.postForLocation("/", map);
+		assertThat(location).isNotNull();
 		assertThat(location.toString()).contains("localhost:" + this.port);
 	}
 

@@ -68,6 +68,7 @@ class RemoteHttpClientTransportTests {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
 			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
+		assertThat(transport).isNotNull();
 		assertThat(transport.getHost()).satisfies(hostOf("http", "192.168.1.2", 2376));
 	}
 
@@ -78,6 +79,7 @@ class RemoteHttpClientTransportTests {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
 			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376", true, "/test-cert-path"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost, sslContextFactory);
+		assertThat(transport).isNotNull();
 		assertThat(transport.getHost()).satisfies(hostOf("https", "192.168.1.2", 2376));
 	}
 

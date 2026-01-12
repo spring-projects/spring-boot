@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,7 +85,7 @@ class LoggingSystemTests {
 		}
 
 		@Override
-		public void setLogLevel(String loggerName, LogLevel level) {
+		public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
 			// Stub implementation
 		}
 

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationsample.source.generation;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesSource;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationPropertiesSource;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Sample record properties source.
@@ -26,6 +26,6 @@ import org.springframework.boot.configurationsample.DefaultValue;
  * @param enabled Whether it is enabled.
  * @author Stephane Nicoll
  */
-@ConfigurationPropertiesSource
-public record RecordPropertiesSources(@DefaultValue("boot") String name, boolean enabled) {
+@TestConfigurationPropertiesSource
+public record RecordPropertiesSources(@TestDefaultValue("boot") String name, boolean enabled) {
 }

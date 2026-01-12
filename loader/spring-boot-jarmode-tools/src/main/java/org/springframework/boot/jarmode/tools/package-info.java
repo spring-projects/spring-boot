@@ -15,6 +15,9 @@
  */
 
 /**
- * JarMode support for layertools and tools.
+ * JarMode support for application tools.
  */
+@NullMarked
 package org.springframework.boot.jarmode.tools;
+
+import org.jspecify.annotations.NullMarked;

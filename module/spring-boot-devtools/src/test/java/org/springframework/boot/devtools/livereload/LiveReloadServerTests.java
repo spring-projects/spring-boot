@@ -47,11 +47,13 @@ import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.WebSocketContainer;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
@@ -223,7 +225,7 @@ class LiveReloadServerTests {
 
 	class LiveReloadWebSocketHandler extends TextWebSocketHandler {
 
-		private volatile WebSocketSession session;
+		private volatile @Nullable WebSocketSession session;
 
 		private final CountDownLatch helloLatch = new CountDownLatch(2);
 
@@ -231,7 +233,7 @@ class LiveReloadServerTests {
 
 		private final AtomicInteger pongCount = new AtomicInteger();
 
-		private volatile CloseStatus closeStatus;
+		private volatile @Nullable CloseStatus closeStatus;
 
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -264,11 +266,15 @@ class LiveReloadServerTests {
 		}
 
 		void sendMessage(WebSocketMessage<?> message) throws IOException {
-			this.session.sendMessage(message);
+			WebSocketSession session = this.session;
+			assertThat(session).isNotNull();
+			session.sendMessage(message);
 		}
 
 		void close() throws IOException {
-			this.session.close();
+			WebSocketSession session = this.session;
+			assertThat(session).isNotNull();
+			session.close();
 		}
 
 		List<String> getMessages() {
@@ -279,7 +285,7 @@ class LiveReloadServerTests {
 			return this.pongCount.get();
 		}
 
-		CloseStatus getCloseStatus() {
+		@Nullable CloseStatus getCloseStatus() {
 			return this.closeStatus;
 		}
 
@@ -314,7 +320,9 @@ class LiveReloadServerTests {
 				this.webSocketContainer.connectToServer(endpoint, endpointConfig, uri);
 				return session;
 			};
-			return getTaskExecutor().submitCompletable(connectTask);
+			AsyncTaskExecutor taskExecutor = getTaskExecutor();
+			assertThat(taskExecutor).isNotNull();
+			return taskExecutor.submitCompletable(connectTask);
 		}
 
 		private InetAddress getLocalHost() {

@@ -20,6 +20,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The {@code 'list-layers'} tools command.
  *
@@ -35,7 +37,7 @@ class ListLayersCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		Layers layers = Layers.get(this.context);
 		printLayers(out, layers);
 	}

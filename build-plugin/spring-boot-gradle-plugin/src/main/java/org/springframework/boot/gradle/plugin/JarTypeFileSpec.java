@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Set;
 import java.util.jar.JarFile;
 
@@ -33,7 +32,7 @@ import org.gradle.api.specs.Spec;
  */
 class JarTypeFileSpec implements Spec<File> {
 
-	private static final Set<String> EXCLUDED_JAR_TYPES = Collections.singleton("dependencies-starter");
+	private static final Set<String> EXCLUDED_JAR_TYPES = Set.of("dependencies-starter", "development-tool");
 
 	@Override
 	public boolean isSatisfiedBy(File file) {

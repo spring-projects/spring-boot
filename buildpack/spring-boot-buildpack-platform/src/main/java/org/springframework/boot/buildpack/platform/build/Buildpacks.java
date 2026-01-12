@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -79,7 +81,7 @@ final class Buildpacks {
 		builder.append("\n");
 	}
 
-	static Buildpacks of(List<Buildpack> buildpacks) {
+	static Buildpacks of(@Nullable List<Buildpack> buildpacks) {
 		return CollectionUtils.isEmpty(buildpacks) ? EMPTY : new Buildpacks(buildpacks);
 	}
 

@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,9 +58,11 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 				"foo.bar.bindings.output.destination=d2");
 		BindingServiceProperties properties = this.context.getBean(BindingServiceProperties.class);
 		BindingProperties input = properties.getBindings().get("input");
+		assertThat(input).isNotNull();
 		assertThat(input.getDestination()).isEqualTo("d1");
 		assertThat(input.getContentType()).isEqualTo("text/xml");
 		BindingProperties output = properties.getBindings().get("output");
+		assertThat(output).isNotNull();
 		assertThat(output.getDestination()).isEqualTo("d2");
 		assertThat(output.getContentType()).isEqualTo("application/json");
 	}
@@ -71,9 +74,11 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 				"foo.bar.bindings.output.destination=d2");
 		BindingServiceProperties properties = this.context.getBean(BindingServiceProperties.class);
 		BindingProperties input = properties.getBindings().get("input");
+		assertThat(input).isNotNull();
 		assertThat(input.getDestination()).isEqualTo("d1");
 		assertThat(input.getContentType()).isEqualTo("text/xml");
 		BindingProperties output = properties.getBindings().get("output");
+		assertThat(output).isNotNull();
 		assertThat(output.getDestination()).isEqualTo("d2");
 		assertThat(output.getContentType()).isEqualTo("text/plain");
 	}
@@ -124,7 +129,8 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 		}
 
 		@Override
-		public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+		public <T> @Nullable Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
+				BindContext context) {
 			ConfigurationPropertyName defaultName = getDefaultName(name);
 			if (defaultName != null) {
 				BindResult<T> result = context.getBinder().bind(defaultName, target);
@@ -135,7 +141,7 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 			return super.onStart(name, target, context);
 		}
 
-		private ConfigurationPropertyName getDefaultName(ConfigurationPropertyName name) {
+		private @Nullable ConfigurationPropertyName getDefaultName(ConfigurationPropertyName name) {
 			for (Map.Entry<ConfigurationPropertyName, ConfigurationPropertyName> mapping : this.mappings.entrySet()) {
 				ConfigurationPropertyName from = mapping.getKey();
 				ConfigurationPropertyName to = mapping.getValue();
@@ -161,15 +167,15 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 	static class BindingProperties {
 
-		private String destination;
+		private @Nullable String destination;
 
 		private String contentType = "application/json";
 
-		String getDestination() {
+		@Nullable String getDestination() {
 			return this.destination;
 		}
 
-		void setDestination(String destination) {
+		void setDestination(@Nullable String destination) {
 			this.destination = destination;
 		}
 

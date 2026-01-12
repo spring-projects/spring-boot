@@ -10,7 +10,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.artemis.broker-url",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -58,7 +59,8 @@
     {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
-        "replacement": "spring.artemis.pool.max-sessions-per-connection"
+        "replacement": "spring.artemis.pool.max-sessions-per-connection",
+        "since": "2.1.0"
       }
     },
     {
@@ -80,7 +82,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.artemis.broker-url",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     }
   ]

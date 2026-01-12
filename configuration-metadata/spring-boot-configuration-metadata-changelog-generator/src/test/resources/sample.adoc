@@ -4,7 +4,13 @@ Configuration property changes between `1.0` and `2.0`
 
 == Deprecated in 2.0
 
-_None_.
+|======================
+| Key | Replacement | Reason
+
+| `test.deprecate`
+|
+|
+|======================
 
 
 
@@ -16,6 +22,10 @@ _None_.
 | `test.add`
 | `new`
 | Test add.
+
+| `test.add.deprecated` (deprecated)
+| `test2`
+| Test add deprecated.
 |======================
 
 
@@ -36,4 +46,8 @@ _None_.
 | `test.removed.directly`
 | `test.new.property`
 | removed in third-party library without deprecation
+
+| `test.replace`
+| `test.add`
+|
 |======================

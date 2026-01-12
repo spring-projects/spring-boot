@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jarmode.tools;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,6 +27,7 @@ import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.EnumSet;
 import java.util.Enumeration;
@@ -34,12 +36,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jarmode.tools.JarStructure.Entry;
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
@@ -84,13 +89,13 @@ class ExtractCommand extends Command {
 
 	private final Context context;
 
-	private final Layers layers;
+	private final @Nullable Layers layers;
 
 	ExtractCommand(Context context) {
 		this(context, null);
 	}
 
-	ExtractCommand(Context context, Layers layers) {
+	ExtractCommand(Context context, @Nullable Layers layers) {
 		super("extract", "Extract the contents from the jar", Options.of(LAUNCHER_OPTION, LAYERS_OPTION,
 				DESTINATION_OPTION, LIBRARIES_DIRECTORY_OPTION, APPLICATION_FILENAME_OPTION, FORCE_OPTION),
 				Parameters.none());
@@ -99,7 +104,7 @@ class ExtractCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		try {
 			checkJarCompatibility();
 			File destination = getDestination(options);
@@ -120,7 +125,7 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static void checkDirectoryIsEmpty(Map<Option, String> options, File destination) {
+	private static void checkDirectoryIsEmpty(Map<Option, @Nullable String> options, File destination) {
 		if (options.containsKey(FORCE_OPTION)) {
 			return;
 		}
@@ -148,30 +153,30 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure, Map<Option, String> options)
-			throws IOException {
+	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure,
+			Map<Option, @Nullable String> options) throws IOException {
 		String librariesDirectory = getLibrariesDirectory(options);
 		extractArchive(fileResolver, (jarEntry) -> {
 			Entry entry = jarStructure.resolve(jarEntry);
-			if (isType(entry, Type.LIBRARY)) {
+			if (entry != null && entry.type() == Type.LIBRARY) {
 				return librariesDirectory + entry.location();
 			}
 			return null;
 		});
 	}
 
-	private static String getLibrariesDirectory(Map<Option, String> options) {
-		if (options.containsKey(LIBRARIES_DIRECTORY_OPTION)) {
-			String value = options.get(LIBRARIES_DIRECTORY_OPTION);
-			if (value.endsWith("/")) {
-				return value;
+	private static String getLibrariesDirectory(Map<Option, @Nullable String> options) {
+		String libraryDirectory = options.get(LIBRARIES_DIRECTORY_OPTION);
+		if (libraryDirectory != null) {
+			if (libraryDirectory.endsWith("/")) {
+				return libraryDirectory;
 			}
-			return value + "/";
+			return libraryDirectory + "/";
 		}
 		return "lib/";
 	}
 
-	private FileResolver getFileResolver(File destination, Map<Option, String> options) {
+	private FileResolver getFileResolver(File destination, Map<Option, @Nullable String> options) {
 		String applicationFilename = getApplicationFilename(options);
 		if (!options.containsKey(LAYERS_OPTION)) {
 			return new NoLayersFileResolver(destination, applicationFilename);
@@ -181,9 +186,10 @@ class ExtractCommand extends Command {
 		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename);
 	}
 
-	private File getDestination(Map<Option, String> options) {
-		if (options.containsKey(DESTINATION_OPTION)) {
-			File destination = new File(options.get(DESTINATION_OPTION));
+	private File getDestination(Map<Option, @Nullable String> options) {
+		String value = options.get(DESTINATION_OPTION);
+		if (value != null) {
+			File destination = new File(value);
 			if (destination.isAbsolute()) {
 				return destination;
 			}
@@ -230,8 +236,8 @@ class ExtractCommand extends Command {
 		return (this.layers != null) ? this.layers : Layers.get(this.context);
 	}
 
-	private void createApplication(JarStructure jarStructure, FileResolver fileResolver, Map<Option, String> options)
-			throws IOException {
+	private void createApplication(JarStructure jarStructure, FileResolver fileResolver,
+			Map<Option, @Nullable String> options) throws IOException {
 		File file = fileResolver.resolveApplication();
 		if (file == null) {
 			return;
@@ -239,10 +245,17 @@ class ExtractCommand extends Command {
 		String librariesDirectory = getLibrariesDirectory(options);
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkdirs(file.getParentFile());
-		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
+		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+			ManfiestWriter manfiestWriter = (sourceJarFile) -> {
+				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
+						sourceJarFile.getJarEntry(JarFile.MANIFEST_NAME));
+				output.putNextEntry(entry);
+				manifest.write(new BufferedOutputStream(output));
+				output.closeEntry();
+			};
 			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
 			Set<String> writtenEntries = new HashSet<>();
-			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
+			withJarEntries(this.context.getArchiveFile(), manfiestWriter, ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
 				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
@@ -260,17 +273,23 @@ class ExtractCommand extends Command {
 				}
 			}));
 		}
+		copyTimestamps(this.context.getArchiveFile(), file);
 	}
 
-	private String getApplicationFilename(Map<Option, String> options) {
-		if (options.containsKey(APPLICATION_FILENAME_OPTION)) {
-			return options.get(APPLICATION_FILENAME_OPTION);
+	private void copyTimestamps(File source, File destination) throws IOException {
+		BasicFileAttributes sourceAttributes = Files.getFileAttributeView(source.toPath(), BasicFileAttributeView.class)
+			.readAttributes();
+		Files.getFileAttributeView(destination.toPath(), BasicFileAttributeView.class)
+			.setTimes(sourceAttributes.lastModifiedTime(), sourceAttributes.lastAccessTime(),
+					sourceAttributes.creationTime());
+	}
+
+	private String getApplicationFilename(Map<Option, @Nullable String> options) {
+		String value = options.get(APPLICATION_FILENAME_OPTION);
+		if (value != null) {
+			return value;
 		}
 		return this.context.getArchiveFile().getName();
-	}
-
-	private static boolean isType(Entry entry, Type type) {
-		return (entry != null) && entry.type() == type;
 	}
 
 	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
@@ -287,18 +306,6 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static FileTime getCreationTime(JarEntry entry) {
-		return (entry.getCreationTime() != null) ? entry.getCreationTime() : entry.getLastModifiedTime();
-	}
-
-	private static FileTime getLastAccessTime(JarEntry entry) {
-		return (entry.getLastAccessTime() != null) ? entry.getLastAccessTime() : getLastModifiedTime(entry);
-	}
-
-	private static FileTime getLastModifiedTime(JarEntry entry) {
-		return (entry.getLastModifiedTime() != null) ? entry.getLastModifiedTime() : entry.getCreationTime();
-	}
-
 	private static void mkdirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
 			throw new IOException("Unable to create directory " + file);
@@ -306,24 +313,43 @@ class ExtractCommand extends Command {
 	}
 
 	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
-		JarEntry jarEntry = new JarEntry(location);
-		FileTime lastModifiedTime = getLastModifiedTime(originalEntry);
-		if (lastModifiedTime != null) {
-			jarEntry.setLastModifiedTime(lastModifiedTime);
+		JarEntry entry = new JarEntry(location);
+		if (originalEntry != null) {
+			copyFileTime(getLastModifiedTime(originalEntry), entry::setLastModifiedTime);
+			copyFileTime(getLastAccessTime(originalEntry), entry::setLastAccessTime);
+			copyFileTime(getCreationTime(originalEntry), entry::setCreationTime);
 		}
-		FileTime lastAccessTime = getLastAccessTime(originalEntry);
-		if (lastAccessTime != null) {
-			jarEntry.setLastAccessTime(lastAccessTime);
+		return entry;
+	}
+
+	private static void copyFileTime(@Nullable FileTime fileTime, Consumer<FileTime> setter) {
+		if (fileTime != null) {
+			setter.accept(fileTime);
 		}
-		FileTime creationTime = getCreationTime(originalEntry);
-		if (creationTime != null) {
-			jarEntry.setCreationTime(creationTime);
-		}
-		return jarEntry;
+	}
+
+	private static @Nullable FileTime getCreationTime(JarEntry entry) {
+		return (entry.getCreationTime() != null) ? entry.getCreationTime() : entry.getLastModifiedTime();
+	}
+
+	private static @Nullable FileTime getLastAccessTime(JarEntry entry) {
+		return (entry.getLastAccessTime() != null) ? entry.getLastAccessTime() : getLastModifiedTime(entry);
+	}
+
+	private static @Nullable FileTime getLastModifiedTime(JarEntry entry) {
+		return (entry.getLastModifiedTime() != null) ? entry.getLastModifiedTime() : entry.getCreationTime();
 	}
 
 	private static void withJarEntries(File file, ThrowingConsumer callback) throws IOException {
+		withJarEntries(file, null, callback);
+	}
+
+	private static void withJarEntries(File file, @Nullable ManfiestWriter manfiestWriter, ThrowingConsumer callback)
+			throws IOException {
 		try (JarFile jarFile = new JarFile(file)) {
+			if (manfiestWriter != null) {
+				manfiestWriter.writeManifest(jarFile);
+			}
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
@@ -348,7 +374,14 @@ class ExtractCommand extends Command {
 	@FunctionalInterface
 	private interface EntryNameTransformer {
 
-		String getName(JarEntry entry);
+		@Nullable String getName(JarEntry entry);
+
+	}
+
+	@FunctionalInterface
+	private interface ManfiestWriter {
+
+		void writeManifest(JarFile sourceJarFile) throws IOException;
 
 	}
 
@@ -375,7 +408,7 @@ class ExtractCommand extends Command {
 		 * should be skipped
 		 * @throws IOException if something went wrong
 		 */
-		default File resolve(JarEntry entry, String newName) throws IOException {
+		default @Nullable File resolve(JarEntry entry, String newName) throws IOException {
 			return resolve(entry.getName(), newName);
 		}
 
@@ -387,7 +420,7 @@ class ExtractCommand extends Command {
 		 * should be skipped
 		 * @throws IOException if something went wrong
 		 */
-		File resolve(String originalName, String newName) throws IOException;
+		@Nullable File resolve(String originalName, String newName) throws IOException;
 
 		/**
 		 * Resolves the file for the application.
@@ -395,7 +428,7 @@ class ExtractCommand extends Command {
 		 * be skipped
 		 * @throws IOException if something went wrong
 		 */
-		File resolveApplication() throws IOException;
+		@Nullable File resolveApplication() throws IOException;
 
 	}
 
@@ -453,7 +486,7 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public File resolve(String originalName, String newName) throws IOException {
+		public @Nullable File resolve(String originalName, String newName) throws IOException {
 			String layer = this.layers.getLayer(originalName);
 			if (shouldExtractLayer(layer)) {
 				File directory = getLayerDirectory(layer);
@@ -463,7 +496,7 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public File resolveApplication() throws IOException {
+		public @Nullable File resolveApplication() throws IOException {
 			String layer = this.layers.getApplicationLayerName();
 			if (shouldExtractLayer(layer)) {
 				File directory = getLayerDirectory(layer);

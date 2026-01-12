@@ -149,7 +149,7 @@ class JsonValueWriter {
 		}
 	}
 
-	private <V> boolean canWriteAsArray(Iterable<?> iterable) {
+	private boolean canWriteAsArray(Iterable<?> iterable) {
 		return !(iterable instanceof Path);
 	}
 
@@ -257,7 +257,7 @@ class JsonValueWriter {
 			append(":");
 			write(value);
 		}
-		this.path = this.path.parent();
+		this.path = (this.path.parent() != null) ? this.path.parent() : MemberPath.ROOT;
 	}
 
 	private void writeString(Object value) {
@@ -349,7 +349,8 @@ class JsonValueWriter {
 	// Lambda isn't detected with the correct nullability
 	@SuppressWarnings({ "unchecked", "NullAway" })
 	private <V> @Nullable V processValue(@Nullable V value, ValueProcessor<?> valueProcessor) {
-		return (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, this.path, new Object[] { value })
+		return (V) LambdaSafe
+			.callback(ValueProcessor.class, valueProcessor, this.path, new @Nullable Object[] { value })
 			.invokeAnd((call) -> call.processValue(this.path, value))
 			.get(value);
 	}
@@ -389,7 +390,7 @@ class JsonValueWriter {
 
 		private int index;
 
-		private Set<String> names = new HashSet<>();
+		private final Set<String> names = new HashSet<>();
 
 		private ActiveSeries(Series series) {
 			this.series = series;
@@ -400,11 +401,17 @@ class JsonValueWriter {
 		}
 
 		MemberPath updatePath(MemberPath path) {
-			return (this.series != Series.ARRAY) ? path : path.child(this.index);
+			if (this.series != Series.ARRAY) {
+				return path;
+			}
+			return path.child(this.index);
 		}
 
 		MemberPath restorePath(MemberPath path) {
-			return (this.series != Series.ARRAY) ? path : path.parent();
+			if (this.series != Series.ARRAY) {
+				return path;
+			}
+			return (path.parent() != null) ? path.parent() : MemberPath.ROOT;
 		}
 
 		void incrementIndexAndAddCommaIfRequired() {

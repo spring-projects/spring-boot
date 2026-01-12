@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Simple immutable properties with primitive types and defaults.
@@ -42,10 +42,11 @@ public class ImmutablePrimitiveWithDefaultsProperties {
 
 	private final double ratio;
 
-	public ImmutablePrimitiveWithDefaultsProperties(@DefaultValue("true") boolean flag, @DefaultValue("120") byte octet,
-			@DefaultValue("a") char letter, @DefaultValue("1000") short number, @DefaultValue("42") int counter,
-			@DefaultValue("2000") long value, @DefaultValue("0.5") float percentage,
-			@DefaultValue("42.42") double ratio) {
+	public ImmutablePrimitiveWithDefaultsProperties(@TestDefaultValue("true") boolean flag,
+			@TestDefaultValue("120") byte octet, @TestDefaultValue("a") char letter,
+			@TestDefaultValue("1000") short number, @TestDefaultValue("42") int counter,
+			@TestDefaultValue("2000") long value, @TestDefaultValue("0.5") float percentage,
+			@TestDefaultValue("42.42") double ratio) {
 		this.flag = flag;
 		this.octet = octet;
 		this.letter = letter;

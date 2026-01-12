@@ -26,5 +26,5 @@ dependencies {
 
 	api(project(":module:spring-boot-webclient"))
 
-	implementation("io.projectreactor.netty:reactor-netty-http")
+	api("io.projectreactor.netty:reactor-netty-http")
 }

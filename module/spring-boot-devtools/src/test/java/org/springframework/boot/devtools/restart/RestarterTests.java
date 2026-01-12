@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,6 +112,7 @@ class RestarterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addUrlsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addUrls(null))
 			.withMessageContaining("'urls' must not be null");
@@ -124,10 +126,12 @@ class RestarterTests {
 		restarter.addUrls(urls);
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter).getRelaunchClassLoader();
+		assertThat(classLoader).isNotNull();
 		assertThat(((URLClassLoader) classLoader).getURLs()[0]).isEqualTo(url);
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addClassLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
 			.withMessageContaining("'classLoaderFiles' must not be null");
@@ -141,6 +145,7 @@ class RestarterTests {
 		restarter.addClassLoaderFiles(classLoaderFiles);
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter).getRelaunchClassLoader();
+		assertThat(classLoader).isNotNull();
 		assertThat(classLoader.getResourceAsStream("f")).hasContent("abc");
 	}
 
@@ -200,7 +205,7 @@ class RestarterTests {
 	@EnableScheduling
 	static class SampleApplication {
 
-		private int count = 0;
+		private int count;
 
 		private static final AtomicBoolean restart = new AtomicBoolean();
 
@@ -228,7 +233,7 @@ class RestarterTests {
 
 	static class CloseCountingApplicationListener implements ApplicationListener<ContextClosedEvent> {
 
-		static int closed = 0;
+		static int closed;
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
@@ -239,7 +244,7 @@ class RestarterTests {
 
 	static class TestableRestarter extends Restarter {
 
-		private ClassLoader relaunchClassLoader;
+		private @Nullable ClassLoader relaunchClassLoader;
 
 		TestableRestarter() {
 			this(Thread.currentThread(), new String[] {}, false, new MockRestartInitializer());
@@ -262,7 +267,7 @@ class RestarterTests {
 		}
 
 		@Override
-		protected Throwable relaunch(ClassLoader classLoader) {
+		protected @Nullable Throwable relaunch(ClassLoader classLoader) {
 			this.relaunchClassLoader = classLoader;
 			return null;
 		}
@@ -271,7 +276,7 @@ class RestarterTests {
 		protected void stop() {
 		}
 
-		ClassLoader getRelaunchClassLoader() {
+		@Nullable ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
 		}
 

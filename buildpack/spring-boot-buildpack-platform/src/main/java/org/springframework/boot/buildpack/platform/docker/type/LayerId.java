@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.math.BigInteger;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -57,7 +59,7 @@ public final class LayerId {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == this) {
 			return true;
 		}

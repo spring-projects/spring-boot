@@ -30,7 +30,6 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assert;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.jspecify.annotations.Nullable;
@@ -40,8 +39,12 @@ import org.skyscreamer.jsonassert.JSONCompareResult;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 import org.springframework.core.io.Resource;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingFunction;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * AssertJ {@link Assert} for {@link JsonContent}.
@@ -63,7 +66,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param json the actual JSON content
 	 */
-	public JsonContentAssert(Class<?> resourceLoadClass, CharSequence json) {
+	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable CharSequence json) {
 		this(resourceLoadClass, null, json);
 	}
 
@@ -75,7 +78,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param json the actual JSON content
 	 * @since 1.4.1
 	 */
-	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, CharSequence json) {
+	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, @Nullable CharSequence json) {
 		this(resourceLoadClass, charset, json, Configuration.defaultConfiguration());
 	}
 
@@ -87,7 +90,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param json the actual JSON content
 	 * @param configuration the json-path configuration
 	 */
-	JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, CharSequence json,
+	JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, @Nullable CharSequence json,
 			Configuration configuration) {
 		super(json, JsonContentAssert.class);
 		this.configuration = configuration;
@@ -916,8 +919,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid
 	 */
+	@CheckReturnValue
 	public AbstractObjectAssert<?, Object> extractingJsonPathValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(new JsonPathValue(expression, args).getValue(false));
+		return assertThat(new JsonPathValue(expression, args).getValue(false));
 	}
 
 	/**
@@ -928,9 +932,10 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a string
 	 */
+	@CheckReturnValue
 	public AbstractCharSequenceAssert<?, String> extractingJsonPathStringValue(CharSequence expression,
 			Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, String.class, "a string"));
+		return assertThat(extractingJsonPathValue(expression, args, String.class, "a string"));
 	}
 
 	/**
@@ -941,8 +946,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a number
 	 */
+	@CheckReturnValue
 	public AbstractObjectAssert<?, Number> extractingJsonPathNumberValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, Number.class, "a number"));
+		return assertThat(extractingJsonPathValue(expression, args, Number.class, "a number"));
 	}
 
 	/**
@@ -953,8 +959,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a boolean
 	 */
+	@CheckReturnValue
 	public AbstractBooleanAssert<?> extractingJsonPathBooleanValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
+		return assertThat(extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
 	}
 
 	/**
@@ -967,8 +974,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
 	@SuppressWarnings("unchecked")
+	@CheckReturnValue
 	public <E> ListAssert<E> extractingJsonPathArrayValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, List.class, "an array"));
+		return assertThat(extractingJsonPathValue(expression, args, List.class, "an array"));
 	}
 
 	/**
@@ -982,8 +990,9 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
 	@SuppressWarnings("unchecked")
+	@CheckReturnValue
 	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, Map.class, "a map"));
+		return assertThat(extractingJsonPathValue(expression, args, Map.class, "a map"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -997,28 +1006,25 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	}
 
 	private JSONCompareResult compare(@Nullable CharSequence expectedJson, JSONCompareMode compareMode) {
-		if (this.actual == null) {
-			return compareForNull(expectedJson);
-		}
-		try {
-			return JSONCompare.compareJSON((expectedJson != null) ? expectedJson.toString() : null,
-					this.actual.toString(), compareMode);
-		}
-		catch (Exception ex) {
-			if (ex instanceof RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			throw new IllegalStateException(ex);
-		}
+		return compare(expectedJson,
+				(expected) -> JSONCompare.compareJSON(expected, this.actual.toString(), compareMode));
 	}
 
 	private JSONCompareResult compare(@Nullable CharSequence expectedJson, JSONComparator comparator) {
+		return compare(expectedJson,
+				(expected) -> JSONCompare.compareJSON(expected, this.actual.toString(), comparator));
+	}
+
+	private JSONCompareResult compare(@Nullable CharSequence expectedJson,
+			ThrowingFunction<String, JSONCompareResult> compareAction) {
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
+		if (expectedJson == null) {
+			return fail("Expected JSON but got null");
+		}
 		try {
-			return JSONCompare.compareJSON((expectedJson != null) ? expectedJson.toString() : null,
-					this.actual.toString(), comparator);
+			return compareAction.applyWithException(expectedJson.toString());
 		}
 		catch (Exception ex) {
 			if (ex instanceof RuntimeException runtimeException) {
@@ -1034,6 +1040,12 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expectedJson != null) {
 			result.fail("Expected null JSON");
 		}
+		return result;
+	}
+
+	private JSONCompareResult fail(String message) {
+		JSONCompareResult result = new JSONCompareResult();
+		result.fail(message);
 		return result;
 	}
 

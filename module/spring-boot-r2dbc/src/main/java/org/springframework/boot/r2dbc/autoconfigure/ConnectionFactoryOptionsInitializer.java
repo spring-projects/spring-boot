@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
@@ -45,7 +46,8 @@ class ConnectionFactoryOptionsInitializer {
 	 * @throws ConnectionFactoryBeanCreationException if no suitable connection could be
 	 * determined
 	 */
-	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcConnectionDetails connectionDetails,
+	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties,
+			@Nullable R2dbcConnectionDetails connectionDetails,
 			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
 		if (connectionDetails != null) {
 			return connectionDetails.getConnectionFactoryOptions().mutate();
@@ -81,7 +83,7 @@ class ConnectionFactoryOptionsInitializer {
 		return (databaseName != null) ? databaseName : "testdb";
 	}
 
-	private String determineDatabaseName(R2dbcProperties properties) {
+	private @Nullable String determineDatabaseName(R2dbcProperties properties) {
 		if (properties.isGenerateUniqueName()) {
 			return properties.determineUniqueName();
 		}
@@ -97,28 +99,28 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	private ConnectionFactoryBeanCreationException connectionFactoryBeanCreationException(String message,
-			String r2dbcUrl, EmbeddedDatabaseConnection embeddedDatabaseConnection) {
+			@Nullable String r2dbcUrl, EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 		return new ConnectionFactoryBeanCreationException(message, r2dbcUrl, embeddedDatabaseConnection);
 	}
 
-	private String ifHasText(String candidate) {
+	private @Nullable String ifHasText(@Nullable String candidate) {
 		return (StringUtils.hasText(candidate)) ? candidate : null;
 	}
 
 	static class ConnectionFactoryBeanCreationException extends BeanCreationException {
 
-		private final String url;
+		private final @Nullable String url;
 
 		private final EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
-		ConnectionFactoryBeanCreationException(String message, String url,
+		ConnectionFactoryBeanCreationException(String message, @Nullable String url,
 				EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 			super(message);
 			this.url = url;
 			this.embeddedDatabaseConnection = embeddedDatabaseConnection;
 		}
 
-		String getUrl() {
+		@Nullable String getUrl() {
 			return this.url;
 		}
 

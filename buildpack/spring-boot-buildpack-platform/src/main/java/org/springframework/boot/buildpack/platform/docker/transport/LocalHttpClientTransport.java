@@ -39,6 +39,7 @@ import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.config.Lookup;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
@@ -85,14 +86,14 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 			.setValidateAfterInactivity(TimeValue.NEG_ONE_MILLISECOND)
 			.build();
 
-		private static final Lookup<TlsSocketStrategy> NO_TLS_SOCKET = (name) -> null;
+		private static final Lookup<@Nullable TlsSocketStrategy> NO_TLS_SOCKET = (name) -> null;
 
 		LocalConnectionManager(ResolvedDockerHost dockerHost) {
-			super(createhttpClientConnectionOperator(dockerHost), null);
+			super(createHttpClientConnectionOperator(dockerHost), null);
 			setConnectionConfig(CONNECTION_CONFIG);
 		}
 
-		private static DefaultHttpClientConnectionOperator createhttpClientConnectionOperator(
+		private static DefaultHttpClientConnectionOperator createHttpClientConnectionOperator(
 				ResolvedDockerHost dockerHost) {
 			LocalDetachedSocketFactory detachedSocketFactory = new LocalDetachedSocketFactory(dockerHost);
 			LocalDnsResolver dnsResolver = new LocalDnsResolver();

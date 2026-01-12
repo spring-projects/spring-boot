@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.context.properties;
 import java.security.Principal;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import org.springframework.boot.actuate.context.properties.ConfigurationProperti
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -37,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigurationPropertiesReportEndpointWebExtensionTests {
 
-	private ConfigurationPropertiesReportEndpointWebExtension webExtension;
+	private @Nullable ConfigurationPropertiesReportEndpointWebExtension webExtension;
 
 	private ConfigurationPropertiesReportEndpoint delegate;
 
@@ -50,18 +52,18 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 	void whenShowValuesIsNever() {
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.NEVER,
 				Collections.emptySet());
-		this.webExtension.configurationProperties(null);
+		this.webExtension.configurationProperties(SecurityContext.NONE);
 		then(this.delegate).should().getConfigurationProperties(false);
-		verifyPrefixed(null, false);
+		verifyPrefixed(SecurityContext.NONE, false);
 	}
 
 	@Test
 	void whenShowValuesIsAlways() {
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.ALWAYS,
 				Collections.emptySet());
-		this.webExtension.configurationProperties(null);
+		this.webExtension.configurationProperties(SecurityContext.NONE);
 		then(this.delegate).should().getConfigurationProperties(true);
-		verifyPrefixed(null, true);
+		verifyPrefixed(SecurityContext.NONE, true);
 	}
 
 	@Test
@@ -89,6 +91,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getConfigurationProperties("test", showUnsanitized))
 			.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
+		assertThat(this.webExtension).isNotNull();
 		this.webExtension.configurationPropertiesWithPrefix(securityContext, "test");
 		then(this.delegate).should().getConfigurationProperties("test", showUnsanitized);
 	}

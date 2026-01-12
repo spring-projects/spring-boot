@@ -17,4 +17,7 @@
 /**
  * Support for testcontainers JDBC service connections.
  */
+@NullMarked
 package org.springframework.boot.jdbc.testcontainers;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,8 @@
 
 package smoketest.propertyvalidation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -26,18 +28,18 @@ public class SampleProperties {
 	/**
 	 * Sample host.
 	 */
-	private String host;
+	private @Nullable String host;
 
 	/**
 	 * Sample port.
 	 */
 	private Integer port = 8080;
 
-	public String getHost() {
+	public @Nullable String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	public void setHost(@Nullable String host) {
 		this.host = host;
 	}
 

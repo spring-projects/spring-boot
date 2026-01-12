@@ -21,6 +21,7 @@ import java.net.URLClassLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.WebApplicationType;
@@ -97,7 +98,7 @@ class ShutdownEndpointTests {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private volatile ClassLoader threadContextClassLoader;
+		private volatile @Nullable ClassLoader threadContextClassLoader;
 
 		@Bean
 		ShutdownEndpoint endpoint() {

@@ -24,17 +24,15 @@ import java.util.Objects;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,6 +40,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
+import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyHealthEndpointAdditionalPathResourceFactory;
 import org.springframework.boot.jersey.autoconfigure.DefaultJerseyApplicationPath;
 import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
@@ -73,7 +74,7 @@ public final class HealthEndpointJerseyExtensionAutoConfiguration {
 		return new JerseyAdditionalHealthEndpointPathsResourcesRegistrar(health, healthEndpointGroups);
 	}
 
-	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
+	private static @Nullable ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
@@ -110,11 +111,11 @@ public final class HealthEndpointJerseyExtensionAutoConfiguration {
 
 	static class JerseyAdditionalHealthEndpointPathsResourcesRegistrar implements ResourceConfigCustomizer {
 
-		private final ExposableWebEndpoint endpoint;
+		private final @Nullable ExposableWebEndpoint endpoint;
 
 		private final HealthEndpointGroups groups;
 
-		JerseyAdditionalHealthEndpointPathsResourcesRegistrar(ExposableWebEndpoint endpoint,
+		JerseyAdditionalHealthEndpointPathsResourcesRegistrar(@Nullable ExposableWebEndpoint endpoint,
 				HealthEndpointGroups groups) {
 			this.endpoint = endpoint;
 			this.groups = groups;

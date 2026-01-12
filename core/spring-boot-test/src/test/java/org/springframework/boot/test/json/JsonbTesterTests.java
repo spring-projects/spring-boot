@@ -20,6 +20,7 @@ import java.util.List;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
@@ -35,12 +36,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> JsonbTester.initFields(null, JsonbBuilder.create()))
 			.withMessageContaining("'testInstance' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
@@ -55,8 +58,10 @@ class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 		JsonbTester.initFields(test, JsonbBuilder.create());
 		assertThat(test.test).isNotNull();
 		assertThat(test.base).isNotNull();
-		assertThat(test.test.getType().resolve()).isEqualTo(List.class);
-		assertThat(test.test.getType().resolveGeneric()).isEqualTo(ExampleObject.class);
+		ResolvableType type = test.test.getType();
+		assertThat(type).isNotNull();
+		assertThat(type.resolve()).isEqualTo(List.class);
+		assertThat(type.resolveGeneric()).isEqualTo(ExampleObject.class);
 	}
 
 	@Override
@@ -66,7 +71,7 @@ class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 
 	abstract static class InitFieldsBaseClass {
 
-		public JsonbTester<ExampleObject> base;
+		public @Nullable JsonbTester<ExampleObject> base;
 
 		public JsonbTester<ExampleObject> baseSet = new JsonbTester<>(InitFieldsBaseClass.class,
 				ResolvableType.forClass(ExampleObject.class), JsonbBuilder.create());
@@ -75,7 +80,7 @@ class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 
 	static class InitFieldsTestClass extends InitFieldsBaseClass {
 
-		public JsonbTester<List<ExampleObject>> test;
+		public @Nullable JsonbTester<List<ExampleObject>> test;
 
 		public JsonbTester<ExampleObject> testSet = new JsonbTester<>(InitFieldsBaseClass.class,
 				ResolvableType.forClass(ExampleObject.class), JsonbBuilder.create());

@@ -90,7 +90,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 
 	private final Map<Integer, String> statuses = new HashMap<>();
 
-	private final Map<Class<?>, String> exceptions = new HashMap<>();
+	private final Map<@Nullable Class<?>, String> exceptions = new HashMap<>();
 
 	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
 
@@ -197,7 +197,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 	 * description based on the request {@code servletPath} and {@code pathInfo}.
 	 * @param request the source request
 	 * @return the description
-	 * @since 1.5.0
 	 */
 	protected String getDescription(HttpServletRequest request) {
 		String pathInfo = (request.getPathInfo() != null) ? request.getPathInfo() : "";

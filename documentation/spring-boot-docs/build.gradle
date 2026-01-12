@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.jetbrains.dokka"
 	id "java"
 	id "org.antora"
+	id "org.springframework.boot.aggregator"
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
-	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
 
 configurations {
-	autoConfiguration
-	configurationProperties
 	remoteSpringApplicationExample
 	resolvedBom
 	springApplicationExample
@@ -68,6 +70,10 @@ tasks.named('compileKotlin', KotlinCompilationTask.class) {
     javaSources.from = []
 }
 
+nullability {
+	requireExplicitNullMarking = false
+}
+
 plugins.withType(EclipsePlugin) {
 	eclipse.classpath { classpath ->
 		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
@@ -75,200 +81,35 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	autoConfiguration(project(path: ":core:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":core:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-activemq", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-artemis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-batch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cache", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cassandra", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cloudfoundry", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-couchbase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-cassandra", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-commons", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-couchbase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-elasticsearch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-jpa", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-ldap", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-neo4j", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-r2dbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-redis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-rest", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-elasticsearch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-flyway", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-freemarker", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-graphql", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-groovy-templates", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-gson", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-h2console", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hateoas", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hazelcast", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-health", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hibernate", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-client", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-codec", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-converter", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-integration", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jackson", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jersey", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jetty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jms", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jooq", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jsonb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-kafka", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-ldap", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-liquibase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mail", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-metrics", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mustache", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-neo4j", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-netty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-observation", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-opentelemetry", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-pulsar", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-quartz", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-r2dbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-reactor", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-reactor-netty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-restclient", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-rsocket", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-authorization-server", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-client", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-resource-server", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-saml2", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-sendgrid", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-servlet", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-data-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-data-redis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-hazelcast", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-thymeleaf", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tomcat", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tracing", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tx", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-validation", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webclient", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webflux", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webmvc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webservices", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-websocket", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-zipkin", configuration: "autoConfigurationMetadata"))
+	compileOnly("org.hamcrest:hamcrest-core")
 
-	configurationProperties(project(path: ":core:spring-boot", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-artemis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-batch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-cache", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-cassandra", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-couchbase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-cassandra", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-commons", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-couchbase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-elasticsearch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-jpa", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-ldap", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-neo4j", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-r2dbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-redis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-rest", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-elasticsearch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-flyway", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-freemarker", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-graphql", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-groovy-templates", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-gson", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-h2console", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hateoas", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hazelcast", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hibernate", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-client", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-codec", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-converter", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-integration", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jackson", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jersey", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jetty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jms", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jooq", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jpa", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-kafka", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-ldap", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-liquibase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mail", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-metrics", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mustache", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-neo4j", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-netty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-observation", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-opentelemetry", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-pulsar", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-quartz", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-r2dbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-reactor", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-reactor-netty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-restclient", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-rsocket", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-authorization-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-client", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-resource-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-saml2", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-sendgrid", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-servlet", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-data-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-data-redis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-hazelcast", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-sql", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-thymeleaf", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tomcat", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tracing", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tx", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-undertow", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-validation", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-web-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webclient", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webflux", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webmvc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webservices", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-zipkin", configuration: "configurationPropertiesMetadata"))
+	dokka(project(path: ":core:spring-boot"))
+	dokka(project(path: ":module:spring-boot-resttestclient"))
 
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
 	implementation(project(path: ":core:spring-boot-test"))
+	implementation(project(path: ":core:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":core:spring-boot-testcontainers"))
 	implementation(project(path: ":loader:spring-boot-loader-tools"))
 	implementation(project(path: ":module:spring-boot-actuator"))
 	implementation(project(path: ":module:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":module:spring-boot-amqp"))
 	implementation(project(path: ":module:spring-boot-cache"))
+	implementation(project(path: ":module:spring-boot-cache-test"))
 	implementation(project(path: ":module:spring-boot-data-cassandra"))
+	implementation(project(path: ":module:spring-boot-data-cassandra-test"))
+	implementation(project(path: ":module:spring-boot-data-couchbase-test"))
 	implementation(project(path: ":module:spring-boot-data-elasticsearch"))
+	implementation(project(path: ":module:spring-boot-data-elasticsearch-test"))
+	implementation(project(path: ":module:spring-boot-data-jpa-test"))
+	implementation(project(path: ":module:spring-boot-data-ldap-test"))
+	implementation(project(path: ":module:spring-boot-data-mongodb-test"))
 	implementation(project(path: ":module:spring-boot-data-neo4j"))
+	implementation(project(path: ":module:spring-boot-data-neo4j-test"))
+	implementation(project(path: ":module:spring-boot-data-redis-test"))
 	implementation(project(path: ":module:spring-boot-devtools"))
+	implementation(project(path: ":module:spring-boot-graphql-test"))
 	implementation(project(path: ":module:spring-boot-health"))
 	implementation(project(path: ":module:spring-boot-hibernate"))
 	implementation(project(path: ":module:spring-boot-http-converter"))
@@ -276,23 +117,31 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-integration"))
 	implementation(project(path: ":module:spring-boot-jackson"))
 	implementation(project(path: ":module:spring-boot-jdbc"))
+	implementation(project(path: ":module:spring-boot-jdbc-test"))
+	implementation(project(path: ":module:spring-boot-jooq-test"))
 	implementation(project(path: ":module:spring-boot-jpa"))
 	implementation(project(path: ":module:spring-boot-jms"))
 	implementation(project(path: ":module:spring-boot-jsonb"))
 	implementation(project(path: ":module:spring-boot-ldap"))
-	implementation(project(path: ":module:spring-boot-metrics"))
+	implementation(project(path: ":module:spring-boot-micrometer-metrics"))
+	implementation(project(path: ":module:spring-boot-persistence"))
 	implementation(project(path: ":module:spring-boot-r2dbc"))
+	implementation(project(path: ":module:spring-boot-restdocs"))
 	implementation(project(path: ":module:spring-boot-reactor-netty"))
 	implementation(project(path: ":module:spring-boot-restclient"))
+	implementation(project(path: ":module:spring-boot-restclient-test"))
+	implementation(project(path: ":module:spring-boot-resttestclient"))
 	implementation(project(path: ":module:spring-boot-security"))
-	implementation(project(path: ":module:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":module:spring-boot-tomcat"))
-	implementation(project(path: ":module:spring-boot-undertow"))
-	implementation(project(path: ":module:spring-boot-web-server-test"))
 	implementation(project(path: ":module:spring-boot-webclient"))
+	implementation(project(path: ":module:spring-boot-webclient-test"))
 	implementation(project(path: ":module:spring-boot-webflux"))
+	implementation(project(path: ":module:spring-boot-webflux-test"))
 	implementation(project(path: ":module:spring-boot-webmvc"))
+	implementation(project(path: ":module:spring-boot-webmvc-test"))
 	implementation(project(path: ":module:spring-boot-webservices"))
+	implementation(project(path: ":module:spring-boot-webservices-test"))
+	implementation(project(path: ":module:spring-boot-webtestclient"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
@@ -300,9 +149,11 @@ dependencies {
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
+	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+	implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
+	implementation("io.opentelemetry:opentelemetry-sdk-metrics")
 	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
 	implementation("io.projectreactor.netty:reactor-netty-http")
-	implementation("io.undertow:undertow-core")
 	implementation("jakarta.annotation:jakarta.annotation-api")
 	implementation("jakarta.jms:jakarta.jms-api")
 	implementation("jakarta.persistence:jakarta.persistence-api")
@@ -310,13 +161,15 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.apache.commons:commons-dbcp2")
-	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.kafka:kafka-streams") {
+		exclude group: "org.lz4", module: "lz4-java"
+	}
 	implementation("org.apache.logging.log4j:log4j-to-slf4j")
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
 	implementation("org.cache2k:cache2k-spring")
 	implementation("org.apache.groovy:groovy")
-	implementation("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	implementation("org.glassfish.jersey.containers:jersey-container-servlet")
 	implementation("org.glassfish.jersey.core:jersey-server")
 	implementation("org.hibernate.orm:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
@@ -357,12 +210,12 @@ dependencies {
 	implementation("org.springframework.data:spring-data-r2dbc")
 	implementation("org.springframework.graphql:spring-graphql")
 	implementation("org.springframework.graphql:spring-graphql-test")
-	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.kafka:spring-kafka") {
+		exclude group: "org.lz4", module: "lz4-java"
+	}
 	implementation("org.springframework.kafka:spring-kafka-test")
 	implementation("org.springframework.pulsar:spring-pulsar")
-	implementation("org.springframework.pulsar:spring-pulsar-reactive")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-	implementation("org.springframework.restdocs:spring-restdocs-restassured")
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	implementation("org.springframework.security:spring-security-config")
 	implementation("org.springframework.security:spring-security-oauth2-client")
@@ -370,12 +223,105 @@ dependencies {
 	implementation("org.springframework.security:spring-security-web")
 	implementation("org.springframework.ws:spring-ws-core")
 	implementation("org.springframework.ws:spring-ws-test")
-	implementation("org.testcontainers:junit-jupiter")
-	implementation("org.testcontainers:neo4j")
-	implementation("org.testcontainers:mongodb")
-	implementation("org.testcontainers:elasticsearch")
+	implementation("org.testcontainers:testcontainers-elasticsearch")
+	implementation("org.testcontainers:testcontainers-junit-jupiter")
+	implementation("org.testcontainers:testcontainers-mongodb")
+	implementation("org.testcontainers:testcontainers-neo4j")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
+
+	javadocMacros(project(":loader:spring-boot-loader"))
+	javadocMacros(project(":module:spring-boot-activemq"))
+	javadocMacros(project(":module:spring-boot-artemis"))
+	javadocMacros(project(":module:spring-boot-batch"))
+	javadocMacros(project(":module:spring-boot-batch-jdbc"))
+	javadocMacros(project(":module:spring-boot-cache-test"))
+	javadocMacros(project(":module:spring-boot-data-r2dbc-test"))
+	javadocMacros(project(":module:spring-boot-data-redis"))
+	javadocMacros(project(":module:spring-boot-data-jdbc-test"))
+	javadocMacros(project(":module:spring-boot-flyway"))
+	javadocMacros(project(":module:spring-boot-freemarker"))
+	javadocMacros(project(":module:spring-boot-gson"))
+	javadocMacros(project(":module:spring-boot-hazelcast"))
+	javadocMacros(project(":module:spring-boot-http-codec"))
+	javadocMacros(project(":module:spring-boot-jackson"))
+	javadocMacros(project(":module:spring-boot-jackson2"))
+	javadocMacros(project(":module:spring-boot-jersey"))
+	javadocMacros(project(":module:spring-boot-jetty"))
+	javadocMacros(project(":module:spring-boot-kafka"))
+	javadocMacros(project(":module:spring-boot-liquibase"))
+	javadocMacros(project(":module:spring-boot-mail"))
+	javadocMacros(project(":module:spring-boot-micrometer-metrics-test"))
+	javadocMacros(project(":module:spring-boot-micrometer-tracing-opentelemetry"))
+	javadocMacros(project(":module:spring-boot-micrometer-tracing-test"))
+	javadocMacros(project(":module:spring-boot-mustache"))
+	javadocMacros(project(":module:spring-boot-opentelemetry"))
+	javadocMacros(project(":module:spring-boot-pulsar"))
+	javadocMacros(project(":module:spring-boot-quartz"))
+	javadocMacros(project(":module:spring-boot-rsocket"))
+	javadocMacros(project(":module:spring-boot-security-oauth2-client"))
+	javadocMacros(project(":module:spring-boot-security-saml2"))
+	javadocMacros(project(":module:spring-boot-servlet"))
+	javadocMacros(project(":module:spring-boot-tomcat"))
+	javadocMacros(project(":module:spring-boot-validation"))
+	javadocMacros(project(":module:spring-boot-web-server"))
+	javadocMacros(project(":module:spring-boot-webflux-test"))
+	javadocMacros(project(":module:spring-boot-webtestclient"))
+	javadocMacros(project(":module:spring-boot-zipkin"))
+	javadocMacros("co.elastic.clients:elasticsearch-rest5-client")
+	javadocMacros("com.h2database:h2")
+	javadocMacros("com.hazelcast:hazelcast-spring")
+	javadocMacros("com.redis:testcontainers-redis")
+	javadocMacros("io.lettuce:lettuce-core")
+	javadocMacros("io.micrometer:micrometer-registry-new-relic")
+	javadocMacros("io.micrometer:micrometer-registry-otlp")
+	javadocMacros("io.opentelemetry:opentelemetry-sdk-logs")
+	javadocMacros("io.opentelemetry:opentelemetry-sdk-metrics")
+	javadocMacros("io.opentelemetry:opentelemetry-sdk-trace")
+	javadocMacros("io.prometheus:prometheus-metrics-tracer-common")
+	javadocMacros("io.prometheus:simpleclient_tracer_common")
+	javadocMacros("io.rsocket:rsocket-core")
+	javadocMacros("jakarta.json.bind:jakarta.json.bind-api")
+	javadocMacros("jakarta.mail:jakarta.mail-api")
+	javadocMacros("jakarta.websocket:jakarta.websocket-api")
+	javadocMacros("org.apache.activemq:artemis-jakarta-server")
+	javadocMacros("org.apache.logging.log4j:log4j-core")
+	javadocMacros("org.eclipse.jetty:jetty-client")
+	javadocMacros("org.infinispan:infinispan-core")
+	javadocMacros("org.liquibase:liquibase-core")
+	javadocMacros("org.messaginghub:pooled-jms")
+	javadocMacros("org.neo4j.driver:neo4j-java-driver-observation-micrometer")
+	javadocMacros("org.postgresql:postgresql")
+	javadocMacros("org.projectlombok:lombok")
+	javadocMacros("org.seleniumhq.selenium:selenium-api")
+	javadocMacros("org.springframework.amqp:spring-rabbit-stream")
+	javadocMacros("org.springframework.data:spring-data-rest-webmvc")
+	javadocMacros("org.springframework.hateoas:spring-hateoas")
+	javadocMacros("org.springframework.integration:spring-integration-core")
+	javadocMacros("org.springframework.integration:spring-integration-rsocket")
+	javadocMacros("org.springframework.security:spring-security-oauth2-authorization-server")
+	javadocMacros("org.springframework.security:spring-security-oauth2-resource-server")
+	javadocMacros("org.springframework.session:spring-session-core")
+	javadocMacros("org.testcontainers:testcontainers-activemq")
+	javadocMacros("org.testcontainers:testcontainers-cassandra")
+	javadocMacros("org.testcontainers:testcontainers-clickhouse")
+	javadocMacros("org.testcontainers:testcontainers-couchbase")
+	javadocMacros("org.testcontainers:testcontainers-elasticsearch")
+	javadocMacros("org.testcontainers:testcontainers-grafana")
+	javadocMacros("org.testcontainers:testcontainers-jdbc")
+	javadocMacros("org.testcontainers:testcontainers-kafka")
+	javadocMacros("org.testcontainers:testcontainers-ldap")
+	javadocMacros("org.testcontainers:testcontainers-mariadb")
+	javadocMacros("org.testcontainers:testcontainers-mssqlserver")
+	javadocMacros("org.testcontainers:testcontainers-mysql")
+	javadocMacros("org.testcontainers:testcontainers-oracle-free")
+	javadocMacros("org.testcontainers:testcontainers-oracle-xe")
+	javadocMacros("org.testcontainers:testcontainers-postgresql")
+	javadocMacros("org.testcontainers:testcontainers-pulsar")
+	javadocMacros("org.testcontainers:testcontainers-rabbitmq")
+	javadocMacros("org.testcontainers:testcontainers-redpanda")
+	javadocMacros("org.thymeleaf:thymeleaf-spring6")
+	javadocMacros("tools.jackson.dataformat:jackson-dataformat-xml")
 
 	remoteSpringApplicationExample(platform(project(":platform:spring-boot-dependencies")))
 	remoteSpringApplicationExample(project(":module:spring-boot-devtools"))
@@ -385,7 +331,7 @@ dependencies {
 	resolvedBom(project(path: ":platform:spring-boot-dependencies", configuration: "resolvedBom"))
 
 	springApplicationExample(platform(project(":platform:spring-boot-dependencies")))
-	springApplicationExample(project(path: ":starter:spring-boot-starter-web"))
+	springApplicationExample(project(path: ":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":module:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -394,16 +340,55 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
-	testSlices(project(path: ":module:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+	testSlices(project(path: ":core:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
-dokkatoo {
+dokka {
 	moduleName.set("Spring Boot Kotlin API")
+}
+
+configurations {
+	javadoc {
+		canBeConsumed = true
+		canBeResolved = false
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EMBEDDED))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC))
+		}
+	}
+	javadocSource {
+		transitive = false
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.VERIFICATION))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES))
+			attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.class, VerificationType.MAIN_SOURCES))
+		}
+		extendsFrom configurations.javadoc
+	}
+	javadocClasspath {
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+		}
+		extendsFrom configurations.javadoc
+		resolutionStrategy.eachDependency {
+			if (it.requested.group == 'org.opensaml') {
+				it.useVersion '4.0.1'
+			}
+		}
+	}
 }
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 	dependsOn configurations.resolvedBom
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
+	source = configurations.javadocSource
+	classpath = configurations.javadocClasspath
+	include("**/*.java")
 	options {
 		author = true
 		docTitle = "Spring Boot ${project.version} API"
@@ -417,7 +402,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 }
 
 project.rootProject.gradle.projectsEvaluated {
-	Set<Project> publishedProjects = rootProject.subprojects
+	rootProject.subprojects
 		.findAll { it != project }
 		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 		.findAll { !it.path.contains(":build-plugin:") }
@@ -425,17 +410,34 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":configuration-metadata:") }
 		.findAll { !it.path.contains(":core:spring-boot-properties-migrator") }
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
-		.findAll { !it.path.contains(":loader:spring-boot-loader-classic") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
-	aggregatedJavadoc.configure {
-		dependsOn publishedProjects.javadoc
-		source publishedProjects.javadoc.source
-		classpath = project.files(publishedProjects.javadoc.classpath)
+		.each { javadocProject ->
+			dependencies {
+				javadoc(project(javadocProject.path)) {
+					exclude group: "org.lz4", module: "lz4-java"
+				}
+				if (javadocProject.plugins.hasPlugin(OptionalDependenciesPlugin)) {
+					javadoc(project(path: javadocProject.path, configuration: 'optional')) {
+						exclude group: "org.lz4", module: "lz4-java"
+					}
+				}
+			}
+		}
+}
+
+aggregates {
+	testSliceMetadata {
+		category = Category.DOCUMENTATION
+		usage = "test-slice-metadata"
+	}
+	devtoolsPropertyDefaults {
+		category = Category.LIBRARY
+		usage = "java-runtime"
 	}
 }
 
 tasks.register("documentTestSlices", org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
-	testSlices = configurations.testSlices
+	testSlices = aggregates.testSliceMetadata.files
 	outputFile = layout.buildDirectory.file("generated/docs/test-auto-configuration/documented-slices.adoc")
 }
 
@@ -443,8 +445,13 @@ tasks.register("documentStarters", org.springframework.boot.build.starters.Docum
 	outputDir = layout.buildDirectory.dir("generated/docs/using/starters/")
 }
 
+def autoConfigurationMetadataAggregate = aggregates.create("autoConfigurationMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "auto-configuration-metadata"
+}
+
 tasks.register("documentAutoConfigurationClasses", org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
-	autoConfiguration = configurations.autoConfiguration
+	autoConfiguration = autoConfigurationMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
@@ -458,17 +465,37 @@ tasks.register("documentDependencyVersionProperties", org.springframework.boot.b
 	resolvedBoms = configurations.resolvedBom
 }
 
+def configurationPropertiesMetadataAggregate = aggregates.create("configurationPropertiesMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "configuration-properties-metadata"
+}
+
+def checkAggregatedSpringConfigurationMetadata = tasks.register("checkAggregatedSpringConfigurationMetadata", org.springframework.boot.build.context.properties.CheckAggregatedSpringConfigurationMetadata) {
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	reportLocation = layout.buildDirectory.file("checkAggregatedSpringConfigurationMetadata/report.txt")
+}
+tasks.named("check") { dependsOn checkAggregatedSpringConfigurationMetadata }
+
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
-	configurationPropertyMetadata = configurations.configurationProperties
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	deprecated = false
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
 }
 
-tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
+tasks.register("documentDeprecatedConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	deprecated = true
+	outputDir = layout.buildDirectory.dir("generated/docs/deprecated-application-properties")
+}
+
+tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {
+	defaults = aggregates.devtoolsPropertyDefaults.files
+}
 
 tasks.register("runRemoteSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.remoteSpringApplicationExample
 	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
-	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
+	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.enabled=true", "--spring.devtools.livereload.port=0"]
 	output = layout.buildDirectory.file("example-output/remote-spring-application.txt")
 	expectedLogging = "Started RemoteSpringApplication in "
 	applicationJar = "/Users/myuser/.m2/repository/org/springframework/boot/spring-boot-devtools/${project.version}/spring-boot-devtools-${project.version}.jar"
@@ -524,7 +551,7 @@ antoraContributions {
 			from(aggregatedJavadoc) {
 				into "java"
 			}
-			from(tasks.named("dokkatooGeneratePublicationHtml")) {
+			from(tasks.named("dokkaGeneratePublicationHtml")) {
 				into "kotlin"
 			}
 		}
@@ -535,7 +562,7 @@ antoraContributions {
 			from("src/main") {
 				into "modules/ROOT/examples"
 			}
-			from(project.configurations.configurationProperties) {
+			from(configurationPropertiesMetadataAggregate.files) {
 				eachFile {
 					it.path = rootProject
 						.projectDir
@@ -581,6 +608,9 @@ antoraContributions {
 			from(documentConfigurationProperties) {
 				into "modules/appendix/partials/configuration-properties"
 			}
+			from(documentDeprecatedConfigurationProperties) {
+				into "modules/appendix/partials/deprecated-configuration-properties"
+			}
 			from(tasks.getByName("generateAntoraYml")) {
 				into "modules"
 			}
@@ -588,8 +618,8 @@ antoraContributions {
 	}
 }
 
-dokkatoo {
-	dokkatooPublications.configureEach {
-		includes.from("src/docs/dokkatoo/dokka-overview.md")
+dokka {
+	dokkaPublications.configureEach {
+		includes.from("src/docs/dokka/dokka-overview.md")
 	}
 }

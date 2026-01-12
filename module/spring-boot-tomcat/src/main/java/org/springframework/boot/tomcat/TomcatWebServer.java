@@ -38,6 +38,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
@@ -73,7 +74,7 @@ public class TomcatWebServer implements WebServer {
 
 	private final boolean autoStart;
 
-	private final GracefulShutdown gracefulShutdown;
+	private final @Nullable GracefulShutdown gracefulShutdown;
 
 	private volatile boolean started;
 
@@ -199,13 +200,7 @@ public class TomcatWebServer implements WebServer {
 		Container[] children = this.tomcat.getHost().findChildren();
 		for (Container container : children) {
 			if (container instanceof TomcatEmbeddedContext embeddedContext) {
-				TomcatStarter tomcatStarter = embeddedContext.getStarter();
-				if (tomcatStarter != null) {
-					Exception exception = tomcatStarter.getStartUpException();
-					if (exception != null) {
-						throw exception;
-					}
-				}
+				embeddedContext.getDeferredStartupExceptions().rethrow();
 			}
 			if (!LifecycleState.STARTED.equals(container.getState())) {
 				throw new IllegalStateException(container + " failed to start");
@@ -412,7 +407,7 @@ public class TomcatWebServer implements WebServer {
 		return -1;
 	}
 
-	private String getContextPath() {
+	private @Nullable String getContextPath() {
 		String contextPath = Arrays.stream(this.tomcat.getHost().findChildren())
 			.filter(TomcatEmbeddedContext.class::isInstance)
 			.map(TomcatEmbeddedContext.class::cast)

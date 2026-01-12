@@ -17,7 +17,7 @@
 package smoketest.secure.jersey;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
  * Integration tests for actuator endpoints with custom application path.
@@ -26,7 +26,6 @@ import org.springframework.boot.web.server.test.LocalServerPort;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = "spring.jersey.application-path=/example")
-
 class CustomApplicationPathActuatorTests extends AbstractJerseySecureTests {
 
 	@LocalServerPort

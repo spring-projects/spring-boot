@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.autoconfigure.reactive;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -50,7 +52,7 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 public class ReactiveWebServerConfiguration {
 
 	@Bean
-	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
+	ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
@@ -58,7 +60,7 @@ public class ReactiveWebServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
+	ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
 	}
 
@@ -66,9 +68,9 @@ public class ReactiveWebServerConfiguration {
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
-		private ConfigurableListableBeanFactory beanFactory;
+		private @Nullable ConfigurableListableBeanFactory beanFactory;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -83,13 +85,13 @@ public class ReactiveWebServerConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
+			registerSyntheticBeanIfMissing(this.beanFactory, registry, "webServerFactoryCustomizerBeanPostProcessor",
 					WebServerFactoryCustomizerBeanPostProcessor.class);
 		}
 
-		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
-				Class<T> beanClass) {
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+		private <T> void registerSyntheticBeanIfMissing(ConfigurableListableBeanFactory beanFactory,
+				BeanDefinitionRegistry registry, String name, Class<T> beanClass) {
+			if (ObjectUtils.isEmpty(beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);

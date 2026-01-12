@@ -31,6 +31,7 @@ class JarUriTests {
 	void describeBootInfClassesUri() {
 		JarUri uri = JarUri.from("jar:file:/home/user/project/target/project-0.0.1-SNAPSHOT.jar"
 				+ "!/BOOT-INF/classes!/application.properties");
+		assertThat(uri).isNotNull();
 		assertThat(uri.getDescription()).isEqualTo("project-0.0.1-SNAPSHOT.jar");
 	}
 
@@ -38,6 +39,7 @@ class JarUriTests {
 	void describeBootInfLibUri() {
 		JarUri uri = JarUri.from("jar:file:/home/user/project/target/project-0.0.1-SNAPSHOT.jar"
 				+ "!/BOOT-INF/lib/nested.jar!/application.properties");
+		assertThat(uri).isNotNull();
 		assertThat(uri.getDescription()).isEqualTo("project-0.0.1-SNAPSHOT.jar!/BOOT-INF/lib/nested.jar");
 	}
 
@@ -45,12 +47,14 @@ class JarUriTests {
 	void describeRegularJar() {
 		JarUri uri = JarUri
 			.from("jar:file:/home/user/project/target/project-0.0.1-SNAPSHOT.jar!/application.properties");
+		assertThat(uri).isNotNull();
 		assertThat(uri.getDescription()).isEqualTo("project-0.0.1-SNAPSHOT.jar");
 	}
 
 	@Test
 	void getDescriptionMergedWithExisting() {
 		JarUri uri = JarUri.from("jar:file:/project-0.0.1-SNAPSHOT.jar!/application.properties");
+		assertThat(uri).isNotNull();
 		assertThat(uri.getDescription("classpath: [application.properties]"))
 			.isEqualTo("classpath: [application.properties] from project-0.0.1-SNAPSHOT.jar");
 	}

@@ -36,6 +36,7 @@ class ContainerReferenceTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerReference.of(null))
 			.withMessage("'value' must not be empty");

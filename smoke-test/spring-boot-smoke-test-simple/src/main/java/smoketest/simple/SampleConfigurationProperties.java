@@ -26,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 public final class SampleConfigurationProperties {
 
 	@NotNull
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	public String getName() {

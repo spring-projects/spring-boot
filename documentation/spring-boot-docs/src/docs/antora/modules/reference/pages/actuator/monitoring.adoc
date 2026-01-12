@@ -9,6 +9,8 @@ TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 If both Jersey and Spring MVC are available, Spring MVC is used.
 
 NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the xref:api:rest/actuator/index.adoc[API documentation].
+Jackson 3 should be used for Spring MVC and Spring WebFlux.
+Jersey does not yet have a Jackson 3 module, so you will need to use Jackson 2.
 
 
 

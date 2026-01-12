@@ -19,11 +19,11 @@ package org.springframework.boot.configurationsample.source.generation;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesSource;
+import org.springframework.boot.configurationsample.TestConfigurationPropertiesSource;
 
 @Getter
 @Setter
-@ConfigurationPropertiesSource
+@TestConfigurationPropertiesSource
 public class LombokPropertiesSource {
 
 	/**

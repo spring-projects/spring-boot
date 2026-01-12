@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Weix Sun
- * @see AbstractReactiveSessionAutoConfigurationTests
+ * @see AbstractSessionReactiveAutoConfigurationTests
  */
 public abstract class AbstractSessionAutoConfigurationTests {
 

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.testsupport.FileUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -113,13 +114,17 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				throw new RuntimeException(ex);
 			}
 		});
-		return warHash.get();
+		String hash = warHash.get();
+		assertThat(hash).isNotNull();
+		return hash;
 	}
 
 	@TestTemplate
 	void whenWarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild) {
 		mavenBuild.project("war-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			List<String> sortedLibs = Arrays.asList(
 					// these libraries are copied from the original war, sorted when
 					// packaged by Maven
@@ -128,7 +133,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 					"WEB-INF/lib/spring-context", "WEB-INF/lib/spring-core", "WEB-INF/lib/spring-expression",
 					// these libraries are contributed by Spring Boot repackaging, and
 					// sorted separately
-					"WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
+					"WEB-INF/lib/" + coordinates.getArtifactId());
 			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/")
 				.zipSatisfy(sortedLibs,
 						(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
@@ -148,10 +153,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void repackagedWarContainsTheLayersIndexByDefault(MavenBuild mavenBuild) {
 		mavenBuild.project("war-layered").execute((project) -> {
 			File repackaged = new File(project, "war/target/war-layered-0.0.1.BUILD-SNAPSHOT.war");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
+				.hasEntryWithNameStartingWith("WEB-INF/lib/" + coordinates.getArtifactId());
 			try (JarFile jarFile = new JarFile(repackaged)) {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
 				assertThat(layerIndex.keySet()).containsExactly("dependencies", "spring-boot-loader",
@@ -176,10 +183,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenWarIsRepackagedWithTheLayersDisabledDoesNotContainLayersIndex(MavenBuild mavenBuild) {
 		mavenBuild.project("war-layered-disabled").execute((project) -> {
 			File repackaged = new File(project, "war/target/war-layered-0.0.1.BUILD-SNAPSHOT.war");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId())
+				.hasEntryWithNameStartingWith("WEB-INF/lib/" + coordinates.getArtifactId())
 				.doesNotHaveEntryWithName("WEB-INF/layers.idx");
 		});
 	}
@@ -188,11 +197,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenWarIsRepackagedWithToolsExclude(MavenBuild mavenBuild) {
 		mavenBuild.project("war-no-tools").execute((project) -> {
 			File repackaged = new File(project, "war/target/war-no-tools-0.0.1.BUILD-SNAPSHOT.war");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.doesNotHaveEntryWithNameStartingWith(
-						"WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
+				.doesNotHaveEntryWithNameStartingWith("WEB-INF/lib/" + coordinates.getArtifactId());
 		});
 	}
 
@@ -237,6 +247,14 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File war = new File(project, "target/war-exclude-entry-0.0.1.BUILD-SNAPSHOT.war");
 			assertThat(jar(war)).hasEntryWithNameStartingWith("WEB-INF/lib/spring-context")
 				.doesNotHaveEntryWithNameStartingWith("WEB-INF/lib/spring-core");
+		});
+	}
+
+	@TestTemplate
+	void whenSigned(MavenBuild mavenBuild) {
+		mavenBuild.project("war-signed").execute((project) -> {
+			File repackaged = new File(project, "target/war-signed-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(repackaged)).hasEntryWithName("META-INF/BOOT.SF");
 		});
 	}
 

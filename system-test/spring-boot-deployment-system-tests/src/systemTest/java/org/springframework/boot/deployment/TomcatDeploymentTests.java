@@ -29,7 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class TomcatDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("tomcat:10.1.15-jdk17",
+	static WarDeploymentContainer container = new WarDeploymentContainer("tomcat:11.0.10-jdk17",
 			"/usr/local/tomcat/webapps", DEFAULT_PORT);
 
 	@Override

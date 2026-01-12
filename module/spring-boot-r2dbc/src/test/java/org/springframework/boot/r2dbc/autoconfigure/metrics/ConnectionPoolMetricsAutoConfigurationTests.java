@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

@@ -26,15 +26,15 @@ class MyReactiveHealthIndicator : ReactiveHealthIndicator {
 
 	override fun health(): Mono<Health> {
 		// @formatter:off
-		return doHealthCheck()!!.onErrorResume { exception: Throwable? ->
+		return doHealthCheck().onErrorResume { exception: Throwable ->
 			Mono.just(Health.Builder().down(exception).build())
 		}
 		// @formatter:on
 	}
 
-	private fun doHealthCheck(): Mono<Health>? {
+	private fun doHealthCheck(): Mono<Health> {
 		// perform some specific health check
-		return  /**/ null
+		return  /**/ Mono.empty()
 	}
 
 }

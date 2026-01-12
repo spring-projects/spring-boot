@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -68,7 +69,6 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Sets the display name of the application deployed in the web server.
 	 * @param displayName the displayName to set
-	 * @since 4.0.0
 	 */
 	default void setDisplayName(String displayName) {
 		getSettings().setDisplayName(displayName);
@@ -104,7 +104,6 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Adds mime-type mappings.
 	 * @param mimeMappings the mime type mappings to add
-	 * @since 4.0.0
 	 */
 	default void addMimeMappings(MimeMappings mimeMappings) {
 		getSettings().addMimeMappings(mimeMappings);
@@ -115,7 +114,7 @@ public interface ConfigurableServletWebServerFactory
 	 * static files.
 	 * @param documentRoot the document root or {@code null} if not required
 	 */
-	default void setDocumentRoot(File documentRoot) {
+	default void setDocumentRoot(@Nullable File documentRoot) {
 		getSettings().setDocumentRoot(documentRoot);
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.autoconfigure.reactive;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -37,7 +39,7 @@ public class ReactiveWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
 	/**
 	 * Create a new {@link ReactiveWebServerFactoryCustomizer} instance.
@@ -53,7 +55,7 @@ public class ReactiveWebServerFactoryCustomizer
 	 * @param sslBundles the SSL bundles
 	 * @since 4.0.0
 	 */
-	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties, SslBundles sslBundles) {
+	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties, @Nullable SslBundles sslBundles) {
 		this.serverProperties = serverProperties;
 		this.sslBundles = sslBundles;
 	}
@@ -65,7 +67,7 @@ public class ReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableReactiveWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.serverProperties::getPort).to(factory::setPort);
 		map.from(this.serverProperties::getAddress).to(factory::setAddress);
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);

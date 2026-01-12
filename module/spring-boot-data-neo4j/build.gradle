@@ -29,7 +29,7 @@ description = "Spring Boot Data Neo4j"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-neo4j"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.data:spring-data-neo4j")
 
 	optional(project(":core:spring-boot-autoconfigure"))
@@ -39,8 +39,8 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:neo4j")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-neo4j")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -48,4 +48,12 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
@@ -58,6 +60,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -66,6 +69,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -74,6 +78,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasDynoShouldReturnHeroku() {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -82,6 +87,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasHcLandscapeShouldReturnSap() {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.SAP);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -90,6 +96,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasNomadAllocIdShouldReturnNomad() {
 		Environment environment = new MockEnvironment().withProperty("NOMAD_ALLOC_ID", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.NOMAD);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -101,6 +108,7 @@ class CloudPlatformTests {
 		envVars.put("KUBERNETES_SERVICE_PORT", "8080");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -128,6 +136,7 @@ class CloudPlatformTests {
 		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -149,6 +158,7 @@ class CloudPlatformTests {
 		envVars.put("WEBSITE_SKU", "1234");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -192,6 +202,24 @@ class CloudPlatformTests {
 		envVars.put("WEBSITE_SITE_NAME", "---");
 		envVars.put("WEBSITE_INSTANCE_ID", "1234");
 		envVars.put("WEBSITE_RESOURCE_GROUP", "test");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "AWS_ECS_FARGATE", "AWS_ECS_EC2" })
+	void getActiveWhenHasAwsExecutionEnvEcsShouldReturnAwsEcs(String awsExecutionEnv) {
+		Map<String, Object> envVars = Map.of("AWS_EXECUTION_ENV", awsExecutionEnv);
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull().isEqualTo(CloudPlatform.AWS_ECS);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
+	void getActiveWhenHasAwsExecutionEnvLambdaShouldNotReturnAwsEcs() {
+		Map<String, Object> envVars = Map.of("AWS_EXECUTION_ENV", "AWS_Lambda_java8");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();

@@ -62,7 +62,7 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
 	@Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
-		return environment.getFieldDefaultValue(getDeclaringElement(), getName());
+		return environment.getFieldDefaultValue(getDeclaringElement(), this.field);
 	}
 
 	@Override

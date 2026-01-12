@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.assertj.core.api.AssertProvider;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -63,6 +64,7 @@ class JsonContentAssertTests {
 	private static final JSONComparator COMPARATOR = new DefaultComparator(JSONCompareMode.LENIENT);
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	public Path tempDir;
 
 	private File temp;
@@ -1288,7 +1290,7 @@ class JsonContentAssertTests {
 
 	}
 
-	private AssertProvider<JsonContentAssert> forJson(String json) {
+	private AssertProvider<JsonContentAssert> forJson(@Nullable String json) {
 		return () -> new JsonContentAssert(JsonContentAssertTests.class, json);
 	}
 

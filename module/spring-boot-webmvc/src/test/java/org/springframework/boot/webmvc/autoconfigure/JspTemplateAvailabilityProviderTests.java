@@ -16,12 +16,18 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,9 +63,37 @@ class JspTemplateAvailabilityProviderTests {
 		assertThat(isTemplateAvailable("suffixed")).isTrue();
 	}
 
+	@Test
+	void availabilityOfTemplateInSrcMainWebapp(@TempDir File rootDirectory) throws Exception {
+		File jsp = new File(rootDirectory, "src/main/webapp/test.jsp");
+		jsp.getParentFile().mkdirs();
+		FileCopyUtils.copy(new byte[0], jsp);
+		Map<String, String> systemEnvironment = new HashMap<>();
+		JspTemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider(rootDirectory,
+				systemEnvironment::get);
+		assertThat(isTemplateAvailable(provider, "test.jsp")).isTrue();
+		assertThat(isTemplateAvailable(provider, "missing.jsp")).isFalse();
+	}
+
+	@Test
+	void availabilityOfTemplateInCustomSrcMainWebapp(@TempDir File rootDirectory) throws Exception {
+		File jsp = new File(rootDirectory, "src/main/unusual/test.jsp");
+		jsp.getParentFile().mkdirs();
+		FileCopyUtils.copy(new byte[0], jsp);
+		Map<String, String> systemEnvironment = new HashMap<>();
+		systemEnvironment.put("WAR_SOURCE_DIRECTORY", "src/main/unusual");
+		JspTemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider(rootDirectory,
+				systemEnvironment::get);
+		assertThat(isTemplateAvailable(provider, "test.jsp")).isTrue();
+		assertThat(isTemplateAvailable(provider, "missing.jsp")).isFalse();
+	}
+
 	private boolean isTemplateAvailable(String view) {
-		return this.provider.isTemplateAvailable(view, this.environment, getClass().getClassLoader(),
-				this.resourceLoader);
+		return isTemplateAvailable(this.provider, view);
+	}
+
+	private boolean isTemplateAvailable(JspTemplateAvailabilityProvider provider, String view) {
+		return provider.isTemplateAvailable(view, this.environment, getClass().getClassLoader(), this.resourceLoader);
 	}
 
 }

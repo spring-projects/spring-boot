@@ -23,12 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -57,7 +58,9 @@ class WelcomePageIntegrationTests {
 	@Test
 	void contentStrategyWithWelcomePage() {
 		this.contextRunner.run((context) -> {
-			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
 				.header("Accept", MediaType.ALL.toString())
 				.build();
@@ -70,7 +73,9 @@ class WelcomePageIntegrationTests {
 	@Test
 	void notAcceptableWelcomePage() {
 		this.contextRunner.run((context) -> {
-			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
 				.header("Accept", "spring/boot")
 				.build();

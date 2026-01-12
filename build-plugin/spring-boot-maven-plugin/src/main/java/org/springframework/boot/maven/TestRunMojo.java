@@ -62,6 +62,7 @@ public class TestRunMojo extends AbstractRunMojo {
 	 * the application.
 	 */
 	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File testClassesDirectory;
 
 	@Inject

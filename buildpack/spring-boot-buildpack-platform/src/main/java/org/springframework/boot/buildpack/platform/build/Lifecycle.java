@@ -25,11 +25,13 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.sun.jna.Platform;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.buildpack.platform.build.Cache.Bind;
+import org.springframework.boot.buildpack.platform.docker.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
-import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -66,7 +68,7 @@ class Lifecycle implements Closeable {
 
 	private final DockerApi docker;
 
-	private final ResolvedDockerHost dockerHost;
+	private final @Nullable ResolvedDockerHost dockerHost;
 
 	private final BuildRequest request;
 
@@ -100,7 +102,7 @@ class Lifecycle implements Closeable {
 	 * @param request the request to process
 	 * @param builder the ephemeral builder used to run the phases
 	 */
-	Lifecycle(BuildLog log, DockerApi docker, ResolvedDockerHost dockerHost, BuildRequest request,
+	Lifecycle(BuildLog log, DockerApi docker, @Nullable ResolvedDockerHost dockerHost, BuildRequest request,
 			EphemeralBuilder builder) {
 		this.log = log;
 		this.docker = docker;
@@ -189,7 +191,9 @@ class Lifecycle implements Closeable {
 		phase.withApp(this.applicationDirectory,
 				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
 		phase.withPlatform(Directory.PLATFORM);
-		phase.withRunImage(this.request.getRunImage());
+		ImageReference runImage = this.request.getRunImage();
+		Assert.state(runImage != null, "'runImage' must not be null");
+		phase.withRunImage(runImage);
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
 		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
@@ -214,7 +218,9 @@ class Lifecycle implements Closeable {
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
-		phase.withRunImage(this.request.getRunImage());
+		ImageReference runImage = this.request.getRunImage();
+		Assert.state(runImage != null, "'runImage' must not be null");
+		phase.withRunImage(runImage);
 		phase.withImageName(this.request.getName());
 		configureOptions(phase);
 		return phase;
@@ -282,12 +288,22 @@ class Lifecycle implements Closeable {
 	}
 
 	private Cache getBuildWorkspaceBindingSource(Cache buildWorkspace, String suffix) {
-		return (buildWorkspace.getVolume() != null) ? Cache.volume(buildWorkspace.getVolume().getName() + "-" + suffix)
-				: Cache.bind(buildWorkspace.getBind().getSource() + "-" + suffix);
+		if (buildWorkspace.getVolume() != null) {
+			return Cache.volume(buildWorkspace.getVolume().getName() + "-" + suffix);
+		}
+
+		Bind bind = buildWorkspace.getBind();
+		Assert.state(bind != null, "'bind' must not be null");
+		return Cache.bind(bind.getSource() + "-" + suffix);
 	}
 
 	private String getCacheBindingSource(Cache cache) {
-		return (cache.getVolume() != null) ? cache.getVolume().getName() : cache.getBind().getSource();
+		if (cache.getVolume() != null) {
+			return cache.getVolume().getName();
+		}
+		Bind bind = cache.getBind();
+		Assert.state(bind != null, "'bind' must not be null");
+		return bind.getSource();
 	}
 
 	private Cache createVolumeCache(String prefix) {
@@ -310,7 +326,9 @@ class Lifecycle implements Closeable {
 				phase.withEnv("DOCKER_HOST", this.dockerHost.getAddress());
 				if (this.dockerHost.isSecure()) {
 					phase.withEnv("DOCKER_TLS_VERIFY", "1");
-					phase.withEnv("DOCKER_CERT_PATH", this.dockerHost.getCertificatePath());
+					if (this.dockerHost.getCertificatePath() != null) {
+						phase.withEnv("DOCKER_CERT_PATH", this.dockerHost.getCertificatePath());
+					}
 				}
 			}
 			else {

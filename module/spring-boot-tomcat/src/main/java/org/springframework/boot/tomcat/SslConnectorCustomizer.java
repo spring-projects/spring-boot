@@ -25,6 +25,7 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -48,17 +49,17 @@ public class SslConnectorCustomizer {
 
 	private final Log logger;
 
-	private final ClientAuth clientAuth;
+	private final @Nullable ClientAuth clientAuth;
 
 	private final Connector connector;
 
-	public SslConnectorCustomizer(Log logger, Connector connector, ClientAuth clientAuth) {
+	public SslConnectorCustomizer(Log logger, Connector connector, @Nullable ClientAuth clientAuth) {
 		this.logger = logger;
 		this.clientAuth = clientAuth;
 		this.connector = connector;
 	}
 
-	public void update(String serverName, SslBundle updatedSslBundle) {
+	public void update(@Nullable String serverName, SslBundle updatedSslBundle) {
 		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) this.connector.getProtocolHandler();
 		String host = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
 		this.logger.debug("SSL Bundle for host " + host + " has been updated, reloading SSL configuration");
@@ -80,7 +81,7 @@ public class SslConnectorCustomizer {
 	 * @param sslBundle the SSL bundle
 	 * @param serverNameSslBundles the SSL bundles for specific SNI host names
 	 */
-	private void configureSsl(AbstractHttp11Protocol<?> protocol, SslBundle sslBundle,
+	private void configureSsl(AbstractHttp11Protocol<?> protocol, @Nullable SslBundle sslBundle,
 			Map<String, SslBundle> serverNameSslBundles) {
 		protocol.setSSLEnabled(true);
 		if (sslBundle != null) {

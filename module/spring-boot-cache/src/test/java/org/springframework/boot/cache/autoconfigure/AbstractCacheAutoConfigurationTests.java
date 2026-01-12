@@ -24,6 +24,7 @@ import java.util.Map;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -146,7 +147,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 	abstract static class CacheManagerTestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
 
-		T cacheManager;
+		@Nullable T cacheManager;
 
 		@Override
 		public void customize(T cacheManager) {

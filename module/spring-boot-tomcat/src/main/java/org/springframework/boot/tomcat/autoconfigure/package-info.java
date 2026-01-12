@@ -18,4 +18,7 @@
  * Classes related to the auto-configuration of a servlet or reactive web server using
  * Tomcat.
  */
+@NullMarked
 package org.springframework.boot.tomcat.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

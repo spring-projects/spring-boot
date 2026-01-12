@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 class HttpRestartServerHandlerTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void serverMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServerHandler(null))
 			.withMessageContaining("'server' must not be null");

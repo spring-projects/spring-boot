@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.event;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;

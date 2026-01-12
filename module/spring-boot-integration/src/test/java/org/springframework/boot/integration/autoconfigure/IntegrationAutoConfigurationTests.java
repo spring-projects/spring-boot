@@ -31,6 +31,7 @@ import io.micrometer.observation.ObservationRegistry;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -38,6 +39,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
@@ -421,7 +423,7 @@ class IntegrationAutoConfigurationTests {
 			.withPropertyValues("spring.integration.channel.auto-create=false",
 					"spring.integration.endpoint.read-only-headers=ignoredHeader")
 			.withInitializer((applicationContext) -> new IntegrationPropertiesEnvironmentPostProcessor()
-				.postProcessEnvironment(applicationContext.getEnvironment(), null))
+				.postProcessEnvironment(applicationContext.getEnvironment(), new SpringApplication()))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
 				org.springframework.integration.context.IntegrationProperties integrationProperties = context
@@ -644,7 +646,7 @@ class IntegrationAutoConfigurationTests {
 
 				@Override
 				public Mono<Void> handleMessage(Message<?> message) {
-					return null;
+					return Mono.empty();
 				}
 
 				@Override
@@ -707,7 +709,7 @@ class IntegrationAutoConfigurationTests {
 			this.name = name;
 		}
 
-		Object get(org.springframework.integration.context.IntegrationProperties properties) {
+		@Nullable Object get(org.springframework.integration.context.IntegrationProperties properties) {
 			return ReflectionTestUtils.invokeMethod(properties, this.name);
 		}
 

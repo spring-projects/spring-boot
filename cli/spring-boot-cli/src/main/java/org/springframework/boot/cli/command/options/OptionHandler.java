@@ -36,6 +36,7 @@ import joptsimple.OptionDescriptor;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.status.ExitStatus;
@@ -52,11 +53,11 @@ public class OptionHandler {
 
 	private final Function<String, String> argumentProcessor;
 
-	private OptionParser parser;
+	private @Nullable OptionParser parser;
 
-	private String help;
+	private @Nullable String help;
 
-	private Collection<OptionHelp> optionHelp;
+	private @Nullable Collection<OptionHelp> optionHelp;
 
 	/**
 	 * Create a new {@link OptionHandler} instance.

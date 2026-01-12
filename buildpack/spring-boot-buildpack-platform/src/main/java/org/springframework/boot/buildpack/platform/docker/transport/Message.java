@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A message returned from the Docker API.
@@ -27,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Message {
 
-	private final String message;
+	private final @Nullable String message;
 
 	@JsonCreator
-	Message(@JsonProperty("message") String message) {
+	Message(@JsonProperty("message") @Nullable String message) {
 		this.message = message;
 	}
 
@@ -38,13 +39,13 @@ public class Message {
 	 * Return the message contained in the response.
 	 * @return the message
 	 */
-	public String getMessage() {
+	public @Nullable String getMessage() {
 		return this.message;
 	}
 
 	@Override
 	public String toString() {
-		return this.message;
+		return (this.message == null) ? "<null>" : this.message;
 	}
 
 }

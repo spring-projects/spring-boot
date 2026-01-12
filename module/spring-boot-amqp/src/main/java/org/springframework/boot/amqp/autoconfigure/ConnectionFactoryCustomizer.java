@@ -19,8 +19,8 @@ package org.springframework.boot.amqp.autoconfigure;
 import com.rabbitmq.client.ConnectionFactory;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the
- * auto-configured RabbitMQ {@link ConnectionFactory}.
+ * Callback interface that can be implemented by beans wishing to customize the RabbitMQ
+ * {@link ConnectionFactory} to fine-tune its auto-configuration.
  *
  * @author Andy Wilkinson
  * @since 4.0.0

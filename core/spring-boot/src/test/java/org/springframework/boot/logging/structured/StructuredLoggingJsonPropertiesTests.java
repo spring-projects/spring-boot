@@ -67,6 +67,7 @@ class StructuredLoggingJsonPropertiesTests {
 		environment.setProperty("logging.structured.json.stacktrace.include-common-frames", "true");
 		environment.setProperty("logging.structured.json.stacktrace.include-hashes", "true");
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
+		assertThat(properties).isNotNull();
 		assertThat(properties.stackTrace())
 			.isEqualTo(new StructuredLoggingJsonProperties.StackTrace("standard", Root.FIRST, 1024, 5, true, true));
 	}
@@ -152,8 +153,9 @@ class StructuredLoggingJsonPropertiesTests {
 		void createPrinterWhenStandardAppliesCustomizations() {
 			Exception exception = TestException.create();
 			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false);
-			StackTracePrinter printer = ((StandardStackTracePrinter) properties.createPrinter())
-				.withLineSeparator("\n");
+			StandardStackTracePrinter printer = (StandardStackTracePrinter) properties.createPrinter();
+			assertThat(printer).isNotNull();
+			printer = printer.withLineSeparator("\n");
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualToNormalizingNewlines("""
 					java.lang.RuntimeException: root
@@ -168,6 +170,7 @@ class StructuredLoggingJsonPropertiesTests {
 			Exception exception = TestException.create();
 			StackTrace properties = new StackTrace(null, null, null, null, null, true);
 			StackTracePrinter printer = properties.createPrinter();
+			assertThat(printer).isNotNull();
 			String actual = printer.printStackTraceToString(exception);
 			assertThat(actual).containsPattern("<#[0-9a-z]{8}>");
 		}
@@ -177,6 +180,7 @@ class StructuredLoggingJsonPropertiesTests {
 			Exception exception = TestException.create();
 			StackTrace properties = new StackTrace(TestStackTracePrinter.class.getName(), null, null, null, true, null);
 			StackTracePrinter printer = properties.createPrinter();
+			assertThat(printer).isNotNull();
 			assertThat(printer.printStackTraceToString(exception)).isEqualTo("java.lang.RuntimeException: exception");
 		}
 
@@ -186,6 +190,7 @@ class StructuredLoggingJsonPropertiesTests {
 			StackTrace properties = new StackTrace(TestStackTracePrinterCustomized.class.getName(), Root.FIRST, 300, 2,
 					true, null);
 			StackTracePrinter printer = properties.createPrinter();
+			assertThat(printer).isNotNull();
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualTo("RuntimeExceptionroot!	at org.springfr...");
 		}

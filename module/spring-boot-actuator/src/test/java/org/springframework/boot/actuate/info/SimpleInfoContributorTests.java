@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class SimpleInfoContributorTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void prefixIsMandatory() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
 	}

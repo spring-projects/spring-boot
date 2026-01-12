@@ -21,11 +21,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port:0" })
+@AutoConfigureTestRestTemplate
 class SampleActuatorUiApplicationPortTests {
 
 	@LocalServerPort

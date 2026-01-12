@@ -17,6 +17,7 @@
 package org.springframework.boot.gson.autoconfigure;
 
 import com.google.gson.Gson;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -52,7 +53,7 @@ class Gson210AutoConfigurationTests {
 		private Long data = 1L;
 
 		@SuppressWarnings("unused")
-		private final String owner = null;
+		private final @Nullable String owner = null;
 
 		public void setData(Long data) {
 			this.data = data;

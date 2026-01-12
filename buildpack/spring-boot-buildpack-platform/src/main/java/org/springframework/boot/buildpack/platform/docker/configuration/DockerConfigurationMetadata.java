@@ -28,12 +28,13 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -88,7 +89,7 @@ final class DockerConfigurationMetadata {
 		return this.context;
 	}
 
-	DockerContext forContext(String context) {
+	DockerContext forContext(@Nullable String context) {
 		return createDockerContext(this.configLocation, context);
 	}
 
@@ -119,17 +120,18 @@ final class DockerConfigurationMetadata {
 		try {
 			return DockerConfig.fromJson(readPathContent(path));
 		}
-		catch (JsonProcessingException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException("Error parsing Docker configuration file '" + path + "'", ex);
 		}
 	}
 
-	private static DockerContext createDockerContext(String configLocation, String currentContext) {
+	private static DockerContext createDockerContext(String configLocation, @Nullable String currentContext) {
 		if (currentContext == null || DEFAULT_CONTEXT.equals(currentContext)) {
 			return DockerContext.empty();
 		}
-		Path metaPath = Path.of(configLocation, CONTEXTS_DIR, META_DIR, asHash(currentContext), CONTEXT_FILE_NAME);
-		Path tlsPath = Path.of(configLocation, CONTEXTS_DIR, TLS_DIR, asHash(currentContext), DOCKER_ENDPOINT);
+		String hash = asHash(currentContext);
+		Path metaPath = Path.of(configLocation, CONTEXTS_DIR, META_DIR, hash, CONTEXT_FILE_NAME);
+		Path tlsPath = Path.of(configLocation, CONTEXTS_DIR, TLS_DIR, hash, DOCKER_ENDPOINT);
 		if (!metaPath.toFile().exists()) {
 			throw new IllegalArgumentException("Docker context '" + currentContext + "' does not exist");
 		}
@@ -140,7 +142,7 @@ final class DockerConfigurationMetadata {
 			}
 			return context;
 		}
-		catch (JsonProcessingException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException("Error parsing Docker context metadata file '" + metaPath + "'", ex);
 		}
 	}
@@ -152,7 +154,7 @@ final class DockerConfigurationMetadata {
 			return HexFormat.of().formatHex(hash);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			return null;
+			throw new IllegalStateException("SHA-256 is not available", ex);
 		}
 	}
 
@@ -167,9 +169,9 @@ final class DockerConfigurationMetadata {
 
 	static final class DockerConfig extends MappedObject {
 
-		private final String currentContext;
+		private final @Nullable String currentContext;
 
-		private final String credsStore;
+		private final @Nullable String credsStore;
 
 		private final Map<String, String> credHelpers;
 
@@ -179,15 +181,15 @@ final class DockerConfigurationMetadata {
 			super(node, MethodHandles.lookup());
 			this.currentContext = valueAt("/currentContext", String.class);
 			this.credsStore = valueAt("/credsStore", String.class);
-			this.credHelpers = mapAt("/credHelpers", JsonNode::textValue);
+			this.credHelpers = mapAt("/credHelpers", JsonNode::stringValue);
 			this.auths = mapAt("/auths", Auth::new);
 		}
 
-		String getCurrentContext() {
+		@Nullable String getCurrentContext() {
 			return this.currentContext;
 		}
 
-		String getCredsStore() {
+		@Nullable String getCredsStore() {
 			return this.credsStore;
 		}
 
@@ -199,8 +201,8 @@ final class DockerConfigurationMetadata {
 			return this.auths;
 		}
 
-		static DockerConfig fromJson(String json) throws JsonProcessingException {
-			return new DockerConfig(SharedObjectMapper.get().readTree(json));
+		static DockerConfig fromJson(String json) {
+			return new DockerConfig(SharedJsonMapper.get().readTree(json));
 		}
 
 		static DockerConfig empty() {
@@ -211,11 +213,11 @@ final class DockerConfigurationMetadata {
 
 	static final class Auth extends MappedObject {
 
-		private final String username;
+		private final @Nullable String username;
 
-		private final String password;
+		private final @Nullable String password;
 
-		private final String email;
+		private final @Nullable String email;
 
 		Auth(JsonNode node) {
 			super(node, MethodHandles.lookup());
@@ -233,15 +235,15 @@ final class DockerConfigurationMetadata {
 			this.email = valueAt("/email", String.class);
 		}
 
-		String getUsername() {
+		@Nullable String getUsername() {
 			return this.username;
 		}
 
-		String getPassword() {
+		@Nullable String getPassword() {
 			return this.password;
 		}
 
-		String getEmail() {
+		@Nullable String getEmail() {
 			return this.email;
 		}
 
@@ -254,20 +256,20 @@ final class DockerConfigurationMetadata {
 
 	static final class DockerContext extends MappedObject {
 
-		private final String dockerHost;
+		private final @Nullable String dockerHost;
 
-		private final Boolean skipTlsVerify;
+		private final @Nullable Boolean skipTlsVerify;
 
-		private final String tlsPath;
+		private final @Nullable String tlsPath;
 
-		private DockerContext(JsonNode node, String tlsPath) {
+		private DockerContext(JsonNode node, @Nullable String tlsPath) {
 			super(node, MethodHandles.lookup());
 			this.dockerHost = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/Host", String.class);
 			this.skipTlsVerify = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/SkipTLSVerify", Boolean.class);
 			this.tlsPath = tlsPath;
 		}
 
-		String getDockerHost() {
+		@Nullable String getDockerHost() {
 			return this.dockerHost;
 		}
 
@@ -275,7 +277,7 @@ final class DockerConfigurationMetadata {
 			return this.skipTlsVerify != null && !this.skipTlsVerify;
 		}
 
-		String getTlsPath() {
+		@Nullable String getTlsPath() {
 			return this.tlsPath;
 		}
 
@@ -283,8 +285,8 @@ final class DockerConfigurationMetadata {
 			return new DockerContext(this.getNode(), tlsPath);
 		}
 
-		static DockerContext fromJson(String json) throws JsonProcessingException {
-			return new DockerContext(SharedObjectMapper.get().readTree(json), null);
+		static DockerContext fromJson(String json) {
+			return new DockerContext(SharedJsonMapper.get().readTree(json), null);
 		}
 
 		static DockerContext empty() {

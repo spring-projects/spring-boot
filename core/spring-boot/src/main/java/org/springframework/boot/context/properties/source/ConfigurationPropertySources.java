@@ -130,12 +130,13 @@ public final class ConfigurationPropertySources {
 
 	/**
 	 * Return {@link Iterable} containing a single new {@link ConfigurationPropertySource}
-	 * adapted from the given Spring {@link PropertySource}.
+	 * adapted from the given Spring {@link PropertySource}. The single element can be
+	 * {@code null} if the source cannot be adapted.
 	 * @param source the Spring property source to adapt
 	 * @return an {@link Iterable} containing a single newly adapted
 	 * {@link SpringConfigurationPropertySource}
 	 */
-	public static Iterable<ConfigurationPropertySource> from(PropertySource<?> source) {
+	public static Iterable<@Nullable ConfigurationPropertySource> from(PropertySource<?> source) {
 		return Collections.singleton(ConfigurationPropertySource.from(source));
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +55,7 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseNeverDetails() {
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
@@ -66,7 +67,7 @@ class ManagementErrorEndpointTests {
 		this.request.addParameter("trace", "false");
 		this.request.addParameter("message", "false");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).containsEntry("message", "test exception");
 		assertThat(response).hasEntrySatisfying("trace",
 				(value) -> assertThat(value).asString().startsWith("java.lang.RuntimeException: test exception"));
@@ -77,7 +78,7 @@ class ManagementErrorEndpointTests {
 		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
@@ -89,7 +90,7 @@ class ManagementErrorEndpointTests {
 		this.request.addParameter("trace", "true");
 		this.request.addParameter("message", "true");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).containsEntry("message", "test exception");
 		assertThat(response).hasEntrySatisfying("trace",
 				(value) -> assertThat(value).asString().startsWith("java.lang.RuntimeException: test exception"));
@@ -102,7 +103,7 @@ class ManagementErrorEndpointTests {
 		this.request.addParameter("trace", "false");
 		this.request.addParameter("message", "false");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
@@ -112,18 +113,19 @@ class ManagementErrorEndpointTests {
 		ErrorAttributes attributes = new ErrorAttributes() {
 
 			@Override
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+			public Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest,
+					ErrorAttributeOptions options) {
 				return Collections.singletonMap("message", "An error occurred");
 			}
 
 			@Override
-			public Throwable getError(WebRequest webRequest) {
+			public @Nullable Throwable getError(WebRequest webRequest) {
 				return null;
 			}
 
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).containsExactly(entry("message", "An error occurred"));
 	}
 
@@ -132,8 +134,9 @@ class ManagementErrorEndpointTests {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
 
 			@Override
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-				Map<String, Object> response = super.getErrorAttributes(webRequest, options);
+			public Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest,
+					ErrorAttributeOptions options) {
+				Map<String, @Nullable Object> response = super.getErrorAttributes(webRequest, options);
 				response.put("error", "custom error");
 				response.put("custom", "value");
 				response.remove("path");
@@ -142,7 +145,7 @@ class ManagementErrorEndpointTests {
 
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).containsEntry("error", "custom error");
 		assertThat(response).containsEntry("custom", "value");
 		assertThat(response).doesNotContainKey("path");
@@ -154,13 +157,14 @@ class ManagementErrorEndpointTests {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
 
 			@Override
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+			public Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest,
+					ErrorAttributeOptions options) {
 				return Collections.singletonMap("error", "custom error");
 			}
 
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
-		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
+		Map<String, @Nullable Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).containsExactly(entry("error", "custom error"));
 	}
 

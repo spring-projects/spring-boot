@@ -37,10 +37,10 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-metrics"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional(project(":module:spring-boot-tomcat"))
-	optional(project(":module:spring-boot-undertow"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-web-server"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
@@ -51,11 +51,10 @@ dependencies {
 	testFixturesImplementation(project(":module:spring-boot-jackson"))
 
 	testImplementation(project(":core:spring-boot-test"))
-	testImplementation(project(":module:spring-boot-freemarker"))
 	testImplementation(project(":module:spring-boot-jackson"))
 	testImplementation(project(":module:spring-boot-restclient"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":module:spring-boot-tomcat"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-actuator-autoconfigure")))
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
@@ -66,4 +65,8 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-jasper")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

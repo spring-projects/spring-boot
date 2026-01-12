@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 
@@ -32,9 +34,9 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerRe
  * @author Scott Frederick
  * @since 3.5.0
  */
-public record BuilderDockerConfiguration(DockerConnectionConfiguration connection, boolean bindHostToBuilder,
-		DockerRegistryAuthentication builderRegistryAuthentication,
-		DockerRegistryAuthentication publishRegistryAuthentication) {
+public record BuilderDockerConfiguration(@Nullable DockerConnectionConfiguration connection, boolean bindHostToBuilder,
+		@Nullable DockerRegistryAuthentication builderRegistryAuthentication,
+		@Nullable DockerRegistryAuthentication publishRegistryAuthentication) {
 
 	public BuilderDockerConfiguration() {
 		this(null, false, null, null);
@@ -44,7 +46,7 @@ public record BuilderDockerConfiguration(DockerConnectionConfiguration connectio
 		return withConnection(new DockerConnectionConfiguration.Context(context));
 	}
 
-	public BuilderDockerConfiguration withHost(String address, boolean secure, String certificatePath) {
+	public BuilderDockerConfiguration withHost(String address, boolean secure, @Nullable String certificatePath) {
 		return withConnection(new DockerConnectionConfiguration.Host(address, secure, certificatePath));
 	}
 

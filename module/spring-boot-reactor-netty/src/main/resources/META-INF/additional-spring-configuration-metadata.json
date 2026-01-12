@@ -4,8 +4,9 @@
     {
       "name": "server.netty.max-chunk-size",
       "deprecation": {
+        "level": "error",
         "reason": "Deprecated for removal in Reactor Netty.",
-        "level": "error"
+        "since": "3.0.0"
       }
     }
   ]

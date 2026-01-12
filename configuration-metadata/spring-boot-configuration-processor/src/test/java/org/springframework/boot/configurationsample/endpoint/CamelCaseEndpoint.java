@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.TestEndpoint;
 
 /**
  * An endpoint with an upper camel case id.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "PascalCase")
+@TestEndpoint(id = "PascalCase")
 public class CamelCaseEndpoint {
 
 }

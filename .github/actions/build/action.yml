@@ -35,7 +35,7 @@ inputs:
   java-version:
     description: 'Java version to compile and test with'
     required: false
-    default: '24'
+    default: '25'
   publish:
     description: 'Whether to publish artifacts ready for deployment to Artifactory'
     required: false

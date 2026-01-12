@@ -45,11 +45,12 @@ class SpringEnvironmentLookup implements LoggerContextAware, StrLookup {
 
 	@Override
 	public @Nullable String lookup(String key) {
-		Assert.state(this.environment != null,
+		Environment environment = this.environment;
+		Assert.state(environment != null,
 				"Unable to obtain Spring Environment from LoggerContext. "
 						+ "This can happen if your log4j2 configuration filename does not end with '-spring' "
 						+ "(for example using 'log4j2.xml' instead of 'log4j2-spring.xml')");
-		return this.environment.getProperty(key);
+		return environment.getProperty(key);
 	}
 
 	@Override

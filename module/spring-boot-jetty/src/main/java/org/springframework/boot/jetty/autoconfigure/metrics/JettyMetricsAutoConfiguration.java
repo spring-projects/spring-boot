@@ -41,7 +41,8 @@ import org.springframework.context.annotation.Bean;
  * @author Chris Bono
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnWebApplication
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)

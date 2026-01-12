@@ -19,6 +19,8 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Parser that can read JSON formatted strings into {@link Map}s or {@link List}s.
  *
@@ -37,7 +39,7 @@ public interface JsonParser {
 	 * @return the parsed JSON as a map
 	 * @throws JsonParseException if the JSON cannot be parsed
 	 */
-	Map<String, Object> parseMap(String json) throws JsonParseException;
+	Map<String, Object> parseMap(@Nullable String json) throws JsonParseException;
 
 	/**
 	 * Parse the specified JSON string into a List.
@@ -45,6 +47,6 @@ public interface JsonParser {
 	 * @return the parsed JSON as a list
 	 * @throws JsonParseException if the JSON cannot be parsed
 	 */
-	List<Object> parseList(String json) throws JsonParseException;
+	List<Object> parseList(@Nullable String json) throws JsonParseException;
 
 }

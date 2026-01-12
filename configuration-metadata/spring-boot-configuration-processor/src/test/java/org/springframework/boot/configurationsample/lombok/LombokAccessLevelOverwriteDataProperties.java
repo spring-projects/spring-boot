@@ -21,7 +21,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using Lombok @Data on element level and overwriting behaviour
@@ -30,8 +30,8 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Jonas Keßler
  */
 @Data
-@ConfigurationProperties("accesslevel.overwrite.data")
-@SuppressWarnings("unused")
+@TestConfigurationProperties("accesslevel.overwrite.data")
+@SuppressWarnings({ "unused", "deprecation" })
 public class LombokAccessLevelOverwriteDataProperties {
 
 	private String name0;

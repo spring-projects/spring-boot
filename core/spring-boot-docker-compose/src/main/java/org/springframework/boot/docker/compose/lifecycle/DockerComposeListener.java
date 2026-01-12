@@ -56,8 +56,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
 			ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners) {
-		return new DockerComposeLifecycleManager(applicationContext, binder, this.shutdownHandlers, properties,
-				eventListeners);
+		return new DockerComposeLifecycleManager(applicationContext, this.shutdownHandlers, properties, eventListeners);
 	}
 
 }

@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.Future;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -84,14 +88,23 @@ public enum JavaVersion {
 	 * Java 24.
 	 * @since 3.4.3
 	 */
-	TWENTY_FOUR("24", Reader.class, "of", CharSequence.class);
+	TWENTY_FOUR("24", Reader.class, "of", CharSequence.class),
+
+	/**
+	 * Java 25.
+	 * @since 3.5.7
+	 */
+	TWENTY_FIVE("25", Reader.class, "readAllLines");
 
 	private final String name;
 
 	private final boolean available;
 
+	private final Class<?> versionSpecificClass;
+
 	JavaVersion(String name, Class<?> versionSpecificClass, String versionSpecificMethod, Class<?>... paramTypes) {
 		this.name = name;
+		this.versionSpecificClass = versionSpecificClass;
 		this.available = ClassUtils.hasMethod(versionSpecificClass, versionSpecificMethod, paramTypes);
 	}
 
@@ -131,6 +144,17 @@ public enum JavaVersion {
 	 */
 	public boolean isOlderThan(JavaVersion version) {
 		return compareTo(version) < 0;
+	}
+
+	static class Hints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
+			for (JavaVersion javaVersion : JavaVersion.values()) {
+				hints.reflection().registerType(javaVersion.versionSpecificClass);
+			}
+		}
+
 	}
 
 }

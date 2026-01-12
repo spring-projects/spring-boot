@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for embedded LDAP.
  */
+@NullMarked
 package org.springframework.boot.ldap.autoconfigure.embedded;
+
+import org.jspecify.annotations.NullMarked;

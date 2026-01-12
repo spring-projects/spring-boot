@@ -31,11 +31,13 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcess
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -65,6 +67,7 @@ class ServletComponentRegisteringPostProcessor
 
 	private final Set<String> packagesToScan;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
 	ServletComponentRegisteringPostProcessor(Set<String> packagesToScan) {
@@ -124,9 +127,11 @@ class ServletComponentRegisteringPostProcessor
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 				if (Objects.equals(definition.getBeanClassName(),
 						WebListenerHandler.ServletComponentWebListenerRegistrar.class.getName())) {
-					String listenerClassName = (String) definition.getConstructorArgumentValues()
-						.getArgumentValue(0, String.class)
-						.getValue();
+					ValueHolder firstArgument = definition.getConstructorArgumentValues()
+						.getArgumentValue(0, String.class);
+					Assert.notNull(firstArgument, "'firstArgument' must not be null");
+					String listenerClassName = (String) firstArgument.getValue();
+					Assert.state(listenerClassName != null, "'listenerClassName' must not be null");
 					generationContext.getRuntimeHints()
 						.reflection()
 						.registerType(TypeReference.of(listenerClassName), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);

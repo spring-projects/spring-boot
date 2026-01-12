@@ -24,10 +24,18 @@ description = "Spring Boot AMQP smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-rabbitmq"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-amqp-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.awaitility:awaitility")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:rabbitmq")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-rabbitmq")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -46,7 +46,7 @@ public class ApplicationPid {
 		this.pid = currentProcessPid();
 	}
 
-	protected ApplicationPid(Long pid) {
+	protected ApplicationPid(@Nullable Long pid) {
 		this.pid = pid;
 	}
 

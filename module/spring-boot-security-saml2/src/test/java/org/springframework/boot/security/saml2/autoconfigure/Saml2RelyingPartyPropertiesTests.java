@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.Registration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 
@@ -44,8 +45,9 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoUrl() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.url",
 				"https://simplesaml-for-spring-saml/SSOService.php");
-		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon().getUrl())
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getAssertingparty().getSinglesignon().getUrl())
 			.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
@@ -53,30 +55,27 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoBinding() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.binding",
 				"post");
-		assertThat(this.properties.getRegistration()
-			.get("simplesamlphp")
-			.getAssertingparty()
-			.getSinglesignon()
-			.getBinding()).isEqualTo(Saml2MessageBinding.POST);
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getAssertingparty().getSinglesignon().getBinding()).isEqualTo(Saml2MessageBinding.POST);
 	}
 
 	@Test
 	void customizeSsoSignRequests() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request",
 				"false");
-		assertThat(this.properties.getRegistration()
-			.get("simplesamlphp")
-			.getAssertingparty()
-			.getSinglesignon()
-			.getSignRequest()).isFalse();
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getAssertingparty().getSinglesignon().getSignRequest()).isFalse();
 	}
 
 	@Test
 	void customizeRelyingPartyEntityId() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.entity-id",
 				"{baseUrl}/saml2/custom-entity-id");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getEntityId())
-			.isEqualTo("{baseUrl}/saml2/custom-entity-id");
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/custom-entity-id");
 	}
 
 	@Test
@@ -89,25 +88,25 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeAssertingPartyMetadataUri() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.metadata-uri",
 				"https://idp.example.org/metadata");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getMetadataUri())
-			.isEqualTo("https://idp.example.org/metadata");
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getAssertingparty().getMetadataUri()).isEqualTo("https://idp.example.org/metadata");
 	}
 
 	@Test
 	void customizeSsoSignRequestsIsNullByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration()
-			.get("simplesamlphp")
-			.getAssertingparty()
-			.getSinglesignon()
-			.getSignRequest()).isNull();
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getAssertingparty().getSinglesignon().getSignRequest()).isNull();
 	}
 
 	@Test
 	void customizeNameIdFormat() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.name-id-format", "sampleNameIdFormat");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getNameIdFormat())
-			.isEqualTo("sampleNameIdFormat");
+		Registration registration = this.properties.getRegistration().get("simplesamlphp");
+		assertThat(registration).isNotNull();
+		assertThat(registration.getNameIdFormat()).isEqualTo("sampleNameIdFormat");
 	}
 
 	private void bind(String name, String value) {

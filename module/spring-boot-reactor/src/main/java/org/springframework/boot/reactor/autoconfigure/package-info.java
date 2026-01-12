@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Reactor.
  */
+@NullMarked
 package org.springframework.boot.reactor.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

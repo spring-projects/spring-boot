@@ -23,7 +23,11 @@ description = "Spring Boot OAuth2 Authorization Server smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-security-oauth2-authorization-server"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-security-oauth2-authorization-server-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

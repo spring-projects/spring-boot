@@ -42,7 +42,9 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
@@ -53,6 +55,7 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
 
@@ -65,6 +68,8 @@ import org.gradle.api.tasks.VerificationException;
  * @author Ivan Malutin
  * @author Phillip Webb
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -72,10 +77,33 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
+		getAnnotationClasses().convention(ArchitectureCheckAnnotation.asMap());
 		getRules().addAll(getProhibitObjectsRequireNonNull().convention(true)
 			.map(whenTrue(ArchitectureRules::noClassesShouldCallObjectsRequireNonNull)));
 		getRules().addAll(ArchitectureRules.standard());
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.beanMethods(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONDITIONAL_ON_CLASS))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.conditionalOnMissingBean(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONDITIONAL_ON_MISSING_BEAN))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES))));
+		getRules().addAll(whenMainSources(
+				() -> ArchitectureRules.configurationPropertiesBinding(ArchitectureCheckAnnotation.classFor(
+						getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_BINDING))));
+		getRules().addAll(whenMainSources(
+				() -> ArchitectureRules.configurationPropertiesDeprecation(ArchitectureCheckAnnotation.classFor(
+						getAnnotationClasses().get(), ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY))));
+		getRules().addAll(whenMainSources(() -> Collections.singletonList(
+				ArchitectureRules.allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue())));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
+	}
+
+	private Provider<List<ArchRule>> whenMainSources(Supplier<List<ArchRule>> rules) {
+		return isMainSourceSet().map(whenTrue(rules));
+	}
+
+	private Provider<Boolean> isMainSourceSet() {
+		return getSourceSet().convention(SourceSet.MAIN_SOURCE_SET_NAME).map(SourceSet.MAIN_SOURCE_SET_NAME::equals);
 	}
 
 	private Transformer<List<ArchRule>, Boolean> whenTrue(Supplier<List<ArchRule>> rules) {
@@ -90,8 +118,11 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	void checkArchitecture() throws Exception {
 		withCompileClasspath(() -> {
 			JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
-			List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
+			List<EvaluationResult> results = new ArrayList<>();
+			evaluate(javaClasses).forEach(results::add);
+			results.add(new AutoConfigurationChecker().check(javaClasses));
 			File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
+			List<EvaluationResult> violations = results.stream().filter(EvaluationResult::hasViolation).toList();
 			writeViolationReport(violations, outputFile);
 			if (!violations.isEmpty()) {
 				throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
@@ -170,7 +201,13 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@Internal
 	public abstract Property<Boolean> getProhibitObjectsRequireNonNull();
 
+	@Internal
+	abstract Property<String> getSourceSet();
+
 	@Input // Use descriptions as input since rules aren't serializable
 	abstract ListProperty<String> getRuleDescriptions();
+
+	@Internal
+	abstract MapProperty<String, String> getAnnotationClasses();
 
 }

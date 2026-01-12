@@ -29,7 +29,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -100,7 +99,7 @@ public class LoggersEndpoint {
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name, @OptionalParameter LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "'name' must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null && group.hasMembers()) {

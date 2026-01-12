@@ -1,2 +1,0 @@
-# AutoConfigureCache auto-configuration imports
-optional:org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration

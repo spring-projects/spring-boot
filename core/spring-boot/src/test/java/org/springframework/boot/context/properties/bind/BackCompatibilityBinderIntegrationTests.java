@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.StandardEnvironment;
@@ -60,13 +61,13 @@ class BackCompatibilityBinderIntegrationTests {
 
 	static class ExampleCamelCaseBean {
 
-		private String zkNodes;
+		private @Nullable String zkNodes;
 
-		String getZkNodes() {
+		@Nullable String getZkNodes() {
 			return this.zkNodes;
 		}
 
-		void setZkNodes(String zkNodes) {
+		void setZkNodes(@Nullable String zkNodes) {
 			this.zkNodes = zkNodes;
 		}
 
@@ -74,13 +75,13 @@ class BackCompatibilityBinderIntegrationTests {
 
 	static class PasswordProperties {
 
-		private String password;
+		private @Nullable String password;
 
-		String getPassword() {
+		@Nullable String getPassword() {
 			return this.password;
 		}
 
-		void setPassword(String password) {
+		void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 

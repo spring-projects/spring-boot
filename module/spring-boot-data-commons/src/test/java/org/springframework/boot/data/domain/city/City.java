@@ -16,12 +16,14 @@
 
 package org.springframework.boot.data.domain.city;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 
 public class City {
 
 	@Id
-	private Long id;
+	private @Nullable Long id;
 
 	private String name;
 

@@ -28,8 +28,10 @@ import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.Addr
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.retry.RetryPolicySettings;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -938,7 +940,7 @@ public class RabbitProperties {
 		 * Whether to fail if the queues declared by the container are not available on
 		 * the broker.
 		 */
-		private boolean missingQueuesFatal = false;
+		private boolean missingQueuesFatal;
 
 		public @Nullable Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;
@@ -1100,9 +1102,9 @@ public class RabbitProperties {
 		private boolean enabled;
 
 		/**
-		 * Maximum number of attempts to deliver a message.
+		 * Maximum number of retry attempts to deliver a message.
 		 */
-		private int maxAttempts = 3;
+		private long maxRetries = 3;
 
 		/**
 		 * Duration between the first and second attempt to deliver a message.
@@ -1127,12 +1129,12 @@ public class RabbitProperties {
 			this.enabled = enabled;
 		}
 
-		public int getMaxAttempts() {
-			return this.maxAttempts;
+		public long getMaxRetries() {
+			return this.maxRetries;
 		}
 
-		public void setMaxAttempts(int maxAttempts) {
-			this.maxAttempts = maxAttempts;
+		public void setMaxRetries(long maxRetries) {
+			this.maxRetries = maxRetries;
 		}
 
 		public Duration getInitialInterval() {
@@ -1157,6 +1159,16 @@ public class RabbitProperties {
 
 		public void setMaxInterval(Duration maxInterval) {
 			this.maxInterval = maxInterval;
+		}
+
+		RetryPolicySettings initializeRetryPolicySettings() {
+			PropertyMapper map = PropertyMapper.get();
+			RetryPolicySettings settings = new RetryPolicySettings();
+			map.from(this::getMaxRetries).to(settings::setMaxRetries);
+			map.from(this::getInitialInterval).to(settings::setDelay);
+			map.from(this::getMultiplier).to(settings::setMultiplier);
+			map.from(this::getMaxInterval).to(settings::setMaxDelay);
+			return settings;
 		}
 
 	}

@@ -18,6 +18,7 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -82,7 +83,7 @@ class HttpHandlerAutoConfigurationTests {
 				ServerHttpRequest request = MockServerHttpRequest.get("").build();
 				ServerHttpResponse response = new MockServerHttpResponse();
 				httpHandler.handle(request, response).block();
-				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.I_AM_A_TEAPOT);
+				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.EXPECTATION_FAILED);
 			});
 	}
 
@@ -104,12 +105,12 @@ class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		HttpHandler customHttpHandler() {
-			return (serverHttpRequest, serverHttpResponse) -> null;
+			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
 		@Bean
 		RouterFunction<ServerResponse> routerFunction() {
-			return route(GET("/test"), (serverRequest) -> null);
+			return route(GET("/test"), (serverRequest) -> Mono.empty());
 		}
 
 	}
@@ -131,7 +132,7 @@ class HttpHandlerAutoConfigurationTests {
 		WebHttpHandlerBuilderCustomizer customizerDecorator() {
 			return (webHttpHandlerBuilder) -> webHttpHandlerBuilder
 				.httpHandlerDecorator(((httpHandler) -> (request, response) -> {
-					response.setStatusCode(HttpStatus.I_AM_A_TEAPOT);
+					response.setStatusCode(HttpStatus.EXPECTATION_FAILED);
 					return response.setComplete();
 				}));
 		}

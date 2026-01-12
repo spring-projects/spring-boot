@@ -21,7 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Helper class to build the command-line arguments of a java process.
@@ -46,19 +51,22 @@ final class CommandLineBuilder {
 		return new CommandLineBuilder(mainClass);
 	}
 
-	CommandLineBuilder withJvmArguments(String... jvmArguments) {
+	// Do not use String @Nullable ... jvmArguments, Maven can't deal with that
+	CommandLineBuilder withJvmArguments(@Nullable String... jvmArguments) {
 		if (jvmArguments != null) {
 			this.options.addAll(Arrays.stream(jvmArguments).filter(Objects::nonNull).toList());
 		}
 		return this;
 	}
 
-	CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
+	CommandLineBuilder withSystemProperties(@Nullable Map<String, String> systemProperties) {
 		if (systemProperties != null) {
-			systemProperties.entrySet()
-				.stream()
-				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-				.forEach(this.options::add);
+			for (Entry<String, String> systemProperty : systemProperties.entrySet()) {
+				String option = SystemPropertyFormatter.format(systemProperty.getKey(), systemProperty.getValue());
+				if (StringUtils.hasText(option)) {
+					this.options.add(option);
+				}
+			}
 		}
 		return this;
 	}
@@ -68,7 +76,8 @@ final class CommandLineBuilder {
 		return this;
 	}
 
-	CommandLineBuilder withArguments(String... arguments) {
+	// Do not use String @Nullable ... arguments, Maven can't deal with that
+	CommandLineBuilder withArguments(@Nullable String... arguments) {
 		if (arguments != null) {
 			this.arguments.addAll(Arrays.stream(arguments).filter(Objects::nonNull).toList());
 		}
@@ -86,23 +95,6 @@ final class CommandLineBuilder {
 			commandLine.addAll(this.arguments);
 		}
 		return commandLine;
-	}
-
-	/**
-	 * Format System properties.
-	 */
-	private static final class SystemPropertyFormatter {
-
-		static String format(String key, String value) {
-			if (key == null) {
-				return "";
-			}
-			if (value == null || value.isEmpty()) {
-				return String.format("-D%s", key);
-			}
-			return String.format("-D%s=\"%s\"", key, value);
-		}
-
 	}
 
 }

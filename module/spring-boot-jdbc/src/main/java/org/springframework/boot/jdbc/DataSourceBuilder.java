@@ -35,12 +35,14 @@ import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.jdbcx.JdbcDataSource;
+import org.jspecify.annotations.Nullable;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.vibur.dbcp.ViburDBCPDataSource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -89,15 +91,15 @@ import org.springframework.util.StringUtils;
  */
 public final class DataSourceBuilder<T extends DataSource> {
 
-	private final ClassLoader classLoader;
+	private final @Nullable ClassLoader classLoader;
 
-	private final Map<DataSourceProperty, String> values = new HashMap<>();
+	private final Map<DataSourceProperty, @Nullable String> values = new HashMap<>();
 
-	private Class<T> type;
+	private @Nullable Class<T> type;
 
-	private final DataSource deriveFrom;
+	private final @Nullable DataSource deriveFrom;
 
-	private DataSourceBuilder(ClassLoader classLoader) {
+	private DataSourceBuilder(@Nullable ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		this.deriveFrom = null;
 	}
@@ -117,7 +119,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @return this builder
 	 */
 	@SuppressWarnings("unchecked")
-	public <D extends DataSource> DataSourceBuilder<D> type(Class<D> type) {
+	public <D extends DataSource> DataSourceBuilder<D> type(@Nullable Class<D> type) {
 		this.type = (Class<T>) type;
 		return (DataSourceBuilder<D>) this;
 	}
@@ -147,7 +149,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @param username the user name
 	 * @return this builder
 	 */
-	public DataSourceBuilder<T> username(String username) {
+	public DataSourceBuilder<T> username(@Nullable String username) {
 		set(DataSourceProperty.USERNAME, username);
 		return this;
 	}
@@ -157,12 +159,12 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @param password the password
 	 * @return this builder
 	 */
-	public DataSourceBuilder<T> password(String password) {
+	public DataSourceBuilder<T> password(@Nullable String password) {
 		set(DataSourceProperty.PASSWORD, password);
 		return this;
 	}
 
-	private void set(DataSourceProperty property, String value) {
+	private void set(DataSourceProperty property, @Nullable String value) {
 		this.values.put(property, value);
 	}
 
@@ -178,7 +180,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			String value = this.values.get(property);
-			if (value == null && deriveFromProperties != null && properties.canSet(property)) {
+			if (value == null && deriveFromProperties != null && this.deriveFrom != null
+					&& properties.canSet(property)) {
 				value = deriveFromProperties.get(this.deriveFrom, property);
 			}
 			if (value != null) {
@@ -193,14 +196,14 @@ public final class DataSourceBuilder<T extends DataSource> {
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
 			String driverClassName = driver.getDriverClassName();
 			if (driverClassName != null) {
-				properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
+				properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driverClassName);
 			}
 		}
 		return dataSource;
 	}
 
 	@SuppressWarnings("unchecked")
-	private DataSourceProperties<DataSource> getDeriveFromProperties() {
+	private @Nullable DataSourceProperties<DataSource> getDeriveFromProperties() {
 		if (this.deriveFrom == null) {
 			return null;
 		}
@@ -220,7 +223,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @param classLoader the classloader used to discover preferred settings
 	 * @return a new {@link DataSource} builder instance
 	 */
-	public static DataSourceBuilder<?> create(ClassLoader classLoader) {
+	public static DataSourceBuilder<?> create(@Nullable ClassLoader classLoader) {
 		return new DataSourceBuilder<>(classLoader);
 	}
 
@@ -258,7 +261,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @param classLoader the classloader used to discover preferred settings
 	 * @return the preferred {@link DataSource} type
 	 */
-	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
+	public static @Nullable Class<? extends DataSource> findType(@Nullable ClassLoader classLoader) {
 		MappedDataSourceProperties<?> mappings = MappedDataSourceProperties.forType(classLoader, null);
 		return (mappings != null) ? mappings.getDataSourceInstanceType() : null;
 	}
@@ -294,15 +297,15 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return this.names[0];
 		}
 
-		Method findSetter(Class<?> type) {
+		@Nullable Method findSetter(Class<?> type) {
 			return findMethod("set", type, String.class);
 		}
 
-		Method findGetter(Class<?> type) {
+		@Nullable Method findGetter(Class<?> type) {
 			return findMethod("get", type);
 		}
 
-		private Method findMethod(String prefix, Class<?> type, Class<?>... paramTypes) {
+		private @Nullable Method findMethod(String prefix, Class<?> type, Class<?>... paramTypes) {
 			for (String name : this.names) {
 				String candidate = prefix + StringUtils.capitalize(name);
 				Method method = ReflectionUtils.findMethod(type, candidate, paramTypes);
@@ -323,11 +326,16 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		void set(T dataSource, DataSourceProperty property, String value);
 
-		String get(T dataSource, DataSourceProperty property);
+		@Nullable String get(T dataSource, DataSourceProperty property);
 
-		static <T extends DataSource> DataSourceProperties<T> forType(ClassLoader classLoader, Class<T> type) {
+		static <T extends DataSource> DataSourceProperties<T> forType(@Nullable ClassLoader classLoader,
+				@Nullable Class<T> type) {
 			MappedDataSourceProperties<T> mapped = MappedDataSourceProperties.forType(classLoader, type);
-			return (mapped != null) ? mapped : new ReflectionDataSourceProperties<>(type);
+			if (mapped != null) {
+				return mapped;
+			}
+			Assert.state(type != null, "No supported DataSource type found");
+			return new ReflectionDataSourceProperties<>(type);
 		}
 
 	}
@@ -338,10 +346,16 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		private final Class<T> dataSourceType;
 
-		@SuppressWarnings("unchecked")
 		MappedDataSourceProperties() {
-			this.dataSourceType = (Class<T>) ResolvableType.forClass(MappedDataSourceProperties.class, getClass())
+			this.dataSourceType = getGeneric();
+		}
+
+		@SuppressWarnings("unchecked")
+		private Class<T> getGeneric() {
+			Class<T> generic = (Class<T>) ResolvableType.forClass(MappedDataSourceProperties.class, getClass())
 				.resolveGeneric();
+			Assert.state(generic != null, "'generic' must not be null");
+			return generic;
 		}
 
 		@Override
@@ -349,11 +363,12 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return this.dataSourceType;
 		}
 
-		protected void add(DataSourceProperty property, Getter<T, String> getter, Setter<T, String> setter) {
+		protected void add(DataSourceProperty property, @Nullable Getter<T, String> getter, Setter<T, String> setter) {
 			add(property, String.class, getter, setter);
 		}
 
-		protected <V> void add(DataSourceProperty property, Class<V> type, Getter<T, V> getter, Setter<T, V> setter) {
+		protected <V> void add(DataSourceProperty property, Class<V> type, @Nullable Getter<T, V> getter,
+				Setter<T, V> setter) {
 			this.mappedProperties.put(property, new MappedDataSourceProperty<>(property, type, getter, setter));
 		}
 
@@ -371,7 +386,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		@Override
-		public String get(T dataSource, DataSourceProperty property) {
+		public @Nullable String get(T dataSource, DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
 			if (mappedProperty != null) {
 				return mappedProperty.get(dataSource);
@@ -379,14 +394,15 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return null;
 		}
 
-		private MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
+		private @Nullable MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = this.mappedProperties.get(property);
 			UnsupportedDataSourcePropertyException.throwIf(!property.isOptional() && mappedProperty == null,
 					() -> "No mapping found for " + property);
 			return mappedProperty;
 		}
 
-		static <T extends DataSource> MappedDataSourceProperties<T> forType(ClassLoader classLoader, Class<T> type) {
+		static <T extends DataSource> @Nullable MappedDataSourceProperties<T> forType(@Nullable ClassLoader classLoader,
+				@Nullable Class<T> type) {
 			MappedDataSourceProperties<T> pooled = lookupPooled(classLoader, type);
 			if (type == null || pooled != null) {
 				return pooled;
@@ -394,8 +410,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return lookupBasic(classLoader, type);
 		}
 
-		private static <T extends DataSource> MappedDataSourceProperties<T> lookupPooled(ClassLoader classLoader,
-				Class<T> type) {
+		private static <T extends DataSource> @Nullable MappedDataSourceProperties<T> lookupPooled(
+				@Nullable ClassLoader classLoader, @Nullable Class<T> type) {
 			MappedDataSourceProperties<T> result = null;
 			result = lookup(classLoader, type, result, "com.zaxxer.hikari.HikariDataSource",
 					HikariDataSourceProperties::new);
@@ -412,8 +428,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return result;
 		}
 
-		private static <T extends DataSource> MappedDataSourceProperties<T> lookupBasic(ClassLoader classLoader,
-				Class<T> dataSourceType) {
+		private static <T extends DataSource> @Nullable MappedDataSourceProperties<T> lookupBasic(
+				@Nullable ClassLoader classLoader, Class<T> dataSourceType) {
 			MappedDataSourceProperties<T> result = null;
 			result = lookup(classLoader, dataSourceType, result,
 					"org.springframework.jdbc.datasource.SimpleDriverDataSource", SimpleDataSourceProperties::new);
@@ -427,8 +443,9 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		@SuppressWarnings("unchecked")
-		private static <T extends DataSource> MappedDataSourceProperties<T> lookup(ClassLoader classLoader,
-				Class<T> dataSourceType, MappedDataSourceProperties<T> existing, String dataSourceClassName,
+		private static <T extends DataSource> @Nullable MappedDataSourceProperties<T> lookup(
+				@Nullable ClassLoader classLoader, @Nullable Class<T> dataSourceType,
+				@Nullable MappedDataSourceProperties<T> existing, String dataSourceClassName,
 				Supplier<MappedDataSourceProperties<?>> propertyMappingsSupplier, String... requiredClassNames) {
 			if (existing != null || !allPresent(classLoader, dataSourceClassName, requiredClassNames)) {
 				return existing;
@@ -439,7 +456,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 							? (MappedDataSourceProperties<T>) propertyMappings : null;
 		}
 
-		private static boolean allPresent(ClassLoader classLoader, String dataSourceClassName,
+		private static boolean allPresent(@Nullable ClassLoader classLoader, String dataSourceClassName,
 				String[] requiredClassNames) {
 			boolean result = ClassUtils.isPresent(dataSourceClassName, classLoader);
 			for (String requiredClassName : requiredClassNames) {
@@ -456,11 +473,12 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		private final Class<V> type;
 
-		private final Getter<T, V> getter;
+		private final @Nullable Getter<T, V> getter;
 
-		private final Setter<T, V> setter;
+		private final @Nullable Setter<T, V> setter;
 
-		MappedDataSourceProperty(DataSourceProperty property, Class<V> type, Getter<T, V> getter, Setter<T, V> setter) {
+		MappedDataSourceProperty(DataSourceProperty property, Class<V> type, @Nullable Getter<T, V> getter,
+				@Nullable Setter<T, V> setter) {
 			this.property = property;
 			this.type = type;
 			this.getter = getter;
@@ -481,7 +499,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 			}
 		}
 
-		String get(T dataSource) {
+		@Nullable String get(T dataSource) {
 			try {
 				if (this.getter == null) {
 					UnsupportedDataSourcePropertyException.throwIf(!this.property.isOptional(),
@@ -506,7 +524,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			throw new IllegalStateException("Unsupported value type " + this.type);
 		}
 
-		private String convertToString(V value) {
+		@Contract("!null -> !null")
+		private @Nullable String convertToString(@Nullable V value) {
 			if (value == null) {
 				return null;
 			}
@@ -530,7 +549,6 @@ public final class DataSourceBuilder<T extends DataSource> {
 		private final Class<T> dataSourceType;
 
 		ReflectionDataSourceProperties(Class<T> dataSourceType) {
-			Assert.state(dataSourceType != null, "No supported DataSource type found");
 			Map<DataSourceProperty, Method> getters = new HashMap<>();
 			Map<DataSourceProperty, Method> setters = new HashMap<>();
 			for (DataSourceProperty property : DataSourceProperty.values()) {
@@ -542,7 +560,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			this.setters = Collections.unmodifiableMap(setters);
 		}
 
-		private void putIfNotNull(Map<DataSourceProperty, Method> map, DataSourceProperty property, Method method) {
+		private void putIfNotNull(Map<DataSourceProperty, Method> map, DataSourceProperty property,
+				@Nullable Method method) {
 			if (method != null) {
 				map.put(property, method);
 			}
@@ -567,7 +586,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		@Override
-		public String get(T dataSource, DataSourceProperty property) {
+		public @Nullable String get(T dataSource, DataSourceProperty property) {
 			Method method = getMethod(property, this.getters);
 			if (method != null) {
 				return (String) ReflectionUtils.invokeMethod(method, dataSource);
@@ -575,7 +594,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 			return null;
 		}
 
-		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> methods) {
+		private @Nullable Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> methods) {
 			Method method = methods.get(property);
 			if (method == null) {
 				UnsupportedDataSourcePropertyException.throwIf(!property.isOptional(),
@@ -591,7 +610,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	@FunctionalInterface
 	private interface Getter<T, V> {
 
-		V get(T instance) throws SQLException;
+		@Nullable V get(T instance) throws SQLException;
 
 	}
 

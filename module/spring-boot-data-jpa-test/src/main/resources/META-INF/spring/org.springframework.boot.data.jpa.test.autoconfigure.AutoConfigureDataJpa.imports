@@ -1,0 +1,2 @@
+org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration
+org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration

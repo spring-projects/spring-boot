@@ -73,23 +73,23 @@ abstract class JmsClientConfigurations {
 			PropertyMapper map = PropertyMapper.get();
 			JmsTemplate template = new JmsTemplate(connectionFactory);
 			template.setPubSubDomain(this.properties.isPubSubDomain());
-			map.from(this.destinationResolver::getIfUnique).whenNonNull().to(template::setDestinationResolver);
-			map.from(this.messageConverter::getIfUnique).whenNonNull().to(template::setMessageConverter);
-			map.from(this.observationRegistry::getIfUnique).whenNonNull().to(template::setObservationRegistry);
+			map.from(this.destinationResolver::getIfUnique).to(template::setDestinationResolver);
+			map.from(this.messageConverter::getIfUnique).to(template::setMessageConverter);
+			map.from(this.observationRegistry::getIfUnique).to(template::setObservationRegistry);
 			mapTemplateProperties(this.properties.getTemplate(), template);
 			return template;
 		}
 
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties.getSession().getAcknowledgeMode()::getMode).to(template::setSessionAcknowledgeMode);
 			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
-			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
-			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
+			map.from(properties::getDefaultDestination).to(template::setDefaultDestinationName);
+			map.from(properties::getDeliveryDelay).as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
 			map.from(properties::getDeliveryMode).as(DeliveryMode::getValue).to(template::setDeliveryMode);
-			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
-			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
+			map.from(properties::getPriority).to(template::setPriority);
+			map.from(properties::getTimeToLive).as(Duration::toMillis).to(template::setTimeToLive);
 			map.from(properties::getReceiveTimeout).as(Duration::toMillis).to(template::setReceiveTimeout);
 		}
 
@@ -109,7 +109,7 @@ abstract class JmsClientConfigurations {
 		}
 
 		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 
@@ -120,7 +120,7 @@ abstract class JmsClientConfigurations {
 	static class JmsClientConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(JmsClient.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
 		JmsClient jmsClient(JmsTemplate jmsTemplate) {
 			return JmsClient.create(jmsTemplate);

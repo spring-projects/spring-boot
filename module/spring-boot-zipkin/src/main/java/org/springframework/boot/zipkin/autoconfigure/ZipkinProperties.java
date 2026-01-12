@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Moritz Halbritter
  * @since 4.0.0
  */
-@ConfigurationProperties("management.zipkin.tracing")
+@ConfigurationProperties("management.tracing.export.zipkin")
 public class ZipkinProperties {
 
 	/**

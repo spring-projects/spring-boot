@@ -29,6 +29,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
@@ -64,7 +65,7 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Collection<MavenProject> localProjects;
 
-	private final Collection<Dependency> unpacks;
+	private final @Nullable Collection<Dependency> unpacks;
 
 	private final Log log;
 
@@ -78,7 +79,7 @@ public class ArtifactsLibraries implements Libraries {
 	 * @since 2.4.0
 	 */
 	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<MavenProject> localProjects,
-			Collection<Dependency> unpacks, Log log) {
+			@Nullable Collection<Dependency> unpacks, Log log) {
 		this(artifacts, artifacts, localProjects, unpacks, log);
 	}
 
@@ -93,7 +94,7 @@ public class ArtifactsLibraries implements Libraries {
 	 * @since 2.4.8
 	 */
 	public ArtifactsLibraries(Set<Artifact> artifacts, Set<Artifact> includedArtifacts,
-			Collection<MavenProject> localProjects, Collection<Dependency> unpacks, Log log) {
+			Collection<MavenProject> localProjects, @Nullable Collection<Dependency> unpacks, Log log) {
 		this.artifacts = artifacts;
 		this.includedArtifacts = includedArtifacts;
 		this.localProjects = localProjects;

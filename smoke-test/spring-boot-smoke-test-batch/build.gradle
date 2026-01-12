@@ -23,7 +23,9 @@ description = "Spring Boot Batch smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-batch"))
 
-	runtimeOnly("org.hsqldb:hsqldb")
+	testImplementation(project(":starter:spring-boot-starter-batch-test"))
+}
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

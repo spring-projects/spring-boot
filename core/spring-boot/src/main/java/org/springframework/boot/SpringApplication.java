@@ -58,10 +58,15 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistryInitializer;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.env.DefaultPropertiesPropertySource;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -270,7 +275,7 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "'primarySources' must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.properties.setWebApplicationType(WebApplicationType.deduceFromClasspath());
+		this.properties.setWebApplicationType(WebApplicationType.deduce());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
@@ -414,6 +419,9 @@ public class SpringApplication {
 	}
 
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
+		if (NativeDetector.inNativeImage()) {
+			NativeImageRequirementsException.throwIfNotMet();
+		}
 		if (AotDetector.useGeneratedArtifacts()) {
 			List<ApplicationContextInitializer<?>> aotInitializers = new ArrayList<>(
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
@@ -569,7 +577,10 @@ public class SpringApplication {
 	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-		return this.applicationContextFactory.create(this.properties.getWebApplicationType());
+		ConfigurableApplicationContext context = this.applicationContextFactory
+			.create(this.properties.getWebApplicationType());
+		Assert.state(context != null, "ApplicationContextFactory created null context");
+		return context;
 	}
 
 	/**
@@ -1639,6 +1650,29 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Exception which is thrown if GraalVM's native-image requirements aren't met.
+	 */
+	static final class NativeImageRequirementsException extends RuntimeException {
+
+		private static final JavaVersion MINIMUM_REQUIRED_JAVA_VERSION = JavaVersion.TWENTY_FIVE;
+
+		private static final JavaVersion CURRENT_JAVA_VERSION = JavaVersion.getJavaVersion();
+
+		NativeImageRequirementsException(String message) {
+			super(message);
+		}
+
+		static void throwIfNotMet() {
+			if (CURRENT_JAVA_VERSION.isOlderThan(MINIMUM_REQUIRED_JAVA_VERSION)) {
+				throw new NativeImageRequirementsException("Native Image requirements not met. "
+						+ "Native Image must support at least Java %s but Java %s was detected"
+							.formatted(MINIMUM_REQUIRED_JAVA_VERSION, CURRENT_JAVA_VERSION));
+			}
+		}
+
+	}
+
+	/**
 	 * {@link SpringApplicationHook} decorator that ensures the hook is only used once.
 	 */
 	private static final class SingleUseSpringApplicationHook implements SpringApplicationHook {
@@ -1664,7 +1698,7 @@ public class SpringApplication {
 	 */
 	private static final class KeepAlive implements ApplicationListener<ApplicationContextEvent> {
 
-		private final AtomicReference<Thread> thread = new AtomicReference<>();
+		private final AtomicReference<@Nullable Thread> thread = new AtomicReference<>();
 
 		@Override
 		public void onApplicationEvent(ApplicationContextEvent event) {
@@ -1780,8 +1814,8 @@ public class SpringApplication {
 		private final StandardStartup fallback = new StandardStartup();
 
 		@Override
-		protected Long processUptime() {
-			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
+		protected @Nullable Long processUptime() {
+			Long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
 			return (uptime >= 0) ? uptime : this.fallback.processUptime();
 		}
 

@@ -65,6 +65,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public final class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader classLoader;
 
 	@Bean

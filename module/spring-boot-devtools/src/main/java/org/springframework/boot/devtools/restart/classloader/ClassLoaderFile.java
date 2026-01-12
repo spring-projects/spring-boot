@@ -16,7 +16,10 @@
 
 package org.springframework.boot.devtools.restart.classloader;
 
+import java.io.Serial;
 import java.io.Serializable;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -30,11 +33,12 @@ import org.springframework.util.Assert;
  */
 public class ClassLoaderFile implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1;
 
 	private final Kind kind;
 
-	private final byte[] contents;
+	private final byte @Nullable [] contents;
 
 	private final long lastModified;
 
@@ -43,7 +47,7 @@ public class ClassLoaderFile implements Serializable {
 	 * @param kind the kind of file
 	 * @param contents the file contents
 	 */
-	public ClassLoaderFile(Kind kind, byte[] contents) {
+	public ClassLoaderFile(Kind kind, byte @Nullable [] contents) {
 		this(kind, System.currentTimeMillis(), contents);
 	}
 
@@ -53,7 +57,7 @@ public class ClassLoaderFile implements Serializable {
 	 * @param lastModified the last modified time
 	 * @param contents the file contents
 	 */
-	public ClassLoaderFile(Kind kind, long lastModified, byte[] contents) {
+	public ClassLoaderFile(Kind kind, long lastModified, byte @Nullable [] contents) {
 		Assert.notNull(kind, "'kind' must not be null");
 		if (kind == Kind.DELETED) {
 			Assert.isTrue(contents == null, "'contents' must be null");
@@ -87,7 +91,7 @@ public class ClassLoaderFile implements Serializable {
 	 * {@link #getKind()} is {@link Kind#DELETED}.
 	 * @return the contents or {@code null}
 	 */
-	public byte[] getContents() {
+	public byte @Nullable [] getContents() {
 		return this.contents;
 	}
 

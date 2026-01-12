@@ -21,10 +21,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -62,9 +64,10 @@ class ConfigurationPropertiesReportEndpointProxyTests {
 			ConfigurationPropertiesDescriptor applicationProperties = context
 				.getBean(ConfigurationPropertiesReportEndpoint.class)
 				.configurationProperties();
-			assertThat(applicationProperties.getContexts()
-				.get(context.getId())
-				.getBeans()
+			ContextConfigurationPropertiesDescriptor contextDescriptor = applicationProperties.getContexts()
+				.get(context.getId());
+			assertThat(contextDescriptor).isNotNull();
+			assertThat(contextDescriptor.getBeans()
 				.values()
 				.stream()
 				.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
@@ -82,9 +85,10 @@ class ConfigurationPropertiesReportEndpointProxyTests {
 			ConfigurationPropertiesDescriptor applicationProperties = context
 				.getBean(ConfigurationPropertiesReportEndpoint.class)
 				.configurationProperties();
-			Map<String, Object> properties = applicationProperties.getContexts()
-				.get(context.getId())
-				.getBeans()
+			ContextConfigurationPropertiesDescriptor contextDescriptor = applicationProperties.getContexts()
+				.get(context.getId());
+			assertThat(contextDescriptor).isNotNull();
+			Map<String, @Nullable Object> properties = contextDescriptor.getBeans()
 				.values()
 				.stream()
 				.map(ConfigurationPropertiesBeanDescriptor::getProperties)

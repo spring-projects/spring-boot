@@ -18,6 +18,7 @@ package org.springframework.boot.diagnostics;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,7 +80,7 @@ class AbstractFailureAnalyzerTests {
 	static class TestFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 		@Override
-		protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
+		protected @Nullable FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
 			return null;
 		}
 

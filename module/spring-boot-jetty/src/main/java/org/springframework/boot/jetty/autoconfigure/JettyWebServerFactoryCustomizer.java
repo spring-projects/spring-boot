@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -82,7 +82,7 @@ public class JettyWebServerFactoryCustomizer
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		JettyServerProperties.Threads threadProperties = this.jettyProperties.getThreads();
 		factory.setThreadPool(JettyThreadPool.create(this.jettyProperties.getThreads()));
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.jettyProperties::getMaxConnections).to(factory::setMaxConnections);
 		map.from(threadProperties::getAcceptors).to(factory::setAcceptors);
 		map.from(threadProperties::getSelectors).to(factory::setSelectors);
@@ -93,7 +93,7 @@ public class JettyWebServerFactoryCustomizer
 		map.from(this.jettyProperties::getMaxHttpResponseHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
-			.to(customizeHttpConfigurations(factory, HttpConfiguration::setResponseHeaderSize));
+			.to(customizeHttpConfigurations(factory, HttpConfiguration::setMaxResponseHeaderSize));
 		map.from(this.jettyProperties::getMaxHttpFormPostSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)

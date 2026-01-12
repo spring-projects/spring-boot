@@ -7,7 +7,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Requests are timed automatically."
+        "reason": "Requests are timed automatically.",
+        "since": "3.0.0"
       }
     },
     {
@@ -15,7 +16,8 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles.",
+        "since": "3.0.0"
       }
     },
     {
@@ -24,7 +26,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram.",
+        "since": "3.0.0"
       }
     },
     {
@@ -36,6 +39,12 @@
         "replacement": "spring.graphql.http.path",
         "since": "3.5.0"
       }
+    },
+    {
+      "name": "spring.graphql.rsocket.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use. By default, auto-detected according to the environment. Supported values are 'jackson' and 'jackson2' (deprecated)."
     },
     {
       "name": "spring.graphql.schema.file-extensions",
@@ -88,6 +97,22 @@
       "values": [
         {
           "value": "*"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.graphql.rsocket.preferred-json-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jackson2"
         }
       ],
       "providers": [

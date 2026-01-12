@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -24,12 +28,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import io.micrometer.context.ThreadLocalAccessor;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
@@ -40,6 +47,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,13 +56,17 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.support.CompositeTaskDecorator;
+import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TaskExecutionAutoConfiguration}.
@@ -83,11 +95,13 @@ class TaskExecutionAutoConfigurationTests {
 	void simpleAsyncTaskExecutorBuilderShouldReadProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.task.execution.thread-name-prefix=mytest-",
+					"spring.task.execution.simple.cancel-remaining-tasks-on-close=true",
 					"spring.task.execution.simple.reject-tasks-when-limit-reached=true",
 					"spring.task.execution.simple.concurrency-limit=1",
 					"spring.task.execution.shutdown.await-termination=true",
 					"spring.task.execution.shutdown.await-termination-period=30s")
 			.run(assertSimpleAsyncTaskExecutor((taskExecutor) -> {
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("cancelRemainingTasksOnClose", true);
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("rejectTasksWhenLimitReached", true);
 				assertThat(taskExecutor.getConcurrencyLimit()).isEqualTo(1);
 				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
@@ -247,6 +261,35 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "META-INF/services/io.micrometer.context.ThreadLocalAccessor",
+			content = "org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfigurationTests$TestThreadLocalAccessor")
+	void asyncTaskExecutorShouldNotNotRegisterContextPropagatingTaskDecoratorByDefault() {
+		this.contextRunner.withUserConfiguration(AsyncConfiguration.class, TestBean.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(ContextPropagatingTaskDecorator.class);
+			TestBean bean = context.getBean(TestBean.class);
+			TestThreadLocalHolder.setValue("from-context");
+			String text = bean.echoContext().get();
+			assertThat(text).contains("task-").endsWith("null");
+		});
+
+	}
+
+	@Test
+	@WithResource(name = "META-INF/services/io.micrometer.context.ThreadLocalAccessor",
+			content = "org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfigurationTests$TestThreadLocalAccessor")
+	void asyncTaskExecutorWhenContextPropagationIsEnabledShouldRegisterBean() {
+		this.contextRunner.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.withPropertyValues("spring.task.execution.propagate-context=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ContextPropagatingTaskDecorator.class);
+				TestBean bean = context.getBean(TestBean.class);
+				TestThreadLocalHolder.setValue("from-context");
+				String text = bean.echoContext().get();
+				assertThat(text).contains("task-").endsWith("from-context");
+			});
+	}
+
+	@Test
 	void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withBean("customTaskExecutor", Executor.class, SyncTaskExecutor::new).run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class);
@@ -389,6 +432,62 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void enableAsyncLinksToCustomTaskExecutorWhenAsyncConfigurerOverridesIt() {
+		Executor executor = createCustomAsyncExecutor("async-task-");
+		AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler = mock(AsyncUncaughtExceptionHandler.class);
+		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-")
+			.withBean("taskScheduler", TaskScheduler.class, () -> mock(ThreadPoolTaskScheduler.class))
+			.withBean("customAsyncConfigurer", AsyncConfigurer.class, () -> new AsyncConfigurer() {
+
+				@Override
+				public @Nullable Executor getAsyncExecutor() {
+					return executor;
+				}
+
+				@Override
+				public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+					return asyncUncaughtExceptionHandler;
+				}
+			})
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
+				assertThat(context.getBeansOfType(Executor.class)).containsOnlyKeys("applicationTaskExecutor",
+						"taskScheduler");
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("async-task-").contains("something");
+				AsyncConfigurer asyncConfigurer = context.getBean(AsyncConfigurer.class);
+				assertThat(asyncConfigurer.getAsyncExecutor()).isEqualTo(executor);
+				assertThat(asyncConfigurer.getAsyncUncaughtExceptionHandler()).isEqualTo(asyncUncaughtExceptionHandler);
+			});
+	}
+
+	@Test
+	void enableAsyncLinksToApplicationTaskExecutorWhenAsyncConfigurerDoesNotOverrideIt() {
+		AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler = mock(AsyncUncaughtExceptionHandler.class);
+		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-")
+			.withBean("taskScheduler", TaskScheduler.class, () -> mock(ThreadPoolTaskScheduler.class))
+			.withBean("customAsyncConfigurer", AsyncConfigurer.class, () -> new AsyncConfigurer() {
+				@Override
+				public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+					return asyncUncaughtExceptionHandler;
+				}
+			})
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
+				assertThat(context.getBeansOfType(Executor.class)).containsOnlyKeys("applicationTaskExecutor",
+						"taskScheduler");
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("auto-task-").contains("something");
+				assertThat(context.getBean(AsyncConfigurer.class).getAsyncUncaughtExceptionHandler())
+					.isEqualTo(asyncUncaughtExceptionHandler);
+			});
+	}
+
+	@Test
 	void enableAsyncUsesAutoConfiguredExecutorWhenModeIsForceAndHasPrimaryCustomTaskExecutor() {
 		this.contextRunner
 			.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-",
@@ -523,8 +622,17 @@ class TaskExecutionAutoConfigurationTests {
 		});
 		assertThat(latch.await(30, TimeUnit.SECONDS)).isTrue();
 		Thread thread = threadReference.get();
+		assertThat(thread).isNotNull();
 		assertThat(thread).extracting("virtual").as("%s is virtual", thread).isEqualTo(true);
 		return thread.getName();
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/services/io.micrometer.context.ThreadLocalAccessor",
+			content = "org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfigurationTests.TestThreadLocalAccessor")
+	@interface WithThreadLocalAccessor {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -556,6 +664,56 @@ class TaskExecutionAutoConfigurationTests {
 		@Async
 		Future<String> echo(String text) {
 			return CompletableFuture.completedFuture(Thread.currentThread().getName() + " " + text);
+		}
+
+		@Async
+		Future<String> echoContext() {
+			return CompletableFuture
+				.completedFuture(Thread.currentThread().getName() + " " + TestThreadLocalHolder.getValue());
+		}
+
+	}
+
+	static class TestThreadLocalHolder {
+
+		private static final ThreadLocal<String> holder = new ThreadLocal<>();
+
+		static void setValue(String value) {
+			holder.set(value);
+		}
+
+		static String getValue() {
+			return holder.get();
+		}
+
+		static void reset() {
+			holder.remove();
+		}
+
+	}
+
+	public static class TestThreadLocalAccessor implements ThreadLocalAccessor<String> {
+
+		static final String KEY = "test.threadlocal";
+
+		@Override
+		public Object key() {
+			return KEY;
+		}
+
+		@Override
+		public String getValue() {
+			return TestThreadLocalHolder.getValue();
+		}
+
+		@Override
+		public void setValue(String value) {
+			TestThreadLocalHolder.setValue(value);
+		}
+
+		@Override
+		public void setValue() {
+			TestThreadLocalHolder.reset();
 		}
 
 	}

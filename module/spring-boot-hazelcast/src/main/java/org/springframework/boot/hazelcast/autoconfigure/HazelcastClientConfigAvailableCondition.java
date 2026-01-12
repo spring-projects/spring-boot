@@ -22,12 +22,14 @@ import java.net.URL;
 
 import com.hazelcast.client.config.ClientConfigRecognizer;
 import com.hazelcast.config.ConfigStream;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link HazelcastConfigResourceCondition} that checks if the
@@ -56,8 +58,10 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 
 	static class HazelcastClientValidation {
 
-		static ConditionOutcome clientConfigOutcome(ConditionContext context, String propertyName, Builder builder) {
+		static @Nullable ConditionOutcome clientConfigOutcome(ConditionContext context, String propertyName,
+				Builder builder) {
 			String resourcePath = context.getEnvironment().getProperty(propertyName);
+			Assert.state(resourcePath != null, "'resourcePath' must not be null");
 			Resource resource = context.getResourceLoader().getResource(resourcePath);
 			if (!resource.exists()) {
 				return ConditionOutcome.noMatch(builder.because("Hazelcast configuration does not exist"));

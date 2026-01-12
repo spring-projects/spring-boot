@@ -17,9 +17,9 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +38,7 @@ import org.springframework.boot.json.WritableJson;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.ContextPairs.Joiner;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
@@ -88,18 +89,20 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			.as(GraylogExtendedLogFormatStructuredLogFormatter::formatTimeStamp);
 		members.add("level", GraylogExtendedLogFormatStructuredLogFormatter::convertLevel);
 		members.add("_level_name", LogEvent::getLevel).as(Level::name);
-		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class))
-			.when(Objects::nonNull);
+		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
 		members.add("_process_thread_name", LogEvent::getThreadName);
 		GraylogExtendedLogFormatProperties.get(environment).jsonMembers(members);
 		members.add("_log_logger", LogEvent::getLoggerName);
+		Predicate<@Nullable ReadOnlyStringMap> mapIsEmpty = (map) -> map == null || map.isEmpty();
 		members.from(LogEvent::getContextData)
-			.whenNot(ReadOnlyStringMap::isEmpty)
+			.whenNot(mapIsEmpty)
 			.usingPairs(contextPairs.flat(additionalFieldJoiner(),
 					GraylogExtendedLogFormatStructuredLogFormatter::addContextDataPairs));
+		Function<@Nullable LogEvent, @Nullable Object> getThrown = (event) -> (event != null) ? event.getThrown()
+				: null;
 		members.add()
-			.whenNotNull(LogEvent::getThrownProxy)
-			.usingMembers((thrownProxyMembers) -> throwableMembers(thrownProxyMembers, extractor));
+			.whenNotNull(getThrown)
+			.usingMembers((thrownMembers) -> throwableMembers(thrownMembers, extractor));
 	}
 
 	private static String getMessageText(Message message) {
@@ -131,18 +134,16 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 
 	private static void throwableMembers(Members<LogEvent> members, Extractor extractor) {
 		members.add("full_message", extractor::messageAndStackTrace);
-		members.add("_error_type", (event) -> event.getThrownProxy().getThrowable())
-			.whenNotNull()
-			.as(ObjectUtils::nullSafeClassName);
+		members.add("_error_type", LogEvent::getThrown).whenNotNull().as(ObjectUtils::nullSafeClassName);
 		members.add("_error_stack_trace", extractor::stackTrace);
-		members.add("_error_message", (event) -> event.getThrownProxy().getMessage());
+		members.add("_error_message", (event) -> event.getThrown().getMessage());
 	}
 
 	private static void addContextDataPairs(ContextPairs.Pairs<ReadOnlyStringMap> contextPairs) {
 		contextPairs.add((contextData, pairs) -> contextData.forEach(pairs::accept));
 	}
 
-	private static BinaryOperator<@Nullable String> additionalFieldJoiner() {
+	private static Joiner additionalFieldJoiner() {
 		return (prefix, name) -> {
 			name = prefix + name;
 			if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {

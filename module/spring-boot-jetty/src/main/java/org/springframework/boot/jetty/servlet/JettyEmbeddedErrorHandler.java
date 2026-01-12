@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jetty.servlet;
 
-import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee11.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.http.HttpMethod;
 
 /**
@@ -24,7 +24,7 @@ import org.eclipse.jetty.http.HttpMethod;
  * HttpMethods} rather than just {@code GET}, {@code POST} and {@code HEAD}. By default
  * Jetty <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=446039">intentionally only
  * supports a limited set of HTTP methods</a> for error pages, however, Spring Boot
- * prefers Tomcat, Jetty and Undertow to all behave in the same way.
+ * prefers Tomcat and Jetty to all behave in the same way.
  *
  * @author Phillip Webb
  * @author Christoph Dreis

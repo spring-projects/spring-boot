@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Utility class for working with Env variables.
  *
@@ -31,11 +33,11 @@ class EnvVariables {
 
 	private final Map<String, String> variables;
 
-	EnvVariables(Map<String, String> variables) {
+	EnvVariables(@Nullable Map<String, String> variables) {
 		this.variables = parseEnvVariables(variables);
 	}
 
-	private static Map<String, String> parseEnvVariables(Map<String, String> args) {
+	private static Map<String, String> parseEnvVariables(@Nullable Map<String, String> args) {
 		if (args == null || args.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -48,7 +50,7 @@ class EnvVariables {
 		return result;
 	}
 
-	private static String getValue(String value) {
+	private static String getValue(@Nullable String value) {
 		return (value != null) ? value : "";
 	}
 

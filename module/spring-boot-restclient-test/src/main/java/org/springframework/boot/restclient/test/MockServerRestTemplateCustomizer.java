@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -56,7 +58,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @author Moritz Halbritter
  * @author Chinmoy Chakraborty
- * @since 1.4.0
+ * @since 4.0.0
  * @see #getServer()
  * @see #getServer(RestTemplate)
  */
@@ -89,7 +91,6 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 * Create a new {@link MockServerRestTemplateCustomizer} instance.
 	 * @param expectationManagerSupplier a supplier that provides the
 	 * {@link RequestExpectationManager} to use
-	 * @since 3.0.0
 	 */
 	public MockServerRestTemplateCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
 		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
@@ -110,7 +111,6 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 * buffer the input and output streams, and for example, allow multiple reads of the
 	 * response body.
 	 * @param bufferContent if request and response content should be buffered
-	 * @since 3.1.0
 	 */
 	public void setBufferContent(boolean bufferContent) {
 		this.bufferContent = bufferContent;
@@ -147,7 +147,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		return this.expectationManagers;
 	}
 
-	public MockRestServiceServer getServer(RestTemplate restTemplate) {
+	public @Nullable MockRestServiceServer getServer(RestTemplate restTemplate) {
 		return this.servers.get(restTemplate);
 	}
 

@@ -30,7 +30,7 @@ dependencies {
 	api("org.springframework:spring-orm")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("org.hibernate.orm:hibernate-micrometer")
 
 	testImplementation(project(":core:spring-boot-test"))
@@ -53,4 +53,8 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

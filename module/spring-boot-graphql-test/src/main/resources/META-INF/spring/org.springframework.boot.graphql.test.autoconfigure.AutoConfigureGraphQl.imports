@@ -1,0 +1,3 @@
+org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration
+optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
+optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration

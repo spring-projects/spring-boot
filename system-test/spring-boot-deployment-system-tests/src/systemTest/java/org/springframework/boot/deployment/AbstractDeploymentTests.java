@@ -26,13 +26,14 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.util.TimeValue;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.images.builder.dockerfile.DockerfileBuilder;
 
 import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -60,7 +61,7 @@ abstract class AbstractDeploymentTests {
 		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-			assertThat(response.getBody()).isEqualTo("{\"status\":\"UP\"}");
+			assertThat(response.getBody()).isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}");
 		});
 	}
 
@@ -128,7 +129,7 @@ abstract class AbstractDeploymentTests {
 		}
 
 		WarDeploymentContainer(String baseImage, String deploymentLocation, int port,
-				Consumer<DockerfileBuilder> dockerfileCustomizer) {
+				@Nullable Consumer<DockerfileBuilder> dockerfileCustomizer) {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.war", findWarToDeploy())
 				.withDockerfileFromBuilder((builder) -> {
 					builder.from(baseImage).add("spring-boot.war", deploymentLocation + "/spring-boot.war");

@@ -27,8 +27,8 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.register("bootBuildImageCaches") {
 	doFirst {
-		println("buildWorkspace=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildWorkspace.asCache().bind.source)
-		println("buildCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildCache.asCache().bind.source)
-		println("launchCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").launchCache.asCache().bind.source)
+		println("buildWorkspace=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildWorkspace.asCache()?.bind?.source)
+		println("buildCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildCache.asCache()?.bind?.source)
+		println("launchCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").launchCache.asCache()?.bind?.source)
 	}
 }

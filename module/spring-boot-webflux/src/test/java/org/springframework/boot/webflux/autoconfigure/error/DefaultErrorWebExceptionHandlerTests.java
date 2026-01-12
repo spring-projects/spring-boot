@@ -30,6 +30,7 @@ import org.springframework.boot.webflux.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.ResourceHttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -53,12 +54,12 @@ import static org.mockito.Mockito.mock;
 class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
-	@WithResource(name = "templates/error/error.mustache", content = """
+	@WithResource(name = "static/error/498.html", content = """
 			<html>
 			<body>
 			<ul>
-				<li>status: {{status}}</li>
-				<li>message: {{message}}</li>
+			<li>status: 498</li>
+			<li>message: non standard error</li>
 			</ul>
 			</body>
 			</html>
@@ -71,6 +72,7 @@ class DefaultErrorWebExceptionHandlerTests {
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				resourceProperties, errorProperties, context);
+		exceptionHandler.setMessageWriters(List.of(new ResourceHttpMessageWriter()));
 		setupViewResolver(exceptionHandler);
 		ServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.get("/some-other-path").accept(MediaType.TEXT_HTML));

@@ -19,10 +19,11 @@ package org.springframework.boot.testcontainers;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Container;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
@@ -43,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 @DisabledIfDockerUnavailable
 class ImportTestcontainersTests {
 
-	private AnnotationConfigApplicationContext applicationContext;
+	private @Nullable AnnotationConfigApplicationContext applicationContext;
 
 	@AfterEach
 	void teardown() {
@@ -126,7 +127,7 @@ class ImportTestcontainersTests {
 	static class ImportWithoutValue {
 
 		@ContainerAnnotation
-		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
@@ -143,21 +144,21 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NullContainer {
 
-		static PostgreSQLContainer<?> container = null;
+		static @Nullable PostgreSQLContainer container;
 
 	}
 
 	@ImportTestcontainers
 	static class NonStaticContainer {
 
-		PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
 	interface ContainerDefinitions {
 
 		@ContainerAnnotation
-		PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
@@ -169,7 +170,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class ContainerDefinitionsWithDynamicPropertySource {
 
-		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void containerProperties(DynamicPropertyRegistry registry) {

@@ -16,23 +16,30 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDeprecatedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestName;
 
 /**
  * Configuration properties as record with deprecated property.
  *
  * @param alpha alpha property, deprecated
  * @param bravo bravo property
+ * @param charlie charlie property, named, deprecated
  * @author Moritz Halbritter
  */
-@ConfigurationProperties("deprecated-record")
-public record DeprecatedRecord(String alpha, String bravo) {
+@TestConfigurationProperties("deprecated-record")
+public record DeprecatedRecord(String alpha, String bravo, @TestName("named.charlie") String charlie) {
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "some-reason")
+	@TestDeprecatedConfigurationProperty(reason = "some-reason")
 	public String alpha() {
 		return this.alpha;
 	}
 
+	@Deprecated
+	@TestDeprecatedConfigurationProperty(reason = "another-reason")
+	public String charlie() {
+		return this.charlie;
+	}
 }

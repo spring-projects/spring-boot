@@ -16,10 +16,12 @@
 
 package org.springframework.boot.convert;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -44,22 +46,30 @@ class DelimitedStringToArrayConverterTests {
 	@ConversionServiceTest
 	void matchesWhenTargetIsNotAnnotatedShouldReturnTrue(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noAnnotation"), 0);
+		Field field = ReflectionUtils.findField(Values.class, "noAnnotation");
+		assertThat(field).isNotNull();
+		TypeDescriptor targetType = TypeDescriptor.nested(field, 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToArrayConverter(conversionService).matches(sourceType, targetType)).isTrue();
 	}
 
 	@ConversionServiceTest
 	void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
+		Field field = ReflectionUtils.findField(Values.class, "nonConvertibleElementType");
+		assertThat(field).isNotNull();
+		TypeDescriptor targetType = TypeDescriptor.nested(field, 0);
+		assertThat(targetType).isNotNull();
 		assertThat(new DelimitedStringToArrayConverter(conversionService).matches(sourceType, targetType)).isFalse();
 	}
 
 	@ConversionServiceTest
 	void convertWhenHasDelimiterOfNoneShouldReturnWholeString(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "delimiterNone"), 0);
+		Field field = ReflectionUtils.findField(Values.class, "delimiterNone");
+		assertThat(field).isNotNull();
+		TypeDescriptor targetType = TypeDescriptor.nested(field, 0);
+		assertThat(targetType).isNotNull();
 		String[] converted = (String[]) conversionService.convert("a,b,c", sourceType, targetType);
 		assertThat(converted).containsExactly("a,b,c");
 	}
@@ -67,8 +77,10 @@ class DelimitedStringToArrayConverterTests {
 	@Test
 	void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		Field field = ReflectionUtils.findField(Values.class, "convertibleElementType");
+		assertThat(field).isNotNull();
+		TypeDescriptor targetType = TypeDescriptor.nested(field, 0);
+		assertThat(targetType).isNotNull();
 		assertThat(
 				new DelimitedStringToArrayConverter(new ApplicationConversionService()).matches(sourceType, targetType))
 			.isTrue();
@@ -77,8 +89,10 @@ class DelimitedStringToArrayConverterTests {
 	@Test
 	void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		Field field = ReflectionUtils.findField(Values.class, "convertibleElementType");
+		assertThat(field).isNotNull();
+		TypeDescriptor targetType = TypeDescriptor.nested(field, 0);
+		assertThat(targetType).isNotNull();
 		Integer[] converted = (Integer[]) new ApplicationConversionService().convert(" 1 |  2| 3  ", sourceType,
 				targetType);
 		assertThat(converted).containsExactly(1, 2, 3);
@@ -91,16 +105,16 @@ class DelimitedStringToArrayConverterTests {
 
 	static class Values {
 
-		List<String> noAnnotation;
+		@Nullable List<String> noAnnotation;
 
 		@Delimiter("|")
-		Integer[] convertibleElementType;
+		Integer @Nullable [] convertibleElementType;
 
 		@Delimiter("|")
-		NonConvertible[] nonConvertibleElementType;
+		NonConvertible @Nullable [] nonConvertibleElementType;
 
 		@Delimiter(Delimiter.NONE)
-		String[] delimiterNone;
+		String @Nullable [] delimiterNone;
 
 	}
 

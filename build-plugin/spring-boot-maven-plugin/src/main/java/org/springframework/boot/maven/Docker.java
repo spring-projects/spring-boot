@@ -17,9 +17,11 @@
 package org.springframework.boot.maven;
 
 import org.apache.maven.plugin.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
+import org.springframework.util.Assert;
 
 /**
  * Docker configuration options.
@@ -30,29 +32,29 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerRe
  */
 public class Docker {
 
-	private String host;
+	private @Nullable String host;
 
-	private String context;
+	private @Nullable String context;
 
 	private boolean tlsVerify;
 
-	private String certPath;
+	private @Nullable String certPath;
 
 	private boolean bindHostToBuilder;
 
-	private DockerRegistry builderRegistry;
+	private @Nullable DockerRegistry builderRegistry;
 
-	private DockerRegistry publishRegistry;
+	private @Nullable DockerRegistry publishRegistry;
 
 	/**
 	 * The host address of the Docker daemon.
 	 * @return the Docker host
 	 */
-	public String getHost() {
+	public @Nullable String getHost() {
 		return this.host;
 	}
 
-	void setHost(String host) {
+	void setHost(@Nullable String host) {
 		this.host = host;
 	}
 
@@ -60,11 +62,11 @@ public class Docker {
 	 * The Docker context to use to retrieve host configuration.
 	 * @return the Docker context
 	 */
-	public String getContext() {
+	public @Nullable String getContext() {
 		return this.context;
 	}
 
-	public void setContext(String context) {
+	public void setContext(@Nullable String context) {
 		this.context = context;
 	}
 
@@ -85,11 +87,11 @@ public class Docker {
 	 * Docker daemon.
 	 * @return the TLS certificate path
 	 */
-	public String getCertPath() {
+	public @Nullable String getCertPath() {
 		return this.certPath;
 	}
 
-	void setCertPath(String certPath) {
+	void setCertPath(@Nullable String certPath) {
 		this.certPath = certPath;
 	}
 
@@ -109,7 +111,7 @@ public class Docker {
 	 * Configuration of the Docker registry where builder and run images are stored.
 	 * @return the registry configuration
 	 */
-	DockerRegistry getBuilderRegistry() {
+	@Nullable DockerRegistry getBuilderRegistry() {
 		return this.builderRegistry;
 	}
 
@@ -118,7 +120,7 @@ public class Docker {
 	 * registry.
 	 * @param builderRegistry the registry configuration
 	 */
-	void setBuilderRegistry(DockerRegistry builderRegistry) {
+	void setBuilderRegistry(@Nullable DockerRegistry builderRegistry) {
 		this.builderRegistry = builderRegistry;
 	}
 
@@ -126,7 +128,7 @@ public class Docker {
 	 * Configuration of the Docker registry where the generated image will be published.
 	 * @return the registry configuration
 	 */
-	DockerRegistry getPublishRegistry() {
+	@Nullable DockerRegistry getPublishRegistry() {
 		return this.publishRegistry;
 	}
 
@@ -135,7 +137,7 @@ public class Docker {
 	 * registry.
 	 * @param builderRegistry the registry configuration
 	 */
-	void setPublishRegistry(DockerRegistry builderRegistry) {
+	void setPublishRegistry(@Nullable DockerRegistry builderRegistry) {
 		this.publishRegistry = builderRegistry;
 	}
 
@@ -189,17 +191,22 @@ public class Docker {
 				getRegistryAuthentication("publish", this.publishRegistry, authentication));
 	}
 
-	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistry registry,
+	private DockerRegistryAuthentication getRegistryAuthentication(String type, @Nullable DockerRegistry registry,
 			DockerRegistryAuthentication fallback) {
 		if (registry == null || registry.isEmpty()) {
 			return fallback;
 		}
 		if (registry.hasTokenAuth() && !registry.hasUserAuth()) {
-			return DockerRegistryAuthentication.token(registry.getToken());
+			String token = registry.getToken();
+			Assert.state(token != null, "'token' must not be null");
+			return DockerRegistryAuthentication.token(token);
 		}
 		if (registry.hasUserAuth() && !registry.hasTokenAuth()) {
-			return DockerRegistryAuthentication.user(registry.getUsername(), registry.getPassword(), registry.getUrl(),
-					registry.getEmail());
+			String username = registry.getUsername();
+			String password = registry.getPassword();
+			Assert.state(username != null, "'username' must not be null");
+			Assert.state(password != null, "'password' must not be null");
+			return DockerRegistryAuthentication.user(username, password, registry.getUrl(), registry.getEmail());
 		}
 		throw new IllegalArgumentException("Invalid Docker " + type
 				+ " registry configuration, either token or username/password must be provided");
@@ -210,20 +217,21 @@ public class Docker {
 	 */
 	public static class DockerRegistry {
 
-		private String username;
+		private @Nullable String username;
 
-		private String password;
+		private @Nullable String password;
 
-		private String url;
+		private @Nullable String url;
 
-		private String email;
+		private @Nullable String email;
 
-		private String token;
+		private @Nullable String token;
 
 		public DockerRegistry() {
 		}
 
-		public DockerRegistry(String username, String password, String url, String email) {
+		public DockerRegistry(@Nullable String username, @Nullable String password, @Nullable String url,
+				@Nullable String email) {
 			this.username = username;
 			this.password = password;
 			this.url = url;
@@ -238,11 +246,11 @@ public class Docker {
 		 * The username that will be used for user authentication to the registry.
 		 * @return the username
 		 */
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		void setUsername(String username) {
+		void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
@@ -250,11 +258,11 @@ public class Docker {
 		 * The password that will be used for user authentication to the registry.
 		 * @return the password
 		 */
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		void setPassword(String password) {
+		void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
@@ -262,11 +270,11 @@ public class Docker {
 		 * The email address that will be used for user authentication to the registry.
 		 * @return the email address
 		 */
-		public String getEmail() {
+		public @Nullable String getEmail() {
 			return this.email;
 		}
 
-		void setEmail(String email) {
+		void setEmail(@Nullable String email) {
 			this.email = email;
 		}
 
@@ -274,11 +282,11 @@ public class Docker {
 		 * The URL of the registry.
 		 * @return the registry URL
 		 */
-		String getUrl() {
+		@Nullable String getUrl() {
 			return this.url;
 		}
 
-		void setUrl(String url) {
+		void setUrl(@Nullable String url) {
 			this.url = url;
 		}
 
@@ -286,11 +294,11 @@ public class Docker {
 		 * The token that will be used for token authentication to the registry.
 		 * @return the authentication token
 		 */
-		public String getToken() {
+		public @Nullable String getToken() {
 			return this.token;
 		}
 
-		void setToken(String token) {
+		void setToken(@Nullable String token) {
 			this.token = token;
 		}
 

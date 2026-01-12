@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -120,7 +121,9 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 	private Consumer<InactiveConfigDataAccessException> propertyNameAndOriginOf(String propertyName, String origin) {
 		return (ex) -> {
 			assertThat(ex.getPropertyName()).isEqualTo(propertyName);
-			assertThat(((PropertySourceOrigin) (ex.getOrigin())).getPropertySource().getName()).isEqualTo(origin);
+			PropertySourceOrigin actualOrigin = (PropertySourceOrigin) (ex.getOrigin());
+			assertThat(actualOrigin).isNotNull();
+			assertThat(actualOrigin.getPropertySource().getName()).isEqualTo(origin);
 		};
 	}
 
@@ -135,7 +138,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		}
 
 		@Override
-		public Origin getOrigin(String key) {
+		public @Nullable Origin getOrigin(String key) {
 			if (getSource().containsKey(key)) {
 				return new PropertySourceOrigin(this, key);
 			}
@@ -155,7 +158,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		}
 
 		@Override
-		boolean isActive(ConfigDataActivationContext activationContext) {
+		boolean isActive(@Nullable ConfigDataActivationContext activationContext) {
 			return this.active;
 		}
 

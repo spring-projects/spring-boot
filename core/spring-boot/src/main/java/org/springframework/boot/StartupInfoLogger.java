@@ -137,11 +137,11 @@ class StartupInfoLogger {
 		append(message, "using Java ", () -> System.getProperty("java.version"));
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call) {
+	private void append(StringBuilder message, String prefix, Callable<@Nullable Object> call) {
 		append(message, prefix, call, "");
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call, String defaultValue) {
+	private void append(StringBuilder message, String prefix, Callable<@Nullable Object> call, String defaultValue) {
 		Object result = callIfPossible(call);
 		String value = (result != null) ? result.toString() : null;
 		if (!StringUtils.hasLength(value)) {
@@ -154,7 +154,7 @@ class StartupInfoLogger {
 		}
 	}
 
-	private @Nullable Object callIfPossible(Callable<Object> call) {
+	private @Nullable Object callIfPossible(Callable<@Nullable Object> call) {
 		try {
 			return call.call();
 		}

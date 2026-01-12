@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.EndpointRequest;
-import org.springframework.boot.security.autoconfigure.servlet.PathRequest;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,7 +56,7 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+	SecurityFilterChain configure(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/actuator/beans"))
 				.hasRole("BEANS");

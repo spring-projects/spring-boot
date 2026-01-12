@@ -19,6 +19,8 @@ package org.springframework.boot.kafka.autoconfigure;
 import java.time.Duration;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Listener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -36,6 +38,7 @@ import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
+import org.springframework.util.Assert;
 
 /**
  * Configure {@link ConcurrentKafkaListenerContainerFactory} with sensible defaults tuned
@@ -53,37 +56,37 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
-	private KafkaProperties properties;
+	private @Nullable KafkaProperties properties;
 
-	private BatchMessageConverter batchMessageConverter;
+	private @Nullable BatchMessageConverter batchMessageConverter;
 
-	private RecordMessageConverter recordMessageConverter;
+	private @Nullable RecordMessageConverter recordMessageConverter;
 
-	private RecordFilterStrategy<Object, Object> recordFilterStrategy;
+	private @Nullable RecordFilterStrategy<Object, Object> recordFilterStrategy;
 
-	private KafkaTemplate<Object, Object> replyTemplate;
+	private @Nullable KafkaTemplate<Object, Object> replyTemplate;
 
-	private KafkaAwareTransactionManager<Object, Object> transactionManager;
+	private @Nullable KafkaAwareTransactionManager<Object, Object> transactionManager;
 
-	private ConsumerAwareRebalanceListener rebalanceListener;
+	private @Nullable ConsumerAwareRebalanceListener rebalanceListener;
 
-	private CommonErrorHandler commonErrorHandler;
+	private @Nullable CommonErrorHandler commonErrorHandler;
 
-	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
+	private @Nullable AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
-	private RecordInterceptor<Object, Object> recordInterceptor;
+	private @Nullable RecordInterceptor<Object, Object> recordInterceptor;
 
-	private BatchInterceptor<Object, Object> batchInterceptor;
+	private @Nullable BatchInterceptor<Object, Object> batchInterceptor;
 
-	private Function<MessageListenerContainer, String> threadNameSupplier;
+	private @Nullable Function<MessageListenerContainer, String> threadNameSupplier;
 
-	private SimpleAsyncTaskExecutor listenerTaskExecutor;
+	private @Nullable SimpleAsyncTaskExecutor listenerTaskExecutor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
 	 * @param properties the properties
 	 */
-	void setKafkaProperties(KafkaProperties properties) {
+	void setKafkaProperties(@Nullable KafkaProperties properties) {
 		this.properties = properties;
 	}
 
@@ -91,7 +94,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link BatchMessageConverter} to use.
 	 * @param batchMessageConverter the message converter
 	 */
-	void setBatchMessageConverter(BatchMessageConverter batchMessageConverter) {
+	void setBatchMessageConverter(@Nullable BatchMessageConverter batchMessageConverter) {
 		this.batchMessageConverter = batchMessageConverter;
 	}
 
@@ -99,7 +102,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link RecordMessageConverter} to use.
 	 * @param recordMessageConverter the message converter
 	 */
-	void setRecordMessageConverter(RecordMessageConverter recordMessageConverter) {
+	void setRecordMessageConverter(@Nullable RecordMessageConverter recordMessageConverter) {
 		this.recordMessageConverter = recordMessageConverter;
 	}
 
@@ -107,7 +110,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link RecordFilterStrategy} to use to filter incoming records.
 	 * @param recordFilterStrategy the record filter strategy
 	 */
-	void setRecordFilterStrategy(RecordFilterStrategy<Object, Object> recordFilterStrategy) {
+	void setRecordFilterStrategy(@Nullable RecordFilterStrategy<Object, Object> recordFilterStrategy) {
 		this.recordFilterStrategy = recordFilterStrategy;
 	}
 
@@ -115,7 +118,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaTemplate} to use to send replies.
 	 * @param replyTemplate the reply template
 	 */
-	void setReplyTemplate(KafkaTemplate<Object, Object> replyTemplate) {
+	void setReplyTemplate(@Nullable KafkaTemplate<Object, Object> replyTemplate) {
 		this.replyTemplate = replyTemplate;
 	}
 
@@ -123,7 +126,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaAwareTransactionManager} to use.
 	 * @param transactionManager the transaction manager
 	 */
-	void setTransactionManager(KafkaAwareTransactionManager<Object, Object> transactionManager) {
+	void setTransactionManager(@Nullable KafkaAwareTransactionManager<Object, Object> transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -131,7 +134,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link ConsumerAwareRebalanceListener} to use.
 	 * @param rebalanceListener the rebalance listener.
 	 */
-	void setRebalanceListener(ConsumerAwareRebalanceListener rebalanceListener) {
+	void setRebalanceListener(@Nullable ConsumerAwareRebalanceListener rebalanceListener) {
 		this.rebalanceListener = rebalanceListener;
 	}
 
@@ -139,7 +142,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link CommonErrorHandler} to use.
 	 * @param commonErrorHandler the error handler.
 	 */
-	public void setCommonErrorHandler(CommonErrorHandler commonErrorHandler) {
+	public void setCommonErrorHandler(@Nullable CommonErrorHandler commonErrorHandler) {
 		this.commonErrorHandler = commonErrorHandler;
 	}
 
@@ -147,7 +150,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
-	void setAfterRollbackProcessor(AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
+	void setAfterRollbackProcessor(@Nullable AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
 		this.afterRollbackProcessor = afterRollbackProcessor;
 	}
 
@@ -155,7 +158,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link RecordInterceptor} to use.
 	 * @param recordInterceptor the record interceptor.
 	 */
-	void setRecordInterceptor(RecordInterceptor<Object, Object> recordInterceptor) {
+	void setRecordInterceptor(@Nullable RecordInterceptor<Object, Object> recordInterceptor) {
 		this.recordInterceptor = recordInterceptor;
 	}
 
@@ -163,7 +166,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link BatchInterceptor} to use.
 	 * @param batchInterceptor the batch interceptor.
 	 */
-	void setBatchInterceptor(BatchInterceptor<Object, Object> batchInterceptor) {
+	void setBatchInterceptor(@Nullable BatchInterceptor<Object, Object> batchInterceptor) {
 		this.batchInterceptor = batchInterceptor;
 	}
 
@@ -171,7 +174,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the thread name supplier to use.
 	 * @param threadNameSupplier the thread name supplier to use
 	 */
-	void setThreadNameSupplier(Function<MessageListenerContainer, String> threadNameSupplier) {
+	void setThreadNameSupplier(@Nullable Function<MessageListenerContainer, String> threadNameSupplier) {
 		this.threadNameSupplier = threadNameSupplier;
 	}
 
@@ -179,7 +182,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the executor for threads that poll the consumer.
 	 * @param listenerTaskExecutor task executor
 	 */
-	void setListenerTaskExecutor(SimpleAsyncTaskExecutor listenerTaskExecutor) {
+	void setListenerTaskExecutor(@Nullable SimpleAsyncTaskExecutor listenerTaskExecutor) {
 		this.listenerTaskExecutor = listenerTaskExecutor;
 	}
 
@@ -198,7 +201,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
+		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
 		map.from(properties::isAutoStartup).to(factory::setAutoStartup);
@@ -218,7 +222,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	private void configureContainer(ContainerProperties container) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
+		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).to(container::setAckMode);
 		map.from(properties::getAsyncAcks).to(container::setAsyncAcks);

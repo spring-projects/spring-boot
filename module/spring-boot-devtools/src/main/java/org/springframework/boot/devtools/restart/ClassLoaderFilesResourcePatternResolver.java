@@ -27,11 +27,12 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.AbstractResource;
@@ -77,7 +78,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
 	}
 
-	private ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {
+	private @Nullable ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {
 		Field field = ReflectionUtils.findField(applicationContext.getClass(), "resourceLoader", ResourceLoader.class);
 		if (field == null) {
 			return null;
@@ -94,7 +95,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	@Override
-	public ClassLoader getClassLoader() {
+	public @Nullable ClassLoader getClassLoader() {
 		return this.patternResolverDelegate.getClassLoader();
 	}
 
@@ -123,15 +124,13 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	private List<Resource> getAdditionalResources(String locationPattern) throws MalformedURLException {
 		List<Resource> additionalResources = new ArrayList<>();
 		String trimmedLocationPattern = trimLocationPattern(locationPattern);
-		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
-				String name = entry.getKey();
-				ClassLoaderFile file = entry.getValue();
-				if (file.getKind() != Kind.DELETED && this.antPathMatcher.match(trimmedLocationPattern, name)) {
-					URL url = new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
-					UrlResource resource = new UrlResource(url);
-					additionalResources.add(resource);
-				}
+		for (Entry<String, ClassLoaderFile> entry : this.classLoaderFiles.getFileEntries()) {
+			String name = entry.getKey();
+			ClassLoaderFile file = entry.getValue();
+			if (file.getKind() != Kind.DELETED && this.antPathMatcher.match(trimmedLocationPattern, name)) {
+				URL url = new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
+				UrlResource resource = new UrlResource(url);
+				additionalResources.add(resource);
 			}
 		}
 		return additionalResources;
@@ -147,19 +146,17 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	private boolean isDeleted(Resource resource) {
-		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
-				try {
-					String name = entry.getKey();
-					ClassLoaderFile file = entry.getValue();
-					if (file.getKind() == Kind.DELETED && resource.exists()
-							&& resource.getURI().toString().endsWith(name)) {
-						return true;
-					}
+		for (Entry<String, ClassLoaderFile> entry : this.classLoaderFiles.getFileEntries()) {
+			try {
+				String name = entry.getKey();
+				ClassLoaderFile file = entry.getValue();
+				if (file.getKind() == Kind.DELETED && resource.exists()
+						&& resource.getURI().toString().endsWith(name)) {
+					return true;
 				}
-				catch (IOException ex) {
-					throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
-				}
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
 			}
 		}
 		return false;
@@ -200,7 +197,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	private static class ResourcePatternResolverFactory {
 
 		ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
-				ResourceLoader resourceLoader) {
+				@Nullable ResourceLoader resourceLoader) {
 			ResourceLoader targetResourceLoader = (resourceLoader != null) ? resourceLoader
 					: new ApplicationContextResourceLoader(applicationContext::getProtocolResolvers);
 			return new PathMatchingResourcePatternResolver(targetResourceLoader);
@@ -216,7 +213,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 		@Override
 		public ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
-				ResourceLoader resourceLoader) {
+				@Nullable ResourceLoader resourceLoader) {
 			if (applicationContext instanceof WebApplicationContext) {
 				return getServletContextResourcePatternResolver(applicationContext, resourceLoader);
 			}
@@ -224,7 +221,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		}
 
 		private ResourcePatternResolver getServletContextResourcePatternResolver(
-				AbstractApplicationContext applicationContext, ResourceLoader resourceLoader) {
+				AbstractApplicationContext applicationContext, @Nullable ResourceLoader resourceLoader) {
 			ResourceLoader targetResourceLoader = (resourceLoader != null) ? resourceLoader
 					: new WebApplicationContextResourceLoader(applicationContext::getProtocolResolvers,
 							(WebApplicationContext) applicationContext);

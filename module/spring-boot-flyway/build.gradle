@@ -21,6 +21,7 @@ plugins {
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Flyway"
@@ -33,30 +34,41 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-database-postgresql")
 	optional("org.flywaydb:flyway-sqlserver")
-	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:testcontainers-jdbc")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
 	testImplementation(project(":core:spring-boot-test"))
-	testImplementation(project(":module:spring-boot-jooq"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("jakarta.persistence:jakarta.persistence-api")
 	testImplementation("org.hibernate.orm:hibernate-core")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.springframework:spring-orm")
 
+	testCompileOnly("org.checkerframework:checker-qual")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

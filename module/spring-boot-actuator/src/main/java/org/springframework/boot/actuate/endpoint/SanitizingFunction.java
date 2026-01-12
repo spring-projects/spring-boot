@@ -338,7 +338,7 @@ public interface SanitizingFunction {
 	 * @see #filter()
 	 * @see #sanitizeValue()
 	 */
-	default SanitizingFunction ifValueMatches(Predicate<Object> predicate) {
+	default SanitizingFunction ifValueMatches(Predicate<@Nullable Object> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
 		return ifMatches((data) -> predicate.test(data.getValue()));
 	}
@@ -373,12 +373,13 @@ public interface SanitizingFunction {
 	 */
 	default SanitizingFunction ifMatches(Predicate<SanitizableData> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
-		Predicate<SanitizableData> filter = (filter() != null) ? filter().or(predicate) : predicate;
+		Predicate<SanitizableData> filter = filter();
+		Predicate<SanitizableData> newFilter = (filter != null) ? filter.or(predicate) : predicate;
 		return new SanitizingFunction() {
 
 			@Override
 			public Predicate<SanitizableData> filter() {
-				return filter;
+				return newFilter;
 			}
 
 			@Override
@@ -398,13 +399,12 @@ public interface SanitizingFunction {
 		Assert.notNull(predicate, "'predicate' must not be null");
 		Assert.notNull(value, "'value' must not be null");
 		String lowerCaseValue = value.toLowerCase(Locale.getDefault());
-		return (data) -> nullSafeTest(data.getLowerCaseKey(),
-				(lowerCaseKey) -> predicate.test(lowerCaseKey, lowerCaseValue));
+		return (data) -> predicate.test(data.getLowerCaseKey(), lowerCaseValue);
 	}
 
 	private Predicate<SanitizableData> onKey(Predicate<String> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
-		return (data) -> nullSafeTest(data.getKey(), predicate);
+		return (data) -> predicate.test(data.getKey());
 	}
 
 	private Predicate<SanitizableData> onValue(Predicate<Object> predicate) {

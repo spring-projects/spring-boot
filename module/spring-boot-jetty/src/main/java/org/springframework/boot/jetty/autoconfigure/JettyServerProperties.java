@@ -19,6 +19,8 @@ package org.springframework.boot.jetty.autoconfigure;
 import java.time.Duration;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
 
@@ -66,12 +68,12 @@ public class JettyServerProperties {
 	/**
 	 * Time that the connection can be idle before it is closed.
 	 */
-	private Duration connectionIdleTimeout;
+	private @Nullable Duration connectionIdleTimeout;
 
 	/**
 	 * Maximum size of the HTTP response header.
 	 */
-	private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
+	private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(16);
 
 	/**
 	 * Maximum number of connections that the server accepts and processes at any given
@@ -113,11 +115,11 @@ public class JettyServerProperties {
 		this.maxFormKeys = maxFormKeys;
 	}
 
-	public Duration getConnectionIdleTimeout() {
+	public @Nullable Duration getConnectionIdleTimeout() {
 		return this.connectionIdleTimeout;
 	}
 
-	public void setConnectionIdleTimeout(Duration connectionIdleTimeout) {
+	public void setConnectionIdleTimeout(@Nullable Duration connectionIdleTimeout) {
 		this.connectionIdleTimeout = connectionIdleTimeout;
 	}
 
@@ -145,7 +147,7 @@ public class JettyServerProperties {
 		/**
 		 * Enable access log.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Log format.
@@ -156,17 +158,17 @@ public class JettyServerProperties {
 		 * Custom log format, see org.eclipse.jetty.server.CustomRequestLog. If defined,
 		 * overrides the "format" configuration key.
 		 */
-		private String customFormat;
+		private @Nullable String customFormat;
 
 		/**
 		 * Log filename. If not specified, logs redirect to "System.err".
 		 */
-		private String filename;
+		private @Nullable String filename;
 
 		/**
 		 * Date format to place in log file name.
 		 */
-		private String fileDateFormat;
+		private @Nullable String fileDateFormat;
 
 		/**
 		 * Number of days before rotated log files are deleted.
@@ -181,7 +183,7 @@ public class JettyServerProperties {
 		/**
 		 * Request paths that should not be logged.
 		 */
-		private List<String> ignorePaths;
+		private @Nullable List<String> ignorePaths;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -199,27 +201,27 @@ public class JettyServerProperties {
 			this.format = format;
 		}
 
-		public String getCustomFormat() {
+		public @Nullable String getCustomFormat() {
 			return this.customFormat;
 		}
 
-		public void setCustomFormat(String customFormat) {
+		public void setCustomFormat(@Nullable String customFormat) {
 			this.customFormat = customFormat;
 		}
 
-		public String getFilename() {
+		public @Nullable String getFilename() {
 			return this.filename;
 		}
 
-		public void setFilename(String filename) {
+		public void setFilename(@Nullable String filename) {
 			this.filename = filename;
 		}
 
-		public String getFileDateFormat() {
+		public @Nullable String getFileDateFormat() {
 			return this.fileDateFormat;
 		}
 
-		public void setFileDateFormat(String fileDateFormat) {
+		public void setFileDateFormat(@Nullable String fileDateFormat) {
 			this.fileDateFormat = fileDateFormat;
 		}
 
@@ -239,11 +241,11 @@ public class JettyServerProperties {
 			this.append = append;
 		}
 
-		public List<String> getIgnorePaths() {
+		public @Nullable List<String> getIgnorePaths() {
 			return this.ignorePaths;
 		}
 
-		public void setIgnorePaths(List<String> ignorePaths) {
+		public void setIgnorePaths(@Nullable List<String> ignorePaths) {
 			this.ignorePaths = ignorePaths;
 		}
 
@@ -299,7 +301,7 @@ public class JettyServerProperties {
 		 * Maximum capacity of the thread pool's backing queue. A default is computed
 		 * based on the threading configuration.
 		 */
-		private Integer maxQueueCapacity;
+		private @Nullable Integer maxQueueCapacity;
 
 		/**
 		 * Maximum thread idle time.
@@ -338,11 +340,11 @@ public class JettyServerProperties {
 			return this.max;
 		}
 
-		public Integer getMaxQueueCapacity() {
+		public @Nullable Integer getMaxQueueCapacity() {
 			return this.maxQueueCapacity;
 		}
 
-		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+		public void setMaxQueueCapacity(@Nullable Integer maxQueueCapacity) {
 			this.maxQueueCapacity = maxQueueCapacity;
 		}
 

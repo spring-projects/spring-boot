@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.servlet.DispatcherType;
@@ -43,15 +45,15 @@ public class SessionProperties {
 	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration timeout;
+	private @Nullable Duration timeout;
 
 	private Servlet servlet = new Servlet();
 
-	public Duration getTimeout() {
+	public @Nullable Duration getTimeout() {
 		return this.timeout;
 	}
 
-	public void setTimeout(Duration timeout) {
+	public void setTimeout(@Nullable Duration timeout) {
 		this.timeout = timeout;
 	}
 
@@ -68,7 +70,9 @@ public class SessionProperties {
 	 * {@code fallbackTimeout} is used.
 	 * @param fallbackTimeout a fallback timeout value if the timeout isn't configured
 	 * @return the session timeout
+	 * @deprecated since 4.0.1 for removal in 4.2.0 in favor of {@link SessionTimeout}
 	 */
+	@Deprecated(since = "4.0.1", forRemoval = true)
 	public Duration determineTimeout(Supplier<Duration> fallbackTimeout) {
 		return (this.timeout != null) ? this.timeout : fallbackTimeout.get();
 	}

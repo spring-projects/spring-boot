@@ -16,7 +16,6 @@
 
 plugins {
 	id "base"
-	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
 }
 
 description = "Spring Boot Build"
@@ -32,6 +31,14 @@ subprojects {
 
 	repositories {
 		mavenCentral()
+		maven {
+			name = "Shibboleth Releases"
+			url = "https://build.shibboleth.net/nexus/content/repositories/releases"
+			content {
+				includeGroup "org.opensaml"
+				includeGroup "net.shibboleth"
+			}
+		}
 		spring.mavenRepositories()
 	}
 
@@ -39,4 +46,3 @@ subprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
-

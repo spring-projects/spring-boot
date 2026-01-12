@@ -16,8 +16,6 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
@@ -32,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImageArchiveIndexTests extends AbstractJsonTests {
 
 	@Test
-	void loadJson() throws IOException {
+	void loadJson() {
 		String content = getContentAsString("image-archive-index.json");
 		ImageArchiveIndex index = getIndex(content);
 		assertThat(index.getSchemaVersion()).isEqualTo(2);
@@ -43,8 +41,8 @@ class ImageArchiveIndexTests extends AbstractJsonTests {
 			.isEqualTo("sha256:3bbe02431d8e5124ffe816ec27bf6508b50edd1d10218be1a03e799a186b9004");
 	}
 
-	private ImageArchiveIndex getIndex(String content) throws IOException {
-		return new ImageArchiveIndex(getObjectMapper().readTree(content));
+	private ImageArchiveIndex getIndex(String content) {
+		return new ImageArchiveIndex(getJsonMapper().readTree(content));
 	}
 
 }

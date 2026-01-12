@@ -31,7 +31,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-junit-jupiter")
 }
 
-jar {
-	reproducibleFileOrder = true
-	preserveFileTimestamps = false
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

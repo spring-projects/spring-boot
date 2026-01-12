@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.ObjectAssert;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,7 +137,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "springx").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -148,7 +148,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(sanitizedValue());
 		assertThatApplyingToKey(function, "atest").has(sanitizedValue());
 		assertThatApplyingToKey(function, "bootx").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -160,7 +159,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(sanitizedValue());
 		assertThatApplyingToKey(function, "beet").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -171,7 +169,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "XtestX").has(sanitizedValue());
 		assertThatApplyingToKey(function, "YY").has(sanitizedValue());
 		assertThatApplyingToKey(function, "xy").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -182,7 +179,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "SPRING").has(sanitizedValue());
 		assertThatApplyingToKey(function, "BOOT").has(sanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -192,7 +188,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "spin").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -204,7 +199,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "BO").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -213,7 +207,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "spring").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spin").has(sanitizedValue());
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -223,7 +216,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToValue(function, "SPRING").has(sanitizedValue());
 		assertThatApplyingToValue(function, "boot").has(sanitizedValue());
 		assertThatApplyingToValue(function, "other").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -281,7 +273,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToValue(function, "spin").has(sanitizedValue());
 		assertThatApplyingToValue(function, "boot").has(unsanitizedValue());
 		assertThatApplyingToValue(function, 123).has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -316,7 +307,8 @@ class SanitizingFunctionTests {
 		return assertThatApplying(function, data(key));
 	}
 
-	private ObjectAssert<SanitizableData> assertThatApplyingToValue(SanitizingFunction function, Object value) {
+	private ObjectAssert<SanitizableData> assertThatApplyingToValue(SanitizingFunction function,
+			@Nullable Object value) {
 		return assertThatApplying(function, data("key", value));
 	}
 
@@ -338,7 +330,7 @@ class SanitizingFunctionTests {
 		return data(key, "value");
 	}
 
-	private static SanitizableData data(String key, Object value) {
+	private static SanitizableData data(String key, @Nullable Object value) {
 		return new SanitizableData(null, key, value);
 	}
 

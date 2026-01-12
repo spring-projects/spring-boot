@@ -35,14 +35,6 @@ public interface LoaderClassesWriter {
 	void writeLoaderClasses() throws IOException;
 
 	/**
-	 * Write the default required spring-boot-loader classes to the JAR.
-	 * @param loaderImplementation the specific implementation to write
-	 * @throws IOException if the classes cannot be written
-	 * @since 3.2.0
-	 */
-	void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException;
-
-	/**
 	 * Write custom required spring-boot-loader classes to the JAR.
 	 * @param loaderJarResourceName the name of the resource containing the loader classes
 	 * to be written

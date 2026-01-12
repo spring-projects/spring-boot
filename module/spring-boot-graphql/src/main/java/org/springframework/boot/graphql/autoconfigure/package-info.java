@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring GraphQL.
  */
+@NullMarked
 package org.springframework.boot.graphql.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

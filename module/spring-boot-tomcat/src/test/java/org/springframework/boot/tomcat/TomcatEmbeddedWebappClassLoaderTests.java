@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TomcatEmbeddedWebappClassLoaderTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

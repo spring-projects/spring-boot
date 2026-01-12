@@ -21,6 +21,7 @@ import java.util.Collections;
 import graphql.GraphQL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -58,6 +59,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.CorsRegistry;
@@ -118,7 +120,7 @@ public final class GraphQlWebFluxAutoConfiguration {
 		builder.POST(path, this::unsupportedMediaType);
 		builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
+			GraphiQlHandler graphQlHandler = createGraphQlHandler(properties, path);
 			builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
 		}
 		GraphQlSource graphQlSource = graphQlSourceProvider.getIfAvailable();
@@ -127,6 +129,10 @@ public final class GraphQlWebFluxAutoConfiguration {
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
 		return builder.build();
+	}
+
+	private GraphiQlHandler createGraphQlHandler(GraphQlProperties properties, String path) {
+		return new GraphiQlHandler(path, properties.getWebsocket().getPath());
 	}
 
 	private Mono<ServerResponse> unsupportedMediaType(ServerRequest request) {
@@ -183,6 +189,7 @@ public final class GraphQlWebFluxAutoConfiguration {
 		HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
 				GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
+			Assert.state(path != null, "'path' must not be null");
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 			mapping.setHandlerPredicate(new WebSocketUpgradeHandlerPredicate());
@@ -196,7 +203,7 @@ public final class GraphQlWebFluxAutoConfiguration {
 	static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("graphiql/index.html");
 		}
 

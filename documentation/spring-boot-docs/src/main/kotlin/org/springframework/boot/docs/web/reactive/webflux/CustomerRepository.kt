@@ -21,7 +21,7 @@ import reactor.core.publisher.Flux
 
 interface CustomerRepository : ReactiveCrudRepository<Customer, Long> {
 
-	fun findByUser(user: User?): Flux<Customer?>?
+	fun findByUser(user: User?): Flux<Customer>
 
 }
 

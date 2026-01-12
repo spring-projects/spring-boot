@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class HelloWorldService {
 
 	@Value("${test.name:World}")
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	public String getHelloMessage() {

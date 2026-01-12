@@ -16,7 +16,10 @@
 
 package org.springframework.boot.health.contributor;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.scheduler.Schedulers;
+
+import org.springframework.lang.Contract;
 
 /**
  * Contributes health information, either directly ({@link ReactiveHealthIndicator}) or
@@ -42,7 +45,8 @@ public sealed interface ReactiveHealthContributor permits ReactiveHealthIndicato
 	 * @param contributor the contributor to adapt or {@code null}
 	 * @return the adapted contributor
 	 */
-	static ReactiveHealthContributor adapt(HealthContributor contributor) {
+	@Contract("!null -> !null")
+	static @Nullable ReactiveHealthContributor adapt(@Nullable HealthContributor contributor) {
 		if (contributor == null) {
 			return null;
 		}

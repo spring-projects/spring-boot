@@ -23,18 +23,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.PosixFilePermission;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -63,9 +60,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
-import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,6 +80,7 @@ import static org.mockito.Mockito.mock;
 abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private final Class<T> taskClass;
@@ -284,24 +280,13 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void loaderIsWrittenToTheRootOfTheJarWhenUsingClassicLoader() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.getLoaderImplementation().set(LoaderImplementation.CLASSIC);
-		executeTask();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
-		}
-	}
-
-	@Test
 	void unpackCommentIsAddedToEntryIdentifiedByAPattern() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		this.task.requiresUnpack("**/one.jar");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).startsWith("UNPACK:");
+			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).isEqualTo("UNPACK");
 			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).isNull();
 		}
 	}
@@ -313,60 +298,9 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.requiresUnpack((element) -> element.getName().endsWith("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).startsWith("UNPACK:");
+			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).isEqualTo("UNPACK");
 			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).isNull();
 		}
-	}
-
-	@Test
-	void launchScriptCanBePrepended() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.launchScript();
-		executeTask();
-		Map<String, String> properties = new HashMap<>();
-		properties.put("initInfoProvides", this.task.getArchiveBaseName().get());
-		properties.put("initInfoShortDescription", this.project.getDescription());
-		properties.put("initInfoDescription", this.project.getDescription());
-		File archiveFile = this.task.getArchiveFile().get().getAsFile();
-		assertThat(Files.readAllBytes(archiveFile.toPath()))
-			.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
-		try (ZipFile zipFile = ZipFile.builder().setFile(archiveFile).get()) {
-			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
-		}
-		try {
-			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(archiveFile.toPath());
-			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
-		}
-		catch (UnsupportedOperationException ex) {
-			// Windows, presumably. Continue
-		}
-	}
-
-	@Test
-	void customLaunchScriptCanBePrepended() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		File customScript = new File(this.temp, "custom.script");
-		Files.writeString(customScript.toPath(), "custom script", StandardOpenOption.CREATE);
-		this.task.launchScript((configuration) -> configuration.setScript(customScript));
-		executeTask();
-		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
-		assertThat(Files.readString(path, StandardCharsets.ISO_8859_1)).startsWith("custom script");
-	}
-
-	@Test
-	void launchScriptInitInfoPropertiesCanBeCustomized() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.launchScript((configuration) -> {
-			configuration.getProperties().put("initInfoProvides", "provides");
-			configuration.getProperties().put("initInfoShortDescription", "short description");
-			configuration.getProperties().put("initInfoDescription", "description");
-		});
-		executeTask();
-		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
-		String content = Files.readString(path, StandardCharsets.ISO_8859_1);
-		assertThat(content).containsSequence("Provides:          provides");
-		assertThat(content).containsSequence("Short-Description: short description");
-		assertThat(content).containsSequence("Description:       description");
 	}
 
 	@Test
@@ -419,23 +353,46 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void reproducibleOrderingCanBeEnabled() throws IOException {
+	void archiveIsReproducibleByDefault() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
-		this.task.from(newFile("bravo.txt"), newFile("alpha.txt"), newFile("charlie.txt"));
-		this.task.setReproducibleFileOrder(true);
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
 		executeTask();
 		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
-		List<String> textFiles = new ArrayList<>();
+		List<String> files = new ArrayList<>();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				if (entry.getName().endsWith(".txt")) {
-					textFiles.add(entry.getName());
+				assertThat(entry.getLastModifiedTime().toMillis())
+					.isEqualTo(ZipEntryConstants.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+				if (entry.getName().startsWith("files/")) {
+					files.add(entry.getName());
 				}
 			}
 		}
-		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
+		assertThat(files).containsExactly("files/", "files/a/", "files/a/alpha.txt", "files/b/", "files/b/bravo.txt",
+				"files/c/", "files/c/charlie.txt");
+	}
+
+	@Test
+	void archiveReproducibilityCanBeDisabled() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
+		this.task.setPreserveFileTimestamps(true);
+		this.task.setReproducibleFileOrder(false);
+		executeTask();
+		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".txt") || entry.getName().startsWith("BOOT-INF/lib/")) {
+					OffsetDateTime lastModifiedTime = entry.getLastModifiedTime().toInstant().atOffset(ZoneOffset.UTC);
+					assertThat(lastModifiedTime)
+						.isNotEqualTo(OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+				}
+			}
+		}
 	}
 
 	@Test
@@ -531,22 +488,22 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+			String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"dependencies\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
 			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
-			if (!layerToolsJar.contains("SNAPSHOT")) {
-				expected.add("  - \"" + layerToolsJar + "\"");
+			if (!toolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + toolsJar + "\"");
 			}
 			expected.add("- \"spring-boot-loader\":");
 			expected.add("  - \"org/\"");
 			expected.add("- \"snapshot-dependencies\":");
 			expected.add("  - \"" + this.libPath + "second-project-library-SNAPSHOT.jar\"");
-			if (layerToolsJar.contains("SNAPSHOT")) {
-				expected.add("  - \"" + layerToolsJar + "\"");
+			if (toolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + toolsJar + "\"");
 			}
 			expected.add("  - \"" + this.libPath + "third-library-SNAPSHOT.jar\"");
 			expected.add("- \"application\":");
@@ -585,10 +542,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
 					"resources", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+			String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"my-deps\":");
-			expected.add("  - \"" + layerToolsJar + "\"");
+			expected.add("  - \"" + toolsJar + "\"");
 			expected.add("- \"my-internal-deps\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
@@ -613,7 +570,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void whenArchiveIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
+	void whenArchiveIsLayeredThenToolsJarIsIncluded() throws IOException {
 		List<String> entryNames = getEntryNames(createLayeredJar());
 		assertThat(entryNames).contains(this.libPath + JarModeLibrary.TOOLS.getName());
 	}
@@ -673,6 +630,19 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			entryNames.add(entries.nextElement().getName());
 		}
 		return entryNames;
+	}
+
+	protected File newFiles(String... names) throws IOException {
+		File dir = new File(this.temp, UUID.randomUUID().toString());
+		dir.mkdir();
+		List<File> files = new ArrayList<>();
+		for (String name : names) {
+			File file = new File(dir, name);
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+			files.add(file);
+		}
+		return dir;
 	}
 
 	protected File newFile(String name) throws IOException {

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.util.Instantiator.FailureHandler;
@@ -44,7 +45,7 @@ class InstantiatorTests {
 
 	private final ParamB paramB = new ParamB();
 
-	private ParamC paramC;
+	private @Nullable ParamC paramC;
 
 	@Test
 	void instantiateWhenOnlyDefaultConstructorCreatesInstance() {
@@ -145,7 +146,9 @@ class InstantiatorTests {
 	}
 
 	private <T> T createInstance(Class<T> type) {
-		return createInstantiator(type).instantiate(type.getName());
+		T instance = createInstantiator(type).instantiate(type.getName());
+		assertThat(instance).isNotNull();
+		return instance;
 	}
 
 	private <T> Instantiator<T> createInstantiator(Class<T> type) {

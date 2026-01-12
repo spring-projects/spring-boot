@@ -26,10 +26,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
@@ -108,6 +110,7 @@ class ConfigurationPropertiesReportEndpointTests {
 				assertThat(nested).containsOnly(entry("name", "nested"), entry("counter", 42));
 			}, (inputs) -> {
 				Map<String, Object> nested = (Map<String, Object>) inputs.get("nested");
+				assertThat(nested).isNotNull();
 				Map<String, Object> name = (Map<String, Object>) nested.get("name");
 				Map<String, Object> counter = (Map<String, Object>) nested.get("counter");
 				assertThat(name).containsEntry("value", "nested");
@@ -164,7 +167,7 @@ class ConfigurationPropertiesReportEndpointTests {
 			.run(assertProperties("test", (properties) -> assertThat(properties.get("wrapper")).isEqualTo(10),
 					(inputs) -> {
 						Map<String, Object> wrapper = (Map<String, Object>) inputs.get("wrapper");
-						assertThat(wrapper.get("value")).isEqualTo(10);
+						assertThat(wrapper).containsEntry("value", 10);
 					}));
 	}
 
@@ -179,7 +182,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	void descriptorWithMixedCaseProperty() {
 		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
 			.run(assertProperties("mixedcase",
-					(properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
+					(properties) -> assertThat(properties).containsEntry("mIxedCase", "mixed")));
 	}
 
 	@Test
@@ -338,6 +341,7 @@ class ConfigurationPropertiesReportEndpointTests {
 			.run(assertProperties("sensible", (properties) -> {
 			}, (inputs) -> {
 				Map<String, Object> stringInputs = (Map<String, Object>) inputs.get("string");
+				assertThat(stringInputs).isNotNull();
 				String[] originParents = (String[]) stringInputs.get("originParents");
 				assertThat(originParents).containsExactly("spring", "boot");
 			}));
@@ -362,8 +366,8 @@ class ConfigurationPropertiesReportEndpointTests {
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor configurationProperties = endpoint
 				.configurationProperties();
-			ContextConfigurationPropertiesDescriptor allProperties = configurationProperties.getContexts()
-				.get(context.getId());
+			ContextConfigurationPropertiesDescriptor allProperties = getContextDescriptor(context,
+					configurationProperties);
 			Optional<String> key = allProperties.getBeans()
 				.keySet()
 				.stream()
@@ -371,10 +375,19 @@ class ConfigurationPropertiesReportEndpointTests {
 				.findAny();
 			assertThat(key).describedAs("No configuration properties with prefix '%s' found", prefix).isPresent();
 			ConfigurationPropertiesBeanDescriptor descriptor = allProperties.getBeans().get(key.get());
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getPrefix()).isEqualTo(prefix);
 			properties.accept(descriptor.getProperties());
 			inputs.accept(descriptor.getInputs());
 		};
+	}
+
+	private ContextConfigurationPropertiesDescriptor getContextDescriptor(AssertableApplicationContext context,
+			ConfigurationPropertiesDescriptor configurationProperties) {
+		ContextConfigurationPropertiesDescriptor contextDescriptor = configurationProperties.getContexts()
+			.get(context.getId());
+		assertThat(contextDescriptor).isNotNull();
+		return contextDescriptor;
 	}
 
 	private boolean findIdFromPrefix(String prefix, String id) {
@@ -396,15 +409,15 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private final String value;
 
-		private final MockOrigin parent;
+		private final @Nullable MockOrigin parent;
 
-		MockOrigin(String value, MockOrigin parent) {
+		MockOrigin(String value, @Nullable MockOrigin parent) {
 			this.value = value;
 			this.parent = parent;
 		}
 
 		@Override
-		public Origin getParent() {
+		public @Nullable Origin getParent() {
 			return this.parent;
 		}
 
@@ -464,13 +477,13 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private String myTestProperty = "654321";
 
-		private String nullValue = null;
+		private @Nullable String nullValue;
 
 		private Duration duration = Duration.ofSeconds(10);
 
 		private final String ignored = "dummy";
 
-		private Integer wrapper;
+		private @Nullable Integer wrapper;
 
 		public String getDbPassword() {
 			return this.dbPassword;
@@ -488,11 +501,11 @@ class ConfigurationPropertiesReportEndpointTests {
 			this.myTestProperty = myTestProperty;
 		}
 
-		public String getNullValue() {
+		public @Nullable String getNullValue() {
 			return this.nullValue;
 		}
 
-		public void setNullValue(String nullValue) {
+		public void setNullValue(@Nullable String nullValue) {
 			this.nullValue = nullValue;
 		}
 
@@ -508,11 +521,11 @@ class ConfigurationPropertiesReportEndpointTests {
 			return this.ignored;
 		}
 
-		public Integer getWrapper() {
+		public @Nullable Integer getWrapper() {
 			return this.wrapper;
 		}
 
-		public void setWrapper(Integer wrapper) {
+		public void setWrapper(@Nullable Integer wrapper) {
 			this.wrapper = wrapper;
 		}
 
@@ -769,13 +782,13 @@ class ConfigurationPropertiesReportEndpointTests {
 	@ConfigurationProperties("data")
 	public static class DataSizeProperties {
 
-		private DataSize size;
+		private @Nullable DataSize size;
 
-		public DataSize getSize() {
+		public @Nullable DataSize getSize() {
 			return this.size;
 		}
 
-		public void setSize(DataSize size) {
+		public void setSize(@Nullable DataSize size) {
 			this.size = size;
 		}
 
@@ -840,7 +853,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	@ConfigurationProperties("sensible")
 	public static class SensibleProperties {
 
-		private String string;
+		private @Nullable String string;
 
 		private URI sensitiveUri = URI.create("http://user:password@localhost:8080");
 
@@ -859,11 +872,11 @@ class ConfigurationPropertiesReportEndpointTests {
 			this.listOfListItems.add(Collections.singletonList(new ListItem()));
 		}
 
-		public void setString(String string) {
+		public void setString(@Nullable String string) {
 			this.string = string;
 		}
 
-		public String getString() {
+		public @Nullable String getString() {
 			return this.string;
 		}
 
@@ -915,7 +928,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 			private String somePassword = "secret";
 
-			private String custom;
+			private @Nullable String custom;
 
 			public String getSomePassword() {
 				return this.somePassword;
@@ -925,11 +938,11 @@ class ConfigurationPropertiesReportEndpointTests {
 				this.somePassword = somePassword;
 			}
 
-			public String getCustom() {
+			public @Nullable String getCustom() {
 				return this.custom;
 			}
 
-			public void setCustom(String custom) {
+			public void setCustom(@Nullable String custom) {
 				this.custom = custom;
 			}
 

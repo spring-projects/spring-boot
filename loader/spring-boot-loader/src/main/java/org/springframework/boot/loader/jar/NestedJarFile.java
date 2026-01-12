@@ -706,6 +706,7 @@ public class NestedJarFile extends JarFile {
 		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
 			this.uncompressedSize = entry.getUncompressedSize();
 			this.content = entry.openContent();
+			this.remaining = this.uncompressedSize;
 		}
 
 		@Override
@@ -727,9 +728,6 @@ public class NestedJarFile extends JarFile {
 				}
 				result = count;
 			}
-			if (this.remaining == 0) {
-				close();
-			}
 			return result;
 		}
 
@@ -740,9 +738,6 @@ public class NestedJarFile extends JarFile {
 				result = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
 				this.pos += result;
 				this.remaining -= result;
-			}
-			if (this.remaining == 0) {
-				close();
 			}
 			return result;
 		}

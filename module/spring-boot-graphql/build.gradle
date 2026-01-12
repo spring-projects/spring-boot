@@ -28,11 +28,12 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.graphql:spring-graphql")
 
-	implementation(project(":module:spring-boot-jackson"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-http-converter"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional(project(":module:spring-boot-rsocket"))
 	optional(project(":module:spring-boot-security"))
 	optional(project(":module:spring-boot-webflux"))
@@ -54,5 +55,11 @@ dependencies {
 	testImplementation("org.springframework.graphql:spring-graphql-test")
 	testImplementation("org.springframework.security:spring-security-test")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Implicit {@code 'help'} command.
  *
@@ -39,7 +41,7 @@ class HelpCommand extends Command {
 		this(context, commands, System.getProperty("jarmode"));
 	}
 
-	HelpCommand(Context context, List<Command> commands, String jarMode) {
+	HelpCommand(Context context, List<Command> commands, @Nullable String jarMode) {
 		super("help", "Help about any command", Options.none(), Parameters.of("[<command>]"));
 		this.context = context;
 		this.commands = commands;
@@ -47,7 +49,7 @@ class HelpCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		run(out, parameters);
 	}
 

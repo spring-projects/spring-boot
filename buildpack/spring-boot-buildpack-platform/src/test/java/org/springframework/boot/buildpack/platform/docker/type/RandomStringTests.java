@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class RandomStringTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void generateWhenPrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> RandomString.generate(null, 10))
 			.withMessage("'prefix' must not be null");

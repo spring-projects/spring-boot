@@ -25,6 +25,7 @@ public class TestNode {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 }

@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.restart;
 
 import java.lang.reflect.Method;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Thread used to launch a restarted application.
  *
@@ -29,7 +31,7 @@ class RestartLauncher extends Thread {
 
 	private final String[] args;
 
-	private Throwable error;
+	private @Nullable Throwable error;
 
 	RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
 			UncaughtExceptionHandler exceptionHandler) {
@@ -55,7 +57,7 @@ class RestartLauncher extends Thread {
 		}
 	}
 
-	Throwable getError() {
+	@Nullable Throwable getError() {
 		return this.error;
 	}
 

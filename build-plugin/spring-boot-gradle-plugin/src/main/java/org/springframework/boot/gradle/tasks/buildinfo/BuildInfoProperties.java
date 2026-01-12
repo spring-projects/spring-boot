@@ -35,6 +35,7 @@ import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The properties that are written into the {@code build-info.properties} file.
@@ -47,7 +48,7 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	private final SetProperty<String> excludes;
 
-	private final Supplier<String> creationTime = () -> DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+	private final Supplier<@Nullable String> creationTime = () -> DateTimeFormatter.ISO_INSTANT.format(Instant.now());
 
 	@Inject
 	public BuildInfoProperties(Project project, SetProperty<String> excludes) {
@@ -107,32 +108,32 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	@Input
 	@Optional
-	String getArtifactIfNotExcluded() {
+	@Nullable String getArtifactIfNotExcluded() {
 		return getIfNotExcluded(getArtifact(), "artifact");
 	}
 
 	@Input
 	@Optional
-	String getGroupIfNotExcluded() {
+	@Nullable String getGroupIfNotExcluded() {
 		return getIfNotExcluded(getGroup(), "group");
 	}
 
 	@Input
 	@Optional
-	String getNameIfNotExcluded() {
+	@Nullable String getNameIfNotExcluded() {
 		return getIfNotExcluded(getName(), "name");
 	}
 
 	@Input
 	@Optional
-	Instant getTimeIfNotExcluded() {
+	@Nullable Instant getTimeIfNotExcluded() {
 		String time = getIfNotExcluded(getTime(), "time", this.creationTime);
 		return (time != null) ? Instant.parse(time) : null;
 	}
 
 	@Input
 	@Optional
-	String getVersionIfNotExcluded() {
+	@Nullable String getVersionIfNotExcluded() {
 		return getIfNotExcluded(getVersion(), "version");
 	}
 
@@ -141,15 +142,19 @@ public abstract class BuildInfoProperties implements Serializable {
 		return coerceToStringValues(applyExclusions(getAdditional().getOrElse(Collections.emptyMap())));
 	}
 
-	private <T> T getIfNotExcluded(Property<T> property, String name) {
-		return getIfNotExcluded(property, name, () -> null);
+	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name) {
+		Supplier<@Nullable T> supplier = () -> null;
+		return getIfNotExcluded(property, name, supplier);
 	}
 
-	private <T> T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
+	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<@Nullable T> defaultValue) {
 		if (this.excludes.getOrElse(Collections.emptySet()).contains(name)) {
 			return null;
 		}
-		return property.getOrElse(defaultValue.get());
+		if (property.isPresent()) {
+			return property.get();
+		}
+		return defaultValue.get();
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
@@ -158,7 +163,9 @@ public abstract class BuildInfoProperties implements Serializable {
 			if (value instanceof Provider<?> provider) {
 				value = provider.getOrNull();
 			}
-			output.put(key, (value != null) ? value.toString() : null);
+			if (value != null) {
+				output.put(key, value.toString());
+			}
 		});
 		return output;
 	}
@@ -166,7 +173,12 @@ public abstract class BuildInfoProperties implements Serializable {
 	private Map<String, Object> applyExclusions(Map<String, Object> input) {
 		Map<String, Object> output = new HashMap<>();
 		Set<String> exclusions = this.excludes.getOrElse(Collections.emptySet());
-		input.forEach((key, value) -> output.put(key, (!exclusions.contains(key)) ? value : null));
+		input.forEach((key, value) -> {
+			boolean isExcluded = exclusions.contains(key);
+			if (!isExcluded) {
+				output.put(key, value);
+			}
+		});
 		return output;
 	}
 

@@ -22,10 +22,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,26 +46,31 @@ public class Image extends MappedObject {
 
 	private final List<LayerId> layers;
 
-	private final String os;
+	private final @Nullable String os;
 
-	private final String architecture;
+	private final @Nullable String architecture;
 
-	private final String variant;
+	private final @Nullable String variant;
 
-	private final String created;
+	private final @Nullable String created;
+
+	private final @Nullable Descriptor descriptor;
 
 	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.digests = childrenAt("/RepoDigests", JsonNode::asText);
+		this.digests = childrenAt("/RepoDigests", JsonNode::asString);
 		this.config = new ImageConfig(getNode().at("/Config"));
 		this.layers = extractLayers(valueAt("/RootFS/Layers", String[].class));
 		this.os = valueAt("/Os", String.class);
 		this.architecture = valueAt("/Architecture", String.class);
 		this.variant = valueAt("/Variant", String.class);
 		this.created = valueAt("/Created", String.class);
+		JsonNode descriptorNode = getNode().path("Descriptor");
+		this.descriptor = (descriptorNode.isMissingNode() || descriptorNode.isNull()) ? null
+				: new Descriptor(descriptorNode);
 	}
 
-	private List<LayerId> extractLayers(String[] layers) {
+	private List<LayerId> extractLayers(String @Nullable [] layers) {
 		if (layers == null) {
 			return Collections.emptyList();
 		}
@@ -105,7 +113,7 @@ public class Image extends MappedObject {
 	 * Return the architecture of the image.
 	 * @return the image architecture
 	 */
-	public String getArchitecture() {
+	public @Nullable String getArchitecture() {
 		return this.architecture;
 	}
 
@@ -113,7 +121,7 @@ public class Image extends MappedObject {
 	 * Return the variant of the image.
 	 * @return the image variant
 	 */
-	public String getVariant() {
+	public @Nullable String getVariant() {
 		return this.variant;
 	}
 
@@ -121,8 +129,37 @@ public class Image extends MappedObject {
 	 * Return the created date of the image.
 	 * @return the image created date
 	 */
-	public String getCreated() {
+	public @Nullable String getCreated() {
 		return this.created;
+	}
+
+	/**
+	 * Return the descriptor for this image as reported by Docker Engine inspect.
+	 * @return the image descriptor or {@code null}
+	 */
+	public @Nullable Descriptor getDescriptor() {
+		return this.descriptor;
+	}
+
+	/**
+	 * Return the primary digest of the image or {@code null}. Checks the
+	 * {@code Descriptor.digest} first, falling back to {@code RepoDigest}.
+	 * @return the primary digest or {@code null}
+	 * @since 3.4.12
+	 */
+	public @Nullable String getPrimaryDigest() {
+		if (this.descriptor != null && StringUtils.hasText(this.descriptor.getDigest())) {
+			return this.descriptor.getDigest();
+		}
+		if (!CollectionUtils.isEmpty(this.digests)) {
+			try {
+				String digest = this.digests.get(0);
+				return (digest != null) ? ImageReference.of(digest).getDigest() : null;
+			}
+			catch (RuntimeException ex) {
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -133,6 +170,26 @@ public class Image extends MappedObject {
 	 */
 	public static Image of(InputStream content) throws IOException {
 		return of(content, Image::new);
+	}
+
+	/**
+	 * Descriptor details as reported in the {@code Docker inspect} response.
+	 *
+	 * @since 3.4.12
+	 */
+	public final class Descriptor extends MappedObject {
+
+		private final String digest;
+
+		Descriptor(JsonNode node) {
+			super(node, MethodHandles.lookup());
+			this.digest = Objects.requireNonNull(valueAt("/digest", String.class));
+		}
+
+		public String getDigest() {
+			return this.digest;
+		}
+
 	}
 
 }

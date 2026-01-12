@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -80,7 +82,7 @@ public class LogUpdateEvent extends UpdateEvent {
 			}
 		}
 		catch (IllegalStateException ex) {
-			byte[] message = ex.getMessage().getBytes(StandardCharsets.UTF_8);
+			byte[] message = (ex.getMessage() == null) ? new byte[0] : ex.getMessage().getBytes(StandardCharsets.UTF_8);
 			consumer.accept(new LogUpdateEvent(StreamType.STD_ERR, message));
 			StreamUtils.drain(inputStream);
 		}
@@ -89,7 +91,7 @@ public class LogUpdateEvent extends UpdateEvent {
 		}
 	}
 
-	private static LogUpdateEvent read(InputStream inputStream) throws IOException {
+	private static @Nullable LogUpdateEvent read(InputStream inputStream) throws IOException {
 		byte[] header = read(inputStream, 8);
 		if (header == null) {
 			return null;
@@ -100,10 +102,11 @@ public class LogUpdateEvent extends UpdateEvent {
 			size = (size << 8) + (header[i + 4] & 0xff);
 		}
 		byte[] payload = read(inputStream, size);
+		Assert.state(payload != null, "'payload' must not be null");
 		return new LogUpdateEvent(streamType, payload);
 	}
 
-	private static byte[] read(InputStream inputStream, long size) throws IOException {
+	private static byte @Nullable [] read(InputStream inputStream, long size) throws IOException {
 		byte[] data = new byte[(int) size];
 		int offset = 0;
 		do {

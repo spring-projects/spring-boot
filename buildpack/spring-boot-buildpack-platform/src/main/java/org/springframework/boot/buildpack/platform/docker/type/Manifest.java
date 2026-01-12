@@ -21,9 +21,11 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.Assert;
 
 /**
  * A manifest as defined in {@code application/vnd.docker.distribution.manifest} or
@@ -38,22 +40,28 @@ public class Manifest extends MappedObject {
 
 	private final Integer schemaVersion;
 
-	private final String mediaType;
+	private final @Nullable String mediaType;
 
 	private final List<BlobReference> layers;
 
 	protected Manifest(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.schemaVersion = valueAt("/schemaVersion", Integer.class);
+		this.schemaVersion = extractSchemaVersion();
 		this.mediaType = valueAt("/mediaType", String.class);
 		this.layers = childrenAt("/layers", BlobReference::new);
+	}
+
+	private Integer extractSchemaVersion() {
+		Integer result = valueAt("/schemaVersion", Integer.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	public Integer getSchemaVersion() {
 		return this.schemaVersion;
 	}
 
-	public String getMediaType() {
+	public @Nullable String getMediaType() {
 		return this.mediaType;
 	}
 

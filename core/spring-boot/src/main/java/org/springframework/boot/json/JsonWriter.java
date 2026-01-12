@@ -29,10 +29,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.json.JsonValueWriter.Series;
-import org.springframework.boot.json.JsonWriter.Member.Extractor;
+import org.springframework.boot.json.JsonWriter.Member.ValueExtractor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -75,7 +76,6 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-@NullUnmarked
 @FunctionalInterface
 public interface JsonWriter<T> {
 
@@ -85,14 +85,14 @@ public interface JsonWriter<T> {
 	 * @param out the output that should receive the JSON
 	 * @throws IOException on IO error
 	 */
-	void write(T instance, Appendable out) throws IOException;
+	void write(@Nullable T instance, Appendable out) throws IOException;
 
 	/**
 	 * Write the given instance to a JSON string.
 	 * @param instance the instance to write (may be {@code null})
 	 * @return the JSON string
 	 */
-	default String writeToString(T instance) {
+	default String writeToString(@Nullable T instance) {
 		return write(instance).toJsonString();
 	}
 
@@ -102,7 +102,7 @@ public interface JsonWriter<T> {
 	 * @param instance the instance to write (may be {@code null})
 	 * @return a {@link WritableJson} instance that may be used to write the JSON
 	 */
-	default WritableJson write(T instance) {
+	default WritableJson write(@Nullable T instance) {
 		return WritableJson.of((out) -> write(instance, out));
 	}
 
@@ -119,9 +119,9 @@ public interface JsonWriter<T> {
 	 * Return a new {@link JsonWriter} instance that appends the given suffix after the
 	 * JSON has been written.
 	 * @param suffix the suffix to write, if any
-	 * @return a new {@link JsonWriter} instance that appends a suffixafter the JSON
+	 * @return a new {@link JsonWriter} instance that appends a suffix after the JSON
 	 */
-	default JsonWriter<T> withSuffix(String suffix) {
+	default JsonWriter<T> withSuffix(@Nullable String suffix) {
 		if (!StringUtils.hasLength(suffix)) {
 			return this;
 		}
@@ -168,7 +168,7 @@ public interface JsonWriter<T> {
 	 * is used to complete the definition.
 	 * <p>
 	 * Members can filtered using {@code Member.when} methods and adapted to different
-	 * types using {@link Member#as(Function) Member.as(...)}.
+	 * types using {@link Member#as(Extractor) Member.as(...)}.
 	 *
 	 * @param <T> the type that will be written
 	 */
@@ -178,7 +178,7 @@ public interface JsonWriter<T> {
 
 		private final boolean contributesPair;
 
-		private final Series series;
+		private final @Nullable Series series;
 
 		private final JsonWriterFiltersAndProcessors jsonProcessors = new JsonWriterFiltersAndProcessors();
 
@@ -211,7 +211,7 @@ public interface JsonWriter<T> {
 		 * @param value the member value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(String name, V value) {
+		public <V> Member<V> add(String name, @Nullable V value) {
 			return add(name, (instance) -> value);
 		}
 
@@ -222,7 +222,7 @@ public interface JsonWriter<T> {
 		 * @param supplier a supplier of the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(String name, Supplier<V> supplier) {
+		public <V> Member<V> add(String name, Supplier<@Nullable V> supplier) {
 			Assert.notNull(supplier, "'supplier' must not be null");
 			return add(name, (instance) -> supplier.get());
 		}
@@ -231,10 +231,10 @@ public interface JsonWriter<T> {
 		 * Add a new member with an extracted value.
 		 * @param <V> the value type
 		 * @param name the member name
-		 * @param extractor a function to extract the value
+		 * @param extractor {@link Extractor} to extract the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(String name, Function<T, V> extractor) {
+		public <V> Member<V> add(String name, Extractor<T, V> extractor) {
 			Assert.notNull(name, "'name' must not be null");
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return addMember(name, extractor);
@@ -247,7 +247,7 @@ public interface JsonWriter<T> {
 		 * @return the added {@link Member} which may be configured further
 		 */
 		public Member<T> add() {
-			return from(Function.identity());
+			return from((value) -> value);
 		}
 
 		/**
@@ -255,10 +255,10 @@ public interface JsonWriter<T> {
 		 * @param <M> the map type
 		 * @param <K> the key type
 		 * @param <V> the value type
-		 * @param extractor a function to extract the map
+		 * @param extractor {@link Extractor} to extract the map
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
+		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Extractor<T, M> extractor) {
 			return from(extractor).usingPairs(Map::forEach);
 		}
 
@@ -269,7 +269,7 @@ public interface JsonWriter<T> {
 		 * @param value the member value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> from(V value) {
+		public <V> Member<V> from(@Nullable V value) {
 			return from((instance) -> value);
 		}
 
@@ -280,7 +280,7 @@ public interface JsonWriter<T> {
 		 * @param supplier a supplier of the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> from(Supplier<V> supplier) {
+		public <V> Member<V> from(Supplier<@Nullable V> supplier) {
 			Assert.notNull(supplier, "'supplier' must not be null");
 			return from((instance) -> supplier.get());
 		}
@@ -289,10 +289,10 @@ public interface JsonWriter<T> {
 		 * Add members from an extracted value. One of the {@code Member.using(...)}
 		 * methods must be used to complete the configuration.
 		 * @param <V> the value type
-		 * @param extractor a function to extract the value
+		 * @param extractor {@link Extractor} to extract the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> from(Function<T, V> extractor) {
+		public <V> Member<V> from(Extractor<T, V> extractor) {
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return addMember(null, extractor);
 		}
@@ -307,7 +307,7 @@ public interface JsonWriter<T> {
 		}
 
 		/**
-		 * Add the a {@link NameProcessor} to be applied when the JSON is written.
+		 * Add a {@link NameProcessor} to be applied when the JSON is written.
 		 * @param nameProcessor the name processor to add
 		 */
 		public void applyingNameProcessor(NameProcessor nameProcessor) {
@@ -316,7 +316,7 @@ public interface JsonWriter<T> {
 		}
 
 		/**
-		 * Add the a {@link ValueProcessor} to be applied when the JSON is written.
+		 * Add a {@link ValueProcessor} to be applied when the JSON is written.
 		 * @param valueProcessor the value processor to add
 		 */
 		public void applyingValueProcessor(ValueProcessor<?> valueProcessor) {
@@ -324,8 +324,8 @@ public interface JsonWriter<T> {
 			this.jsonProcessors.valueProcessors().add(valueProcessor);
 		}
 
-		private <V> Member<V> addMember(String name, Function<T, V> extractor) {
-			Member<V> member = new Member<>(this.members.size(), name, Extractor.of(extractor));
+		private <V> Member<V> addMember(@Nullable String name, Extractor<T, V> extractor) {
+			Member<V> member = new Member<>(this.members.size(), name, ValueExtractor.of(extractor));
 			this.members.add(member);
 			return member;
 		}
@@ -335,7 +335,7 @@ public interface JsonWriter<T> {
 		 * @param instance the instance to write
 		 * @param valueWriter the JSON value writer to use
 		 */
-		void write(T instance, JsonValueWriter valueWriter) {
+		void write(@Nullable T instance, JsonValueWriter valueWriter) {
 			valueWriter.pushProcessors(this.jsonProcessors);
 			valueWriter.start(this.series);
 			for (Member<?> member : this.members) {
@@ -361,7 +361,7 @@ public interface JsonWriter<T> {
 	 * JSON structures when configured with one of the {@code using(...)} methods.
 	 * <p>
 	 * The {@code when(...)} methods may be used to filter a member (omit it entirely from
-	 * the JSON). The {@link #as(Function)} method can be used to adapt to a different
+	 * the JSON). The {@link #as(Extractor)} method can be used to adapt to a different
 	 * type.
 	 *
 	 * @param <T> the member type
@@ -370,18 +370,18 @@ public interface JsonWriter<T> {
 
 		private final int index;
 
-		private final String name;
+		private final @Nullable String name;
 
-		private Extractor<T> extractor;
+		private ValueExtractor<? extends @Nullable T> valueExtractor;
 
-		private BiConsumer<T, BiConsumer<?, ?>> pairs;
+		private @Nullable BiConsumer<T, BiConsumer<?, ?>> pairs;
 
-		private Members<T> members;
+		private @Nullable Members<T> members;
 
-		Member(int index, String name, Extractor<T> extractor) {
+		Member(int index, @Nullable String name, ValueExtractor<? extends @Nullable T> valueExtractor) {
 			this.index = index;
 			this.name = name;
-			this.extractor = extractor;
+			this.valueExtractor = valueExtractor;
 		}
 
 		/**
@@ -397,7 +397,7 @@ public interface JsonWriter<T> {
 		 * @param extractor an function used to extract the value to test
 		 * @return a {@link Member} which may be configured further
 		 */
-		public Member<T> whenNotNull(Function<T, ?> extractor) {
+		public Member<T> whenNotNull(Function<@Nullable T, ?> extractor) {
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return when((instance) -> Objects.nonNull(extractor.apply(instance)));
 		}
@@ -418,7 +418,8 @@ public interface JsonWriter<T> {
 		 * @return a {@link Member} which may be configured further
 		 */
 		public Member<T> whenNotEmpty() {
-			return whenNot(ObjectUtils::isEmpty);
+			Predicate<@Nullable T> isEmpty = ObjectUtils::isEmpty;
+			return whenNot(isEmpty);
 		}
 
 		/**
@@ -426,7 +427,7 @@ public interface JsonWriter<T> {
 		 * @param predicate the predicate to test
 		 * @return a {@link Member} which may be configured further
 		 */
-		public Member<T> whenNot(Predicate<T> predicate) {
+		public Member<T> whenNot(Predicate<@Nullable T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
 			return when(predicate.negate());
 		}
@@ -436,23 +437,23 @@ public interface JsonWriter<T> {
 		 * @param predicate the predicate to test
 		 * @return a {@link Member} which may be configured further
 		 */
-		public Member<T> when(Predicate<T> predicate) {
+		public Member<T> when(Predicate<? super @Nullable T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
-			this.extractor = this.extractor.when(predicate);
+			this.valueExtractor = this.valueExtractor.when(predicate);
 			return this;
 		}
 
 		/**
 		 * Adapt the value by applying the given {@link Function}.
 		 * @param <R> the result type
-		 * @param adapter a {@link Function} to adapt the value
+		 * @param extractor a {@link Extractor} to adapt the value
 		 * @return a {@link Member} which may be configured further
 		 */
 		@SuppressWarnings("unchecked")
-		public <R> Member<R> as(Function<T, R> adapter) {
-			Assert.notNull(adapter, "'adapter' must not be null");
+		public <R> Member<R> as(Extractor<T, R> extractor) {
+			Assert.notNull(extractor, "'adapter' must not be null");
 			Member<R> result = (Member<R>) this;
-			result.extractor = this.extractor.as(adapter);
+			result.valueExtractor = this.valueExtractor.as(extractor::extract);
 			return result;
 		}
 
@@ -644,23 +645,30 @@ public interface JsonWriter<T> {
 		 * @param instance the instance to write
 		 * @param valueWriter the JSON value writer to use
 		 */
-		void write(Object instance, JsonValueWriter valueWriter) {
-			T extracted = this.extractor.extract(instance);
-			if (Extractor.skip(extracted)) {
+		void write(@Nullable Object instance, JsonValueWriter valueWriter) {
+			T extracted = this.valueExtractor.extract(instance);
+			if (ValueExtractor.skip(extracted)) {
 				return;
 			}
 			Object value = getValueToWrite(extracted, valueWriter);
 			valueWriter.write(this.name, value);
 		}
 
-		private Object getValueToWrite(T extracted, JsonValueWriter valueWriter) {
-			if (this.pairs != null) {
-				return WritableJson.of((out) -> valueWriter.writePairs((pairs) -> this.pairs.accept(extracted, pairs)));
+		private @Nullable Object getValueToWrite(@Nullable T extracted, JsonValueWriter valueWriter) {
+			WritableJson writableJson = getWritableJsonToWrite(extracted, valueWriter);
+			return (writableJson != null) ? WritableJson.of(writableJson) : extracted;
+		}
+
+		private @Nullable WritableJson getWritableJsonToWrite(@Nullable T extracted, JsonValueWriter valueWriter) {
+			BiConsumer<T, BiConsumer<?, ?>> pairs = this.pairs;
+			if (pairs != null) {
+				return (out) -> valueWriter.writePairs((outPairs) -> pairs.accept(extracted, outPairs));
 			}
-			if (this.members != null) {
-				return WritableJson.of((out) -> this.members.write(extracted, valueWriter));
+			Members<T> members = this.members;
+			if (members != null) {
+				return (out) -> members.write(extracted, valueWriter);
 			}
-			return extracted;
+			return null;
 		}
 
 		/**
@@ -682,7 +690,7 @@ public interface JsonWriter<T> {
 		 * @param <T> the member type
 		 */
 		@FunctionalInterface
-		interface Extractor<T> {
+		interface ValueExtractor<T extends @Nullable Object> {
 
 			/**
 			 * Represents a skipped value.
@@ -694,50 +702,55 @@ public interface JsonWriter<T> {
 			 * @param instance the source instance
 			 * @return the extracted value or {@link #SKIP}
 			 */
-			T extract(Object instance);
+			@Nullable T extract(@Nullable Object instance);
 
 			/**
 			 * Only extract when the given predicate matches.
 			 * @param predicate the predicate to test
-			 * @return a new {@link Extractor}
+			 * @return a new {@link ValueExtractor}
 			 */
-			default Extractor<T> when(Predicate<T> predicate) {
+			default ValueExtractor<T> when(Predicate<? super @Nullable T> predicate) {
 				return (instance) -> test(extract(instance), predicate);
 			}
 
 			@SuppressWarnings("unchecked")
-			private T test(T extracted, Predicate<T> predicate) {
+			private @Nullable T test(@Nullable T extracted, Predicate<? super @Nullable T> predicate) {
 				return (!skip(extracted) && predicate.test(extracted)) ? extracted : (T) SKIP;
 			}
 
 			/**
 			 * Adapt the extracted value.
 			 * @param <R> the result type
-			 * @param adapter the adapter to use
-			 * @return a new {@link Extractor}
+			 * @param extractor the extractor to use
+			 * @return a new {@link ValueExtractor}
 			 */
-			default <R> Extractor<R> as(Function<T, R> adapter) {
-				return (instance) -> apply(extract(instance), adapter);
+			default <R> ValueExtractor<R> as(Extractor<T, R> extractor) {
+				return (instance) -> apply(extract(instance), extractor);
 			}
 
 			@SuppressWarnings("unchecked")
-			private <R> R apply(T extracted, Function<T, R> function) {
-				if (skip(extracted)) {
+			private <R> @Nullable R apply(@Nullable T value, Extractor<T, R> extractor) {
+				if (skip(value)) {
 					return (R) SKIP;
 				}
-				return (extracted != null) ? function.apply(extracted) : null;
+				return (value != null) ? extractor.extract(value) : null;
 			}
 
 			/**
-			 * Create a new {@link Extractor} based on the given {@link Function}.
+			 * Create a new {@link ValueExtractor} based on the given {@link Function}.
 			 * @param <S> the source type
 			 * @param <T> the extracted type
 			 * @param extractor the extractor to use
-			 * @return a new {@link Extractor} instance
+			 * @return a new {@link ValueExtractor} instance
 			 */
 			@SuppressWarnings("unchecked")
-			static <S, T> Extractor<T> of(Function<S, T> extractor) {
-				return (instance) -> !skip(instance) ? extractor.apply((S) instance) : (T) SKIP;
+			static <S, T> ValueExtractor<T> of(Extractor<S, T> extractor) {
+				return (instance) -> {
+					if (instance == null) {
+						return null;
+					}
+					return (skip(instance)) ? (T) SKIP : extractor.extract((S) instance);
+				};
 			}
 
 			/**
@@ -746,7 +759,7 @@ public interface JsonWriter<T> {
 			 * @param extracted the value to test
 			 * @return if the value is to be skipped
 			 */
-			static <T> boolean skip(T extracted) {
+			static <T> boolean skip(@Nullable T extracted) {
 				return extracted == SKIP;
 			}
 
@@ -765,7 +778,7 @@ public interface JsonWriter<T> {
 	 * include any {@link NameProcessor name processing}.
 	 * @param index the index of the member or {@link MemberPath#UNINDEXED}
 	 */
-	record MemberPath(MemberPath parent, String name, int index) {
+	record MemberPath(@Nullable MemberPath parent, @Nullable String name, int index) {
 
 		private static final String[] ESCAPED = { "\\", ".", "[", "]" };
 
@@ -803,7 +816,7 @@ public interface JsonWriter<T> {
 		}
 
 		@Override
-		public final String toString() {
+		public String toString() {
 			return toString(true);
 		}
 
@@ -811,7 +824,7 @@ public interface JsonWriter<T> {
 		 * Return a string representation of the path without any escaping.
 		 * @return the unescaped string representation
 		 */
-		public final String toUnescapedString() {
+		public String toUnescapedString() {
 			return toString(false);
 		}
 
@@ -826,7 +839,10 @@ public interface JsonWriter<T> {
 			return string.toString();
 		}
 
-		private String escape(String name) {
+		private @Nullable String escape(@Nullable String name) {
+			if (name == null) {
+				return null;
+			}
 			for (String escape : ESCAPED) {
 				name = name.replace(escape, "\\" + escape);
 			}
@@ -932,7 +948,7 @@ public interface JsonWriter<T> {
 		 * @param existingName the existing and possibly already processed name.
 		 * @return the new name
 		 */
-		String processName(MemberPath path, String existingName);
+		@Nullable String processName(MemberPath path, String existingName);
 
 		/**
 		 * Factory method to create a new {@link NameProcessor} for the given operation.
@@ -955,7 +971,7 @@ public interface JsonWriter<T> {
 	 * @param <T> the value type
 	 */
 	@FunctionalInterface
-	interface ValueProcessor<T> {
+	interface ValueProcessor<T extends @Nullable Object> {
 
 		/**
 		 * Process the value at the given path.
@@ -963,7 +979,7 @@ public interface JsonWriter<T> {
 		 * @param value the value being written (may be {@code null})
 		 * @return the processed value
 		 */
-		T processValue(MemberPath path, T value);
+		@Nullable T processValue(MemberPath path, @Nullable T value);
 
 		/**
 		 * Return a new processor from this one that only applied to members with the
@@ -1004,7 +1020,8 @@ public interface JsonWriter<T> {
 		 * type.
 		 */
 		default ValueProcessor<T> whenInstanceOf(Class<?> type) {
-			return when(type::isInstance);
+			Predicate<@Nullable T> isInstance = type::isInstance;
+			return when(isInstance);
 		}
 
 		/**
@@ -1014,7 +1031,7 @@ public interface JsonWriter<T> {
 		 * @return a new {@link ValueProcessor} that only applies when the predicate
 		 * matches
 		 */
-		default ValueProcessor<T> when(Predicate<T> predicate) {
+		default ValueProcessor<T> when(Predicate<@Nullable T> predicate) {
 			return (name, value) -> (predicate.test(value)) ? processValue(name, value) : value;
 		}
 
@@ -1026,7 +1043,7 @@ public interface JsonWriter<T> {
 		 * @param action the action to apply
 		 * @return a new {@link ValueProcessor} instance
 		 */
-		static <T> ValueProcessor<T> of(Class<? extends T> type, UnaryOperator<T> action) {
+		static <T> ValueProcessor<T> of(Class<? extends T> type, UnaryOperator<@Nullable T> action) {
 			return of(action).whenInstanceOf(type);
 		}
 
@@ -1037,10 +1054,28 @@ public interface JsonWriter<T> {
 		 * @param action the action to apply
 		 * @return a new {@link ValueProcessor} instance
 		 */
-		static <T> ValueProcessor<T> of(UnaryOperator<T> action) {
+		static <T> ValueProcessor<T> of(UnaryOperator<@Nullable T> action) {
 			Assert.notNull(action, "'action' must not be null");
 			return (name, value) -> action.apply(value);
 		}
+
+	}
+
+	/**
+	 * Interface that can be used to extract one value from another.
+	 *
+	 * @param <T> the source type
+	 * @param <R> the result type
+	 */
+	@FunctionalInterface
+	interface Extractor<T extends @Nullable Object, R extends @Nullable Object> {
+
+		/**
+		 * Extract from the given value.
+		 * @param value the source value (never {@code null})
+		 * @return an extracted value or {@code null}
+		 */
+		@Nullable R extract(@NonNull T value);
 
 	}
 

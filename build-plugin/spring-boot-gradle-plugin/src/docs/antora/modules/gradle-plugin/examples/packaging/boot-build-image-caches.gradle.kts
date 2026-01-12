@@ -22,7 +22,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.register("bootBuildImageCaches") {
 	doFirst {
-		println("buildCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildCache.asCache().volume.name)
-		println("launchCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").launchCache.asCache().volume.name)
+		println("buildCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").buildCache.asCache()?.volume?.name)
+		println("launchCache=" + tasks.getByName<BootBuildImage>("bootBuildImage").launchCache.asCache()?.volume?.name)
 	}
 }

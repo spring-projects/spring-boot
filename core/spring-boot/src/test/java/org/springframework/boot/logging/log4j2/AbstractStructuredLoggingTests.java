@@ -20,16 +20,15 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
-import org.assertj.core.api.Assertions;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMembersCustomizerBuilder;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -46,9 +45,10 @@ abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochMilli(1719910193000L);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	MockStructuredLoggingJsonMembersCustomizerBuilder<?> customizerBuilder = new MockStructuredLoggingJsonMembersCustomizerBuilder<>(
@@ -67,7 +67,7 @@ abstract class AbstractStructuredLoggingTests {
 		return createEvent(null);
 	}
 
-	protected static MutableLogEvent createEvent(Throwable thrown) {
+	protected static MutableLogEvent createEvent(@Nullable Throwable thrown) {
 		MutableLogEvent event = new MutableLogEvent();
 		event.setTimeMillis(EVENT_TIME.toEpochMilli());
 		event.setLevel(Level.INFO);
@@ -79,14 +79,8 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected Map<String, Object> deserialize(String json) {
-		try {
-			return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
-			});
-		}
-		catch (JsonProcessingException ex) {
-			Assertions.fail("Failed to deserialize JSON: " + json, ex);
-			return null;
-		}
+		return JSON_MAPPER.readValue(json, new TypeReference<>() {
+		});
 	}
 
 }

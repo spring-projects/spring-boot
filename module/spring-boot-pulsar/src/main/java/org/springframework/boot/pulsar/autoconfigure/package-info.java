@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring for Apache Pulsar.
  */
+@NullMarked
 package org.springframework.boot.pulsar.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLeve
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
+import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
 
@@ -62,7 +63,9 @@ class LoggersEndpointTests {
 	void setup() {
 		Map<String, List<String>> groups = Collections.singletonMap("test", Collections.singletonList("test.member"));
 		this.loggerGroups = new LoggerGroups(groups);
-		this.loggerGroups.get("test").configureLogLevel(LogLevel.DEBUG, (a, b) -> {
+		LoggerGroup test = this.loggerGroups.get("test");
+		assertThat(test).isNotNull();
+		test.configureLogLevel(LogLevel.DEBUG, (a, b) -> {
 		});
 	}
 
@@ -74,7 +77,9 @@ class LoggersEndpointTests {
 		LoggersDescriptor result = new LoggersEndpoint(this.loggingSystem, new LoggerGroups()).loggers();
 		Map<String, LoggerLevelsDescriptor> loggers = result.getLoggers();
 		Set<LogLevel> levels = result.getLevels();
+		assertThat(loggers).isNotNull();
 		SingleLoggerLevelsDescriptor rootLevels = (SingleLoggerLevelsDescriptor) loggers.get("ROOT");
+		assertThat(rootLevels).isNotNull();
 		assertThat(rootLevels.getConfiguredLevel()).isNull();
 		assertThat(rootLevels.getEffectiveLevel()).isEqualTo("DEBUG");
 		assertThat(levels).containsExactly(LogLevel.OFF, LogLevel.FATAL, LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO,
@@ -90,15 +95,19 @@ class LoggersEndpointTests {
 		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
 		LoggersDescriptor result = new LoggersEndpoint(this.loggingSystem, this.loggerGroups).loggers();
 		Map<String, GroupLoggerLevelsDescriptor> loggerGroups = result.getGroups();
+		assertThat(loggerGroups).isNotNull();
 		GroupLoggerLevelsDescriptor groupLevel = loggerGroups.get("test");
 		Map<String, LoggerLevelsDescriptor> loggers = result.getLoggers();
 		Set<LogLevel> levels = result.getLevels();
+		assertThat(loggers).isNotNull();
 		SingleLoggerLevelsDescriptor rootLevels = (SingleLoggerLevelsDescriptor) loggers.get("ROOT");
+		assertThat(rootLevels).isNotNull();
 		assertThat(rootLevels.getConfiguredLevel()).isNull();
 		assertThat(rootLevels.getEffectiveLevel()).isEqualTo("DEBUG");
 		assertThat(levels).containsExactly(LogLevel.OFF, LogLevel.FATAL, LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO,
 				LogLevel.DEBUG, LogLevel.TRACE);
 		assertThat(loggerGroups).isNotNull();
+		assertThat(groupLevel).isNotNull();
 		assertThat(groupLevel.getConfiguredLevel()).isEqualTo("DEBUG");
 		assertThat(groupLevel.getMembers()).containsExactly("test.member");
 	}
@@ -110,6 +119,7 @@ class LoggersEndpointTests {
 		SingleLoggerLevelsDescriptor levels = (SingleLoggerLevelsDescriptor) new LoggersEndpoint(this.loggingSystem,
 				this.loggerGroups)
 			.loggerLevels("ROOT");
+		assertThat(levels).isNotNull();
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
@@ -121,6 +131,7 @@ class LoggersEndpointTests {
 		SingleLoggerLevelsDescriptor levels = (SingleLoggerLevelsDescriptor) new LoggersEndpoint(this.loggingSystem,
 				this.loggerGroups)
 			.loggerLevels("ROOT");
+		assertThat(levels).isNotNull();
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("FINEST");
 	}
@@ -130,6 +141,7 @@ class LoggersEndpointTests {
 		GroupLoggerLevelsDescriptor levels = (GroupLoggerLevelsDescriptor) new LoggersEndpoint(this.loggingSystem,
 				this.loggerGroups)
 			.loggerLevels("test");
+		assertThat(levels).isNotNull();
 		assertThat(levels.getConfiguredLevel()).isEqualTo("DEBUG");
 		assertThat(levels.getMembers()).isEqualTo(Collections.singletonList("test.member"));
 	}

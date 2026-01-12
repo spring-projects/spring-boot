@@ -16,35 +16,38 @@
 
 package smoketest.webflux;
 
+import java.util.Map;
+import java.util.function.Consumer;
+
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Basic integration tests for WebFlux application.
+ * Basic tests for a WebFlux application, configuring the {@link WebTestClient} to test
+ * without a running server.
  *
- * @author Brian Clozel
+ * @author Stephane Nicoll
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureWebTestClient
 class SampleWebFluxApplicationTests {
+
+	private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	};
 
 	@Autowired
 	private WebTestClient webClient;
-
-	@Test
-	void testWelcome() {
-		this.webClient.get()
-			.uri("/")
-			.accept(MediaType.TEXT_PLAIN)
-			.exchange()
-			.expectBody(String.class)
-			.isEqualTo("Hello World");
-	}
 
 	@Test
 	void testEcho() {
@@ -59,15 +62,31 @@ class SampleWebFluxApplicationTests {
 	}
 
 	@Test
-	void testActuatorStatus() {
+	void testBadRequest() {
+		Consumer<@Nullable Map<String, Object>> test = (content) -> assertThat(content).containsEntry("path",
+				"/bad-request");
 		this.webClient.get()
-			.uri("/actuator/health")
+			.uri("/bad-request")
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
 			.expectStatus()
-			.isOk()
-			.expectBody()
-			.json("{\"status\":\"UP\"}");
+			.isBadRequest()
+			.expectBody(MAP_TYPE)
+			.value(test);
+	}
+
+	@Test
+	void testServerError() {
+		Consumer<@Nullable Map<String, Object>> test = (content) -> assertThat(content).containsEntry("path",
+				"/five-hundred");
+		this.webClient.get()
+			.uri("/five-hundred")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(MAP_TYPE)
+			.value(test);
 	}
 
 }

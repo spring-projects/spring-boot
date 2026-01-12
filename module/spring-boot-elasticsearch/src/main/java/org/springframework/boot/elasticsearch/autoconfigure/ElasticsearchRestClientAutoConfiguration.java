@@ -16,7 +16,7 @@
 
 package org.springframework.boot.elasticsearch.autoconfigure;
 
-import org.elasticsearch.client.RestClientBuilder;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5ClientBuilder;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Import;
  * @since 4.0.0
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
-@ConditionalOnClass(RestClientBuilder.class)
+@ConditionalOnClass(Rest5ClientBuilder.class)
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 @Import({ RestClientBuilderConfiguration.class, RestClientConfiguration.class, RestClientSnifferConfiguration.class })
 public final class ElasticsearchRestClientAutoConfiguration {

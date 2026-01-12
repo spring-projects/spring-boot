@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
+import org.springframework.lang.Contract;
 
 /**
  * Base class for a {@link WebServerFactoryCustomizer} that customizes the web server's
@@ -39,6 +40,7 @@ public abstract class AccessLogCustomizer<T extends WebServerFactory>
 		this.prefix = prefix;
 	}
 
+	@Contract("!null -> !null")
 	protected @Nullable String customizePrefix(@Nullable String existingPrefix) {
 		if (this.prefix == null) {
 			return existingPrefix;

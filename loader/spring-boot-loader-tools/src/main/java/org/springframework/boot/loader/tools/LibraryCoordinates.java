@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Encapsulates information about the artifact coordinates of a library.
  *
@@ -29,19 +31,19 @@ public interface LibraryCoordinates {
 	 * Return the group ID of the coordinates.
 	 * @return the group ID
 	 */
-	String getGroupId();
+	@Nullable String getGroupId();
 
 	/**
 	 * Return the artifact ID of the coordinates.
 	 * @return the artifact ID
 	 */
-	String getArtifactId();
+	@Nullable String getArtifactId();
 
 	/**
 	 * Return the version of the coordinates.
 	 * @return the version
 	 */
-	String getVersion();
+	@Nullable String getVersion();
 
 	/**
 	 * Factory method to create {@link LibraryCoordinates} with the specified values.
@@ -50,7 +52,7 @@ public interface LibraryCoordinates {
 	 * @param version the version
 	 * @return a new {@link LibraryCoordinates} instance
 	 */
-	static LibraryCoordinates of(String groupId, String artifactId, String version) {
+	static LibraryCoordinates of(@Nullable String groupId, @Nullable String artifactId, @Nullable String version) {
 		return new DefaultLibraryCoordinates(groupId, artifactId, version);
 	}
 
@@ -60,7 +62,7 @@ public interface LibraryCoordinates {
 	 * @param coordinates the coordinates to convert (may be {@code null})
 	 * @return the standard notation form or {@code "::"} when the coordinates are null
 	 */
-	static String toStandardNotationString(LibraryCoordinates coordinates) {
+	static String toStandardNotationString(@Nullable LibraryCoordinates coordinates) {
 		if (coordinates == null) {
 			return "::";
 		}

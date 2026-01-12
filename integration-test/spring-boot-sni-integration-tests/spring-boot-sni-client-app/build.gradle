@@ -25,7 +25,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	maven { url = layout.projectDirectory.dir("../int-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
@@ -33,5 +33,5 @@ repositories {
 dependencies {
 	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-restclient")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 }

@@ -20,4 +20,7 @@
  * @see org.springframework.boot.jetty.servlet.JettyServletWebServerFactory
  * @see org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory
  */
+@NullMarked
 package org.springframework.boot.jetty;
+
+import org.jspecify.annotations.NullMarked;

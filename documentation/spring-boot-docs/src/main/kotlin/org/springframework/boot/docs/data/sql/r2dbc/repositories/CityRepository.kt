@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono
 
 interface CityRepository : Repository<City, Long> {
 
-	fun findByNameAndStateAllIgnoringCase(name: String, state: String): Mono<City?>
+	fun findByNameAndStateAllIgnoringCase(name: String, state: String): Mono<City>
 
 }
 

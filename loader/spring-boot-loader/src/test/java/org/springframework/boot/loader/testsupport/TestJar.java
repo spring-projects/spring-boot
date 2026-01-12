@@ -90,7 +90,7 @@ public abstract class TestJar {
 		nestedEntry.setSize(nestedJarData.length);
 		nestedEntry.setCompressedSize(nestedJarData.length);
 		if (unpackNested) {
-			nestedEntry.setComment("UNPACK:0000000000000000000000000000000000000000");
+			nestedEntry.setComment("UNPACK");
 		}
 		CRC32 crc32 = new CRC32();
 		crc32.update(nestedJarData);

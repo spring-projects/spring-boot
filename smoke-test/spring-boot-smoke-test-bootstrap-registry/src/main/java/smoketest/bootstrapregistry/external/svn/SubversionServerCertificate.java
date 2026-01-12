@@ -16,6 +16,8 @@
 
 package smoketest.bootstrapregistry.external.svn;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,7 +38,7 @@ public class SubversionServerCertificate {
 		return this.data;
 	}
 
-	public static SubversionServerCertificate of(String data) {
+	public static @Nullable SubversionServerCertificate of(@Nullable String data) {
 		return StringUtils.hasText(data) ? new SubversionServerCertificate(data) : null;
 	}
 

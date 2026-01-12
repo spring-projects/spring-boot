@@ -18,6 +18,9 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,6 +32,8 @@ import org.springframework.util.StringUtils;
  * @since 2.6.0
  */
 public final class WebServerNamespace {
+
+	private static final String WEB_SERVER_CONTEXT_CLASS = "org.springframework.boot.web.server.context.WebServerApplicationContext";
 
 	/**
 	 * {@link WebServerNamespace} that represents the main server.
@@ -74,6 +79,21 @@ public final class WebServerNamespace {
 	@Override
 	public String toString() {
 		return this.value;
+	}
+
+	/**
+	 * Factory method to create a new {@link WebServerNamespace} from a value. If the
+	 * context is {@code null} or not a web server context then {@link #SERVER} is
+	 * returned.
+	 * @param context the application context
+	 * @return the web server namespace
+	 * @since 4.0.1
+	 */
+	public static WebServerNamespace from(@Nullable ApplicationContext context) {
+		if (!ClassUtils.isPresent(WEB_SERVER_CONTEXT_CLASS, null)) {
+			return SERVER;
+		}
+		return from(WebServerApplicationContext.getServerNamespace(context));
 	}
 
 	/**

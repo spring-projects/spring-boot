@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -61,14 +62,16 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 		members.add("thread_name", LogEvent::getThreadName);
 		members.add("level", LogEvent::getLevel).as(Level::name);
 		members.add("level_value", LogEvent::getLevel).as(Level::intLevel);
+		Predicate<@Nullable ReadOnlyStringMap> mapIsEmpty = (map) -> map == null || map.isEmpty();
 		members.from(LogEvent::getContextData)
-			.whenNot(ReadOnlyStringMap::isEmpty)
+			.whenNot(mapIsEmpty)
 			.usingPairs(contextPairs.flat("_", LogstashStructuredLogFormatter::addContextDataPairs));
+		Predicate<@Nullable Set<String>> collectionIsEmpty = CollectionUtils::isEmpty;
 		members.add("tags", LogEvent::getMarker)
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
-			.whenNot(CollectionUtils::isEmpty);
-		members.add("stack_trace", LogEvent::getThrownProxy).whenNotNull().as(extractor::stackTrace);
+			.whenNot(collectionIsEmpty);
+		members.add("stack_trace", LogEvent::getThrown).whenNotNull().as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {

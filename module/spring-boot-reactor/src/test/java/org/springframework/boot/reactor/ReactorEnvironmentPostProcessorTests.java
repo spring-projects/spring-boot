@@ -24,6 +24,7 @@ import org.junit.jupiter.api.condition.JRE;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +42,7 @@ class ReactorEnvironmentPostProcessorTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.threads.virtual.enabled", "true");
 		ReactorEnvironmentPostProcessor postProcessor = new ReactorEnvironmentPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		postProcessor.postProcessEnvironment(environment, new SpringApplication());
 	}
 
 	@Test

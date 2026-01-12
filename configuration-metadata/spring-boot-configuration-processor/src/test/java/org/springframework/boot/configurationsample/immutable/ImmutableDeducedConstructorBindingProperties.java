@@ -16,13 +16,13 @@
 
 package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * @author Madhura Bhave
  */
-@ConfigurationProperties("immutable")
+@TestConfigurationProperties("immutable")
 public class ImmutableDeducedConstructorBindingProperties {
 
 	/**
@@ -35,7 +35,7 @@ public class ImmutableDeducedConstructorBindingProperties {
 	 */
 	private final boolean flag;
 
-	public ImmutableDeducedConstructorBindingProperties(@DefaultValue("boot") String theName, boolean flag) {
+	public ImmutableDeducedConstructorBindingProperties(@TestDefaultValue("boot") String theName, boolean flag) {
 		this.theName = theName;
 		this.flag = flag;
 	}

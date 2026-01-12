@@ -17,4 +17,7 @@
 /**
  * Spring MVC error handling infrastructure.
  */
+@NullMarked
 package org.springframework.boot.webmvc.error;
+
+import org.jspecify.annotations.NullMarked;

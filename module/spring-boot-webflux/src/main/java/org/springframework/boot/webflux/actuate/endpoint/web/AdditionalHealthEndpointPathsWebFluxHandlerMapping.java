@@ -20,12 +20,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+import reactor.core.publisher.Mono;
+
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
-import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
-import org.springframework.boot.actuate.health.HealthEndpointGroup;
+import org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpointPath;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.HandlerMapping;
@@ -42,19 +46,19 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 
 	private final EndpointMapping endpointMapping;
 
-	private final ExposableWebEndpoint healthEndpoint;
+	private final @Nullable ExposableWebEndpoint healthEndpoint;
 
 	private final Set<HealthEndpointGroup> groups;
 
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
-			ExposableWebEndpoint healthEndpoint, Set<HealthEndpointGroup> groups) {
-		super(endpointMapping, asList(healthEndpoint), null, null, false);
+			@Nullable ExposableWebEndpoint healthEndpoint, Set<HealthEndpointGroup> groups) {
+		super(endpointMapping, asList(healthEndpoint), new EndpointMediaTypes(), null, false);
 		this.endpointMapping = endpointMapping;
 		this.groups = groups;
 		this.healthEndpoint = healthEndpoint;
 	}
 
-	private static Collection<ExposableWebEndpoint> asList(ExposableWebEndpoint healthEndpoint) {
+	private static Collection<ExposableWebEndpoint> asList(@Nullable ExposableWebEndpoint healthEndpoint) {
 		return (healthEndpoint != null) ? Collections.singletonList(healthEndpoint) : Collections.emptyList();
 	}
 
@@ -90,7 +94,7 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 
 	@Override
 	protected LinksHandler getLinksHandler() {
-		return null;
+		return (exchange) -> Mono.empty();
 	}
 
 }

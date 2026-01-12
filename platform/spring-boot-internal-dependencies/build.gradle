@@ -24,13 +24,9 @@ bom {
 	upgrade {
 		policy = "same-major-version"
 		gitHub {
-			issueLabels = ["type: task"]
-		}
-	}
-	library("Android JSON", "0.0.20131108.vaadin1") {
-		group("com.vaadin.external.google") {
-			modules = [
-				"android-json"
+			issueLabels = [
+				"type: task",
+				"status: team-only"
 			]
 		}
 	}
@@ -52,6 +48,13 @@ bom {
 		group("com.mchange") {
 			modules = [
 				"c3p0"
+			]
+		}
+	}
+	library("Checker Annotations", "3.51.0") {
+		group("org.checkerframework") {
+			modules = [
+				"checker-qual"
 			]
 		}
 	}
@@ -77,7 +80,7 @@ bom {
 			]
 		}
 	}
-	library("CycloneDX Gradle Plugin", "2.3.0") {
+	library("CycloneDX Gradle Plugin", "3.0.1") {
 		group("org.cyclonedx") {
 			modules = [
 				"cyclonedx-gradle-plugin"
@@ -235,7 +238,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.3-groovy-4.0") {
+	library("Spock Framework", "2.4-groovy-5.0") {
 		group("org.spockframework") {
 			modules = [
 				"spock-core"

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * addition to the methods in the {WebServerApplicationContext} interface.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public interface ConfigurableWebServerApplicationContext
 		extends ConfigurableApplicationContext, WebServerApplicationContext {
@@ -34,6 +36,6 @@ public interface ConfigurableWebServerApplicationContext
 	 * @param serverNamespace the server namespace
 	 * @see #getServerNamespace()
 	 */
-	void setServerNamespace(String serverNamespace);
+	void setServerNamespace(@Nullable String serverNamespace);
 
 }

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
@@ -26,7 +28,7 @@ import org.springframework.util.ObjectUtils;
  * create and manage the lifecycle of an embedded {@link WebServer}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public interface WebServerApplicationContext extends ApplicationContext {
 
@@ -40,7 +42,6 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	/**
 	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which starting and
 	 * stopping of the web server is performed.
-	 * @since 4.0.0
 	 */
 	int START_STOP_LIFECYCLE_PHASE = GRACEFUL_SHUTDOWN_PHASE - 1024;
 
@@ -49,7 +50,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * the server has not yet been created.
 	 * @return the web server
 	 */
-	WebServer getWebServer();
+	@Nullable WebServer getWebServer();
 
 	/**
 	 * Returns the namespace of the web server application context or {@code null} if no
@@ -58,7 +59,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * different port).
 	 * @return the server namespace
 	 */
-	String getServerNamespace();
+	@Nullable String getServerNamespace();
 
 	/**
 	 * Returns {@code true} if the specified context is a
@@ -66,9 +67,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @param context the context to check
 	 * @param serverNamespace the server namespace to match against
 	 * @return {@code true} if the server namespace of the context matches
-	 * @since 2.1.8
 	 */
-	static boolean hasServerNamespace(ApplicationContext context, String serverNamespace) {
+	static boolean hasServerNamespace(@Nullable ApplicationContext context, String serverNamespace) {
 		return (context instanceof WebServerApplicationContext webServerApplicationContext)
 				&& ObjectUtils.nullSafeEquals(webServerApplicationContext.getServerNamespace(), serverNamespace);
 	}
@@ -79,9 +79,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @param context the context
 	 * @return the server namespace or {@code null} if the context is not a
 	 * {@link WebServerApplicationContext}
-	 * @since 2.6.0
 	 */
-	static String getServerNamespace(ApplicationContext context) {
+	static @Nullable String getServerNamespace(@Nullable ApplicationContext context) {
 		return (context instanceof WebServerApplicationContext configurableContext)
 				? configurableContext.getServerNamespace() : null;
 

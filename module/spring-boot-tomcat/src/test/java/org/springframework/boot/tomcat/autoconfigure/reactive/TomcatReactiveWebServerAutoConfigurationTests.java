@@ -128,6 +128,7 @@ class TomcatReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebS
 		this.serverRunner.run((context) -> {
 			WebServer webServer = ((ReactiveWebServerApplicationContext) context.getSourceApplicationContext())
 				.getWebServer();
+			assertThat(webServer).isNotNull();
 			ServletContext servletContext = findContext(((TomcatWebServer) webServer).getTomcat()).getServletContext();
 			Object serverContainer = servletContext.getAttribute("jakarta.websocket.server.ServerContainer");
 			assertThat(serverContainer).isInstanceOf(ServerContainer.class);

@@ -24,6 +24,7 @@ import smoketest.groovytemplates.Message;
 import smoketest.groovytemplates.MessageRepository;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -71,7 +72,9 @@ public class MessageController {
 		}
 		message = this.messageRepository.save(message);
 		redirect.addFlashAttribute("globalMessage", "Successfully created a new message");
-		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
+		Long id = message.getId();
+		Assert.state(id != null, "'id' must not be null");
+		return new ModelAndView("redirect:/{message.id}", "message.id", id);
 	}
 
 	private Map<String, ObjectError> getFieldErrors(BindingResult result) {

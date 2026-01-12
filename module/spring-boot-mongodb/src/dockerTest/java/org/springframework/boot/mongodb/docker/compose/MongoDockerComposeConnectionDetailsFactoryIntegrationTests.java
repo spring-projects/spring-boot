@@ -17,12 +17,11 @@
 package org.springframework.boot.mongodb.docker.compose;
 
 import com.mongodb.ConnectionString;
-import org.junit.jupiter.api.condition.OS;
+import com.mongodb.MongoCredential;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,19 +40,14 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
 	}
 
-	@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64", disabledReason = "The image has no ARM support")
-	@DockerComposeTest(composeFile = "mongo-bitnami-compose.yaml", image = TestImage.BITNAMI_MONGODB)
-	void runWithBitnamiImageCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
-		assertConnectionDetailsWithDatabase(connectionDetails, "testdb");
-	}
-
 	private void assertConnectionDetailsWithDatabase(MongoConnectionDetails connectionDetails, String database) {
 		ConnectionString connectionString = connectionDetails.getConnectionString();
-		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
-		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
-		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getUserName()).isEqualTo("root");
+		assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
+		assertThat(credential.getSource()).isEqualTo("admin");
 		assertThat(connectionString.getDatabase()).isEqualTo(database);
-		assertThat(connectionDetails.getGridFs()).isNull();
 	}
 
 }

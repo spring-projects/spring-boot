@@ -44,7 +44,7 @@ public class SampleRestControllerEndpointWithException {
 
 		@ExceptionHandler(CustomException.class)
 		ResponseEntity<String> handleCustomException(CustomException e) {
-			return new ResponseEntity<>("this is a custom exception body", HttpStatus.I_AM_A_TEAPOT);
+			return new ResponseEntity<>("this is a custom exception body", HttpStatus.EXPECTATION_FAILED);
 		}
 
 	}

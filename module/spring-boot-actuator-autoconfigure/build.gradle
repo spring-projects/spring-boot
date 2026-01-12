@@ -29,17 +29,13 @@ dependencies {
 	api(project(":core:spring-boot-autoconfigure"))
 	api(project(":module:spring-boot-actuator"))
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-
-	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-web-server"))
-
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("io.micrometer:micrometer-core")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-config")
+	optional("tools.jackson.core:jackson-databind")
 
 	testFixturesImplementation(project(":core:spring-boot-test"))
 	testFixturesImplementation(project(":test-support:spring-boot-test-support"))
@@ -49,5 +45,12 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
 	testImplementation("org.springframework:spring-webflux")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

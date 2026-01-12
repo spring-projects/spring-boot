@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Adapts {@link DataSourceProperties} to {@link JdbcConnectionDetails}.
  *
@@ -30,12 +32,12 @@ final class PropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
 	}
 
 	@Override
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.properties.determineUsername();
 	}
 
 	@Override
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.properties.determinePassword();
 	}
 
@@ -50,7 +52,7 @@ final class PropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
 	}
 
 	@Override
-	public String getXaDataSourceClassName() {
+	public @Nullable String getXaDataSourceClassName() {
 		return (this.properties.getXa().getDataSourceClassName() != null)
 				? this.properties.getXa().getDataSourceClassName()
 				: JdbcConnectionDetails.super.getXaDataSourceClassName();

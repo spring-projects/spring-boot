@@ -26,7 +26,7 @@ import org.springframework.core.AttributeAccessor;
  * Primarily designed to be attached to {@link BeanDefinition BeanDefinitions} created in
  * support of Testcontainers or Docker Compose.
  *
- * @param imageName the contaimer image name or {@code null} if the image name is not yet
+ * @param imageName the container image name or {@code null} if the image name is not yet
  * known
  * @author Phillip Webb
  * @since 3.4.0

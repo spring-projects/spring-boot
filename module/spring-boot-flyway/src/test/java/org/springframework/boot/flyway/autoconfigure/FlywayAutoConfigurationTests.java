@@ -43,14 +43,12 @@ import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.api.pattern.ValidatePattern;
+import org.flywaydb.core.internal.configuration.models.ResolvedEnvironment;
 import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -59,7 +57,6 @@ import org.postgresql.Driver;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
@@ -343,7 +340,7 @@ class FlywayAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
 			assertThat(flyway.getConfiguration().getLocations())
-				.containsExactly(new Location("classpath:db/migration"));
+				.containsExactly(createLocation("classpath:db/migration"));
 		});
 	}
 
@@ -354,8 +351,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/changelog"), new Location("classpath:db/migration"));
+				assertThat(flyway.getConfiguration().getLocations()).containsExactly(
+						createLocation("classpath:db/changelog"), createLocation("classpath:db/migration"));
 			});
 	}
 
@@ -367,8 +364,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/changelog"), new Location("classpath:db/migration"));
+				assertThat(flyway.getConfiguration().getLocations()).containsExactly(
+						createLocation("classpath:db/changelog"), createLocation("classpath:db/migration"));
 			});
 	}
 
@@ -393,7 +390,9 @@ class FlywayAutoConfigurationTests {
 				Flyway flyway = context.getBean(Flyway.class);
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) flyway.getConfiguration().getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
-				assertThat(dataSource.getDriver().getClass().getName()).isEqualTo(driverClassName);
+				java.sql.Driver driver = dataSource.getDriver();
+				assertThat(driver).isNotNull();
+				assertThat(driver.getClass().getName()).isEqualTo(driverClassName);
 			});
 	}
 
@@ -543,7 +542,7 @@ class FlywayAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getLocations()).containsExactlyInAnyOrder(
-						new Location("classpath:db/vendors/h2"), new Location("classpath:db/changelog"));
+						createLocation("classpath:db/vendors/h2"), createLocation("classpath:db/changelog"));
 			});
 	}
 
@@ -556,7 +555,20 @@ class FlywayAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/vendors/h2"));
+					.containsExactly(createLocation("classpath:db/vendors/h2"));
+			});
+	}
+
+	@Test
+	@WithResource(name = "com/example/h2/beforeEachMigrate.sql", content = "DROP TABLE IF EXISTS TEMP;")
+	void useOneCallbackLocationWithVendorSpecificPackage() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.callback-locations=classpath:com.example.{vendor}")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getCallbackLocations())
+					.containsExactly(createLocation("classpath:com.example.h2"));
 			});
 	}
 
@@ -638,7 +650,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getSqlplus()).isTrue());
 
 	}
@@ -650,7 +662,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getSqlplusWarn()).isTrue());
 	}
 
@@ -661,7 +673,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
 	}
 
@@ -672,7 +684,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
 	}
 
@@ -724,10 +736,11 @@ class FlywayAutoConfigurationTests {
 			.withPropertyValues("spring.flyway.jdbc-properties.prop=value")
 			.run((context) -> {
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration()
+				ResolvedEnvironment environment = flyway.getConfiguration()
 					.getCachedResolvedEnvironments()
-					.get(flyway.getConfiguration().getCurrentEnvironmentName())
-					.getJdbcProperties()).containsEntry("prop", "value");
+					.get(flyway.getConfiguration().getCurrentEnvironmentName());
+				assertThat(environment).isNotNull();
+				assertThat(environment.getJdbcProperties()).containsEntry("prop", "value");
 			});
 	}
 
@@ -770,7 +783,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(PostgreSQLConfigurationExtension.class)
+				.getExact(PostgreSQLConfigurationExtension.class)
 				.isTransactionalLock()).isFalse());
 	}
 
@@ -788,7 +801,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(SQLServerConfigurationExtension.class)
+				.getExact(SQLServerConfigurationExtension.class)
 				.getKerberos()
 				.getLogin()
 				.getFile()).isEqualTo("/tmp/config"));
@@ -802,37 +815,6 @@ class FlywayAutoConfigurationTests {
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getSkipExecutingMigrations())
 					.isTrue();
-			});
-	}
-
-	@Test
-	void whenFlywayIsAutoConfiguredThenJooqDslContextDependsOnFlywayBeans() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class)
-			.run((context) -> {
-				BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayInitializer", "flyway");
-			});
-	}
-
-	@Test
-	void whenCustomMigrationInitializerIsDefinedThenJooqDslContextDependsOnIt() {
-		this.contextRunner
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
-					CustomFlywayMigrationInitializer.class)
-			.run((context) -> {
-				BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayMigrationInitializer",
-						"flyway");
-			});
-	}
-
-	@Test
-	void whenCustomFlywayIsDefinedThenJooqDslContextDependsOnIt() {
-		this.contextRunner
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class, CustomFlyway.class)
-			.run((context) -> {
-				BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("customFlyway");
 			});
 	}
 
@@ -897,6 +879,21 @@ class FlywayAutoConfigurationTests {
 				.containsExactly(ValidatePattern.fromPattern("*:missing")));
 	}
 
+	@Test
+	void ignoreMigrationPatternsUsesDefaultValuesWhenNotSet() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getIgnoreMigrationPatterns())
+				.containsExactly(new FluentConfiguration().getIgnoreMigrationPatterns()));
+	}
+
+	@Test
+	void ignoreMigrationPatternsWhenEmpty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.ignore-migration-patterns=")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getIgnoreMigrationPatterns())
+				.isEmpty());
+	}
+
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
 		return (context) -> {
 			assertThat(context).hasFailed();
@@ -904,6 +901,11 @@ class FlywayAutoConfigurationTests {
 			assertThat(failure).hasRootCauseInstanceOf(FlywayEditionUpgradeRequiredException.class);
 			assertThat(failure).hasMessageContaining(String.format(" %s ", propertyName));
 		};
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Location createLocation(String location) {
+		return new Location(location);
 	}
 
 	private static Map<String, ?> configureJpaProperties() {
@@ -1150,16 +1152,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class JooqConfiguration {
-
-		@Bean
-		DSLContext dslContext() {
-			return new DefaultDSLContext(SQLDialect.H2);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	abstract static class AbstractUserH2DataSourceConfiguration {
 
@@ -1188,7 +1180,9 @@ class FlywayAutoConfigurationTests {
 
 		@Override
 		protected String getDatabaseName(DataSourceProperties properties) {
-			return properties.determineDatabaseName();
+			String result = properties.determineDatabaseName();
+			assertThat(result).isNotNull();
+			return result;
 		}
 
 	}
@@ -1328,18 +1322,23 @@ class FlywayAutoConfigurationTests {
 
 		@Id
 		@GeneratedValue
+		@SuppressWarnings("NullAway.Init")
 		private Long id;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String name;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String state;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String country;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String map;
 
 		protected City() {

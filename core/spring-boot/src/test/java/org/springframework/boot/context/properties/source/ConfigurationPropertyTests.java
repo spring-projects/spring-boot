@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Objects;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -36,15 +38,18 @@ class ConfigurationPropertyTests {
 
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
-	private final ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
+	private final ConfigurationPropertySource source = Objects
+		.requireNonNull(ConfigurationPropertySource.from(mock(PropertySource.class)));
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
 			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
 			.withMessageContaining("'value' must not be null");

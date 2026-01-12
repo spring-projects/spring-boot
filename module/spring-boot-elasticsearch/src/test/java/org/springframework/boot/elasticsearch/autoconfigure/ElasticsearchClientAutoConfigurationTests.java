@@ -19,13 +19,15 @@ package org.springframework.boot.elasticsearch.autoconfigure;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.JsonpMapper;
 import co.elastic.clients.json.SimpleJsonpMapper;
+import co.elastic.clients.json.jackson.Jackson3JsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
@@ -59,13 +61,13 @@ class ElasticsearchClientAutoConfigurationTests {
 	void withRestClientAutoConfigurationShouldDefineClientAndSupportingBeans() {
 		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
-				.hasSingleBean(RestClientTransport.class)
+				.hasSingleBean(Rest5ClientTransport.class)
 				.hasSingleBean(ElasticsearchClient.class));
 	}
 
 	@Test
 	void withoutJsonbOrJacksonShouldDefineSimpleMapper() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ObjectMapper.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(JsonMapper.class, ObjectMapper.class))
 			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
 				.hasSingleBean(SimpleJsonpMapper.class));
@@ -73,7 +75,7 @@ class ElasticsearchClientAutoConfigurationTests {
 
 	@Test
 	void withJsonbShouldDefineJsonbMapper() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ObjectMapper.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(JsonMapper.class, ObjectMapper.class))
 			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
@@ -85,6 +87,16 @@ class ElasticsearchClientAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
+				.hasSingleBean(Jackson3JsonpMapper.class));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void withoutJackson3ShouldDefineJackson2Mapper() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(JsonMapper.class))
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withUserConfiguration(RestClientConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
 				.hasSingleBean(JacksonJsonpMapper.class));
 	}
 
@@ -94,7 +106,7 @@ class ElasticsearchClientAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class, JacksonAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
-				.hasSingleBean(JacksonJsonpMapper.class));
+				.hasSingleBean(Jackson3JsonpMapper.class));
 	}
 
 	@Test
@@ -123,6 +135,21 @@ class ElasticsearchClientAutoConfigurationTests {
 	void jacksonJsonpMapperDoesNotUseGlobalObjectMapper() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
+			.withBean(ObjectMapper.class)
+			.run((context) -> {
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				Jackson3JsonpMapper jacksonJsonpMapper = context.getBean(Jackson3JsonpMapper.class);
+				assertThat(jacksonJsonpMapper.objectMapper()).isNotSameAs(jsonMapper);
+			});
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void jackson2JsonpMapperDoesNotUseGlobalObjectMapper() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(JsonMapper.class))
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withUserConfiguration(RestClientConfiguration.class)
+			.withBean(ObjectMapper.class)
 			.run((context) -> {
 				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
 				JacksonJsonpMapper jacksonJsonpMapper = context.getBean(JacksonJsonpMapper.class);
@@ -134,8 +161,8 @@ class ElasticsearchClientAutoConfigurationTests {
 	static class RestClientConfiguration {
 
 		@Bean
-		RestClient restClient() {
-			return mock(RestClient.class);
+		Rest5Client restClient() {
+			return mock(Rest5Client.class);
 		}
 
 	}

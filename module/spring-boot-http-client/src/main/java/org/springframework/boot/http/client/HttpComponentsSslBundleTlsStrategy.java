@@ -20,9 +20,11 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
+import org.springframework.lang.Contract;
 
 /**
  * Adapts {@link SslBundle} to an
@@ -36,7 +38,8 @@ final class HttpComponentsSslBundleTlsStrategy {
 	private HttpComponentsSslBundleTlsStrategy() {
 	}
 
-	static DefaultClientTlsStrategy get(SslBundle sslBundle) {
+	@Contract("!null -> !null")
+	static @Nullable DefaultClientTlsStrategy get(@Nullable SslBundle sslBundle) {
 		if (sslBundle == null) {
 			return null;
 		}

@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,9 +39,9 @@ import static org.mockito.Mockito.mock;
  */
 class DefaultSslManagerBundleTests {
 
-	private KeyManagerFactory keyManagerFactory = mock(KeyManagerFactory.class);
+	private final KeyManagerFactory keyManagerFactory = mock(KeyManagerFactory.class);
 
-	private TrustManagerFactory trustManagerFactory = mock(TrustManagerFactory.class);
+	private final TrustManagerFactory trustManagerFactory = mock(TrustManagerFactory.class);
 
 	@Test
 	void getKeyManagerFactoryWhenStoreBundleIsNull() throws Exception {
@@ -137,7 +138,7 @@ class DefaultSslManagerBundleTests {
 	 */
 	class TestDefaultSslManagerBundle extends DefaultSslManagerBundle {
 
-		TestDefaultSslManagerBundle(SslStoreBundle storeBundle, SslBundleKey key) {
+		TestDefaultSslManagerBundle(@Nullable SslStoreBundle storeBundle, @Nullable SslBundleKey key) {
 			super(storeBundle, key);
 		}
 

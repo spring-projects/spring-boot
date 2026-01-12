@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StringToFileConverterTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@ConversionServiceTest
@@ -48,19 +50,21 @@ class StringToFileConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenFilePrefixedReturnsFile(ConversionService conversionService) {
-		assertThat(convert(conversionService, "file:" + this.temp.getAbsolutePath() + "/test").getAbsoluteFile())
-			.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
+		File file = convert(conversionService, "file:" + this.temp.getAbsolutePath() + "/test");
+		assertThat(file).isNotNull();
+		assertThat(file.getAbsoluteFile()).isEqualTo(new File(this.temp, "test").getAbsoluteFile());
 	}
 
 	@ConversionServiceTest
 	@WithResource(name = "com/example/test-file.txt", content = "test content")
 	void convertWhenClasspathPrefixedReturnsFile(ConversionService conversionService) throws IOException {
 		String resource = new ClassPathResource("com/example/test-file.txt").getURL().getFile();
-		assertThat(convert(conversionService, "classpath:com/example/test-file.txt").getAbsoluteFile())
-			.isEqualTo(new File(resource).getAbsoluteFile());
+		File file = convert(conversionService, "classpath:com/example/test-file.txt");
+		assertThat(file).isNotNull();
+		assertThat(file.getAbsoluteFile()).isEqualTo(new File(resource).getAbsoluteFile());
 	}
 
-	private File convert(ConversionService conversionService, String source) {
+	private @Nullable File convert(ConversionService conversionService, String source) {
 		return conversionService.convert(source, File.class);
 	}
 

@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
@@ -137,11 +138,12 @@ class StringToDurationConverterTests {
 		assertThat(convert(conversionService, "")).isNull();
 	}
 
-	private Duration convert(ConversionService conversionService, String source) {
+	private @Nullable Duration convert(ConversionService conversionService, String source) {
 		return conversionService.convert(source, Duration.class);
 	}
 
-	private Duration convert(ConversionService conversionService, String source, ChronoUnit unit, DurationStyle style) {
+	private @Nullable Duration convert(ConversionService conversionService, String source, @Nullable ChronoUnit unit,
+			@Nullable DurationStyle style) {
 		return (Duration) conversionService.convert(source, TypeDescriptor.forObject(source),
 				MockDurationTypeDescriptor.get(unit, style));
 	}

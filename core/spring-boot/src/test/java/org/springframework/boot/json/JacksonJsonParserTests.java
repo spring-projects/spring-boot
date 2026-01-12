@@ -16,12 +16,10 @@
 
 package org.springframework.boot.json;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,10 +41,10 @@ class JacksonJsonParserTests extends AbstractJsonParserTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void instanceWithSpecificObjectMapper() throws IOException {
-		ObjectMapper objectMapper = spy(new ObjectMapper());
-		new JacksonJsonParser(objectMapper).parseMap("{}");
-		then(objectMapper).should().readValue(eq("{}"), any(TypeReference.class));
+	void instanceWithSpecificObjectMapper() {
+		JsonMapper jsonMapper = spy(new JsonMapper());
+		new JacksonJsonParser(jsonMapper).parseMap("{}");
+		then(jsonMapper).should().readValue(eq("{}"), any(TypeReference.class));
 	}
 
 	@Override

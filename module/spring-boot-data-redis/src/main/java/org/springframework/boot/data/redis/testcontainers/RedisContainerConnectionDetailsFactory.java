@@ -20,18 +20,20 @@ import java.util.List;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link RedisConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
- * the {@code "redis"} image.
+ * {@link ContainerConnectionDetailsFactory} to create {@link DataRedisConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer}
+ * using the {@code "redis"} image.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -39,9 +41,9 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class RedisContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Container<?>, RedisConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<Container<?>, DataRedisConnectionDetails> {
 
-	private static final List<String> REDIS_IMAGE_NAMES = List.of("redis", "bitnami/redis", "redis/redis-stack",
+	private static final List<String> REDIS_IMAGE_NAMES = List.of("redis", "redis/redis-stack",
 			"redis/redis-stack-server");
 
 	private static final int REDIS_PORT = 6379;
@@ -61,24 +63,28 @@ class RedisContainerConnectionDetailsFactory
 	}
 
 	@Override
-	protected RedisConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+	protected DataRedisConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link RedisConnectionDetails} backed by a {@link ContainerConnectionSource}.
+	 * {@link DataRedisConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
-			implements RedisConnectionDetails {
+			implements DataRedisConnectionDetails {
 
 		private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 
 		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
+		}
+
+		@Override
 		public Standalone getStandalone() {
-			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT),
-					super.getSslBundle());
+			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT));
 		}
 
 	}

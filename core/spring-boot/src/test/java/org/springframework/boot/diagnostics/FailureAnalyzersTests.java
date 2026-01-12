@@ -16,6 +16,7 @@
 
 package org.springframework.boot.diagnostics;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(OutputCaptureExtension.class)
 class FailureAnalyzersTests {
 
+	@SuppressWarnings("NullAway.Init")
 	private static FailureAnalyzer failureAnalyzer;
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -103,12 +105,13 @@ class FailureAnalyzersTests {
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
 
 		@Override
-		public FailureAnalysis analyze(Throwable failure) {
+		public @Nullable FailureAnalysis analyze(Throwable failure) {
 			return failureAnalyzer.analyze(failure);
 		}
 
 	}
 
+	@SuppressWarnings("NullAway") // Intentional NullPointerException
 	static class BrokenInitializationFailureAnalyzer implements FailureAnalyzer {
 
 		static {

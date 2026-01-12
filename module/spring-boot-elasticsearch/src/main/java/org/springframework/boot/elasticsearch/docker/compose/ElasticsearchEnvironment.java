@@ -33,7 +33,7 @@ class ElasticsearchEnvironment {
 
 	private final @Nullable String password;
 
-	ElasticsearchEnvironment(Map<String, String> env) {
+	ElasticsearchEnvironment(Map<String, @Nullable String> env) {
 		Assert.state(!env.containsKey("ELASTIC_PASSWORD_FILE"), "ELASTIC_PASSWORD_FILE is not supported");
 		this.password = env.get("ELASTIC_PASSWORD");
 	}

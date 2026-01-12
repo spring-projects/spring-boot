@@ -16,18 +16,18 @@
 
 package org.springframework.boot.configurationsample.generic;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
 /**
  * More advanced generic setup.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("generic")
+@TestConfigurationProperties("generic")
 public class ComplexGenericProperties {
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final UpperBoundGenericPojo<Test> test = new UpperBoundGenericPojo<>();
 
 	public UpperBoundGenericPojo<Test> getTest() {

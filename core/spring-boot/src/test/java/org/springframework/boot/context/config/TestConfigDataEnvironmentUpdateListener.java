@@ -20,17 +20,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.PropertySource;
 
 class TestConfigDataEnvironmentUpdateListener implements ConfigDataEnvironmentUpdateListener {
 
 	private final List<AddedPropertySource> addedPropertySources = new ArrayList<>();
 
-	private Profiles profiles;
+	private @Nullable Profiles profiles;
 
 	@Override
-	public void onPropertySourceAdded(PropertySource<?> propertySource, ConfigDataLocation location,
-			ConfigDataResource resource) {
+	public void onPropertySourceAdded(PropertySource<?> propertySource, @Nullable ConfigDataLocation location,
+			@Nullable ConfigDataResource resource) {
 		this.addedPropertySources.add(new AddedPropertySource(propertySource, location, resource));
 	}
 
@@ -43,7 +45,7 @@ class TestConfigDataEnvironmentUpdateListener implements ConfigDataEnvironmentUp
 		return Collections.unmodifiableList(this.addedPropertySources);
 	}
 
-	Profiles getProfiles() {
+	@Nullable Profiles getProfiles() {
 		return this.profiles;
 	}
 
@@ -51,12 +53,12 @@ class TestConfigDataEnvironmentUpdateListener implements ConfigDataEnvironmentUp
 
 		private final PropertySource<?> propertySource;
 
-		private final ConfigDataLocation location;
+		private final @Nullable ConfigDataLocation location;
 
-		private final ConfigDataResource resource;
+		private final @Nullable ConfigDataResource resource;
 
-		AddedPropertySource(PropertySource<?> propertySource, ConfigDataLocation location,
-				ConfigDataResource resource) {
+		AddedPropertySource(PropertySource<?> propertySource, @Nullable ConfigDataLocation location,
+				@Nullable ConfigDataResource resource) {
 			this.propertySource = propertySource;
 			this.location = location;
 			this.resource = resource;
@@ -66,11 +68,11 @@ class TestConfigDataEnvironmentUpdateListener implements ConfigDataEnvironmentUp
 			return this.propertySource;
 		}
 
-		ConfigDataLocation getLocation() {
+		@Nullable ConfigDataLocation getLocation() {
 			return this.location;
 		}
 
-		ConfigDataResource getResource() {
+		@Nullable ConfigDataResource getResource() {
 			return this.resource;
 		}
 

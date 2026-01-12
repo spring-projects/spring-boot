@@ -16,15 +16,12 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -47,15 +44,6 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void signed() throws Exception {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
-		try (JarFile jarFile = new JarFile(jar)) {
-			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();
-		}
-	}
-
-	@TestTemplate
 	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
 		Assumptions.assumeTrue(this.gradleBuild.gradleVersionIsLessThan("9.0-milestone-1"));
 		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.0").build("build");
@@ -66,18 +54,10 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
-		if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
-			assertThat(output).containsPattern("1\\. .*classes");
-			assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
-			assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
-			assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
-		}
-		else {
-			assertThat(output).containsPattern("1\\. .*classes");
-			assertThat(output).containsPattern("2\\. .*commons-lang3-3.9.jar");
-			assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
-			assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
-		}
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
 		assertThat(output).doesNotContain("5. ");
 	}
 
@@ -86,18 +66,10 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
-		if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
-			assertThat(output).containsPattern("1\\. .*classes");
-			assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
-			assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
-			assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
-		}
-		else {
-			assertThat(output).containsPattern("1\\. .*classes");
-			assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
-			assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
-			assertThat(output).containsPattern("4\\. .*library-1.0-SNAPSHOT.jar");
-		}
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
+		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
 		assertThat(output).doesNotContain("5. ");
 	}
 

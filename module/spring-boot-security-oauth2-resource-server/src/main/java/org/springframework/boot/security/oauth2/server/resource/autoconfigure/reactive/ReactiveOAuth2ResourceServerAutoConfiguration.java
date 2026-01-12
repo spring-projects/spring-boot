@@ -22,9 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.security.autoconfigure.actuate.reactive.ReactiveManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -37,7 +37,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  * @since 4.0.0
  */
 @AutoConfiguration(before = { ReactiveManagementWebSecurityAutoConfiguration.class,
-		ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
+		ReactiveWebSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass({ EnableWebFluxSecurity.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)

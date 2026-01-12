@@ -18,6 +18,8 @@ package org.springframework.boot.mustache.autoconfigure;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
@@ -45,7 +47,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 
 	private String suffix = "";
 
-	private String charSet = "UTF-8";
+	private Charset charset = StandardCharsets.UTF_8;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
@@ -58,11 +60,23 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	}
 
 	/**
-	 * Set the charset.
-	 * @param charSet the charset
+	 * Set the {@link Charset} to use.
+	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	public void setCharset(String charSet) {
-		this.charSet = charSet;
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
+
+	/**
+	 * Set the name of the charset to use.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(String charset) {
+		this.charset = Charset.forName(charset);
 	}
 
 	/**
@@ -77,7 +91,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	@Override
 	public Reader getTemplate(String name) throws Exception {
 		return new InputStreamReader(this.resourceLoader.getResource(this.prefix + name + this.suffix).getInputStream(),
-				this.charSet);
+				this.charset);
 	}
 
 }

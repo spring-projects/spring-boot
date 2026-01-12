@@ -32,12 +32,14 @@ import static org.mockito.Mockito.mock;
 class ContainerContentTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(null))
 			.withMessage("'archive' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenDestinationPathIsNullThrowsException() {
 		TarArchive archive = mock(TarArchive.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(archive, null))

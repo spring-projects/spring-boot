@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.BuildpackLayersMetadata.BuildpackLayerDetails;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
@@ -37,6 +38,7 @@ import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.docker.type.LayerId;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -54,7 +56,7 @@ final class ImageBuildpack implements Buildpack {
 
 	private final BuildpackCoordinates coordinates;
 
-	private final ExportedLayers exportedLayers;
+	private final @Nullable ExportedLayers exportedLayers;
 
 	private ImageBuildpack(BuildpackResolverContext context, ImageReference imageReference) {
 		ImageReference reference = imageReference.inTaggedOrDigestForm();
@@ -95,11 +97,18 @@ final class ImageBuildpack implements Buildpack {
 	 * @param reference the buildpack reference
 	 * @return the resolved {@link Buildpack} or {@code null}
 	 */
-	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
+	static @Nullable Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		boolean unambiguous = reference.hasPrefix(PREFIX);
 		try {
-			ImageReference imageReference = ImageReference
-				.of((unambiguous) ? reference.getSubReference(PREFIX) : reference.toString());
+			ImageReference imageReference;
+			if (unambiguous) {
+				String subReference = reference.getSubReference(PREFIX);
+				Assert.state(subReference != null, "'subReference' must not be null");
+				imageReference = ImageReference.of(subReference);
+			}
+			else {
+				imageReference = ImageReference.of(reference.toString());
+			}
 			return new ImageBuildpack(context, imageReference);
 		}
 		catch (IllegalArgumentException ex) {

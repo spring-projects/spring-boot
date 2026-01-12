@@ -62,7 +62,7 @@ import org.springframework.web.util.UriTemplateHandler;
 class EmbeddedServerContainerInvocationContextProvider
 		implements TestTemplateInvocationContextProvider, AfterAllCallback {
 
-	private static final Set<String> CONTAINERS = new HashSet<>(Arrays.asList("jetty", "tomcat", "undertow"));
+	private static final Set<String> CONTAINERS = new HashSet<>(Arrays.asList("jetty", "tomcat"));
 
 	private static final BuildOutput buildOutput = new BuildOutput(
 			EmbeddedServerContainerInvocationContextProvider.class);

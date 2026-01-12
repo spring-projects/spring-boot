@@ -54,6 +54,7 @@ class LogFileTests {
 
 	private void testLoggingFile(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
+		assertThat(logFile).isNotNull();
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile).hasToString("log.file");
@@ -70,6 +71,7 @@ class LogFileTests {
 
 	private void testLoggingPath(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
+		assertThat(logFile).isNotNull();
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile).hasToString("logpath" + File.separatorChar + "spring.log");
@@ -90,6 +92,7 @@ class LogFileTests {
 
 	private void testLoggingFileAndPath(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
+		assertThat(logFile).isNotNull();
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile).hasToString("log.file");

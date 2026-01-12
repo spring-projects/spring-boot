@@ -19,6 +19,8 @@ package smoketest.hateoas.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
@@ -39,7 +41,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
 	}
 
 	@Override
-	public Customer findOne(Long id) {
+	public @Nullable Customer findOne(Long id) {
 		for (Customer customer : this.customers) {
 			if (ObjectUtils.nullSafeEquals(customer.getId(), id)) {
 				return customer;

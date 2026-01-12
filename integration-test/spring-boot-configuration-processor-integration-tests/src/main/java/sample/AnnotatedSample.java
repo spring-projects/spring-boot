@@ -17,6 +17,7 @@
 package sample;
 
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -32,14 +33,14 @@ public class AnnotatedSample {
 	/**
 	 * A valid name.
 	 */
-	private String name;
+	private @Nullable String name;
 
 	@Valid
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 

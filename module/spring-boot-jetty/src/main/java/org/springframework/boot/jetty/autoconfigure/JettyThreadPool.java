@@ -22,6 +22,9 @@ import java.util.concurrent.SynchronousQueue;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 
 /**
  * Creates a {@link ThreadPool} for Jetty, applying
@@ -44,7 +47,8 @@ final class JettyThreadPool {
 		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
 	}
 
-	private static BlockingQueue<Runnable> determineBlockingQueue(Integer maxQueueCapacity) {
+	@Contract("!null -> !null")
+	private static @Nullable BlockingQueue<Runnable> determineBlockingQueue(@Nullable Integer maxQueueCapacity) {
 		if (maxQueueCapacity == null) {
 			return null;
 		}

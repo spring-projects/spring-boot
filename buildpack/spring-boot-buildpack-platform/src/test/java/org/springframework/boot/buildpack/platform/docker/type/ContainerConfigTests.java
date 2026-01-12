@@ -37,12 +37,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ContainerConfigTests extends AbstractJsonTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenImageReferenceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerConfig.of(null, (update) -> {
 		})).withMessage("'imageReference' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenUpdateIsNullThrowsException() {
 		ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerConfig.of(imageReference, null))

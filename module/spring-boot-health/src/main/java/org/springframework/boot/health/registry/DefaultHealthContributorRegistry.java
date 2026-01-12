@@ -21,6 +21,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors.Entry;
 
@@ -45,13 +47,14 @@ public class DefaultHealthContributorRegistry extends AbstractRegistry<HealthCon
 	 * @param nameValidators the name validators to apply
 	 * @param initialRegistrations callback to setup any initial registrations
 	 */
-	public DefaultHealthContributorRegistry(Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
+	public DefaultHealthContributorRegistry(
+			@Nullable Collection<? extends HealthContributorNameValidator> nameValidators,
+			@Nullable Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
 		super(Entry::new, nameValidators, initialRegistrations);
 	}
 
 	@Override
-	public HealthContributor getContributor(String name) {
+	public @Nullable HealthContributor getContributor(String name) {
 		return super.getContributor(name);
 	}
 
@@ -66,7 +69,7 @@ public class DefaultHealthContributorRegistry extends AbstractRegistry<HealthCon
 	}
 
 	@Override
-	public HealthContributor unregisterContributor(String name) {
+	public @Nullable HealthContributor unregisterContributor(String name) {
 		return super.unregisterContributor(name);
 	}
 

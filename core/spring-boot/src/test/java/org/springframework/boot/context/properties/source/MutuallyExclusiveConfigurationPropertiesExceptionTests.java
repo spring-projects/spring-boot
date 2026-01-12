@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenConfiguredNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(null, Arrays.asList("a", "b")))
@@ -50,6 +51,7 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMutuallyExclusiveNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Arrays.asList("a", "b"), null))

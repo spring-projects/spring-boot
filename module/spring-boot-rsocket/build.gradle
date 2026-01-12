@@ -29,18 +29,27 @@ dependencies {
 	api("io.rsocket:rsocket-core")
 	api("org.springframework:spring-messaging")
 
-	implementation("org.springframework:spring-web")
+	compileOnly("com.google.code.findbugs:jsr305")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-reactor-netty"))
-	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("io.rsocket:rsocket-transport-netty")
+	optional("org.springframework:spring-web")
+	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
+	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework:spring-webflux")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

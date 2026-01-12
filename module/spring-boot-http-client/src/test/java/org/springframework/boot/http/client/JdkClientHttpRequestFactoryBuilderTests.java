@@ -18,11 +18,15 @@ package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JdkClientHttpRequestFactoryBuilder} and {@link JdkHttpClientBuilder}.
@@ -48,15 +52,33 @@ class JdkClientHttpRequestFactoryBuilderTests
 		httpClientCustomizer2.assertCalled();
 	}
 
+	@Test
+	void withExecutor() {
+		Executor executor = new SimpleAsyncTaskExecutor();
+		JdkClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jdk().withExecutor(executor).build();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		assertThat(httpClient.executor()).containsSame(executor);
+	}
+
+	@Test
+	void with() {
+		TestCustomizer<HttpClient.Builder> customizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.jdk().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(JdkClientHttpRequestFactory requestFactory) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
 		return httpClient.connectTimeout().get().toMillis();
 	}
 
 	@Override
 	protected long readTimeout(JdkClientHttpRequestFactory requestFactory) {
 		Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(readTimeout).isNotNull();
 		return readTimeout.toMillis();
 	}
 

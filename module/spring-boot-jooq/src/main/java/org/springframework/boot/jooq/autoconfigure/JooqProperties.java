@@ -19,6 +19,7 @@ package org.springframework.boot.jooq.autoconfigure;
 import javax.sql.DataSource;
 
 import org.jooq.SQLDialect;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -37,26 +38,26 @@ public class JooqProperties {
 	/**
 	 * SQL dialect to use. Auto-detected by default.
 	 */
-	private SQLDialect sqlDialect;
+	private @Nullable SQLDialect sqlDialect;
 
 	/**
 	 * Location of the jOOQ config file.
 	 */
-	private Resource config;
+	private @Nullable Resource config;
 
-	public SQLDialect getSqlDialect() {
+	public @Nullable SQLDialect getSqlDialect() {
 		return this.sqlDialect;
 	}
 
-	public void setSqlDialect(SQLDialect sqlDialect) {
+	public void setSqlDialect(@Nullable SQLDialect sqlDialect) {
 		this.sqlDialect = sqlDialect;
 	}
 
-	public Resource getConfig() {
+	public @Nullable Resource getConfig() {
 		return this.config;
 	}
 
-	public void setConfig(Resource config) {
+	public void setConfig(@Nullable Resource config) {
 		this.config = config;
 	}
 

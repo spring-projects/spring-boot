@@ -16,15 +16,15 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Access;
-import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.TestAccess;
+import org.springframework.boot.configurationsample.TestEndpoint;
 
 /**
  * An endpoint with no permitted access unless configured explicitly.
  *
  * @author Andy Wilkinson
  */
-@Endpoint(id = "noaccess", defaultAccess = Access.NONE)
+@TestEndpoint(id = "noaccess", defaultAccess = TestAccess.NONE)
 public class NoAccessEndpoint {
 
 }

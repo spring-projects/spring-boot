@@ -19,6 +19,8 @@ package org.springframework.boot.health.contributor;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -34,7 +36,7 @@ public interface HealthContributors extends Iterable<HealthContributors.Entry> {
 	 * @param name the name of the contributor
 	 * @return a contributor instance or {@code null}
 	 */
-	HealthContributor getContributor(String name);
+	@Nullable HealthContributor getContributor(String name);
 
 	@Override
 	default Iterator<Entry> iterator() {

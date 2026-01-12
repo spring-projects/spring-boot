@@ -27,7 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class MyOAuthClientConfiguration {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		// @formatter:off
 		http
 			.authorizeHttpRequests((requests) -> requests

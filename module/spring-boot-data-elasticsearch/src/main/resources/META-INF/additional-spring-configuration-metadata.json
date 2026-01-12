@@ -6,7 +6,8 @@
       "type": "java.lang.String",
       "description": "Elasticsearch cluster name.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -14,7 +15,8 @@
       "type": "java.lang.String",
       "description": "Comma-separated list of cluster node addresses.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -22,7 +24,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Additional properties used to configure the client.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {

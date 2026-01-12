@@ -29,7 +29,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyEndpointResourceFactory;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
@@ -44,8 +43,10 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 @Configuration(proxyBeanMethods = false)
-@ImportAutoConfiguration({ JacksonAutoConfiguration.class, JerseyAutoConfiguration.class })
+@ImportAutoConfiguration({ org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+		JerseyAutoConfiguration.class })
 class JerseyEndpointConfiguration {
 
 	private final ApplicationContext applicationContext;

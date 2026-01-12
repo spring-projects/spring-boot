@@ -23,6 +23,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
@@ -42,7 +43,7 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	 * Set the Tomcat base directory. If not specified a temporary directory will be used.
 	 * @param baseDirectory the tomcat base directory
 	 */
-	void setBaseDirectory(File baseDirectory);
+	void setBaseDirectory(@Nullable File baseDirectory);
 
 	/**
 	 * Sets the background processor delay in seconds.
@@ -74,7 +75,6 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	 * Add {@link TomcatProtocolHandlerCustomizer}s that should be added to the Tomcat
 	 * {@link Connector}.
 	 * @param tomcatProtocolHandlerCustomizers the customizers to add
-	 * @since 4.0.0
 	 */
 	void addProtocolHandlerCustomizers(TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers);
 

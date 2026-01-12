@@ -38,6 +38,7 @@ import org.springframework.ws.client.core.FaultMessageResolver;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
@@ -62,9 +63,11 @@ class WebServiceTemplateBuilderTests {
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private WebServiceMessageSender messageSender;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientInterceptor interceptor;
 
 	@Test
@@ -100,6 +103,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
@@ -107,6 +111,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null))
@@ -128,6 +133,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalMessageSenders((WebServiceMessageSender[]) null))
@@ -135,6 +141,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -159,12 +166,14 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.interceptors((ClientInterceptor[]) null))
 			.withMessageContaining("'interceptors' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.interceptors((Collection<? extends ClientInterceptor>) null))
@@ -186,6 +195,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
@@ -193,6 +203,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
@@ -219,6 +230,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
@@ -226,6 +238,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Collection<? extends WebServiceTemplateCustomizer>) null))
@@ -259,6 +272,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
@@ -266,6 +280,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -305,6 +320,12 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	void buildShouldDetectWebServiceMessageFactory() {
+		WebServiceTemplate webServiceTemplate = this.builder.build();
+		assertThat(webServiceTemplate.getMessageFactory()).isInstanceOf(SaajSoapMessageFactory.class);
+	}
+
+	@Test
 	void setWebServiceMessageFactory() {
 		WebServiceMessageFactory messageFactory = mock(WebServiceMessageFactory.class);
 		WebServiceTemplate template = this.builder.setWebServiceMessageFactory(messageFactory).build();
@@ -336,7 +357,9 @@ class WebServiceTemplateBuilderTests {
 	void setDefaultUri() {
 		URI uri = URI.create("http://localhost:8080");
 		WebServiceTemplate webServiceTemplate = this.builder.setDefaultUri(uri.toString()).build();
-		assertThat(webServiceTemplate.getDestinationProvider().getDestination()).isEqualTo(uri);
+		DestinationProvider destinationProvider = webServiceTemplate.getDestinationProvider();
+		assertThat(destinationProvider).isNotNull();
+		assertThat(destinationProvider.getDestination()).isEqualTo(uri);
 	}
 
 	@Test

@@ -69,14 +69,14 @@ public final class WebSessionIdResolverAutoConfiguration {
 
 	private void initializeCookie(ResponseCookieBuilder builder) {
 		Cookie cookie = this.serverProperties.getReactive().getSession().getCookie();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(cookie::getDomain).to(builder::domain);
 		map.from(cookie::getPath).to(builder::path);
 		map.from(cookie::getHttpOnly).to(builder::httpOnly);
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
 		map.from(cookie::getPartitioned).to(builder::partitioned);
-		map.from(cookie::getSameSite).as(SameSite::attributeValue).to(builder::sameSite);
+		map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(builder::sameSite);
 	}
 
 }

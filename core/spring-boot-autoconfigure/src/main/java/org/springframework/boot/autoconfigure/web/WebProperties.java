@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
@@ -50,6 +51,9 @@ public class WebProperties {
 
 	private final Resources resources = new Resources();
 
+	@NestedConfigurationProperty
+	private final ErrorProperties error = new ErrorProperties();
+
 	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
@@ -64,6 +68,10 @@ public class WebProperties {
 
 	public void setLocaleResolver(LocaleResolver localeResolver) {
 		this.localeResolver = localeResolver;
+	}
+
+	public ErrorProperties getError() {
+		return this.error;
 	}
 
 	public Resources getResources() {
@@ -101,7 +109,7 @@ public class WebProperties {
 		 */
 		private boolean addMappings = true;
 
-		private boolean customized = false;
+		private boolean customized;
 
 		private final Chain chain = new Chain();
 
@@ -151,7 +159,7 @@ public class WebProperties {
 		 */
 		public static class Chain {
 
-			boolean customized = false;
+			boolean customized;
 
 			/**
 			 * Whether to enable the Spring Resource Handling chain. By default, disabled
@@ -169,7 +177,7 @@ public class WebProperties {
 			 * brotli). Checks for a resource name with the '.gz' or '.br' file
 			 * extensions.
 			 */
-			private boolean compressed = false;
+			private boolean compressed;
 
 			private final Strategy strategy = new Strategy();
 
@@ -188,7 +196,7 @@ public class WebProperties {
 				return this.customized || getStrategy().hasBeenCustomized();
 			}
 
-			public void setEnabled(boolean enabled) {
+			public void setEnabled(Boolean enabled) {
 				this.enabled = enabled;
 				this.customized = true;
 			}
@@ -246,7 +254,7 @@ public class WebProperties {
 				 */
 				public static class Content {
 
-					private boolean customized = false;
+					private boolean customized;
 
 					/**
 					 * Whether to enable the content Version Strategy.
@@ -287,7 +295,7 @@ public class WebProperties {
 				 */
 				public static class Fixed {
 
-					private boolean customized = false;
+					private boolean customized;
 
 					/**
 					 * Whether to enable the fixed Version Strategy.
@@ -346,7 +354,7 @@ public class WebProperties {
 		 */
 		public static class Cache {
 
-			private boolean customized = false;
+			private boolean customized;
 
 			/**
 			 * Cache period for the resources served by the resource handler. If a
@@ -398,7 +406,7 @@ public class WebProperties {
 			 */
 			public static class Cachecontrol {
 
-				private boolean customized = false;
+				private boolean customized;
 
 				/**
 				 * Maximum time the response should be cached, in seconds if no duration
@@ -576,13 +584,10 @@ public class WebProperties {
 					map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
 					map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
 					map.from(this::getStaleWhileRevalidate)
-						.whenNonNull()
 						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
 					map.from(this::getStaleIfError)
-						.whenNonNull()
 						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
 					map.from(this::getSMaxAge)
-						.whenNonNull()
 						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
 					// check if cacheControl remained untouched
 					if (control.getHeaderValue() == null) {

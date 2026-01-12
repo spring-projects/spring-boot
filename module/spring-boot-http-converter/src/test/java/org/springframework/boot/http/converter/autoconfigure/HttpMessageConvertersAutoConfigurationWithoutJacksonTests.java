@@ -38,7 +38,8 @@ class HttpMessageConvertersAutoConfigurationWithoutJacksonTests {
 
 	@Test
 	void autoConfigurationWorksWithSpringHateoasButWithoutJackson() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
+		this.contextRunner.run((context) -> assertThat(context).hasBean("clientConvertersCustomizer")
+			.hasBean("serverConvertersCustomizer"));
 	}
 
 }

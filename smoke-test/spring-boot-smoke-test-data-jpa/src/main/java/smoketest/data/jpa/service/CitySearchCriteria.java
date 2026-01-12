@@ -24,10 +24,7 @@ public class CitySearchCriteria implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;
-
-	public CitySearchCriteria() {
-	}
+	private final String name;
 
 	public CitySearchCriteria(String name) {
 		Assert.notNull(name, "'name' must not be null");
@@ -36,10 +33,6 @@ public class CitySearchCriteria implements Serializable {
 
 	public String getName() {
 		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 }

@@ -27,14 +27,16 @@ import java.util.function.Consumer;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.test.json.JsonContentAssert;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.StreamUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * AssertJ {@link org.assertj.core.api.Assert} for Docker image contents.
@@ -73,6 +75,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 			super(layer, LayerContentAssert.class);
 		}
 
+		@CheckReturnValue
 		public ListAssert<String> entries() {
 			List<String> entryNames = new ArrayList<>();
 			try {
@@ -92,7 +95,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 			catch (IOException ex) {
 				failWithMessage("IOException while reading image layer archive: '%s'", ex.getMessage());
 			}
-			return Assertions.assertThat(entryNames);
+			return assertThat(entryNames);
 		}
 
 		public void jsonEntry(String name, Consumer<JsonContentAssert> assertConsumer) {

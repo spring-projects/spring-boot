@@ -18,11 +18,12 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -50,7 +51,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	private Origin origin;
 
-	private PostgreSQLContainer<?> container;
+	private PostgreSQLContainer container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -84,15 +85,17 @@ class ServiceConnectionContextCustomizerTests {
 		then(beanFactory).should()
 			.registerBeanDefinition(eq("testConnectionDetailsForTest"),
 					ArgumentMatchers.<RootBeanDefinition>assertArg((beanDefinition) -> {
-						assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
+						Supplier<?> instanceSupplier = beanDefinition.getInstanceSupplier();
+						assertThat(instanceSupplier).isNotNull();
+						assertThat(instanceSupplier.get()).isSameAs(connectionDetails);
 						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestConnectionDetails.class);
 					}));
 	}
 
 	@Test
 	void equalsAndHashCode() {
-		PostgreSQLContainer<?> container1 = mock(PostgreSQLContainer.class);
-		PostgreSQLContainer<?> container2 = mock(PostgreSQLContainer.class);
+		PostgreSQLContainer container1 = mock(PostgreSQLContainer.class);
+		PostgreSQLContainer container2 = mock(PostgreSQLContainer.class);
 		MergedAnnotation<ServiceConnection> annotation1 = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[0]));
 		MergedAnnotation<ServiceConnection> annotation2 = MergedAnnotation.of(ServiceConnection.class,
@@ -141,7 +144,7 @@ class ServiceConnectionContextCustomizerTests {
 
 		@Override
 		public String getJdbcUrl() {
-			return null;
+			return "";
 		}
 
 	}

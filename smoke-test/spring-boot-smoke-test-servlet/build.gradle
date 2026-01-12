@@ -25,8 +25,13 @@ dependencies {
 
 	implementation(project(":starter:spring-boot-starter-security"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
+	testImplementation(project(":module:spring-boot-restclient"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 
 	testRuntimeOnly(project(":starter:spring-boot-starter-tomcat"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

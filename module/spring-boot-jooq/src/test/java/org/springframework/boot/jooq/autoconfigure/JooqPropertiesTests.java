@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.jooq.SQLDialect;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.never;
  */
 class JooqPropertiesTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void close() {

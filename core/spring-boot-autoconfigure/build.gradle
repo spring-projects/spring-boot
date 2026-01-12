@@ -30,7 +30,7 @@ dependencies {
 
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("org.aspectj:aspectjweaver")
-	optional("jakarta.persistence:jakarta.persistence-api")
+	optional("io.micrometer:context-propagation")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.money:money-api")
 	optional("org.springframework:spring-web")
@@ -45,10 +45,10 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot")))
 	testImplementation("ch.qos.logback:logback-classic")
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("org.springframework:spring-context-support")
 	testImplementation("org.springframework.security:spring-security-config")
+	testImplementation("tools.jackson.core:jackson-databind")
 
 	testRuntimeOnly("com.github.ben-manes.caffeine:caffeine")
 	testRuntimeOnly("org.springframework:spring-webflux")
@@ -56,4 +56,8 @@ dependencies {
 
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

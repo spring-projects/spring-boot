@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -60,7 +61,7 @@ class DockerComposeListenerTests {
 
 		private final ConfigurableApplicationContext context;
 
-		private DockerComposeLifecycleManager manager;
+		private @Nullable DockerComposeLifecycleManager manager;
 
 		TestDockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers,
 				ConfigurableApplicationContext context) {
@@ -79,7 +80,7 @@ class DockerComposeListenerTests {
 			return this.manager;
 		}
 
-		DockerComposeLifecycleManager getManager() {
+		@Nullable DockerComposeLifecycleManager getManager() {
 			return this.manager;
 		}
 

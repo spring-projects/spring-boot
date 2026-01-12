@@ -30,7 +30,6 @@ dependencies {
 	api("org.springframework.session:spring-session-jdbc")
 
 	implementation(project(":module:spring-boot-jdbc"))
-	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
@@ -38,7 +37,9 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-flyway"))
 	testImplementation(project(":module:spring-boot-liquibase"))
+	testImplementation(project(":module:spring-boot-web-server"))
 	testImplementation(testFixtures(project(":module:spring-boot-session")))
+	testImplementation(testFixtures(project(":module:spring-boot-sql")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 	testImplementation("org.apache.commons:commons-dbcp2")
 	testImplementation("org.springframework:spring-web")
@@ -46,4 +47,8 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
 	testRuntimeOnly("org.hsqldb:hsqldb")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

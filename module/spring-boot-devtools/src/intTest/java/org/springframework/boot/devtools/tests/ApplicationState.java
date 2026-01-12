@@ -19,7 +19,10 @@ package org.springframework.boot.devtools.tests;
 import java.io.File;
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
+import org.springframework.util.Assert;
 
 /**
  * State of an application.
@@ -30,7 +33,7 @@ final class ApplicationState {
 
 	private final Instant launchTime;
 
-	private final Integer serverPort;
+	private final @Nullable Integer serverPort;
 
 	private final FileContents out;
 
@@ -56,6 +59,7 @@ final class ApplicationState {
 	}
 
 	int getServerPort() {
+		Assert.notNull(this.serverPort, "No server port is available");
 		return this.serverPort;
 	}
 

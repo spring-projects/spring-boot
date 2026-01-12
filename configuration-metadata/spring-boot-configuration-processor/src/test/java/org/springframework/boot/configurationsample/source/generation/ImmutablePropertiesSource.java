@@ -16,10 +16,10 @@
 
 package org.springframework.boot.configurationsample.source.generation;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesSource;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationPropertiesSource;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
-@ConfigurationPropertiesSource
+@TestConfigurationPropertiesSource
 public class ImmutablePropertiesSource {
 
 	/**
@@ -34,7 +34,7 @@ public class ImmutablePropertiesSource {
 	@SuppressWarnings("unused")
 	private final boolean enabled;
 
-	public ImmutablePropertiesSource(@DefaultValue("boot") String name, boolean enabled) {
+	public ImmutablePropertiesSource(@TestDefaultValue("boot") String name, boolean enabled) {
 		this.name = name;
 		this.enabled = enabled;
 	}

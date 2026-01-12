@@ -22,14 +22,14 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Getter/@Setter at field level.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("explicit")
+@TestConfigurationProperties("explicit")
 public class LombokExplicitProperties {
 
 	@Getter

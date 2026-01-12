@@ -23,6 +23,7 @@ import java.util.Map;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
@@ -55,13 +56,14 @@ public abstract class AbstractErrorController implements ErrorController {
 		this(errorAttributes, null);
 	}
 
-	public AbstractErrorController(ErrorAttributes errorAttributes, List<ErrorViewResolver> errorViewResolvers) {
+	public AbstractErrorController(ErrorAttributes errorAttributes,
+			@Nullable List<ErrorViewResolver> errorViewResolvers) {
 		Assert.notNull(errorAttributes, "'errorAttributes' must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorViewResolvers = sortErrorViewResolvers(errorViewResolvers);
 	}
 
-	private List<ErrorViewResolver> sortErrorViewResolvers(List<ErrorViewResolver> resolvers) {
+	private List<ErrorViewResolver> sortErrorViewResolvers(@Nullable List<ErrorViewResolver> resolvers) {
 		List<ErrorViewResolver> sorted = new ArrayList<>();
 		if (resolvers != null) {
 			sorted.addAll(resolvers);
@@ -70,7 +72,8 @@ public abstract class AbstractErrorController implements ErrorController {
 		return sorted;
 	}
 
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
+	protected Map<String, @Nullable Object> getErrorAttributes(HttpServletRequest request,
+			ErrorAttributeOptions options) {
 		WebRequest webRequest = new ServletWebRequest(request);
 		return this.errorAttributes.getErrorAttributes(webRequest, options);
 	}
@@ -142,8 +145,8 @@ public abstract class AbstractErrorController implements ErrorController {
 	 * @return a specific {@link ModelAndView} or {@code null} if the default should be
 	 * used
 	 */
-	protected ModelAndView resolveErrorView(HttpServletRequest request, HttpServletResponse response, HttpStatus status,
-			Map<String, Object> model) {
+	protected @Nullable ModelAndView resolveErrorView(HttpServletRequest request, HttpServletResponse response,
+			HttpStatus status, Map<String, Object> model) {
 		for (ErrorViewResolver resolver : this.errorViewResolvers) {
 			ModelAndView modelAndView = resolver.resolveErrorView(request, status, model);
 			if (modelAndView != null) {

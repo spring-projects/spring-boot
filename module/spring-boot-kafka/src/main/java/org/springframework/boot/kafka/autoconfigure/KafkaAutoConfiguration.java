@@ -19,11 +19,13 @@ package org.springframework.boot.kafka.autoconfigure;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -46,6 +48,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.retry.RetryPolicy;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -59,9 +62,8 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.retry.backoff.BackOffPolicyBuilder;
-import org.springframework.retry.backoff.SleepingBackOffPolicy;
 import org.springframework.util.StringUtils;
+import org.springframework.util.backoff.BackOff;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -102,7 +104,7 @@ public final class KafkaAutoConfiguration {
 	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
@@ -195,8 +197,8 @@ public final class KafkaAutoConfiguration {
 			.maxAttempts(retryTopic.getAttempts())
 			.useSingleTopicForSameIntervals()
 			.suffixTopicsWithIndexValues()
-			.doNotAutoCreateRetryTopics();
-		setBackOffPolicy(builder, retryTopic.getBackoff());
+			.doNotAutoCreateRetryTopics()
+			.customBackoff(getBackOff(retryTopic.getBackoff()));
 		return builder.create(kafkaTemplate);
 	}
 
@@ -224,30 +226,24 @@ public final class KafkaAutoConfiguration {
 		applySslBundle(properties, admin.getSslBundle());
 	}
 
-	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Backoff retryTopicBackoff) {
-		long delay = (retryTopicBackoff.getDelay() != null) ? retryTopicBackoff.getDelay().toMillis() : 0;
-		if (delay > 0) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			BackOffPolicyBuilder backOffPolicy = BackOffPolicyBuilder.newBuilder();
-			map.from(delay).to(backOffPolicy::delay);
-			map.from(retryTopicBackoff.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);
-			map.from(retryTopicBackoff.getMultiplier()).to(backOffPolicy::multiplier);
-			map.from(retryTopicBackoff.isRandom()).to(backOffPolicy::random);
-			builder.customBackoff((SleepingBackOffPolicy<?>) backOffPolicy.build());
-		}
-		else {
-			builder.noBackoff();
-		}
+	static BackOff getBackOff(Backoff retryTopicBackoff) {
+		PropertyMapper map = PropertyMapper.get();
+		RetryPolicy.Builder builder = RetryPolicy.builder().maxRetries(Long.MAX_VALUE);
+		map.from(retryTopicBackoff.getDelay()).to(builder::delay);
+		map.from(retryTopicBackoff.getMaxDelay()).when(Predicate.not(Duration::isZero)).to(builder::maxDelay);
+		map.from(retryTopicBackoff.getMultiplier()).to(builder::multiplier);
+		map.from(retryTopicBackoff.getJitter()).when((Predicate.not(Duration::isZero))).to(builder::jitter);
+		return builder.build().getBackOff();
 	}
 
-	static void applySslBundle(Map<String, Object> properties, SslBundle sslBundle) {
+	static void applySslBundle(Map<String, Object> properties, @Nullable SslBundle sslBundle) {
 		if (sslBundle != null) {
 			properties.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, SslBundleSslEngineFactory.class);
 			properties.put(SslBundle.class.getName(), sslBundle);
 		}
 	}
 
-	static void applySecurityProtocol(Map<String, Object> properties, String securityProtocol) {
+	static void applySecurityProtocol(Map<String, Object> properties, @Nullable String securityProtocol) {
 		if (StringUtils.hasLength(securityProtocol)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
 		}
@@ -256,7 +252,7 @@ public final class KafkaAutoConfiguration {
 	static class KafkaRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection().registerType(SslBundleSslEngineFactory.class, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 		}
 

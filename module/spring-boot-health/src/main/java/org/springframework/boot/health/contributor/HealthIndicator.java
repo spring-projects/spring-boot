@@ -16,6 +16,8 @@
 
 package org.springframework.boot.health.contributor;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Directly contributes {@link Health} information for specific component or subsystem.
  *
@@ -31,8 +33,11 @@ public non-sealed interface HealthIndicator extends HealthContributor {
 	 * @param includeDetails if details should be included or removed
 	 * @return the health
 	 */
-	default Health health(boolean includeDetails) {
+	default @Nullable Health health(boolean includeDetails) {
 		Health health = health();
+		if (health == null) {
+			return null;
+		}
 		return includeDetails ? health : health.withoutDetails();
 	}
 
@@ -40,6 +45,6 @@ public non-sealed interface HealthIndicator extends HealthContributor {
 	 * Return an indication of health.
 	 * @return the health
 	 */
-	Health health();
+	@Nullable Health health();
 
 }

@@ -24,17 +24,17 @@ import org.springframework.context.annotation.Configuration;
 
 @AutoConfiguration
 // Some conditions ...
-public class MyAutoConfiguration {
+public final class MyAutoConfiguration {
 
 	// Auto-configured beans ...
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SomeService.class)
-	public static class SomeServiceConfiguration {
+	static class SomeServiceConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public SomeService someService() {
+		SomeService someService() {
 			return new SomeService();
 		}
 

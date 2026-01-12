@@ -21,6 +21,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -59,7 +61,7 @@ class RemoteUrlPropertyExtractor implements ApplicationListener<ApplicationEnvir
 		environment.getPropertySources().addLast(propertySource);
 	}
 
-	private String cleanRemoteUrl(String url) {
+	private @Nullable String cleanRemoteUrl(@Nullable String url) {
 		if (StringUtils.hasText(url) && url.endsWith("/")) {
 			return url.substring(0, url.length() - 1);
 		}

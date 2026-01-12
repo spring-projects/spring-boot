@@ -16,8 +16,11 @@
 
 package org.springframework.boot.mustache.reactive.view;
 
+import java.nio.charset.Charset;
+
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
@@ -34,7 +37,7 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 
 	private final Compiler compiler;
 
-	private String charset;
+	private @Nullable Charset charset;
 
 	/**
 	 * Create a {@code MustacheViewResolver} backed by a default instance of a
@@ -56,11 +59,23 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	/**
-	 * Set the charset.
+	 * Set the {@link Charset} to use.
 	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
+	}
+
+	/**
+	 * Set the name of the charset to use.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(@Nullable String charset) {
+		setCharset((charset != null) ? Charset.forName(charset) : null);
 	}
 
 	@Override

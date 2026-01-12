@@ -16,14 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +34,6 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,10 +51,12 @@ import static org.mockito.BDDMockito.then;
 class CachingOperationInvokerAdvisorTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private OperationInvoker invoker;
 
 	@Mock
-	private Function<EndpointId, Long> timeToLive;
+	@SuppressWarnings("NullAway.Init")
+	private Function<EndpointId, @Nullable Long> timeToLive;
 
 	private CachingOperationInvokerAdvisor advisor;
 
@@ -163,47 +160,39 @@ class CachingOperationInvokerAdvisorTests {
 
 	private OperationMethod getOperationMethod(String methodName, Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName, parameterTypes);
-		return new OperationMethod(method, OperationType.READ,
-				(parameter) -> MergedAnnotations.from(parameter).isPresent(TestOptional.class));
+		assertThat(method).as("Method '%s'", method).isNotNull();
+		return new OperationMethod(method, OperationType.READ);
 	}
 
-	@SuppressWarnings("deprecation")
 	static class TestOperations {
 
 		String get() {
 			return "";
 		}
 
-		String getWithParameters(@TestOptional String foo, String bar) {
+		String getWithParameters(@Nullable String foo, String bar) {
 			return "";
 		}
 
-		String getWithAllOptionalParameters(@TestOptional String foo, @TestOptional String bar) {
+		String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
 			return "";
 		}
 
-		String getWithSecurityContext(SecurityContext securityContext, @TestOptional String bar) {
+		String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
 			return "";
 		}
 
-		String getWithApiVersion(ApiVersion apiVersion, @TestOptional String bar) {
+		String getWithApiVersion(ApiVersion apiVersion, @Nullable String bar) {
 			return "";
 		}
 
-		String getWithServerNamespace(WebServerNamespace serverNamespace, @TestOptional String bar) {
+		String getWithServerNamespace(WebServerNamespace serverNamespace, @Nullable String bar) {
 			return "";
 		}
 
 		String getWithServerNamespaceAndOtherMandatory(WebServerNamespace serverNamespace, String bar) {
 			return "";
 		}
-
-	}
-
-	@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface TestOptional {
 
 	}
 

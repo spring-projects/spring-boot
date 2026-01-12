@@ -90,7 +90,7 @@ final class SpringProfileArbiter implements Arbiter {
 		 * @return this
 		 * @see Profiles#of(String...)
 		 */
-		Builder setName(String name) {
+		public Builder setName(String name) {
 			this.name = name;
 			return this;
 		}

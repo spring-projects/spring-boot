@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
@@ -56,7 +58,7 @@ import org.springframework.web.client.RestClient.Builder;
  * {@code getServer().reset()} or {@code getServer(restClientBuilder).reset()}.
  *
  * @author Scott Frederick
- * @since 3.2.0
+ * @since 4.0.0
  * @see #getServer()
  * @see #getServer(RestClient.Builder)
  */
@@ -87,7 +89,6 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 * Create a new {@link MockServerRestClientCustomizer} instance.
 	 * @param expectationManagerSupplier a supplier that provides the
 	 * {@link RequestExpectationManager} to use
-	 * @since 3.0.0
 	 */
 	public MockServerRestClientCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
 		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
@@ -99,7 +100,6 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 * buffer the input and output streams, and for example, allow multiple reads of the
 	 * response body.
 	 * @param bufferContent if request and response content should be buffered
-	 * @since 3.1.0
 	 */
 	public void setBufferContent(boolean bufferContent) {
 		this.bufferContent = bufferContent;
@@ -133,7 +133,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 		return this.expectationManagers;
 	}
 
-	public MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
+	public @Nullable MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
 		return this.servers.get(restClientBuilder);
 	}
 

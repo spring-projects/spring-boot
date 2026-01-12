@@ -25,6 +25,7 @@ import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.compat.JreCompat;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extension of Tomcat's {@link ParallelWebappClassLoader} that does not consider the
@@ -49,12 +50,12 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	public TomcatEmbeddedWebappClassLoader() {
 	}
 
-	public TomcatEmbeddedWebappClassLoader(ClassLoader parent) {
+	public TomcatEmbeddedWebappClassLoader(@Nullable ClassLoader parent) {
 		super(parent);
 	}
 
 	@Override
-	public URL findResource(String name) {
+	public @Nullable URL findResource(String name) {
 		return null;
 	}
 
@@ -75,13 +76,13 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		}
 	}
 
-	private Class<?> findExistingLoadedClass(String name) {
+	private @Nullable Class<?> findExistingLoadedClass(String name) {
 		Class<?> resultClass = findLoadedClass0(name);
 		resultClass = (resultClass != null || JreCompat.isGraalAvailable()) ? resultClass : findLoadedClass(name);
 		return resultClass;
 	}
 
-	private Class<?> doLoadClass(String name) {
+	private @Nullable Class<?> doLoadClass(String name) {
 		if ((this.delegate || filter(name, true))) {
 			Class<?> result = loadFromParent(name);
 			return (result != null) ? result : findClassIgnoringNotFound(name);
@@ -105,7 +106,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		}
 	}
 
-	private Class<?> loadFromParent(String name) {
+	private @Nullable Class<?> loadFromParent(String name) {
 		if (this.parent == null) {
 			return null;
 		}
@@ -117,7 +118,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		}
 	}
 
-	private Class<?> findClassIgnoringNotFound(String name) {
+	private @Nullable Class<?> findClassIgnoringNotFound(String name) {
 		try {
 			return findClass(name);
 		}

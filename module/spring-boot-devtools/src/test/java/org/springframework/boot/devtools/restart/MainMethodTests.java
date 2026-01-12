@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.lang.reflect.Method;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.launch.FakeJarLauncher;
@@ -37,14 +37,8 @@ class MainMethodTests {
 
 	private static final ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
-	private Method actualMain;
-
-	@BeforeEach
-	void setup() throws Exception {
-		this.actualMain = Valid.class.getMethod("main", String[].class);
-	}
-
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
 			.withMessageContaining("'thread' must not be null");
@@ -52,9 +46,10 @@ class MainMethodTests {
 
 	@Test
 	void validMainMethod() throws Exception {
+		Method actualMain = Valid.class.getMethod("main", String[].class);
 		MainMethod method = new TestThread(Valid::main).test();
-		assertThat(method.getMethod()).isEqualTo(this.actualMain);
-		assertThat(method.getDeclaringClassName()).isEqualTo(this.actualMain.getDeclaringClass().getName());
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test // gh-35214
@@ -75,14 +70,41 @@ class MainMethodTests {
 	}
 
 	@Test
-	void missingArgsMainMethod() {
-		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
-			.withMessageContaining("Unable to find main method");
+	void detectPublicMainMethod() throws Exception {
+		Method actualMain = PublicMainMethod.class.getMethod("main", String[].class);
+		MainMethod method = new TestThread(PublicMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void detectPublicParameterlessMainMethod() throws Exception {
+		Method actualMain = PublicParameterlessMainMethod.class.getMethod("main");
+		MainMethod method = new TestThread(PublicParameterlessMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void detectPackagePrivateMainMethod() throws Exception {
+		Method actualMain = PackagePrivateMainMethod.class.getDeclaredMethod("main", String[].class);
+		MainMethod method = new TestThread(PackagePrivateMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void detectPackagePrivateParameterlessMainMethod() throws Exception {
+		Method actualMain = PackagePrivateParameterlessMainMethod.class.getDeclaredMethod("main");
+		MainMethod method = new TestThread(PackagePrivateParameterlessMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test
 	void nonStatic() {
-		assertThatIllegalStateException().isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new TestThread(() -> new NonStaticMainMethod().main()).test())
 			.withMessageContaining("Unable to find main method");
 	}
 
@@ -90,9 +112,9 @@ class MainMethodTests {
 
 		private final Runnable runnable;
 
-		private Exception exception;
+		private @Nullable Exception exception;
 
-		private MainMethod mainMethod;
+		private @Nullable MainMethod mainMethod;
 
 		TestThread(Runnable runnable) {
 			this.runnable = runnable;
@@ -104,7 +126,9 @@ class MainMethodTests {
 			if (this.exception != null) {
 				ReflectionUtils.rethrowRuntimeException(this.exception);
 			}
-			return this.mainMethod;
+			MainMethod mainMethod = this.mainMethod;
+			assertThat(mainMethod).isNotNull();
+			return mainMethod;
 		}
 
 		@Override
@@ -141,7 +165,15 @@ class MainMethodTests {
 
 	}
 
-	public static class MissingArgs {
+	public static class PublicMainMethod {
+
+		public static void main(String... args) {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class PublicParameterlessMainMethod {
 
 		public static void main() {
 			mainMethod.set(new MainMethod());
@@ -149,7 +181,23 @@ class MainMethodTests {
 
 	}
 
-	public static class NonStaticMain {
+	public static class PackagePrivateMainMethod {
+
+		static void main(String... args) {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class PackagePrivateParameterlessMainMethod {
+
+		static void main() {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class NonStaticMainMethod {
 
 		void main(String... args) {
 			mainMethod.set(new MainMethod());

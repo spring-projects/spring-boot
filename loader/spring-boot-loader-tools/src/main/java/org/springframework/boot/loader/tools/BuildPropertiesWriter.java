@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.CollectionFactory;
 import org.springframework.util.StringUtils;
 
@@ -86,7 +88,7 @@ public final class BuildPropertiesWriter {
 		return properties;
 	}
 
-	private void addIfHasValue(Properties properties, String name, String value) {
+	private void addIfHasValue(Properties properties, String name, @Nullable String value) {
 		if (StringUtils.hasText(value)) {
 			properties.put(name, value);
 		}
@@ -97,20 +99,20 @@ public final class BuildPropertiesWriter {
 	 */
 	public static final class ProjectDetails {
 
-		private final String group;
+		private final @Nullable String group;
 
-		private final String artifact;
+		private final @Nullable String artifact;
 
-		private final String name;
+		private final @Nullable String name;
 
-		private final String version;
+		private final @Nullable String version;
 
-		private final Instant time;
+		private final @Nullable Instant time;
 
-		private final Map<String, String> additionalProperties;
+		private final @Nullable Map<String, String> additionalProperties;
 
-		public ProjectDetails(String group, String artifact, String version, String name, Instant time,
-				Map<String, String> additionalProperties) {
+		public ProjectDetails(@Nullable String group, @Nullable String artifact, @Nullable String version,
+				@Nullable String name, @Nullable Instant time, @Nullable Map<String, String> additionalProperties) {
 			this.group = group;
 			this.artifact = artifact;
 			this.name = name;
@@ -120,7 +122,7 @@ public final class BuildPropertiesWriter {
 			this.additionalProperties = additionalProperties;
 		}
 
-		private static void validateAdditionalProperties(Map<String, String> additionalProperties) {
+		private static void validateAdditionalProperties(@Nullable Map<String, String> additionalProperties) {
 			if (additionalProperties != null) {
 				additionalProperties.forEach((name, value) -> {
 					if (value == null) {
@@ -130,27 +132,27 @@ public final class BuildPropertiesWriter {
 			}
 		}
 
-		public String getGroup() {
+		public @Nullable String getGroup() {
 			return this.group;
 		}
 
-		public String getArtifact() {
+		public @Nullable String getArtifact() {
 			return this.artifact;
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public String getVersion() {
+		public @Nullable String getVersion() {
 			return this.version;
 		}
 
-		public Instant getTime() {
+		public @Nullable Instant getTime() {
 			return this.time;
 		}
 
-		public Map<String, String> getAdditionalProperties() {
+		public @Nullable Map<String, String> getAdditionalProperties() {
 			return this.additionalProperties;
 		}
 

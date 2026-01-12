@@ -69,7 +69,7 @@ public class ActiveMQProperties {
 	 * Whether to stop message delivery before re-delivering messages from a rolled back
 	 * transaction. This implies that message order is not preserved when this is enabled.
 	 */
-	private boolean nonBlockingRedelivery = false;
+	private boolean nonBlockingRedelivery;
 
 	/**
 	 * Time to wait on message sends for a response. Set it to 0 to wait forever.

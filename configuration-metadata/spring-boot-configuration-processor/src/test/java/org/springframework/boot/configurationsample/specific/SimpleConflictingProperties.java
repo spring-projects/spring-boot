@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 
 /**
@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.simple.SimpleProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("simple")
+@TestConfigurationProperties("simple")
 public class SimpleConflictingProperties {
 
 	private String flag = "hello";

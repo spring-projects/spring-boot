@@ -49,7 +49,10 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 		Assert.notNull(vin, "'vin' must not be null");
 		logger.debug("Retrieving vehicle data for: " + vin);
 		try {
-			return this.restTemplate.getForObject("/vehicle/{vin}/details", VehicleDetails.class, vin);
+			VehicleDetails response = this.restTemplate.getForObject("/vehicle/{vin}/details", VehicleDetails.class,
+					vin);
+			Assert.state(response != null, "'response' must not be null");
+			return response;
 		}
 		catch (HttpStatusCodeException ex) {
 			if (HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {

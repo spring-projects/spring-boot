@@ -57,11 +57,13 @@ record Changelog(String oldVersionNumber, String newVersionNumber, List<Differen
 		}
 		for (ConfigurationMetadataProperty newProperty : newMetadata.getAllProperties().values()) {
 			if (!seenIds.contains(newProperty.getId())) {
-				if (newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
-					differences.add(new Difference(DifferenceType.DELETED, null, newProperty));
-				}
-				else if (!newProperty.isDeprecated()) {
+				if (!newProperty.isDeprecated()) {
 					differences.add(new Difference(DifferenceType.ADDED, null, newProperty));
+				}
+				else {
+					DifferenceType differenceType = (newProperty.getDeprecation().getLevel() == Level.ERROR)
+							? DifferenceType.DELETED : DifferenceType.ADDED;
+					differences.add(new Difference(differenceType, null, newProperty));
 				}
 			}
 		}

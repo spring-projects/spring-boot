@@ -17,6 +17,7 @@
 package org.springframework.boot.validation.autoconfigure;
 
 import jakarta.validation.ValidationException;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -26,6 +27,7 @@ import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
+import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -104,7 +106,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	 * @param validator an existing validator to use or {@code null}
 	 * @return the validator to use
 	 */
-	public static Validator get(ApplicationContext applicationContext, Validator validator) {
+	public static Validator get(ApplicationContext applicationContext, @Nullable Validator validator) {
 		if (validator != null) {
 			return wrap(validator, false);
 		}
@@ -119,7 +121,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		return create(applicationContext);
 	}
 
-	private static Validator getExisting(ApplicationContext applicationContext) {
+	private static @Nullable Validator getExisting(ApplicationContext applicationContext) {
 		try {
 			jakarta.validation.Validator validatorBean = applicationContext.getBean(jakarta.validation.Validator.class);
 			if (validatorBean instanceof Validator validator) {
@@ -156,7 +158,8 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T unwrap(Class<T> type) {
+	public <T> @Nullable T unwrap(@Nullable Class<T> type) {
+		Assert.state(type != null, "'type' must not be null");
 		if (type.isInstance(this.target)) {
 			return (T) this.target;
 		}

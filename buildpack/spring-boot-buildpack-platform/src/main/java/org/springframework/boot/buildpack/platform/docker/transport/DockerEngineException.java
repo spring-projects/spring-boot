@@ -17,8 +17,13 @@
 package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.hc.core5.http.HttpStatus;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,21 +31,22 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Siva Sai Udayagiri
  * @since 2.3.0
  */
 public class DockerEngineException extends RuntimeException {
 
 	private final int statusCode;
 
-	private final String reasonPhrase;
+	private final @Nullable String reasonPhrase;
 
-	private final Errors errors;
+	private final @Nullable Errors errors;
 
-	private final Message responseMessage;
+	private final @Nullable Message responseMessage;
 
-	public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
-			Message responseMessage) {
-		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
+	public DockerEngineException(String host, URI uri, int statusCode, @Nullable String reasonPhrase,
+			@Nullable Errors errors, @Nullable Message responseMessage, byte @Nullable [] content) {
+		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage, content));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 		this.errors = errors;
@@ -59,7 +65,7 @@ public class DockerEngineException extends RuntimeException {
 	 * Return the reason phrase returned by the Docker API.
 	 * @return the reasonPhrase
 	 */
-	public String getReasonPhrase() {
+	public @Nullable String getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
@@ -68,7 +74,7 @@ public class DockerEngineException extends RuntimeException {
 	 * errors JSON could not be read.
 	 * @return the errors or {@code null}
 	 */
-	public Errors getErrors() {
+	public @Nullable Errors getErrors() {
 		return this.errors;
 	}
 
@@ -77,12 +83,12 @@ public class DockerEngineException extends RuntimeException {
 	 * message JSON could not be read.
 	 * @return the message or {@code null}
 	 */
-	public Message getResponseMessage() {
+	public @Nullable Message getResponseMessage() {
 		return this.responseMessage;
 	}
 
-	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
-			Message responseMessage) {
+	private static String buildMessage(String host, URI uri, int statusCode, @Nullable String reasonPhrase,
+			@Nullable Errors errors, @Nullable Message responseMessage, byte @Nullable [] content) {
 		Assert.notNull(host, "'host' must not be null");
 		Assert.notNull(uri, "'uri' must not be null");
 		StringBuilder message = new StringBuilder(
@@ -92,6 +98,10 @@ public class DockerEngineException extends RuntimeException {
 		}
 		if (responseMessage != null && StringUtils.hasLength(responseMessage.getMessage())) {
 			message.append(" and message \"").append(responseMessage.getMessage()).append("\"");
+		}
+		else if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED && !ObjectUtils.isEmpty(content)) {
+			String contentString = new String(content, StandardCharsets.UTF_8);
+			message.append(" and content \"").append(contentString.trim()).append("\"");
 		}
 		if (errors != null && !errors.isEmpty()) {
 			message.append(" ").append(errors);

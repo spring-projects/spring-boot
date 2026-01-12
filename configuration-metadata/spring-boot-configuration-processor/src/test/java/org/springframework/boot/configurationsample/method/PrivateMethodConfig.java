@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing private method configuration.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class PrivateMethodConfig {
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	private Foo foo() {
 		return new Foo();
 	}

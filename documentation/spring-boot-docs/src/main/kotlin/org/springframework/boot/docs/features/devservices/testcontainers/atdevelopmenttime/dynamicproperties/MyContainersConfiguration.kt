@@ -19,7 +19,7 @@ package org.springframework.boot.docs.features.devservices.testcontainers.atdeve
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.mongodb.MongoDBContainer
 
 @TestConfiguration(proxyBeanMethods = false)
 class MyContainersConfiguration {
@@ -32,8 +32,8 @@ class MyContainersConfiguration {
 	@Bean
 	fun mongoDbProperties(container: MongoDBContainer): DynamicPropertyRegistrar {
 		return DynamicPropertyRegistrar { properties ->
-			properties.add("spring.data.mongodb.host") { container.host }
-			properties.add("spring.data.mongodb.port") { container.firstMappedPort }
+			properties.add("spring.mongodb.host") { container.host }
+			properties.add("spring.mongodb.port") { container.firstMappedPort }
 		}
 	}
 

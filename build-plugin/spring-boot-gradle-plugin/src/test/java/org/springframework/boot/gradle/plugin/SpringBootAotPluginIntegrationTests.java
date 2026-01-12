@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnJre;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 @GradleCompatibility
 class SpringBootAotPluginIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -126,14 +128,16 @@ class SpringBootAotPluginIntegrationTests {
 	void processAotRunsWhenProjectHasMainSource() throws IOException {
 		writeMainClass("org.springframework.boot", "SpringApplicationAotProcessor");
 		writeMainClass("com.example", "Main");
-		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("processAot").task(":processAot");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void processTestAotIsSkippedWhenProjectHasNoTestSource() {
-		assertThat(this.gradleBuild.build("processTestAot").task(":processTestAot").getOutcome())
-			.isEqualTo(TaskOutcome.NO_SOURCE);
+		BuildTask task = this.gradleBuild.build("processTestAot").task(":processTestAot");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.NO_SOURCE);
 	}
 
 	// gh-37343

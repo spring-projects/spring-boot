@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -34,7 +36,7 @@ class TestBuildpack implements Buildpack {
 
 	private final BuildpackCoordinates coordinates;
 
-	TestBuildpack(String id, String version) {
+	TestBuildpack(String id, @Nullable String version) {
 		this.coordinates = BuildpackCoordinates.of(id, version);
 	}
 

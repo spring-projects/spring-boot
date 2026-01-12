@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Override
@@ -94,6 +95,7 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	private String fileAppenderPattern() {
 		prepareConfiguration();
+		assertThat(this.configuration).isNotNull();
 		return ((PatternLayout) this.configuration.getAppender("File").getLayout()).getConversionPattern();
 	}
 

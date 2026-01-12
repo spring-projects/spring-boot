@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -49,6 +50,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -68,7 +70,7 @@ public final class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled")
 	static class LiveReloadConfiguration {
 
 		@Bean
@@ -116,6 +118,7 @@ public final class LocalDevToolsAutoConfiguration {
 		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 				ClassPathRestartStrategy classPathRestartStrategy) {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
+			Assert.state(urls != null, "'urls' must not be null");
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(fileSystemWatcherFactory,
 					classPathRestartStrategy, urls);
 			watcher.setStopWatcherOnRestart(true);
@@ -176,7 +179,7 @@ public final class LocalDevToolsAutoConfiguration {
 		}
 
 		@Override
-		public boolean supportsSourceType(Class<?> sourceType) {
+		public boolean supportsSourceType(@Nullable Class<?> sourceType) {
 			return true;
 		}
 

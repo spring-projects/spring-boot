@@ -22,10 +22,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,49 +44,49 @@ class JacksonEndpointAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(JacksonEndpointAutoConfiguration.class));
 
 	@Test
-	void endpointObjectMapperWhenNoProperty() {
-		this.runner.run((context) -> assertThat(context).hasSingleBean(EndpointObjectMapper.class));
+	void endpointJsonMapperWhenNoProperty() {
+		this.runner.run((context) -> assertThat(context).hasSingleBean(EndpointJsonMapper.class));
 	}
 
 	@Test
-	void endpointObjectMapperWhenPropertyTrue() {
-		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=true")
-			.run((context) -> assertThat(context).hasSingleBean(EndpointObjectMapper.class));
+	void endpointJsonMapperWhenPropertyTrue() {
+		this.runner.withPropertyValues("management.endpoints.jackson.isolated-json-mapper=true")
+			.run((context) -> assertThat(context).hasSingleBean(EndpointJsonMapper.class));
 	}
 
 	@Test
-	void endpointObjectMapperWhenPropertyFalse() {
-		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(EndpointObjectMapper.class));
+	void endpointJsonMapperWhenPropertyFalse() {
+		this.runner.withPropertyValues("management.endpoints.jackson.isolated-json-mapper=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(EndpointJsonMapper.class));
 	}
 
 	@Test
-	void endpointObjectMapperDoesNotSerializeDatesAsTimestamps() {
+	void endpointJsonMapperDoesNotSerializeDatesAsTimestamps() {
 		this.runner.run((context) -> {
-			ObjectMapper objectMapper = context.getBean(EndpointObjectMapper.class).get();
+			JsonMapper jsonMapper = context.getBean(EndpointJsonMapper.class).get();
 			Instant now = Instant.now();
-			String json = objectMapper.writeValueAsString(Map.of("timestamp", now));
+			String json = jsonMapper.writeValueAsString(Map.of("timestamp", now));
 			assertThat(json).contains(DateTimeFormatter.ISO_INSTANT.format(now));
 		});
 	}
 
 	@Test
-	void endpointObjectMapperDoesNotSerializeDurationsAsTimestamps() {
+	void endpointJsonMapperDoesNotSerializeDurationsAsTimestamps() {
 		this.runner.run((context) -> {
-			ObjectMapper objectMapper = context.getBean(EndpointObjectMapper.class).get();
+			JsonMapper jsonMapper = context.getBean(EndpointJsonMapper.class).get();
 			Duration duration = Duration.ofSeconds(42);
-			String json = objectMapper.writeValueAsString(Map.of("duration", duration));
+			String json = jsonMapper.writeValueAsString(Map.of("duration", duration));
 			assertThat(json).contains(duration.toString());
 		});
 	}
 
 	@Test
-	void endpointObjectMapperDoesNotSerializeNullValues() {
+	void endpointJsonMapperDoesNotSerializeNullValues() {
 		this.runner.run((context) -> {
-			ObjectMapper objectMapper = context.getBean(EndpointObjectMapper.class).get();
+			JsonMapper jsonMapper = context.getBean(EndpointJsonMapper.class).get();
 			HashMap<String, String> map = new HashMap<>();
 			map.put("key", null);
-			String json = objectMapper.writeValueAsString(map);
+			String json = jsonMapper.writeValueAsString(map);
 			assertThat(json).isEqualTo("{}");
 		});
 	}
@@ -95,17 +95,17 @@ class JacksonEndpointAutoConfigurationTests {
 	static class TestEndpointMapperConfiguration {
 
 		@Bean
-		TestEndpointObjectMapper testEndpointObjectMapper() {
-			return new TestEndpointObjectMapper();
+		TestEndpointJsonMapper testEndpointJsonMapper() {
+			return new TestEndpointJsonMapper();
 		}
 
 	}
 
-	static class TestEndpointObjectMapper implements EndpointObjectMapper {
+	static class TestEndpointJsonMapper implements EndpointJsonMapper {
 
 		@Override
-		public ObjectMapper get() {
-			return null;
+		public JsonMapper get() {
+			return new JsonMapper();
 		}
 
 	}

@@ -47,6 +47,7 @@ class IndexedJarStructureTests {
 	void shouldResolveLibraryEntry() throws IOException {
 		IndexedJarStructure structure = createStructure();
 		Entry entry = structure.resolve("BOOT-INF/lib/spring-webmvc-6.1.4.jar");
+		assertThat(entry).isNotNull();
 		assertThat(entry.location()).isEqualTo("spring-webmvc-6.1.4.jar");
 		assertThat(entry.originalLocation()).isEqualTo("BOOT-INF/lib/spring-webmvc-6.1.4.jar");
 		assertThat(entry.type()).isEqualTo(Type.LIBRARY);
@@ -56,6 +57,7 @@ class IndexedJarStructureTests {
 	void shouldResolveApplicationEntry() throws IOException {
 		IndexedJarStructure structure = createStructure();
 		Entry entry = structure.resolve("BOOT-INF/classes/application.properties");
+		assertThat(entry).isNotNull();
 		assertThat(entry.location()).isEqualTo("application.properties");
 		assertThat(entry.originalLocation()).isEqualTo("BOOT-INF/classes/application.properties");
 		assertThat(entry.type()).isEqualTo(Type.APPLICATION_CLASS_OR_RESOURCE);
@@ -65,6 +67,7 @@ class IndexedJarStructureTests {
 	void shouldResolveLoaderEntry() throws IOException {
 		IndexedJarStructure structure = createStructure();
 		Entry entry = structure.resolve("org/springframework/boot/loader/launch/JarLauncher");
+		assertThat(entry).isNotNull();
 		assertThat(entry.location()).isEqualTo("org/springframework/boot/loader/launch/JarLauncher");
 		assertThat(entry.originalLocation()).isEqualTo("org/springframework/boot/loader/launch/JarLauncher");
 		assertThat(entry.type()).isEqualTo(Type.LOADER);

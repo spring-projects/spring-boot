@@ -87,13 +87,16 @@ class ResourceProviderCustomizerBeanRegistrationAotProcessorTests {
 		TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
 		ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
 		generationContext.writeGeneratedContent();
-		TestCompiler.forSystem().with(generationContext).compile((compiled) -> {
-			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
-			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-				.getInstance(ApplicationContextInitializer.class, className.toString());
-			initializer.initialize(freshApplicationContext);
-			freshContext.accept(freshApplicationContext);
-		});
+		TestCompiler.forSystem()
+			.withCompilerOptions("-Xlint:deprecation,removal", "-Werror")
+			.with(generationContext)
+			.compile((compiled) -> {
+				GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
+				ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+					.getInstance(ApplicationContextInitializer.class, className.toString());
+				initializer.initialize(freshApplicationContext);
+				freshContext.accept(freshApplicationContext);
+			});
 	}
 
 	static class TestTarget {

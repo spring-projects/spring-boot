@@ -13,5 +13,5 @@ The application's javadoc:org.springframework.context.MessageSource[] is used wh
 This allows you to use xref:features/internationalization.adoc[your application's `messages.properties` files] for Bean Validation messages.
 Once the parameters have been resolved, message interpolation is completed using Bean Validation's default interpolator.
 
-To customize the javadoc:jakarta.validation.Configuration[] used to build the javadoc:jakarta.validation.ValidatorFactory[], define a javadoc:org.springframework.boot.autoconfigure.validation.ValidationConfigurationCustomizer[] bean.
+To customize the javadoc:jakarta.validation.Configuration[] used to build the javadoc:jakarta.validation.ValidatorFactory[], define a javadoc:org.springframework.boot.validation.autoconfigure.ValidationConfigurationCustomizer[] bean.
 When multiple customizer beans are defined, they are called in order based on their javadoc:org.springframework.core.annotation.Order[format=annotation] annotation or javadoc:org.springframework.core.Ordered[] implementation.

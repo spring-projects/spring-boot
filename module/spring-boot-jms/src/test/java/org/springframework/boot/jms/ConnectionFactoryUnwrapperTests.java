@@ -137,7 +137,9 @@ class ConnectionFactoryUnwrapperTests {
 		}
 
 		private ConnectionFactory unwrap(ConnectionFactory connectionFactory) {
-			return ConnectionFactoryUnwrapper.unwrap(connectionFactory);
+			ConnectionFactory unwrapped = ConnectionFactoryUnwrapper.unwrap(connectionFactory);
+			assertThat(unwrapped).isNotNull();
+			return unwrapped;
 		}
 
 	}

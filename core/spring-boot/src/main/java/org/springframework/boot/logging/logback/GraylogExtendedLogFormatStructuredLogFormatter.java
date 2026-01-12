@@ -17,9 +17,8 @@
 package org.springframework.boot.logging.logback;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
@@ -38,6 +37,7 @@ import org.springframework.boot.json.WritableJson;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.ContextPairs.Joiner;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
@@ -93,8 +93,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			.as(GraylogExtendedLogFormatStructuredLogFormatter::formatTimeStamp);
 		members.add("level", LevelToSyslogSeverity::convert);
 		members.add("_level_name", ILoggingEvent::getLevel);
-		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class))
-			.when(Objects::nonNull);
+		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
 		members.add("_process_thread_name", ILoggingEvent::getThreadName);
 		GraylogExtendedLogFormatProperties.get(environment).jsonMembers(members);
 		members.add("_log_logger", ILoggingEvent::getLoggerName);
@@ -102,8 +101,10 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			pairs.addMapEntries(ILoggingEvent::getMDCPropertyMap);
 			pairs.add(ILoggingEvent::getKeyValuePairs, keyValuePairExtractor);
 		}));
+		Function<@Nullable ILoggingEvent, @Nullable Object> getThrowableProxy = (event) -> (event != null)
+				? event.getThrowableProxy() : null;
 		members.add()
-			.whenNotNull(ILoggingEvent::getThrowableProxy)
+			.whenNotNull(getThrowableProxy)
 			.usingMembers((throwableMembers) -> throwableMembers(throwableMembers, extractor));
 	}
 
@@ -130,7 +131,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add("_error_message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
 	}
 
-	private static BinaryOperator<@Nullable String> additionalFieldJoiner() {
+	private static Joiner additionalFieldJoiner() {
 		return (prefix, name) -> {
 			name = prefix + name;
 			if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {

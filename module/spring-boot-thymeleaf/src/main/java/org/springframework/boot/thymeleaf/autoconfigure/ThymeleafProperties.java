@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
@@ -83,17 +85,17 @@ public class ThymeleafProperties {
 	 * first in the chain. Order start at 1 and should only be set if you have defined
 	 * additional "TemplateResolver" beans.
 	 */
-	private Integer templateResolverOrder;
+	private @Nullable Integer templateResolverOrder;
 
 	/**
 	 * List of view names (patterns allowed) that can be resolved.
 	 */
-	private String[] viewNames;
+	private String @Nullable [] viewNames;
 
 	/**
 	 * List of view names (patterns allowed) that should be excluded from resolution.
 	 */
-	private String[] excludedViewNames;
+	private String @Nullable [] excludedViewNames;
 
 	/**
 	 * Enable the SpringEL compiler in SpringEL expressions.
@@ -104,24 +106,11 @@ public class ThymeleafProperties {
 	 * Whether hidden form inputs acting as markers for checkboxes should be rendered
 	 * before the checkbox element itself.
 	 */
-	private boolean renderHiddenMarkersBeforeCheckboxes = false;
-
-	/**
-	 * Whether to enable Thymeleaf view resolution for Web frameworks.
-	 */
-	private boolean enabled = true;
+	private boolean renderHiddenMarkersBeforeCheckboxes;
 
 	private final Servlet servlet = new Servlet();
 
 	private final Reactive reactive = new Reactive();
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public boolean isCheckTemplate() {
 		return this.checkTemplate;
@@ -179,27 +168,27 @@ public class ThymeleafProperties {
 		this.cache = cache;
 	}
 
-	public Integer getTemplateResolverOrder() {
+	public @Nullable Integer getTemplateResolverOrder() {
 		return this.templateResolverOrder;
 	}
 
-	public void setTemplateResolverOrder(Integer templateResolverOrder) {
+	public void setTemplateResolverOrder(@Nullable Integer templateResolverOrder) {
 		this.templateResolverOrder = templateResolverOrder;
 	}
 
-	public String[] getExcludedViewNames() {
+	public String @Nullable [] getExcludedViewNames() {
 		return this.excludedViewNames;
 	}
 
-	public void setExcludedViewNames(String[] excludedViewNames) {
+	public void setExcludedViewNames(String @Nullable [] excludedViewNames) {
 		this.excludedViewNames = excludedViewNames;
 	}
 
-	public String[] getViewNames() {
+	public String @Nullable [] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	public void setViewNames(String @Nullable [] viewNames) {
 		this.viewNames = viewNames;
 	}
 
@@ -269,25 +258,25 @@ public class ThymeleafProperties {
 		/**
 		 * Media types supported by the view technology.
 		 */
-		private List<MediaType> mediaTypes;
+		private @Nullable List<MediaType> mediaTypes;
 
 		/**
 		 * Comma-separated list of view names (patterns allowed) that should be executed
 		 * in FULL mode even if a max chunk size is set.
 		 */
-		private String[] fullModeViewNames;
+		private String @Nullable [] fullModeViewNames;
 
 		/**
 		 * Comma-separated list of view names (patterns allowed) that should be the only
 		 * ones executed in CHUNKED mode when a max chunk size is set.
 		 */
-		private String[] chunkedModeViewNames;
+		private String @Nullable [] chunkedModeViewNames;
 
-		public List<MediaType> getMediaTypes() {
+		public @Nullable List<MediaType> getMediaTypes() {
 			return this.mediaTypes;
 		}
 
-		public void setMediaTypes(List<MediaType> mediaTypes) {
+		public void setMediaTypes(@Nullable List<MediaType> mediaTypes) {
 			this.mediaTypes = mediaTypes;
 		}
 
@@ -299,19 +288,19 @@ public class ThymeleafProperties {
 			this.maxChunkSize = maxChunkSize;
 		}
 
-		public String[] getFullModeViewNames() {
+		public String @Nullable [] getFullModeViewNames() {
 			return this.fullModeViewNames;
 		}
 
-		public void setFullModeViewNames(String[] fullModeViewNames) {
+		public void setFullModeViewNames(String @Nullable [] fullModeViewNames) {
 			this.fullModeViewNames = fullModeViewNames;
 		}
 
-		public String[] getChunkedModeViewNames() {
+		public String @Nullable [] getChunkedModeViewNames() {
 			return this.chunkedModeViewNames;
 		}
 
-		public void setChunkedModeViewNames(String[] chunkedModeViewNames) {
+		public void setChunkedModeViewNames(String @Nullable [] chunkedModeViewNames) {
 			this.chunkedModeViewNames = chunkedModeViewNames;
 		}
 

@@ -16,15 +16,17 @@
 
 package smoketest.security.method;
 
+import java.net.URI;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,7 +45,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.http.client.factory=simple")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.http.clients.imperative.factory=simple")
+@AutoConfigureTestRestTemplate
 class SampleMethodSecurityApplicationTests {
 
 	@LocalServerPort
@@ -71,7 +75,9 @@ class SampleMethodSecurityApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
 				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.toString()).endsWith(this.port + "/");
 	}
 
 	@Test
@@ -86,8 +92,10 @@ class SampleMethodSecurityApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		ResponseEntity<String> page = this.restTemplate.exchange(entity.getHeaders().getLocation(), HttpMethod.GET,
-				new HttpEntity<>(headers), String.class);
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		ResponseEntity<String> page = this.restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers),
+				String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		assertThat(page.getBody()).contains("Access denied");
 	}

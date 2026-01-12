@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -50,9 +52,9 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 
 	private final Environment environment;
 
-	private final ResourceLoader resourceLoader;
+	private final @Nullable ResourceLoader resourceLoader;
 
-	ConfigurationPropertiesScanRegistrar(Environment environment, ResourceLoader resourceLoader) {
+	ConfigurationPropertiesScanRegistrar(Environment environment, @Nullable ResourceLoader resourceLoader) {
 		this.environment = environment;
 		this.resourceLoader = resourceLoader;
 	}

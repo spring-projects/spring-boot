@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -122,12 +123,13 @@ class DiscoveredJmxOperationTests {
 		Method method = findMethod(methodName);
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		annotationAttributes.put("produces", "application/xml");
+		assertThat(method).as("Method '%s'", methodName).isNotNull();
 		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method, OperationType.READ,
 				annotationAttributes);
 		return new DiscoveredJmxOperation(EndpointId.of("test"), operationMethod, mock(OperationInvoker.class));
 	}
 
-	private Method findMethod(String methodName) {
+	private @Nullable Method findMethod(String methodName) {
 		Map<String, Method> methods = new HashMap<>();
 		ReflectionUtils.doWithMethods(Example.class, (method) -> methods.put(method.getName(), method));
 		return methods.get(methodName);

@@ -30,7 +30,7 @@ Each javadoc:org.springframework.boot.actuate.endpoint.SanitizingFunction[] is c
 [[howto.actuator.map-health-indicators-to-metrics]]
 == Map Health Indicators to Micrometer Metrics
 
-Spring Boot health indicators return a javadoc:org.springframework.boot.actuate.health.Status[] type to indicate the overall system health.
+Spring Boot health indicators return a javadoc:org.springframework.boot.health.contributor.Status[] type to indicate the overall system health.
 If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics with Micrometer.
 By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.
 To export these, you will need to convert these states to some set of numbers so that they can be used with a Micrometer javadoc:io.micrometer.core.instrument.Gauge[].

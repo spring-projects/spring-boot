@@ -29,11 +29,15 @@ configurations {
 dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	providedRuntime( project(":starter:spring-boot-starter-tomcat"))
+	providedRuntime( project(":starter:spring-boot-starter-tomcat-runtime"))
 
 	runtimeOnly("org.webjars:bootstrap:3.0.3")
 	runtimeOnly("org.webjars:jquery:2.0.3-1")
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -102,7 +102,7 @@ class Neo4jAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.neo4j.uri=" + invalidScheme + "://localhost:4711")
 			.run((ctx) -> assertThat(ctx).hasFailed()
 				.getFailure()
-				.hasMessageContaining("'%s' is not a supported scheme.", invalidScheme));
+				.hasMessageContaining("Unsupported scheme: %s", invalidScheme));
 	}
 
 	@Test
@@ -218,13 +218,6 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	void poolWithMetricsEnabled() {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.getPool().setMetricsEnabled(true);
-		assertThat(mapDriverConfig(properties).isMetricsEnabled()).isTrue();
-	}
-
-	@Test
 	void poolWithLogLeakedSessions() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getPool().setLogLeakedSessions(true);
@@ -320,11 +313,6 @@ class Neo4jAutoConfigurationTests {
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 		assertThat(mapDriverConfig(properties).trustStrategy().strategy())
 			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
-	}
-
-	@Test
-	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
-		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {

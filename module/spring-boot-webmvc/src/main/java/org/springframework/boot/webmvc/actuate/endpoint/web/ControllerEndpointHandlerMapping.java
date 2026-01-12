@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -34,9 +36,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * {@link HandlerMapping} that exposes
@@ -58,7 +62,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 
 	private final EndpointMapping endpointMapping;
 
-	private final CorsConfiguration corsConfiguration;
+	private final @Nullable CorsConfiguration corsConfiguration;
 
 	private final Map<Object, ExposableControllerEndpoint> handlers;
 
@@ -72,7 +76,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
+			Collection<ExposableControllerEndpoint> endpoints, @Nullable CorsConfiguration corsConfiguration) {
 		this(endpointMapping, endpoints, corsConfiguration, (endpointId, defaultAccess) -> Access.NONE);
 	}
 
@@ -85,7 +89,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param endpointAccessResolver resolver for endpoint access
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration,
+			Collection<ExposableControllerEndpoint> endpoints, @Nullable CorsConfiguration corsConfiguration,
 			EndpointAccessResolver endpointAccessResolver) {
 		Assert.notNull(endpointMapping, "'endpointMapping' must not be null");
 		Assert.notNull(endpoints, "'endpoints' must not be null");
@@ -110,6 +114,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	@Override
 	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		ExposableControllerEndpoint endpoint = this.handlers.get(handler);
+		Assert.state(endpoint != null, "'endpoint' must not be null");
 		Access access = this.accessResolver.accessFor(endpoint.getEndpointId(), endpoint.getDefaultAccess());
 		if (access == Access.NONE) {
 			return;
@@ -138,9 +143,13 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
 			RequestMappingInfo mapping) {
-		Set<PathPattern> patterns = mapping.getPathPatternsCondition().getPatterns();
+		PathPatternsRequestCondition condition = mapping.getPathPatternsCondition();
+		Assert.state(condition != null, "'condition' must not be null");
+		Set<PathPattern> patterns = condition.getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = Collections.singleton(getPatternParser().parse(""));
+			PathPatternParser parser = getPatternParser();
+			Assert.state(parser != null, "'parser' must not be null");
+			patterns = Collections.singleton(parser.parse(""));
 		}
 		String[] endpointMappedPatterns = patterns.stream()
 			.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))
@@ -158,7 +167,8 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
+	protected @Nullable CorsConfiguration initCorsConfiguration(Object handler, Method method,
+			RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 

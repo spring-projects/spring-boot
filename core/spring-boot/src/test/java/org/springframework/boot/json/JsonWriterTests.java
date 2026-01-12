@@ -24,10 +24,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.Extractor;
 import org.springframework.boot.json.JsonWriter.Member;
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -104,7 +109,8 @@ class JsonWriterTests {
 
 	@Test
 	void ofAddSupplier() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", () -> "Boot"));
+		Supplier<@Nullable String> supplier = () -> "Boot";
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", supplier));
 		assertThat(writer.writeToString(PERSON)).isEqualTo("""
 				{"Spring":"Boot"}""");
 	}
@@ -128,7 +134,8 @@ class JsonWriterTests {
 
 	@Test
 	void ofFromSupplier() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.from(() -> "Boot"));
+		Supplier<@Nullable String> supplier = () -> "Boot";
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.from(supplier));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
@@ -222,7 +229,7 @@ class JsonWriterTests {
 			assertThat(write(new int[] { 1, 2, 3 })).isEqualTo("[1,2,3]");
 		}
 
-		private <T> String write(T instance) {
+		private <T> String write(@Nullable T instance) {
 			return JsonWriter.standard().writeToString(instance);
 		}
 
@@ -244,7 +251,9 @@ class JsonWriterTests {
 		@Test
 		void whenNotNullExtracted() {
 			Person personWithNull = new Person("Spring", null, 10);
-			JsonWriter<Person> writer = JsonWriter.of((members) -> members.add().whenNotNull(Person::lastName));
+			Function<@Nullable Person, @Nullable Object> lastName = (person) -> (person != null) ? person.lastName()
+					: null;
+			JsonWriter<Person> writer = JsonWriter.of((members) -> members.add().whenNotNull(lastName));
 			assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
 			assertThat(writer.writeToString(personWithNull)).isEmpty();
 		}
@@ -278,7 +287,8 @@ class JsonWriterTests {
 
 		@Test
 		void whenNot() {
-			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().whenNot(List::isEmpty));
+			Predicate<@Nullable List<String>> isEmpty = List::isEmpty;
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().whenNot(isEmpty));
 			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
 					["a"]""");
 			assertThat(writer.writeToString(Collections.emptyList())).isEmpty();
@@ -286,7 +296,8 @@ class JsonWriterTests {
 
 		@Test
 		void when() {
-			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().when(List::isEmpty));
+			Predicate<@Nullable List<String>> isEmpty = List::isEmpty;
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().when(isEmpty));
 			assertThat(writer.writeToString(List.of("a"))).isEmpty();
 			assertThat(writer.writeToString(Collections.emptyList())).isEqualTo("[]");
 		}
@@ -294,10 +305,10 @@ class JsonWriterTests {
 		@Test
 		void chainedPredicates() {
 			Set<String> banned = Set.of("Spring", "Boot");
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.add()
-				.whenHasLength()
-				.whenNot(banned::contains)
-				.whenNot((string) -> string.length() <= 2));
+			Predicate<@Nullable String> stringLengthPredicate = (string) -> string != null && string.length() <= 2;
+			Predicate<@Nullable String> bannedPredicate = (string) -> string != null && banned.contains(string);
+			JsonWriter<String> writer = JsonWriter
+				.of((members) -> members.add().whenHasLength().whenNot(bannedPredicate).whenNot(stringLengthPredicate));
 			assertThat(writer.writeToString("")).isEmpty();
 			assertThat(writer.writeToString("a")).isEmpty();
 			assertThat(writer.writeToString("Boot")).isEmpty();
@@ -320,21 +331,22 @@ class JsonWriterTests {
 
 		@Test
 		void chainedAs() {
-			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			Extractor<Integer, Boolean> booleanExtractor = (integer) -> integer != 0;
 			JsonWriter<String> writer = JsonWriter
-				.of((members) -> members.add().as(Integer::valueOf).as(booleanAdapter));
+				.of((members) -> members.add().as(Integer::valueOf).as(booleanExtractor));
 			assertThat(writer.writeToString("0")).isEqualTo("false");
 			assertThat(writer.writeToString("1")).isEqualTo("true");
 		}
 
 		@Test
 		void chainedAsAndPredicates() {
-			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			Extractor<Integer, Boolean> booleanExtractor = (integer) -> integer != 0;
+			Predicate<@Nullable String> isEmpty = (string) -> !StringUtils.hasLength(string);
 			JsonWriter<String> writer = JsonWriter.of((members) -> members.add()
-				.whenNot(String::isEmpty)
+				.whenNot(isEmpty)
 				.as(Integer::valueOf)
 				.when((integer) -> integer < 2)
-				.as(booleanAdapter));
+				.as(booleanExtractor));
 			assertThat(writer.writeToString("")).isEmpty();
 			assertThat(writer.writeToString("0")).isEqualTo("false");
 			assertThat(writer.writeToString("1")).isEqualTo("true");
@@ -543,7 +555,11 @@ class JsonWriterTests {
 			JsonWriter<Person> writer = JsonWriter.of((members) -> {
 				members.add("first", Person::firstName);
 				members.add("last", Person::lastName);
-				members.applyingPathFilter((path) -> path.name().equals("first"));
+				members.applyingPathFilter((path) -> {
+					String name = path.name();
+					assertThat(name).isNotNull();
+					return name.equals("first");
+				});
 			});
 			assertThat(writer.writeToString(new Person("spring", "boot", 10))).isEqualTo("""
 					{"last":"boot"}""");
@@ -553,7 +569,11 @@ class JsonWriterTests {
 		void filteringInMap() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingPathFilter((path) -> path.name().equals("spring"));
+				members.applyingPathFilter((path) -> {
+					String name = path.name();
+					assertThat(name).isNotNull();
+					return name.equals("spring");
+				});
 
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot", "test", "test"))).isEqualTo("""
@@ -706,11 +726,12 @@ class JsonWriterTests {
 
 		@Test
 		void of() {
-			ValueProcessor<String> processor = ValueProcessor.of(String::toUpperCase);
-			assertThat(processor.processValue(null, "test")).isEqualTo("TEST");
+			ValueProcessor<String> processor = ValueProcessor.of(stringToUppercase());
+			assertThat(processor.processValue(MemberPath.ROOT, "test")).isEqualTo("TEST");
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void ofWhenNull() {
 			assertThatIllegalArgumentException().isThrownBy(() -> ValueProcessor.of(null))
 				.withMessage("'action' must not be null");
@@ -718,54 +739,54 @@ class JsonWriterTests {
 
 		@Test
 		void whenHasPathWithStringWhenPathMatches() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase).whenHasPath("foo");
+			ValueProcessor<String> processor = ValueProcessor.of(stringToUppercase()).whenHasPath("foo");
 			assertThat(processor.processValue(MemberPath.ROOT.child("foo"), "test")).isEqualTo("TEST");
 		}
 
 		@Test
 		void whenHasPathWithStringWhenPathDoesNotMatch() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase).whenHasPath("foo");
+			ValueProcessor<String> processor = ValueProcessor.<String>of(stringToUppercase()).whenHasPath("foo");
 			assertThat(processor.processValue(MemberPath.ROOT.child("bar"), "test")).isEqualTo("test");
 		}
 
 		@Test
 		void whenHasPathWithPredicateWhenPathMatches() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase)
+			ValueProcessor<String> processor = ValueProcessor.<String>of(stringToUppercase())
 				.whenHasPath((path) -> path.toString().startsWith("f"));
 			assertThat(processor.processValue(MemberPath.ROOT.child("foo"), "test")).isEqualTo("TEST");
 		}
 
 		@Test
 		void whenHasPathWithPredicateWhenPathDoesNotMatch() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase)
+			ValueProcessor<String> processor = ValueProcessor.<String>of(stringToUppercase())
 				.whenHasPath((path) -> path.toString().startsWith("f"));
 			assertThat(processor.processValue(MemberPath.ROOT.child("bar"), "test")).isEqualTo("test");
 		}
 
 		@Test
 		void whenInstanceOfWhenInstanceMatches() {
-			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase(Locale.ROOT))
-				.whenInstanceOf(String.class);
-			assertThat(processor.processValue(null, "test")).hasToString("TEST");
+			ValueProcessor<Object> processor = ValueProcessor.of(objectToUppercase()).whenInstanceOf(String.class);
+			assertThat(processor.processValue(MemberPath.ROOT, "test")).hasToString("TEST");
 		}
 
 		@Test
 		void whenInstanceOfWhenInstanceDoesNotMatch() {
-			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase(Locale.ROOT))
-				.whenInstanceOf(String.class);
-			assertThat(processor.processValue(null, new StringBuilder("test"))).hasToString("test");
+			ValueProcessor<Object> processor = ValueProcessor.of(objectToUppercase()).whenInstanceOf(String.class);
+			assertThat(processor.processValue(MemberPath.ROOT, new StringBuilder("test"))).hasToString("test");
 		}
 
 		@Test
 		void whenWhenPredicateMatches() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase).when("test"::equals);
-			assertThat(processor.processValue(null, "test")).isEqualTo("TEST");
+			Predicate<@Nullable String> equals = "test"::equals;
+			ValueProcessor<String> processor = ValueProcessor.of(stringToUppercase()).when(equals);
+			assertThat(processor.processValue(MemberPath.ROOT, "test")).isEqualTo("TEST");
 		}
 
 		@Test
 		void whenWhenPredicateDoesNotMatch() {
-			ValueProcessor<String> processor = ValueProcessor.<String>of(String::toUpperCase).when("test"::equals);
-			assertThat(processor.processValue(null, "other")).isEqualTo("other");
+			Predicate<@Nullable String> equals = "test"::equals;
+			ValueProcessor<String> processor = ValueProcessor.of(stringToUppercase()).when(equals);
+			assertThat(processor.processValue(MemberPath.ROOT, "other")).isEqualTo("other");
 		}
 
 		@Test
@@ -779,7 +800,7 @@ class JsonWriterTests {
 			JsonWriter<Person> writer = JsonWriter.of((members) -> {
 				members.add("first", Person::firstName);
 				members.add("last", Person::lastName);
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()));
 			});
 			assertThat(writer.writeToString(new Person("spring", "boot", 10))).isEqualTo("""
 					{"first":"Spring","last":"Boot"}""");
@@ -789,7 +810,7 @@ class JsonWriterTests {
 		void processValueWhenInMap() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()));
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot"))).isEqualTo("""
 					{"spring":"Boot"}""");
@@ -799,7 +820,7 @@ class JsonWriterTests {
 		void processValueWhenInNestedMap() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()));
 			});
 			assertThat(writer.writeToString(Map.of("test", Map.of("spring", "boot")))).isEqualTo("""
 					{"test":{"spring":"Boot"}}""");
@@ -809,7 +830,7 @@ class JsonWriterTests {
 		void processValueWhenInPairs() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add().usingPairs(Map::forEach);
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()));
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot"))).isEqualTo("""
 					{"spring":"Boot"}""");
@@ -819,7 +840,7 @@ class JsonWriterTests {
 		void processValueWhenCalledWithMultipleTypesIgnoresLambdaErrors() {
 			JsonWriter<Object> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()));
 			});
 			assertThat(writer.writeToString("spring")).isEqualTo("\"Spring\"");
 			assertThat(writer.writeToString(123)).isEqualTo("123");
@@ -830,7 +851,7 @@ class JsonWriterTests {
 		void processValueWhenLimitedToPath() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(ValueProcessor.of(StringUtils::capitalize).whenHasPath("spring"));
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()).whenHasPath("spring"));
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot"))).isEqualTo("""
 					{"spring":"Boot"}""");
@@ -842,8 +863,8 @@ class JsonWriterTests {
 		void processValueWhen() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(
-						ValueProcessor.of(StringUtils::capitalize).when((candidate) -> candidate.startsWith("b")));
+				Predicate<@Nullable String> startsWithB = (candidate) -> candidate != null && candidate.startsWith("b");
+				members.applyingValueProcessor(ValueProcessor.of(stringCapitalize()).when(startsWithB));
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot"))).isEqualTo("""
 					{"spring":"Boot"}""");
@@ -859,7 +880,9 @@ class JsonWriterTests {
 					.usingMembers((personMembers) -> personMembers.add("one", Person::toString));
 				members.from(Couple::person2)
 					.usingMembers((personMembers) -> personMembers.add("two", Person::toString));
-				members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+				UnaryOperator<@Nullable String> toUpperCase = (string) -> (string != null)
+						? string.toUpperCase(Locale.ROOT) : null;
+				members.applyingValueProcessor(ValueProcessor.of(String.class, toUpperCase));
 			});
 			assertThat(writer.writeToString(couple)).isEqualTo("""
 					{"one":"SPRING BOOT (10)","two":"SPRING FRAMEWORK (20)"}""");
@@ -873,9 +896,12 @@ class JsonWriterTests {
 					.usingMembers((personMembers) -> personMembers.add("one", Person::toString));
 				members.from(Couple::person2).usingMembers((personMembers) -> {
 					personMembers.add("two", Person::toString);
-					personMembers.applyingValueProcessor(ValueProcessor.of(String.class, (item) -> item + "!"));
+					UnaryOperator<@Nullable String> operator = (item) -> item + "!";
+					personMembers.applyingValueProcessor(ValueProcessor.of(String.class, operator));
 				});
-				members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+				UnaryOperator<@Nullable String> toUpperCase = (string) -> (string != null)
+						? string.toUpperCase(Locale.ROOT) : null;
+				members.applyingValueProcessor(ValueProcessor.of(String.class, toUpperCase));
 			});
 			assertThat(writer.writeToString(couple)).isEqualTo("""
 					{"one":"SPRING BOOT (10)","two":"SPRING FRAMEWORK (20)!"}""");
@@ -933,16 +959,30 @@ class JsonWriterTests {
 			assertThat(paths).containsExactly("first", "last");
 		}
 
+		private static UnaryOperator<@Nullable String> stringToUppercase() {
+			return (string) -> (string != null) ? string.toUpperCase(Locale.ROOT) : null;
+		}
+
+		private static UnaryOperator<@Nullable Object> objectToUppercase() {
+			return (string) -> (string != null) ? string.toString().toUpperCase(Locale.ROOT) : null;
+		}
+
+		private static UnaryOperator<@Nullable String> stringCapitalize() {
+			return (string) -> (string != null) ? StringUtils.capitalize(string) : null;
+		}
+
 		private JsonWriter<String> simpleWriterWithUppercaseProcessor() {
 			return JsonWriter.of((members) -> {
 				members.add();
-				members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+				UnaryOperator<@Nullable String> toUpperCase = (string) -> (string != null)
+						? string.toUpperCase(Locale.ROOT) : null;
+				members.applyingValueProcessor(ValueProcessor.of(String.class, toUpperCase));
 			});
 		}
 
 	}
 
-	record Person(String firstName, String lastName, int age) {
+	record Person(String firstName, @Nullable String lastName, int age) {
 
 		@Override
 		public String toString() {

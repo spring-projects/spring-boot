@@ -63,13 +63,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.tomcat.DisableReferenceClearingContextCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatEmbeddedContext;
 import org.springframework.boot.tomcat.TomcatEmbeddedWebappClassLoader;
-import org.springframework.boot.tomcat.TomcatStarter;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.TomcatWebServerFactory;
 import org.springframework.boot.web.error.ErrorPage;
@@ -85,6 +85,7 @@ import org.springframework.boot.web.server.servlet.ServletWebServerSettings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -125,6 +126,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 
 	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	private Set<String> tldSkipPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SKIP);
@@ -210,6 +212,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 			method.run();
 		}
 		catch (NoSuchMethodError ex) {
+			// Intentionally left blank
 		}
 	}
 
@@ -286,12 +289,13 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 	 * @param initializers initializers to apply
 	 */
 	protected void configureContext(Context context, Iterable<ServletContextInitializer> initializers) {
-		TomcatStarter starter = new TomcatStarter(initializers);
+		DeferredServletContainerInitializers deferredInitializers = new DeferredServletContainerInitializers(
+				initializers);
 		if (context instanceof TomcatEmbeddedContext embeddedContext) {
-			embeddedContext.setStarter(starter);
+			embeddedContext.setDeferredStartupExceptions(deferredInitializers);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
-		context.addServletContainerInitializer(starter, NO_CLASSES);
+		context.addServletContainerInitializer(deferredInitializers, NO_CLASSES);
 		for (LifecycleListener lifecycleListener : this.getContextLifecycleListeners()) {
 			context.addLifecycleListener(lifecycleListener);
 		}
@@ -379,7 +383,8 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
-	private boolean isZeroOrLess(Duration sessionTimeout) {
+	@Contract("null -> true")
+	private boolean isZeroOrLess(@Nullable Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative() || sessionTimeout.isZero();
 	}
 
@@ -668,7 +673,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 			return delegate.generateHeader(cookie, request);
 		}
 
-		private SameSite getSameSite(Cookie cookie) {
+		private @Nullable SameSite getSameSite(Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

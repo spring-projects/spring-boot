@@ -51,16 +51,17 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageRecoverer> messageRecoverer;
 
-	private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+	private final ObjectProvider<RabbitListenerRetrySettingsCustomizer> retrySettingsCustomizers;
 
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
-			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers, RabbitProperties properties) {
+			ObjectProvider<RabbitListenerRetrySettingsCustomizer> retrySettingsCustomizers,
+			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
-		this.retryTemplateCustomizers = retryTemplateCustomizers;
+		this.retrySettingsCustomizers = retrySettingsCustomizers;
 		this.properties = properties;
 	}
 
@@ -125,7 +126,7 @@ class RabbitAnnotationDrivenConfiguration {
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
-		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers.orderedStream().toList());
+		configurer.setRetrySettingsCustomizers(this.retrySettingsCustomizers.orderedStream().toList());
 		return configurer;
 	}
 
@@ -134,7 +135,7 @@ class RabbitAnnotationDrivenConfiguration {
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
-		configurer.setRetryTemplateCustomizers(this.retryTemplateCustomizers.orderedStream().toList());
+		configurer.setRetrySettingsCustomizers(this.retrySettingsCustomizers.orderedStream().toList());
 		return configurer;
 	}
 

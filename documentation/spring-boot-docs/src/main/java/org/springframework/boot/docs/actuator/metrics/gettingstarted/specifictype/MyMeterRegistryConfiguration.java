@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 
-import org.springframework.boot.metrics.autoconfigure.MeterRegistryCustomizer;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

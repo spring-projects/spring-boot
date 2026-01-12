@@ -22,6 +22,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
@@ -50,12 +52,15 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		this.configurationPropertyMetadata = configurationPropertyMetadata;
 	}
 
+	@Input
+	public abstract Property<Boolean> getDeprecated();
+
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDir();
 
 	@TaskAction
 	void documentConfigurationProperties() throws IOException {
-		Snippets snippets = new Snippets(this.configurationPropertyMetadata);
+		Snippets snippets = new Snippets(this.configurationPropertyMetadata, getDeprecated().getOrElse(false));
 		snippets.add("application-properties.core", "Core Properties", this::corePrefixes);
 		snippets.add("application-properties.cache", "Cache Properties", this::cachePrefixes);
 		snippets.add("application-properties.mail", "Mail Properties", this::mailPrefixes);
@@ -118,6 +123,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 	private void jsonPrefixes(Config config) {
 		config.accept("spring.jackson");
 		config.accept("spring.gson");
+		config.accept("spring.kotlinx.serialization.json");
 	}
 
 	private void dataPrefixes(Config config) {
@@ -129,7 +135,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.ldap");
 		config.accept("spring.mongodb");
 		config.accept("spring.neo4j");
-		config.accept("spring.dao");
+		config.accept("spring.persistence");
 		config.accept("spring.data");
 		config.accept("spring.datasource");
 		config.accept("spring.jooq");

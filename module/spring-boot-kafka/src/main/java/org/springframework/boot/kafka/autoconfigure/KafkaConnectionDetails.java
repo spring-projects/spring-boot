@@ -18,6 +18,8 @@ package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -41,7 +43,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	 * Returns the SSL bundle.
 	 * @return the SSL bundle
 	 */
-	default SslBundle getSslBundle() {
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 
@@ -49,7 +51,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	 * Returns the security protocol.
 	 * @return the security protocol
 	 */
-	default String getSecurityProtocol() {
+	default @Nullable String getSecurityProtocol() {
 		return null;
 	}
 
@@ -117,7 +119,8 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 		 * @param securityProtocol the security protocol
 		 * @return the configuration
 		 */
-		static Configuration of(List<String> bootstrapServers, SslBundle sslBundle, String securityProtocol) {
+		static Configuration of(List<String> bootstrapServers, @Nullable SslBundle sslBundle,
+				@Nullable String securityProtocol) {
 			return new Configuration() {
 				@Override
 				public List<String> getBootstrapServers() {
@@ -125,12 +128,12 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 				}
 
 				@Override
-				public SslBundle getSslBundle() {
+				public @Nullable SslBundle getSslBundle() {
 					return sslBundle;
 				}
 
 				@Override
-				public String getSecurityProtocol() {
+				public @Nullable String getSecurityProtocol() {
 					return securityProtocol;
 				}
 			};
@@ -146,7 +149,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 		 * Returns the SSL bundle.
 		 * @return the SSL bundle
 		 */
-		default SslBundle getSslBundle() {
+		default @Nullable SslBundle getSslBundle() {
 			return null;
 		}
 
@@ -154,7 +157,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 		 * Returns the security protocol.
 		 * @return the security protocol
 		 */
-		default String getSecurityProtocol() {
+		default @Nullable String getSecurityProtocol() {
 			return null;
 		}
 

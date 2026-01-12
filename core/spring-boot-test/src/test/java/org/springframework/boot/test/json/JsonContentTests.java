@@ -36,6 +36,7 @@ class JsonContentTests {
 	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON, Configuration.defaultConfiguration()))
@@ -43,6 +44,7 @@ class JsonContentTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenJsonIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -51,6 +53,7 @@ class JsonContentTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenConfigurationIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))

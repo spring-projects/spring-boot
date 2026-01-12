@@ -122,7 +122,8 @@ class DataSourceInitializationAutoConfigurationTests {
 
 		@Bean
 		DataSourceScriptDatabaseInitializer customInitializer() {
-			return new DataSourceScriptDatabaseInitializer(null, new DatabaseInitializationSettings()) {
+			return new DataSourceScriptDatabaseInitializer(mock(DataSource.class),
+					new DatabaseInitializationSettings()) {
 
 				@Override
 				protected void runScripts(Scripts scripts) {

@@ -21,6 +21,9 @@ import java.util.Arrays;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 
 /**
  * Provides access to the Maven Java Compiler plugin configuration.
@@ -35,7 +38,7 @@ class JavaCompilerPluginConfiguration {
 		this.project = project;
 	}
 
-	String getSourceMajorVersion() {
+	@Nullable String getSourceMajorVersion() {
 		String version = getConfigurationValue("source");
 
 		if (version == null) {
@@ -45,7 +48,7 @@ class JavaCompilerPluginConfiguration {
 		return majorVersionFor(version);
 	}
 
-	String getTargetMajorVersion() {
+	@Nullable String getTargetMajorVersion() {
 		String version = getConfigurationValue("target");
 
 		if (version == null) {
@@ -55,7 +58,7 @@ class JavaCompilerPluginConfiguration {
 		return majorVersionFor(version);
 	}
 
-	String getReleaseVersion() {
+	@Nullable String getReleaseVersion() {
 		String version = getConfigurationValue("release");
 
 		if (version == null) {
@@ -65,7 +68,7 @@ class JavaCompilerPluginConfiguration {
 		return majorVersionFor(version);
 	}
 
-	private String getConfigurationValue(String propertyName) {
+	private @Nullable String getConfigurationValue(String propertyName) {
 		Plugin plugin = this.project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
 		if (plugin != null) {
 			Object pluginConfiguration = plugin.getConfiguration();
@@ -76,14 +79,14 @@ class JavaCompilerPluginConfiguration {
 		return null;
 	}
 
-	private String getPropertyValue(String propertyName) {
+	private @Nullable String getPropertyValue(String propertyName) {
 		if (this.project.getProperties().containsKey(propertyName)) {
 			return this.project.getProperties().get(propertyName).toString();
 		}
 		return null;
 	}
 
-	private String getNodeValue(Xpp3Dom dom, String... childNames) {
+	private @Nullable String getNodeValue(Xpp3Dom dom, String... childNames) {
 		Xpp3Dom childNode = dom.getChild(childNames[0]);
 
 		if (childNode == null) {
@@ -97,7 +100,8 @@ class JavaCompilerPluginConfiguration {
 		return childNode.getValue();
 	}
 
-	private String majorVersionFor(String version) {
+	@Contract("!null -> !null")
+	private @Nullable String majorVersionFor(@Nullable String version) {
 		if (version != null && version.startsWith("1.")) {
 			return version.substring("1.".length());
 		}

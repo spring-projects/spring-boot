@@ -23,7 +23,11 @@ description = "Spring Boot Tomcat multi-connectors smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

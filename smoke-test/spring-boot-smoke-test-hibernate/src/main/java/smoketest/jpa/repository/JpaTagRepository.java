@@ -28,6 +28,7 @@ import org.springframework.stereotype.Repository;
 class JpaTagRepository implements TagRepository {
 
 	@PersistenceContext
+	@SuppressWarnings("NullAway.Init")
 	private EntityManager entityManager;
 
 	@Override

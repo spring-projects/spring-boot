@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.system;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provides access to environment variable values.
  *
@@ -38,6 +40,6 @@ public interface Environment {
 	 * @return the string value of the variable, or {@code null} if the variable is not
 	 * defined in the environment
 	 */
-	String get(String name);
+	@Nullable String get(String name);
 
 }

@@ -116,7 +116,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("memberSelectInt")).isNull();
 	}
 
-	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })
+	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.TestConfigurationProperties" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private final class TestProcessor extends AbstractProcessor {
 

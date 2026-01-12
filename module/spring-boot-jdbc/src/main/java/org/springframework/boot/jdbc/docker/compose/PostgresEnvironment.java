@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -43,26 +45,27 @@ class PostgresEnvironment {
 
 	private final String username;
 
-	private final String password;
+	private final @Nullable String password;
 
 	private final String database;
 
-	PostgresEnvironment(Map<String, String> env) {
+	PostgresEnvironment(Map<String, @Nullable String> env) {
 		this.username = extract(env, USERNAME_KEYS, DEFAULT_USERNAME);
 		this.password = extractPassword(env);
 		this.database = extract(env, DATABASE_KEYS, this.username);
 	}
 
-	private String extract(Map<String, String> env, String[] keys, String defaultValue) {
+	private String extract(Map<String, @Nullable String> env, String[] keys, String defaultValue) {
 		for (String key : keys) {
-			if (env.containsKey(key)) {
-				return env.get(key);
+			String value = env.get(key);
+			if (value != null) {
+				return value;
 			}
 		}
 		return defaultValue;
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private @Nullable String extractPassword(Map<String, @Nullable String> env) {
 		if (isUsingTrustHostAuthMethod(env)) {
 			return null;
 		}
@@ -72,7 +75,7 @@ class PostgresEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {
+	private boolean isUsingTrustHostAuthMethod(Map<String, @Nullable String> env) {
 		String hostAuthMethod = env.get("POSTGRES_HOST_AUTH_METHOD");
 		return "trust".equals(hostAuthMethod);
 	}
@@ -81,7 +84,7 @@ class PostgresEnvironment {
 		return this.username;
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 

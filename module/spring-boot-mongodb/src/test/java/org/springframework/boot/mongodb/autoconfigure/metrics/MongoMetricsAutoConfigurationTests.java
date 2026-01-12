@@ -152,7 +152,7 @@ class MongoMetricsAutoConfigurationTests {
 	void whenMetricsCommandListenerEnabledPropertyFalseThenNoMetricsCommandListenerIsAdded() {
 		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withPropertyValues("management.metrics.mongo.command.enabled:false")
+			.withPropertyValues("management.metrics.mongodb.command.enabled:false")
 			.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
@@ -160,7 +160,7 @@ class MongoMetricsAutoConfigurationTests {
 	void whenMetricsConnectionPoolListenerEnabledPropertyFalseThenNoMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withPropertyValues("management.metrics.mongo.connectionpool.enabled:false")
+			.withPropertyValues("management.metrics.mongodb.connectionpool.enabled:false")
 			.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
@@ -197,13 +197,19 @@ class MongoMetricsAutoConfigurationTests {
 	private MongoCommandTagsProvider getMongoCommandTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsCommandListener listener = context.getBean(MongoMetricsCommandListener.class);
-		return (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		MongoCommandTagsProvider tagsProvider = (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener,
+				"tagsProvider");
+		assertThat(tagsProvider).isNotNull();
+		return tagsProvider;
 	}
 
 	private MongoConnectionPoolTagsProvider getMongoConnectionPoolTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsConnectionPoolListener listener = context.getBean(MongoMetricsConnectionPoolListener.class);
-		return (MongoConnectionPoolTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		MongoConnectionPoolTagsProvider tagsProvider = (MongoConnectionPoolTagsProvider) ReflectionTestUtils
+			.getField(listener, "tagsProvider");
+		assertThat(tagsProvider).isNotNull();
+		return tagsProvider;
 	}
 
 }

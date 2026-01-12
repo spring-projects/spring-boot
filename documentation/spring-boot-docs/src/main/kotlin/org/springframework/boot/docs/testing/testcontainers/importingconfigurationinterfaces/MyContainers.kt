@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docs.testing.testcontainers.importingconfigurationinterfaces
 
-import org.testcontainers.containers.MongoDBContainer
-import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.mongodb.MongoDBContainer
+import org.testcontainers.neo4j.Neo4jContainer
 
 interface MyContainers {
 
@@ -28,7 +28,7 @@ interface MyContainers {
 		val mongoContainer: MongoDBContainer = MongoDBContainer("mongo:5.0")
 
 		@Container
-		val neo4jContainer: Neo4jContainer<*> = Neo4jContainer("neo4j:5")
+		val neo4jContainer: Neo4jContainer = Neo4jContainer("neo4j:5")
 
 	}
 

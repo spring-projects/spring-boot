@@ -39,6 +39,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.AbstractJarWriter.EntryTransformer;
 import org.springframework.boot.loader.tools.AbstractJarWriter.UnpackHandler;
@@ -84,21 +85,19 @@ public abstract class Packager {
 
 	private final List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
-	private String mainClass;
+	private @Nullable String mainClass;
 
 	private final File source;
 
-	private File backupFile;
+	private @Nullable File backupFile;
 
-	private Layout layout;
+	private @Nullable Layout layout;
 
-	private LoaderImplementation loaderImplementation;
+	private @Nullable LayoutFactory layoutFactory;
 
-	private LayoutFactory layoutFactory;
+	private @Nullable Layers layers;
 
-	private Layers layers;
-
-	private LayersIndex layersIndex;
+	private @Nullable LayersIndex layersIndex;
 
 	private boolean includeRelevantJarModeJars = true;
 
@@ -128,7 +127,7 @@ public abstract class Packager {
 	 * searched for a suitable class.
 	 * @param mainClass the main class name
 	 */
-	public void setMainClass(String mainClass) {
+	public void setMainClass(@Nullable String mainClass) {
 		this.mainClass = mainClass;
 	}
 
@@ -142,19 +141,11 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Sets the loader implementation to use.
-	 * @param loaderImplementation the loaderImplementation to set
-	 */
-	public void setLoaderImplementation(LoaderImplementation loaderImplementation) {
-		this.loaderImplementation = loaderImplementation;
-	}
-
-	/**
 	 * Sets the layout factory for the jar. The factory can be used when no specific
 	 * layout is specified.
 	 * @param layoutFactory the layout factory to set
 	 */
-	public void setLayoutFactory(LayoutFactory layoutFactory) {
+	public void setLayoutFactory(@Nullable LayoutFactory layoutFactory) {
 		this.layoutFactory = layoutFactory;
 	}
 
@@ -172,7 +163,7 @@ public abstract class Packager {
 	 * Sets the {@link File} to use to back up the original source.
 	 * @param backupFile the file to use to back up the original source
 	 */
-	protected void setBackupFile(File backupFile) {
+	protected void setBackupFile(@Nullable File backupFile) {
 		this.backupFile = backupFile;
 	}
 
@@ -230,7 +221,7 @@ public abstract class Packager {
 			customLoaderLayout.writeLoadedClasses(writer);
 		}
 		else if (layout.isExecutable()) {
-			writer.writeLoaderClasses(this.loaderImplementation);
+			writer.writeLoaderClasses();
 		}
 	}
 
@@ -260,8 +251,11 @@ public abstract class Packager {
 	}
 
 	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
+		Assert.state(this.layout != null, "'layout' must not be null");
 		String name = this.layout.getLayersIndexFileLocation();
 		if (StringUtils.hasLength(name)) {
+			Assert.state(this.layers != null, "'layers' must not be null");
+			Assert.state(this.layersIndex != null, "'layersIndex' must not be null");
 			Layer layer = this.layers.getLayer(name);
 			this.layersIndex.add(layer, name);
 			writer.writeEntry(name, this.layersIndex::writeTo);
@@ -335,7 +329,7 @@ public abstract class Packager {
 		}
 	}
 
-	private String getMainClass(JarFile source, Manifest manifest) throws IOException {
+	private @Nullable String getMainClass(JarFile source, Manifest manifest) throws IOException {
 		if (this.mainClass != null) {
 			return this.mainClass;
 		}
@@ -346,7 +340,7 @@ public abstract class Packager {
 		return findMainMethodWithTimeoutWarning(source);
 	}
 
-	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
+	private @Nullable String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
 		long startTime = System.currentTimeMillis();
 		String mainMethod = findMainMethod(source);
 		long duration = System.currentTimeMillis() - startTime;
@@ -358,7 +352,7 @@ public abstract class Packager {
 		return mainMethod;
 	}
 
-	protected String findMainMethod(JarFile source) throws IOException {
+	protected @Nullable String findMainMethod(JarFile source) throws IOException {
 		return MainClassFinder.findSingleMainClass(source, getLayout().getClassesLocation(),
 				SPRING_BOOT_APPLICATION_CLASS_NAME);
 	}
@@ -434,7 +428,7 @@ public abstract class Packager {
 		return entry.getName().endsWith(".cdx.json") || entry.getName().endsWith("/bom.json");
 	}
 
-	private void putIfHasLength(Attributes attributes, String name, String value) {
+	private void putIfHasLength(Attributes attributes, String name, @Nullable String value) {
 		if (StringUtils.hasLength(value)) {
 			attributes.putValue(name, value);
 		}
@@ -456,7 +450,7 @@ public abstract class Packager {
 		 * @param duration the amount of time it took to find the main method
 		 * @param mainMethod the main method that was actually found
 		 */
-		void handleTimeoutWarning(long duration, String mainMethod);
+		void handleTimeoutWarning(long duration, @Nullable String mainMethod);
 
 	}
 
@@ -472,7 +466,7 @@ public abstract class Packager {
 		}
 
 		@Override
-		public JarArchiveEntry transform(JarArchiveEntry entry) {
+		public @Nullable JarArchiveEntry transform(JarArchiveEntry entry) {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
@@ -528,7 +522,7 @@ public abstract class Packager {
 
 		private final UnpackHandler unpackHandler;
 
-		private final Function<JarEntry, Library> libraryLookup;
+		private final Function<JarEntry, @Nullable Library> libraryLookup;
 
 		PackagedLibraries(Libraries libraries, boolean ensureReproducibleBuild) throws IOException {
 			this.libraries = (ensureReproducibleBuild) ? new TreeMap<>() : new LinkedHashMap<>();
@@ -553,7 +547,7 @@ public abstract class Packager {
 			}
 		}
 
-		private Library lookup(JarEntry entry) {
+		private @Nullable Library lookup(JarEntry entry) {
 			return this.libraries.get(entry.getName());
 		}
 
@@ -561,7 +555,7 @@ public abstract class Packager {
 			return this.unpackHandler;
 		}
 
-		Function<JarEntry, Library> getLibraryLookup() {
+		Function<JarEntry, @Nullable Library> getLibraryLookup() {
 			return this.libraryLookup;
 		}
 

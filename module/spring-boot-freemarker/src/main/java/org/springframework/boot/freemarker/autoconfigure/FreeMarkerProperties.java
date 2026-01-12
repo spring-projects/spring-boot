@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
@@ -49,11 +51,6 @@ public class FreeMarkerProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Whether to enable MVC view resolution for this technology.
-	 */
-	private boolean enabled = true;
-
-	/**
 	 * Whether to enable template caching.
 	 */
 	private boolean cache;
@@ -71,7 +68,7 @@ public class FreeMarkerProperties {
 	/**
 	 * View names that can be resolved.
 	 */
-	private String[] viewNames;
+	private String @Nullable [] viewNames;
 
 	/**
 	 * Whether to check that the templates location exists.
@@ -91,25 +88,25 @@ public class FreeMarkerProperties {
 	/**
 	 * Name of the RequestContext attribute for all views.
 	 */
-	private String requestContextAttribute;
+	private @Nullable String requestContextAttribute;
 
 	/**
 	 * Whether all request attributes should be added to the model prior to merging with
 	 * the template.
 	 */
-	private boolean exposeRequestAttributes = false;
+	private boolean exposeRequestAttributes;
 
 	/**
 	 * Whether all HttpSession attributes should be added to the model prior to merging
 	 * with the template.
 	 */
-	private boolean exposeSessionAttributes = false;
+	private boolean exposeSessionAttributes;
 
 	/**
 	 * Whether HttpServletRequest attributes are allowed to override (hide) controller
 	 * generated model attributes of the same name.
 	 */
-	private boolean allowRequestOverride = false;
+	private boolean allowRequestOverride;
 
 	/**
 	 * Whether to expose a RequestContext for use by Spring's macro library, under the
@@ -121,7 +118,7 @@ public class FreeMarkerProperties {
 	 * Whether HttpSession attributes are allowed to override (hide) controller generated
 	 * model attributes of the same name.
 	 */
-	private boolean allowSessionOverride = false;
+	private boolean allowSessionOverride;
 
 	/**
 	 * Well-known FreeMarker keys which are passed to FreeMarker's Configuration.
@@ -141,14 +138,6 @@ public class FreeMarkerProperties {
 	 */
 	private boolean preferFileSystemAccess;
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;
 	}
@@ -157,11 +146,11 @@ public class FreeMarkerProperties {
 		return this.checkTemplateLocation;
 	}
 
-	public String[] getViewNames() {
+	public String @Nullable [] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	public void setViewNames(String @Nullable [] viewNames) {
 		this.viewNames = viewNames;
 	}
 
@@ -191,7 +180,7 @@ public class FreeMarkerProperties {
 		return this.charset;
 	}
 
-	public String getCharsetName() {
+	public @Nullable String getCharsetName() {
 		return (this.charset != null) ? this.charset.name() : null;
 	}
 
@@ -239,11 +228,11 @@ public class FreeMarkerProperties {
 		this.suffix = suffix;
 	}
 
-	public String getRequestContextAttribute() {
+	public @Nullable String getRequestContextAttribute() {
 		return this.requestContextAttribute;
 	}
 
-	public void setRequestContextAttribute(String requestContextAttribute) {
+	public void setRequestContextAttribute(@Nullable String requestContextAttribute) {
 		this.requestContextAttribute = requestContextAttribute;
 	}
 

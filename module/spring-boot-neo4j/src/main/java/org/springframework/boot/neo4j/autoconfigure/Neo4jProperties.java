@@ -20,6 +20,8 @@ import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,7 +37,7 @@ public class Neo4jProperties {
 	/**
 	 * URI used by the driver.
 	 */
-	private URI uri;
+	private @Nullable URI uri;
 
 	/**
 	 * Timeout for borrowing connections from the pool.
@@ -53,11 +55,11 @@ public class Neo4jProperties {
 
 	private final Security security = new Security();
 
-	public URI getUri() {
+	public @Nullable URI getUri() {
 		return this.uri;
 	}
 
-	public void setUri(URI uri) {
+	public void setUri(@Nullable URI uri) {
 		this.uri = uri;
 	}
 
@@ -94,53 +96,53 @@ public class Neo4jProperties {
 		/**
 		 * Login user of the server.
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Login password of the server.
 		 */
-		private String password;
+		private @Nullable String password;
 
 		/**
 		 * Realm to connect to.
 		 */
-		private String realm;
+		private @Nullable String realm;
 
 		/**
 		 * Kerberos ticket for connecting to the database. Mutual exclusive with a given
 		 * username.
 		 */
-		private String kerberosTicket;
+		private @Nullable String kerberosTicket;
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
-		public String getRealm() {
+		public @Nullable String getRealm() {
 			return this.realm;
 		}
 
-		public void setRealm(String realm) {
+		public void setRealm(@Nullable String realm) {
 			this.realm = realm;
 		}
 
-		public String getKerberosTicket() {
+		public @Nullable String getKerberosTicket() {
 			return this.kerberosTicket;
 		}
 
-		public void setKerberosTicket(String kerberosTicket) {
+		public void setKerberosTicket(@Nullable String kerberosTicket) {
 			this.kerberosTicket = kerberosTicket;
 		}
 
@@ -149,14 +151,9 @@ public class Neo4jProperties {
 	public static class Pool {
 
 		/**
-		 * Whether to enable metrics.
-		 */
-		private boolean metricsEnabled = false;
-
-		/**
 		 * Whether to log leaked sessions.
 		 */
-		private boolean logLeakedSessions = false;
+		private boolean logLeakedSessions;
 
 		/**
 		 * Maximum amount of connections in the connection pool towards a single database.
@@ -167,7 +164,7 @@ public class Neo4jProperties {
 		 * Pooled connections that have been idle in the pool for longer than this
 		 * threshold will be tested before they are used again.
 		 */
-		private Duration idleTimeBeforeConnectionTest;
+		private @Nullable Duration idleTimeBeforeConnectionTest;
 
 		/**
 		 * Pooled connections older than this threshold will be closed and removed from
@@ -197,11 +194,11 @@ public class Neo4jProperties {
 			this.maxConnectionPoolSize = maxConnectionPoolSize;
 		}
 
-		public Duration getIdleTimeBeforeConnectionTest() {
+		public @Nullable Duration getIdleTimeBeforeConnectionTest() {
 			return this.idleTimeBeforeConnectionTest;
 		}
 
-		public void setIdleTimeBeforeConnectionTest(Duration idleTimeBeforeConnectionTest) {
+		public void setIdleTimeBeforeConnectionTest(@Nullable Duration idleTimeBeforeConnectionTest) {
 			this.idleTimeBeforeConnectionTest = idleTimeBeforeConnectionTest;
 		}
 
@@ -221,14 +218,6 @@ public class Neo4jProperties {
 			this.connectionAcquisitionTimeout = connectionAcquisitionTimeout;
 		}
 
-		public boolean isMetricsEnabled() {
-			return this.metricsEnabled;
-		}
-
-		public void setMetricsEnabled(boolean metricsEnabled) {
-			this.metricsEnabled = metricsEnabled;
-		}
-
 	}
 
 	public static class Security {
@@ -236,7 +225,7 @@ public class Neo4jProperties {
 		/**
 		 * Whether the driver should use encrypted traffic.
 		 */
-		private boolean encrypted = false;
+		private boolean encrypted;
 
 		/**
 		 * Trust strategy to use.
@@ -246,7 +235,7 @@ public class Neo4jProperties {
 		/**
 		 * Path to the file that holds the trusted certificates.
 		 */
-		private File certFile;
+		private @Nullable File certFile;
 
 		/**
 		 * Whether hostname verification is required.
@@ -269,11 +258,11 @@ public class Neo4jProperties {
 			this.trustStrategy = trustStrategy;
 		}
 
-		public File getCertFile() {
+		public @Nullable File getCertFile() {
 			return this.certFile;
 		}
 
-		public void setCertFile(File certFile) {
+		public void setCertFile(@Nullable File certFile) {
 			this.certFile = certFile;
 		}
 

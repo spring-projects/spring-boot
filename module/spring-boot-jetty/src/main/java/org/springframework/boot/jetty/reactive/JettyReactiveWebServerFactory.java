@@ -20,11 +20,12 @@ import java.net.InetSocketAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.server.ConnectionLimit;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletHolder;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.jetty.ForwardHeadersCustomizer;
@@ -53,7 +54,7 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 
 	private static final Log logger = LogFactory.getLog(JettyReactiveWebServerFactory.class);
 
-	private JettyResourceFactory resourceFactory;
+	private @Nullable JettyResourceFactory resourceFactory;
 
 	/**
 	 * Create a new {@link JettyServletWebServerFactory} instance.
@@ -81,11 +82,11 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 	 * Set the {@link JettyResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
 	 */
-	public void setResourceFactory(JettyResourceFactory resourceFactory) {
+	public void setResourceFactory(@Nullable JettyResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
 	}
 
-	protected JettyResourceFactory getResourceFactory() {
+	protected @Nullable JettyResourceFactory getResourceFactory() {
 		return this.resourceFactory;
 	}
 
@@ -108,7 +109,7 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 		server.setHandler(addHandlerWrappers(contextHandler));
 		logger.info("Server initialized with port: " + port);
 		if (this.getMaxConnections() > -1) {
-			server.addBean(new ConnectionLimit(this.getMaxConnections(), server));
+			server.addBean(new NetworkConnectionLimit(this.getMaxConnections(), server));
 		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);

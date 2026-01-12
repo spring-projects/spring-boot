@@ -48,7 +48,7 @@ public final class DirectRabbitListenerContainerFactoryConfigurer
 		PropertyMapper map = PropertyMapper.get();
 		RabbitProperties.DirectContainer config = getRabbitProperties().getListener().getDirect();
 		configure(factory, connectionFactory, config);
-		map.from(config::getConsumersPerQueue).whenNonNull().to(factory::setConsumersPerQueue);
+		map.from(config::getConsumersPerQueue).to(factory::setConsumersPerQueue);
 	}
 
 }

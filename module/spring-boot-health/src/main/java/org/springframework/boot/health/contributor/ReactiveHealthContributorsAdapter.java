@@ -18,6 +18,10 @@ package org.springframework.boot.health.contributor;
 
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
+
 /**
  * Adapts {@link ReactiveHealthContributors} to {@link HealthContributors}.
  *
@@ -33,7 +37,7 @@ class ReactiveHealthContributorsAdapter implements HealthContributors {
 	}
 
 	@Override
-	public HealthContributor getContributor(String name) {
+	public @Nullable HealthContributor getContributor(String name) {
 		return adapt(this.delegate.getContributor(name));
 	}
 
@@ -42,7 +46,8 @@ class ReactiveHealthContributorsAdapter implements HealthContributors {
 		return this.delegate.stream().map((entry) -> new Entry(entry.name(), adapt(entry.contributor())));
 	}
 
-	private HealthContributor adapt(ReactiveHealthContributor contributor) {
+	@Contract("!null -> !null")
+	private @Nullable HealthContributor adapt(@Nullable ReactiveHealthContributor contributor) {
 		return (contributor != null) ? contributor.asHealthContributor() : null;
 	}
 

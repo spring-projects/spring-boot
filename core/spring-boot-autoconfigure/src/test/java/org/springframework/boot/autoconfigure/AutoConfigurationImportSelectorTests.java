@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -83,39 +84,35 @@ class AutoConfigurationImportSelectorTests {
 	void importsAreSelectedWhenUsingEnableAutoConfiguration() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSameSizeAs(getAutoConfigurationClassNames());
-		assertThat(this.importSelector.getLastEvent().getExclusions()).isEmpty();
+		assertThat(getLastEvent().getExclusions()).isEmpty();
 	}
 
 	@Test
 	void classExclusionsAreApplied() {
 		String[] imports = selectImports(EnableAutoConfigurationWithClassExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains(SeventhAutoConfiguration.class.getName());
+		assertThat(getLastEvent().getExclusions()).contains(SeventhAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void classExclusionsAreAppliedWhenUsingSpringBootApplication() {
 		String[] imports = selectImports(SpringBootApplicationWithClassExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains(SeventhAutoConfiguration.class.getName());
+		assertThat(getLastEvent().getExclusions()).contains(SeventhAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void classNamesExclusionsAreApplied() {
 		String[] imports = selectImports(EnableAutoConfigurationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains("com.example.one.FirstAutoConfiguration");
+		assertThat(getLastEvent().getExclusions()).contains("com.example.one.FirstAutoConfiguration");
 	}
 
 	@Test
 	void classNamesExclusionsAreAppliedWhenUsingSpringBootApplication() {
 		String[] imports = selectImports(SpringBootApplicationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains("com.example.three.ThirdAutoConfiguration");
+		assertThat(getLastEvent().getExclusions()).contains("com.example.three.ThirdAutoConfiguration");
 	}
 
 	@Test
@@ -123,8 +120,7 @@ class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude", "com.example.three.ThirdAutoConfiguration");
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains("com.example.three.ThirdAutoConfiguration");
+		assertThat(getLastEvent().getExclusions()).contains("com.example.three.ThirdAutoConfiguration");
 	}
 
 	@Test
@@ -151,8 +147,8 @@ class AutoConfigurationImportSelectorTests {
 	private void testSeveralPropertyExclusionsAreApplied() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-			.contains("com.example.two.SecondAutoConfiguration", "com.example.four.FourthAutoConfiguration");
+		assertThat(getLastEvent().getExclusions()).contains("com.example.two.SecondAutoConfiguration",
+				"com.example.four.FourthAutoConfiguration");
 	}
 
 	@Test
@@ -160,9 +156,8 @@ class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude", "com.example.one.FirstAutoConfiguration");
 		String[] imports = selectImports(EnableAutoConfigurationWithClassAndClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
-		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
-				"com.example.one.FirstAutoConfiguration", "com.example.five.FifthAutoConfiguration",
-				SeventhAutoConfiguration.class.getName());
+		assertThat(getLastEvent().getExclusions()).contains("com.example.one.FirstAutoConfiguration",
+				"com.example.five.FifthAutoConfiguration", SeventhAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -202,7 +197,7 @@ class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure.DoesNotExist2");
 		selectImports(EnableAutoConfigurationWithAbsentClassNameExclude.class);
-		assertThat(this.importSelector.getLastEvent().getExclusions()).containsExactlyInAnyOrder(
+		assertThat(getLastEvent().getExclusions()).containsExactlyInAnyOrder(
 				"org.springframework.boot.autoconfigure.DoesNotExist1",
 				"org.springframework.boot.autoconfigure.DoesNotExist2");
 	}
@@ -269,11 +264,17 @@ class AutoConfigurationImportSelectorTests {
 		importSelector.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
 	}
 
+	private AutoConfigurationImportEvent getLastEvent() {
+		AutoConfigurationImportEvent result = this.importSelector.getLastEvent();
+		assertThat(result).isNotNull();
+		return result;
+	}
+
 	private final class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
 
-		private AutoConfigurationImportEvent lastEvent;
+		private @Nullable AutoConfigurationImportEvent lastEvent;
 
-		TestAutoConfigurationImportSelector(Class<?> autoConfigurationAnnotation) {
+		TestAutoConfigurationImportSelector(@Nullable Class<?> autoConfigurationAnnotation) {
 			super(autoConfigurationAnnotation);
 		}
 
@@ -287,7 +288,7 @@ class AutoConfigurationImportSelectorTests {
 			return Collections.singletonList((event) -> this.lastEvent = event);
 		}
 
-		AutoConfigurationImportEvent getLastEvent() {
+		@Nullable AutoConfigurationImportEvent getLastEvent() {
 			return this.lastEvent;
 		}
 
@@ -297,6 +298,7 @@ class AutoConfigurationImportSelectorTests {
 
 		private final Set<String> nonMatching = new HashSet<>();
 
+		@SuppressWarnings("NullAway.Init")
 		private BeanFactory beanFactory;
 
 		TestAutoConfigurationImportFilter(String[] configurations, int... nonMatching) {
@@ -306,7 +308,8 @@ class AutoConfigurationImportSelectorTests {
 		}
 
 		@Override
-		public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
+		public boolean[] match(@Nullable String[] autoConfigurationClasses,
+				AutoConfigurationMetadata autoConfigurationMetadata) {
 			boolean[] result = new boolean[autoConfigurationClasses.length];
 			for (int i = 0; i < result.length; i++) {
 				result[i] = !this.nonMatching.contains(autoConfigurationClasses[i]);

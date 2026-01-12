@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web:{bootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc:{bootVersion}")
 }
 
 bootJar {

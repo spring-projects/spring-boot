@@ -26,6 +26,8 @@ import org.testcontainers.lifecycle.Startables;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * JUnit extension used by reset startables.
  *
@@ -46,8 +48,11 @@ class ResetStartablesExtension implements BeforeEachCallback, AfterEachCallback 
 	private void reset() {
 		try {
 			Object executor = ReflectionTestUtils.getField(Startables.class, "EXECUTOR");
+			assertThat(executor).isNotNull();
 			Object threadFactory = ReflectionTestUtils.getField(executor, "threadFactory");
+			assertThat(threadFactory).isNotNull();
 			AtomicLong counter = (AtomicLong) ReflectionTestUtils.getField(threadFactory, "COUNTER");
+			assertThat(counter).isNotNull();
 			counter.set(0);
 		}
 		catch (InaccessibleObjectException ex) {

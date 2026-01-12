@@ -16,17 +16,16 @@
 
 package org.springframework.boot.loader.net.util;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CoderResult;
-import java.nio.charset.CodingErrorAction;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 
 /**
- * Utility to decode URL strings.
+ * Utility to decode URL strings. Copied from Spring Framework's {@code StringUtils} as we
+ * cannot depend on it in the loader.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 3.2.0
  */
 public final class UrlDecoder {
@@ -35,73 +34,70 @@ public final class UrlDecoder {
 	}
 
 	/**
-	 * Decode the given string by decoding URL {@code '%'} escapes. This method should be
-	 * identical in behavior to the {@code decode} method in the internal
-	 * {@code sun.net.www.ParseUtil} JDK class.
-	 * @param string the string to decode
-	 * @return the decoded string
+	 * Decode the given encoded URI component value by replacing each "<i>{@code %xy}</i>"
+	 * sequence with a hexadecimal representation of the character in
+	 * {@link StandardCharsets#UTF_8 UTF-8}, leaving other characters unmodified.
+	 * @param source the encoded URI component value
+	 * @return the decoded value
 	 */
-	public static String decode(String string) {
-		int length = string.length();
-		if ((length == 0) || (string.indexOf('%') < 0)) {
-			return string;
+	public static String decode(String source) {
+		return decode(source, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Decode the given encoded URI component value by replacing each "<i>{@code %xy}</i>"
+	 * sequence with a hexadecimal representation of the character in the specified
+	 * character encoding, leaving other characters unmodified.
+	 * @param source the encoded URI component value
+	 * @param charset the character encoding to use to decode the "<i>{@code %xy}</i>"
+	 * sequences
+	 * @return the decoded value
+	 * @since 4.0.0
+	 */
+	public static String decode(String source, Charset charset) {
+		int length = source.length();
+		int firstPercentIndex = source.indexOf('%');
+		if (length == 0 || firstPercentIndex < 0) {
+			return source;
 		}
-		StringBuilder result = new StringBuilder(length);
-		ByteBuffer byteBuffer = ByteBuffer.allocate(length);
-		CharBuffer charBuffer = CharBuffer.allocate(length);
-		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
-			.onMalformedInput(CodingErrorAction.REPORT)
-			.onUnmappableCharacter(CodingErrorAction.REPORT);
-		int index = 0;
-		while (index < length) {
-			char ch = string.charAt(index);
-			if (ch != '%') {
-				result.append(ch);
-				if (index + 1 >= length) {
-					return result.toString();
+
+		StringBuilder output = new StringBuilder(length);
+		output.append(source, 0, firstPercentIndex);
+		byte[] bytes = null;
+		int i = firstPercentIndex;
+		while (i < length) {
+			char ch = source.charAt(i);
+			if (ch == '%') {
+				try {
+					if (bytes == null) {
+						bytes = new byte[(length - i) / 3];
+					}
+
+					int pos = 0;
+					while (i + 2 < length && ch == '%') {
+						bytes[pos++] = (byte) HexFormat.fromHexDigits(source, i + 1, i + 3);
+						i += 3;
+						if (i < length) {
+							ch = source.charAt(i);
+						}
+					}
+
+					if (i < length && ch == '%') {
+						throw new IllegalArgumentException("Incomplete trailing escape (%) pattern");
+					}
+
+					output.append(new String(bytes, 0, pos, charset));
 				}
-				index++;
-				continue;
+				catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
+				}
 			}
-			index = fillByteBuffer(byteBuffer, string, index, length);
-			decodeToCharBuffer(byteBuffer, charBuffer, decoder);
-			result.append(charBuffer.flip());
-
+			else {
+				output.append(ch);
+				i++;
+			}
 		}
-		return result.toString();
-	}
-
-	private static int fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
-		byteBuffer.clear();
-		do {
-			byteBuffer.put(unescape(string, index));
-			index += 3;
-		}
-		while (index < length && string.charAt(index) == '%');
-		byteBuffer.flip();
-		return index;
-	}
-
-	private static byte unescape(String string, int index) {
-		try {
-			return (byte) Integer.parseInt(string, index + 1, index + 3, 16);
-		}
-		catch (NumberFormatException ex) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	private static void decodeToCharBuffer(ByteBuffer byteBuffer, CharBuffer charBuffer, CharsetDecoder decoder) {
-		decoder.reset();
-		charBuffer.clear();
-		assertNoError(decoder.decode(byteBuffer, charBuffer, true));
-		assertNoError(decoder.flush(charBuffer));
-	}
-
-	private static void assertNoError(CoderResult result) {
-		if (result.isError()) {
-			throw new IllegalArgumentException("Error decoding percent encoded characters");
-		}
+		return output.toString();
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ class DockerHostTests {
 
 	private static final String TCP_HOST = "tcp://192.168.1.1";
 
-	private static final Function<String, String> NO_SYSTEM_ENV = (key) -> null;
+	private static final Function<String, @Nullable String> NO_SYSTEM_ENV = (key) -> null;
 
 	private static final Supplier<List<DockerCliContextResponse>> NO_CONTEXT = Collections::emptyList;
 

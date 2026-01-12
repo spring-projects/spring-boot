@@ -36,8 +36,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.work.DisableCachingByDefault;
-
-import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
@@ -72,7 +71,7 @@ public abstract class BootWar extends War implements BootArchive {
 
 	private final ResolvedDependencies resolvedDependencies;
 
-	private FileCollection providedClasspath;
+	private @Nullable FileCollection providedClasspath;
 
 	/**
 	 * Creates a new {@code BootWar} task.
@@ -118,14 +117,12 @@ public abstract class BootWar extends War implements BootArchive {
 
 	@Override
 	protected CopyAction createCopyAction() {
-		LoaderImplementation loaderImplementation = getLoaderImplementation().getOrElse(LoaderImplementation.DEFAULT);
 		LayerResolver layerResolver = null;
 		if (!isLayeredDisabled()) {
 			layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 		}
 		String jarmodeToolsLocation = isIncludeJarmodeTools() ? LIB_DIRECTORY : null;
-		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, false,
-				layerResolver, jarmodeToolsLocation);
+		return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, jarmodeToolsLocation);
 	}
 
 	private boolean isIncludeJarmodeTools() {
@@ -142,21 +139,6 @@ public abstract class BootWar extends War implements BootArchive {
 		this.support.requiresUnpack(spec);
 	}
 
-	@Override
-	public LaunchScriptConfiguration getLaunchScript() {
-		return this.support.getLaunchScript();
-	}
-
-	@Override
-	public void launchScript() {
-		enableLaunchScriptIfNecessary();
-	}
-
-	@Override
-	public void launchScript(Action<LaunchScriptConfiguration> action) {
-		action.execute(enableLaunchScriptIfNecessary());
-	}
-
 	/**
 	 * Returns the provided classpath, the contents of which will be included in the
 	 * {@code WEB-INF/lib-provided} directory of the war.
@@ -164,7 +146,7 @@ public abstract class BootWar extends War implements BootArchive {
 	 */
 	@Optional
 	@Classpath
-	public FileCollection getProvidedClasspath() {
+	public @Nullable FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
 
@@ -241,15 +223,6 @@ public abstract class BootWar extends War implements BootArchive {
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
 		return path.startsWith(LIB_DIRECTORY) || path.startsWith(LIB_PROVIDED_DIRECTORY);
-	}
-
-	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
-		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
-		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration(this);
-			this.support.setLaunchScript(launchScript);
-		}
-		return launchScript;
 	}
 
 	/**

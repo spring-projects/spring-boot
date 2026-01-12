@@ -21,14 +21,19 @@ plugins {
 description = "Spring Boot Quartz smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation(project(":starter:spring-boot-starter-actuator"))
-	implementation(project(":starter:spring-boot-starter-quartz"))
 	implementation(project(":starter:spring-boot-starter-jdbc"))
+	implementation(project(":starter:spring-boot-starter-quartz"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-quartz-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.awaitility:awaitility")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

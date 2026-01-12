@@ -90,6 +90,7 @@ class OAuth2ClientWebSecurityAutoConfigurationTests {
 			ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
 					getSecurityFilters(context, OAuth2LoginAuthenticationFilter.class).get(0),
 					"clientRegistrationRepository");
+			assertThat(actual).isNotNull();
 			assertThat(isEqual(expected.findByRegistrationId("first"), actual.findByRegistrationId("first"))).isTrue();
 			assertThat(isEqual(expected.findByRegistrationId("second"), actual.findByRegistrationId("second")))
 				.isTrue();
@@ -103,6 +104,7 @@ class OAuth2ClientWebSecurityAutoConfigurationTests {
 			ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
 					getSecurityFilters(context, OAuth2AuthorizationCodeGrantFilter.class).get(0),
 					"clientRegistrationRepository");
+			assertThat(actual).isNotNull();
 			assertThat(isEqual(expected.findByRegistrationId("first"), actual.findByRegistrationId("first"))).isTrue();
 			assertThat(isEqual(expected.findByRegistrationId("second"), actual.findByRegistrationId("second")))
 				.isTrue();
@@ -145,8 +147,7 @@ class OAuth2ClientWebSecurityAutoConfigurationTests {
 	private SecurityFilterChain getSecurityFilterChain(AssertableWebApplicationContext context) {
 		Filter springSecurityFilterChain = context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		FilterChainProxy filterChainProxy = getFilterChainProxy(springSecurityFilterChain);
-		SecurityFilterChain securityFilterChain = filterChainProxy.getFilterChains().get(0);
-		return securityFilterChain;
+		return filterChainProxy.getFilterChains().get(0);
 	}
 
 	private FilterChainProxy getFilterChainProxy(Filter filter) {
@@ -155,6 +156,7 @@ class OAuth2ClientWebSecurityAutoConfigurationTests {
 		}
 		if (filter instanceof CompositeFilter) {
 			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			assertThat(filters).isNotNull();
 			return (FilterChainProxy) filters.stream()
 				.filter(FilterChainProxy.class::isInstance)
 				.findFirst()
@@ -252,7 +254,7 @@ class OAuth2ClientWebSecurityAutoConfigurationTests {
 	static class TestSecurityFilterChainConfiguration {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			return http.securityMatcher("/**")
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 				.build();

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -59,7 +61,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpRequestFactory}.
 	 */
-	T build(ClientHttpRequestFactorySettings settings);
+	T build(@Nullable HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given
@@ -173,7 +175,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} from the given supplier, using
-	 * reflection to ultimately apply the {@link ClientHttpRequestFactorySettings}.
+	 * reflection to ultimately apply the {@link HttpClientSettings}.
 	 * @param <T> the {@link ClientHttpRequestFactory} type
 	 * @param requestFactorySupplier the {@link ClientHttpRequestFactory} supplier
 	 * @return a new {@link ClientHttpRequestFactoryBuilder}
@@ -213,7 +215,8 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @return the most suitable {@link ClientHttpRequestFactoryBuilder} for the classpath
 	 * @since 3.5.0
 	 */
-	static ClientHttpRequestFactoryBuilder<? extends ClientHttpRequestFactory> detect(ClassLoader classLoader) {
+	static ClientHttpRequestFactoryBuilder<? extends ClientHttpRequestFactory> detect(
+			@Nullable ClassLoader classLoader) {
 		if (HttpComponentsClientHttpRequestFactoryBuilder.Classes.present(classLoader)) {
 			return httpComponents();
 		}

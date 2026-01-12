@@ -31,7 +31,6 @@ dependencies {
 	api("org.springframework.session:spring-session-data-redis")
 
 	implementation(project(":module:spring-boot-data-redis"))
-	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-webflux"))
@@ -41,7 +40,7 @@ dependencies {
 	dockerTestImplementation(testFixtures(project(":module:spring-boot-web-server")))
 	dockerTestImplementation(testFixtures(project(":module:spring-boot-session")))
 	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	dockerTestRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 
@@ -51,4 +50,8 @@ dependencies {
 	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

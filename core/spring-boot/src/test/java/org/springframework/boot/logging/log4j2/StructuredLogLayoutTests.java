@@ -69,6 +69,7 @@ class StructuredLogLayoutTests extends AbstractStructuredLoggingTests {
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsEntry("ecs", Map.of("version", "8.11"));
 		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		assertThat(error).isNotNull();
 		assertThat(error.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 

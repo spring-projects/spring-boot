@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.sun.jna.Platform;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfigurationMetadata.DockerContext;
 import org.springframework.boot.buildpack.platform.system.Environment;
@@ -46,11 +47,11 @@ public class ResolvedDockerHost extends DockerHost {
 
 	private static final String DOCKER_CONTEXT = "DOCKER_CONTEXT";
 
-	ResolvedDockerHost(String address) {
+	ResolvedDockerHost(@Nullable String address) {
 		super(address);
 	}
 
-	ResolvedDockerHost(String address, boolean secure, String certificatePath) {
+	ResolvedDockerHost(@Nullable String address, boolean secure, @Nullable String certificatePath) {
 		super(address, secure, certificatePath);
 	}
 
@@ -81,11 +82,12 @@ public class ResolvedDockerHost extends DockerHost {
 	 * @param connectionConfiguration the host configuration or {@code null}
 	 * @return the resolved docker host
 	 */
-	public static ResolvedDockerHost from(DockerConnectionConfiguration connectionConfiguration) {
+	public static ResolvedDockerHost from(@Nullable DockerConnectionConfiguration connectionConfiguration) {
 		return from(Environment.SYSTEM, connectionConfiguration);
 	}
 
-	static ResolvedDockerHost from(Environment environment, DockerConnectionConfiguration connectionConfiguration) {
+	static ResolvedDockerHost from(Environment environment,
+			@Nullable DockerConnectionConfiguration connectionConfiguration) {
 		DockerConfigurationMetadata environmentConfiguration = DockerConfigurationMetadata.from(environment);
 		if (environment.get(DOCKER_CONTEXT) != null) {
 			DockerContext context = environmentConfiguration.forContext(environment.get(DOCKER_CONTEXT));
@@ -114,7 +116,7 @@ public class ResolvedDockerHost extends DockerHost {
 		return Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH;
 	}
 
-	private static boolean isTrue(String value) {
+	private static boolean isTrue(@Nullable String value) {
 		try {
 			return (value != null) && (Integer.parseInt(value) == 1);
 		}

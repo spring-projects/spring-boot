@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Strategy interface used to initialize a {@link Restarter}.
  *
@@ -39,6 +41,6 @@ public interface RestartInitializer {
 	 * @param thread the source thread
 	 * @return initial URLs or {@code null}
 	 */
-	URL[] getInitialUrls(Thread thread);
+	URL @Nullable [] getInitialUrls(Thread thread);
 
 }

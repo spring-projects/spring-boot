@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Dmytro Nosan
  * @author Stephane Nicoll
+ * @author Tommy Karlsson
  * @since 4.0.0
  */
 public class HazelcastHealthIndicator extends AbstractHealthIndicator {
@@ -42,6 +43,10 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
+		if (!this.hazelcast.getLifecycleService().isRunning()) {
+			builder.down();
+			return;
+		}
 		this.hazelcast.executeTransaction((context) -> {
 			String uuid = this.hazelcast.getLocalEndpoint().getUuid().toString();
 			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid", uuid);

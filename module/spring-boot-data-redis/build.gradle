@@ -28,7 +28,7 @@ description = "Spring Boot Data Redis"
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-data-commons"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("io.lettuce:lettuce-core")
 	api("org.springframework.data:spring-data-redis")
 
@@ -40,7 +40,7 @@ dependencies {
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("com.redis:testcontainers-redis")
 	optional("redis.clients:jedis")
 
@@ -50,13 +50,23 @@ dependencies {
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
+

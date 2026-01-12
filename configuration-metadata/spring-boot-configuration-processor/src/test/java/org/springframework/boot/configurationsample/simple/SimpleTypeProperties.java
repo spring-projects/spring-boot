@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Expose simple types to make sure these are detected properly.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("simple.type")
+@TestConfigurationProperties("simple.type")
 public class SimpleTypeProperties {
 
 	private String myString;

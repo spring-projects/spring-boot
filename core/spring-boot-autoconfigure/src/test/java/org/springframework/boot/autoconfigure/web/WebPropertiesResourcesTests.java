@@ -90,6 +90,7 @@ class WebPropertiesResourcesTests {
 		properties.setStaleIfError(Duration.ofSeconds(6));
 		properties.setStaleWhileRevalidate(Duration.ofSeconds(7));
 		CacheControl cacheControl = properties.toHttpCacheControl();
+		assertThat(cacheControl).isNotNull();
 		assertThat(cacheControl.getHeaderValue())
 			.isEqualTo("max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
 					+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
@@ -101,6 +102,7 @@ class WebPropertiesResourcesTests {
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);
 		CacheControl cacheControl = properties.toHttpCacheControl();
+		assertThat(cacheControl).isNotNull();
 		assertThat(cacheControl.getHeaderValue()).isEqualTo("no-store");
 	}
 

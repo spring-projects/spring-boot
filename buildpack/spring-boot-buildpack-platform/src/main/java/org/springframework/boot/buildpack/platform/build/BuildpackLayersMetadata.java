@@ -21,12 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -53,7 +54,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 	 * @return the buildpack details or {@code null} if a buildpack with the given ID and
 	 * version does not exist in the metadata
 	 */
-	BuildpackLayerDetails getBuildpack(String id, String version) {
+	@Nullable BuildpackLayerDetails getBuildpack(String id, @Nullable String version) {
 		return this.buildpacks.getBuildpack(id, version);
 	}
 
@@ -89,7 +90,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackLayersMetadata fromJson(String json) throws IOException {
-		return fromJson(SharedObjectMapper.get().readTree(json));
+		return fromJson(SharedJsonMapper.get().readTree(json));
 	}
 
 	/**
@@ -105,7 +106,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private final Map<String, BuildpackVersions> buildpacks = new HashMap<>();
 
-		private BuildpackLayerDetails getBuildpack(String id, String version) {
+		private @Nullable BuildpackLayerDetails getBuildpack(String id, @Nullable String version) {
 			if (this.buildpacks.containsKey(id)) {
 				return this.buildpacks.get(id).getBuildpack(version);
 			}
@@ -130,7 +131,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private final Map<String, BuildpackLayerDetails> versions = new HashMap<>();
 
-		private BuildpackLayerDetails getBuildpack(String version) {
+		private @Nullable BuildpackLayerDetails getBuildpack(@Nullable String version) {
 			return this.versions.get(version);
 		}
 
@@ -150,11 +151,11 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 	static final class BuildpackLayerDetails extends MappedObject {
 
-		private final String name;
+		private final @Nullable String name;
 
-		private final String homepage;
+		private final @Nullable String homepage;
 
-		private final String layerDiffId;
+		private final @Nullable String layerDiffId;
 
 		private BuildpackLayerDetails(JsonNode node) {
 			super(node, MethodHandles.lookup());
@@ -167,7 +168,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 		 * Return the buildpack name.
 		 * @return the name
 		 */
-		String getName() {
+		@Nullable String getName() {
 			return this.name;
 		}
 
@@ -175,7 +176,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 		 * Return the buildpack homepage address.
 		 * @return the homepage address
 		 */
-		String getHomepage() {
+		@Nullable String getHomepage() {
 			return this.homepage;
 		}
 
@@ -183,7 +184,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 		 * Return the buildpack layer {@code diffID}.
 		 * @return the layer {@code diffID}
 		 */
-		String getLayerDiffId() {
+		@Nullable String getLayerDiffId() {
 			return this.layerDiffId;
 		}
 

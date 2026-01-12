@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Nested properties with a private constructor.
  *
  * @author Phillip Webb
  */
-@ConfigurationProperties("config")
+@TestConfigurationProperties("config")
 public class InnerClassWithPrivateConstructor {
 
 	private Nested nested = new Nested("whatever");

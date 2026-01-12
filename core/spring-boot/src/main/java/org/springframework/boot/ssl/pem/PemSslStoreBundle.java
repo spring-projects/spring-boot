@@ -24,7 +24,6 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -47,9 +46,9 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private static final String DEFAULT_ALIAS = "ssl";
 
-	private final Supplier<KeyStore> keyStore;
+	private final SingletonSupplier<KeyStore> keyStore;
 
-	private final Supplier<KeyStore> trustStore;
+	private final SingletonSupplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
@@ -73,7 +72,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	}
 
 	@Override
-	public KeyStore getKeyStore() {
+	public @Nullable KeyStore getKeyStore() {
 		return this.keyStore.get();
 	}
 
@@ -83,7 +82,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	}
 
 	@Override
-	public KeyStore getTrustStore() {
+	public @Nullable KeyStore getTrustStore() {
 		return this.trustStore.get();
 	}
 
@@ -94,7 +93,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		try {
 			List<X509Certificate> certificates = pemSslStore.certificates();
 			Assert.state(!ObjectUtils.isEmpty(certificates), "Certificates must not be empty");
-			String alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : DEFAULT_ALIAS;
+			String alias = getAlias(pemSslStore);
 			KeyStore store = createKeyStore(pemSslStore.type());
 			PrivateKey privateKey = pemSslStore.privateKey();
 			if (privateKey != null) {
@@ -108,6 +107,11 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to create %s store: %s".formatted(name, ex.getMessage()), ex);
 		}
+	}
+
+	private static String getAlias(PemSslStore pemSslStore) {
+		String alias = pemSslStore.alias();
+		return (alias != null) ? alias : DEFAULT_ALIAS;
 	}
 
 	private static KeyStore createKeyStore(@Nullable String type)

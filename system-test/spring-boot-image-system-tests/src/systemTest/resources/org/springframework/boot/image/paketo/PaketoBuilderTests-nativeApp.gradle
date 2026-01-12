@@ -38,11 +38,11 @@ repositories {
 }
 
 tasks.named("bootBuildImage") {
-	environment["BP_JVM_VERSION"] = "24"
+	environment["BP_JVM_VERSION"] = "25"
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web:{bootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc:{bootVersion}")
 }
 
 bootJar {

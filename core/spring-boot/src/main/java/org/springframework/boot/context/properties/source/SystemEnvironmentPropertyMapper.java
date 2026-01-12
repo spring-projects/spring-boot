@@ -19,9 +19,11 @@ package org.springframework.boot.context.properties.source;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.ToStringFormat;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * {@link PropertyMapper} for system environment variables. Names are mapped by removing
@@ -38,6 +40,8 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
+
+	private final Map<String, ConfigurationPropertyName> propertySourceNameCache = new ConcurrentReferenceHashMap<>();
 
 	@Override
 	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
@@ -57,7 +61,12 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	@Override
 	public ConfigurationPropertyName map(String propertySourceName) {
-		return convertName(propertySourceName);
+		ConfigurationPropertyName configurationPropertyName = this.propertySourceNameCache.get(propertySourceName);
+		if (configurationPropertyName == null) {
+			configurationPropertyName = convertName(propertySourceName);
+			this.propertySourceNameCache.put(propertySourceName, configurationPropertyName);
+		}
+		return configurationPropertyName;
 	}
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {

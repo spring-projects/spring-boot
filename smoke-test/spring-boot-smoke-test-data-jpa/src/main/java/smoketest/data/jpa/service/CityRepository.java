@@ -16,6 +16,7 @@
 
 package smoketest.data.jpa.service;
 
+import org.jspecify.annotations.Nullable;
 import smoketest.data.jpa.domain.City;
 
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ import org.springframework.data.repository.Repository;
 
 public interface CityRepository extends Repository<City, Long> {
 
-	Page<City> findAll(Pageable pageable);
+	Page<City> findAll(@Nullable Pageable pageable);
 
 	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(String name, String country, Pageable pageable);
 

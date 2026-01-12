@@ -33,11 +33,15 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
-	providedRuntime("org.eclipse.jetty.ee10:jetty-ee10-apache-jsp")
+	providedRuntime("org.eclipse.jetty.ee11:jetty-ee11-apache-jsp")
 
 	runtimeOnly("org.glassfish.web:jakarta.servlet.jsp.jstl")
 
 	testImplementation(project(":starter:spring-boot-starter-jetty"))
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -27,32 +27,34 @@ description = "Spring Boot Jersey"
 
 dependencies {
 	api(project(":module:spring-boot-servlet"))
-	api("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	api("org.glassfish.jersey.containers:jersey-container-servlet")
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-spring6")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson")
+
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
+	compileOnly("com.google.code.findbugs:jsr305")
 
 	implementation("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-jackson"))
-	optional(project(":module:spring-boot-metrics"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-jackson2"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.projectreactor:reactor-core")
 	optional("org.glassfish.jersey.ext:jersey-micrometer")
 
 	testFixturesApi(testFixtures(project(":module:spring-boot-actuator")))
 	testFixturesImplementation(project(":module:spring-boot-tomcat"))
+	testFixturesRuntimeOnly(project(":module:spring-boot-jackson2"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-restclient"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation(testFixtures(project(":module:spring-boot-actuator-autoconfigure")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 	testImplementation("org.springframework:spring-webflux")

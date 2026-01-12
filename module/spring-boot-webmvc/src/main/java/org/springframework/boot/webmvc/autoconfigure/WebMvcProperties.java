@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.http.MediaType;
@@ -45,14 +47,14 @@ public class WebMvcProperties {
 	/**
 	 * Formatting strategy for message codes. For instance, 'PREFIX_ERROR_CODE'.
 	 */
-	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
+	private DefaultMessageCodesResolver.@Nullable Format messageCodesResolverFormat;
 
 	private final Format format = new Format();
 
 	/**
 	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchTraceRequest = false;
+	private boolean dispatchTraceRequest;
 
 	/**
 	 * Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
@@ -74,7 +76,7 @@ public class WebMvcProperties {
 	 * Whether to enable warn logging of exceptions resolved by a
 	 * "HandlerExceptionResolver", except for "DefaultHandlerExceptionResolver".
 	 */
-	private boolean logResolvedException = false;
+	private boolean logResolvedException;
 
 	/**
 	 * Path pattern used for static resources.
@@ -100,11 +102,11 @@ public class WebMvcProperties {
 
 	private final Apiversion apiversion = new Apiversion();
 
-	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
+	public DefaultMessageCodesResolver.@Nullable Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.@Nullable Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
@@ -202,13 +204,13 @@ public class WebMvcProperties {
 		 * Amount of time before asynchronous request handling times out. If this value is
 		 * not set, the default timeout of the underlying implementation is used.
 		 */
-		private Duration requestTimeout;
+		private @Nullable Duration requestTimeout;
 
-		public Duration getRequestTimeout() {
+		public @Nullable Duration getRequestTimeout() {
 			return this.requestTimeout;
 		}
 
-		public void setRequestTimeout(Duration requestTimeout) {
+		public void setRequestTimeout(@Nullable Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
 		}
 
@@ -282,26 +284,26 @@ public class WebMvcProperties {
 		/**
 		 * Spring MVC view prefix.
 		 */
-		private String prefix;
+		private @Nullable String prefix;
 
 		/**
 		 * Spring MVC view suffix.
 		 */
-		private String suffix;
+		private @Nullable String suffix;
 
-		public String getPrefix() {
+		public @Nullable String getPrefix() {
 			return this.prefix;
 		}
 
-		public void setPrefix(String prefix) {
+		public void setPrefix(@Nullable String prefix) {
 			this.prefix = prefix;
 		}
 
-		public String getSuffix() {
+		public @Nullable String getSuffix() {
 			return this.suffix;
 		}
 
-		public void setSuffix(String suffix) {
+		public void setSuffix(@Nullable String suffix) {
 			this.suffix = suffix;
 		}
 
@@ -313,12 +315,12 @@ public class WebMvcProperties {
 		 * Whether a request parameter ("format" by default) should be used to determine
 		 * the requested media type.
 		 */
-		private boolean favorParameter = false;
+		private boolean favorParameter;
 
 		/**
 		 * Query parameter name to use when "favor-parameter" is enabled.
 		 */
-		private String parameterName;
+		private @Nullable String parameterName;
 
 		/**
 		 * Map file extensions to media types for content negotiation. For instance, yml
@@ -340,11 +342,11 @@ public class WebMvcProperties {
 			this.favorParameter = favorParameter;
 		}
 
-		public String getParameterName() {
+		public @Nullable String getParameterName() {
 			return this.parameterName;
 		}
 
-		public void setParameterName(String parameterName) {
+		public void setParameterName(@Nullable String parameterName) {
 			this.parameterName = parameterName;
 		}
 
@@ -389,41 +391,41 @@ public class WebMvcProperties {
 		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
 		 * java.util.Date and java.time.LocalDate.
 		 */
-		private String date;
+		private @Nullable String date;
 
 		/**
 		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
 		 * LocalTime and OffsetTime.
 		 */
-		private String time;
+		private @Nullable String time;
 
 		/**
 		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
 		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
-		private String dateTime;
+		private @Nullable String dateTime;
 
-		public String getDate() {
+		public @Nullable String getDate() {
 			return this.date;
 		}
 
-		public void setDate(String date) {
+		public void setDate(@Nullable String date) {
 			this.date = date;
 		}
 
-		public String getTime() {
+		public @Nullable String getTime() {
 			return this.time;
 		}
 
-		public void setTime(String time) {
+		public void setTime(@Nullable String time) {
 			this.time = time;
 		}
 
-		public String getDateTime() {
+		public @Nullable String getDateTime() {
 			return this.dateTime;
 		}
 
-		public void setDateTime(String dateTime) {
+		public void setDateTime(@Nullable String dateTime) {
 			this.dateTime = dateTime;
 		}
 
@@ -457,7 +459,7 @@ public class WebMvcProperties {
 		/**
 		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -477,63 +479,63 @@ public class WebMvcProperties {
 		/**
 		 * Whether the API version is required with each request.
 		 */
-		private boolean required = false;
+		private @Nullable Boolean required;
 
 		/**
 		 * Default version that should be used for each request.
 		 */
 		@Name("default")
-		private String defaultVersion;
+		private @Nullable String defaultVersion;
 
 		/**
 		 * Supported versions.
 		 */
-		private List<String> supported;
+		private @Nullable List<String> supported;
 
 		/**
 		 * Whether supported versions should be detected from controllers.
 		 */
-		private boolean detectSupported = true;
+		private @Nullable Boolean detectSupported;
 
 		/**
 		 * How version details should be inserted into requests.
 		 */
 		private final Use use = new Use();
 
-		public boolean isRequired() {
+		public @Nullable Boolean getRequired() {
 			return this.required;
 		}
 
-		public void setRequired(boolean required) {
+		public void setRequired(@Nullable Boolean required) {
 			this.required = required;
 		}
 
-		public String getDefaultVersion() {
+		public @Nullable String getDefaultVersion() {
 			return this.defaultVersion;
 		}
 
-		public void setDefaultVersion(String defaultVersion) {
+		public void setDefaultVersion(@Nullable String defaultVersion) {
 			this.defaultVersion = defaultVersion;
 		}
 
-		public List<String> getSupported() {
+		public @Nullable List<String> getSupported() {
 			return this.supported;
 		}
 
-		public void setSupported(List<String> supported) {
+		public void setSupported(@Nullable List<String> supported) {
 			this.supported = supported;
+		}
+
+		public @Nullable Boolean getDetectSupported() {
+			return this.detectSupported;
+		}
+
+		public void setDetectSupported(@Nullable Boolean detectSupported) {
+			this.detectSupported = detectSupported;
 		}
 
 		public Use getUse() {
 			return this.use;
-		}
-
-		public boolean isDetectSupported() {
-			return this.detectSupported;
-		}
-
-		public void setDetectSupported(boolean detectSupported) {
-			this.detectSupported = detectSupported;
 		}
 
 		public static class Use {
@@ -541,44 +543,44 @@ public class WebMvcProperties {
 			/**
 			 * Use the HTTP header with the given name to obtain the version.
 			 */
-			private String header;
+			private @Nullable String header;
 
 			/**
 			 * Use the query parameter with the given name to obtain the version.
 			 */
-			private String requestParameter;
+			private @Nullable String queryParameter;
 
 			/**
 			 * Use the path segment at the given index to obtain the version.
 			 */
-			private Integer pathSegment;
+			private @Nullable Integer pathSegment;
 
 			/**
 			 * Use the media type parameter with the given name to obtain the version.
 			 */
 			private Map<MediaType, String> mediaTypeParameter = new LinkedHashMap<>();
 
-			public String getHeader() {
+			public @Nullable String getHeader() {
 				return this.header;
 			}
 
-			public void setHeader(String header) {
+			public void setHeader(@Nullable String header) {
 				this.header = header;
 			}
 
-			public String getRequestParameter() {
-				return this.requestParameter;
+			public @Nullable String getQueryParameter() {
+				return this.queryParameter;
 			}
 
-			public void setRequestParameter(String queryParameter) {
-				this.requestParameter = queryParameter;
+			public void setQueryParameter(@Nullable String queryParameter) {
+				this.queryParameter = queryParameter;
 			}
 
-			public Integer getPathSegment() {
+			public @Nullable Integer getPathSegment() {
 				return this.pathSegment;
 			}
 
-			public void setPathSegment(Integer pathSegment) {
+			public void setPathSegment(@Nullable Integer pathSegment) {
 				this.pathSegment = pathSegment;
 			}
 

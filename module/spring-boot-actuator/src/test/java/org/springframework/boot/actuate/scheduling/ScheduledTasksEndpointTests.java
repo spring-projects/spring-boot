@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.Custom
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.LastExecution;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.NextExecution;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.TaskDescriptor;
@@ -72,7 +73,9 @@ class ScheduledTasksEndpointTests {
 			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/3 1/1 * ?");
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CronScheduledMethod.class.getName() + ".cron");
-			assertThat(description.getNextExecution().getTime()).isInTheFuture();
+			NextExecution nextExecution = description.getNextExecution();
+			assertThat(nextExecution).isNotNull();
+			assertThat(nextExecution.getTime()).isInTheFuture();
 			assertThat(description.getLastExecution()).isNull();
 		});
 	}

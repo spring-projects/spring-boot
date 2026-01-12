@@ -25,12 +25,16 @@ public class City implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
+	@SuppressWarnings("NullAway.Init")
 	private String state;
 
+	@SuppressWarnings("NullAway.Init")
 	private String country;
 
+	@SuppressWarnings("NullAway.Init")
 	private String map;
 
 	protected City() {

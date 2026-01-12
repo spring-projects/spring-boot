@@ -20,7 +20,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
+import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
@@ -31,15 +33,15 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.DockerLog;
+import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
-import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.transport.TestDockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
-import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
@@ -76,7 +78,11 @@ class BuilderTests {
 
 	private static final ImageReference BASE_CNB = ImageReference.of("docker.io/cloudfoundry/run:base-cnb");
 
+	private static final ImageReference PLATFORM_CNB = ImageReference
+		.of("docker.io/cloudfoundry/run@sha256:fb5ecb90a42b2067a859aab23fc1f5e9d9c2589d07ba285608879e7baa415aad");
+
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenLogIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Builder((BuildLog) null))
 			.withMessage("'log' must not be null");
@@ -106,6 +112,7 @@ class BuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void buildWhenRequestIsNullThrowsException() {
 		Builder builder = new Builder();
 		assertThatIllegalArgumentException().isThrownBy(() -> builder.build(null))
@@ -131,7 +138,9 @@ class BuilderTests {
 		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull());
 		then(docker.image()).should().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
@@ -161,7 +170,9 @@ class BuilderTests {
 			.pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), regAuthEq(builderToken));
 		then(docker.image()).should().push(eq(request.getName()), any(), regAuthEq(publishToken));
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
@@ -184,7 +195,9 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 	}
 
 	@Test
@@ -207,7 +220,9 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 	}
 
 	@Test
@@ -227,7 +242,9 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 	}
 
 	@Test
@@ -249,7 +266,9 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 	}
 
 	@Test
@@ -262,8 +281,8 @@ class BuilderTests {
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER))).willReturn(builderImage);
-		given(docker.image().inspect(eq(BASE_CNB))).willReturn(runImage);
+		given(docker.image().inspect(eq(DEFAULT_BUILDER), any())).willReturn(builderImage);
+		given(docker.image().inspect(eq(BASE_CNB), any())).willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.NEVER);
 		builder.build(request);
@@ -271,9 +290,11 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).should(never()).pull(any(), any(), any());
-		then(docker.image()).should(times(2)).inspect(any());
+		then(docker.image()).should(times(2)).inspect(any(), any());
 	}
 
 	@Test
@@ -295,7 +316,9 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
 		then(docker.image()).should(never()).inspect(any());
 	}
@@ -310,13 +333,13 @@ class BuilderTests {
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER)))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+		given(docker.image().inspect(eq(DEFAULT_BUILDER), any()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(builderImage);
-		given(docker.image().inspect(eq(BASE_CNB)))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+		given(docker.image().inspect(eq(BASE_CNB), any()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT);
@@ -325,8 +348,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
-		then(docker.image()).should(times(2)).inspect(any());
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
+		then(docker.image()).should(times(2)).inspect(any(), any());
 		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
 	}
 
@@ -349,7 +374,9 @@ class BuilderTests {
 		then(docker.image()).should().tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 	}
 
 	@Test
@@ -385,7 +412,9 @@ class BuilderTests {
 		then(docker.image()).should().push(eq(builtImageReference), any(), regAuthEq(publishToken));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
@@ -399,6 +428,8 @@ class BuilderTests {
 		given(docker.image().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(platform), any(), isNull())).willAnswer(withPulledImage(runImage));
+		given(docker.image().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withImagePlatform("linux/arm64/v1");
 		builder.build(request);
@@ -407,8 +438,11 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull());
 		then(docker.image()).should().pull(eq(BASE_CNB), eq(platform), any(), isNull());
+		then(docker.image()).should().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
-		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		ImageReference tag = archive.getValue().getTag();
+		assertThat(tag).isNotNull();
+		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
@@ -483,7 +517,7 @@ class BuilderTests {
 		return mockDockerApi(null);
 	}
 
-	private DockerApi mockDockerApi(ImagePlatform platform) throws IOException {
+	private DockerApi mockDockerApi(@Nullable ImagePlatform platform) throws IOException {
 		ContainerApi containerApi = mock(ContainerApi.class);
 		ContainerReference reference = ContainerReference.of("container-ref");
 		given(containerApi.create(any(), eq(platform), any())).willReturn(reference);
@@ -531,7 +565,7 @@ class BuilderTests {
 	}
 
 	private static String regAuthEq(DockerRegistryAuthentication authentication) {
-		return argThat(authentication.getAuthHeader()::equals);
+		return argThat((arg) -> Objects.equals(authentication.getAuthHeader(), arg));
 	}
 
 	static class TestPrintStream extends PrintStream {

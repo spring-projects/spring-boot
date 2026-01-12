@@ -16,53 +16,31 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.jspecify.annotations.Nullable;
 
 class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
-	private final List<String> availableClasses = new ArrayList<>();
+	private boolean disableSelfInitialization;
 
-	private String[] standardConfigLocations;
-
-	TestLog4J2LoggingSystem() {
-		super(TestLog4J2LoggingSystem.class.getClassLoader());
+	TestLog4J2LoggingSystem(String contextName) {
+		// Tests add resources to the thread context classloader
+		super(Thread.currentThread().getContextClassLoader(), new LoggerContext(contextName));
+		getLoggerContext().start();
 	}
 
 	Configuration getConfiguration() {
 		return getLoggerContext().getConfiguration();
 	}
 
-	private LoggerContext getLoggerContext() {
-		return (LoggerContext) LogManager.getContext(false);
-	}
-
 	@Override
-	protected boolean isClassAvailable(String className) {
-		return this.availableClasses.contains(className);
+	protected @Nullable String getSelfInitializationConfig() {
+		return this.disableSelfInitialization ? null : super.getSelfInitializationConfig();
 	}
 
-	void availableClasses(String... classNames) {
-		Collections.addAll(this.availableClasses, classNames);
-	}
-
-	@Override
-	protected String[] getStandardConfigLocations() {
-		return (this.standardConfigLocations != null) ? this.standardConfigLocations
-				: super.getStandardConfigLocations();
-	}
-
-	void setStandardConfigLocations(boolean standardConfigLocations) {
-		this.standardConfigLocations = (!standardConfigLocations) ? new String[0] : null;
-	}
-
-	void setStandardConfigLocations(String[] standardConfigLocations) {
-		this.standardConfigLocations = standardConfigLocations;
+	void disableSelfInitialization() {
+		this.disableSelfInitialization = true;
 	}
 
 }

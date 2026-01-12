@@ -52,6 +52,7 @@ class HttpHeaderAccessManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void headerNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
 			.withMessageContaining("'headerName' must not be empty");
@@ -64,6 +65,7 @@ class HttpHeaderAccessManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void expectedSecretMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
 			.withMessageContaining("'expectedSecret' must not be empty");

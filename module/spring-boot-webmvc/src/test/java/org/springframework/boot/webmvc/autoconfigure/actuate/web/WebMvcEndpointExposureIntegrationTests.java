@@ -30,19 +30,20 @@ import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoCon
 import org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.servlet.autoconfigure.actuate.ServletHttpExchangesAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.servlet.autoconfigure.actuate.web.exchanges.ServletHttpExchangesAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
@@ -127,9 +128,10 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	private RestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		return RestClient.builder().defaultStatusHandler((status) -> true, (request, response) -> {
 		}).baseUrl("http://localhost:" + port).build();
 	}

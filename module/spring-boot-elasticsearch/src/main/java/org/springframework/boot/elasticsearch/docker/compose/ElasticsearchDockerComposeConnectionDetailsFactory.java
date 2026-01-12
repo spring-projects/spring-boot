@@ -38,12 +38,10 @@ import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnect
 class ElasticsearchDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<ElasticsearchConnectionDetails> {
 
-	private static final String[] ELASTICSEARCH_CONTAINER_NAMES = { "elasticsearch", "bitnami/elasticsearch" };
-
 	private static final int ELASTICSEARCH_PORT = 9200;
 
 	protected ElasticsearchDockerComposeConnectionDetailsFactory() {
-		super(ELASTICSEARCH_CONTAINER_NAMES);
+		super("elasticsearch");
 	}
 
 	@Override

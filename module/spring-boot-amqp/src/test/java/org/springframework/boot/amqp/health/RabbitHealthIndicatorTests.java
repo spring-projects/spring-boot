@@ -45,12 +45,15 @@ import static org.mockito.Mockito.mock;
 class RabbitHealthIndicatorTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private RabbitTemplate rabbitTemplate;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Channel channel;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenRabbitTemplateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RabbitHealthIndicator(null))
 			.withMessageContaining("'rabbitTemplate' must not be null");
@@ -65,6 +68,17 @@ class RabbitHealthIndicatorTests {
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("version", "123");
+	}
+
+	@Test
+	void healthWhenVersionIsMissingShouldReturnUpWithUnknownVersion() {
+		givenTemplateExecutionWillInvokeCallback();
+		Connection connection = mock(Connection.class);
+		given(this.channel.getConnection()).willReturn(connection);
+		given(connection.getServerProperties()).willReturn(Collections.emptyMap());
+		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("version", "unknown");
 	}
 
 	@Test

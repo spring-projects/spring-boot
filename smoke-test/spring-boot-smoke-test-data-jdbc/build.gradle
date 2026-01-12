@@ -26,5 +26,10 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-data-jdbc-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

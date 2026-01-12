@@ -87,7 +87,7 @@ public class Instantiator<T> {
 
 	private Map<Class<?>, Function<Class<?>, @Nullable Object>> getAvailableParameters(
 			Consumer<AvailableParameters> availableParameters) {
-		Map<Class<?>, Function<Class<?>, Object>> result = new LinkedHashMap<>();
+		Map<Class<?>, Function<Class<?>, @Nullable Object>> result = new LinkedHashMap<>();
 		availableParameters.accept(new AvailableParameters() {
 
 			@Override
@@ -96,7 +96,7 @@ public class Instantiator<T> {
 			}
 
 			@Override
-			public void add(Class<?> type, @Nullable Function<Class<?>, @Nullable Object> factory) {
+			public void add(Class<?> type, Function<Class<?>, @Nullable Object> factory) {
 				result.put(type, factory);
 			}
 

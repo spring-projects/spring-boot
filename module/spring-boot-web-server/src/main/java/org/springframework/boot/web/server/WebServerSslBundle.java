@@ -18,6 +18,8 @@ package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -52,7 +54,7 @@ public final class WebServerSslBundle implements SslBundle {
 
 	private final SslManagerBundle managers;
 
-	private WebServerSslBundle(SslStoreBundle stores, String keyPassword, Ssl ssl) {
+	private WebServerSslBundle(SslStoreBundle stores, @Nullable String keyPassword, Ssl ssl) {
 		this.stores = stores;
 		this.key = SslBundleKey.of(keyPassword, ssl.getKeyAlias());
 		this.protocol = ssl.getProtocol();
@@ -129,7 +131,7 @@ public final class WebServerSslBundle implements SslBundle {
 	 * @return a {@link SslBundle} instance
 	 * @throws NoSuchSslBundleException if a bundle lookup fails
 	 */
-	public static SslBundle get(Ssl ssl, SslBundles sslBundles) throws NoSuchSslBundleException {
+	public static SslBundle get(@Nullable Ssl ssl, @Nullable SslBundles sslBundles) throws NoSuchSslBundleException {
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
 		String keyPassword = ssl.getKeyPassword();
 		String bundleName = ssl.getBundle();
@@ -149,7 +151,7 @@ public final class WebServerSslBundle implements SslBundle {
 		return new WebServerSslStoreBundle(keyStore, trustStore, ssl.getKeyStorePassword());
 	}
 
-	private static KeyStore createKeyStore(Ssl ssl) {
+	private static @Nullable KeyStore createKeyStore(Ssl ssl) {
 		if (hasPemKeyStoreProperties(ssl)) {
 			return createPemKeyStoreBundle(ssl).getKeyStore();
 		}
@@ -159,7 +161,7 @@ public final class WebServerSslBundle implements SslBundle {
 		return null;
 	}
 
-	private static KeyStore createTrustStore(Ssl ssl) {
+	private static @Nullable KeyStore createTrustStore(Ssl ssl) {
 		if (hasPemTrustStoreProperties(ssl)) {
 			return createPemTrustStoreBundle(ssl).getTrustStore();
 		}
@@ -199,13 +201,14 @@ public final class WebServerSslBundle implements SslBundle {
 
 	private static final class WebServerSslStoreBundle implements SslStoreBundle {
 
-		private final KeyStore keyStore;
+		private final @Nullable KeyStore keyStore;
 
-		private final KeyStore trustStore;
+		private final @Nullable KeyStore trustStore;
 
-		private final String keyStorePassword;
+		private final @Nullable String keyStorePassword;
 
-		private WebServerSslStoreBundle(KeyStore keyStore, KeyStore trustStore, String keyStorePassword) {
+		private WebServerSslStoreBundle(@Nullable KeyStore keyStore, @Nullable KeyStore trustStore,
+				@Nullable String keyStorePassword) {
 			Assert.state(keyStore != null || trustStore != null,
 					"SSL is enabled but no trust material is configured for the default host");
 			this.keyStore = keyStore;
@@ -214,17 +217,17 @@ public final class WebServerSslBundle implements SslBundle {
 		}
 
 		@Override
-		public KeyStore getKeyStore() {
+		public @Nullable KeyStore getKeyStore() {
 			return this.keyStore;
 		}
 
 		@Override
-		public KeyStore getTrustStore() {
+		public @Nullable KeyStore getTrustStore() {
 			return this.trustStore;
 		}
 
 		@Override
-		public String getKeyStorePassword() {
+		public @Nullable String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 

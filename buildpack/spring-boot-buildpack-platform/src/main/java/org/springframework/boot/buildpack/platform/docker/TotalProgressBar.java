@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.docker;
 import java.io.PrintStream;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,7 +64,7 @@ public class TotalProgressBar implements Consumer<TotalProgressEvent> {
 	 * @param bookend if bookends should be printed
 	 * @param out the output print stream to use
 	 */
-	public TotalProgressBar(String prefix, char progressChar, boolean bookend, PrintStream out) {
+	public TotalProgressBar(@Nullable String prefix, char progressChar, boolean bookend, PrintStream out) {
 		this.progressChar = progressChar;
 		this.bookend = bookend;
 		if (StringUtils.hasLength(prefix)) {

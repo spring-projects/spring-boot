@@ -69,6 +69,8 @@ Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 
 This means that Spring Boot will create a javadoc:org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler[] bean that will handle RSocket requests to your application.
 
+TIP: You can use {url-spring-framework-docs}/web/webmvc/mvc-controller/ann-advice.html[`@ControllerAdvice`] to handle exceptions.
+
 
 
 [[messaging.rsocket.requester]]

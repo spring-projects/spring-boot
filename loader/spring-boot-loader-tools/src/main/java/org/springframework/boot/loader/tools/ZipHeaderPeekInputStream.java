@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link InputStream} that can peek ahead at zip header bytes.
  *
@@ -37,7 +39,7 @@ class ZipHeaderPeekInputStream extends FilterInputStream {
 
 	private int position;
 
-	private ByteArrayInputStream headerStream;
+	private @Nullable ByteArrayInputStream headerStream;
 
 	protected ZipHeaderPeekInputStream(InputStream in) throws IOException {
 		super(in);

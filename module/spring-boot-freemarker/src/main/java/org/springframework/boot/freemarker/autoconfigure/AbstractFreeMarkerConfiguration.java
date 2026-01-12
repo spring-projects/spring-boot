@@ -49,7 +49,10 @@ abstract class AbstractFreeMarkerConfiguration {
 	protected void applyProperties(FreeMarkerConfigurationFactory factory) {
 		factory.setTemplateLoaderPaths(this.properties.getTemplateLoaderPath());
 		factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
-		factory.setDefaultEncoding(this.properties.getCharsetName());
+		String charsetName = this.properties.getCharsetName();
+		if (charsetName != null) {
+			factory.setDefaultEncoding(charsetName);
+		}
 		factory.setFreemarkerSettings(createFreeMarkerSettings());
 		factory.setFreemarkerVariables(createFreeMarkerVariables());
 	}

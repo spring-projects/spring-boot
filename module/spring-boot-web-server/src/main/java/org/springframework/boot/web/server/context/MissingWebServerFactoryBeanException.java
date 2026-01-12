@@ -26,7 +26,7 @@ import org.springframework.boot.web.server.WebServerFactory;
  *
  * @author Guirong Hu
  * @author Andy Wilkinson
- * @since 2.7.0
+ * @since 4.0.0
  */
 public class MissingWebServerFactoryBeanException extends NoSuchBeanDefinitionException {
 

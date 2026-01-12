@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
@@ -334,7 +335,9 @@ class LiquibaseAutoConfigurationTests {
 			.run(assertLiquibase((liquibase) -> {
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
-				assertThat(dataSource.getDriver().getClass().getName()).isEqualTo("org.h2.Driver");
+				Driver driver = dataSource.getDriver();
+				assertThat(driver).isNotNull();
+				assertThat(driver.getClass().getName()).isEqualTo("org.h2.Driver");
 			}));
 	}
 
@@ -349,7 +352,9 @@ class LiquibaseAutoConfigurationTests {
 			.run(assertLiquibase((liquibase) -> {
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
-				assertThat(dataSource.getDriver().getClass().getName()).isEqualTo(driverClassName);
+				Driver driver = dataSource.getDriver();
+				assertThat(driver).isNotNull();
+				assertThat(driver.getClass().getName()).isEqualTo(driverClassName);
 			}));
 	}
 

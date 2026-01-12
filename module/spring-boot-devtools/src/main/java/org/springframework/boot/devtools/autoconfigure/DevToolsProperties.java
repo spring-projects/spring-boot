@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
@@ -76,7 +78,7 @@ public class DevToolsProperties {
 		/**
 		 * Additional patterns that should be excluded from triggering a full restart.
 		 */
-		private String additionalExclude;
+		private @Nullable String additionalExclude;
 
 		/**
 		 * Amount of time to wait between polling for classpath changes.
@@ -94,7 +96,7 @@ public class DevToolsProperties {
 		 * a simple name (without any path) of a file that appears on your classpath. If
 		 * not specified, any classpath file change triggers the restart.
 		 */
-		private String triggerFile;
+		private @Nullable String triggerFile;
 
 		/**
 		 * Additional paths to watch for changes.
@@ -133,11 +135,11 @@ public class DevToolsProperties {
 			this.exclude = exclude;
 		}
 
-		public String getAdditionalExclude() {
+		public @Nullable String getAdditionalExclude() {
 			return this.additionalExclude;
 		}
 
-		public void setAdditionalExclude(String additionalExclude) {
+		public void setAdditionalExclude(@Nullable String additionalExclude) {
 			this.additionalExclude = additionalExclude;
 		}
 
@@ -157,11 +159,11 @@ public class DevToolsProperties {
 			this.quietPeriod = quietPeriod;
 		}
 
-		public String getTriggerFile() {
+		public @Nullable String getTriggerFile() {
 			return this.triggerFile;
 		}
 
-		public void setTriggerFile(String triggerFile) {
+		public void setTriggerFile(@Nullable String triggerFile) {
 			this.triggerFile = triggerFile;
 		}
 
@@ -191,7 +193,7 @@ public class DevToolsProperties {
 		/**
 		 * Whether to enable a livereload.com-compatible server.
 		 */
-		private boolean enabled = true;
+		private boolean enabled;
 
 		/**
 		 * Server port.

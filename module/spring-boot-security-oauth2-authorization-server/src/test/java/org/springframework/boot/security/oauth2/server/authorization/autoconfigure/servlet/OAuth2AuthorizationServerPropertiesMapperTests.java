@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OAuth2AuthorizationServerPropertiesMapper}.
  *
  * @author Steve Riesenberg
+ * @author Florian Lemaire
  */
 class OAuth2AuthorizationServerPropertiesMapperTests {
 
@@ -107,6 +108,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		endpoints.setJwkSetUri("/jwks");
 		endpoints.setTokenRevocationUri("/revoke");
 		endpoints.setTokenIntrospectionUri("/introspect");
+		endpoints.setPushedAuthorizationRequestUri("/par");
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoints.getOidc();
 		oidc.setLogoutUri("/logout");
 		oidc.setClientRegistrationUri("/register");
@@ -121,6 +123,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		assertThat(settings.getJwkSetEndpoint()).isEqualTo("/jwks");
 		assertThat(settings.getTokenRevocationEndpoint()).isEqualTo("/revoke");
 		assertThat(settings.getTokenIntrospectionEndpoint()).isEqualTo("/introspect");
+		assertThat(settings.getPushedAuthorizationRequestEndpoint()).isEqualTo("/par");
 		assertThat(settings.getOidcLogoutEndpoint()).isEqualTo("/logout");
 		assertThat(settings.getOidcClientRegistrationEndpoint()).isEqualTo("/register");
 		assertThat(settings.getOidcUserInfoEndpoint()).isEqualTo("/user");
@@ -137,6 +140,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		endpoints.setJwkSetUri("/jwks");
 		endpoints.setTokenRevocationUri("/revoke");
 		endpoints.setTokenIntrospectionUri("/introspect");
+		endpoints.setPushedAuthorizationRequestUri("/par");
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoints.getOidc();
 		oidc.setLogoutUri("/logout");
 		oidc.setClientRegistrationUri("/register");
@@ -151,6 +155,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		assertThat(settings.getJwkSetEndpoint()).isEqualTo("/jwks");
 		assertThat(settings.getTokenRevocationEndpoint()).isEqualTo("/revoke");
 		assertThat(settings.getTokenIntrospectionEndpoint()).isEqualTo("/introspect");
+		assertThat(settings.getPushedAuthorizationRequestEndpoint()).isEqualTo("/par");
 		assertThat(settings.getOidcLogoutEndpoint()).isEqualTo("/logout");
 		assertThat(settings.getOidcClientRegistrationEndpoint()).isEqualTo("/register");
 		assertThat(settings.getOidcUserInfoEndpoint()).isEqualTo("/user");

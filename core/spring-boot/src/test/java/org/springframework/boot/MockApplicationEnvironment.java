@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.mock.env.MockEnvironment;
 
 /**
@@ -27,12 +29,12 @@ import org.springframework.mock.env.MockEnvironment;
 public class MockApplicationEnvironment extends MockEnvironment {
 
 	@Override
-	protected String doGetActiveProfilesProperty() {
+	protected @Nullable String doGetActiveProfilesProperty() {
 		return null;
 	}
 
 	@Override
-	protected String doGetDefaultProfilesProperty() {
+	protected @Nullable String doGetDefaultProfilesProperty() {
 		return null;
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.mustache.servlet.view;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,8 +27,11 @@ import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
@@ -41,9 +45,9 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
  */
 public class MustacheView extends AbstractTemplateView {
 
-	private Compiler compiler;
+	private @Nullable Compiler compiler;
 
-	private String charset;
+	private @Nullable Charset charset;
 
 	/**
 	 * Set the Mustache compiler to be used by this view.
@@ -58,30 +62,55 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	/**
-	 * Set the charset used for reading Mustache template files.
-	 * @param charset the charset to use for reading template files
+	 * Set the {@link Charset} used for reading Mustache template files.
+	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
+	}
+
+	/**
+	 * Set the name of the charset used for reading Mustache template files.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(@Nullable String charset) {
+		setCharset((charset != null) ? Charset.forName(charset) : null);
 	}
 
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
-		Resource resource = getApplicationContext().getResource(getUrl());
-		return (resource != null && resource.exists());
+		Resource resource = getResource();
+		return resource != null;
 	}
 
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		Template template = createTemplate(getApplicationContext().getResource(getUrl()));
+		Resource resource = getResource();
+		Assert.state(resource != null, "'resource' must not be null");
+		Template template = createTemplate(resource);
 		if (template != null) {
 			template.execute(model, response.getWriter());
 		}
 	}
 
+	private @Nullable Resource getResource() {
+		ApplicationContext applicationContext = getApplicationContext();
+		String url = getUrl();
+		if (applicationContext == null || url == null) {
+			return null;
+		}
+		Resource resource = applicationContext.getResource(url);
+		return (resource.exists()) ? resource : null;
+	}
+
 	private Template createTemplate(Resource resource) throws IOException {
 		try (Reader reader = getReader(resource)) {
+			Assert.state(this.compiler != null, "'compiler' must not be null");
 			return this.compiler.compile(reader);
 		}
 	}

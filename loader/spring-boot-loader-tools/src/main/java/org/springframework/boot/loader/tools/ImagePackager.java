@@ -22,6 +22,8 @@ import java.util.function.BiConsumer;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -38,7 +40,7 @@ public class ImagePackager extends Packager {
 	 * @param source the source file to package
 	 * @param backupFile the backup of the source file to package
 	 */
-	public ImagePackager(File source, File backupFile) {
+	public ImagePackager(File source, @Nullable File backupFile) {
 		super(source);
 		setBackupFile(backupFile);
 		if (isAlreadyPackaged()) {
@@ -55,7 +57,8 @@ public class ImagePackager extends Packager {
 	 * @param exporter the exporter used to write the image
 	 * @throws IOException on IO error
 	 */
-	public void packageImage(Libraries libraries, BiConsumer<ZipEntry, EntryWriter> exporter) throws IOException {
+	public void packageImage(Libraries libraries, BiConsumer<ZipEntry, @Nullable EntryWriter> exporter)
+			throws IOException {
 		packageImage(libraries, new DelegatingJarWriter(exporter));
 	}
 
@@ -71,14 +74,14 @@ public class ImagePackager extends Packager {
 	 */
 	private static class DelegatingJarWriter extends AbstractJarWriter {
 
-		private final BiConsumer<ZipEntry, EntryWriter> exporter;
+		private final BiConsumer<ZipEntry, @Nullable EntryWriter> exporter;
 
-		DelegatingJarWriter(BiConsumer<ZipEntry, EntryWriter> exporter) {
+		DelegatingJarWriter(BiConsumer<ZipEntry, @Nullable EntryWriter> exporter) {
 			this.exporter = exporter;
 		}
 
 		@Override
-		protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
+		protected void writeToArchive(ZipEntry entry, @Nullable EntryWriter entryWriter) throws IOException {
 			this.exporter.accept(entry, entryWriter);
 		}
 

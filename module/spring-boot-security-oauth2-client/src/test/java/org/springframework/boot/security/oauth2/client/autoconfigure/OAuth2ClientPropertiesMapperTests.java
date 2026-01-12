@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties.Provider;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties.Registration;
@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class OAuth2ClientPropertiesMapperTests {
 
-	private MockWebServer server;
+	private @Nullable MockWebServer server;
 
 	@AfterEach
 	void cleanup() throws Exception {
@@ -73,6 +73,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
+		assertThat(adapted).isNotNull();
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://example.com/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://example.com/token");
@@ -105,6 +106,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
+		assertThat(adapted).isNotNull();
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://www.googleapis.com/oauth2/v4/token");
@@ -133,6 +135,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
+		assertThat(adapted).isNotNull();
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://www.googleapis.com/oauth2/v4/token");
@@ -175,6 +178,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("google");
+		assertThat(adapted).isNotNull();
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("https://www.googleapis.com/oauth2/v4/token");
@@ -253,6 +257,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("okta");
+		assertThat(adapted).isNotNull();
 		ProviderDetails providerDetails = adapted.getProviderDetails();
 		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.CLIENT_SECRET_POST);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
@@ -304,6 +309,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
 			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("okta");
+		assertThat(adapted).isNotNull();
 		ProviderDetails providerDetails = adapted.getProviderDetails();
 		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
@@ -320,14 +326,16 @@ class OAuth2ClientPropertiesMapperTests {
 		assertThat(this.server.getRequestCount()).isEqualTo(numberOfRequests);
 	}
 
-	private void setupMockResponse(String issuer) throws JsonProcessingException {
+	private void setupMockResponse(String issuer) {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
-			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
+			.setBody(new JsonMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
 	}
 
-	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) {
+		assertThat(this.server).isNotNull();
 		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);

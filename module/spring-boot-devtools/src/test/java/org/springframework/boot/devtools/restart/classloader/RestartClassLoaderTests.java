@@ -102,12 +102,14 @@ class RestartClassLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void parentMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
 			.withMessageContaining("'parent' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void updatedFilesMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
@@ -164,6 +166,7 @@ class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		URL resource = this.reloadClassLoader.getResource(name);
+		assertThat(resource).isNotNull();
 		assertThat(FileCopyUtils.copyToByteArray(resource.openStream())).isEqualTo(bytes);
 	}
 

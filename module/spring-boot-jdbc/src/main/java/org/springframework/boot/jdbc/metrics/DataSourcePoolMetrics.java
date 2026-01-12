@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
@@ -64,6 +65,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public void bindTo(MeterRegistry registry) {
 		if (this.metadataProvider.getDataSourcePoolMetadata(this.dataSource) != null) {
 			bindPoolMetadata(registry, "active",
@@ -80,17 +82,18 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	}
 
 	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName, String description,
-			Function<DataSourcePoolMetadata, N> function) {
+			Function<DataSourcePoolMetadata, @Nullable N> function) {
 		bindDataSource(registry, metricName, description, this.metadataProvider.getValueFunction(function));
 	}
 
 	private <N extends Number> void bindDataSource(MeterRegistry registry, String metricName, String description,
-			Function<DataSource, N> function) {
+			Function<DataSource, @Nullable N> function) {
 		if (function.apply(this.dataSource) != null) {
-			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> function.apply(m).doubleValue())
-				.tags(this.tags)
-				.description(description)
-				.register(registry);
+			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> {
+				Number value = function.apply(m);
+				Assert.state(value != null, "'value' must not be null");
+				return value.doubleValue();
+			}).tags(this.tags).description(description).register(registry);
 		}
 	}
 
@@ -104,12 +107,17 @@ public class DataSourcePoolMetrics implements MeterBinder {
 			this.metadataProvider = metadataProvider;
 		}
 
-		<N extends Number> Function<DataSource, N> getValueFunction(Function<DataSourcePoolMetadata, N> function) {
-			return (dataSource) -> function.apply(getDataSourcePoolMetadata(dataSource));
+		<N extends Number> Function<DataSource, @Nullable N> getValueFunction(
+				Function<DataSourcePoolMetadata, @Nullable N> function) {
+			return (dataSource) -> {
+				DataSourcePoolMetadata dataSourcePoolMetadata = getDataSourcePoolMetadata(dataSource);
+				Assert.state(dataSourcePoolMetadata != null, "'dataSourcePoolMetadata' must not be null");
+				return function.apply(dataSourcePoolMetadata);
+			};
 		}
 
 		@Override
-		public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
+		public @Nullable DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 			return cache.computeIfAbsent(dataSource,
 					(key) -> this.metadataProvider.getDataSourcePoolMetadata(dataSource));
 		}

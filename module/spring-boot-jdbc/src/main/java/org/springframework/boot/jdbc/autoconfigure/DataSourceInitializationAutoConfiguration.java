@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.autoconfigure;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -57,7 +59,8 @@ public final class DataSourceInitializationAutoConfiguration {
 				determineDataSource(dataSource, properties.getUsername(), properties.getPassword()), properties);
 	}
 
-	private static DataSource determineDataSource(DataSource dataSource, String username, String password) {
+	private static DataSource determineDataSource(DataSource dataSource, @Nullable String username,
+			@Nullable String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			return DataSourceBuilder.derivedFrom(dataSource)
 				.username(username)

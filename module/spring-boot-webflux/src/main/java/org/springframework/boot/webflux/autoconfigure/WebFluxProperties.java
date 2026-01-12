@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.http.MediaType;
@@ -38,7 +40,7 @@ public class WebFluxProperties {
 	/**
 	 * Base path for all web handlers.
 	 */
-	private String basePath;
+	private @Nullable String basePath;
 
 	private final Format format = new Format();
 
@@ -56,15 +58,15 @@ public class WebFluxProperties {
 	 */
 	private String webjarsPathPattern = "/webjars/**";
 
-	public String getBasePath() {
+	public @Nullable String getBasePath() {
 		return this.basePath;
 	}
 
-	public void setBasePath(String basePath) {
+	public void setBasePath(@Nullable String basePath) {
 		this.basePath = cleanBasePath(basePath);
 	}
 
-	private String cleanBasePath(String basePath) {
+	private @Nullable String cleanBasePath(@Nullable String basePath) {
 		String candidate = null;
 		if (StringUtils.hasLength(basePath)) {
 			candidate = basePath.strip();
@@ -114,41 +116,41 @@ public class WebFluxProperties {
 		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
 		 * java.util.Date and java.time.LocalDate.
 		 */
-		private String date;
+		private @Nullable String date;
 
 		/**
 		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
 		 * LocalTime and OffsetTime.
 		 */
-		private String time;
+		private @Nullable String time;
 
 		/**
 		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
 		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
-		private String dateTime;
+		private @Nullable String dateTime;
 
-		public String getDate() {
+		public @Nullable String getDate() {
 			return this.date;
 		}
 
-		public void setDate(String date) {
+		public void setDate(@Nullable String date) {
 			this.date = date;
 		}
 
-		public String getTime() {
+		public @Nullable String getTime() {
 			return this.time;
 		}
 
-		public void setTime(String time) {
+		public void setTime(@Nullable String time) {
 			this.time = time;
 		}
 
-		public String getDateTime() {
+		public @Nullable String getDateTime() {
 			return this.dateTime;
 		}
 
-		public void setDateTime(String dateTime) {
+		public void setDateTime(@Nullable String dateTime) {
 			this.dateTime = dateTime;
 		}
 
@@ -159,7 +161,7 @@ public class WebFluxProperties {
 		/**
 		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -176,63 +178,63 @@ public class WebFluxProperties {
 		/**
 		 * Whether the API version is required with each request.
 		 */
-		private boolean required = false;
+		private @Nullable Boolean required;
 
 		/**
 		 * Default version that should be used for each request.
 		 */
 		@Name("default")
-		private String defaultVersion;
+		private @Nullable String defaultVersion;
 
 		/**
 		 * Supported versions.
 		 */
-		private List<String> supported;
+		private @Nullable List<String> supported;
 
 		/**
 		 * Whether supported versions should be detected from controllers.
 		 */
-		private boolean detectSupported = true;
+		private @Nullable Boolean detectSupported;
 
 		/**
 		 * How version details should be inserted into requests.
 		 */
 		private final Use use = new Use();
 
-		public boolean isRequired() {
+		public @Nullable Boolean getRequired() {
 			return this.required;
 		}
 
-		public void setRequired(boolean required) {
+		public void setRequired(@Nullable Boolean required) {
 			this.required = required;
 		}
 
-		public String getDefaultVersion() {
+		public @Nullable String getDefaultVersion() {
 			return this.defaultVersion;
 		}
 
-		public void setDefaultVersion(String defaultVersion) {
+		public void setDefaultVersion(@Nullable String defaultVersion) {
 			this.defaultVersion = defaultVersion;
 		}
 
-		public List<String> getSupported() {
+		public @Nullable List<String> getSupported() {
 			return this.supported;
 		}
 
-		public void setSupported(List<String> supported) {
+		public void setSupported(@Nullable List<String> supported) {
 			this.supported = supported;
+		}
+
+		public @Nullable Boolean getDetectSupported() {
+			return this.detectSupported;
+		}
+
+		public void setDetectSupported(@Nullable Boolean detectSupported) {
+			this.detectSupported = detectSupported;
 		}
 
 		public Use getUse() {
 			return this.use;
-		}
-
-		public boolean isDetectSupported() {
-			return this.detectSupported;
-		}
-
-		public void setDetectSupported(boolean detectSupported) {
-			this.detectSupported = detectSupported;
 		}
 
 		public static class Use {
@@ -240,44 +242,44 @@ public class WebFluxProperties {
 			/**
 			 * Use the HTTP header with the given name to obtain the version.
 			 */
-			private String header;
+			private @Nullable String header;
 
 			/**
 			 * Use the query parameter with the given name to obtain the version.
 			 */
-			private String requestParameter;
+			private @Nullable String queryParameter;
 
 			/**
 			 * Use the path segment at the given index to obtain the version.
 			 */
-			private Integer pathSegment;
+			private @Nullable Integer pathSegment;
 
 			/**
 			 * Use the media type parameter with the given name to obtain the version.
 			 */
 			private Map<MediaType, String> mediaTypeParameter = new LinkedHashMap<>();
 
-			public String getHeader() {
+			public @Nullable String getHeader() {
 				return this.header;
 			}
 
-			public void setHeader(String header) {
+			public void setHeader(@Nullable String header) {
 				this.header = header;
 			}
 
-			public String getRequestParameter() {
-				return this.requestParameter;
+			public @Nullable String getQueryParameter() {
+				return this.queryParameter;
 			}
 
-			public void setRequestParameter(String queryParameter) {
-				this.requestParameter = queryParameter;
+			public void setQueryParameter(@Nullable String queryParameter) {
+				this.queryParameter = queryParameter;
 			}
 
-			public Integer getPathSegment() {
+			public @Nullable Integer getPathSegment() {
 				return this.pathSegment;
 			}
 
-			public void setPathSegment(Integer pathSegment) {
+			public void setPathSegment(@Nullable Integer pathSegment) {
 				this.pathSegment = pathSegment;
 			}
 

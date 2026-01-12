@@ -22,16 +22,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -46,6 +52,9 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
+import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +71,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -83,29 +93,50 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private final EmbeddedLdapProperties embeddedProperties;
 
-	private InMemoryDirectoryServer server;
+	private @Nullable InMemoryDirectoryServer server;
 
 	EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
 		this.embeddedProperties = embeddedProperties;
 	}
 
 	@Bean
-	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
+	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext,
+			ObjectProvider<SslBundles> sslBundles) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
-		if (this.embeddedProperties.getCredential().isAvailable()) {
-			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
-					this.embeddedProperties.getCredential().getPassword());
+		String username = this.embeddedProperties.getCredential().getUsername();
+		String password = this.embeddedProperties.getCredential().getPassword();
+		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+			config.addAdditionalBindCredentials(username, password);
 		}
+		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
-		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig.createLDAPConfig("LDAP",
-				this.embeddedProperties.getPort());
-		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
-		importLdif(applicationContext);
+		importLdif(this.server, applicationContext);
 		this.server.startListening();
 		setPortProperty(applicationContext, this.server.getListenPort());
 		return this.server;
+	}
+
+	private InMemoryListenerConfig createListenerConfig(ObjectProvider<SslBundles> sslBundles) throws LDAPException {
+		SslBundle sslBundle = getSslBundle(sslBundles.getIfAvailable());
+		if (sslBundle != null) {
+			SSLContext sslContext = sslBundle.createSslContext();
+			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
+			return InMemoryListenerConfig.createLDAPSConfig("LDAPS", null, this.embeddedProperties.getPort(),
+					serverSocketFactory, clientSocketFactory);
+		}
+		return InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+	}
+
+	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {
+		Ssl ssl = this.embeddedProperties.getSsl();
+		if (ssl.isEnabled() && StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return sslBundles.getBundle(ssl.getBundle());
+		}
+		return null;
 	}
 
 	private void setSchema(InMemoryDirectoryServerConfig config) {
@@ -123,21 +154,26 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		try {
 			Schema defaultSchema = Schema.getDefaultStandardSchema();
 			Schema schema = Schema.getSchema(resource.getInputStream());
-			config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
+			if (schema == null) {
+				config.setSchema(defaultSchema);
+			}
+			else {
+				config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
+			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to load schema " + resource.getDescription(), ex);
 		}
 	}
 
-	private void importLdif(ApplicationContext applicationContext) {
+	private void importLdif(InMemoryDirectoryServer server, ApplicationContext applicationContext) {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {
 				Resource resource = applicationContext.getResource(location);
 				if (resource.exists()) {
 					try (InputStream inputStream = resource.getInputStream()) {
-						this.server.importFromLDIF(true, new LDIFReader(inputStream));
+						server.importFromLDIF(true, new LDIFReader(inputStream));
 					}
 				}
 			}
@@ -221,7 +257,7 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 	static class EmbeddedLdapAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources()
 				.registerPatternIfPresent(classLoader, "schema.ldif", (hint) -> hint.includes("schema.ldif"));
 		}

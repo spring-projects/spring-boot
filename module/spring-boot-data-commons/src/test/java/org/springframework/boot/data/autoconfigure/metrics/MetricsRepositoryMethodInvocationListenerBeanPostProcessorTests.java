@@ -30,7 +30,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link MetricsRepositoryMethodInvocationListenerBeanPostProcessor} .
+ * Tests for {@link MetricsRepositoryMethodInvocationListenerBeanPostProcessor}.
  *
  * @author Phillip Webb
  */

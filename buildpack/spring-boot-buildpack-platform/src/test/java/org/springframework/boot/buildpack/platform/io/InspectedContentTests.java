@@ -37,18 +37,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class InspectedContentTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenInputStreamThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((InputStream) null))
 			.withMessage("'inputStream' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenContentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((Content) null))
 			.withMessage("'content' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenConsumerIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((IOConsumer<OutputStream>) null))
 			.withMessage("'writer' must not be null");
@@ -88,6 +91,17 @@ class InspectedContentTests {
 		assertThat(digest.digest()).inHexadecimal()
 			.contains(0x9f, 0x86, 0xd0, 0x81, 0x88, 0x4c, 0x7d, 0x65, 0x9a, 0x2f, 0xea, 0xa0, 0xc5, 0x5a, 0xd0, 0x15,
 					0xa3, 0xbf, 0x4f, 0x1b, 0x2b, 0x0b, 0x82, 0x2c, 0xd1, 0x5d, 0x6c, 0x15, 0xb0, 0xf0, 0x0a, 0x08);
+	}
+
+	@Test
+	void ofWritingSingleBytesShouldWork() throws Exception {
+		InspectedContent content = InspectedContent.of((outputStream) -> {
+			outputStream.write('A');
+			outputStream.write('B');
+			outputStream.write('C');
+		});
+		assertThat(content.size()).isEqualTo(3);
+		assertThat(readBytes(content)).containsExactly('A', 'B', 'C');
 	}
 
 	private byte[] readBytes(InspectedContent content) throws IOException {

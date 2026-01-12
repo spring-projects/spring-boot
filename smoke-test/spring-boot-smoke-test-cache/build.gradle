@@ -62,12 +62,11 @@ dependencies {
 	infinispan("org.infinispan:infinispan-core")
 	infinispan("org.infinispan:infinispan-jcache")
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
@@ -106,4 +105,12 @@ def testInfinispan = tasks.register("testInfinispan", Test) {
 
 tasks.named("check").configure {
 	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testInfinispan
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

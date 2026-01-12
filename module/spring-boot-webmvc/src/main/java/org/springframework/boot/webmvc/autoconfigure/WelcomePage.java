@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -32,11 +34,11 @@ final class WelcomePage {
 	 */
 	static final WelcomePage UNRESOLVED = new WelcomePage(null, false);
 
-	private final String viewName;
+	private final @Nullable String viewName;
 
 	private final boolean templated;
 
-	private WelcomePage(String viewName, boolean templated) {
+	private WelcomePage(@Nullable String viewName, boolean templated) {
 		this.viewName = viewName;
 		this.templated = templated;
 	}
@@ -45,7 +47,7 @@ final class WelcomePage {
 	 * Return the view name of the welcome page.
 	 * @return the view name
 	 */
-	String getViewName() {
+	@Nullable String getViewName() {
 		return this.viewName;
 	}
 
@@ -66,7 +68,7 @@ final class WelcomePage {
 	 * @return a resolved {@link WelcomePage} instance or {@link #UNRESOLVED}
 	 */
 	static WelcomePage resolve(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Resource indexHtmlResource, String staticPathPattern) {
+			ApplicationContext applicationContext, @Nullable Resource indexHtmlResource, String staticPathPattern) {
 		if (indexHtmlResource != null && "/**".equals(staticPathPattern)) {
 			return new WelcomePage("forward:index.html", false);
 		}

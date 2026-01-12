@@ -25,13 +25,13 @@ plugins {
 description = "Spring Boot Integration"
 
 dependencies {
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.integration:spring-integration-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-jdbc"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-rsocket"))
 	optional("org.springframework.integration:spring-integration-jdbc")
 	optional("org.springframework.integration:spring-integration-jmx")
@@ -41,6 +41,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-flyway"))
 	testImplementation(project(":module:spring-boot-rsocket"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":module:spring-boot-sql")))
 	testImplementation(testFixtures(project(":module:spring-boot-jersey")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
@@ -50,4 +51,8 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

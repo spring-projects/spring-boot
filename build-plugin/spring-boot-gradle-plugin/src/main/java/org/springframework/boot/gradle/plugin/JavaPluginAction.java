@@ -20,17 +20,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.DependencyConstraint;
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.dsl.DependencyConstraintHandler;
-import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.file.FileCollection;
@@ -49,11 +44,13 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -128,6 +125,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 							}
 							SpringBootExtension springBootExtension = project.getExtensions()
 								.findByType(SpringBootExtension.class);
+							Assert.state(springBootExtension != null, "'springBootExtension' must not be null");
 							return springBootExtension.getMainClass().getOrNull();
 						}));
 						resolveMainClassName.getOutputFile()
@@ -152,7 +150,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 					});
 	}
 
-	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
+	private static @Nullable String getJavaApplicationMainClass(ExtensionContainer extensions) {
 		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
 		if (javaApplication == null) {
 			return null;
@@ -205,10 +203,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
-		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
-			.findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-			.getRuntimeClasspath()
-			.filter(new JarTypeFileSpec());
+		Callable<FileCollection> classpath = () -> {
+			SourceSet mainSourceSet = javaPluginExtension(project).getSourceSets()
+				.findByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			Assert.state(mainSourceSet != null, "'mainSourceSet' must not be null");
+			return mainSourceSet.getRuntimeClasspath().filter(new JarTypeFileSpec());
+		};
 		project.getTasks().register(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
@@ -219,10 +219,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootTestRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
-		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
-			.findByName(SourceSet.TEST_SOURCE_SET_NAME)
-			.getRuntimeClasspath()
-			.filter(new JarTypeFileSpec());
+		Callable<FileCollection> classpath = () -> {
+			SourceSet testSourceSet = javaPluginExtension(project).getSourceSets()
+				.findByName(SourceSet.TEST_SOURCE_SET_NAME);
+			Assert.state(testSourceSet != null, "'testSourceSet' must not be null");
+			return testSourceSet.getRuntimeClasspath().filter(new JarTypeFileSpec());
+		};
 		project.getTasks().register("bootTestRun", BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application using the test runtime classpath.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
@@ -283,7 +285,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		productionRuntimeClasspath.setVisible(false);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		productionRuntimeClasspath.attributes((attributes) -> {
@@ -297,26 +298,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
 		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
 		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
-		productionRuntimeClasspath.getDependencyConstraints()
-			.addAllLater(project.getProviders().provider(() -> constraintsFrom(runtimeClasspath, project)));
-	}
-
-	private Iterable<DependencyConstraint> constraintsFrom(Configuration configuration, Project project) {
-		DependencyConstraintHandler constraints = project.getDependencies().getConstraints();
-		return resolvedArtifactsOf(configuration).map((artifact) -> artifact.getId().getComponentIdentifier())
-			.filter(ModuleComponentIdentifier.class::isInstance)
-			.map(ModuleComponentIdentifier.class::cast)
-			.map(this::asConstraintNotation)
-			.map(constraints::create)
-			.toList();
-	}
-
-	private Stream<ResolvedArtifactResult> resolvedArtifactsOf(Configuration configuration) {
-		return configuration.getIncoming().getArtifacts().getArtifacts().stream();
-	}
-
-	private String asConstraintNotation(ModuleComponentIdentifier identifier) {
-		return "%s:%s:%s".formatted(identifier.getGroup(), identifier.getModule(), identifier.getVersion());
+		productionRuntimeClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 	}
 
 	private void configureDevelopmentOnlyConfiguration(Project project) {

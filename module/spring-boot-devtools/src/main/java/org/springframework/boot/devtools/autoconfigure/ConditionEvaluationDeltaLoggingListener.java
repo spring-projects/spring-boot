@@ -27,6 +27,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.util.Assert;
 
 /**
  * An {@link ApplicationListener} that logs the delta of condition evaluation across
@@ -41,6 +42,7 @@ class ConditionEvaluationDeltaLoggingListener
 
 	private static final Log logger = LogFactory.getLog(ConditionEvaluationDeltaLoggingListener.class);
 
+	@SuppressWarnings("NullAway.Init")
 	private volatile ApplicationContext context;
 
 	@Override
@@ -49,7 +51,8 @@ class ConditionEvaluationDeltaLoggingListener
 			return;
 		}
 		ConditionEvaluationReport report = event.getApplicationContext().getBean(ConditionEvaluationReport.class);
-		ConditionEvaluationReport previousReport = previousReports.get(event.getApplicationContext().getId());
+		String contextId = event.getApplicationContext().getId();
+		ConditionEvaluationReport previousReport = previousReports.get(contextId);
 		if (previousReport != null) {
 			ConditionEvaluationReport delta = report.getDelta(previousReport);
 			if (!delta.getConditionAndOutcomesBySource().isEmpty() || !delta.getExclusions().isEmpty()
@@ -63,7 +66,8 @@ class ConditionEvaluationDeltaLoggingListener
 				logger.info("Condition evaluation unchanged");
 			}
 		}
-		previousReports.put(event.getApplicationContext().getId(), report);
+		Assert.state(contextId != null, "'contextId' must not be null");
+		previousReports.put(contextId, report);
 	}
 
 	@Override

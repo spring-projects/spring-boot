@@ -18,6 +18,7 @@ package smoketest.test.service;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -49,7 +50,7 @@ public class VehicleDetails {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == this) {
 			return true;
 		}

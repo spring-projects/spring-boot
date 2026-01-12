@@ -34,6 +34,7 @@ import org.springframework.boot.health.registry.HealthContributorNameValidator;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -58,6 +59,7 @@ public final class HealthContributorRegistryAutoConfiguration {
 		return new DefaultHealthContributorRegistry(nameValidators, nameGenerator.registrar(contributorBeans));
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Flux.class)
 	static class ReactiveHealthContributorRegistryConfiguration {
 

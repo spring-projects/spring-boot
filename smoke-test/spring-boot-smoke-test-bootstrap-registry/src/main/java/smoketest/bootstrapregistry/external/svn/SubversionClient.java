@@ -16,6 +16,8 @@
 
 package smoketest.bootstrapregistry.external.svn;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A client that can connect to a subversion server.
  *
@@ -23,9 +25,9 @@ package smoketest.bootstrapregistry.external.svn;
  */
 public class SubversionClient {
 
-	private final SubversionServerCertificate serverCertificate;
+	private final @Nullable SubversionServerCertificate serverCertificate;
 
-	public SubversionClient(SubversionServerCertificate serverCertificate) {
+	public SubversionClient(@Nullable SubversionServerCertificate serverCertificate) {
 		this.serverCertificate = serverCertificate;
 	}
 

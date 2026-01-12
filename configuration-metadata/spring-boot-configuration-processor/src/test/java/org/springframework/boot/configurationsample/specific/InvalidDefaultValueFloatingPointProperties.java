@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Demonstrates that an invalid default floating point value leads to a compilation
@@ -25,12 +25,12 @@ import org.springframework.boot.configurationsample.DefaultValue;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
+@TestConfigurationProperties("test")
 public class InvalidDefaultValueFloatingPointProperties {
 
 	private final Double ratio;
 
-	public InvalidDefaultValueFloatingPointProperties(@DefaultValue("55.55.33") Double ratio) {
+	public InvalidDefaultValueFloatingPointProperties(@TestDefaultValue("55.55.33") Double ratio) {
 		this.ratio = ratio;
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command.init;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpHost;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,7 +141,8 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		return entity;
 	}
 
-	private static void assertProjectEntity(ProjectGenerationResponse entity, String mimeType, String fileName) {
+	private static void assertProjectEntity(ProjectGenerationResponse entity, @Nullable String mimeType,
+			@Nullable String fileName) {
 		if (mimeType == null) {
 			assertThat(entity.getContentType()).isNull();
 		}

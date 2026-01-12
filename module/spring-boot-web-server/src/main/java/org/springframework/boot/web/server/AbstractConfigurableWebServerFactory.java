@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.error.ErrorPage;
@@ -49,19 +51,19 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private int port = 8080;
 
-	private InetAddress address;
+	private @Nullable InetAddress address;
 
 	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
 
-	private Ssl ssl;
+	private @Nullable Ssl ssl;
 
-	private SslBundles sslBundles;
+	private @Nullable SslBundles sslBundles;
 
-	private Http2 http2;
+	private @Nullable Http2 http2;
 
-	private Compression compression;
+	private @Nullable Compression compression;
 
-	private String serverHeader;
+	private @Nullable String serverHeader;
 
 	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
@@ -97,12 +99,12 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * Return the address that the web server binds to.
 	 * @return the address
 	 */
-	public InetAddress getAddress() {
+	public @Nullable InetAddress getAddress() {
 		return this.address;
 	}
 
 	@Override
-	public void setAddress(InetAddress address) {
+	public void setAddress(@Nullable InetAddress address) {
 		this.address = address;
 	}
 
@@ -127,12 +129,12 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 
-	public Ssl getSsl() {
+	public @Nullable Ssl getSsl() {
 		return this.ssl;
 	}
 
 	@Override
-	public void setSsl(Ssl ssl) {
+	public void setSsl(@Nullable Ssl ssl) {
 		this.ssl = ssl;
 	}
 
@@ -141,39 +143,39 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * @return the {@link SslBundles} or {@code null}
 	 * @since 3.2.0
 	 */
-	public SslBundles getSslBundles() {
+	public @Nullable SslBundles getSslBundles() {
 		return this.sslBundles;
 	}
 
 	@Override
-	public void setSslBundles(SslBundles sslBundles) {
+	public void setSslBundles(@Nullable SslBundles sslBundles) {
 		this.sslBundles = sslBundles;
 	}
 
-	public Http2 getHttp2() {
+	public @Nullable Http2 getHttp2() {
 		return this.http2;
 	}
 
 	@Override
-	public void setHttp2(Http2 http2) {
+	public void setHttp2(@Nullable Http2 http2) {
 		this.http2 = http2;
 	}
 
-	public Compression getCompression() {
+	public @Nullable Compression getCompression() {
 		return this.compression;
 	}
 
 	@Override
-	public void setCompression(Compression compression) {
+	public void setCompression(@Nullable Compression compression) {
 		this.compression = compression;
 	}
 
-	public String getServerHeader() {
+	public @Nullable String getServerHeader() {
 		return this.serverHeader;
 	}
 
 	@Override
-	public void setServerHeader(String serverHeader) {
+	public void setServerHeader(@Nullable String serverHeader) {
 		this.serverHeader = serverHeader;
 	}
 
@@ -200,10 +202,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	}
 
 	protected final Map<String, SslBundle> getServerNameSslBundles() {
+		Assert.state(this.ssl != null, "'ssl' must not be null");
 		return this.ssl.getServerNameBundles()
 			.stream()
-			.collect(Collectors.toMap(ServerNameSslBundle::serverName,
-					(serverNameSslBundle) -> this.sslBundles.getBundle(serverNameSslBundle.bundle())));
+			.collect(Collectors.toMap(ServerNameSslBundle::serverName, (serverNameSslBundle) -> {
+				Assert.state(this.sslBundles != null, "'sslBundles' must not be null");
+				return this.sslBundles.getBundle(serverNameSslBundle.bundle());
+			}));
 	}
 
 	/**

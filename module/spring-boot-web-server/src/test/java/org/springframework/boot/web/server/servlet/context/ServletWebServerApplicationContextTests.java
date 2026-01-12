@@ -102,6 +102,7 @@ class ServletWebServerApplicationContextTests {
 	private final ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
 
 	@Captor
+	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<Filter> filterCaptor;
 
 	@AfterEach

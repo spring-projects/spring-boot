@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.test.generate.TestGenerationContext;
@@ -81,7 +82,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		assertThat(contribution).isNotNull();
 	}
 
-	private BeanRegistrationAotContribution process(Class<?> type) {
+	private @Nullable BeanRegistrationAotContribution process(Class<?> type) {
 		ConfigurationPropertiesBeanRegistrar beanRegistrar = new ConfigurationPropertiesBeanRegistrar(this.beanFactory);
 		beanRegistrar.register(type);
 		RegisteredBean registeredBean = RegisteredBean.of(this.beanFactory,
@@ -159,13 +160,16 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
 		ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
 		generationContext.writeGeneratedContent();
-		TestCompiler.forSystem().with(generationContext).compile((compiled) -> {
-			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
-			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-				.getInstance(ApplicationContextInitializer.class, className.toString());
-			initializer.initialize(freshApplicationContext);
-			freshContext.accept(freshApplicationContext);
-		});
+		TestCompiler.forSystem()
+			.withCompilerOptions("-Xlint:deprecation,removal", "-Werror")
+			.with(generationContext)
+			.compile((compiled) -> {
+				GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
+				ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+					.getInstance(ApplicationContextInitializer.class, className.toString());
+				initializer.initialize(freshApplicationContext);
+				freshContext.accept(freshApplicationContext);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -177,13 +181,13 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	@ConfigurationProperties("test")
 	public static class JavaBeanSampleBean {
 
-		private String name;
+		private @Nullable String name;
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 

@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.HashingScheme;
@@ -372,7 +373,9 @@ class PulsarPropertiesTests {
 				assertThat(subscription.getTopicsMode()).isEqualTo(RegexSubscriptionMode.AllTopics);
 			});
 			assertThat(properties.getTopics()).containsExactly("my-topic");
-			assertThat(properties.getTopicsPattern().toString()).isEqualTo("my-pattern");
+			Pattern topicsPattern = properties.getTopicsPattern();
+			assertThat(topicsPattern).isNotNull();
+			assertThat(topicsPattern.toString()).isEqualTo("my-pattern");
 			assertThat(properties.getPriorityLevel()).isEqualTo(8);
 			assertThat(properties.isReadCompacted()).isTrue();
 			assertThat(properties.getDeadLetterPolicy()).satisfies((policy) -> {

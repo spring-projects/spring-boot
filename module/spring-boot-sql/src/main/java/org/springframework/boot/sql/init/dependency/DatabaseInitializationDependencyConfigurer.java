@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -82,6 +84,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 	static class DependsOnDatabaseInitializationPostProcessor
 			implements BeanFactoryPostProcessor, EnvironmentAware, Ordered {
 
+		@SuppressWarnings("NullAway.Init")
 		private Environment environment;
 
 		@Override
@@ -118,7 +121,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			}
 		}
 
-		private String[] merge(String[] source, Set<String> additional) {
+		private String @Nullable [] merge(String @Nullable [] source, @Nullable Set<String> additional) {
 			if (CollectionUtils.isEmpty(additional)) {
 				return source;
 			}

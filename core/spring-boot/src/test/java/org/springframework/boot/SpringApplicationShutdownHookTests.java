@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -152,6 +153,7 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().add(null))
@@ -168,6 +170,7 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void removeHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().remove(null))
@@ -244,15 +247,16 @@ class SpringApplicationShutdownHookTests {
 
 		private final List<Object> finished;
 
-		private final CountDownLatch closing;
+		private final @Nullable CountDownLatch closing;
 
-		private final CountDownLatch proceedWithClose;
+		private final @Nullable CountDownLatch proceedWithClose;
 
 		TestApplicationContext(List<Object> finished) {
 			this(finished, null, null);
 		}
 
-		TestApplicationContext(List<Object> finished, CountDownLatch closing, CountDownLatch proceedWithClose) {
+		TestApplicationContext(List<Object> finished, @Nullable CountDownLatch closing,
+				@Nullable CountDownLatch proceedWithClose) {
 			this.finished = finished;
 			this.closing = closing;
 			this.proceedWithClose = proceedWithClose;

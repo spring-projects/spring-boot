@@ -18,9 +18,9 @@ package org.springframework.boot.jackson.scan.f;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.boot.jackson.JsonMixin;
+import org.springframework.boot.jackson.JacksonMixin;
 
-@JsonMixin
+@JacksonMixin
 public interface EmptyMixIn {
 
 	@JsonProperty("username")

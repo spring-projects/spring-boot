@@ -27,7 +27,7 @@ description = "Spring Boot Elasticsearch"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("org.elasticsearch.client:elasticsearch-rest-client")
+	api("co.elastic.clients:elasticsearch-rest5-client")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
@@ -35,25 +35,19 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-reactor"))
-	optional("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("co.elastic.clients:elasticsearch-java")
+
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
-	optional("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "org.elasticsearch.client", module: "transport"
-	}
-	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:testcontainers-elasticsearch")
+	optional("tools.jackson.core:jackson-databind")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":module:spring-boot-jackson"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:elasticsearch")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -62,4 +56,12 @@ dependencies {
 	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

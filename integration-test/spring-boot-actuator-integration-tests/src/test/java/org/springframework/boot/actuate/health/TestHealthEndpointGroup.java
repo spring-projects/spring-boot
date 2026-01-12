@@ -19,6 +19,13 @@ package org.springframework.boot.actuate.health;
 import java.util.function.Predicate;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpointPath;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
+import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
+import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
+import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
+import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 
 /**
  * Test implementation of {@link HealthEndpointGroups}.

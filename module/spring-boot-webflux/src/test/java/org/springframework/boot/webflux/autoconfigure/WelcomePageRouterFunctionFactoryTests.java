@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -36,6 +37,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
@@ -166,13 +169,17 @@ class WelcomePageRouterFunctionFactoryTests {
 
 	private WebTestClient withStaticIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithoutTemplateSupport(this.indexLocations, "/**");
-		return WebTestClient.bindToRouterFunction(factory.createRouterFunction()).build();
+		RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
+		assertThat(routerFunction).isNotNull();
+		return WebTestClient.bindToRouterFunction(routerFunction).build();
 	}
 
 	private WebTestClient withTemplateIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithTemplateSupport(this.noIndexLocations);
 		TestViewResolver testViewResolver = new TestViewResolver();
-		return WebTestClient.bindToRouterFunction(factory.createRouterFunction())
+		RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
+		assertThat(routerFunction).isNotNull();
+		return WebTestClient.bindToRouterFunction(routerFunction)
 			.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build())
 			.build();
 	}
@@ -180,7 +187,9 @@ class WelcomePageRouterFunctionFactoryTests {
 	private WebTestClient withStaticAndTemplateIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithTemplateSupport(this.indexLocations);
 		TestViewResolver testViewResolver = new TestViewResolver();
-		return WebTestClient.bindToRouterFunction(factory.createRouterFunction())
+		RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
+		assertThat(routerFunction).isNotNull();
+		return WebTestClient.bindToRouterFunction(routerFunction)
 			.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build())
 			.build();
 	}
@@ -226,7 +235,8 @@ class WelcomePageRouterFunctionFactoryTests {
 		private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
 		@Override
-		public Mono<Void> render(Map<String, ?> model, MediaType contentType, ServerWebExchange exchange) {
+		public Mono<Void> render(@Nullable Map<String, ?> model, @Nullable MediaType contentType,
+				ServerWebExchange exchange) {
 			DataBuffer buffer = this.bufferFactory.wrap("welcome-page-template".getBytes(StandardCharsets.UTF_8));
 			return exchange.getResponse().writeWith(Mono.just(buffer));
 		}

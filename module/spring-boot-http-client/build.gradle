@@ -31,7 +31,7 @@ dependencies {
 	implementation(project(":module:spring-boot-http-converter"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-reactor-netty"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
@@ -44,5 +44,11 @@ dependencies {
 	testImplementation("org.springframework:spring-webflux")
 	testImplementation("io.micrometer:micrometer-observation-test")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

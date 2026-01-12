@@ -18,9 +18,8 @@ package org.springframework.boot.web.error;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -46,8 +45,8 @@ class ErrorTests {
 	}
 
 	@Test
-	void errorCauseDoesNotAppearInJson() throws JsonProcessingException {
-		String json = new ObjectMapper()
+	void errorCauseDoesNotAppearInJson() {
+		String json = new JsonMapper()
 			.writeValueAsString(Error.wrapIfNecessary(List.of(new CustomMessageSourceResolvable("code"))));
 		assertThat(json).doesNotContain("some detail");
 	}

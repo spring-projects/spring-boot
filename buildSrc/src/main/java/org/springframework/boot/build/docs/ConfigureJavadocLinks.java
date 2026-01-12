@@ -58,7 +58,7 @@ public class ConfigureJavadocLinks implements Action<Javadoc> {
 		ResolvedBom resolvedBom = ResolvedBom.readFrom(this.resolvedBoms.getSingleFile());
 		List<String> links = new ArrayList<>();
 		links.add("https://docs.oracle.com/en/java/javase/17/docs/api/");
-		links.add("https://jakarta.ee/specifications/platform/9/apidocs/");
+		links.add("https://jakarta.ee/specifications/platform/11/apidocs/");
 		resolvedBom.libraries()
 			.stream()
 			.filter((candidate) -> this.includedLibraries.contains(candidate.name()))

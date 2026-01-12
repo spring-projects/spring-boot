@@ -17,4 +17,7 @@
 /**
  * Servlet web server abstractions.
  */
+@NullMarked
 package org.springframework.boot.web.server.servlet;
+
+import org.jspecify.annotations.NullMarked;

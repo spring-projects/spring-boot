@@ -17,7 +17,6 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
-	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -32,7 +31,7 @@ dependencies {
 	implementation(project(":module:spring-boot-http-codec"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-reactor-netty"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
@@ -44,4 +43,8 @@ dependencies {
 	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -1,2 +1,2 @@
-org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.reactive.CloudFoundryReactiveActuatorAutoConfiguration
-org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.servlet.CloudFoundryActuatorAutoConfiguration
+org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.reactive.CloudFoundryReactiveActuatorAutoConfiguration
+org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.servlet.CloudFoundryActuatorAutoConfiguration

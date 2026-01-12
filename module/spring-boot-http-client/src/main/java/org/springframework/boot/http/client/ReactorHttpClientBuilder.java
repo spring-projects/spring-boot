@@ -24,6 +24,7 @@ import javax.net.ssl.SSLException;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContextBuilder;
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
@@ -98,13 +99,16 @@ public final class ReactorHttpClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+	public HttpClient build(@Nullable HttpClientSettings settings) {
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		HttpClient httpClient = applyDefaults(this.factory.get());
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		httpClient = map.from(settings::connectTimeout).to(httpClient, this::setConnectTimeout);
 		httpClient = map.from(settings::readTimeout).to(httpClient, HttpClient::responseTimeout);
-		httpClient = map.from(settings::redirects).as(this::followRedirects).to(httpClient, HttpClient::followRedirect);
+		httpClient = map.from(settings::redirects)
+			.orFrom(() -> HttpRedirects.FOLLOW_WHEN_POSSIBLE)
+			.as(this::followRedirects)
+			.to(httpClient, HttpClient::followRedirect);
 		httpClient = map.from(settings::sslBundle).to(httpClient, this::secure);
 		return this.customizer.apply(httpClient);
 	}

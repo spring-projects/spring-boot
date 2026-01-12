@@ -22,12 +22,14 @@ import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.annotation.WebFilter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,7 +44,7 @@ class WebFilterHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	public void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
+	public void doHandle(Map<String, @Nullable Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(FilterRegistrationBean.class);
 		builder.addPropertyValue("asyncSupported", attributes.get("asyncSupported"));
@@ -56,8 +58,9 @@ class WebFilterHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, Object> attributes) {
+	private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, @Nullable Object> attributes) {
 		DispatcherType[] dispatcherTypes = (DispatcherType[]) attributes.get("dispatcherTypes");
+		Assert.state(dispatcherTypes != null, "'dispatcherTypes' must not be null");
 		if (dispatcherTypes.length == 0) {
 			return EnumSet.noneOf(DispatcherType.class);
 		}
@@ -67,9 +70,15 @@ class WebFilterHandler extends ServletComponentHandler {
 		return EnumSet.of(dispatcherTypes[0], Arrays.copyOfRange(dispatcherTypes, 1, dispatcherTypes.length));
 	}
 
-	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("filterName")) ? attributes.get("filterName")
-				: beanDefinition.getBeanClassName());
+	private String determineName(Map<String, @Nullable Object> attributes, BeanDefinition beanDefinition) {
+		String filterName = (String) attributes.get("filterName");
+		return (StringUtils.hasText(filterName) ? filterName : getBeanClassName(beanDefinition));
+	}
+
+	private String getBeanClassName(BeanDefinition beanDefinition) {
+		String name = beanDefinition.getBeanClassName();
+		Assert.state(name != null, "'name' must not be null");
+		return name;
 	}
 
 }

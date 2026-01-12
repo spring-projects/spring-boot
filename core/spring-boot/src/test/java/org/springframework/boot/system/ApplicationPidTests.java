@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.contentOf;
 class ApplicationPidTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.lang.reflect.Field;
+
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -34,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class FieldOriginTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenFieldIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FieldOrigin(null))
 			.withMessage("'field' must not be null");
@@ -41,24 +45,30 @@ class FieldOriginTests {
 
 	@Test
 	void equalsAndHashCode() {
-		Origin o1 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "one"));
-		Origin o2 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "one"));
-		Origin o3 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "two"));
+		Origin o1 = new FieldOrigin(findField("one"));
+		Origin o2 = new FieldOrigin(findField("one"));
+		Origin o3 = new FieldOrigin(findField("two"));
 		assertThat(o1).isEqualTo(o1).isEqualTo(o2).isNotEqualTo(o3);
 		assertThat(o1).hasSameHashCodeAs(o2);
 	}
 
 	@Test
 	void toStringReturnsSensibleString() {
-		Origin origin = new FieldOrigin(ReflectionUtils.findField(Fields.class, "one"));
+		Origin origin = new FieldOrigin(findField("one"));
 		assertThat(origin).hasToString("FieldOriginTests.Fields.one");
+	}
+
+	private Field findField(String name) {
+		Field field = ReflectionUtils.findField(Fields.class, name);
+		assertThat(field).isNotNull();
+		return field;
 	}
 
 	static class Fields {
 
-		String one;
+		@Nullable String one;
 
-		String two;
+		@Nullable String two;
 
 	}
 

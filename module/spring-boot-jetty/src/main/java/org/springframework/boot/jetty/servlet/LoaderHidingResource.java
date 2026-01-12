@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jetty.util.resource.CombinedResource;
 import org.eclipse.jetty.util.resource.Resource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A custom {@link Resource} that hides Spring Boot's loader classes, preventing them from
@@ -160,7 +161,7 @@ final class LoaderHidingResource extends Resource {
 	}
 
 	@Override
-	public Resource resolve(String subUriPath) {
+	public @Nullable Resource resolve(String subUriPath) {
 		if (subUriPath.startsWith(LOADER_RESOURCE_PATH_PREFIX)) {
 			return null;
 		}

@@ -17,7 +17,7 @@
 package org.springframework.boot.jetty.autoconfigure.reactive;
 
 import jakarta.websocket.server.ServerContainer;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.junit.jupiter.api.Test;
@@ -76,6 +76,7 @@ class JettyReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebSe
 		this.serverRunner.run((context) -> {
 			WebServer webServer = ((ReactiveWebServerApplicationContext) context.getSourceApplicationContext())
 				.getWebServer();
+			assertThat(webServer).isNotNull();
 			ServletContextHandler servletContextHandler = (ServletContextHandler) ((StatisticsHandler) ((JettyWebServer) webServer)
 				.getServer()
 				.getHandler()).getHandler();

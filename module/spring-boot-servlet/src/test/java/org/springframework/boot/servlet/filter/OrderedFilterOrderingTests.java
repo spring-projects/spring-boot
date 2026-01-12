@@ -19,12 +19,12 @@ package org.springframework.boot.servlet.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Tests for the ordering of various {@link OrderedFilter} implementations.
@@ -48,7 +48,7 @@ class OrderedFilterOrderingTests {
 	@Test
 	void requestContextOrderingIsCloseToRequestWrapperFilterMaxOrder() {
 		assertThat(new OrderedRequestContextFilter().getOrder())
-			.isCloseTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER, Assertions.within(105));
+			.isCloseTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER, within(105));
 	}
 
 }

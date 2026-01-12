@@ -16,6 +16,7 @@
 
 package smoketest.quartz;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -23,10 +24,10 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 public class SampleJob extends QuartzJobBean {
 
-	private String name;
+	private @Nullable String name;
 
 	// Invoked if a Job data map entry with that name
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 

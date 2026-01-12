@@ -18,18 +18,27 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-slice"
 }
 
 description = "Spring Boot GraphQL Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api("org.springframework.graphql:spring-graphql-test")
 
-	implementation(project(":core:spring-boot-test"))
+	implementation(project(":module:spring-boot-graphql"))
+	implementation(project(":module:spring-boot-jackson"))
 
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-jackson2"))
+	optional(project(":module:spring-boot-validation"))
+	optional(project(":module:spring-boot-webclient"))
+	optional(project(":module:spring-boot-webmvc-test"))
+	optional(project(":module:spring-boot-webtestclient"))
 	optional(project(":module:spring-boot-web-server"))
-	optional(project(":module:spring-boot-web-server-test"))
 	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.springframework:spring-web")
 
 	testImplementation(project(":module:spring-boot-tomcat"))
@@ -38,9 +47,9 @@ dependencies {
 	testImplementation("org.springframework:spring-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
+	testRuntimeOnly("tools.jackson.core:jackson-databind")
 }
 
-tasks.named("javadoc") {
-	enabled = false
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

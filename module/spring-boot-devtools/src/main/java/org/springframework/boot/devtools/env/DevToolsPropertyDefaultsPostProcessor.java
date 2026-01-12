@@ -16,20 +16,18 @@
 
 package org.springframework.boot.devtools.env;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.devtools.settings.DevToolsSettings;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -68,7 +66,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 			PROPERTIES = Collections.emptyMap();
 		}
 		else {
-			PROPERTIES = loadDefaultProperties();
+			PROPERTIES = DevToolsSettings.get().getPropertyDefaults();
 		}
 	}
 
@@ -123,33 +121,13 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		return false;
 	}
 
-	private Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
+	private @Nullable Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
 		try {
 			return ClassUtils.resolveClassName(candidate, classLoader);
 		}
 		catch (IllegalArgumentException ex) {
 			return null;
 		}
-	}
-
-	private static Map<String, Object> loadDefaultProperties() {
-		Properties properties = new Properties();
-		try (InputStream stream = DevToolsPropertyDefaultsPostProcessor.class
-			.getResourceAsStream("devtools-property-defaults.properties")) {
-			if (stream == null) {
-				throw new RuntimeException(
-						"Failed to load devtools-property-defaults.properties because it doesn't exist");
-			}
-			properties.load(stream);
-		}
-		catch (IOException ex) {
-			throw new RuntimeException("Failed to load devtools-property-defaults.properties", ex);
-		}
-		Map<String, Object> map = new HashMap<>();
-		for (String name : properties.stringPropertyNames()) {
-			map.put(name, properties.getProperty(name));
-		}
-		return Collections.unmodifiableMap(map);
 	}
 
 }

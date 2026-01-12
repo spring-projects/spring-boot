@@ -16,6 +16,8 @@
 
 package org.springframework.boot.hazelcast.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -32,13 +34,13 @@ public class HazelcastProperties {
 	/**
 	 * The location of the configuration file to use to initialize Hazelcast.
 	 */
-	private Resource config;
+	private @Nullable Resource config;
 
-	public Resource getConfig() {
+	public @Nullable Resource getConfig() {
 		return this.config;
 	}
 
-	public void setConfig(Resource config) {
+	public void setConfig(@Nullable Resource config) {
 		this.config = config;
 	}
 
@@ -48,13 +50,13 @@ public class HazelcastProperties {
 	 * @throws IllegalArgumentException if the config attribute is set to an unknown
 	 * location
 	 */
-	public Resource resolveConfigLocation() {
-		if (this.config == null) {
+	public @Nullable Resource resolveConfigLocation() {
+		Resource config = this.config;
+		if (config == null) {
 			return null;
 		}
-		Assert.state(this.config.exists(),
-				() -> "Hazelcast configuration does not exist '" + this.config.getDescription() + "'");
-		return this.config;
+		Assert.state(config.exists(), () -> "Hazelcast configuration does not exist '" + config.getDescription() + "'");
+		return config;
 	}
 
 }

@@ -143,19 +143,19 @@ public final class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
+		RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+				ObjectProvider<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers) {
 			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
-			configurer.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().toList());
+			configurer.setRetrySettingsCustomizers(retrySettingsCustomizers.orderedStream().toList());
 			return configurer;
 		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
-		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
+		RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
 				ObjectProvider<RabbitTemplateCustomizer> customizers) {
 			RabbitTemplate template = new RabbitTemplate();
 			configurer.configure(template, connectionFactory);
@@ -167,7 +167,7 @@ public final class RabbitAutoConfiguration {
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnBooleanProperty(name = "spring.rabbitmq.dynamic", matchIfMissing = true)
 		@ConditionalOnMissingBean
-		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+		AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 			return new RabbitAdmin(connectionFactory);
 		}
 
@@ -181,7 +181,7 @@ public final class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
-		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
+		RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
 		}
 

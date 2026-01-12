@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
@@ -47,7 +48,7 @@ class LibraryTests {
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		boolean considerSnapshots = false;
 		VersionAlignment versionAlignment = null;
-		String alignsWithBom = null;
+		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Map<String, List<Link>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
@@ -64,7 +65,7 @@ class LibraryTests {
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		boolean considerSnapshots = false;
 		VersionAlignment versionAlignment = null;
-		String alignsWithBom = null;
+		BomAlignment alignsWithBom = null;
 		String linkRootName = "spring-data";
 		Map<String, List<Link>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,

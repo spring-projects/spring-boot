@@ -31,11 +31,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.lang.Contract;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -245,7 +246,9 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	ConfigDataEnvironmentContributor withBoundProperties(Iterable<ConfigDataEnvironmentContributor> contributors,
 			@Nullable ConfigDataActivationContext activationContext) {
-		Iterable<ConfigurationPropertySource> sources = Collections.singleton(getConfigurationPropertySource());
+		ConfigurationPropertySource configurationPropertySource = getConfigurationPropertySource();
+		Assert.state(configurationPropertySource != null, "'configurationPropertySource' must not be null");
+		Iterable<ConfigurationPropertySource> sources = Collections.singleton(configurationPropertySource);
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, activationContext, this, true, this.conversionService);
 		Binder binder = new Binder(sources, placeholdersResolver, null, null, null);
@@ -437,9 +440,10 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @param environmentUpdateListener the environment update listener
 	 * @return a new {@link ConfigDataEnvironmentContributor} instance
 	 */
-	static ConfigDataEnvironmentContributor ofUnboundImport(ConfigDataLocation location, ConfigDataResource resource,
-			boolean profileSpecific, ConfigData configData, int propertySourceIndex,
-			ConversionService conversionService, ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
+	static ConfigDataEnvironmentContributor ofUnboundImport(@Nullable ConfigDataLocation location,
+			@Nullable ConfigDataResource resource, boolean profileSpecific, ConfigData configData,
+			int propertySourceIndex, ConversionService conversionService,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		PropertySource<?> propertySource = configData.getPropertySources().get(propertySourceIndex);
 		ConfigData.Options options = configData.getOptions(propertySource);
 		options = environmentUpdateListener.onConfigDataOptions(configData, propertySource, options);
@@ -450,8 +454,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	private static @Nullable ConfigurationPropertySource asConfigurationPropertySource(
 			PropertySource<?> propertySource) {
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
-		if (configurationPropertySource != null && propertySource instanceof OriginLookup<?> originLookup) {
-			configurationPropertySource = configurationPropertySource.withPrefix(originLookup.getPrefix());
+		if (configurationPropertySource != null && propertySource instanceof PropertySourceInfo propertySourceInfo) {
+			configurationPropertySource = configurationPropertySource.withPrefix(propertySourceInfo.getPrefix());
 		}
 		return configurationPropertySource;
 	}

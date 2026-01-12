@@ -59,6 +59,7 @@ class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenExpectationManagerClassIsNullShouldThrowException() {
 		Class<? extends RequestExpectationManager> expectationManager = null;
 		assertThatIllegalArgumentException().isThrownBy(() -> new MockServerRestTemplateCustomizer(expectationManager))
@@ -66,6 +67,7 @@ class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenExpectationManagerSupplierIsNullShouldThrowException() {
 		Supplier<? extends RequestExpectationManager> expectationManagerSupplier = null;
 		assertThatIllegalArgumentException()

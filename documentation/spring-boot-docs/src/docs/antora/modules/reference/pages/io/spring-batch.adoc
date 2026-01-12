@@ -1,0 +1,53 @@
+[[io.spring-batch]]
+= Spring Batch
+
+Spring Boot offers several conveniences for working with {url-spring-batch-site}[Spring Batch], including running a Job on startup.
+
+When building a batch application, the following stores can be auto-configured:
+
+* In-memory
+* JDBC
+
+Each store has specific additional settings.
+For instance, it is possible to customize the tables prefix for the JDBC store, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  batch:
+    jdbc:
+      table-prefix: "CUSTOM_"
+----
+
+To disable Spring Boot's auto-configuration and take complete control of Spring Batch's configuration, add javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or extend javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[].
+This will cause the auto-configuration to back off, including initialization of Spring Batch's database schema if you're using the JDBC-based store.
+Spring Batch can then be configured using the `@Enable*JobRepository` annotation's attributes rather than the previously described configuration properties.
+
+To learn more about manually configuring Spring Batch, see the API documentation of:
+
+* javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableJdbcJobRepository[format=annotation]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableMongoJobRepository[format=annotation]
+
+For more information about Spring Batch, see the {url-spring-batch-site}[Spring Batch project page].
+
+
+
+[[io.spring-batch.running-jobs-on-startup]]
+== Running Spring Batch Jobs on Startup
+
+When Spring Boot auto-configures Spring Batch, and if a single javadoc:org.springframework.batch.core.job.Job[] bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner[] for details).
+If multiple javadoc:org.springframework.batch.core.job.Job[] beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
+
+You can disable running a javadoc:org.springframework.batch.core.job.Job[] found in the application context, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  batch:
+    job:
+      enabled: false
+----
+
+See {code-spring-boot-batch-src}/autoconfigure/BatchAutoConfiguration.java[`BatchAutoConfiguration`] and  {code-spring-boot-batch-jdbc-src}/autoconfigure/BatchJdbcAutoConfiguration.java[`BatchJdbcAutoConfiguration`] for more details.

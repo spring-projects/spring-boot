@@ -36,6 +36,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -46,7 +47,6 @@ import org.springframework.boot.loader.tools.Layouts.Jar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.Packager;
 import org.springframework.boot.loader.tools.layer.CustomLayers;
 
@@ -67,6 +67,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	protected MavenProject project;
 
 	/**
@@ -74,6 +75,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @since 2.4.0
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	protected MavenSession session;
 
 	/**
@@ -88,7 +90,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @since 1.0.0
 	 */
 	@Parameter
-	private String mainClass;
+	private @Nullable String mainClass;
 
 	/**
 	 * Exclude Spring Boot devtools from the repackaged archive.
@@ -110,6 +112,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean includeSystemScope;
+
+	/**
+	 * Include optional dependencies.
+	 * @since 3.5.7
+	 */
+	@Parameter(defaultValue = "false")
+	public boolean includeOptional;
 
 	/**
 	 * Include JAR tools.
@@ -135,16 +144,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @return {@code null}, indicating a layout type will be chosen based on the original
 	 * archive type
 	 */
-	protected LayoutType getLayout() {
-		return null;
-	}
-
-	/**
-	 * Return the loader implementation that should be used.
-	 * @return the loader implementation or {@code null}
-	 * @since 3.2.0
-	 */
-	protected LoaderImplementation getLoaderImplementation() {
+	protected @Nullable LayoutType getLayout() {
 		return null;
 	}
 
@@ -153,7 +153,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * no explicit layout is set.
 	 * @return {@code null}, indicating a default layout factory will be chosen
 	 */
-	protected LayoutFactory getLayoutFactory() {
+	protected @Nullable LayoutFactory getLayoutFactory() {
 		return null;
 	}
 
@@ -165,7 +165,6 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	protected <P extends Packager> P getConfiguredPackager(Supplier<P> supplier) {
 		P packager = supplier.get();
-		packager.setLoaderImplementation(getLoaderImplementation());
 		packager.setLayoutFactory(getLayoutFactory());
 		packager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener(this::getLog));
 		packager.setMainClass(this.mainClass);
@@ -211,7 +210,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @return the libraries to use
 	 * @throws MojoExecutionException on execution error
 	 */
-	protected final Libraries getLibraries(Collection<Dependency> unpacks) throws MojoExecutionException {
+	protected final Libraries getLibraries(@Nullable Collection<Dependency> unpacks) throws MojoExecutionException {
 		Set<Artifact> artifacts = this.project.getArtifacts();
 		Set<Artifact> includedArtifacts = filterDependencies(artifacts, getAdditionalFilters());
 		return new ArtifactsLibraries(artifacts, includedArtifacts, this.session.getProjects(), unpacks, getLog());
@@ -228,6 +227,9 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		if (!this.includeSystemScope) {
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		}
+		if (!this.includeOptional) {
+			filters.add(DependencyFilter.exclude(Artifact::isOptional));
+		}
 		return filters.toArray(new ArtifactsFilter[0]);
 	}
 
@@ -238,12 +240,12 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @param classifier the artifact classifier
 	 * @return the source artifact to repackage
 	 */
-	protected Artifact getSourceArtifact(String classifier) {
+	protected Artifact getSourceArtifact(@Nullable String classifier) {
 		Artifact sourceArtifact = getArtifact(classifier);
 		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
 	}
 
-	private Artifact getArtifact(String classifier) {
+	private @Nullable Artifact getArtifact(@Nullable String classifier) {
 		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
 				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
@@ -255,7 +257,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		return null;
 	}
 
-	protected File getTargetFile(String finalName, String classifier, File targetDirectory) {
+	protected File getTargetFile(String finalName, @Nullable String classifier, File targetDirectory) {
 		String classifierSuffix = (classifier != null) ? classifier.trim() : "";
 		if (!classifierSuffix.isEmpty() && !classifierSuffix.startsWith("-")) {
 			classifierSuffix = "-" + classifierSuffix;

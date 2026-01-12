@@ -27,7 +27,7 @@ description = "Spring Boot Data REST"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-jackson"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api(project(":module:spring-boot-webmvc"))
 	api("org.springframework.data:spring-data-rest-webmvc")
 
@@ -42,4 +42,8 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

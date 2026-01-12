@@ -28,10 +28,6 @@ configurations {
 		extendsFrom dependencyManagement
 		transitive = false
 	}
-	loaderClassic {
-		extendsFrom dependencyManagement
-		transitive = false
-	}
 	jarmode {
 		extendsFrom dependencyManagement
 		transitive = false
@@ -45,7 +41,6 @@ dependencies {
 	compileOnly("ch.qos.logback:logback-classic")
 
 	loader(project(":loader:spring-boot-loader"))
-	loaderClassic(project(":loader:spring-boot-loader-classic"))
 
 	jarmode(project(":loader:spring-boot-jarmode-tools"))
 
@@ -55,7 +50,7 @@ dependencies {
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
-tasks.register("reproducibleLoaderJar", Jar) {
+tasks.register("loaderJar", Jar) {
 	dependsOn configurations.loader
 	from {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
@@ -64,25 +59,8 @@ tasks.register("reproducibleLoaderJar", Jar) {
 			exclude "META-INF/spring-boot.properties"
 		}
 	}
-	reproducibleFileOrder = true
-	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader.jar"
 	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
-}
-
-tasks.register("reproducibleLoaderClassicJar", Jar) {
-	dependsOn configurations.loaderClassic
-	from {
-		zipTree(configurations.loaderClassic.incoming.files.singleFile).matching {
-			exclude "META-INF/LICENSE.txt"
-			exclude "META-INF/NOTICE.txt"
-			exclude "META-INF/spring-boot.properties"
-		}
-	}
-	reproducibleFileOrder = true
-	preserveFileTimestamps = false
-	archiveFileName = "spring-boot-loader-classic.jar"
-	destinationDirectory = file(generatedResources.map { it.dir("META-INF/loader") })
 }
 
 tasks.register("toolsJar", Sync) {
@@ -96,7 +74,7 @@ tasks.register("toolsJar", Sync) {
 
 sourceSets {
 	main {
-		output.dir(generatedResources, builtBy: [toolsJar, reproducibleLoaderJar, reproducibleLoaderClassicJar])
+		output.dir(generatedResources, builtBy: [toolsJar, loaderJar])
 	}
 }
 
@@ -114,4 +92,8 @@ plugins.withType(EclipsePlugin) {
 			}
 		}
 	}
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

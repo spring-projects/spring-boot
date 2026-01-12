@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.redis.testcontainers.RedisContainer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -166,7 +167,9 @@ class TestcontainersLifecycleOrderWithScopeIntegrationTests {
 		public Object remove(String name) {
 			synchronized (this) {
 				Object removed = this.instances.remove(name);
-				this.destructors.get(name).forEach(Runnable::run);
+				List<Runnable> destructor = this.destructors.get(name);
+				assertThat(destructor).isNotNull();
+				destructor.forEach(Runnable::run);
 				this.destructors.remove(name);
 				return removed;
 			}
@@ -178,12 +181,12 @@ class TestcontainersLifecycleOrderWithScopeIntegrationTests {
 		}
 
 		@Override
-		public Object resolveContextualObject(String key) {
+		public @Nullable Object resolveContextualObject(String key) {
 			return null;
 		}
 
 		@Override
-		public String getConversationId() {
+		public @Nullable String getConversationId() {
 			return null;
 		}
 

@@ -82,6 +82,7 @@ public record ElasticCommonSchemaProperties(Service service) {
 
 		static final Service NONE = new Service(null, null, null, null);
 
+		@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 		void jsonMembers(Members<?> members) {
 			members.add("service").usingMembers((service) -> {
 				service.add("name", this::name).whenHasLength();

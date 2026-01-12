@@ -21,7 +21,8 @@
       "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
       "defaultValue": true,
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -37,7 +38,8 @@
       "description": "Connection expiration timeout.",
       "defaultValue": "0ms",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -64,7 +66,8 @@
     {
       "name": "spring.activemq.pool.maximum-active-session-per-connection",
       "deprecation": {
-        "replacement": "spring.activemq.pool.max-sessions-per-connection"
+        "replacement": "spring.activemq.pool.max-sessions-per-connection",
+        "since": "2.1.0"
       }
     },
     {
@@ -73,7 +76,8 @@
       "description": "Reset the connection when a \"JMSException\" occurs.",
       "defaultValue": true,
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {

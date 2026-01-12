@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.boot.origin.Origin;
-import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
@@ -202,8 +202,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	boolean isImmutablePropertySource() {
 		EnumerablePropertySource<?> source = getPropertySource();
-		if (source instanceof OriginLookup<?> originLookup) {
-			return originLookup.isImmutable();
+		if (source instanceof PropertySourceInfo propertySourceInfo) {
+			return propertySourceInfo.isImmutable();
 		}
 		if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
 			return source.getSource() == System.getenv();
@@ -373,7 +373,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final @Nullable ConfigurationPropertyName[] names;
 
-		private int index = 0;
+		private int index;
 
 		ConfigurationPropertyNamesIterator(@Nullable ConfigurationPropertyName[] names) {
 			this.names = names;

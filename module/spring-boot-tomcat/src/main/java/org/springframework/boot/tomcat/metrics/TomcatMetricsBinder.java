@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -45,7 +46,7 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	private final Iterable<Tag> tags;
 
-	private volatile TomcatMetrics tomcatMetrics;
+	private volatile @Nullable TomcatMetrics tomcatMetrics;
 
 	public TomcatMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
@@ -60,11 +61,12 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Manager manager = findManager(applicationContext);
-		this.tomcatMetrics = new TomcatMetrics(manager, this.tags);
-		this.tomcatMetrics.bindTo(this.meterRegistry);
+		TomcatMetrics tomcatMetrics = new TomcatMetrics(manager, this.tags);
+		tomcatMetrics.bindTo(this.meterRegistry);
+		this.tomcatMetrics = tomcatMetrics;
 	}
 
-	private Manager findManager(ApplicationContext applicationContext) {
+	private @Nullable Manager findManager(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			WebServer webServer = webServerApplicationContext.getWebServer();
 			if (webServer instanceof TomcatWebServer tomcatWebServer) {
@@ -77,7 +79,7 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 		return null;
 	}
 
-	private Context findContext(TomcatWebServer tomcatWebServer) {
+	private @Nullable Context findContext(TomcatWebServer tomcatWebServer) {
 		for (Container container : tomcatWebServer.getTomcat().getHost().findChildren()) {
 			if (container instanceof Context context) {
 				return context;
@@ -88,8 +90,9 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	@Override
 	public void destroy() {
-		if (this.tomcatMetrics != null) {
-			this.tomcatMetrics.close();
+		TomcatMetrics tomcatMetrics = this.tomcatMetrics;
+		if (tomcatMetrics != null) {
+			tomcatMetrics.close();
 		}
 	}
 

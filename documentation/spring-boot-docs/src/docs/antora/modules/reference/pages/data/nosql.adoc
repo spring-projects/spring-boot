@@ -25,10 +25,10 @@ Spring Boot also provides auto-configuration for the InfluxDB client but it is d
 == Redis
 
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
-Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
+Spring Boot offers basic auto-configuration for the https://github.com/redis/lettuce/[Lettuce] and https://github.com/redis/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
 There is a `spring-boot-starter-data-redis` starter for collecting the dependencies in a convenient way.
-By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
+By default, it uses https://github.com/redis/lettuce/[Lettuce].
 That starter handles both traditional and reactive applications.
 
 TIP: We also provide a `spring-boot-starter-data-redis-reactive` starter for consistency with the other stores with reactive support.
@@ -75,7 +75,10 @@ spring:
 TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer[] for more advanced customizations.
 javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer[].
 If you use Jedis, javadoc:org.springframework.boot.data.redis.autoconfigure.JedisClientConfigurationBuilderCustomizer[] is also available.
-Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[] to take full control over the configuration.
+
+Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration[] to take full control over the configuration.
+
+NOTE: master/replica is not supported by Jedis.
 
 If you add your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of any of the auto-configured types, it replaces the default (except in the case of javadoc:org.springframework.data.redis.core.RedisTemplate[], when the exclusion is based on the bean name, `redisTemplate`, not its type).
 
@@ -127,17 +130,16 @@ If you have defined your own javadoc:{url-mongodb-driver-sync-javadoc}/com.mongo
 The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] is created using a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] bean.
 If you have defined your own javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[], it will be used without modification and the `spring.data.mongodb` properties will be ignored.
 Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
-In either case, you can declare one or more javadoc:org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
+In either case, you can declare one or more javadoc:org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
 Each will be called in order with the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings$Builder[] that is used to build the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[].
 
-You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
+You can set the configprop:spring.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.
@@ -146,15 +148,14 @@ For example, you might declare the following settings in your `application.prope
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      host: "mongoserver1.example.com"
-      port: 27017
-      additional-hosts:
-      - "mongoserver2.example.com:23456"
-      database: "test"
-      username: "user"
-      password: "secret"
+  mongodb:
+    host: "mongoserver1.example.com"
+    port: 27017
+    additional-hosts:
+    - "mongoserver2.example.com:23456"
+    database: "test"
+    username: "user"
+    password: "secret"
 ----
 
 The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] can be configured to use SSL for communication with the server by setting the properties as shown in this example:
@@ -162,11 +163,10 @@ The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-      ssl:
-        enabled: true
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+    ssl:
+      enabled: true
 ----
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] as shown in this example:
@@ -174,17 +174,16 @@ Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bun
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-      ssl:
-        bundle: "example"
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+    ssl:
+      bundle: "example"
 ----
 
 
 [TIP]
 ====
-If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
+If configprop:spring.mongodb.port[] is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
 
 You can also specify the port as part of the host address by using the `host:port` syntax.
@@ -224,7 +223,7 @@ include-code::CityRepository[]
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {url-spring-data-mongodb-docs}[reference documentation].
 
@@ -283,7 +282,7 @@ When Project Reactor is available on the classpath, the reactive style is also a
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 [NOTE]
 ====
@@ -314,7 +313,9 @@ Spring Boot provides a dedicated starter, `spring-boot-starter-data-elasticsearc
 [[data.nosql.elasticsearch.connecting-using-rest]]
 === Connecting to Elasticsearch Using REST clients
 
-Elasticsearch ships two different REST clients that you can use to query a cluster: the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/java-rest-low.html[low-level client] from the `org.elasticsearch.client:elasticsearch-rest-client` module and the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html[Java API client] from the `co.elastic.clients:elasticsearch-java` module.
+Elasticsearch ships two different REST clients that you can use to query a cluster: the https://www.elastic.co/docs/reference/elasticsearch/clients/java/transport/rest5-client/[low-level client] and the https://www.elastic.co/docs/reference/elasticsearch/clients/java[Java API client].
+The Java API client is provided by the `co.elastic.clients:elasticsearch-java` module and
+the low-level client is provided by the `co.elastic.clients:elasticsearch-rest5-client` module.
 Additionally, Spring Boot provides support for a reactive client from the `org.springframework.data:spring-data-elasticsearch` module.
 By default, the clients will target `http://localhost:9200`.
 You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
@@ -332,16 +333,16 @@ spring:
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-==== Connecting to Elasticsearch Using RestClient
+==== Connecting to Elasticsearch Using Rest5Client
 
-If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a javadoc:org.springframework.web.client.RestClient[] bean.
-In addition to the properties described previously, to fine-tune the javadoc:org.springframework.web.client.RestClient[] you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.elasticsearch.autoconfigure.RestClientBuilderCustomizer[] for more advanced customizations.
-To take full control over the clients' configuration, define a javadoc:org.elasticsearch.client.RestClientBuilder[] bean.
+If you have `co.elastic.clients:elasticsearch-rest5-client` on the classpath, Spring Boot will auto-configure and register a javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[] bean.
+In addition to the properties described previously, to fine-tune the javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[] you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.elasticsearch.autoconfigure.Rest5ClientBuilderCustomizer[] for more advanced customizations.
+To take full control over the client's configuration, define a javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5ClientBuilder[] bean.
 
 
 
-Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a javadoc:org.elasticsearch.client.sniff.Sniffer[] is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the javadoc:org.springframework.web.client.RestClient[] bean.
-You can further tune how javadoc:org.elasticsearch.client.sniff.Sniffer[] is configured, as shown in the following example:
+Additionally, a javadoc:co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer[] can be auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[] bean.
+You can further tune how javadoc:co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer[] is configured, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -349,6 +350,7 @@ spring:
   elasticsearch:
     restclient:
       sniffer:
+        enabled: true
         interval: "10m"
         delay-after-failure: "30s"
 ----
@@ -358,11 +360,11 @@ spring:
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
 ==== Connecting to Elasticsearch Using ElasticsearchClient
 
-If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean.
+If you use the `spring-boot-starter-elasticsearch` or have added `co.elastic.clients:elasticsearch-java` to the classpath, Spring Boot will auto-configure and register an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean.
 
-The javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] uses a transport that depends upon the previously described javadoc:org.springframework.web.client.RestClient[].
+The javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] uses a transport that depends upon the previously described javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[].
 Therefore, the properties described previously can be used to configure the javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[].
-Furthermore, you can define a javadoc:co.elastic.clients.transport.rest_client.RestClientOptions[] bean to take further control of the behavior of the transport.
+Furthermore, you can define a javadoc:co.elastic.clients.transport.rest5_client.Rest5ClientOptions[] bean to take further control of the behavior of the transport.
 
 
 
@@ -372,9 +374,9 @@ Furthermore, you can define a javadoc:co.elastic.clients.transport.rest_client.R
 {url-spring-data-elasticsearch-site}[Spring Data Elasticsearch] ships javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] for querying Elasticsearch instances in a reactive fashion.
 If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[].
 
-The javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] uses a transport that depends upon the previously described javadoc:org.springframework.web.client.RestClient[].
+The javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] uses a transport that depends upon the previously described javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[].
 Therefore, the properties described previously can be used to configure the javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[].
-Furthermore, you can define a javadoc:co.elastic.clients.transport.rest_client.RestClientOptions[] bean to take further control of the behavior of the transport.
+Furthermore, you can define a javadoc:co.elastic.clients.transport.rest5_client.Rest5ClientOptions[] bean to take further control of the behavior of the transport.
 
 
 
@@ -405,7 +407,7 @@ You could take the JPA example from earlier and, assuming that `City` is now an 
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data Elasticsearch, see the {url-spring-data-elasticsearch-docs}[reference documentation].
 
@@ -523,7 +525,7 @@ Currently, this is more limited than the JPA repositories discussed earlier and 
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.cassandra.repository.config.EnableCassandraRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.cassandra.repository.config.EnableCassandraRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data Cassandra, see the {url-spring-data-cassandra-docs}[reference documentation].
 
@@ -613,7 +615,7 @@ Spring Data includes repository support for Couchbase.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 For complete details of Spring Data Couchbase, see the {url-spring-data-couchbase-docs}[reference documentation].
 
@@ -686,7 +688,7 @@ Spring Data includes repository support for LDAP.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.ldap.repository.config.EnableLdapRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.ldap.repository.config.EnableLdapRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data LDAP, see the {url-spring-data-ldap-docs}[reference documentation].
 
@@ -734,3 +736,20 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
+
+
+
+[[data.nosql.ldap.embedded.ssl]]
+==== SSL
+
+The in-memory LDAP server supports SSL (LDAPS).
+To enable SSL, configure the xref:features/ssl.adoc[SSL bundle] to use by setting the configprop:spring.ldap.embedded.ssl.bundle[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  ldap:
+    embedded:
+      ssl:
+        bundle: "example"
+----

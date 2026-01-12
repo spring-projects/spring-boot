@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

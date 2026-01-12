@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.OracleConnection;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -49,14 +50,14 @@ import org.springframework.util.StringUtils;
 abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
-	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
-			ClassLoader classLoader) {
+	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails,
+			@Nullable Class<? extends DataSource> type, ClassLoader classLoader) {
 		return createDataSource(connectionDetails, type, classLoader, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
-			ClassLoader classLoader, boolean applyDriverClassName) {
+	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails,
+			@Nullable Class<? extends DataSource> type, ClassLoader classLoader, boolean applyDriverClassName) {
 		DataSourceBuilder<? extends DataSource> builder = DataSourceBuilder.create(classLoader).type(type);
 		if (applyDriverClassName) {
 			builder.driverClassName(connectionDetails.getDriverClassName());

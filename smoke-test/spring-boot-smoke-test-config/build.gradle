@@ -29,3 +29,7 @@ dependencies {
 tasks.named("test", Test) {
 	environment "SMOKE_TEST_CONFIG_ENV", "from-env.key1=value1"
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

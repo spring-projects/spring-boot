@@ -18,7 +18,7 @@ package org.springframework.boot.docs.testing.springbootapplications.additionala
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest
 
 @JdbcTest
 @ImportAutoConfiguration(IntegrationAutoConfiguration::class)

@@ -20,11 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,8 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "management.endpoints.jackson.isolated-object-mapper=false")
+		properties = "management.endpoints.jackson2.isolated-object-mapper=false")
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
 class JerseyActuatorIsolatedObjectMapperFalseTests {
 
@@ -54,6 +56,7 @@ class JerseyActuatorIsolatedObjectMapperFalseTests {
 	void resourceShouldBeAvailableOnMainPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
 			.getForEntity("http://localhost:" + this.port + "/actuator/startup", String.class);
+		System.out.println(entity.getBody());
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(entity.getBody())
 			.contains("Java 8 date/time type `java.time.Clock$SystemClock` not supported by default");

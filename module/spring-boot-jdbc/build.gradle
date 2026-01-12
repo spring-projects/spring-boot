@@ -28,36 +28,33 @@ description = "Spring Boot JDBC"
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-sql"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework:spring-jdbc")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
-
-	implementation(project(":module:spring-boot-tx"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("com.h2database:h2")
 	optional("com.mchange:c3p0")
 	optional("com.oracle.database.jdbc:ojdbc11")
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.zaxxer:HikariCP")
 	optional("io.micrometer:micrometer-core")
-	optional("org.apache.commons:commons-dbcp2") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.postgresql:postgresql")
-	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:testcontainers-jdbc")
 	optional("org.vibur:vibur-dbcp")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 
 	dockerTestRuntimeOnly("com.clickhouse:clickhouse-jdbc")
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
@@ -68,7 +65,6 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation(testFixtures(project(":module:spring-boot-sql")))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
 	testImplementation("io.r2dbc:r2dbc-spi")
@@ -76,6 +72,9 @@ dependencies {
 	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
+	testImplementation("tools.jackson.core:jackson-databind")
+
+	testCompileOnly("org.checkerframework:checker-qual")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.clickhouse:clickhouse-jdbc")
@@ -86,7 +85,7 @@ dependencies {
 	testRuntimeOnly("org.firebirdsql.jdbc:jaybird") {
 		exclude group: "javax.resource", module: "connector-api"
 	}
-	testRuntimeOnly("org.testcontainers:jdbc") {
+	testRuntimeOnly("org.testcontainers:testcontainers-jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
@@ -101,4 +100,12 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 		"spring.datasource.oracleucp.*",
 		"spring.datasource.tomcat.*",
 	]
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

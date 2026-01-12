@@ -54,6 +54,7 @@ class HttpStatusHandlerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpStatusHandler(null))
 			.withMessageContaining("'status' must not be null");
@@ -68,9 +69,9 @@ class HttpStatusHandlerTests {
 
 	@Test
 	void respondsWithStatus() throws Exception {
-		HttpStatusHandler handler = new HttpStatusHandler(HttpStatus.I_AM_A_TEAPOT);
+		HttpStatusHandler handler = new HttpStatusHandler(HttpStatus.EXPECTATION_FAILED);
 		handler.handle(this.request, this.response);
-		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
+		assertThat(this.servletResponse.getStatus()).isEqualTo(417);
 	}
 
 }

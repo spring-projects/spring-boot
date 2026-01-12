@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.docs.env;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +23,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.endpoint.Show;
@@ -116,24 +115,19 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@SuppressWarnings("unchecked")
 	private byte[] filterProperties(byte[] content, MediaType mediaType) {
-		ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-		try {
-			Map<String, Object> payload = objectMapper.readValue(content, Map.class);
-			List<Map<String, Object>> propertySources = (List<Map<String, Object>>) payload.get("propertySources");
-			for (Map<String, Object> propertySource : propertySources) {
-				Map<String, String> properties = (Map<String, String>) propertySource.get("properties");
-				Set<String> filteredKeys = properties.keySet()
-					.stream()
-					.filter(this::retainKey)
-					.limit(3)
-					.collect(Collectors.toSet());
-				properties.keySet().retainAll(filteredKeys);
-			}
-			return objectMapper.writeValueAsBytes(payload);
+		JsonMapper jsonMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
+		Map<String, Object> payload = jsonMapper.readValue(content, Map.class);
+		List<Map<String, Object>> propertySources = (List<Map<String, Object>>) payload.get("propertySources");
+		for (Map<String, Object> propertySource : propertySources) {
+			Map<String, String> properties = (Map<String, String>) propertySource.get("properties");
+			Set<String> filteredKeys = properties.keySet()
+				.stream()
+				.filter(this::retainKey)
+				.limit(3)
+				.collect(Collectors.toSet());
+			properties.keySet().retainAll(filteredKeys);
 		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
+		return jsonMapper.writeValueAsBytes(payload);
 	}
 
 	private boolean retainKey(String key) {

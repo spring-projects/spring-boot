@@ -24,8 +24,8 @@
 			<!-- Override Spring Data release train provided by Spring Boot -->
 			<dependency>
 				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>2020.0.0-SR1</version>
+				<artifactId>spring-data-bom</artifactId>
+				<version>2024.1.10</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

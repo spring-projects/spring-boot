@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JDBC health.
  */
+@NullMarked
 package org.springframework.boot.jdbc.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

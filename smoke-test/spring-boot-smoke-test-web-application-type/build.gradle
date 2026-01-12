@@ -25,4 +25,9 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

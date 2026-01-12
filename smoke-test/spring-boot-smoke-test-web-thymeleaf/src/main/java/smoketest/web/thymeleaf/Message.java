@@ -19,24 +19,25 @@ package smoketest.web.thymeleaf;
 import java.util.Calendar;
 
 import jakarta.validation.constraints.NotEmpty;
+import org.jspecify.annotations.Nullable;
 
 public class Message {
 
-	private Long id;
+	private @Nullable Long id;
 
 	@NotEmpty(message = "Text is required.")
-	private String text;
+	private @Nullable String text;
 
 	@NotEmpty(message = "Summary is required.")
-	private String summary;
+	private @Nullable String summary;
 
 	private Calendar created = Calendar.getInstance();
 
-	public Long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(@Nullable Long id) {
 		this.id = id;
 	}
 
@@ -48,19 +49,19 @@ public class Message {
 		this.created = created;
 	}
 
-	public String getText() {
+	public @Nullable String getText() {
 		return this.text;
 	}
 
-	public void setText(String text) {
+	public void setText(@Nullable String text) {
 		this.text = text;
 	}
 
-	public String getSummary() {
+	public @Nullable String getSummary() {
 		return this.summary;
 	}
 
-	public void setSummary(String summary) {
+	public void setSummary(@Nullable String summary) {
 		this.summary = summary;
 	}
 

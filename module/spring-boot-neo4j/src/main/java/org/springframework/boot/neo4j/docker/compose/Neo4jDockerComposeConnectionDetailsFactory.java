@@ -18,7 +18,9 @@ package org.springframework.boot.neo4j.docker.compose;
 
 import java.net.URI;
 
+import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokens;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -34,10 +36,8 @@ import org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails;
  */
 class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<Neo4jConnectionDetails> {
 
-	private static final String[] NEO4J_CONTAINER_NAMES = { "neo4j", "bitnami/neo4j" };
-
 	Neo4jDockerComposeConnectionDetailsFactory() {
-		super(NEO4J_CONTAINER_NAMES);
+		super("neo4j");
 	}
 
 	@Override
@@ -53,7 +53,7 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private static final int BOLT_PORT = 7687;
 
-		private final AuthToken authToken;
+		private final @Nullable AuthToken authToken;
 
 		private final URI uri;
 
@@ -71,7 +71,7 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		@Override
 		public AuthToken getAuthToken() {
-			return this.authToken;
+			return (this.authToken != null) ? this.authToken : AuthTokens.none();
 		}
 
 	}

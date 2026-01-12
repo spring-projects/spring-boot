@@ -17,9 +17,9 @@
 package org.springframework.boot.data.neo4j.autoconfigure;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = TestImage.container(Neo4jContainer.class);
+	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
@@ -63,8 +63,8 @@ class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Configuration
 	@EnableNeo4jRepositories(basePackageClasses = CountryRepository.class)
-	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class })
+	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, DataNeo4jAutoConfiguration.class,
+			DataNeo4jRepositoriesAutoConfiguration.class })
 	static class TestConfiguration {
 
 	}

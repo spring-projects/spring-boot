@@ -42,7 +42,7 @@ server:
 ----
 
 (The presence of either of those properties switches on the valve.
-Alternatively, you can add the javadoc:org.apache.catalina.valves.RemoteIpValve[] by customizing the javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[] using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.)
+Alternatively, you can add the javadoc:org.apache.catalina.valves.RemoteIpValve[] by customizing the javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[] using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.)
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own javadoc:org.springframework.security.web.SecurityFilterChain[] bean that adds the following javadoc:org.springframework.security.config.annotation.web.builders.HttpSecurity[] configuration:
 

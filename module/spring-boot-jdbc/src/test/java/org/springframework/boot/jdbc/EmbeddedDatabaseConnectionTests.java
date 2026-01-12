@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -50,6 +51,8 @@ class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void derbyCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.DERBY.getUrl("myderbydb"))
 			.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
@@ -61,6 +64,7 @@ class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getUrlWithNullDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
 			.withMessageContaining("'databaseName' must not be empty");
@@ -78,6 +82,7 @@ class EmbeddedDatabaseConnectionTests {
 		assertThat(EmbeddedDatabaseConnection.isEmbedded(driverClassName, url)).isEqualTo(embedded);
 	}
 
+	@SuppressWarnings("removal")
 	static Object[] embeddedDriverAndUrlParameters() {
 		return new Object[] {
 				new Object[] { EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test", false },
@@ -142,7 +147,7 @@ class EmbeddedDatabaseConnectionTests {
 			.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), null))).isTrue();
 	}
 
-	DataSource mockDataSource(String productName, String connectionUrl) throws SQLException {
+	DataSource mockDataSource(@Nullable String productName, @Nullable String connectionUrl) throws SQLException {
 		DatabaseMetaData metaData = mock(DatabaseMetaData.class);
 		given(metaData.getDatabaseProductName()).willReturn(productName);
 		given(metaData.getURL()).willReturn(connectionUrl);

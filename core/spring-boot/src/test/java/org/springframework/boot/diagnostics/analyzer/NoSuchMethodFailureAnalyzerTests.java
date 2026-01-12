@@ -76,7 +76,6 @@ class NoSuchMethodFailureAnalyzerTests {
 	@Test
 	void whenAMethodOnAClassIsMissingThenNoSuchMethodErrorIsAnalyzed() {
 		Throwable failure = createFailureForMissingMethod();
-		assertThat(failure).isNotNull();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
@@ -91,7 +90,6 @@ class NoSuchMethodFailureAnalyzerTests {
 	@Test
 	void whenAnInheritedMethodIsMissingThenNoSuchMethodErrorIsAnalyzed() {
 		Throwable failure = createFailureForMissingInheritedMethod();
-		assertThat(failure).isNotNull();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(R2dbcMappingContext.class.getName() + ".<init>(")
@@ -104,11 +102,12 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(analysis.getAction()).contains("org.springframework.data.r2dbc.mapping.R2dbcMappingContext");
 	}
 
+	@SuppressWarnings("NullAway") // Deliberately trigger exception
 	private Throwable createFailureForMissingMethod() {
 		try {
 			MimeType mimeType = new MimeType("application", "json");
 			mimeType.isMoreSpecific(null);
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (Throwable ex) {
 			return ex;
@@ -118,7 +117,7 @@ class NoSuchMethodFailureAnalyzerTests {
 	private Throwable createFailureForMissingInheritedMethod() {
 		try {
 			new R2dbcMappingContext();
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (Throwable ex) {
 			return ex;

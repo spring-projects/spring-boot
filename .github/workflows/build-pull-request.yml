@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build
         id: build
         uses: ./.github/actions/build
@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/print-jvm-thread-dumps
       - name: Upload Build Reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-reports
           path: '**/build/reports/'

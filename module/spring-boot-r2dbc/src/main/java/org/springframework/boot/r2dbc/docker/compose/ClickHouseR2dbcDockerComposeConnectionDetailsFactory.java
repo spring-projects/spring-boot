@@ -32,10 +32,8 @@ import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 class ClickHouseR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	private static final String[] CLICKHOUSE_CONTAINER_NAMES = { "clickhouse/clickhouse-server", "bitnami/clickhouse" };
-
 	ClickHouseR2dbcDockerComposeConnectionDetailsFactory() {
-		super(CLICKHOUSE_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
+		super("clickhouse/clickhouse-server", "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override

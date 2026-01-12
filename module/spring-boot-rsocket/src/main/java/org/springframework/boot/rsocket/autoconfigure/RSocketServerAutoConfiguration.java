@@ -51,6 +51,7 @@ import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -78,14 +79,15 @@ public final class RSocketServerAutoConfiguration {
 		@ConditionalOnMissingBean
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
-			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), customizeWebsocketServerSpec(properties.getServer().getSpec()),
-					customizers.orderedStream());
+			String mappingPath = properties.getServer().getMappingPath();
+			Assert.state(mappingPath != null, "'mappingPath' must not be null");
+			return new RSocketWebSocketNettyRouteProvider(mappingPath, messageHandler.responder(),
+					customizeWebsocketServerSpec(properties.getServer().getSpec()), customizers.orderedStream());
 		}
 
 		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
 			return (builder) -> {
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper map = PropertyMapper.get();
 				map.from(spec.getProtocols()).to(builder::protocols);
 				map.from(spec.getMaxFramePayloadLength()).asInt(DataSize::toBytes).to(builder::maxFramePayloadLength);
 				map.from(spec.isHandlePing()).to(builder::handlePing);
@@ -108,7 +110,7 @@ public final class RSocketServerAutoConfiguration {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);

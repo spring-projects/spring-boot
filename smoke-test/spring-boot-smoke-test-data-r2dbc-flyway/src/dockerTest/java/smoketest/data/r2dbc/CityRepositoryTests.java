@@ -19,13 +19,13 @@ package smoketest.data.r2dbc;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
+import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 
@@ -44,7 +44,7 @@ class CityRepositoryTests {
 
 	@Container
 	@ServiceConnection
-	static PostgreSQLContainer<?> postgresql = TestImage.container(PostgreSQLContainer.class)
+	static PostgreSQLContainer postgresql = TestImage.container(PostgreSQLContainer.class)
 		.withDatabaseName("test_flyway");
 
 	@Autowired

@@ -19,7 +19,7 @@ package org.springframework.boot.restclient.autoconfigure;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
@@ -29,33 +29,26 @@ import org.springframework.web.client.RestClient;
  * {@link RestClientCustomizer} to apply {@link HttpMessageConverter
  * HttpMessageConverters}.
  *
- * @author Phillip Webb
+ * @author Brian Clozel
  * @since 4.0.0
  */
 public class HttpMessageConvertersRestClientCustomizer implements RestClientCustomizer {
 
-	private final Iterable<? extends HttpMessageConverter<?>> messageConverters;
+	private final List<ClientHttpMessageConvertersCustomizer> customizers;
 
-	public HttpMessageConvertersRestClientCustomizer(HttpMessageConverter<?>... messageConverters) {
-		Assert.notNull(messageConverters, "'messageConverters' must not be null");
-		this.messageConverters = Arrays.asList(messageConverters);
+	public HttpMessageConvertersRestClientCustomizer(ClientHttpMessageConvertersCustomizer... customizers) {
+		this(Arrays.asList(customizers));
 	}
 
-	HttpMessageConvertersRestClientCustomizer(HttpMessageConverters messageConverters) {
-		this.messageConverters = messageConverters;
+	public HttpMessageConvertersRestClientCustomizer(List<ClientHttpMessageConvertersCustomizer> customizers) {
+		Assert.notNull(customizers, "customizers must not be null");
+		this.customizers = customizers;
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public void customize(RestClient.Builder restClientBuilder) {
-		restClientBuilder.messageConverters(this::configureMessageConverters);
-	}
-
-	private void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
-		if (this.messageConverters != null) {
-			messageConverters.clear();
-			this.messageConverters.forEach(messageConverters::add);
-		}
+		restClientBuilder.configureMessageConverters(
+				(builder) -> this.customizers.forEach((customizer) -> customizer.customize(builder)));
 	}
 
 }

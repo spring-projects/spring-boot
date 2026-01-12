@@ -70,7 +70,7 @@ public final class LambdaSafe {
 	 * @return a {@link Callback} instance that can be invoked.
 	 */
 	public static <C, A> Callback<C, A> callback(Class<C> callbackType, C callbackInstance, A argument,
-			Object @Nullable ... additionalArguments) {
+			@Nullable Object @Nullable ... additionalArguments) {
 		Assert.notNull(callbackType, "'callbackType' must not be null");
 		Assert.notNull(callbackInstance, "'callbackInstance' must not be null");
 		return new Callback<>(callbackType, callbackInstance, argument, additionalArguments);
@@ -108,13 +108,13 @@ public final class LambdaSafe {
 
 		private final A argument;
 
-		private final Object @Nullable [] additionalArguments;
+		private final @Nullable Object @Nullable [] additionalArguments;
 
 		private Log logger;
 
 		private Filter<C, A> filter = new GenericTypeFilter<>();
 
-		LambdaSafeCallback(Class<C> callbackType, A argument, Object @Nullable [] additionalArguments) {
+		LambdaSafeCallback(Class<C> callbackType, A argument, @Nullable Object @Nullable [] additionalArguments) {
 			this.callbackType = callbackType;
 			this.argument = argument;
 			this.additionalArguments = additionalArguments;
@@ -175,8 +175,15 @@ public final class LambdaSafe {
 		}
 
 		private boolean startsWithArgumentClassName(String message) {
-			Predicate<Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
-			return startsWith.test(this.argument) || Stream.of(this.additionalArguments).anyMatch(startsWith);
+			Predicate<@Nullable Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
+			return startsWith.test(this.argument) || additionalArgumentsStartsWith(startsWith);
+		}
+
+		private boolean additionalArgumentsStartsWith(Predicate<@Nullable Object> startsWith) {
+			if (this.additionalArguments == null) {
+				return false;
+			}
+			return Stream.of(this.additionalArguments).anyMatch(startsWith);
 		}
 
 		private boolean startsWithArgumentClassName(String message, @Nullable Object argument) {
@@ -236,7 +243,7 @@ public final class LambdaSafe {
 		private final C callbackInstance;
 
 		private Callback(Class<C> callbackType, C callbackInstance, A argument,
-				Object @Nullable [] additionalArguments) {
+				@Nullable Object @Nullable [] additionalArguments) {
 			super(callbackType, argument, additionalArguments);
 			this.callbackInstance = callbackInstance;
 		}
@@ -245,13 +252,12 @@ public final class LambdaSafe {
 		 * Invoke the callback instance where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
-			invoke(this.callbackInstance, () -> {
+			Supplier<@Nullable Void> supplier = () -> {
 				invoker.accept(this.callbackInstance);
 				return null;
-			});
+			};
+			invoke(this.callbackInstance, supplier);
 		}
 
 		/**
@@ -261,10 +267,9 @@ public final class LambdaSafe {
 		 * @return the result of the invocation (may be {@link InvocationResult#noResult}
 		 * if the callback was not invoked)
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public <R> InvocationResult<R> invokeAnd(Function<C, @Nullable R> invoker) {
-			return invoke(this.callbackInstance, () -> invoker.apply(this.callbackInstance));
+			Supplier<@Nullable R> supplier = () -> invoker.apply(this.callbackInstance);
+			return invoke(this.callbackInstance, supplier);
 		}
 
 	}
@@ -289,13 +294,14 @@ public final class LambdaSafe {
 		 * Invoke the callback instances where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
-			this.callbackInstances.forEach((callbackInstance) -> invoke(callbackInstance, () -> {
-				invoker.accept(callbackInstance);
-				return null;
-			}));
+			this.callbackInstances.forEach((callbackInstance) -> {
+				Supplier<@Nullable Void> supplier = () -> {
+					invoker.accept(callbackInstance);
+					return null;
+				};
+				invoke(callbackInstance, supplier);
+			});
 		}
 
 		/**
@@ -305,11 +311,11 @@ public final class LambdaSafe {
 		 * @return the results of the invocation (may be an empty stream if no callbacks
 		 * could be called)
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public <R> Stream<R> invokeAnd(Function<C, @Nullable R> invoker) {
-			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
-					() -> invoker.apply(callbackInstance));
+			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> {
+				Supplier<@Nullable R> supplier = () -> invoker.apply(callbackInstance);
+				return invoke(callbackInstance, supplier);
+			};
 			return this.callbackInstances.stream()
 				.map(mapper)
 				.filter(InvocationResult::hasResult)
@@ -336,7 +342,8 @@ public final class LambdaSafe {
 		 * @param additionalArguments any additional arguments
 		 * @return if the callback matches and should be invoked
 		 */
-		boolean match(Class<C> callbackType, C callbackInstance, A argument, Object @Nullable [] additionalArguments);
+		boolean match(Class<C> callbackType, C callbackInstance, A argument,
+				@Nullable Object @Nullable [] additionalArguments);
 
 		/**
 		 * Return a {@link Filter} that allows all callbacks to be invoked.
@@ -358,7 +365,7 @@ public final class LambdaSafe {
 
 		@Override
 		public boolean match(Class<C> callbackType, C callbackInstance, A argument,
-				Object @Nullable [] additionalArguments) {
+				@Nullable Object @Nullable [] additionalArguments) {
 			ResolvableType type = ResolvableType.forClass(callbackType, callbackInstance.getClass());
 			if (type.getGenerics().length != 1) {
 				return true;

@@ -16,22 +16,22 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * An endpoint with additional custom properties.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "customprops")
-@ConfigurationProperties("management.endpoint.customprops")
+@TestEndpoint(id = "customprops")
+@TestConfigurationProperties("management.endpoint.customprops")
 public class CustomPropertiesEndpoint {
 
 	private String name = "test";
 
-	@ReadOperation
+	@TestReadOperation
 	public String getName() {
 		return this.name;
 	}

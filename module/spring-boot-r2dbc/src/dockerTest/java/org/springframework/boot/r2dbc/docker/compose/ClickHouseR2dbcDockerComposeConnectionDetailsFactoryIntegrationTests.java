@@ -43,13 +43,6 @@ class ClickHouseR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		checkDatabaseAccess(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "clickhouse-bitnami-compose.yaml", image = TestImage.BITNAMI_CLICKHOUSE)
-	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-		// See https://github.com/bitnami/containers/issues/73550
-		// checkDatabaseAccess(connectionDetails);
-	}
-
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=clickhouse",

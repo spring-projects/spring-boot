@@ -20,17 +20,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
+import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.BindResult;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.schema.Schema;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -53,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedLdapAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(EmbeddedLdapAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(EmbeddedLdapAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void testSetDefaultPort() {
@@ -62,6 +67,8 @@ class EmbeddedLdapAutoConfigurationTests {
 			.run((context) -> {
 				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 				assertThat(server.getListenPort()).isEqualTo(1234);
+				InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+				assertThat(config.getListenerName()).isEqualTo("LDAP");
 			});
 	}
 
@@ -173,9 +180,10 @@ class EmbeddedLdapAutoConfigurationTests {
 					"spring.ldap.embedded.base-dn:dc=spring,dc=org")
 			.run((context) -> {
 				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
-
-				assertThat(server.getSchema().getObjectClass("exampleAuxiliaryClass")).isNotNull();
-				assertThat(server.getSchema().getAttributeType("exampleAttributeName")).isNotNull();
+				Schema schema = server.getSchema();
+				assertThat(schema).isNotNull();
+				assertThat(schema.getObjectClass("exampleAuxiliaryClass")).isNotNull();
+				assertThat(schema.getAttributeType("exampleAttributeName")).isNotNull();
 			});
 	}
 
@@ -344,6 +352,63 @@ class EmbeddedLdapAutoConfigurationTests {
 				LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
 				assertThat(ldapContextSource.getBaseLdapPathAsString()).isEqualTo("dc=spring,dc=org");
 			});
+	}
+
+	@Test
+	void whenSslBundleIsConfiguredLdapsListenerIsConfigured() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.password=secret");
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.location=" + location + "test.jks");
+		propertyValues.add("spring.ssl.bundle.jks.test.truststore.location=" + location + "test.jks");
+		propertyValues.add("spring.ssl.bundle.jks.test.protocol=TLSv1.2");
+		propertyValues.add("spring.ldap.embedded.port:0");
+		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		propertyValues.add("spring.ldap.embedded.ssl.bundle:test");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+			assertThat(server.getConfig().getListenerConfigs().size()).isEqualTo(1);
+			InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+			assertThat(config.getListenerName()).isEqualTo("LDAPS");
+			assertThat(server.getConnection("LDAPS").getSSLSession()).isNotNull();
+		});
+	}
+
+	@Test
+	void whenSslBundleIsConfiguredButSslIsDisabledLdapListenerIsConfigured() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.password=secret");
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.location=" + location + "test.jks");
+		propertyValues.add("spring.ssl.bundle.jks.test.truststore.location=" + location + "test.jks");
+		propertyValues.add("spring.ssl.bundle.jks.test.protocol=TLSv1.2");
+		propertyValues.add("spring.ldap.embedded.port:0");
+		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		propertyValues.add("spring.ldap.embedded.ssl.enabled:false");
+		propertyValues.add("spring.ldap.embedded.ssl.bundle:test");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+			assertThat(server.getConfig().getListenerConfigs().size()).isEqualTo(1);
+			InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+			assertThat(config.getListenerName()).isEqualTo("LDAP");
+		});
+	}
+
+	@Test
+	void whenInvalidSslBundleIsConfiguredThenStartFails() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.password=secret");
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.location=" + location + "test.jks");
+		propertyValues.add("spring.ldap.embedded.port:0");
+		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		propertyValues.add("spring.ldap.embedded.ssl.enabled:true");
+		propertyValues.add("spring.ldap.embedded.ssl.bundle:foo");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasMessageContaining("foo");
+			assertThat(context).getFailure().hasMessageContaining("cannot be found");
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

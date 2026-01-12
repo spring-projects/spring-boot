@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.recursive;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
-@ConfigurationProperties("prefix")
+@TestConfigurationProperties("prefix")
 public class RecursiveProperties {
 
 	private RecursiveProperties recursive;

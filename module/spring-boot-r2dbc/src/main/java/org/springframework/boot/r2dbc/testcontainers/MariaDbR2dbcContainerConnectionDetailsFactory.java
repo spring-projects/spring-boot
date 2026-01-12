@@ -17,8 +17,8 @@
 package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.MariaDBR2DBCDatabaseContainer;
+import org.testcontainers.mariadb.MariaDBContainer;
+import org.testcontainers.mariadb.MariaDBR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -34,14 +34,14 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MariaDbR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<MariaDBContainer, R2dbcConnectionDetails> {
 
 	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer> source) {
 		return new MariaDbR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
@@ -49,9 +49,9 @@ class MariaDbR2dbcContainerConnectionDetailsFactory
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class MariaDbR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<MariaDBContainer<?>> implements R2dbcConnectionDetails {
+			extends ContainerConnectionDetails<MariaDBContainer> implements R2dbcConnectionDetails {
 
-		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer> source) {
 			super(source);
 		}
 

@@ -30,5 +30,10 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-actuator-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

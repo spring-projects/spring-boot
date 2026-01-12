@@ -24,13 +24,18 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.core5.function.Resolver;
+import org.apache.hc.core5.util.Timeout;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -81,12 +86,15 @@ class RestTemplateBuilderTests {
 	private final RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpMessageConverter<Object> messageConverter;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestInterceptor interceptor;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCustomizersAreNullShouldThrowException() {
 		RestTemplateCustomizer[] customizers = null;
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestTemplateBuilder(customizers))
@@ -134,6 +142,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageConvertersWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageConverters((HttpMessageConverter<?>[]) null))
@@ -141,6 +150,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageConvertersCollectionWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageConverters((Set<HttpMessageConverter<?>>) null))
@@ -162,6 +172,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageConvertersWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalMessageConverters((HttpMessageConverter<?>[]) null))
@@ -169,6 +180,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageConvertersCollectionWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalMessageConverters((Set<HttpMessageConverter<?>>) null))
@@ -199,6 +211,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.interceptors((ClientHttpRequestInterceptor[]) null))
@@ -206,6 +219,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.interceptors((Set<ClientHttpRequestInterceptor>) null))
@@ -227,6 +241,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((ClientHttpRequestInterceptor[]) null))
@@ -234,6 +249,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientHttpRequestInterceptor>) null))
@@ -248,6 +264,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void requestFactoryClassWhenFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.requestFactory((Class<ClientHttpRequestFactory>) null))
@@ -267,6 +284,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void requestFactoryWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.requestFactory((Supplier<ClientHttpRequestFactory>) null))
@@ -281,6 +299,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void uriTemplateHandlerWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.uriTemplateHandler(null))
 			.withMessageContaining("'uriTemplateHandler' must not be null");
@@ -294,6 +313,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void errorHandlerWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.errorHandler(null))
 			.withMessageContaining("'errorHandler' must not be null");
@@ -339,11 +359,18 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void requestFactorySettingsAppliesSettings() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(1));
-		RestTemplate template = this.builder.requestFactorySettings(settings).build();
-		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);
+	@SuppressWarnings("unchecked")
+	void clientSettingsAppliesSettings() {
+		HttpClientSettings settings = HttpClientSettings.defaults()
+			.withConnectTimeout(Duration.ofSeconds(1))
+			.withReadTimeout(Duration.ofSeconds(2));
+		RestTemplate template = this.builder.clientSettings(settings).build();
+		Resolver<HttpRoute, ConnectionConfig> resolver = (Resolver<HttpRoute, ConnectionConfig>) Extractors
+			.byName("httpClient.connManager.connectionConfigResolver")
+			.apply(template.getRequestFactory());
+		ConnectionConfig config = resolver.resolve(mock());
+		assertThat(config.getConnectTimeout()).isEqualTo(Timeout.of(Duration.ofSeconds(1)));
+		assertThat(config.getSocketTimeout()).isEqualTo(Timeout.of(Duration.ofSeconds(2)));
 	}
 
 	@Test
@@ -367,12 +394,14 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((RestTemplateCustomizer[]) null))
 			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<RestTemplateCustomizer>) null))
@@ -406,6 +435,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((RestTemplateCustomizer[]) null))
@@ -413,6 +443,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<RestTemplateCustomizer>) null))
@@ -481,14 +512,16 @@ class RestTemplateBuilderTests {
 
 	@Test
 	void configureRedirects() {
-		assertThat(this.builder.redirects(HttpRedirects.DONT_FOLLOW)).extracting("requestFactorySettings")
+		assertThat(this.builder.redirects(HttpRedirects.DONT_FOLLOW)).extracting("clientSettings")
 			.extracting("redirects")
 			.isSameAs(HttpRedirects.DONT_FOLLOW);
 	}
 
 	private ClientHttpRequest createRequest(RestTemplate template) {
-		return ReflectionTestUtils.invokeMethod(template, "createRequest", URI.create("http://localhost"),
-				HttpMethod.GET);
+		ClientHttpRequest request = ReflectionTestUtils.invokeMethod(template, "createRequest",
+				URI.create("http://localhost"), HttpMethod.GET);
+		assertThat(request).isNotNull();
+		return request;
 	}
 
 	static class RestTemplateSubclass extends RestTemplate {

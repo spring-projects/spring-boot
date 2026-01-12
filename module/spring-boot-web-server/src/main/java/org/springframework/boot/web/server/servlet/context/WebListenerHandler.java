@@ -19,6 +19,7 @@ package org.springframework.boot.web.server.servlet.context;
 import java.util.Map;
 
 import jakarta.servlet.annotation.WebListener;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -38,7 +39,7 @@ class WebListenerHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	protected void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
+	protected void doHandle(Map<String, @Nullable Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder
 			.rootBeanDefinition(ServletComponentWebListenerRegistrar.class);

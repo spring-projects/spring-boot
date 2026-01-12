@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.reactive.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.context.reactive.StandardReactiveWebEnvironment;
@@ -31,12 +33,12 @@ import org.springframework.core.env.MutablePropertySources;
 class ApplicationReactiveWebEnvironment extends StandardReactiveWebEnvironment {
 
 	@Override
-	protected String doGetActiveProfilesProperty() {
+	protected @Nullable String doGetActiveProfilesProperty() {
 		return null;
 	}
 
 	@Override
-	protected String doGetDefaultProfilesProperty() {
+	protected @Nullable String doGetDefaultProfilesProperty() {
 		return null;
 	}
 

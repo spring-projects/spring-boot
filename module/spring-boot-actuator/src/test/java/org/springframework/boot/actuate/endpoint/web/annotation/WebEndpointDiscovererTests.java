@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Condition;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -100,6 +101,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("test").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("application/json")));
 		});
@@ -111,6 +113,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("test").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("application/json"),
 					path("test/{id}").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("application/json")));
@@ -123,6 +126,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("voidwrite"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("voidwrite"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("voidwrite").httpMethod(WebEndpointHttpMethod.POST).produces().consumes("application/json")));
 		});
@@ -174,6 +178,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
 			assertThat(endpoint.getOperations()).hasSize(1);
 			WebOperation operation = endpoint.getOperations().iterator().next();
 			Object invoker = ReflectionTestUtils.getField(operation, "invoker");
@@ -188,6 +193,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("resource"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("resource"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint))
 				.has(requestPredicates(path("resource").httpMethod(WebEndpointHttpMethod.GET)
 					.consumes()
@@ -201,6 +207,7 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("custommediatypes"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("custommediatypes"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("custommediatypes").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("text/plain"),
 					path("custommediatypes").httpMethod(WebEndpointHttpMethod.POST).consumes().produces("a/b", "c/d"),
@@ -221,6 +228,7 @@ class WebEndpointDiscovererTests {
 					path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET)
 						.consumes()
 						.produces("application/json"));
+			assertThat(endpoint).isNotNull();
 			assertThat(requestPredicates(endpoint)).has(expected);
 		});
 	}
@@ -237,6 +245,7 @@ class WebEndpointDiscovererTests {
 				AdditionalOperationWebEndpointConfiguration.class, (discoverer) -> {
 					Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 					ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+					assertThat(endpoint).isNotNull();
 					assertThat(endpoint.getAdditionalPaths(WebServerNamespace.SERVER)).containsExactly("/test");
 					assertThat(endpoint.getAdditionalPaths(WebServerNamespace.MANAGEMENT)).isEmpty();
 				});
@@ -255,13 +264,13 @@ class WebEndpointDiscovererTests {
 		load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
-	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,
-			Consumer<WebEndpointDiscoverer> consumer) {
+	private void load(Function<EndpointId, @Nullable Long> timeToLive, PathMapper endpointPathMapper,
+			Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
 		load(timeToLive, endpointPathMapper, null, configuration, consumer);
 	}
 
-	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper,
-			AdditionalPathsMapper additionalPathsMapper, Class<?> configuration,
+	private void load(Function<EndpointId, @Nullable Long> timeToLive, PathMapper endpointPathMapper,
+			@Nullable AdditionalPathsMapper additionalPathsMapper, Class<?> configuration,
 			Consumer<WebEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
@@ -488,12 +497,12 @@ class WebEndpointDiscovererTests {
 	static class TestWebEndpointExtension {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		Object getOne(@Selector String id) {
+		@Nullable Object getOne(@Selector String id) {
 			return null;
 		}
 
@@ -512,7 +521,7 @@ class WebEndpointDiscovererTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -522,7 +531,7 @@ class WebEndpointDiscovererTests {
 	static class OverriddenOperationWebEndpointExtension {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -532,7 +541,7 @@ class WebEndpointDiscovererTests {
 	static class AdditionalOperationWebEndpointExtension {
 
 		@ReadOperation
-		Object getOne(@Selector String id) {
+		@Nullable Object getOne(@Selector String id) {
 			return null;
 		}
 
@@ -542,12 +551,12 @@ class WebEndpointDiscovererTests {
 	static class ClashingOperationsEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		Object getAgain() {
+		@Nullable Object getAgain() {
 			return null;
 		}
 
@@ -557,12 +566,12 @@ class WebEndpointDiscovererTests {
 	static class ClashingOperationsWebEndpointExtension {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		Object getAgain() {
+		@Nullable Object getAgain() {
 			return null;
 		}
 
@@ -572,12 +581,12 @@ class WebEndpointDiscovererTests {
 	static class ClashingSelectorsWebEndpointExtension {
 
 		@ReadOperation
-		Object readOne(@Selector String oneA, @Selector String oneB) {
+		@Nullable Object readOne(@Selector String oneA, @Selector String oneB) {
 			return null;
 		}
 
 		@ReadOperation
-		Object readTwo(@Selector String twoA, @Selector String twoB) {
+		@Nullable Object readTwo(@Selector String twoA, @Selector String twoB) {
 			return null;
 		}
 
@@ -587,7 +596,7 @@ class WebEndpointDiscovererTests {
 	static class NonWebEndpoint {
 
 		@ReadOperation
-		Object getData() {
+		@Nullable Object getData() {
 			return null;
 		}
 
@@ -597,7 +606,7 @@ class WebEndpointDiscovererTests {
 	static class NonWebWebEndpointExtension {
 
 		@ReadOperation
-		Object getSomething(@Selector String name) {
+		@Nullable Object getSomething(@Selector String name) {
 			return null;
 		}
 
@@ -646,11 +655,11 @@ class WebEndpointDiscovererTests {
 
 		private final String path;
 
-		private List<String> produces;
+		private @Nullable List<String> produces;
 
-		private List<String> consumes;
+		private @Nullable List<String> consumes;
 
-		private WebEndpointHttpMethod httpMethod;
+		private @Nullable WebEndpointHttpMethod httpMethod;
 
 		private RequestPredicateMatcher(String path) {
 			this.path = path;

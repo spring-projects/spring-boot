@@ -24,6 +24,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private MBeanServer mBeanServer;
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@BeforeEach
 	void setup() {
@@ -90,15 +91,18 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
-		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), new String[0],
 				mock(ConfigurableApplicationContext.class), null));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context, null));
+		registrar
+			.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), new String[0], context, null));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 
 	private boolean isApplicationReady(SpringApplicationAdminMXBeanRegistrar registrar) {
-		return (Boolean) ReflectionTestUtils.getField(registrar, "ready");
+		Object field = ReflectionTestUtils.getField(registrar, "ready");
+		assertThat(field).isNotNull();
+		return (Boolean) field;
 	}
 
 	@Test

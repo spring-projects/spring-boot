@@ -38,6 +38,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
@@ -60,14 +61,16 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
 @ConditionalOnMissingBean(RedisConnectionFactory.class)
 @ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "jedis", matchIfMissing = true)
-class JedisConnectionConfiguration extends RedisConnectionConfiguration {
+class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 
-	JedisConnectionConfiguration(RedisProperties properties,
+	JedisConnectionConfiguration(DataRedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
+			DataRedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
-				clusterConfiguration);
+				clusterConfiguration, masterReplicaConfiguration);
 	}
 
 	@Bean
@@ -103,6 +106,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new JedisConnectionFactory(sentinelConfig, clientConfiguration);
 			}
+			case MASTER_REPLICA -> throw new IllegalStateException("'masterReplicaConfig' is not supported by Jedis");
 		};
 	}
 
@@ -110,7 +114,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		applySslIfNeeded(builder);
-		RedisProperties.Pool pool = getProperties().getJedis().getPool();
+		DataRedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (isPoolEnabled(pool)) {
 			applyPooling(pool, builder);
 		}
@@ -123,7 +127,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
@@ -139,18 +143,18 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
 		SslOptions sslOptions = sslBundle.getOptions();
 		SSLParameters sslParameters = new SSLParameters();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
 		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
 		sslBuilder.sslParameters(sslParameters);
 	}
 
-	private void applyPooling(RedisProperties.Pool pool,
+	private void applyPooling(DataRedisProperties.Pool pool,
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		builder.usePooling().poolConfig(jedisPoolConfig(pool));
 	}
 
-	private JedisPoolConfig jedisPoolConfig(RedisProperties.Pool pool) {
+	private JedisPoolConfig jedisPoolConfig(DataRedisProperties.Pool pool) {
 		JedisPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(pool.getMaxActive());
 		config.setMaxIdle(pool.getMaxIdle());

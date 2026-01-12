@@ -20,12 +20,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.json.JsonMapper;
+
+import org.springframework.lang.Contract;
 
 /**
- * {@link JmxOperationResponseMapper} that delegates to a Jackson {@link ObjectMapper} to
+ * {@link JmxOperationResponseMapper} that delegates to a Jackson {@link JsonMapper} to
  * return a JSON response.
  *
  * @author Stephane Nicoll
@@ -33,17 +35,16 @@ import org.jspecify.annotations.Nullable;
  */
 public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMapper {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private final JavaType listType;
 
 	private final JavaType mapType;
 
-	public JacksonJmxOperationResponseMapper(@Nullable ObjectMapper objectMapper) {
-		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
-		this.listType = this.objectMapper.getTypeFactory().constructParametricType(List.class, Object.class);
-		this.mapType = this.objectMapper.getTypeFactory()
-			.constructParametricType(Map.class, String.class, Object.class);
+	public JacksonJmxOperationResponseMapper(@Nullable JsonMapper jsonMapper) {
+		this.jsonMapper = (jsonMapper != null) ? jsonMapper : new JsonMapper();
+		this.listType = this.jsonMapper.getTypeFactory().constructParametricType(List.class, Object.class);
+		this.mapType = this.jsonMapper.getTypeFactory().constructParametricType(Map.class, String.class, Object.class);
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	}
 
 	@Override
+	@Contract("!null -> !null")
 	public @Nullable Object mapResponse(@Nullable Object response) {
 		if (response == null) {
 			return null;
@@ -66,9 +68,9 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 			return response.toString();
 		}
 		if (response.getClass().isArray() || response instanceof Collection) {
-			return this.objectMapper.convertValue(response, this.listType);
+			return this.jsonMapper.convertValue(response, this.listType);
 		}
-		return this.objectMapper.convertValue(response, this.mapType);
+		return this.jsonMapper.convertValue(response, this.mapType);
 	}
 
 }

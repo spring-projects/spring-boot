@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Hazelcast.
  */
+@NullMarked
 package org.springframework.boot.hazelcast.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

@@ -27,8 +27,9 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
+import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -40,26 +41,22 @@ import org.springframework.util.StreamUtils;
  */
 class LoaderZipEntries {
 
-	private final LoaderImplementation loaderImplementation;
-
-	private final Long entryTime;
+	private final @Nullable Long entryTime;
 
 	private final int dirMode;
 
 	private final int fileMode;
 
-	LoaderZipEntries(Long entryTime, int dirMode, int fileMode, LoaderImplementation loaderImplementation) {
+	LoaderZipEntries(@Nullable Long entryTime, int dirMode, int fileMode) {
 		this.entryTime = entryTime;
 		this.dirMode = dirMode;
 		this.fileMode = fileMode;
-		this.loaderImplementation = (loaderImplementation != null) ? loaderImplementation
-				: LoaderImplementation.DEFAULT;
 	}
 
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
-				getClass().getResourceAsStream("/" + this.loaderImplementation.getJarResourceName()))) {
+				getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {
@@ -74,6 +71,12 @@ class LoaderZipEntries {
 			}
 		}
 		return written;
+	}
+
+	private InputStream getResourceAsStream(String name) {
+		InputStream stream = getClass().getResourceAsStream(name);
+		Assert.state(stream != null, "Resource '%s not found'".formatted(name));
+		return stream;
 	}
 
 	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {

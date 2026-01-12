@@ -26,7 +26,6 @@ dependencies {
 	testImplementation(project(":module:spring-boot-jetty"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(project(":module:spring-boot-undertow"))
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testImplementation("org.apache.httpcomponents.core5:httpcore5-reactive")
@@ -36,9 +35,8 @@ dependencies {
 	testImplementation("org.springframework:spring-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("io.undertow:undertow-servlet")
-	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-servlets")
-	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testRuntimeOnly("org.eclipse.jetty.ee11:jetty-ee11-servlets")
+	testRuntimeOnly("org.eclipse.jetty.ee11:jetty-ee11-webapp")
 }
 
 test {

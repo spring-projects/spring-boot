@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.system.SystemProperties;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author David Liu
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class WebServerPortFileWriter implements ApplicationListener<WebServerInitializedEvent> {
 
@@ -118,7 +119,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 				filenameWithoutExtension + "-" + suffix + ((!StringUtils.hasLength(extension)) ? "" : "." + extension));
 	}
 
-	private String getServerNamespace(ApplicationContext applicationContext) {
+	private @Nullable String getServerNamespace(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			return webServerApplicationContext.getServerNamespace();
 		}

@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -40,7 +42,7 @@ public class QuartzProperties {
 	/**
 	 * Name of the scheduler.
 	 */
-	private String schedulerName;
+	private @Nullable String schedulerName;
 
 	/**
 	 * Whether to automatically start the scheduler after initialization.
@@ -57,12 +59,12 @@ public class QuartzProperties {
 	/**
 	 * Whether to wait for running jobs to complete on shutdown.
 	 */
-	private boolean waitForJobsToCompleteOnShutdown = false;
+	private boolean waitForJobsToCompleteOnShutdown;
 
 	/**
 	 * Whether configured jobs should overwrite existing job definitions.
 	 */
-	private boolean overwriteExistingJobs = false;
+	private boolean overwriteExistingJobs;
 
 	/**
 	 * Additional Quartz Scheduler properties.
@@ -77,11 +79,11 @@ public class QuartzProperties {
 		this.jobStoreType = jobStoreType;
 	}
 
-	public String getSchedulerName() {
+	public @Nullable String getSchedulerName() {
 		return this.schedulerName;
 	}
 
-	public void setSchedulerName(String schedulerName) {
+	public void setSchedulerName(@Nullable String schedulerName) {
 		this.schedulerName = schedulerName;
 	}
 

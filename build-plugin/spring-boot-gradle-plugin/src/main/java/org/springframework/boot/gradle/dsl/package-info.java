@@ -17,4 +17,7 @@
 /**
  * Spring Boot Gradle DSL.
  */
+@NullMarked
 package org.springframework.boot.gradle.dsl;
+
+import org.jspecify.annotations.NullMarked;

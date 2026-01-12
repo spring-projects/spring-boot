@@ -73,7 +73,7 @@ public final class MongoAutoConfiguration {
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails,
-					properties.getUuidRepresentation());
+					properties.getRepresentation().getUuid());
 		}
 
 	}

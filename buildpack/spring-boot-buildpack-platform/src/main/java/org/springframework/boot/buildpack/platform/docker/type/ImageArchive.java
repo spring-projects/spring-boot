@@ -29,10 +29,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -40,7 +41,7 @@ import org.springframework.boot.buildpack.platform.io.InspectedContent;
 import org.springframework.boot.buildpack.platform.io.Layout;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 
 /**
@@ -66,27 +67,28 @@ public class ImageArchive implements TarArchive {
 	private static final IOConsumer<Update> NO_UPDATES = (update) -> {
 	};
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private final ImageConfig imageConfig;
 
 	private final Instant createDate;
 
-	private final ImageReference tag;
+	private final @Nullable ImageReference tag;
 
 	private final String os;
 
-	private final String architecture;
+	private final @Nullable String architecture;
 
-	private final String variant;
+	private final @Nullable String variant;
 
 	private final List<LayerId> existingLayers;
 
 	private final List<Layer> newLayers;
 
-	ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, ImageReference tag, String os,
-			String architecture, String variant, List<LayerId> existingLayers, List<Layer> newLayers) {
-		this.objectMapper = objectMapper;
+	ImageArchive(JsonMapper jsonMapper, ImageConfig imageConfig, Instant createDate, @Nullable ImageReference tag,
+			String os, @Nullable String architecture, @Nullable String variant, List<LayerId> existingLayers,
+			List<Layer> newLayers) {
+		this.jsonMapper = jsonMapper;
 		this.imageConfig = imageConfig;
 		this.createDate = createDate;
 		this.tag = tag;
@@ -117,7 +119,7 @@ public class ImageArchive implements TarArchive {
 	 * Return the tag of the archive.
 	 * @return the tag
 	 */
-	public ImageReference getTag() {
+	public @Nullable ImageReference getTag() {
 		return this.tag;
 	}
 
@@ -156,7 +158,7 @@ public class ImageArchive implements TarArchive {
 	private String writeConfig(Layout writer, List<LayerId> writtenLayers) throws IOException {
 		try {
 			ObjectNode config = createConfig(writtenLayers);
-			String json = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
+			String json = this.jsonMapper.writeValueAsString(config).replace("\r\n", "\n");
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			InspectedContent content = InspectedContent.of(Content.of(json), digest::update);
 			String name = LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
@@ -169,13 +171,13 @@ public class ImageArchive implements TarArchive {
 	}
 
 	private ObjectNode createConfig(List<LayerId> writtenLayers) {
-		ObjectNode config = this.objectMapper.createObjectNode();
+		ObjectNode config = this.jsonMapper.createObjectNode();
 		config.set("Config", this.imageConfig.getNodeCopy());
-		config.set("Created", config.textNode(getCreatedDate()));
+		config.set("Created", config.stringNode(getCreatedDate()));
 		config.set("History", createHistory(writtenLayers));
-		config.set("Os", config.textNode(this.os));
-		config.set("Architecture", config.textNode(this.architecture));
-		config.set("Variant", config.textNode(this.variant));
+		config.set("Os", config.stringNode(this.os));
+		config.set("Architecture", config.stringNode(this.architecture));
+		config.set("Variant", config.stringNode(this.variant));
 		config.set("RootFS", createRootFs(writtenLayers));
 		return config;
 	}
@@ -185,7 +187,7 @@ public class ImageArchive implements TarArchive {
 	}
 
 	private JsonNode createHistory(List<LayerId> writtenLayers) {
-		ArrayNode history = this.objectMapper.createArrayNode();
+		ArrayNode history = this.jsonMapper.createArrayNode();
 		int size = this.existingLayers.size() + writtenLayers.size();
 		for (int i = 0; i < size; i++) {
 			history.addObject();
@@ -194,7 +196,7 @@ public class ImageArchive implements TarArchive {
 	}
 
 	private JsonNode createRootFs(List<LayerId> writtenLayers) {
-		ObjectNode rootFs = this.objectMapper.createObjectNode();
+		ObjectNode rootFs = this.jsonMapper.createObjectNode();
 		ArrayNode diffIds = rootFs.putArray("diff_ids");
 		this.existingLayers.stream().map(Object::toString).forEach(diffIds::add);
 		writtenLayers.stream().map(Object::toString).forEach(diffIds::add);
@@ -203,14 +205,14 @@ public class ImageArchive implements TarArchive {
 
 	private void writeManifest(Layout writer, String config, List<LayerId> writtenLayers) throws IOException {
 		ArrayNode manifest = createManifest(config, writtenLayers);
-		String manifestJson = this.objectMapper.writeValueAsString(manifest);
+		String manifestJson = this.jsonMapper.writeValueAsString(manifest);
 		writer.file("manifest.json", Owner.ROOT, Content.of(manifestJson));
 	}
 
 	private ArrayNode createManifest(String config, List<LayerId> writtenLayers) {
-		ArrayNode manifest = this.objectMapper.createArrayNode();
+		ArrayNode manifest = this.jsonMapper.createArrayNode();
 		ObjectNode entry = manifest.addObject();
-		entry.set("Config", entry.textNode(config));
+		entry.set("Config", entry.stringNode(config));
 		entry.set("Layers", getManifestLayers(writtenLayers));
 		if (this.tag != null) {
 			entry.set("RepoTags", entry.arrayNode().add(this.tag.toString()));
@@ -219,7 +221,7 @@ public class ImageArchive implements TarArchive {
 	}
 
 	private ArrayNode getManifestLayers(List<LayerId> writtenLayers) {
-		ArrayNode layers = this.objectMapper.createArrayNode();
+		ArrayNode layers = this.jsonMapper.createArrayNode();
 		for (int i = 0; i < this.existingLayers.size(); i++) {
 			layers.add(EMPTY_LAYER_NAME_PREFIX + i);
 		}
@@ -257,9 +259,9 @@ public class ImageArchive implements TarArchive {
 
 		private ImageConfig config;
 
-		private Instant createDate;
+		private @Nullable Instant createDate;
 
-		private ImageReference tag;
+		private @Nullable ImageReference tag;
 
 		private final List<Layer> newLayers = new ArrayList<>();
 
@@ -271,7 +273,7 @@ public class ImageArchive implements TarArchive {
 		private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
 			update.accept(this);
 			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
-			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
+			return new ImageArchive(SharedJsonMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
 					this.image.getArchitecture(), this.image.getVariant(), this.image.getLayers(),
 					Collections.unmodifiableList(this.newLayers));
 		}

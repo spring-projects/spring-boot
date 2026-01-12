@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Jersey actuator web concerns.
  */
+@NullMarked
 package org.springframework.boot.jersey.autoconfigure.actuate.web;
+
+import org.jspecify.annotations.NullMarked;

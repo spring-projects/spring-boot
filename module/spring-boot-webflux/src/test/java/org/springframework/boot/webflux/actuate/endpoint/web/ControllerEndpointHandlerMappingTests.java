@@ -16,9 +16,11 @@
 
 package org.springframework.boot.webflux.actuate.endpoint.web;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Arrays;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.Access;
@@ -96,7 +98,8 @@ class ControllerEndpointHandlerMappingTests {
 			.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
-	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method, String requestURI) {
+	private @Nullable Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,
+			String requestURI) {
 		return mapping.getHandler(exchange(method, requestURI)).block(Duration.ofSeconds(30));
 	}
 
@@ -109,7 +112,9 @@ class ControllerEndpointHandlerMappingTests {
 	}
 
 	private HandlerMethod handlerOf(Object source, String methodName) {
-		return new HandlerMethod(source, ReflectionUtils.findMethod(source.getClass(), methodName));
+		Method method = ReflectionUtils.findMethod(source.getClass(), methodName);
+		assertThat(method).isNotNull();
+		return new HandlerMethod(source, method);
 	}
 
 	private MockServerWebExchange exchange(HttpMethod method, String requestURI) {

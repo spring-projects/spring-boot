@@ -38,7 +38,7 @@ class CouchbaseClientFactoryConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	CouchbaseClientFactory couchbaseClientFactory(Cluster cluster, CouchbaseDataProperties properties) {
+	CouchbaseClientFactory couchbaseClientFactory(Cluster cluster, DataCouchbaseProperties properties) {
 		return new SimpleCouchbaseClientFactory(cluster, properties.getBucketName(), properties.getScopeName());
 	}
 

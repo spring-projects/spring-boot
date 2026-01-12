@@ -49,6 +49,7 @@ class CommandLineBuilderTests {
 	public static final String CLASS_NAME = ClassWithMainMethod.class.getName();
 
 	@Test
+	@SuppressWarnings("NullAway") // Maven can't deal with @Nullable arrays / varargs
 	void buildWithNullJvmArgumentsIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withJvmArguments((String[]) null).build())
 			.containsExactly(CLASS_NAME);
@@ -76,10 +77,11 @@ class CommandLineBuilderTests {
 	@Test
 	void buildWithSystemProperty() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withSystemProperties(Map.of("flag", "enabled")).build())
-			.containsExactly("-Dflag=\"enabled\"", CLASS_NAME);
+			.containsExactly("-Dflag=enabled", CLASS_NAME);
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Maven can't deal with @Nullable arrays / varargs
 	void buildWithNullArgumentsIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withArguments((String[]) null).build())
 			.containsExactly(CLASS_NAME);

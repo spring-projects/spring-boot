@@ -16,13 +16,14 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.event.LoggingEvent;
 
 import org.springframework.boot.logging.StackTracePrinter;
-import org.springframework.util.Assert;
 
 /**
  * Functions to extract items from {@link LoggingEvent}.
@@ -42,19 +43,23 @@ class Extractor {
 	}
 
 	@Nullable String stackTrace(LogEvent event) {
-		return stackTrace(event.getThrownProxy());
+		return stackTrace(event.getThrown());
 	}
 
-	@Nullable String stackTrace(@Nullable ThrowableProxy throwableProxy) {
-		if (throwableProxy == null) {
+	@Nullable String stackTrace(@Nullable Throwable throwable) {
+		if (throwable == null) {
 			return null;
 		}
 		if (this.stackTracePrinter != null) {
-			Throwable throwable = throwableProxy.getThrowable();
-			Assert.state(throwable != null, "Proxy must return Throwable in order to print exception");
 			return this.stackTracePrinter.printStackTraceToString(throwable);
 		}
-		return throwableProxy.getExtendedStackTraceAsString();
+		return printStackTrace(throwable);
+	}
+
+	private static String printStackTrace(Throwable throwable) {
+		StringWriter stringWriter = new StringWriter();
+		throwable.printStackTrace(new PrintWriter(stringWriter));
+		return stringWriter.toString();
 	}
 
 }

@@ -21,8 +21,8 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link CqlSession} through a {@link CqlSessionBuilder} whilst retaining default
- * auto-configuration.
+ * {@link CqlSessionBuilder} to fine-tune its auto-configuration before it creates a
+ * {@link CqlSession}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

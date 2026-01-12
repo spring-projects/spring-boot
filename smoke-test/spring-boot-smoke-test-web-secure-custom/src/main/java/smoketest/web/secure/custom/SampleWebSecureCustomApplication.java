@@ -45,7 +45,7 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 	protected static class ApplicationSecurity {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();

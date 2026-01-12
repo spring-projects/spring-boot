@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -31,7 +30,7 @@ import org.springframework.boot.graphql.autoconfigure.GraphQlTestDataFetchers;
 import org.springframework.boot.graphql.autoconfigure.reactive.GraphQlWebFluxAutoConfiguration;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
@@ -80,7 +79,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
-@Disabled("Waiting on compatible release")
 class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/graphql";
@@ -89,7 +87,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 				CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
 				GraphQlWebFluxAutoConfiguration.class, GraphQlWebFluxSecurityAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class))
+				ReactiveWebSecurityAutoConfiguration.class))
 		.withUserConfiguration(DataFetchersConfiguration.class, SecurityConfig.class)
 		.withPropertyValues("spring.main.web-application-type=reactive");
 
@@ -155,8 +153,11 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById", (env) -> {
+				String id = env.getArgument("id");
+				assertThat(id).isNotNull();
+				return bookService.getBookdById(id);
+			}));
 		}
 
 		@Bean

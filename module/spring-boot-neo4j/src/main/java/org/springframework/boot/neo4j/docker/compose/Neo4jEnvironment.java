@@ -18,6 +18,7 @@ package org.springframework.boot.neo4j.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
 
@@ -29,9 +30,9 @@ import org.neo4j.driver.AuthTokens;
  */
 class Neo4jEnvironment {
 
-	private final AuthToken authToken;
+	private final @Nullable AuthToken authToken;
 
-	Neo4jEnvironment(Map<String, String> env) {
+	Neo4jEnvironment(Map<String, @Nullable String> env) {
 		AuthToken authToken = parse(env.get("NEO4J_AUTH"));
 		if (authToken == null && env.containsKey("NEO4J_PASSWORD")) {
 			authToken = parse("neo4j/" + env.get("NEO4J_PASSWORD"));
@@ -39,7 +40,7 @@ class Neo4jEnvironment {
 		this.authToken = authToken;
 	}
 
-	private AuthToken parse(String neo4jAuth) {
+	private @Nullable AuthToken parse(@Nullable String neo4jAuth) {
 		if (neo4jAuth == null) {
 			return null;
 		}
@@ -55,7 +56,7 @@ class Neo4jEnvironment {
 						+ " the neo4j user's password");
 	}
 
-	AuthToken getAuthToken() {
+	@Nullable AuthToken getAuthToken() {
 		return this.authToken;
 	}
 

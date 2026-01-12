@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.ReactiveHealthContributor;
 import org.springframework.boot.health.contributor.ReactiveHealthContributors;
 import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
@@ -38,7 +40,7 @@ class DefaultReactiveHealthContributorRegistryTests
 	@Override
 	protected AbstractRegistry<ReactiveHealthContributor, Entry> createRegistry(
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
+			@Nullable Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
 		return new DefaultReactiveHealthContributorRegistry(nameValidators, initialRegistrations);
 	}
 

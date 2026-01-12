@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
 import org.assertj.core.error.BasicErrorMessageFactory;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.TypeHint;
@@ -28,6 +29,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor.ConfigurationPropertiesReflectionHintsContribution;
@@ -38,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor}.
@@ -67,6 +70,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("test", new SampleProperties());
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(beanFactory);
+		assertThat(contribution).isNotNull();
 		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(SampleProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
 			.containsExactly(TypeReference.of(SampleProperties.class));
@@ -75,6 +79,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@Test
 	void javaBeanConfigurationPropertiesBindAsJavaBean() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(EnableJavaBeanProperties.class);
+		assertThat(contribution).isNotNull();
 		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(JavaBeanProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
 			.containsExactly(TypeReference.of(JavaBeanProperties.class));
@@ -84,6 +89,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void constructorBindingConfigurationPropertiesBindAsValueObject() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				EnableConstructorBindingProperties.class);
+		assertThat(contribution).isNotNull();
 		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
 			.hasType(ConstructorBindingProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
@@ -94,6 +100,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void possibleConstructorBindingPropertiesDefinedThroughBeanMethodBindAsJavaBean() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				PossibleConstructorBindingPropertiesBeanMethodConfiguration.class);
+		assertThat(contribution).isNotNull();
 		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN)
 			.hasType(PossibleConstructorBindingProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
@@ -104,6 +111,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void possibleConstructorBindingPropertiesDefinedThroughEnabledAnnotationBindAsValueObject() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				EnablePossibleConstructorBindingProperties.class);
+		assertThat(contribution).isNotNull();
 		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
 			.hasType(PossibleConstructorBindingProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
@@ -112,17 +120,18 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	private Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
 		TestGenerationContext generationContext = new TestGenerationContext();
-		contribution.applyTo(generationContext, null);
+		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
 		return generationContext.getRuntimeHints().reflection().typeHints();
 	}
 
-	private ConfigurationPropertiesReflectionHintsContribution process(Class<?> config) {
+	private @Nullable ConfigurationPropertiesReflectionHintsContribution process(Class<?> config) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(config)) {
 			return process(context.getBeanFactory());
 		}
 	}
 
-	private ConfigurationPropertiesReflectionHintsContribution process(ConfigurableListableBeanFactory beanFactory) {
+	private @Nullable ConfigurationPropertiesReflectionHintsContribution process(
+			ConfigurableListableBeanFactory beanFactory) {
 		return this.processor.processAheadOfTime(beanFactory);
 	}
 
@@ -144,13 +153,13 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@ConfigurationProperties("java-bean")
 	static class JavaBeanProperties {
 
-		private String value;
+		private @Nullable String value;
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
@@ -195,17 +204,17 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@ConfigurationProperties("possible-constructor-binding")
 	static class PossibleConstructorBindingProperties {
 
-		private String value;
+		private @Nullable String value;
 
 		PossibleConstructorBindingProperties(String arg) {
 
 		}
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 

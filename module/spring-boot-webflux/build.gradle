@@ -27,16 +27,17 @@ description = "Spring Boot WebFlux"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-http-codec"))
 	api("org.springframework:spring-webflux")
 
-	implementation(project(":module:spring-boot-http-codec"))
 	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-metrics"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-micrometer-observation"))
+	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-validation"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("org.springframework.security:spring-security-core")
@@ -47,7 +48,6 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-jackson"))
-	testImplementation(project(":module:spring-boot-mustache"))
 	testImplementation(project(":module:spring-boot-reactor-netty"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -57,6 +57,9 @@ dependencies {
 	testImplementation("org.aspectj:aspectjweaver")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

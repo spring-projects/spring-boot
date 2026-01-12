@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class LinkTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenHrefIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Link(null))
 			.withMessageContaining("'href' must not be null");

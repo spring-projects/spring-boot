@@ -50,6 +50,11 @@ public class ElasticsearchProperties {
 	private @Nullable String password;
 
 	/**
+	 * API key for authentication with Elasticsearch.
+	 */
+	private @Nullable String apiKey;
+
+	/**
 	 * Connection timeout used when communicating with Elasticsearch.
 	 */
 	private Duration connectionTimeout = Duration.ofSeconds(1);
@@ -62,7 +67,7 @@ public class ElasticsearchProperties {
 	/**
 	 * Whether to enable socket keep alive between client and Elasticsearch.
 	 */
-	private boolean socketKeepAlive = false;
+	private boolean socketKeepAlive = true;
 
 	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
@@ -93,6 +98,14 @@ public class ElasticsearchProperties {
 
 	public void setPassword(@Nullable String password) {
 		this.password = password;
+	}
+
+	public @Nullable String getApiKey() {
+		return this.apiKey;
+	}
+
+	public void setApiKey(@Nullable String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	public Duration getConnectionTimeout() {
@@ -148,6 +161,11 @@ public class ElasticsearchProperties {
 		public static class Sniffer {
 
 			/**
+			 * Whether the sniffer is enabled.
+			 */
+			private boolean enabled;
+
+			/**
 			 * Interval between consecutive ordinary sniff executions.
 			 */
 			private Duration interval = Duration.ofMinutes(5);
@@ -156,6 +174,14 @@ public class ElasticsearchProperties {
 			 * Delay of a sniff execution scheduled after a failure.
 			 */
 			private Duration delayAfterFailure = Duration.ofMinutes(1);
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
 
 			public Duration getInterval() {
 				return this.interval;

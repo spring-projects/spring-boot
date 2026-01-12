@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
 import org.tomlj.Toml;
 import org.tomlj.TomlParseResult;
 
@@ -39,9 +40,9 @@ final class BuildpackCoordinates {
 
 	private final String id;
 
-	private final String version;
+	private final @Nullable String version;
 
-	private BuildpackCoordinates(String id, String version) {
+	private BuildpackCoordinates(String id, @Nullable String version) {
 		Assert.hasText(id, "'id' must not be empty");
 		this.id = id;
 		this.version = version;
@@ -59,12 +60,12 @@ final class BuildpackCoordinates {
 		return this.id.replace("/", "_");
 	}
 
-	String getVersion() {
+	@Nullable String getVersion() {
 		return this.version;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -105,15 +106,15 @@ final class BuildpackCoordinates {
 	private static BuildpackCoordinates fromToml(TomlParseResult toml, Path path) {
 		Assert.isTrue(!toml.isEmpty(),
 				() -> "Buildpack descriptor 'buildpack.toml' is required in buildpack '" + path + "'");
-		Assert.hasText(toml.getString("buildpack.id"),
-				() -> "Buildpack descriptor must contain ID in buildpack '" + path + "'");
+		String buildpackId = toml.getString("buildpack.id");
+		Assert.hasText(buildpackId, () -> "Buildpack descriptor must contain ID in buildpack '" + path + "'");
 		Assert.hasText(toml.getString("buildpack.version"),
 				() -> "Buildpack descriptor must contain version in buildpack '" + path + "'");
 		Assert.isTrue(toml.contains("stacks") || toml.contains("order"),
 				() -> "Buildpack descriptor must contain either 'stacks' or 'order' in buildpack '" + path + "'");
 		Assert.isTrue(!(toml.contains("stacks") && toml.contains("order")),
 				() -> "Buildpack descriptor must not contain both 'stacks' and 'order' in buildpack '" + path + "'");
-		return new BuildpackCoordinates(toml.getString("buildpack.id"), toml.getString("buildpack.version"));
+		return new BuildpackCoordinates(buildpackId, toml.getString("buildpack.version"));
 	}
 
 	/**
@@ -133,7 +134,7 @@ final class BuildpackCoordinates {
 	 * @param version the buildpack version
 	 * @return a new {@link BuildpackCoordinates} instance
 	 */
-	static BuildpackCoordinates of(String id, String version) {
+	static BuildpackCoordinates of(String id, @Nullable String version) {
 		return new BuildpackCoordinates(id, version);
 	}
 

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -63,9 +65,9 @@ import static org.mockito.Mockito.mock;
 @ExtendWith({ OutputCaptureExtension.class, MockRestarter.class })
 class RemoteClientConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
+	private @Nullable AnnotationConfigServletWebServerApplicationContext context;
 
-	private AnnotationConfigApplicationContext clientContext;
+	private @Nullable AnnotationConfigApplicationContext clientContext;
 
 	@AfterEach
 	void cleanup() {
@@ -102,31 +104,38 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void liveReloadOnClassPathChanged() throws Exception {
-		configure();
+	void liveReloadOnClassPathChanged() {
+		configure("spring.devtools.livereload.enabled:true");
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
+		assertThat(this.clientContext).isNotNull();
 		this.clientContext.publishEvent(event);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
 		Awaitility.await().atMost(Duration.ofMinutes(1)).untilAsserted(() -> then(server).should().triggerReload());
 	}
 
 	@Test
-	void liveReloadDisabled() {
-		configure("spring.devtools.livereload.enabled:false");
+	void liveReloadDisabledByDefault() {
+		configure();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
+			.isThrownBy(() -> getContext().getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+			.isThrownBy(() -> getContext().getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {
 		configure("http://localhost", true, pairs);
+	}
+
+	private AnnotationConfigServletWebServerApplicationContext getContext() {
+		AnnotationConfigServletWebServerApplicationContext context = this.context;
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	private void configure(String remoteUrl, boolean setSecret, String... pairs) {
@@ -143,7 +152,9 @@ class RemoteClientConfigurationTests {
 		if (setSecret) {
 			TestPropertyValues.of("spring.devtools.remote.secret:secret").applyTo(this.clientContext);
 		}
-		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":" + this.context.getWebServer().getPort();
+		WebServer webServer = this.context.getWebServer();
+		assertThat(webServer).isNotNull();
+		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":" + webServer.getPort();
 		TestPropertyValues.of(remoteUrlProperty).applyTo(this.clientContext);
 		this.clientContext.refresh();
 	}

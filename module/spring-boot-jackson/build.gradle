@@ -26,18 +26,21 @@ description = "Spring Boot Jackson"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("com.fasterxml.jackson.core:jackson-databind")
-
-	implementation("org.springframework:spring-web")
+	api("tools.jackson.core:jackson-databind")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
-	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
-	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	optional("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
-	optional("com.fasterxml.jackson.module:jackson-module-parameter-names")
+	optional(project(":core:spring-boot-test-autoconfigure"))
+	optional("org.springframework:spring-web")
+	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
+	optional("tools.jackson.dataformat:jackson-dataformat-xml")
+	optional("tools.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("tools.jackson.module:jackson-module-kotlin")
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

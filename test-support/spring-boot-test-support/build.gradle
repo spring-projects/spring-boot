@@ -61,3 +61,7 @@ dependencies {
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
 }
+
+nullability {
+	requireExplicitNullMarking = false
+}

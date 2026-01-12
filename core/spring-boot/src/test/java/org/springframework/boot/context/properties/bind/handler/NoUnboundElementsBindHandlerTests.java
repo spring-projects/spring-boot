@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
@@ -42,7 +43,7 @@ class NoUnboundElementsBindHandlerTests {
 
 	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
+	private @Nullable Binder binder;
 
 	@Test
 	void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
@@ -73,11 +74,14 @@ class NoUnboundElementsBindHandlerTests {
 		source.put("example.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		assertThatExceptionOfType(BindException.class)
-			.isThrownBy(
-					() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
-			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-				.contains("The elements [example.baz] were left unbound"));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> {
+			assertThat(this.binder).isNotNull();
+			this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler());
+		}).satisfies((ex) -> {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isNotNull();
+			assertThat(cause.getMessage()).contains("The elements [example.baz] were left unbound");
+		});
 	}
 
 	@Test
@@ -126,11 +130,14 @@ class NoUnboundElementsBindHandlerTests {
 		source.put("example.foo[0]", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		assertThatExceptionOfType(BindException.class)
-			.isThrownBy(
-					() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
-			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-				.contains("The elements [example.foo[0]] were left unbound"));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> {
+			assertThat(this.binder).isNotNull();
+			this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler());
+		}).satisfies((ex) -> {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isNotNull();
+			assertThat(cause.getMessage()).contains("The elements [example.foo[0]] were left unbound");
+		});
 	}
 
 	@Test
@@ -148,7 +155,9 @@ class NoUnboundElementsBindHandlerTests {
 		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler();
 		ExampleWithNestedList bound = this.binder.bind("example", Bindable.of(ExampleWithNestedList.class), handler)
 			.get();
-		assertThat(bound.getNested().get(0).getStringValue()).isEqualTo("bar");
+		List<Nested> nested = bound.getNested();
+		assertThat(nested).isNotNull();
+		assertThat(nested.get(0).getStringValue()).isEqualTo("bar");
 	}
 
 	@Test
@@ -162,22 +171,25 @@ class NoUnboundElementsBindHandlerTests {
 		this.sources.add(source1);
 		this.sources.add(source2);
 		this.binder = new Binder(this.sources);
-		assertThatExceptionOfType(BindException.class)
-			.isThrownBy(() -> this.binder.bind("example", Bindable.of(ExampleWithNestedList.class),
-					new NoUnboundElementsBindHandler()))
-			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-				.contains("The elements [example.nested[1].invalid] were left unbound"));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> {
+			assertThat(this.binder).isNotNull();
+			this.binder.bind("example", Bindable.of(ExampleWithNestedList.class), new NoUnboundElementsBindHandler());
+		}).satisfies((ex) -> {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isNotNull();
+			assertThat(cause.getMessage()).contains("The elements [example.nested[1].invalid] were left unbound");
+		});
 	}
 
 	static class Example {
 
-		private String foo;
+		private @Nullable String foo;
 
-		String getFoo() {
+		@Nullable String getFoo() {
 			return this.foo;
 		}
 
-		void setFoo(String foo) {
+		void setFoo(@Nullable String foo) {
 			this.foo = foo;
 		}
 
@@ -185,13 +197,13 @@ class NoUnboundElementsBindHandlerTests {
 
 	static class ExampleWithList {
 
-		private List<String> foo;
+		private @Nullable List<String> foo;
 
-		List<String> getFoo() {
+		@Nullable List<String> getFoo() {
 			return this.foo;
 		}
 
-		void setFoo(List<String> foo) {
+		void setFoo(@Nullable List<String> foo) {
 			this.foo = foo;
 		}
 
@@ -199,13 +211,13 @@ class NoUnboundElementsBindHandlerTests {
 
 	static class ExampleWithNestedList {
 
-		private List<Nested> nested;
+		private @Nullable List<Nested> nested;
 
-		List<Nested> getNested() {
+		@Nullable List<Nested> getNested() {
 			return this.nested;
 		}
 
-		void setNested(List<Nested> nested) {
+		void setNested(@Nullable List<Nested> nested) {
 			this.nested = nested;
 		}
 
@@ -213,33 +225,33 @@ class NoUnboundElementsBindHandlerTests {
 
 	static class Nested {
 
-		private String stringValue;
+		private @Nullable String stringValue;
 
-		private Integer intValue;
+		private @Nullable Integer intValue;
 
-		private OtherNested otherNested;
+		private @Nullable OtherNested otherNested;
 
-		String getStringValue() {
+		@Nullable String getStringValue() {
 			return this.stringValue;
 		}
 
-		void setStringValue(String value) {
+		void setStringValue(@Nullable String value) {
 			this.stringValue = value;
 		}
 
-		Integer getIntValue() {
+		@Nullable Integer getIntValue() {
 			return this.intValue;
 		}
 
-		void setIntValue(Integer intValue) {
+		void setIntValue(@Nullable Integer intValue) {
 			this.intValue = intValue;
 		}
 
-		OtherNested getOtherNested() {
+		@Nullable OtherNested getOtherNested() {
 			return this.otherNested;
 		}
 
-		void setOtherNested(OtherNested otherNested) {
+		void setOtherNested(@Nullable OtherNested otherNested) {
 			this.otherNested = otherNested;
 		}
 
@@ -247,13 +259,13 @@ class NoUnboundElementsBindHandlerTests {
 
 	static class OtherNested {
 
-		private String baz;
+		private @Nullable String baz;
 
-		String getBaz() {
+		@Nullable String getBaz() {
 			return this.baz;
 		}
 
-		void setBaz(String baz) {
+		void setBaz(@Nullable String baz) {
 			this.baz = baz;
 		}
 

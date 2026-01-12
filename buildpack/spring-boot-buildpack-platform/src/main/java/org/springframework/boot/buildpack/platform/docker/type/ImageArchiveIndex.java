@@ -21,9 +21,10 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.Assert;
 
 /**
  * Image archive index information as provided by {@code index.json}.
@@ -42,8 +43,14 @@ public class ImageArchiveIndex extends MappedObject {
 
 	protected ImageArchiveIndex(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.schemaVersion = valueAt("/schemaVersion", Integer.class);
+		this.schemaVersion = extractSchemaVersion();
 		this.manifests = childrenAt("/manifests", BlobReference::new);
+	}
+
+	private Integer extractSchemaVersion() {
+		Integer result = valueAt("/schemaVersion", Integer.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	public Integer getSchemaVersion() {

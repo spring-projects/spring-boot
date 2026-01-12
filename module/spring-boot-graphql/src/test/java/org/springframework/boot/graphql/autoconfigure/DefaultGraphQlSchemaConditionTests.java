@@ -18,6 +18,7 @@ package org.springframework.boot.graphql.autoconfigure;
 
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -78,7 +79,7 @@ class DefaultGraphQlSchemaConditionTests {
 		assertThat(context.getBean("success")).isEqualTo("success");
 	}
 
-	private String conditionReportMessage(AssertableApplicationContext context) {
+	private @Nullable String conditionReportMessage(AssertableApplicationContext context) {
 		Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
 			.get(context.getSourceApplicationContext().getBeanFactory())
 			.getConditionAndOutcomesBySource()

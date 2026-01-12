@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Demonstrate that deprecating accessor with not the same type is not taken into account
@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("not.deprecated")
+@TestConfigurationProperties("not.deprecated")
 public class DeprecatedLessPreciseTypePojo {
 
 	private boolean flag;

@@ -32,7 +32,7 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
-import org.assertj.core.api.Assertions;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -79,9 +79,9 @@ import static org.mockito.Mockito.mock;
  */
 class NettyRSocketServerFactoryTests {
 
-	private NettyRSocketServer server;
+	private @Nullable NettyRSocketServer server;
 
-	private RSocketRequester requester;
+	private @Nullable RSocketRequester requester;
 
 	@AfterEach
 	void tearDown() {
@@ -111,10 +111,15 @@ class NettyRSocketServerFactoryTests {
 			factory.setPort(0);
 			this.server = factory.create(new EchoRequestResponseAcceptor());
 			this.server.start();
-			return this.server.address().getPort();
+			InetSocketAddress address = this.server.address();
+			assertThat(address).isNotNull();
+			return address.getPort();
 		});
 		this.requester = createRSocketTcpClient();
-		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
+		assertThat(this.server).isNotNull();
+		InetSocketAddress address = this.server.address();
+		assertThat(address).isNotNull();
+		assertThat(address.getPort()).isEqualTo(specificPort);
 		checkEchoRequest();
 	}
 
@@ -264,6 +269,7 @@ class NettyRSocketServerFactoryTests {
 
 	private void checkEchoRequest() {
 		String payload = "test payload";
+		assertThat(this.requester).isNotNull();
 		Mono<String> response = this.requester.route("test").data(payload).retrieveMono(String.class);
 		StepVerifier.create(response).expectNext(payload).expectComplete().verify(Duration.ofSeconds(30));
 	}
@@ -375,8 +381,9 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private HttpClient createHttpClient() {
-		Assertions.assertThat(this.server).isNotNull();
+		assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
+		assertThat(address).isNotNull();
 		return HttpClient.create().host(address.getHostName()).port(address.getPort());
 	}
 
@@ -389,8 +396,9 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private TcpClient createTcpClient() {
-		Assertions.assertThat(this.server).isNotNull();
+		assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
+		assertThat(address).isNotNull();
 		return TcpClient.create().host(address.getHostName()).port(address.getPort());
 	}
 

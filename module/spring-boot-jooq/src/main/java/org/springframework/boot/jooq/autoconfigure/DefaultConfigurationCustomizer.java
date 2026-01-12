@@ -20,7 +20,7 @@ import org.jooq.impl.DefaultConfiguration;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link DefaultConfiguration} whilst retaining default auto-configuration.
+ * {@link DefaultConfiguration} to fine-tune its auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

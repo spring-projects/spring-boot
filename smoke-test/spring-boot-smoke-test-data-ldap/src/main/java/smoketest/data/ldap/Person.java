@@ -18,6 +18,8 @@ package smoketest.data.ldap;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
@@ -26,10 +28,10 @@ import org.springframework.ldap.odm.annotations.Id;
 public class Person {
 
 	@Id
-	private Name dn;
+	private @Nullable Name dn;
 
 	@Attribute(name = "telephoneNumber")
-	private String phone;
+	private @Nullable String phone;
 
 	@Override
 	public String toString() {

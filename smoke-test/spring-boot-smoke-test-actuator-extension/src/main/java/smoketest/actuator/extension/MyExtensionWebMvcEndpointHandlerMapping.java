@@ -23,6 +23,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -40,7 +41,7 @@ class MyExtensionWebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHand
 	private final EndpointLinksResolver linksResolver;
 
 	MyExtensionWebMvcEndpointHandlerMapping(Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
+			EndpointMediaTypes endpointMediaTypes, @Nullable CorsConfiguration corsConfiguration) {
 		super(new EndpointMapping(PATH), endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.linksResolver = new EndpointLinksResolver(endpoints, PATH);
 		setOrder(-100);

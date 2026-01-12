@@ -48,7 +48,7 @@ public class MappingsEndpoint {
 	@ReadOperation
 	public ApplicationMappingsDescriptor mappings() {
 		ApplicationContext target = this.context;
-		Map<String, ContextMappingsDescriptor> contextMappings = new HashMap<>();
+		Map<@Nullable String, ContextMappingsDescriptor> contextMappings = new HashMap<>();
 		while (target != null) {
 			contextMappings.put(target.getId(), mappingsForContext(target));
 			target = target.getParent();
@@ -69,13 +69,13 @@ public class MappingsEndpoint {
 	 */
 	public static final class ApplicationMappingsDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextMappingsDescriptor> contextMappings;
+		private final Map<@Nullable String, ContextMappingsDescriptor> contextMappings;
 
-		private ApplicationMappingsDescriptor(Map<String, ContextMappingsDescriptor> contextMappings) {
+		private ApplicationMappingsDescriptor(Map<@Nullable String, ContextMappingsDescriptor> contextMappings) {
 			this.contextMappings = contextMappings;
 		}
 
-		public Map<String, ContextMappingsDescriptor> getContexts() {
+		public Map<@Nullable String, ContextMappingsDescriptor> getContexts() {
 			return this.contextMappings;
 		}
 

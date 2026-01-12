@@ -33,7 +33,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { AbstractErrorPageTests.TestConfiguration.class, NoSessionErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
-		properties = { "server.error.include-message=always", "spring.security.user.name=username",
+		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password" })
 class NoSessionErrorPageTests extends AbstractErrorPageTests {
 
@@ -45,7 +45,7 @@ class NoSessionErrorPageTests extends AbstractErrorPageTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 			http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((requests) -> {
 					requests.requestMatchers("/public/**").permitAll();

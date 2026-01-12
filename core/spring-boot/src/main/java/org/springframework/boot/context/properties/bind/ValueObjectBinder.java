@@ -83,7 +83,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		Assert.state(targetType != null, "'targetType' must not be null");
 		context.pushConstructorBoundTypes(targetType);
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
-		List<Object> args = new ArrayList<>(parameters.size());
+		List<@Nullable Object> args = new ArrayList<>(parameters.size());
 		boolean bound = false;
 		for (ConstructorParameter parameter : parameters) {
 			Object arg = parameter.bind(propertyBinder);
@@ -103,7 +103,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			return null;
 		}
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
-		List<Object> args = new ArrayList<>(parameters.size());
+		List<@Nullable Object> args = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
 			args.add(getDefaultValue(context, parameter));
 		}
@@ -203,7 +203,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.constructor = constructor;
 		}
 
-		T instantiate(List<Object> args) {
+		T instantiate(List<@Nullable Object> args) {
 			return BeanUtils.instantiateClass(this.constructor, args.toArray());
 		}
 
@@ -283,12 +283,13 @@ class ValueObjectBinder implements DataObjectBinder {
 				ResolvableType parameterType = ResolvableType
 					.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
 				Annotation[] annotations = parameter.getAnnotations().toArray(ANNOTATION_ARRAY);
+				Assert.state(name != null, "'name' must not be null");
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
 		}
 
-		private String getParameterName(KParameter parameter) {
+		private @Nullable String getParameterName(KParameter parameter) {
 			return MergedAnnotations.from(parameter, parameter.getAnnotations().toArray(ANNOTATION_ARRAY))
 				.get(Name.class)
 				.getValue(MergedAnnotation.VALUE, String.class)

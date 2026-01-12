@@ -79,10 +79,11 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 		.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class, FailingControllerEndpoint.class)
 		.withInitializer(new ServerPortInfoApplicationContextInitializer())
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*",
-				"server.error.include-exception=true", "server.error.include-message=always",
-				"server.error.include-binding-errors=always");
+				"spring.web.error.include-exception=true", "spring.web.error.include-message=always",
+				"spring.web.error.include-binding-errors=always");
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test // gh-17938
@@ -101,7 +102,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	@Test
 	void errorPageAndErrorControllerIncludeDetails() {
-		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-message=always")
+		this.runner
+			.withPropertyValues("spring.web.error.include-stacktrace=always", "spring.web.error.include-message=always")
 			.run(withRestClient((client) -> {
 				Map<String, ?> body = client.get()
 					.uri("actuator/fail")
@@ -188,8 +190,12 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	}
 
 	private ExchangeFunction<Map<String, ?>> toResponseBody() {
-		return ((request, response) -> response.bodyTo(new ParameterizedTypeReference<Map<String, ?>>() {
-		}));
+		return (request, response) -> {
+			Map<String, ?> body = response.bodyTo(new ParameterizedTypeReference<>() {
+			});
+			assertThat(body).isNotNull();
+			return body;
+		};
 	}
 
 	@Endpoint(id = "fail")
@@ -232,6 +238,7 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	public static class TestBody {
 
 		@NotEmpty
+		@SuppressWarnings("NullAway.Init")
 		private String content;
 
 		public String getContent() {

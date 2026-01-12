@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for Kafka"
+description = "Starter for using Apache Kafka"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))

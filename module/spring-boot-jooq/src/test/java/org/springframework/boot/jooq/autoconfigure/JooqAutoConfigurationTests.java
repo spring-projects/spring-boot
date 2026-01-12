@@ -361,7 +361,7 @@ class JooqAutoConfigurationTests {
 
 		@Override
 		public ExecuteListener provide() {
-			return null;
+			return mock(ExecuteListener.class);
 		}
 
 	}

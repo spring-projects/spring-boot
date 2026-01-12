@@ -16,6 +16,8 @@
 
 package org.springframework.boot.maven;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.util.Assert;
 
@@ -27,7 +29,7 @@ import org.springframework.util.Assert;
  */
 public class CacheInfo {
 
-	private Cache cache;
+	private @Nullable Cache cache;
 
 	public CacheInfo() {
 	}
@@ -38,24 +40,32 @@ public class CacheInfo {
 
 	public void setVolume(VolumeCacheInfo info) {
 		Assert.state(this.cache == null, "Each image building cache can be configured only once");
-		this.cache = Cache.volume(info.getName());
+		String name = info.getName();
+		Assert.state(name != null, "'name' must not be null");
+		this.cache = Cache.volume(name);
 	}
 
 	public void setBind(BindCacheInfo info) {
 		Assert.state(this.cache == null, "Each image building cache can be configured only once");
-		this.cache = Cache.bind(info.getSource());
+		String source = info.getSource();
+		Assert.state(source != null, "'source' must not be null");
+		this.cache = Cache.bind(source);
 	}
 
-	Cache asCache() {
+	@Nullable Cache asCache() {
 		return this.cache;
 	}
 
 	static CacheInfo fromVolume(VolumeCacheInfo cacheInfo) {
-		return new CacheInfo(Cache.volume(cacheInfo.getName()));
+		String name = cacheInfo.getName();
+		Assert.state(name != null, "'name' must not be null");
+		return new CacheInfo(Cache.volume(name));
 	}
 
 	static CacheInfo fromBind(BindCacheInfo cacheInfo) {
-		return new CacheInfo(Cache.bind(cacheInfo.getSource()));
+		String source = cacheInfo.getSource();
+		Assert.state(source != null, "'source' must not be null");
+		return new CacheInfo(Cache.bind(source));
 	}
 
 	/**
@@ -63,7 +73,7 @@ public class CacheInfo {
 	 */
 	public static class VolumeCacheInfo {
 
-		private String name;
+		private @Nullable String name;
 
 		public VolumeCacheInfo() {
 		}
@@ -72,11 +82,11 @@ public class CacheInfo {
 			this.name = name;
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -87,7 +97,7 @@ public class CacheInfo {
 	 */
 	public static class BindCacheInfo {
 
-		private String source;
+		private @Nullable String source;
 
 		public BindCacheInfo() {
 		}
@@ -96,11 +106,11 @@ public class CacheInfo {
 			this.source = name;
 		}
 
-		public String getSource() {
+		public @Nullable String getSource() {
 			return this.source;
 		}
 
-		void setSource(String source) {
+		void setSource(@Nullable String source) {
 			this.source = source;
 		}
 

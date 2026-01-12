@@ -38,11 +38,6 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "rabbit-bitnami-compose.yaml", image = TestImage.BITNAMI_RABBITMQ)
-	void runWithBitnamiImageCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-	}
-
 	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");

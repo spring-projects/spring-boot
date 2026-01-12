@@ -29,6 +29,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,15 +58,19 @@ import static org.mockito.Mockito.mock;
 class ServletEndpointRegistrarTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletRegistration.Dynamic servletDynamic;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private FilterRegistration.Dynamic filterDynamic;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenServletEndpointsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletEndpointRegistrar(null, null))
 			.withMessageContaining("'servletEndpoints' must not be null");
@@ -91,7 +96,7 @@ class ServletEndpointRegistrarTests {
 		assertBasePath("/", "/test/*");
 	}
 
-	private void assertBasePath(String basePath, String expectedMapping) throws ServletException {
+	private void assertBasePath(@Nullable String basePath, String expectedMapping) throws ServletException {
 		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint),

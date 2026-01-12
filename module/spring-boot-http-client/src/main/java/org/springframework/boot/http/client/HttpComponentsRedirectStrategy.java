@@ -23,6 +23,7 @@ import org.apache.hc.client5.http.protocol.RedirectStrategy;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.protocol.HttpContext;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Adapts {@link HttpRedirects} to an
@@ -36,7 +37,10 @@ final class HttpComponentsRedirectStrategy {
 	private HttpComponentsRedirectStrategy() {
 	}
 
-	static RedirectStrategy get(HttpRedirects redirects) {
+	static RedirectStrategy get(@Nullable HttpRedirects redirects) {
+		if (redirects == null) {
+			return DefaultRedirectStrategy.INSTANCE;
+		}
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
 			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;
@@ -59,7 +63,7 @@ final class HttpComponentsRedirectStrategy {
 		}
 
 		@Override
-		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context) {
+		public @Nullable URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context) {
 			return null;
 		}
 

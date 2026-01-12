@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A {@link DataSourcePoolMetadataProvider} implementation that returns the first
  * {@link DataSourcePoolMetadata} that is found by one of its delegate.
@@ -38,12 +40,13 @@ public class CompositeDataSourcePoolMetadataProvider implements DataSourcePoolMe
 	 * collection of delegates to use.
 	 * @param providers the data source pool metadata providers
 	 */
-	public CompositeDataSourcePoolMetadataProvider(Collection<? extends DataSourcePoolMetadataProvider> providers) {
+	public CompositeDataSourcePoolMetadataProvider(
+			@Nullable Collection<? extends DataSourcePoolMetadataProvider> providers) {
 		this.providers = (providers != null) ? List.copyOf(providers) : Collections.emptyList();
 	}
 
 	@Override
-	public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
+	public @Nullable DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 		for (DataSourcePoolMetadataProvider provider : this.providers) {
 			DataSourcePoolMetadata metadata = provider.getDataSourcePoolMetadata(dataSource);
 			if (metadata != null) {

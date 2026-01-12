@@ -28,7 +28,10 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class StaticResourceJarsTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
@@ -75,6 +79,7 @@ class StaticResourceJarsTests {
 	}
 
 	@Test
+	@DisabledForJreRange(min = JRE.JAVA_25) // Requires -Djdk.net.file.ftpfallback=true
 	void uncPathsAreTolerated() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL(),
@@ -98,11 +103,16 @@ class StaticResourceJarsTests {
 		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
 		try {
 			new StaticResourceJars().getUrlsFrom(url);
-			assertThatNoException()
-				.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment());
+			assertThatNoException().isThrownBy(() -> {
+				JarURLConnection connection = (JarURLConnection) handler.getConnection();
+				assertThat(connection).isNotNull();
+				connection.getJarFile().getComment();
+			});
 		}
 		finally {
-			((JarURLConnection) handler.getConnection()).getJarFile().close();
+			JarURLConnection connection = (JarURLConnection) handler.getConnection();
+			assertThat(connection).isNotNull();
+			connection.getJarFile().close();
 		}
 	}
 
@@ -112,9 +122,11 @@ class StaticResourceJarsTests {
 		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(false);
 		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
 		new StaticResourceJars().getUrlsFrom(url);
-		assertThatIllegalStateException()
-			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment())
-			.withMessageContaining("closed");
+		assertThatIllegalStateException().isThrownBy(() -> {
+			JarURLConnection connection = (JarURLConnection) handler.getConnection();
+			assertThat(connection).isNotNull();
+			connection.getJarFile().getComment();
+		}).withMessageContaining("closed");
 	}
 
 	private File createResourcesJar(String name) throws IOException {
@@ -134,7 +146,7 @@ class StaticResourceJarsTests {
 		return createJar(name, null);
 	}
 
-	private File createJar(String name, Consumer<JarOutputStream> customizer) throws IOException {
+	private File createJar(String name, @Nullable Consumer<JarOutputStream> customizer) throws IOException {
 		File jarFile = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
 		if (customizer != null) {
@@ -148,7 +160,7 @@ class StaticResourceJarsTests {
 
 		private final boolean useCaches;
 
-		private URLConnection connection;
+		private @Nullable URLConnection connection;
 
 		TrackedURLStreamHandler(boolean useCaches) {
 			this.useCaches = useCaches;
@@ -161,7 +173,7 @@ class StaticResourceJarsTests {
 			return this.connection;
 		}
 
-		URLConnection getConnection() {
+		@Nullable URLConnection getConnection() {
 			return this.connection;
 		}
 

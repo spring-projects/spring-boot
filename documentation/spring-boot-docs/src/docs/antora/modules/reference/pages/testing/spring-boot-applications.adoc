@@ -10,7 +10,7 @@ The annotation works by xref:testing/spring-boot-applications.adoc#testing.sprin
 In addition to javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] a number of other annotations are also provided for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[testing more specific slices] of an application.
 
 TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
+If you are using JUnit 6, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
 
 By default, javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] will not start a server.
 You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] to further refine how your tests run:
@@ -18,10 +18,10 @@ You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.t
 * `MOCK`(Default) : Loads a web javadoc:org.springframework.context.ApplicationContext[] and provides a mock web environment.
 Embedded servers are not started when using this annotation.
 If a web environment is not available on your classpath, this mode transparently falls back to creating a regular non-web javadoc:org.springframework.context.ApplicationContext[].
-It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc` or javadoc:org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient[format=annotation]] for mock-based testing of your web application.
-* `RANDOM_PORT`: Loads a javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] and provides a real web environment.
+It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc`, javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation]], or javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation]] for mock-based testing of your web application.
+* `RANDOM_PORT`: Loads a javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] and provides a real web environment.
 Embedded servers are started and listen on a random port.
-* `DEFINED_PORT`: Loads a javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] and provides a real web environment.
+* `DEFINED_PORT`: Loads a javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] and provides a real web environment.
 Embedded servers are started and listen on a defined port (from your `application.properties`) or on the default port of `8080`.
 * `NONE`: Loads an javadoc:org.springframework.context.ApplicationContext[] by using javadoc:org.springframework.boot.SpringApplication[] but does not provide _any_ web environment (mock or otherwise).
 
@@ -141,17 +141,18 @@ include-code::MyApplicationArgumentTests[]
 By default, javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] does not start the server but instead sets up a mock environment for testing web endpoints.
 
 With Spring MVC, we can query our web endpoints using {url-spring-framework-docs}/testing/mockmvc.html[`MockMvc`].
-Three integrations are available:
+The following integrations are available:
 
 * The regular {url-spring-framework-docs}/testing/mockmvc/hamcrest.html[`MockMvc`] that uses Hamcrest.
 * {url-spring-framework-docs}/testing/mockmvc/assertj.html[`MockMvcTester`] that wraps javadoc:org.springframework.test.web.servlet.MockMvc[] and uses AssertJ.
+* {url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] where javadoc:org.springframework.test.web.servlet.MockMvc[] is plugged in as the server to handle requests with.
 * {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] where javadoc:org.springframework.test.web.servlet.MockMvc[] is plugged in as the server to handle requests with.
 
 The following example showcases the available integrations:
 
 include-code::MyMockMvcTests[]
 
-TIP: If you want to focus only on the web layer and not start a complete javadoc:org.springframework.context.ApplicationContext[], consider xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-mvc-tests[using javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] instead].
+TIP: If you want to focus only on the web layer and not start a complete javadoc:org.springframework.context.ApplicationContext[], consider xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-mvc-tests[using javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] instead].
 
 With Spring WebFlux endpoints, you can use {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] as shown in the following example:
 
@@ -176,23 +177,48 @@ If you need to start a full running server, we recommend that you use random por
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
 The javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation can be used to xref:how-to:webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
-For convenience, tests that need to make REST calls to the started server can additionally autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+
+Tests that need to make REST calls to the started server can autowire a
+{url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] by annotating the test class with javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation].
+
+The configured client resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+
+include-code::MyRandomPortRestTestClientTests[]
+
+If you prefer to use AssertJ, dedicated assertions are available from javadoc:org.springframework.test.web.servlet.client.assertj.RestTestClientResponse[], as shown in the following example:
+
+include-code::MyRandomPortRestTestClientAssertJTests[]
+
+If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] by annotating the test class with javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation].
+
+`WebTestClient` provides a similar API, as shown in the following example:
 
 include-code::MyRandomPortWebTestClientTests[]
 
-TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient[format=annotation].
+TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also be used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation] from `spring-boot-webflux-test`.
 
-This setup requires `spring-webflux` on the classpath.
-If you can not or will not add webflux, Spring Boot also provides a javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] facility:
+The `spring-boot-resttestclient` module also provides a javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] facility:
 
 include-code::MyRandomPortTestRestTemplateTests[]
+
+To use `TestRestTemplate` a dependency on `spring-boot-restclient` is also required.
+Take care when adding this dependency as it will enable auto-configuration for `RestClient.Builder`.
+If your main code uses `RestClient.Builder`, declare the `spring-boot-restclient` dependency so that it is on your application's main classpath and not only on its test classpath.
+
+
+
+[[testing.spring-boot-applications.customizing-rest-test-client]]
+== Customizing RestTestClient
+
+To customize the javadoc:org.springframework.test.web.servlet.client.RestTestClient[] bean, configure a javadoc:org.springframework.boot.resttestclient.autoconfigure.RestTestClientBuilderCustomizer[] bean.
+Any such beans are called with the javadoc:org.springframework.test.web.servlet.client.RestTestClient$Builder[] that is used to create the javadoc:org.springframework.test.web.servlet.client.RestTestClient[].
 
 
 
 [[testing.spring-boot-applications.customizing-web-test-client]]
 == Customizing WebTestClient
 
-To customize the javadoc:org.springframework.test.web.reactive.server.WebTestClient[] bean, configure a javadoc:org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer[] bean.
+To customize the javadoc:org.springframework.test.web.reactive.server.WebTestClient[] bean, configure a javadoc:org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer[] bean.
 Any such beans are called with the javadoc:org.springframework.test.web.reactive.server.WebTestClient$Builder[] that is used to create the javadoc:org.springframework.test.web.reactive.server.WebTestClient[].
 
 
@@ -210,7 +236,7 @@ include-code::MyJmxTests[]
 [[testing.spring-boot-applications.observations]]
 == Using Observations
 
-If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation], it auto-configures an javadoc:io.micrometer.observation.ObservationRegistry[].
+If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation] from `spring-boot-micrometer-tracing-test` or with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] from `spring-boot-micrometer-metrics-test`, it auto-configures an javadoc:io.micrometer.observation.ObservationRegistry[].
 
 
 
@@ -219,10 +245,10 @@ If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-a
 
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 
-If you need to export metrics to a different backend as part of an integration test, annotate it with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation].
+If you need to export metrics to a different backend as part of an integration test, annotate it with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation].
 
-If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation], it auto-configures an in-memory javadoc:io.micrometer.core.instrument.MeterRegistry[].
-Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation] annotation.
+If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation], it auto-configures an in-memory javadoc:io.micrometer.core.instrument.MeterRegistry[].
+Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] annotation.
 
 
 
@@ -231,12 +257,12 @@ Data exporting in sliced tests is not supported with the javadoc:org.springframe
 
 Regardless of your classpath, tracing components which are reporting data are not auto-configured when using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 
-If you need those components as part of an integration test, annotate the test with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation].
+If you need those components as part of an integration test, annotate the test with javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation].
 
-If you have created your own reporting components (e.g. a custom javadoc:io.opentelemetry.sdk.trace.export.SpanExporter[] or `brave.handler.SpanHandler`) and you don't want them to be active in tests, you can use the javadoc:org.springframework.boot.tracing.autoconfigure.ConditionalOnEnabledTracing[format=annotation] annotation to disable them.
+If you have created your own reporting components (e.g. a custom javadoc:io.opentelemetry.sdk.trace.export.SpanExporter[] or `brave.handler.SpanHandler`) and you don't want them to be active in tests, you can use the javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport[format=annotation] annotation to disable them.
 
-If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation], it auto-configures a no-op javadoc:io.micrometer.tracing.Tracer[].
-Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation] annotation.
+If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation] , it auto-configures a no-op javadoc:io.micrometer.tracing.Tracer[].
+Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation] annotation.
 
 
 
@@ -260,7 +286,7 @@ Spring Boot's auto-configuration system works well for applications but can some
 It often helps to load only the parts of the configuration that are required to test a "`slice`" of your application.
 For example, you might want to test that Spring MVC controllers are mapping URLs correctly, and you do not want to involve database calls in those tests, or you might want to test JPA entities, and you are not interested in the web layer when those tests run.
 
-The `spring-boot-test-autoconfigure` module includes a number of annotations that can be used to automatically configure such "`slices`".
+When combined with `spring-boot-test-autoconfigure`, Spring Boot's xref:reference:testing/test-modules.adoc[test modules] include a number of annotations that can be used to automatically configure such "`slices`".
 Each of them works in a similar way, providing a `@...Test` annotation that loads the javadoc:org.springframework.context.ApplicationContext[] and one or more `@AutoConfigure...` annotations that can be used to customize auto-configuration settings.
 
 NOTE: Each slice restricts component scan to appropriate components and loads a very restricted set of auto-configuration classes.
@@ -278,10 +304,11 @@ You can use this combination if you are not interested in "`slicing`" your appli
 [[testing.spring-boot-applications.json-tests]]
 == Auto-configured JSON Tests
 
-To test that object JSON serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.json.JsonTest[format=annotation] annotation.
+To test that object JSON serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.json.JsonTest[format=annotation] annotation from the `spring-boot-test-autoconfigure` module.
 javadoc:org.springframework.boot.test.autoconfigure.json.JsonTest[format=annotation] auto-configures the available supported JSON mapper, which can be one of the following libraries:
 
-* Jackson javadoc:com.fasterxml.jackson.databind.ObjectMapper[], any javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] beans and any Jackson javadoc:com.fasterxml.jackson.databind.Module[]
+* Jackson javadoc:tools.jackson.databind.json.JsonMapper[], any javadoc:org.springframework.boot.jackson.JacksonComponent[format=annotation] beans and any Jackson javadoc:tools.jackson.databind.JacksonModule[]
+* Jackson 2 (deprecated) javadoc:com.fasterxml.jackson.databind.ObjectMapper[], any javadoc:org.springframework.boot.jackson2.JsonComponent[format=annotation] beans and any Jackson javadoc:com.fasterxml.jackson.databind.Module[]
 * `Gson`
 * `Jsonb`
 
@@ -310,27 +337,29 @@ include-code::MyJsonAssertJTests[tag=*]
 [[testing.spring-boot-applications.spring-mvc-tests]]
 == Auto-configured Spring MVC Tests
 
-To test whether Spring MVC controllers are working as expected, use the javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] annotation.
-javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] auto-configures the Spring MVC infrastructure and limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation], javadoc:org.springframework.web.bind.annotation.ControllerAdvice[format=annotation], javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation], javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[], javadoc:jakarta.servlet.Filter[], javadoc:org.springframework.web.servlet.HandlerInterceptor[], javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[], javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations[], and javadoc:org.springframework.web.method.support.HandlerMethodArgumentResolver[].
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] annotation is used.
+To test whether Spring MVC controllers are working as expected, use the javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] annotation from the `spring-boot-webmvc-test` module.
+javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] auto-configures the Spring MVC infrastructure and limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation],  javadoc:org.springframework.web.bind.annotation.ControllerAdvice[format=annotation], javadoc:org.springframework.boot.jackson.JacksonComponent[format=annotation], javadoc:org.springframework.boot.jackson2.JsonComponent[format=annotation] (deprecated), javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[], javadoc:jakarta.servlet.Filter[], javadoc:org.springframework.web.servlet.HandlerInterceptor[], javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[], javadoc:org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations[], and javadoc:org.springframework.web.method.support.HandlerMethodArgumentResolver[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as the Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes by using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
+TIP: If you need to register extra components, such as a javadoc:tools.jackson.databind.JacksonModule[], you can import additional configuration classes by using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] is limited to a single controller and is used in combination with javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] is limited to a single controller and is used in combination with javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] to provide mock implementations for required collaborators.
 
-javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] also auto-configures javadoc:org.springframework.test.web.servlet.MockMvc[].
+javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] also auto-configures javadoc:org.springframework.test.web.servlet.MockMvc[].
 Mock MVC offers a powerful way to quickly test MVC controllers without needing to start a full HTTP server.
 If AssertJ is available, the AssertJ support provided by javadoc:org.springframework.test.web.servlet.assertj.MockMvcTester[] is auto-configured as well.
+If you'd like to use javadoc:org.springframework.test.web.servlet.client.RestTestClient[] in your tests, annotate your test class with javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation].
+A `RestTestClient` that uses the Mock MVC infrastructure will then be auto-configured.
 
-TIP: You can also auto-configure javadoc:org.springframework.test.web.servlet.MockMvc[] and javadoc:org.springframework.test.web.servlet.assertj.MockMvcTester[] in a non-`@WebMvcTest` (such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]) by annotating it with javadoc:org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc[format=annotation].
+TIP: You can also auto-configure javadoc:org.springframework.test.web.servlet.MockMvc[] and javadoc:org.springframework.test.web.servlet.assertj.MockMvcTester[] in a non-`@WebMvcTest` (such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]) by annotating it with javadoc:org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc[format=annotation].
 The following example uses javadoc:org.springframework.test.web.servlet.assertj.MockMvcTester[]:
 
 include-code::MyControllerTests[]
 
-TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the javadoc:org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc[format=annotation] annotation.
+TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the javadoc:org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc[format=annotation] annotation.
 
 If you use HtmlUnit and Selenium, auto-configuration also provides an HtmlUnit javadoc:org.springframework.web.reactive.function.client.WebClient[] bean and/or a Selenium javadoc:org.openqa.selenium.WebDriver[] bean.
 The following example uses HtmlUnit:
@@ -341,9 +370,9 @@ NOTE: By default, Spring Boot puts javadoc:org.openqa.selenium.WebDriver[] beans
 If you do not want this behavior, you can add `@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)` to your javadoc:org.openqa.selenium.WebDriver[] javadoc:org.springframework.context.annotation.Bean[format=annotation] definition.
 
 WARNING: The `webDriver` scope created by Spring Boot will replace any user defined scope of the same name.
-If you define your own `webDriver` scope you may find it stops working when you use javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation].
+If you define your own `webDriver` scope you may find it stops working when you use javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation].
 
-If you have Spring Security on the classpath, javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] will also scan javadoc:org.springframework.security.config.annotation.web.WebSecurityConfigurer[] beans.
+If you have Spring Security on the classpath, javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation] will also scan javadoc:org.springframework.security.config.annotation.web.WebSecurityConfigurer[] beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
 More details on how to use Spring Security's javadoc:org.springframework.test.web.servlet.MockMvc[] support can be found in this xref:how-to:testing.adoc#howto.testing.with-spring-security[] "`How-to Guides`" section.
 
@@ -354,30 +383,31 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 [[testing.spring-boot-applications.spring-webflux-tests]]
 == Auto-configured Spring WebFlux Tests
 
-To test that {url-spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] annotation.
-javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] auto-configures the Spring WebFlux infrastructure and limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation], javadoc:org.springframework.web.bind.annotation.ControllerAdvice[format=annotation], javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation], javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[] and javadoc:org.springframework.web.reactive.config.WebFluxConfigurer[].
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] annotation is used.
+To test that {url-spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] annotation from the `spring-boot-webflux-test` module.
+javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] auto-configures the Spring WebFlux infrastructure and limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation], javadoc:org.springframework.web.bind.annotation.ControllerAdvice[format=annotation], javadoc:org.springframework.boot.jackson.JacksonComponent[format=annotation], javadoc:org.springframework.boot.jackson2.JsonComponent[format=annotation] (deprecated), javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[] and javadoc:org.springframework.web.reactive.config.WebFluxConfigurer[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
+TIP: If you need to register extra components, such as a javadoc:tools.jackson.databind.JacksonModule[], you can import additional configuration classes using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] is limited to a single controller and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] is limited to a single controller and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
 
-javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] also auto-configures {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
+javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] also auto-configures {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
 
-TIP: You can also auto-configure javadoc:org.springframework.test.web.reactive.server.WebTestClient[] in a non-`@WebFluxTest` (such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]) by annotating it with javadoc:org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient[format=annotation].
-The following example shows a class that uses both javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] and a javadoc:org.springframework.test.web.reactive.server.WebTestClient[]:
+TIP: You can also auto-configure javadoc:org.springframework.test.web.reactive.server.WebTestClient[] in a non-`@WebFluxTest` (such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]) by annotating it with javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation].
+
+The following example shows a class that uses both javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] and a javadoc:org.springframework.test.web.reactive.server.WebTestClient[]:
 
 include-code::MyControllerTests[]
 
 TIP: This setup is only supported by WebFlux applications as using javadoc:org.springframework.test.web.reactive.server.WebTestClient[] in a mocked web application only works with WebFlux at the moment.
 
-NOTE: javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] cannot detect routes registered through the functional web framework.
+NOTE: javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] cannot detect routes registered through the functional web framework.
 For testing javadoc:org.springframework.web.reactive.function.server.RouterFunction[] beans in the context, consider importing your javadoc:org.springframework.web.reactive.function.server.RouterFunction[] yourself by using javadoc:org.springframework.context.annotation.Import[format=annotation] or by using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 
-NOTE: javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] cannot detect custom security configuration registered as a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.security.web.server.SecurityWebFilterChain[].
+NOTE: javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] cannot detect custom security configuration registered as a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.security.web.server.SecurityWebFilterChain[].
 To include that in your test, you will need to import the configuration that registers the bean by using javadoc:org.springframework.context.annotation.Import[format=annotation] or by using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[full end-to-end tests with an actual server].
@@ -424,36 +454,39 @@ There are javadoc:org.springframework.graphql.test.tester.GraphQlTester[] varian
 * the javadoc:org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester[] performs tests on the server side, without a client nor a transport
 * the javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] performs tests with a client that connects to a server, with or without a live server
 
-Spring Boot helps you to test your {url-spring-graphql-docs}/controllers.html[Spring GraphQL Controllers] with the javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] annotation.
-javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
-This limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation], javadoc:org.springframework.graphql.execution.RuntimeWiringConfigurer[], javadoc:org.springframework.boot.jackson.JsonComponent[], javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[], javadoc:org.springframework.graphql.execution.DataFetcherExceptionResolver[], javadoc:graphql.execution.instrumentation.Instrumentation[] and javadoc:org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer[].
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] annotation is used.
+Spring Boot helps you to test your {url-spring-graphql-docs}/controllers.html[Spring GraphQL Controllers] with the javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[format=annotation] annotation from the `spring-boot-graphql-test` module.
+javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[format=annotation] auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
+This limits scanned beans to javadoc:org.springframework.stereotype.Controller[format=annotation], javadoc:org.springframework.graphql.execution.RuntimeWiringConfigurer[], javadoc:org.springframework.boot.jackson.JacksonComponent[], javadoc:org.springframework.boot.jackson2.JsonComponent[format=annotation] (deprecated), javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[], javadoc:org.springframework.graphql.execution.DataFetcherExceptionResolver[], javadoc:graphql.execution.instrumentation.Instrumentation[] and javadoc:org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] is limited to a set of controllers and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[format=annotation] is limited to a set of controllers and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
 
 include-code::GreetingControllerTests[]
 
 javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] tests are full integration tests and involve the entire application.
-When using a random or defined port, a live server is configured and an javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean is contributed automatically so you can use it to test your server.
-When a MOCK environment is configured, you can also request an javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean by annotating your test class with javadoc:org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester[format=annotation]:
+A javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean can be added by annotating your test class with javadoc:org.springframework.boot.graphql.test.autoconfigure.tester.AutoConfigureHttpGraphQlTester[format=annotation] from the `spring-boot-graphql-test` module:
 
 include-code::GraphQlIntegrationTests[]
+
+The javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean uses the relevant transport of the integration test.
+When using a random or defined port, the tester is configured against the live server.
+To bind the tester to `MockMvc`, make sure to annotate your test class with javadoc:org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc[format=annotation].
 
 
 
 [[testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
 == Auto-configured Data Cassandra Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest[format=annotation] to test Cassandra applications.
+You can use javadoc:org.springframework.boot.data.cassandra.test.autoconfigure.DataCassandraTest[format=annotation] from the `spring-boot-data-cassandra-test` module to test Data Cassandra applications.
 By default, it configures a javadoc:org.springframework.data.cassandra.core.CassandraTemplate[], scans for javadoc:org.springframework.data.cassandra.core.mapping.Table[format=annotation] classes, and configures Spring Data Cassandra repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.cassandra.test.autoconfigure.DataCassandraTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using Cassandra with Spring Boot, see xref:data/nosql.adoc#data.nosql.cassandra[].)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.cassandra.test.autoconfigure.DataCassandraTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
@@ -464,13 +497,13 @@ include-code::MyDataCassandraTests[]
 [[testing.spring-boot-applications.autoconfigured-spring-data-couchbase]]
 == Auto-configured Data Couchbase Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest[format=annotation] to test Couchbase applications.
+You can use javadoc:org.springframework.boot.data.couchbase.test.autoconfigure.DataCouchbaseTest[format=annotation] from the `spring-boot-data-couchbase-test` module to test Data Couchbase applications.
 By default, it configures a javadoc:org.springframework.data.couchbase.core.CouchbaseTemplate[] or javadoc:org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate[], scans for javadoc:org.springframework.data.couchbase.core.mapping.Document[format=annotation] classes, and configures Spring Data Couchbase repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.couchbase.test.autoconfigure.DataCouchbaseTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using Couchbase with Spring Boot, see xref:data/nosql.adoc#data.nosql.couchbase[], earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.couchbase.test.autoconfigure.DataCouchbaseTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 The following example shows a typical setup for using Couchbase tests in Spring Boot:
 
@@ -481,13 +514,13 @@ include-code::MyDataCouchbaseTests[]
 [[testing.spring-boot-applications.autoconfigured-spring-data-elasticsearch]]
 == Auto-configured Data Elasticsearch Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest[format=annotation] to test Elasticsearch applications.
+You can use javadoc:org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest[format=annotation] from the `spring-boot-data-elasticsearch-test` module to test Data Elasticsearch applications.
 By default, it configures an javadoc:org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate[], scans for javadoc:org.springframework.data.elasticsearch.annotations.Document[format=annotation] classes, and configures Spring Data Elasticsearch repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using Elasticsearch with Spring Boot, see xref:data/nosql.adoc#data.nosql.elasticsearch[], earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 The following example shows a typical setup for using Elasticsearch tests in Spring Boot:
 
@@ -498,16 +531,16 @@ include-code::MyDataElasticsearchTests[]
 [[testing.spring-boot-applications.autoconfigured-spring-data-jpa]]
 == Auto-configured Data JPA Tests
 
-You can use the javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] annotation to test JPA applications.
+You can use the javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation] annotation from the `spring-boot-data-jpa-test` module to test Data JPA applications.
 By default, it scans for javadoc:jakarta.persistence.Entity[format=annotation] classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
 SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
 This can be disabled using the `showSql` attribute of the annotation.
 
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 By default, data JPA tests are transactional and roll back at the end of each test.
 See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -515,18 +548,18 @@ If that is not what you want, you can disable transaction management for a test 
 
 include-code::MyNonTransactionalTests[]
 
-Data JPA tests may also inject a javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager[] bean, which provides an alternative to the standard JPA javadoc:jakarta.persistence.EntityManager[] that is specifically designed for tests.
+Data JPA tests may also inject a javadoc:org.springframework.boot.jpa.test.autoconfigure.TestEntityManager[] bean, which provides an alternative to the standard JPA javadoc:jakarta.persistence.EntityManager[] that is specifically designed for tests.
 
-TIP: javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager[] can also be auto-configured to any of your Spring-based test class by adding javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager[format=annotation].
+TIP: javadoc:org.springframework.boot.jpa.test.autoconfigure.TestEntityManager[] can also be auto-configured to any of your Spring-based test class by adding javadoc:org.springframework.boot.jpa.test.autoconfigure.AutoConfigureTestEntityManager[format=annotation].
 When doing so, make sure that your test is running in a transaction, for instance by adding  javadoc:org.springframework.transaction.annotation.Transactional[format=annotation] on your test class or method.
 
 A javadoc:org.springframework.jdbc.core.JdbcTemplate[] is also available if you need that.
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] annotation in use:
+The following example shows the javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation] annotation in use:
 
 include-code::withoutdb/MyRepositoryTests[]
 
 In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
-If, however, you prefer to run tests against a real database you can use the javadoc:org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase[format=annotation] annotation, as shown in the following example:
+If, however, you prefer to run tests against a real database you can use the javadoc:org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase[format=annotation] annotation, as shown in the following example:
 
 include-code::withdb/MyRepositoryTests[]
 
@@ -535,12 +568,12 @@ include-code::withdb/MyRepositoryTests[]
 [[testing.spring-boot-applications.autoconfigured-jdbc]]
 == Auto-configured JDBC Tests
 
-javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation] is similar to javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] but is for tests that only require a javadoc:javax.sql.DataSource[] and do not use Spring Data JDBC.
+javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] from the `spring-boot-jdbc-test` module is similar to javadoc:org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest[format=annotation] but is for tests that only require a javadoc:javax.sql.DataSource[] and do not use Spring Data JDBC.
 By default, it configures an in-memory embedded database and a javadoc:org.springframework.jdbc.core.JdbcTemplate[].
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 By default, JDBC tests are transactional and roll back at the end of each test.
 See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -548,7 +581,7 @@ If that is not what you want, you can disable transaction management for a test 
 
 include-code::MyTransactionalTests[]
 
-If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation].
+If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation].
 (See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
@@ -556,18 +589,18 @@ If you prefer your test to run against a real database, you can use the javadoc:
 [[testing.spring-boot-applications.autoconfigured-spring-data-jdbc]]
 == Auto-configured Data JDBC Tests
 
-javadoc:org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest[format=annotation] is similar to javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation] but is for tests that use Spring Data JDBC repositories.
+javadoc:org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest[format=annotation] from the `spring-boot-data-jdbc-test` module is similar to javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] but is for tests that use Spring Data JDBC repositories.
 By default, it configures an in-memory embedded database, a javadoc:org.springframework.jdbc.core.JdbcTemplate[], and Spring Data JDBC repositories.
-Only javadoc:org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration[] subclasses are scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest[format=annotation] annotation is used, regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned.
+Only javadoc:org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration[] subclasses are scanned when the javadoc:org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest[format=annotation] annotation is used, regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
 See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-jdbc[shown in the JDBC example].
 
-If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation].
+If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation].
 (See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
@@ -575,16 +608,16 @@ If you prefer your test to run against a real database, you can use the javadoc:
 [[testing.spring-boot-applications.autoconfigured-spring-data-r2dbc]]
 == Auto-configured Data R2DBC Tests
 
-javadoc:org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest[format=annotation] is similar to javadoc:org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest[format=annotation] but is for tests that use Spring Data R2DBC repositories.
+javadoc:org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest[format=annotation] from the `spring-boot-data-r2dbc-test` module is similar to javadoc:org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest[format=annotation] but is for tests that use Spring Data R2DBC repositories.
 By default, it configures an in-memory embedded database, an javadoc:org.springframework.data.r2dbc.core.R2dbcEntityTemplate[], and Spring Data R2DBC repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 By default, Data R2DBC tests are not transactional.
 
-If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation].
+If you prefer your test to run against a real database, you can use the javadoc:org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase[format=annotation] annotation in the same way as for javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation].
 (See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
@@ -592,17 +625,17 @@ If you prefer your test to run against a real database, you can use the javadoc:
 [[testing.spring-boot-applications.autoconfigured-jooq]]
 == Auto-configured jOOQ Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.jooq.JooqTest[format=annotation] in a similar fashion as javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation] but for jOOQ-related tests.
+You can use javadoc:org.springframework.boot.jooq.test.autoconfigure.JooqTest[format=annotation] from `spring-boot-jooq-test` in a similar fashion as javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing javadoc:javax.sql.DataSource[] is used.
-If you want to replace it with an in-memory database, you can use javadoc:org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase[format=annotation] to override those settings.
+If you want to replace it with an in-memory database, you can use javadoc:org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase[format=annotation] to override those settings.
 (For more about using jOOQ with Spring Boot, see xref:data/sql.adoc#data.sql.jooq[].)
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.jooq.JooqTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.jooq.test.autoconfigure.JooqTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.jooq.JooqTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.jooq.test.autoconfigure.JooqTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-javadoc:org.springframework.boot.test.autoconfigure.jooq.JooqTest[format=annotation] configures a javadoc:org.jooq.DSLContext[].
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.jooq.JooqTest[format=annotation] annotation in use:
+javadoc:org.springframework.boot.jooq.test.autoconfigure.JooqTest[format=annotation] configures a javadoc:org.jooq.DSLContext[].
+The following example shows the javadoc:org.springframework.boot.jooq.test.autoconfigure.JooqTest[format=annotation] annotation in use:
 
 include-code::MyJooqTests[]
 
@@ -614,15 +647,15 @@ If that is not what you want, you can disable transaction management for a test 
 [[testing.spring-boot-applications.autoconfigured-spring-data-mongodb]]
 == Auto-configured Data MongoDB Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest[format=annotation] to test MongoDB applications.
+You can use javadoc:org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest[format=annotation] from the `spring-boot-data-mongodb-test` module to test MongoDB applications.
 By default, it configures a javadoc:org.springframework.data.mongodb.core.MongoTemplate[], scans for javadoc:org.springframework.data.mongodb.core.mapping.Document[format=annotation] classes, and configures Spring Data MongoDB repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using MongoDB with Spring Boot, see xref:data/nosql.adoc#data.nosql.mongodb[].)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The following class shows the javadoc:org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest[format=annotation] annotation in use:
+The following class shows the javadoc:org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest[format=annotation] annotation in use:
 
 include-code::MyDataMongoDbTests[]
 
@@ -631,13 +664,13 @@ include-code::MyDataMongoDbTests[]
 [[testing.spring-boot-applications.autoconfigured-spring-data-neo4j]]
 == Auto-configured Data Neo4j Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest[format=annotation] to test Neo4j applications.
+You can use javadoc:org.springframework.boot.data.neo4j.test.autoconfigure.DataNeo4jTest[format=annotation] from the `spring-boot-data-neo4j-test` module to test Neo4j applications.
 By default, it scans for javadoc:org.springframework.data.neo4j.core.schema.Node[format=annotation] classes, and configures Spring Data Neo4j repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.neo4j.test.autoconfigure.DataNeo4jTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using Neo4J with Spring Boot, see xref:data/nosql.adoc#data.nosql.neo4j[].)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.neo4j.test.autoconfigure.DataNeo4jTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
@@ -650,22 +683,22 @@ If that is not what you want, you can disable transaction management for a test 
 include-code::nopropagation/MyDataNeo4jTests[]
 
 NOTE: Transactional tests are not supported with reactive access.
-If you are using this style, you must configure javadoc:org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest[format=annotation] tests as described above.
+If you are using this style, you must configure javadoc:org.springframework.boot.data.neo4j.test.autoconfigure.DataNeo4jTest[format=annotation] tests as described above.
 
 
 
 [[testing.spring-boot-applications.autoconfigured-spring-data-redis]]
 == Auto-configured Data Redis Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest[format=annotation] to test Redis applications.
+You can use javadoc:org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest[format=annotation] from the `spring-boot-data-redis-test` module to test Data Redis applications.
 By default, it scans for javadoc:org.springframework.data.redis.core.RedisHash[format=annotation] classes and configures Spring Data Redis repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using Redis with Spring Boot, see xref:data/nosql.adoc#data.nosql.redis[].)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest[format=annotation] annotation in use:
+The following example shows the javadoc:org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest[format=annotation] annotation in use:
 
 include-code::MyDataRedisTests[]
 
@@ -674,15 +707,15 @@ include-code::MyDataRedisTests[]
 [[testing.spring-boot-applications.autoconfigured-spring-data-ldap]]
 == Auto-configured Data LDAP Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest[format=annotation] to test LDAP applications.
+You can use javadoc:org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest[format=annotation] to test Data LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an javadoc:org.springframework.ldap.core.LdapTemplate[], scans for javadoc:org.springframework.ldap.odm.annotations.Entry[format=annotation] classes, and configures Spring Data LDAP repositories.
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest[format=annotation] annotation is used.
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 (For more about using LDAP with Spring Boot, see xref:data/nosql.adoc#data.nosql.ldap[].)
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest[format=annotation] annotation in use:
+The following example shows the javadoc:org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest[format=annotation] annotation in use:
 
 include-code::inmemory/MyDataLdapTests[]
 
@@ -696,32 +729,46 @@ include-code::server/MyDataLdapTests[]
 [[testing.spring-boot-applications.autoconfigured-rest-client]]
 == Auto-configured REST Clients
 
-You can use the javadoc:org.springframework.boot.test.autoconfigure.web.client.RestClientTest[format=annotation] annotation to test REST clients.
-By default, it auto-configures Jackson, GSON, and Jsonb support, configures a javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] and a javadoc:org.springframework.web.client.RestClient$Builder[], and adds support for javadoc:org.springframework.test.web.client.MockRestServiceServer[].
-Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.test.autoconfigure.web.client.RestClientTest[format=annotation] annotation is used.
+You can use the javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] annotation from the `spring-boot-restclient-test` module to test REST clients.
+By default, it auto-configures Jackson, GSON, and Jsonb support, configures a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] and a javadoc:org.springframework.web.client.RestClient$Builder[], and adds support for javadoc:org.springframework.test.web.client.MockRestServiceServer[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.web.client.RestClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The specific beans that you want to test should be specified by using the `value` or `components` attribute of javadoc:org.springframework.boot.test.autoconfigure.web.client.RestClientTest[format=annotation].
+The specific beans that you want to test should be specified by using the `value` or `components` attribute of javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation].
 
-When using a javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] in the beans under test and `RestTemplateBuilder.rootUri(String rootUri)` has been called when building the javadoc:org.springframework.web.client.RestTemplate[], then the root URI should be omitted from the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
+When using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] in the beans under test and `RestTemplateBuilder.rootUri(String rootUri)` has been called when building the javadoc:org.springframework.web.client.RestTemplate[], then the root URI should be omitted from the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
 
 include-code::MyRestTemplateServiceTests[]
 
-When using a javadoc:org.springframework.web.client.RestClient$Builder[] in the beans under test, or when using a javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] without calling `rootUri(String rootURI)`, the full URI must be used in the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
+When using a javadoc:org.springframework.web.client.RestClient$Builder[] in the beans under test, or when using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] without calling `rootUri(String rootURI)`, the full URI must be used in the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
 
 include-code::MyRestClientServiceTests[]
+
+
+
+[[testing.spring-boot-applications.autoconfigured-web-client]]
+== Auto-configured Web Clients
+
+You can use the javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] annotation from the `spring-boot-webclient-test` module to test code that uses `WebClient`.
+By default, it auto-configures Jackson, GSON, and Jsonb support, and configures a javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] annotation is used.
+javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
+
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+
+The specific beans that you want to test should be specified by using the `value` or `components` attribute of javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation].
 
 
 
 [[testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 == Auto-configured Spring REST Docs Tests
 
-You can use the javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation] annotation to use {url-spring-restdocs-site}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
+You can use the javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] annotation from the `spring-boot-restdocs- module to use {url-spring-restdocs-site}[Spring REST Docs] in your tests with Mock MVC or WebTestClient.
 It removes the need for the JUnit extension in Spring REST Docs.
 
-javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation] can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).
+javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).
 It can also be used to configure the host, scheme, and port that appears in any documented URIs.
 
 
@@ -729,7 +776,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 [[testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
 === Auto-configured Spring REST Docs Tests With Mock MVC
 
-javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation] customizes the javadoc:org.springframework.test.web.servlet.MockMvc[] bean to use Spring REST Docs when testing servlet-based web applications.
+javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] customizes the javadoc:org.springframework.test.web.servlet.MockMvc[] bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 include-code::hamcrest/MyUserDocumentationTests[]
@@ -740,7 +787,7 @@ include-code::assertj/MyUserDocumentationTests[]
 
 Both reuses the same javadoc:org.springframework.test.web.servlet.MockMvc[] instance behind the scenes so any configuration to it applies to both.
 
-If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation], you can use a javadoc:org.springframework.boot.test.autoconfigure.restdocs.RestDocsMockMvcConfigurationCustomizer[] bean, as shown in the following example:
+If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation], you can use a javadoc:org.springframework.boot.restdocs.test.autoconfigure.RestDocsMockMvcConfigurationCustomizer[] bean, as shown in the following example:
 
 include-code::MyRestDocsConfiguration[]
 
@@ -755,33 +802,19 @@ include-code::MyResultHandlerConfiguration[]
 [[testing.spring-boot-applications.autoconfigured-spring-restdocs.with-web-test-client]]
 === Auto-configured Spring REST Docs Tests With WebTestClient
 
-javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation] can also be used with javadoc:org.springframework.test.web.reactive.server.WebTestClient[] when testing reactive web applications.
-You can inject it by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] and use it in your tests as you normally would when using javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] and Spring REST Docs, as shown in the following example:
+javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] can also be used with javadoc:org.springframework.test.web.reactive.server.WebTestClient[] when testing reactive web applications.
+You can inject it by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] and use it in your tests as you normally would when using javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] and Spring REST Docs, as shown in the following example:
 
 include-code::MyUsersDocumentationTests[]
 
-If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation], you can use a javadoc:org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClientConfigurationCustomizer[] bean, as shown in the following example:
+If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation], you can use a javadoc:org.springframework.boot.restdocs.test.autoconfigure.RestDocsWebTestClientConfigurationCustomizer[] bean, as shown in the following example:
 
 include-code::MyRestDocsConfiguration[]
 
-If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a javadoc:org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer[] to configure a consumer for every entity exchange result.
-The following example shows such a javadoc:org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer[] being defined:
+If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a javadoc:org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer[] to configure a consumer for every entity exchange result.
+The following example shows such a javadoc:org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer[] being defined:
 
 include-code::MyWebTestClientBuilderCustomizerConfiguration[]
-
-
-
-[[testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
-=== Auto-configured Spring REST Docs Tests With REST Assured
-
-javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation] makes a javadoc:io.restassured.specification.RequestSpecification[] bean, preconfigured to use Spring REST Docs, available to your tests.
-You can inject it by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
-
-include-code::MyUserDocumentationTests[]
-
-If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs[format=annotation], a javadoc:org.springframework.boot.test.autoconfigure.restdocs.RestDocsRestAssuredConfigurationCustomizer[] bean can be used, as shown in the following example:
-
-include-code::MyRestDocsConfiguration[]
 
 
 
@@ -793,14 +826,14 @@ include-code::MyRestDocsConfiguration[]
 [[testing.spring-boot-applications.autoconfigured-webservices.client]]
 === Auto-configured Spring Web Services Client Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest[format=annotation] to test applications that call web services using the Spring Web Services project.
+You can use javadoc:org.springframework.boot.webservices.test.autoconfigure.client.WebServiceClientTest[format=annotation] from the `spring-boot-webservices-test` module to test applications that call web services using the Spring Web Services project.
 By default, it configures a javadoc:org.springframework.ws.test.client.MockWebServiceServer[] bean and automatically customizes your javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[].
 (For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.webservices.test.autoconfigure.client.WebServiceClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest[format=annotation] annotation in use:
+The following example shows the javadoc:org.springframework.boot.webservices.test.autoconfigure.client.WebServiceClientTest[format=annotation] annotation in use:
 
 include-code::MyWebServiceClientTests[]
 
@@ -809,14 +842,14 @@ include-code::MyWebServiceClientTests[]
 [[testing.spring-boot-applications.autoconfigured-webservices.server]]
 === Auto-configured Spring Web Services Server Tests
 
-You can use javadoc:org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest[format=annotation] to test applications that implement web services using the Spring Web Services project.
+You can use javadoc:org.springframework.boot.webservices.test.autoconfigure.server.WebServiceServerTest[format=annotation] from the `spring-boot-webservices-test` module to test applications that implement web services using the Spring Web Services project.
 By default, it configures a javadoc:org.springframework.ws.test.server.MockWebServiceClient[] bean that can be used to call your web service endpoints.
 (For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 
-TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.webservices.test.autoconfigure.server.WebServiceServerTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-The following example shows the javadoc:org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest[format=annotation] annotation in use:
+The following example shows the javadoc:org.springframework.boot.webservices.test.autoconfigure.server.WebServiceServerTest[format=annotation] annotation in use:
 
 include-code::MyWebServiceServerTests[]
 
@@ -834,13 +867,13 @@ NOTE: Make sure to not use the regular javadoc:org.springframework.context.annot
 
 Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in a file stored in `META-INF/spring` as shown in the following example:
 
-.META-INF/spring/org.springframework.boot.test.autoconfigure.jdbc.JdbcTest.imports
+.META-INF/spring/org.springframework.boot.jdbc.test.autoconfigure.JdbcTest.imports
 [source]
 ----
 com.example.IntegrationAutoConfiguration
 ----
 
-In this example, the `+com.example.IntegrationAutoConfiguration+` is enabled on every test annotated with javadoc:org.springframework.boot.test.autoconfigure.jdbc.JdbcTest[format=annotation].
+In this example, the `+com.example.IntegrationAutoConfiguration+` is enabled on every test annotated with javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation].
 
 TIP: You can use comments with `#` in this file.
 
@@ -870,7 +903,7 @@ The latter approach lets you enable it in one of your tests, if necessary, with 
 See xref:how-to:testing.adoc#howto.testing.slice-tests[this how-to section] for more details on when you might want to enable specific javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes for slice tests.
 
 Test slices exclude javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes from scanning.
-For example, for a javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation], the following configuration will not include the given javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] bean in the application context loaded by the test slice:
+For example, for a javadoc:org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest[format=annotation], the following configuration will not include the given javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] bean in the application context loaded by the test slice:
 
 include-code::MyWebConfiguration[]
 
@@ -885,7 +918,7 @@ Your application may resemble the following code:
 include-code::scan/MyApplication[]
 
 Doing so effectively overrides the default component scan directive with the side effect of scanning those two packages regardless of the slice that you chose.
-For instance, a javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest[format=annotation] seems to suddenly scan components and user configurations of your application.
+For instance, a javadoc:org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest[format=annotation] seems to suddenly scan components and user configurations of your application.
 Again, moving the custom directive to a separate class is a good way to fix this issue.
 
 TIP: If this is not an option for you, you can create a javadoc:org.springframework.boot.SpringBootConfiguration[format=annotation] somewhere in the hierarchy of your test so that it is used instead.
@@ -896,7 +929,7 @@ Alternatively, you can specify a source for your test, which disables the behavi
 [[testing.spring-boot-applications.spock]]
 == Using Spock to Test Spring Boot Applications
 
-Spock 2.2 or later can be used to test a Spring Boot application.
-To do so, add a dependency on a `-groovy-4.0` version of Spock's `spock-spring` module to your application's build.
+Spock 2.4 or later can be used to test a Spring Boot application.
+To do so, add a dependency on a `-groovy-5.0` version of Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See https://spockframework.org/spock/docs/2.2-M1/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/2.4/modules.html#spring-module[the documentation for Spock's Spring module] for further details.

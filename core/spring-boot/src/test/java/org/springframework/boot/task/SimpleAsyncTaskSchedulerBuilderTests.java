@@ -76,6 +76,7 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
@@ -83,6 +84,7 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))
@@ -118,6 +120,7 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
@@ -125,6 +128,7 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))

@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for building RSocket clients and servers"
+description = "Starter for using RSocket"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
@@ -27,6 +27,7 @@ dependencies {
 
 	api(project(":module:spring-boot-rsocket"))
 
-	api("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	api("io.rsocket:rsocket-transport-netty")
+	api("org.springframework:spring-web")
+	api("tools.jackson.dataformat:jackson-dataformat-cbor")
 }

@@ -44,12 +44,15 @@ import static org.mockito.BDDMockito.then;
 class BindResultTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Consumer<String> consumer;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Function<String, String> mapper;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Supplier<String> supplier;
 
 	@Test
@@ -78,6 +81,7 @@ class BindResultTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.ifBound(null))
@@ -99,6 +103,7 @@ class BindResultTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.map(null))

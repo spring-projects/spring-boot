@@ -16,22 +16,22 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
 /**
  * Demonstrate the auto-detection of inner config classes.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("config")
+@TestConfigurationProperties("config")
 public class InnerClassProperties {
 
 	private final Foo first = new Foo();
 
 	private Foo second = new Foo();
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final SimplePojo third = new SimplePojo();
 
 	private Fourth fourth;
@@ -62,7 +62,7 @@ public class InnerClassProperties {
 		this.fourth = fourth;
 	}
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	public DeprecatedSimplePojo getFifth() {
 		return this.fifth;
 	}

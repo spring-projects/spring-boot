@@ -16,24 +16,24 @@
 
 package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import jakarta.servlet.http.HttpServlet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.std.StdScalarSerializer;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebMvcEndpointIntegrationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@Test
 	void webMvcEndpointHandlerMappingIsConfiguredWithPathPatternParser() {
@@ -95,15 +95,16 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	void endpointObjectMapperCanBeApplied() {
+	void endpointJsonMapperCanBeApplied() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
-		this.context.register(EndpointObjectMapperConfiguration.class, DefaultConfiguration.class);
+		this.context.register(EndpointJsonMapperConfiguration.class, DefaultConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvcTester mvc = doCreateMockMvcTester();
 		assertThat(mvc.get().uri("/actuator/beans")).hasStatusOk().bodyText().contains("\"scope\":\"notelgnis\"");
 	}
 
 	private MockMvcTester doCreateMockMvcTester() {
+		assertThat(this.context).isNotNull();
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		return MockMvcTester.from(this.context);
@@ -165,17 +166,14 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	@Configuration
-	@SuppressWarnings({ "deprecation", "removal" })
-	static class EndpointObjectMapperConfiguration {
+	static class EndpointJsonMapperConfiguration {
 
 		@Bean
-		EndpointObjectMapper endpointObjectMapper() {
+		EndpointJsonMapper endpointJsonMapper() {
 			SimpleModule module = new SimpleModule();
 			module.addSerializer(String.class, new ReverseStringSerializer());
-			ObjectMapper objectMapper = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
-				.modules(module)
-				.build();
-			return () -> objectMapper;
+			JsonMapper jsonMapper = JsonMapper.builder().addModule(module).build();
+			return () -> jsonMapper;
 		}
 
 		static class ReverseStringSerializer extends StdScalarSerializer<Object> {
@@ -185,22 +183,22 @@ class WebMvcEndpointIntegrationTests {
 			}
 
 			@Override
-			public boolean isEmpty(SerializerProvider prov, Object value) {
+			public boolean isEmpty(SerializationContext context, Object value) {
 				return ((String) value).isEmpty();
 			}
 
 			@Override
-			public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+			public void serialize(Object value, JsonGenerator gen, SerializationContext context) {
 				serialize(value, gen);
 			}
 
 			@Override
-			public final void serializeWithType(Object value, JsonGenerator gen, SerializerProvider provider,
-					TypeSerializer typeSer) throws IOException {
+			public final void serializeWithType(Object value, JsonGenerator gen, SerializationContext context,
+					TypeSerializer typeSer) {
 				serialize(value, gen);
 			}
 
-			private void serialize(Object value, JsonGenerator gen) throws IOException {
+			private void serialize(Object value, JsonGenerator gen) {
 				StringBuilder builder = new StringBuilder((String) value);
 				gen.writeString(builder.reverse().toString());
 			}

@@ -19,6 +19,8 @@ package org.springframework.boot.webmvc.error;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
@@ -42,7 +44,7 @@ public interface ErrorAttributes {
 	 * @param options options for error attribute contents
 	 * @return a map of error attributes
 	 */
-	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+	default Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		return Collections.emptyMap();
 	}
 
@@ -52,6 +54,6 @@ public interface ErrorAttributes {
 	 * @param webRequest the source request
 	 * @return the {@link Exception} that caused the error or {@code null}
 	 */
-	Throwable getError(WebRequest webRequest);
+	@Nullable Throwable getError(WebRequest webRequest);
 
 }

@@ -29,6 +29,7 @@ import java.util.Set;
 import jline.console.ConsoleReader;
 import jline.console.completer.CandidateListCompletionHandler;
 import org.fusesource.jansi.AnsiRenderer.Code;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
@@ -183,9 +184,9 @@ public class Shell {
 	 * Extension of {@link CommandRunner} to deal with {@link RunProcessCommand}s and
 	 * aliases.
 	 */
-	private class ShellCommandRunner extends CommandRunner {
+	private static class ShellCommandRunner extends CommandRunner {
 
-		private volatile Command lastCommand;
+		private volatile @Nullable Command lastCommand;
 
 		private final Map<String, String> aliases = new HashMap<>();
 
@@ -200,7 +201,7 @@ public class Shell {
 		}
 
 		@Override
-		public Command findCommand(String name) {
+		public @Nullable Command findCommand(String name) {
 			if (name.startsWith("!")) {
 				return new RunProcessCommand(name.substring(1));
 			}

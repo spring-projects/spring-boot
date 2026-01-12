@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 public class EnclosedInSquareBracketsConverter extends CompositeConverter<ILoggingEvent> {
 
 	@Override
-	protected String transform(ILoggingEvent event, String in) {
+	protected String transform(ILoggingEvent event, @Nullable String in) {
 		in = (!StringUtils.hasLength(in)) ? resolveFromFirstOption(event) : in;
 		return (!StringUtils.hasLength(in)) ? "" : "[%s] ".formatted(in);
 	}

@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
@@ -76,9 +77,9 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
 			.whenNotEmpty();
-		members.add("stack_trace", (event) -> event)
-			.whenNotNull(ILoggingEvent::getThrowableProxy)
-			.as(extractor::stackTrace);
+		Function<@Nullable ILoggingEvent, @Nullable Object> getThrowableProxy = (event) -> (event != null)
+				? event.getThrowableProxy() : null;
+		members.add("stack_trace", (event) -> event).whenNotNull(getThrowableProxy).as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {

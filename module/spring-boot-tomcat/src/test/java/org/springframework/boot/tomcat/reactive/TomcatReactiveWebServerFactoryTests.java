@@ -132,6 +132,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setConnectorCustomizers(null))
@@ -139,6 +140,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -147,6 +149,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setProtocolHandlerCustomizers(null))
@@ -154,6 +157,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -205,6 +209,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullAdditionalConnectorsThrows() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalConnectors((Connector[]) null))
@@ -277,8 +282,9 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 
 			@Override
 			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
-				webServerReference.set(new TomcatWebServer(tomcat));
-				return webServerReference.get();
+				TomcatWebServer server = new TomcatWebServer(tomcat);
+				webServerReference.set(server);
+				return server;
 			}
 
 		}.getWebServer(new EchoHandler());

@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.DirectFieldAccessor;
 
@@ -36,9 +37,10 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	@Override
-	public Integer getActive() {
+	public @Nullable Integer getActive() {
 		try {
-			return getHikariPool().getActiveConnections();
+			HikariPool hikariPool = getHikariPool();
+			return (hikariPool != null) ? hikariPool.getActiveConnections() : null;
 		}
 		catch (Exception ex) {
 			return null;
@@ -46,36 +48,37 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	@Override
-	public Integer getIdle() {
+	public @Nullable Integer getIdle() {
 		try {
-			return getHikariPool().getIdleConnections();
+			HikariPool hikariPool = getHikariPool();
+			return (hikariPool != null) ? hikariPool.getIdleConnections() : null;
 		}
 		catch (Exception ex) {
 			return null;
 		}
 	}
 
-	private HikariPool getHikariPool() {
+	private @Nullable HikariPool getHikariPool() {
 		return (HikariPool) new DirectFieldAccessor(getDataSource()).getPropertyValue("pool");
 	}
 
 	@Override
-	public Integer getMax() {
+	public @Nullable Integer getMax() {
 		return getDataSource().getMaximumPoolSize();
 	}
 
 	@Override
-	public Integer getMin() {
+	public @Nullable Integer getMin() {
 		return getDataSource().getMinimumIdle();
 	}
 
 	@Override
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return getDataSource().getConnectionTestQuery();
 	}
 
 	@Override
-	public Boolean getDefaultAutoCommit() {
+	public @Nullable Boolean getDefaultAutoCommit() {
 		return getDataSource().isAutoCommit();
 	}
 

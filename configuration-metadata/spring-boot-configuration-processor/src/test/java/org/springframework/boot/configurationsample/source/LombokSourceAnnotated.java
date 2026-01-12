@@ -18,14 +18,14 @@ package org.springframework.boot.configurationsample.source;
 
 import lombok.Getter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
 @Getter
-@ConfigurationProperties("example")
+@TestConfigurationProperties("example")
 public class LombokSourceAnnotated {
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final LombokSource nested = new LombokSource();
 
 }

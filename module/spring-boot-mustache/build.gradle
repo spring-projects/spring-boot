@@ -34,14 +34,23 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional(project(":core:spring-boot-autoconfigure"))
 
-	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-reactor-netty"))
 	testImplementation(project(":module:spring-boot-restclient"))
-	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":module:spring-boot-reactor-netty"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
+	testImplementation(project(":module:spring-boot-tomcat"))
+	testImplementation(project(":module:spring-boot-webflux-test"))
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("io.projectreactor:reactor-test")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

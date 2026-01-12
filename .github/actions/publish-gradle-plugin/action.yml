@@ -21,14 +21,14 @@ runs:
   using: composite
   steps:
     - name: Set Up JFrog CLI
-      uses: jfrog/setup-jfrog-cli@ff5cb544114ffc152db9cea1cd3d5978d5074946 # v4.5.11
+      uses: jfrog/setup-jfrog-cli@5b06f730cc5a6f55d78b30753f8583454b08c0aa # v4.8.1
       env:
         JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
     - name: Download Artifacts
       shell: bash
       run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.plugin-version) }};buildNumber=${{ inputs.build-number }}'
     - name: Set Up Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'liberica'
         java-version: '17'

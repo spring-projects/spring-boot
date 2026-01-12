@@ -7,7 +7,8 @@
       "defaultValue": "none",
       "deprecation": {
         "reason": "Automatic index creation is no longer supported.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -16,7 +17,8 @@
       "description": "Whether to enable embedded mode if the embedded driver is available.",
       "deprecation": {
         "reason": "Embedded mode is no longer supported, please use Testcontainers instead.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -24,7 +26,8 @@
       "type": "java.lang.Boolean",
       "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -33,7 +36,8 @@
       "description": "Login password of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.password",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -43,7 +47,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.data.neo4j.repositories.type",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -58,7 +63,8 @@
       "description": "URI used by the driver. Auto-detected by default.",
       "deprecation": {
         "replacement": "spring.neo4j.uri",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -67,7 +73,8 @@
       "description": "Whether to use Neo4j native types wherever possible.",
       "deprecation": {
         "reason": "Native type support is now built-in.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -76,7 +83,8 @@
       "description": "Login user of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.username",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     }
   ]

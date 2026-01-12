@@ -24,17 +24,25 @@ description = "Spring Boot Data Redis smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-data-redis"))
 
-	dockerTestImplementation(project(":module:spring-boot-reactor"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":module:spring-boot-data-redis-test"))
+	dockerTestImplementation(project(":module:spring-boot-reactor"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-engine")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("redis.clients:jedis")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

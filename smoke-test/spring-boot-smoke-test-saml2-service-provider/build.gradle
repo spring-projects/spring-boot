@@ -20,19 +20,16 @@ plugins {
 
 description = "Spring Boot SAML 2 service provider smoke test"
 
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
-
 dependencies {
 	implementation(project(":starter:spring-boot-starter-security-saml2"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-security-saml2-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

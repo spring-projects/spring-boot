@@ -22,6 +22,7 @@ import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
 import io.rsocket.transport.netty.server.TcpServerTransport;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -99,7 +100,7 @@ public final class IntegrationAutoConfiguration {
 	static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
 		map.from(properties.getChannel().getMaxUnicastSubscribers())
 			.to(integrationProperties::setChannelsMaxUnicastSubscribers);
@@ -141,7 +142,7 @@ public final class IntegrationAutoConfiguration {
 				entries.put("spring.integration.poller.fixed-rate", poller.getFixedRate());
 			});
 			PollerMetadata pollerMetadata = new PollerMetadata();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
 			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
@@ -149,7 +150,7 @@ public final class IntegrationAutoConfiguration {
 			return pollerMetadata;
 		}
 
-		private Trigger asTrigger(IntegrationProperties.Poller poller) {
+		private @Nullable Trigger asTrigger(IntegrationProperties.Poller poller) {
 			if (StringUtils.hasText(poller.getCron())) {
 				return new CronTrigger(poller.getCron());
 			}
@@ -162,7 +163,7 @@ public final class IntegrationAutoConfiguration {
 			return null;
 		}
 
-		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
+		private Trigger createPeriodicTrigger(Duration period, @Nullable Duration initialDelay, boolean fixedRate) {
 			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
 				trigger.setInitialDelay(initialDelay);
@@ -348,11 +349,17 @@ public final class IntegrationAutoConfiguration {
 			@Conditional(RemoteRSocketServerAddressConfigured.class)
 			ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
 					RSocketStrategies rSocketStrategies) {
-
 				IntegrationProperties.RSocket.Client client = integrationProperties.getRsocket().getClient();
-				ClientRSocketConnector clientRSocketConnector = (client.getUri() != null)
-						? new ClientRSocketConnector(client.getUri())
-						: new ClientRSocketConnector(client.getHost(), client.getPort());
+				ClientRSocketConnector clientRSocketConnector;
+				if (client.getUri() != null) {
+					clientRSocketConnector = new ClientRSocketConnector(client.getUri());
+				}
+				else if (client.getHost() != null && client.getPort() != null) {
+					clientRSocketConnector = new ClientRSocketConnector(client.getHost(), client.getPort());
+				}
+				else {
+					throw new IllegalStateException("Neither uri nor host and port is set");
+				}
 				clientRSocketConnector.setRSocketStrategies(rSocketStrategies);
 				return clientRSocketConnector;
 			}

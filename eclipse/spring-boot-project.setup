@@ -9,10 +9,9 @@
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/buildship/oomph/1.0 https://raw.githubusercontent.com/eclipse/buildship/master/org.eclipse.buildship.oomph/model/GradleImport-1.0.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot.4.0.x"
-    label="Spring Boot 4.0.x">
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/JDT.ecore http://www.eclipse.org/buildship/oomph/1.0 https://raw.githubusercontent.com/eclipse/buildship/master/org.eclipse.buildship.oomph/model/GradleImport-1.0.ecore http://www.eclipse.org/oomph/predicates/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/SetupWorkingSets.ecore"
+    name="spring.boot.4.1.x"
+    label="Spring Boot 4.1.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -113,57 +112,102 @@
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
     <workingSet
-        name="spring-boot">
+        name="platform">
       <predicate
-          xsi:type="predicates:AndPredicate">
-        <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="spring-boot.*"/>
-        <operand
-            xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests'] //@setupTasks.8/@workingSets[name='spring-boot-starters'] //@setupTasks.8/@workingSets[name='spring-boot-tests'] //@setupTasks.8/@workingSets[name='spring-boot-tools']"/>
-      </predicate>
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/platform(/.*)?"/>
     </workingSet>
     <workingSet
-        name="spring-boot-tools">
+        name="core">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-(tools|antlib|configuration-.*|loader|loader-classic|.*-tools|.*-layertools|.*-plugin|autoconfigure-processor|buildpack.*)"/>
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/core(/.*)?"/>
     </workingSet>
     <workingSet
-        name="spring-boot-starters">
+        name="module">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/module(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="loader">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/loader(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="configuration-metadata">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/configuration-metadata(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="buildpack">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/buildpack(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="build-plugin">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/build-plugin(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="cli">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/cli(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="test-support">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/test-support(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="integration-test">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/integration-test(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="smoke-test">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/smoke-test(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="system-test">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/system-test(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="starter">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/starter(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="documentation">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/documentation(/.*)?"/>
+    </workingSet>
+    <workingSet
+        name="build">
       <predicate
           xsi:type="predicates:OrPredicate">
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="spring-boot-starter(s|-.*)"/>
+            pattern="spring-boot-build"/>
         <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="spring-boot-starter"/>
-      </predicate>
-    </workingSet>
-    <workingSet
-        name="spring-boot-smoke-tests">
-      <predicate
-          xsi:type="predicates:OrPredicate">
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/buildSrc"/>
         <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="spring-boot-smoke-test(s|-.*)"/>
-        <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="spring-boot-smoke-tests-invoker"/>
-      </predicate>
-    </workingSet>
-    <workingSet
-        name="spring-boot-tests">
-      <predicate
-          xsi:type="predicates:AndPredicate">
-        <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="spring-boot-(.*-test|tests).*"/>
-        <operand
-            xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests']"/>
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/gradle(/.*)?"/>
       </predicate>
     </workingSet>
   </setupTask>

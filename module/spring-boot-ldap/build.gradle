@@ -36,12 +36,12 @@ dependencies {
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
 	optional("com.unboundid:unboundid-ldapsdk")
-	optional("org.testcontainers:ldap")
+	optional("org.testcontainers:testcontainers-ldap")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
@@ -50,4 +50,12 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.apache.commons:commons-pool2")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

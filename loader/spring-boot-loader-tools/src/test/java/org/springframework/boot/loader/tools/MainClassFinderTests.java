@@ -16,11 +16,22 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.ClassFileVersion;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.scaffold.InstrumentedType;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.bytecode.ByteCodeAppender;
+import net.bytebuddy.jar.asm.MethodVisitor;
+import net.bytebuddy.jar.asm.Opcodes;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -179,12 +190,94 @@ class MainClassFinderTests {
 		}
 	}
 
+	@Test
+	void packagePrivateMainMethod() throws Exception {
+		this.testJarFile.addFile("a/b/c/D.class", packagePrivateMainMethod(ClassFileVersion.JAVA_V25));
+		ClassNameCollector callback = new ClassNameCollector();
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			MainClassFinder.doWithMainClasses(jarFile, null, callback);
+			assertThat(callback.getClassNames()).hasToString("[a.b.c.D]");
+		}
+	}
+
+	@Test
+	void packagePrivateMainMethodBeforeJava25() throws Exception {
+		this.testJarFile.addFile("a/b/c/D.class", packagePrivateMainMethod(ClassFileVersion.JAVA_V24));
+		ClassNameCollector callback = new ClassNameCollector();
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			MainClassFinder.doWithMainClasses(jarFile, null, callback);
+			assertThat(callback.getClassNames()).isEmpty();
+		}
+	}
+
+	@Test
+	void parameterlessMainMethod() throws Exception {
+		this.testJarFile.addFile("a/b/c/D.class", parameterlessMainMethod(ClassFileVersion.JAVA_V25));
+		ClassNameCollector callback = new ClassNameCollector();
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			MainClassFinder.doWithMainClasses(jarFile, null, callback);
+			assertThat(callback.getClassNames()).hasToString("[a.b.c.D]");
+		}
+	}
+
+	@Test
+	void parameterlessMainMethodBeforeJava25() throws Exception {
+		this.testJarFile.addFile("a/b/c/D.class", parameterlessMainMethod(ClassFileVersion.JAVA_V24));
+		ClassNameCollector callback = new ClassNameCollector();
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			MainClassFinder.doWithMainClasses(jarFile, null, callback);
+			assertThat(callback.getClassNames()).isEmpty();
+		}
+	}
+
+	private ByteArrayInputStream packagePrivateMainMethod(ClassFileVersion classFileVersion) {
+		byte[] bytecode = new ByteBuddy(classFileVersion).subclass(Object.class)
+			.defineMethod("main", void.class, Modifier.STATIC)
+			.withParameter(String[].class)
+			.intercept(new EmptyBodyImplementation())
+			.make()
+			.getBytes();
+		return new ByteArrayInputStream(bytecode);
+	}
+
+	private ByteArrayInputStream parameterlessMainMethod(ClassFileVersion classFileVersion) {
+		byte[] bytecode = new ByteBuddy(classFileVersion).subclass(Object.class)
+			.defineMethod("main", void.class, Modifier.STATIC | Modifier.PUBLIC)
+			.intercept(new EmptyBodyImplementation())
+			.make()
+			.getBytes();
+		return new ByteArrayInputStream(bytecode);
+	}
+
+	static class EmptyBodyImplementation implements Implementation {
+
+		@Override
+		public InstrumentedType prepare(InstrumentedType instrumentedType) {
+			return instrumentedType;
+		}
+
+		@Override
+		public ByteCodeAppender appender(Target implementationTarget) {
+			return new ByteCodeAppender() {
+
+				@Override
+				public Size apply(MethodVisitor methodVisitor, Context implementationContext,
+						MethodDescription instrumentedMethod) {
+					methodVisitor.visitInsn(Opcodes.RETURN);
+					return Size.ZERO;
+				}
+
+			};
+		}
+
+	}
+
 	static class ClassNameCollector implements MainClassCallback<Object> {
 
 		private final List<String> classNames = new ArrayList<>();
 
 		@Override
-		public Object doWith(MainClass mainClass) {
+		public @Nullable Object doWith(MainClass mainClass) {
 			this.classNames.add(mainClass.getName());
 			return null;
 		}

@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.Assert;
 
 /**
  * Status details returned from {@code Docker container wait}.
@@ -34,18 +37,24 @@ public class ContainerStatus extends MappedObject {
 
 	private final int statusCode;
 
-	private final String waitingErrorMessage;
+	private final @Nullable String waitingErrorMessage;
 
-	ContainerStatus(int statusCode, String waitingErrorMessage) {
-		super(null, null);
+	ContainerStatus(int statusCode, @Nullable String waitingErrorMessage) {
+		super(NullNode.getInstance(), MethodHandles.lookup());
 		this.statusCode = statusCode;
 		this.waitingErrorMessage = waitingErrorMessage;
 	}
 
 	ContainerStatus(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.statusCode = valueAt("/StatusCode", Integer.class);
+		this.statusCode = extractStatusCode();
 		this.waitingErrorMessage = valueAt("/Error/Message", String.class);
+	}
+
+	private Integer extractStatusCode() {
+		Integer result = valueAt("/StatusCode", Integer.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	/**
@@ -60,7 +69,7 @@ public class ContainerStatus extends MappedObject {
 	 * Return a message indicating an error waiting for a container to stop.
 	 * @return the waiting error message
 	 */
-	public String getWaitingErrorMessage() {
+	public @Nullable String getWaitingErrorMessage() {
 		return this.waitingErrorMessage;
 	}
 
@@ -81,7 +90,7 @@ public class ContainerStatus extends MappedObject {
 	 * @param errorMessage the error message
 	 * @return a new {@link ContainerStatus} instance
 	 */
-	public static ContainerStatus of(int statusCode, String errorMessage) {
+	public static ContainerStatus of(int statusCode, @Nullable String errorMessage) {
 		return new ContainerStatus(statusCode, errorMessage);
 	}
 

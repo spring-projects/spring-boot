@@ -85,32 +85,35 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 		if (!(this.parentContext instanceof WebServerApplicationContext)) {
 			return;
 		}
-		if (this.managementContext == null) {
-			ConfigurableApplicationContext managementContext = createManagementContext();
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		if (managementContext == null) {
+			managementContext = createManagementContext();
 			registerBeans(managementContext);
 			managementContext.refresh();
 			this.managementContext = managementContext;
 		}
 		else {
-			this.managementContext.start();
+			managementContext.start();
 		}
 	}
 
 	@Override
 	public void stop() {
-		if (this.managementContext != null) {
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		if (managementContext != null) {
 			if (this.parentContext.isClosed()) {
-				this.managementContext.close();
+				managementContext.close();
 			}
 			else {
-				this.managementContext.stop();
+				managementContext.stop();
 			}
 		}
 	}
 
 	@Override
 	public boolean isRunning() {
-		return this.managementContext != null && this.managementContext.isRunning();
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		return managementContext != null && managementContext.isRunning();
 	}
 
 	@Override
@@ -121,7 +124,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public @Nullable BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		Assert.isInstanceOf(ConfigurableApplicationContext.class, this.parentContext);
-		BeanFactory parentBeanFactory = ((ConfigurableApplicationContext) this.parentContext).getBeanFactory();
+		BeanFactory parentBeanFactory = this.parentContext.getBeanFactory();
 		if (registeredBean.getBeanClass().equals(getClass())
 				&& registeredBean.getBeanFactory().equals(parentBeanFactory)) {
 			ConfigurableApplicationContext managementContext = createManagementContext();
@@ -134,6 +137,10 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public boolean isBeanExcludedFromAotProcessing() {
 		return false;
+	}
+
+	@Nullable ConfigurableApplicationContext getManagementContext() {
+		return this.managementContext;
 	}
 
 	private void registerBeans(ConfigurableApplicationContext managementContext) {

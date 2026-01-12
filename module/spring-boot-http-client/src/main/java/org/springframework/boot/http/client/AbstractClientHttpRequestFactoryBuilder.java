@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -37,7 +39,7 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 
 	private final List<Consumer<T>> customizers;
 
-	protected AbstractClientHttpRequestFactoryBuilder(List<Consumer<T>> customizers) {
+	protected AbstractClientHttpRequestFactoryBuilder(@Nullable List<Consumer<T>> customizers) {
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 	}
 
@@ -64,18 +66,12 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final T build(ClientHttpRequestFactorySettings settings) {
-		T factory = createClientHttpRequestFactory(
-				(settings != null) ? settings : ClientHttpRequestFactorySettings.defaults());
+	public final T build(@Nullable HttpClientSettings settings) {
+		T factory = createClientHttpRequestFactory((settings != null) ? settings : HttpClientSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
 		return factory;
 	}
 
-	protected abstract T createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings);
-
-	protected final HttpClientSettings asHttpClientSettings(ClientHttpRequestFactorySettings settings) {
-		return (settings != null) ? new HttpClientSettings(settings.redirects(), settings.connectTimeout(),
-				settings.readTimeout(), settings.sslBundle()) : null;
-	}
+	protected abstract T createClientHttpRequestFactory(HttpClientSettings settings);
 
 }

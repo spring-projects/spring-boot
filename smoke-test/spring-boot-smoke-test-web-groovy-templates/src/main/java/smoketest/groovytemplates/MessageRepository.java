@@ -16,12 +16,14 @@
 
 package smoketest.groovytemplates;
 
+import org.jspecify.annotations.Nullable;
+
 public interface MessageRepository {
 
 	Iterable<Message> findAll();
 
 	Message save(Message message);
 
-	Message findMessage(Long id);
+	@Nullable Message findMessage(Long id);
 
 }

@@ -22,15 +22,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -54,10 +56,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "server.servlet.session.timeout:2", "debug=true" })
+@AutoConfigureTestRestTemplate
 class SampleSessionJdbcApplicationTests {
 
-	private static final ClientHttpRequestFactorySettings DONT_FOLLOW_REDIRECTS = ClientHttpRequestFactorySettings
-		.defaults()
+	private static final HttpClientSettings DONT_FOLLOW_REDIRECTS = HttpClientSettings.defaults()
 		.withRedirects(HttpRedirects.DONT_FOLLOW);
 
 	@Autowired
@@ -67,6 +69,7 @@ class SampleSessionJdbcApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@LocalServerPort
+	@SuppressWarnings("NullAway.Init")
 	private String port;
 
 	private static final URI ROOT_URI = URI.create("/");
@@ -82,8 +85,8 @@ class SampleSessionJdbcApplicationTests {
 		assertThat(loginPage).containsIgnoringCase("login");
 	}
 
-	private String performLogin() {
-		RestTemplate restTemplate = this.restTemplateBuilder.requestFactorySettings(DONT_FOLLOW_REDIRECTS).build();
+	private @Nullable String performLogin() {
+		RestTemplate restTemplate = this.restTemplateBuilder.clientSettings(DONT_FOLLOW_REDIRECTS).build();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -102,17 +105,19 @@ class SampleSessionJdbcApplicationTests {
 		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
+		Map<String, Object> body = response.getBody();
+		assertThat(body).isNotNull();
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) body.get("sessions");
 		assertThat(sessions).hasSize(1);
 	}
 
-	private ResponseEntity<String> performRequest(URI uri, String cookie) {
+	private ResponseEntity<String> performRequest(URI uri, @Nullable String cookie) {
 		HttpHeaders headers = getHeaders(cookie);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
 		return this.restTemplate.exchange(request, String.class);
 	}
 
-	private HttpHeaders getHeaders(String cookie) {
+	private HttpHeaders getHeaders(@Nullable String cookie) {
 		HttpHeaders headers = new HttpHeaders();
 		if (cookie != null) {
 			headers.set("Cookie", cookie);

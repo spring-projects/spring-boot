@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -125,14 +126,16 @@ class DevToolsR2dbcAutoConfigurationTests {
 			});
 			thread.start();
 			thread.join();
-			return atomicReference.get();
+			ConfigurableApplicationContext context = atomicReference.get();
+			assertThat(context).isNotNull();
+			return context;
 		}
 
 		protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
 			return createContext(null, classes);
 		}
 
-		protected final ConfigurableApplicationContext createContext(String url, Class<?>... classes) {
+		protected final ConfigurableApplicationContext createContext(@Nullable String url, Class<?>... classes) {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			if (!ObjectUtils.isEmpty(classes)) {
 				context.register(classes);

@@ -616,8 +616,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ConfigurableReactiveWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		assertThat(startedLogMessage()).matches(
-				"(Jetty|Netty|Tomcat|Undertow) started on port " + this.webServer.getPort() + " \\(http(/1.1)?\\)");
+		assertThat(startedLogMessage())
+			.matches("(Jetty|Netty|Tomcat) started on port " + this.webServer.getPort() + " \\(http(/1.1)?\\)");
 	}
 
 	@Test
@@ -626,7 +626,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		addConnector(0, factory);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat) started on ports " + this.webServer.getPort()
 				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\)");
 	}
 

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for health contributors.
  */
+@NullMarked
 package org.springframework.boot.health.autoconfigure.contributor;
+
+import org.jspecify.annotations.NullMarked;

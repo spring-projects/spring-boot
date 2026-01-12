@@ -16,8 +16,10 @@
 
 package org.springframework.boot.webservices.client;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -50,11 +52,11 @@ public interface WebServiceMessageSenderFactory {
 	/**
 	 * Returns a factory that will create a {@link ClientHttpRequestMessageSender} backed
 	 * by a detected {@link ClientHttpRequestFactory}.
-	 * @param requestFactorySettings the setting to apply
+	 * @param clientSettings the setting to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
 	 */
-	static WebServiceMessageSenderFactory http(ClientHttpRequestFactorySettings requestFactorySettings) {
-		return http(ClientHttpRequestFactoryBuilder.detect(), requestFactorySettings);
+	static WebServiceMessageSenderFactory http(HttpClientSettings clientSettings) {
+		return http(ClientHttpRequestFactoryBuilder.detect(), clientSettings);
 	}
 
 	/**
@@ -62,13 +64,13 @@ public interface WebServiceMessageSenderFactory {
 	 * by a {@link ClientHttpRequestFactory} created from the given
 	 * {@link ClientHttpRequestFactoryBuilder}.
 	 * @param requestFactoryBuilder the request factory builder to use
-	 * @param requestFactorySettings the settings to apply
+	 * @param clientSettings the settings to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
 	 */
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			ClientHttpRequestFactorySettings requestFactorySettings) {
+			@Nullable HttpClientSettings clientSettings) {
 		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
-		return () -> new ClientHttpRequestMessageSender(requestFactoryBuilder.build(requestFactorySettings));
+		return () -> new ClientHttpRequestMessageSender(requestFactoryBuilder.build(clientSettings));
 	}
 
 }

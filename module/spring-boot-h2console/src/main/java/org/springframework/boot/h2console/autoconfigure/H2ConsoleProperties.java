@@ -16,6 +16,8 @@
 
 package org.springframework.boot.h2console.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -38,7 +40,7 @@ public class H2ConsoleProperties {
 	/**
 	 * Whether to enable the console.
 	 */
-	private boolean enabled = false;
+	private boolean enabled;
 
 	private final Settings settings = new Settings();
 
@@ -70,17 +72,17 @@ public class H2ConsoleProperties {
 		/**
 		 * Whether to enable trace output.
 		 */
-		private boolean trace = false;
+		private boolean trace;
 
 		/**
 		 * Whether to enable remote access.
 		 */
-		private boolean webAllowOthers = false;
+		private boolean webAllowOthers;
 
 		/**
 		 * Password to access preferences and tools of H2 Console.
 		 */
-		private String webAdminPassword;
+		private @Nullable String webAdminPassword;
 
 		public boolean isTrace() {
 			return this.trace;
@@ -98,11 +100,11 @@ public class H2ConsoleProperties {
 			this.webAllowOthers = webAllowOthers;
 		}
 
-		public String getWebAdminPassword() {
+		public @Nullable String getWebAdminPassword() {
 			return this.webAdminPassword;
 		}
 
-		public void setWebAdminPassword(String webAdminPassword) {
+		public void setWebAdminPassword(@Nullable String webAdminPassword) {
 			this.webAdminPassword = webAdminPassword;
 		}
 

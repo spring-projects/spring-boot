@@ -16,6 +16,7 @@
 
 package org.springframework.boot.tomcat.autoconfigure;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -29,9 +30,11 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -72,13 +75,15 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	private final TomcatServerProperties tomcatProperties = new TomcatServerProperties();
 
+	private final WebProperties webProperties = new WebProperties();
+
 	private TomcatWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
 		ConfigurationPropertySources.attach(this.environment);
 		this.customizer = new TomcatWebServerFactoryCustomizer(this.environment, this.serverProperties,
-				this.tomcatProperties);
+				this.tomcatProperties, this.webProperties);
 	}
 
 	@Test
@@ -323,6 +328,20 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void resourceCacheMatchesDefault() {
+		TomcatServerProperties properties = new TomcatServerProperties();
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(properties.getResource().isAllowCaching()).isEqualTo(context.getResources().isCachingAllowed());
+			assertThat(properties.getResource().getCacheMaxSize())
+				.isEqualTo(DataSize.ofKilobytes(context.getResources().getCacheMaxSize()));
+			assertThat(properties.getResource().getCacheTtl())
+				.isEqualTo(Duration.ofMillis(context.getResources().getCacheTtl()));
+		});
+	}
+
+	@Test
 	void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
@@ -333,8 +352,18 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customStaticResourceCacheMaxSize() {
+		bind("server.tomcat.resource.cache-max-size=4MB");
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().getCacheMaxSize()).isEqualTo(4096L);
+		});
+	}
+
+	@Test
 	void customStaticResourceCacheTtl() {
-		bind("server.tomcat.resource.cache-ttl=10000");
+		bind("server.tomcat.resource.cache-ttl=10s");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
 			Context context = (Context) tomcat.getHost().findChildren()[0];
@@ -411,21 +440,8 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
 		assertThat(remoteIpValve.getHostHeader()).isEqualTo("X-Forwarded-Host");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("X-Forwarded-Port");
-		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
-				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
-				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
-				+ "100\\.6[4-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.[7-9]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.1[0-1]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.12[0-7]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "0:0:0:0:0:0:0:1|" // 0:0:0:0:0:0:0:1
-				+ "::1|" // ::1
-				+ "fe[89ab]\\p{XDigit}:.*|" //
-				+ "f[cd]\\p{XDigit}{2}+:.*";
+		String expectedInternalProxies = "192.168.0.0/16, 172.16.0.0/12, 169.254.0.0/16, fc00::/7, 10.0.0.0/8, "
+				+ "100.64.0.0/10, 127.0.0.0/8, fe80::/10, ::1/128";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
@@ -643,7 +659,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer(null);
 	}
 
-	private void customizeAndRunServer(Consumer<TomcatWebServer> consumer) {
+	private void customizeAndRunServer(@Nullable Consumer<TomcatWebServer> consumer) {
 		TomcatWebServer server = customizeAndGetServer();
 		server.start();
 		try {

@@ -19,7 +19,7 @@ style:
     active: true
   NewLineAtEndOfFile:
     active: true
-  UnusedImports:
+  UnusedImport:
     active: true
   WildcardImport:
     active: true

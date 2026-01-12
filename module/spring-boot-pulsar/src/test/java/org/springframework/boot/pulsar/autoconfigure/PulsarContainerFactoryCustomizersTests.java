@@ -26,10 +26,8 @@ import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactor
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
 import org.springframework.pulsar.config.ListenerContainerFactory;
 import org.springframework.pulsar.config.PulsarContainerFactory;
-import org.springframework.pulsar.config.PulsarListenerContainerFactory;
 import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
-import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -74,12 +72,12 @@ class PulsarContainerFactoryCustomizersTests {
 		assertThat(list.get(1).getCount()).isZero();
 		assertThat(list.get(2).getCount()).isZero();
 
-		customizers.customize(mock(ConcurrentPulsarListenerContainerFactory.class));
+		customizers.customize(mock(ListenerContainerFactory.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
 		assertThat(list.get(1).getCount()).isOne();
-		assertThat(list.get(2).getCount()).isOne();
+		assertThat(list.get(2).getCount()).isZero();
 
-		customizers.customize(mock(DefaultReactivePulsarListenerContainerFactory.class));
+		customizers.customize(mock(ConcurrentPulsarListenerContainerFactory.class));
 		assertThat(list.get(0).getCount()).isEqualTo(3);
 		assertThat(list.get(1).getCount()).isEqualTo(2);
 		assertThat(list.get(2).getCount()).isOne();
@@ -101,7 +99,7 @@ class PulsarContainerFactoryCustomizersTests {
 	}
 
 	/**
-	 * Test customizer that will match all {@link PulsarListenerContainerFactory}.
+	 * Test customizer that will match all {@link PulsarContainerFactory}.
 	 *
 	 * @param <T> the container factory type
 	 */
@@ -121,10 +119,7 @@ class PulsarContainerFactoryCustomizersTests {
 	}
 
 	/**
-	 * Test customizer that will match both
-	 * {@link ConcurrentPulsarListenerContainerFactory} and
-	 * {@link DefaultReactivePulsarListenerContainerFactory} as they both extend
-	 * {@link ListenerContainerFactory}.
+	 * Test customizer that will match all {@link ListenerContainerFactory}.
 	 */
 	static class TestPulsarListenersContainerFactoryCustomizer extends TestCustomizer<ListenerContainerFactory<?, ?>> {
 

@@ -6,3 +6,11 @@ updates:
       interval: "weekly"
     labels:
       - "type: task"
+      - "status: waiting-for-triage"
+  - package-ecosystem: "npm"
+    directory: "/antora"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "type: task"
+      - "status: waiting-for-triage"

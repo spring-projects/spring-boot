@@ -17,4 +17,7 @@
 /**
  * System abstractions.
  */
+@NullMarked
 package org.springframework.boot.buildpack.platform.system;
+
+import org.jspecify.annotations.NullMarked;

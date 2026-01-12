@@ -12,19 +12,24 @@ This section answers those questions.
 
 Many Spring Boot starters include default embedded containers.
 
-* For servlet stack applications, the `spring-boot-starter-web` includes Tomcat by including `spring-boot-starter-tomcat`, but you can use `spring-boot-starter-jetty` or `spring-boot-starter-undertow` instead.
-* For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`, `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
+* For servlet stack applications, the `spring-boot-starter-web` includes Tomcat by including `spring-boot-starter-tomcat`, but you can use `spring-boot-starter-jetty` instead.
+* For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat` or `spring-boot-starter-jetty` instead.
 
 When switching to a different HTTP server, you need to swap the default dependencies for those that you need instead.
 To help with this process, Spring Boot provides a separate starter for each of the supported HTTP servers.
 
-The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
+The following example shows how to exclude Tomcat and include Jetty for Spring MVC:
 
+[tabs]
+======
+
+Maven::
++
 [source,xml]
 ----
 <dependency>
 	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-web</artifactId>
+	<artifactId>spring-boot-starter-webmvc</artifactId>
 	<exclusions>
 		<!-- Exclude the Tomcat dependency -->
 		<exclusion>
@@ -39,23 +44,70 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	<artifactId>spring-boot-starter-jetty</artifactId>
 </dependency>
 ----
++
 
-The following Gradle example configures the necessary dependencies and a {url-gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
-
+Gradle::
++
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-undertow"
-	implementation "org.springframework.boot:spring-boot-starter-webflux"
-	modules {
-		module("org.springframework.boot:spring-boot-starter-reactor-netty") {
-			replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
-		}
+	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+		// Exclude the Tomcat dependency
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 	}
+	// Use Jetty instead
+	implementation "org.springframework.boot:spring-boot-starter-jetty"
 }
 ----
++
+======
 
-NOTE: `spring-boot-starter-reactor-netty` is required to use the javadoc:org.springframework.web.reactive.function.client.WebClient[] class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
+If you are creating a war file, you can use a similar approach, but you must indicate provided dependencies:
+
+
+[tabs]
+======
+
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-webmvc</artifactId>
+	<exclusions>
+		<!-- Exclude the Tomcat dependency -->
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use Jetty instead -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jetty</artifactId>
+	<scope>provided</scope>
+</dependency>
+----
++
+
+Gradle::
++
+[source,gradle]
+----
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+		// Exclude the Tomcat dependency
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+	// Use Jetty instead
+	implementation "org.springframework.boot:spring-boot-starter-jetty"
+	providedRuntime "org.springframework.boot:spring-boot-starter-jetty-runtime"
+}
+----
++
+======
 
 
 
@@ -82,7 +134,7 @@ Thanks to relaxed binding of javadoc:org.springframework.core.env.Environment[] 
 
 To switch off the HTTP endpoints completely but still create a javadoc:org.springframework.web.context.WebApplicationContext[], use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class.
+For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.web.server.autoconfigure.ServerProperties[] class.
 
 
 
@@ -96,7 +148,7 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto.webserver.discover-port]]
 == Discover the HTTP Port at Runtime
 
-You can access the port the server is running on from log output or from the javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] through its javadoc:org.springframework.boot.web.server.WebServer[].
+You can access the port the server is running on from log output or from the javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] through its javadoc:org.springframework.boot.web.server.WebServer[].
 The best way to get that and be sure it has been initialized is to add a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation, as shown in the following example:
@@ -113,10 +165,23 @@ Contrary to a test, application code callbacks are processed early (before the v
 
 
 
+[[howto.webserver.build-uri-test-web-server]]
+== Build URI Against the Test Web Server
+
+Tests that start a javadoc:org.springframework.boot.web.server.WebServer[] such as  `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can get information about
+the running server using javadoc:org.springframework.boot.test.http.server.LocalTestWebServer[], as shown in the following example:
+
+include-code::MyWebIntegrationTests[]
+
+javadoc:org.springframework.boot.test.http.server.LocalTestWebServer[] provides access to a suitable javadoc:org.springframework.web.util.UriBuilderFactory[].
+It can also be customized to build such an instance on a sub-path of your application.
+
+
+
 [[howto.webserver.enable-response-compression]]
 == Enable HTTP Response Compression
 
-HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
+HTTP response compression is supported by Jetty, Tomcat and Reactor Netty.
 It can be enabled in `application.properties`, as follows:
 
 [configprops,yaml]
@@ -221,7 +286,7 @@ These properties should instead be defined using `spring.ssl.bundle.<type>.<name
 [[howto.webserver.configure-ssl.sni]]
 === Configure Server Name Indication
 
-Tomcat, Netty, and Undertow can be configured to use unique SSL trust material for individual host names to support Server Name Indication (SNI).
+Tomcat, and Netty can be configured to use unique SSL trust material for individual host names to support Server Name Indication (SNI).
 SNI configuration is not supported with Jetty, but Jetty can https://eclipse.dev/jetty/documentation/jetty-12/operations-guide/index.html#og-protocols-ssl-sni[automatically set up SNI] if multiple certificates are provided to it.
 
 Assuming xref:reference:features/ssl.adoc[SSL bundles] named `web`, `web-alt1`, and `web-alt2` have been configured, the following configuration can be used to assign each bundle to a host name served by the embedded web server:
@@ -258,7 +323,7 @@ You may, for example, want to use `h2c` when your application is xref:webserver.
 [[howto.webserver.configure-http2.tomcat]]
 === HTTP/2 With Tomcat
 
-Spring Boot ships by default with Tomcat 10.1.x which supports `h2c` and `h2` out of the box.
+Spring Boot ships by default with Tomcat 11.0.x which supports `h2c` and `h2` out of the box.
 Alternatively, you can use `libtcnative` for `h2` support if the library and its dependencies are installed on the host operating system.
 
 The library directory must be made available, if not already, to the JVM library path.
@@ -292,13 +357,6 @@ Developers can choose to import only the required dependencies using a classifie
 
 
 
-[[howto.webserver.configure-http2.undertow]]
-=== HTTP/2 With Undertow
-
-Undertow supports `h2c` and `h2` out of the box.
-
-
-
 [[howto.webserver.configure]]
 == Configure the Web Server
 
@@ -309,7 +367,7 @@ See the list of xref:appendix:application-properties/index.adoc[].
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key does not exist for your use case, you should then look at javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[].
-You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
+You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty) and the chosen web stack (servlet or reactive).
 
 The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
 
@@ -328,20 +386,16 @@ In addition Spring Boot provides:
 | Server | Servlet stack | Reactive stack
 
 | Tomcat
-| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[]
-| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[]
+| javadoc:org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory[]
 
 | Jetty
-| javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[]
-| javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[]
-
-| Undertow
-| javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[]
-| javadoc:org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.jetty.servlet.JettyServletWebServerFactory[]
+| javadoc:org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory[]
 
 | Reactor
 | N/A
-| javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory[]
 |===
 
 As a last resort, you can also declare your own javadoc:org.springframework.boot.web.server.WebServerFactory[] bean, which will override the one provided by Spring Boot.
@@ -394,15 +448,15 @@ include-code::MyFilterConfiguration[]
 [[howto.webserver.add-servlet-filter-listener.using-scanning]]
 === Add Servlets, Filters, and Listeners by Using Classpath Scanning
 
-javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] annotated classes can be automatically registered with an embedded servlet container by annotating a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class with javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] and specifying the package(s) containing the components that you want to register.
-By default, javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] scans from the package of the annotated class.
+javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] annotated classes can be automatically registered with an embedded servlet container by annotating a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class with javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation] and specifying the package(s) containing the components that you want to register.
+By default, javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation] scans from the package of the annotated class.
 
 
 
 [[howto.webserver.configure-access-logs]]
 == Configure Access Logging
 
-Access logs can be configured for Tomcat, Undertow, and Jetty through their respective namespaces.
+Access logs can be configured for Tomcat and Jetty through their respective namespaces.
 
 For instance, the following settings log access on Tomcat with a {url-tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
@@ -420,24 +474,6 @@ NOTE: The default location for logs is a `logs` directory relative to the Tomcat
 By default, the `logs` directory is a temporary directory, so you may want to fix Tomcat's base directory or use an absolute path for the logs.
 In the preceding example, the logs are available in `my-tomcat/logs` relative to the working directory of the application.
 
-Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
-
-[configprops,yaml]
-----
-server:
-  undertow:
-    accesslog:
-      enabled: true
-      pattern: "%t %a %r %s (%D milliseconds)"
-    options:
-      server:
-        record-request-start-time: true
-----
-
-Note that, in addition to enabling access logging and configuring its pattern, recording request start times has also been enabled.
-This is required when including the response time (`%D`) in the access log pattern.
-Logs are stored in a `logs` directory relative to the working directory of the application.
-You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
 
 Finally, access logging for Jetty can also be configured as follows:
 
@@ -514,7 +550,7 @@ You can take complete control of the configuration of Tomcat's javadoc:org.apach
 [[howto.webserver.enable-multiple-connectors-in-tomcat]]
 == Enable Multiple Connectors with Tomcat
 
-You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
+You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
 include-code::MyTomcatConfiguration[]
 
@@ -535,14 +571,6 @@ server:
       enabled: true
 ----
 
-
-
-[[howto.webserver.enable-multiple-listeners-in-undertow]]
-== Enable Multiple Listeners with Undertow
-
-Add an javadoc:org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer[] to the javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[] and add a listener to the `io.undertow.Undertow.Builder`, as shown in the following example:
-
-include-code::MyUndertowConfiguration[]
 
 
 

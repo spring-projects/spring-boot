@@ -51,6 +51,7 @@ import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.status.WarnStatus;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,7 @@ import org.slf4j.MDC;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
@@ -396,7 +398,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testCleanHistoryOnStartProperty() {
-		this.environment.setProperty("logging.file.clean-history-on-start", "true");
+		this.environment.setProperty("logging.logback.rollingpolicy.clean-history-on-start", "true");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -409,7 +411,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testCleanHistoryOnStartPropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.clean-history-on-start", "true");
+		this.environment.setProperty("logging.logback.rollingpolicy.clean-history-on-start", "true");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -435,7 +437,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private void testMaxFileSizeProperty(String sizeValue, String expectedFileSize) {
-		this.environment.setProperty("logging.file.max-size", sizeValue);
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -448,7 +450,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testMaxFileSizePropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.max-size", "100MB");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "100MB");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -460,7 +462,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testMaxHistoryProperty() {
-		this.environment.setProperty("logging.file.max-history", "30");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -473,7 +475,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testMaxHistoryPropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.max-history", "30");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -499,7 +501,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private void testTotalSizeCapProperty(String sizeValue, String expectedFileSize) {
-		this.environment.setProperty("logging.file.total-size-cap", sizeValue);
+		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -513,7 +515,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@WithIncludeBaseXmlResource
 	void testTotalSizeCapPropertyWithXmlConfiguration() {
 		String expectedSize = "101 MB";
-		this.environment.setProperty("logging.file.total-size-cap", expectedSize);
+		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", expectedSize);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -771,9 +773,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void testRollingFileNameProperty() {
+	void testRollingFileNamePatternProperty() {
 		String rollingFile = "my.log.%d{yyyyMMdd}.%i.gz";
-		this.environment.setProperty("logging.pattern.rolling-file-name", rollingFile);
+		this.environment.setProperty("logging.logback.rollingpolicy.file-name-pattern", rollingFile);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "my.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -797,7 +799,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void whenContextHasNoAotContributionThenProcessAheadOfTimeReturnsNull() {
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
+			.processAheadOfTime(mock(ConfigurableListableBeanFactory.class));
 		assertThat(contribution).isNull();
 	}
 
@@ -806,7 +809,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext context = ((LoggerContext) LoggerFactory.getILoggerFactory());
 		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
 				mock(BeanFactoryInitializationAotContribution.class));
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
+			.processAheadOfTime(mock(ConfigurableListableBeanFactory.class));
 		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
 		assertThat(contribution).isNotNull();
 	}
@@ -1139,8 +1143,11 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(this.logger.getLoggerContext().getObject(Environment.class.getName())).isSameAs(this.environment);
 	}
 
-	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
-		this.loggingSystem.getSystemProperties((ConfigurableEnvironment) context.getEnvironment()).apply(logFile);
+	private void initialize(LoggingInitializationContext context, @Nullable String configLocation,
+			@Nullable LogFile logFile) {
+		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getEnvironment();
+		assertThat(environment).isNotNull();
+		this.loggingSystem.getSystemProperties(environment).apply(logFile);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(context, configLocation, logFile);
 	}

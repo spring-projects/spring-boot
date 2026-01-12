@@ -23,11 +23,12 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.Access;
+import org.springframework.boot.configurationsample.TestAccess;
 import org.springframework.boot.configurationsample.endpoint.CamelCaseEndpoint;
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.NoAccessEndpoint;
+import org.springframework.boot.configurationsample.endpoint.NullableParameterEndpoint;
 import org.springframework.boot.configurationsample.endpoint.ReadOnlyAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint2;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatRuntimeException;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Wonyong Hwang
  */
 class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -52,7 +54,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void simpleEndpoint() {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
-		assertThat(metadata).has(access("simple", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("simple", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -61,7 +63,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void enabledEndpoint() {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled").fromSource(EnabledEndpoint.class));
-		assertThat(metadata).has(access("enabled", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("enabled", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -69,7 +71,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void noAccessEndpoint() {
 		ConfigurationMetadata metadata = compile(NoAccessEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.noaccess").fromSource(NoAccessEndpoint.class));
-		assertThat(metadata).has(access("noaccess", Access.NONE));
+		assertThat(metadata).has(access("noaccess", TestAccess.NONE));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -78,7 +80,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(ReadOnlyAccessEndpoint.class);
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.readonlyaccess").fromSource(ReadOnlyAccessEndpoint.class));
-		assertThat(metadata).has(access("readonlyaccess", Access.READ_ONLY));
+		assertThat(metadata).has(access("readonlyaccess", TestAccess.READ_ONLY));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -87,7 +89,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(UnrestrictedAccessEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.unrestrictedaccess")
 			.fromSource(UnrestrictedAccessEndpoint.class));
-		assertThat(metadata).has(access("unrestrictedaccess", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("unrestrictedaccess", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -99,7 +101,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name")
 			.ofType(String.class)
 			.withDefaultValue("test"));
-		assertThat(metadata).has(access("customprops", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("customprops", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -108,7 +110,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void specificEndpoint() {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
-		assertThat(metadata).has(access("specific", Access.READ_ONLY));
+		assertThat(metadata).has(access("specific", TestAccess.READ_ONLY));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -118,7 +120,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(CamelCaseEndpoint.class);
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
-		assertThat(metadata).has(defaultAccess("PascalCase", "pascal-case", Access.UNRESTRICTED));
+		assertThat(metadata).has(defaultAccess("PascalCase", "pascal-case", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -128,15 +130,15 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
-				"id = \"incremental\", defaultAccess = org.springframework.boot.configurationsample.Access.NONE");
+				"id = \"incremental\", defaultAccess = org.springframework.boot.configurationsample.TestAccess.NONE");
 		metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(access("incremental", Access.NONE));
+		assertThat(metadata).has(access("incremental", TestAccess.NONE));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -147,14 +149,14 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
-		project.replaceText(IncrementalEndpoint.class, "@OptionalParameter String param", "String param");
+		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
 		metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -163,13 +165,14 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		TestProject project = new TestProject(SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
-		assertThat(metadata).has(access("specific", Access.READ_ONLY));
+		assertThat(metadata).has(access("specific", TestAccess.READ_ONLY));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
-		project.replaceText(SpecificEndpoint.class, "defaultAccess = Access.READ_ONLY", "defaultAccess = Access.NONE");
+		project.replaceText(SpecificEndpoint.class, "defaultAccess = TestAccess.READ_ONLY",
+				"defaultAccess = TestAccess.NONE");
 		metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
-		assertThat(metadata).has(access("specific", Access.NONE));
+		assertThat(metadata).has(access("specific", TestAccess.NONE));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -178,7 +181,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void shouldTolerateEndpointWithSameId() {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class, SimpleEndpoint2.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
-		assertThat(metadata).has(defaultAccess("simple", "simple", Access.UNRESTRICTED));
+		assertThat(metadata).has(defaultAccess("simple", "simple", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -192,12 +195,22 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 					"Existing property 'management.endpoint.simple.access' from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint has a conflicting value. Existing value: unrestricted, new value from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint3: none");
 	}
 
-	private Metadata.MetadataItemCondition access(String endpointId, Access defaultValue) {
+	@Test
+	void endpointWithNullableParameter() {
+		ConfigurationMetadata metadata = compile(NullableParameterEndpoint.class);
+		assertThat(metadata)
+			.has(Metadata.withGroup("management.endpoint.nullable").fromSource(NullableParameterEndpoint.class));
+		assertThat(metadata).has(access("nullable", TestAccess.UNRESTRICTED));
+		assertThat(metadata).has(cacheTtl("nullable"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	private Metadata.MetadataItemCondition access(String endpointId, TestAccess defaultValue) {
 		return defaultAccess(endpointId, endpointId, defaultValue);
 	}
 
 	private Metadata.MetadataItemCondition defaultAccess(String endpointId, String endpointSuffix,
-			Access defaultValue) {
+			TestAccess defaultValue) {
 		return Metadata.withAccess("management.endpoint." + endpointSuffix + ".access")
 			.withDefaultValue(defaultValue.name().toLowerCase(Locale.ENGLISH))
 			.withDescription("Permitted level of access for the %s endpoint.".formatted(endpointId));

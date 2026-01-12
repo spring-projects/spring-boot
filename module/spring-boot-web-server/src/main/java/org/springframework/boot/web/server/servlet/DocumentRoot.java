@@ -23,8 +23,10 @@ import java.net.URLConnection;
 import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manages a {@link ServletWebServerFactory} document root.
@@ -34,21 +36,36 @@ import org.apache.commons.logging.Log;
  */
 public class DocumentRoot {
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
+	private static final String WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE = "WAR_SOURCE_DIRECTORY";
 
 	private final Log logger;
 
-	private File directory;
+	private final File rootDirectory;
+
+	private final String[] commonDocRoots;
+
+	private @Nullable File directory;
 
 	public DocumentRoot(Log logger) {
-		this.logger = logger;
+		this(logger, new File("."), System::getenv);
 	}
 
-	File getDirectory() {
+	DocumentRoot(Log logger, File rootDirectory, Function<String, @Nullable String> systemEnvironment) {
+		this.logger = logger;
+		this.rootDirectory = rootDirectory;
+		this.commonDocRoots = new String[] { getWarSourceDirectory(systemEnvironment), "public", "static" };
+	}
+
+	private static String getWarSourceDirectory(Function<String, @Nullable String> systemEnvironment) {
+		String name = systemEnvironment.apply(WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE);
+		return (name != null) ? name : "src/main/webapp";
+	}
+
+	@Nullable File getDirectory() {
 		return this.directory;
 	}
 
-	public void setDirectory(File directory) {
+	public void setDirectory(@Nullable File directory) {
 		this.directory = directory;
 	}
 
@@ -57,7 +74,7 @@ public class DocumentRoot {
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
-	public final File getValidDirectory() {
+	public final @Nullable File getValidDirectory() {
 		File file = this.directory;
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
@@ -71,11 +88,11 @@ public class DocumentRoot {
 		return file;
 	}
 
-	private File getWarFileDocumentRoot() {
+	private @Nullable File getWarFileDocumentRoot() {
 		return getArchiveFileDocumentRoot(".war");
 	}
 
-	private File getArchiveFileDocumentRoot(String extension) {
+	private @Nullable File getArchiveFileDocumentRoot(String extension) {
 		File file = getCodeSourceArchive();
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
@@ -87,15 +104,15 @@ public class DocumentRoot {
 		return null;
 	}
 
-	private File getExplodedWarFileDocumentRoot() {
+	private @Nullable File getExplodedWarFileDocumentRoot() {
 		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
 	}
 
-	private File getCodeSourceArchive() {
+	private @Nullable File getCodeSourceArchive() {
 		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
 	}
 
-	File getCodeSourceArchive(CodeSource codeSource) {
+	@Nullable File getCodeSourceArchive(@Nullable CodeSource codeSource) {
 		try {
 			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			if (location == null) {
@@ -120,7 +137,7 @@ public class DocumentRoot {
 		}
 	}
 
-	final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
+	final @Nullable File getExplodedWarFileDocumentRoot(@Nullable File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + codeSourceFile);
 		}
@@ -135,9 +152,9 @@ public class DocumentRoot {
 		return null;
 	}
 
-	private File getCommonDocumentRoot() {
-		for (String commonDocRoot : COMMON_DOC_ROOTS) {
-			File root = new File(commonDocRoot);
+	private @Nullable File getCommonDocumentRoot() {
+		for (String commonDocRoot : this.commonDocRoots) {
+			File root = new File(this.rootDirectory, commonDocRoot);
 			if (root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
@@ -146,7 +163,7 @@ public class DocumentRoot {
 	}
 
 	private void logNoDocumentRoots() {
-		this.logger.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+		this.logger.debug("None of the document roots " + Arrays.asList(this.commonDocRoots)
 				+ " point to a directory and will be ignored.");
 	}
 

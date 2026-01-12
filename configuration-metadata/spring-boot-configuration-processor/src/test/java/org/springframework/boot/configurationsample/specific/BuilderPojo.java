@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample with builder style setters.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("builder")
+@TestConfigurationProperties("builder")
 public class BuilderPojo {
 
 	private String name;

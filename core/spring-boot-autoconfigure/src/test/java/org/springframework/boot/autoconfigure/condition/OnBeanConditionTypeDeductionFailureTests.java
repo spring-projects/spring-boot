@@ -16,8 +16,9 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.condition.OnBeanCondition.BeanTypeDeductionException;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -45,6 +46,7 @@ class OnBeanConditionTypeDeductionFailureTests {
 			.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
 			.satisfies((ex) -> {
 				Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
+				assertThat(beanTypeDeductionException).isNotNull();
 				assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
 						+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
 				assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
@@ -52,7 +54,7 @@ class OnBeanConditionTypeDeductionFailureTests {
 			});
 	}
 
-	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {
+	private @Nullable Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {
 		Throwable candidate = ex;
 		while (candidate != null) {
 			if (target.isInstance(candidate)) {

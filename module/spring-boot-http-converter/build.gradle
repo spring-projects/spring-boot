@@ -33,19 +33,26 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-gson"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-jsonb"))
+	optional(project(":module:spring-boot-kotlinx-serialization-json"))
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.google.code.gson:gson")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("org.springframework:spring-webmvc")
+	optional("tools.jackson.dataformat:jackson-dataformat-xml")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 	testRuntimeOnly("org.eclipse:yasson")
 	testRuntimeOnly("org.springframework:spring-webflux")
+	testRuntimeOnly("tools.jackson.dataformat:jackson-dataformat-cbor")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

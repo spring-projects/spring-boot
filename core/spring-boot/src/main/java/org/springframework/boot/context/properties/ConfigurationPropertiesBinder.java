@@ -183,11 +183,13 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private Binder getBinder() {
-		if (this.binder == null) {
-			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
+		Binder binder = this.binder;
+		if (binder == null) {
+			binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
 					getConversionServices(), getPropertyEditorInitializer(), null, null);
+			this.binder = binder;
 		}
-		return this.binder;
+		return binder;
 	}
 
 	private Iterable<ConfigurationPropertySource> getConfigurationPropertySources() {

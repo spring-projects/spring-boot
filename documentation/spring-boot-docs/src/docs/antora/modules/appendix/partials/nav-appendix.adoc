@@ -2,6 +2,8 @@
 
 ** xref:appendix:application-properties/index.adoc[]
 
+** xref:appendix:deprecated-application-properties/index.adoc[]
+
 ** xref:appendix:auto-configuration-classes/index.adoc[]
 include::appendix:partial$auto-configuration-classes/nav.adoc[]
 

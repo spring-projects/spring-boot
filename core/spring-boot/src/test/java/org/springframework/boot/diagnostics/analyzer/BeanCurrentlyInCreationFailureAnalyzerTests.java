@@ -169,7 +169,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 			beanFactory.setAllowCircularReferences(allowCircularReferences);
 			this.context.refresh();
 			fail("Expected failure did not occur");
-			return null;
+			throw new AssertionError("This should not be reached");
 		}
 		catch (Exception ex) {
 			return ex;

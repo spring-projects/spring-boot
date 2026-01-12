@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
@@ -117,7 +118,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 					: new SQLExceptionSubclassTranslator();
 		}
 
-		private String getSpringDbName(SQLDialect dialect) {
+		private @Nullable String getSpringDbName(@Nullable SQLDialect dialect) {
 			return (dialect != null && dialect.thirdParty() != null) ? dialect.thirdParty().springDbName() : null;
 		}
 

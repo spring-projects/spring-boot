@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.restart.classloader;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A container for files that may be served from a {@link ClassLoader}. Can be used to
  * represent files that have been added, modified or deleted since the original JAR was
@@ -39,6 +41,6 @@ public interface ClassLoaderFileRepository {
 	 * @param name the name of the file
 	 * @return a {@link ClassLoaderFile} or {@code null}
 	 */
-	ClassLoaderFile getFile(String name);
+	@Nullable ClassLoaderFile getFile(@Nullable String name);
 
 }

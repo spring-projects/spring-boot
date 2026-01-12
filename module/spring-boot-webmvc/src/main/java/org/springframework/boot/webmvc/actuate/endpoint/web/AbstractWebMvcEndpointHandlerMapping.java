@@ -30,6 +30,7 @@ import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -50,7 +51,6 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.webmvc.actuate.endpoint.web.AbstractWebMvcEndpointHandlerMapping.AbstractWebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpHeaders;
@@ -58,6 +58,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -96,12 +97,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	private final EndpointMediaTypes endpointMediaTypes;
 
-	private final CorsConfiguration corsConfiguration;
+	private final @Nullable CorsConfiguration corsConfiguration;
 
 	private final boolean shouldRegisterLinksMapping;
 
-	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
-			HttpServletRequest.class, Map.class);
+	private final Method handleMethod = getHandleMethod();
 
 	private RequestMappingInfo.BuilderConfiguration builderConfig = new RequestMappingInfo.BuilderConfiguration();
 
@@ -130,13 +130,20 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
+			@Nullable CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
 		setOrder(-100);
+	}
+
+	private static Method getHandleMethod() {
+		Method method = ReflectionUtils.findMethod(OperationHandler.class, "handle", HttpServletRequest.class,
+				Map.class);
+		Assert.state(method != null, "'method' must not be null");
+		return method;
 	}
 
 	@Override
@@ -219,8 +226,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			.options(this.builderConfig)
 			.build();
 		LinksHandler linksHandler = getLinksHandler();
-		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
-				HttpServletRequest.class, HttpServletResponse.class));
+		Method links = ReflectionUtils.findMethod(linksHandler.getClass(), "links", HttpServletRequest.class,
+				HttpServletResponse.class);
+		Assert.state(links != null, "'links' must not be null");
+		registerMapping(mapping, linksHandler, links);
 	}
 
 	@Override
@@ -229,12 +238,13 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
+	protected @Nullable CorsConfiguration initCorsConfiguration(Object handler, Method method,
+			RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 
 	@Override
-	protected CorsConfiguration getCorsConfiguration(Object handler, HttpServletRequest request) {
+	protected @Nullable CorsConfiguration getCorsConfiguration(Object handler, HttpServletRequest request) {
 		CorsConfiguration corsConfiguration = super.getCorsConfiguration(handler, request);
 		return (corsConfiguration != null) ? corsConfiguration : this.corsConfiguration;
 	}
@@ -245,7 +255,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	@Override
-	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+	protected @Nullable RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
 		return null;
 	}
 
@@ -269,7 +279,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	@FunctionalInterface
 	protected interface LinksHandler {
 
-		Object links(HttpServletRequest request, HttpServletResponse response);
+		@Nullable Object links(HttpServletRequest request, HttpServletResponse response);
 
 	}
 
@@ -279,7 +289,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	@FunctionalInterface
 	protected interface ServletWebOperation {
 
-		Object handle(HttpServletRequest request, Map<String, String> body);
+		@Nullable Object handle(HttpServletRequest request, @Nullable Map<String, String> body);
 
 	}
 
@@ -309,15 +319,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		@Override
-		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+		public @Nullable Object handle(HttpServletRequest request,
+				@RequestBody(required = false) @Nullable Map<String, String> body) {
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
-			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
-						() -> headers.get("Accept"));
-				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						serverNamespaceArgumentResolver(request), producibleOperationArgumentResolver);
+				InvocationContext invocationContext = getInvocationContext(request, body, headers, securityContext);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -325,15 +332,21 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			}
 		}
 
-		private OperationArgumentResolver serverNamespaceArgumentResolver(HttpServletRequest request) {
-			if (ClassUtils.isPresent("org.springframework.boot.web.server.context.WebServerApplicationContext", null)) {
-				return OperationArgumentResolver.of(WebServerNamespace.class, () -> {
-					WebApplicationContext applicationContext = WebApplicationContextUtils
-						.getRequiredWebApplicationContext(request.getServletContext());
-					return WebServerNamespace.from(WebServerApplicationContext.getServerNamespace(applicationContext));
-				});
-			}
-			return OperationArgumentResolver.of(WebServerNamespace.class, () -> null);
+		private InvocationContext getInvocationContext(HttpServletRequest request, @Nullable Map<String, String> body,
+				HttpHeaders headers, ServletSecurityContext securityContext) {
+			Map<String, Object> arguments = getArguments(request, body);
+			OperationArgumentResolver serverNamespaceResolver = OperationArgumentResolver.of(WebServerNamespace.class,
+					() -> getServerNamespace(request));
+			ProducibleOperationArgumentResolver producibleOperationResolver = new ProducibleOperationArgumentResolver(
+					() -> headers.get("Accept"));
+			return new InvocationContext(securityContext, arguments, serverNamespaceResolver,
+					producibleOperationResolver);
+		}
+
+		private @Nullable WebServerNamespace getServerNamespace(HttpServletRequest request) {
+			WebApplicationContext context = WebApplicationContextUtils
+				.getRequiredWebApplicationContext(request.getServletContext());
+			return WebServerNamespace.from(context);
 		}
 
 		@Override
@@ -341,7 +354,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return "Actuator web endpoint '" + this.operation.getId() + "'";
 		}
 
-		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
+		private Map<String, Object> getArguments(HttpServletRequest request, @Nullable Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(request));
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
 				.getMatchAllRemainingPathSegmentsVariable();
@@ -386,7 +399,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
 
-		private Object handleResult(Object result, HttpMethod httpMethod) {
+		private @Nullable Object handleResult(@Nullable Object result, HttpMethod httpMethod) {
 			if (result == null) {
 				return new ResponseEntity<>(
 						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
@@ -396,12 +409,17 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			}
 			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
 					: null;
-			return ResponseEntity.status(response.getStatus())
-				.contentType(contentType)
-				.body(convertIfNecessary(response.getBody()));
+			BodyBuilder builder = ResponseEntity.status(response.getStatus());
+			if (contentType != null) {
+				builder = builder.contentType(contentType);
+			}
+			return builder.body(convertIfNecessary(response.getBody()));
 		}
 
-		private Object convertIfNecessary(Object body) {
+		private @Nullable Object convertIfNecessary(@Nullable Object body) {
+			if (body == null) {
+				return null;
+			}
 			for (Function<Object, Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}
@@ -435,7 +453,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@ResponseBody
 		@Reflective
-		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+		@Nullable Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}
 
@@ -504,7 +522,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, OperationHandler.class);
 		}
 

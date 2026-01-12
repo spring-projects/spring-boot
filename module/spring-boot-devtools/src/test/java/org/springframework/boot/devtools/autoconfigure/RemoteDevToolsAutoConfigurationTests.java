@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import jakarta.servlet.Filter;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.SourceDirectoryUrlFilter;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -65,7 +67,7 @@ class RemoteDevToolsAutoConfigurationTests {
 
 	private static final String DEFAULT_SECRET_HEADER_NAME = RemoteDevToolsProperties.DEFAULT_SECRET_HEADER_NAME;
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	private MockHttpServletRequest request;
 
@@ -90,8 +92,10 @@ class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	void disabledIfRemoteSecretIsMissing() throws Exception {
 		this.context = getContext(() -> loadContext("a:b"));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(DispatcherFilter.class);
+		});
 	}
 
 	@Test
@@ -182,8 +186,10 @@ class RemoteDevToolsAutoConfigurationTests {
 	void disableRestart() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false"));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean("remoteRestartHandlerMapper");
+		});
 	}
 
 	@Test
@@ -218,18 +224,21 @@ class RemoteDevToolsAutoConfigurationTests {
 		});
 		thread.start();
 		thread.join();
-		return atomicReference.get();
+		AnnotationConfigServletWebApplicationContext context = atomicReference.get();
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	private void assertRestartInvoked(boolean value) {
+		assertThat(this.context).isNotNull();
 		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked).isEqualTo(value);
 	}
 
 	private AnnotationConfigServletWebApplicationContext loadContext(String... properties) {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.setServletContext(new MockServletContext());
-		context.register(Config.class, SecurityAutoConfiguration.class, RemoteDevToolsAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		context.register(Config.class, SecurityAutoConfiguration.class, ServletWebSecurityAutoConfiguration.class,
+				RemoteDevToolsAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		TestPropertyValues.of(properties).applyTo(context);
 		context.refresh();
 		return context;

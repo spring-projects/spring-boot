@@ -26,14 +26,16 @@ description = "Spring Boot Data Commons"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-persistence"))
 	api("org.springframework.data:spring-data-commons")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-webmvc"))
 
-	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-jdbc"))
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("org.springframework.data:spring-data-jdbc")
@@ -42,4 +44,8 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

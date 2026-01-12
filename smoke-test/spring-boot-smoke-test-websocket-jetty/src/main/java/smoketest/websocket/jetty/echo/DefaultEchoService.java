@@ -16,11 +16,13 @@
 
 package smoketest.websocket.jetty.echo;
 
+import org.jspecify.annotations.Nullable;
+
 public class DefaultEchoService implements EchoService {
 
 	private final String echoFormat;
 
-	public DefaultEchoService(String echoFormat) {
+	public DefaultEchoService(@Nullable String echoFormat) {
 		this.echoFormat = (echoFormat != null) ? echoFormat : "%s";
 	}
 

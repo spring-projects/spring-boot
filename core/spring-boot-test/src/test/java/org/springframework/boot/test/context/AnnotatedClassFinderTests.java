@@ -35,12 +35,14 @@ class AnnotatedClassFinderTests {
 	private final AnnotatedClassFinder finder = new AnnotatedClassFinder(SpringBootConfiguration.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void findFromClassWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
 			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void findFromPackageWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromPackage((String) null))
 			.withMessageContaining("'source' must not be null");

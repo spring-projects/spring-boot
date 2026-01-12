@@ -28,14 +28,19 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.hateoas:spring-hateoas")
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation(project(":module:spring-boot-jackson"))
 	implementation("org.springframework:spring-webmvc")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
-	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

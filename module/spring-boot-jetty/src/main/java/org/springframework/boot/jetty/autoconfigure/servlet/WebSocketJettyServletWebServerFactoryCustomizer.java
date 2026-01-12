@@ -16,11 +16,11 @@
 
 package org.springframework.boot.jetty.autoconfigure.servlet;
 
-import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.ee10.websocket.jakarta.server.JakartaWebSocketServerContainer;
-import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.ee11.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.websocket.jakarta.server.JakartaWebSocketServerContainer;
+import org.eclipse.jetty.ee11.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee11.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
 import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
 

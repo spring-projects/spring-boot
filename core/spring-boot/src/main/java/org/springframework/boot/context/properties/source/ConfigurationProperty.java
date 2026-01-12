@@ -22,6 +22,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -124,6 +125,7 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 		return this.name.compareTo(other.name);
 	}
 
+	@Contract("_, !null -> !null")
 	static @Nullable ConfigurationProperty of(ConfigurationPropertyName name, @Nullable OriginTrackedValue value) {
 		if (value == null) {
 			return null;
@@ -131,6 +133,7 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 		return new ConfigurationProperty(name, value.getValue(), value.getOrigin());
 	}
 
+	@Contract("_, _, !null, _ -> !null")
 	static @Nullable ConfigurationProperty of(@Nullable ConfigurationPropertySource source,
 			ConfigurationPropertyName name, @Nullable Object value, @Nullable Origin origin) {
 		if (value == null) {

@@ -21,6 +21,7 @@ import smoketest.web.thymeleaf.Message;
 import smoketest.web.thymeleaf.MessageRepository;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,7 +64,9 @@ public class MessageController {
 		}
 		message = this.messageRepository.save(message);
 		redirect.addFlashAttribute("globalMessage", "view.success");
-		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
+		Long id = message.getId();
+		Assert.state(id != null, "'id' must not be null");
+		return new ModelAndView("redirect:/{message.id}", "message.id", id);
 	}
 
 	@RequestMapping("foo")

@@ -20,11 +20,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Request;
+import co.elastic.clients.transport.rest5_client.low_level.Response;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import org.apache.hc.core5.http.HttpStatus;
 
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
@@ -35,7 +34,7 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.util.StreamUtils;
 
 /**
- * {@link HealthIndicator} for an Elasticsearch cluster using a {@link RestClient}.
+ * {@link HealthIndicator} for an Elasticsearch cluster using a {@link Rest5Client}.
  *
  * @author Artsiom Yudovin
  * @author Brian Clozel
@@ -46,11 +45,11 @@ public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndica
 
 	private static final String RED_STATUS = "red";
 
-	private final RestClient client;
+	private final Rest5Client client;
 
 	private final JsonParser jsonParser;
 
-	public ElasticsearchRestClientHealthIndicator(RestClient client) {
+	public ElasticsearchRestClientHealthIndicator(Rest5Client client) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 		this.jsonParser = JsonParserFactory.getJsonParser();
@@ -59,11 +58,10 @@ public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndica
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Response response = this.client.performRequest(new Request("GET", "/_cluster/health/"));
-		StatusLine statusLine = response.getStatusLine();
-		if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+		if (response.getStatusCode() != HttpStatus.SC_OK) {
 			builder.down();
-			builder.withDetail("statusCode", statusLine.getStatusCode());
-			builder.withDetail("reasonPhrase", statusLine.getReasonPhrase());
+			builder.withDetail("statusCode", response.getStatusCode());
+			builder.withDetail("warnings", response.getWarnings());
 			return;
 		}
 		try (InputStream inputStream = response.getEntity().getContent()) {

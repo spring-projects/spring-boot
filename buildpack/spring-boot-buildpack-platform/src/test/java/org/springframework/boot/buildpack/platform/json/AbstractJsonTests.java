@@ -24,7 +24,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractJsonTests {
 
-	protected final ObjectMapper getObjectMapper() {
-		return SharedObjectMapper.get();
+	protected final JsonMapper getJsonMapper() {
+		return SharedJsonMapper.get();
 	}
 
 	protected final InputStream getContent(String name) {

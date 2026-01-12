@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Security's OAuth2 authorization server.
  */
+@NullMarked
 package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
+
+import org.jspecify.annotations.NullMarked;

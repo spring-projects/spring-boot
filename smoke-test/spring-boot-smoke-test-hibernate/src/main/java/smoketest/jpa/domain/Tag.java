@@ -16,6 +16,7 @@
 
 package smoketest.jpa.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -23,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 public class Tag {
@@ -30,26 +32,26 @@ public class Tag {
 	@Id
 	@SequenceGenerator(name = "tag_generator", sequenceName = "tag_sequence", initialValue = 4)
 	@GeneratedValue(generator = "tag_generator")
-	private long id;
+	private @Nullable Long id;
 
-	private String name;
+	private @Nullable String name;
 
 	@ManyToMany(mappedBy = "tags")
-	private List<Note> notes;
+	private List<Note> notes = new ArrayList<>();
 
-	public long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(@Nullable Long id) {
 		this.id = id;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 

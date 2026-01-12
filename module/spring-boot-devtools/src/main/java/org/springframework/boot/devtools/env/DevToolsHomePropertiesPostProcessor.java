@@ -29,9 +29,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -137,14 +139,14 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 			.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 	}
 
-	protected File getHomeDirectory() {
+	protected @Nullable File getHomeDirectory() {
 		return getHomeDirectory(() -> this.environmentVariables.get("SPRING_DEVTOOLS_HOME"),
 				() -> this.systemProperties.getProperty("spring.devtools.home"),
 				() -> this.systemProperties.getProperty("user.home"));
 	}
 
 	@SafeVarargs
-	private File getHomeDirectory(Supplier<String>... pathSuppliers) {
+	private @Nullable File getHomeDirectory(Supplier<String>... pathSuppliers) {
 		for (Supplier<String> pathSupplier : pathSuppliers) {
 			String path = pathSupplier.get();
 			if (StringUtils.hasText(path)) {

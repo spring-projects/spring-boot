@@ -33,6 +33,7 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,15 +68,19 @@ class HttpClientTransportTests {
 	private static final String APPLICATION_X_TAR = "application/x-tar";
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpClient client;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClassicHttpResponse response;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpEntity entity;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private InputStream content;
 
 	private HttpClientTransport http;
@@ -294,7 +299,9 @@ class HttpClientTransportTests {
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).isNull();
-				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+				Message responseMessage = ex.getResponseMessage();
+				assertThat(responseMessage).isNotNull();
+				assertThat(responseMessage.getMessage()).contains("test message");
 			});
 	}
 
@@ -318,7 +325,22 @@ class HttpClientTransportTests {
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).hasSize(2);
-				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+				Message responseMessage = ex.getResponseMessage();
+				assertThat(responseMessage).isNotNull();
+				assertThat(responseMessage.getMessage()).contains("test message");
+			});
+	}
+
+	@Test
+	void shouldReturnContentIfProxyAuthError() throws IOException {
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("proxy-error.txt"));
+		given(this.response.getCode()).willReturn(HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage()).isNull();
+				assertThat(ex.getMessage()).contains("Some kind of proxy auth problem!");
 			});
 	}
 

@@ -25,33 +25,6 @@
       "defaultValue": false
     },
     {
-      "name": "management.endpoint.health.probes.add-additional-paths",
-      "type": "java.lang.Boolean",
-      "description": "Whether to make the liveness and readiness health groups available on the main server port.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.endpoint.health.probes.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable liveness and readiness probes.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.endpoint.health.status.order",
-      "defaultValue": [
-        "DOWN",
-        "OUT_OF_SERVICE",
-        "UP",
-        "UNKNOWN"
-      ]
-    },
-    {
-      "name": "management.endpoint.health.validate-group-membership",
-      "type": "java.lang.Boolean",
-      "description": "Whether to validate health group membership on startup. Validation fails if a group includes or excludes a health contributor that does not exist.",
-      "defaultValue": true
-    },
-    {
       "name": "management.endpoints.access.default",
       "type": "org.springframework.boot.actuate.endpoint.Access",
       "description": "Default access level for all endpoints."
@@ -71,10 +44,20 @@
       }
     },
     {
-      "name": "management.endpoints.jackson.isolated-object-mapper",
+      "name": "management.endpoints.jackson.isolated-json-mapper",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use an isolated JsonMapper to serialize endpoint JSON.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.endpoints.jackson2.isolated-object-mapper",
       "type": "java.lang.Boolean",
       "description": "Whether to use an isolated object mapper to serialize endpoint JSON.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Jackson 3 is preferred.",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "management.endpoints.jmx.domain",
@@ -90,7 +73,8 @@
       "description": "Whether unique runtime object names should be ensured.",
       "deprecation": {
         "replacement": "spring.jmx.unique-names",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -98,51 +82,6 @@
       "defaultValue": [
         "health"
       ]
-    },
-    {
-      "name": "management.health.defaults.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable default health indicators.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.diskspace.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable disk space health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.livenessstate.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable liveness state health check.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.health.ping.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable ping health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.probes.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable liveness and readiness probes.",
-      "defaultValue": false,
-      "deprecation": {
-        "replacement": "management.endpoint.health.probes.enabled"
-      }
-    },
-    {
-      "name": "management.health.readinessstate.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable readiness state health check.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.health.ssl.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable SSL certificate health check.",
-      "defaultValue": true
     },
     {
       "name": "management.httpexchanges.recording.enabled",
@@ -207,6 +146,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export logs.",
+      "defaultValue": true
+    },
+    {
       "name": "management.server.add-application-context-header",
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",
@@ -217,28 +162,248 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.server.base-path",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.http.enabled",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.http.include",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.include",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.api-token",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.api-token-type",
+      "type": "org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties$TokenType",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.application.cluster-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.application.custom-tags",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.application.name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.application.service-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.application.shard-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.batch-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.connect-timeout",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.global-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.read-timeout",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-day-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-hour-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-minute-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.step",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.sender.batch-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.sender.flush-interval",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.sender.max-queue-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.sender.message-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.source",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.trace-derived-custom-tag-keys",
+      "type": "java.util.Set<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.wavefront.uri",
+      "type": "java.net.URI",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     }
   ],
@@ -274,28 +439,6 @@
       "values": [
         {
           "value": "*"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "management.health.status.order",
-      "values": [
-        {
-          "value": "UNKNOWN"
-        },
-        {
-          "value": "UP"
-        },
-        {
-          "value": "DOWN"
-        },
-        {
-          "value": "OUT_OF_SERVICE"
         }
       ],
       "providers": [

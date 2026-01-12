@@ -29,10 +29,12 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.ConfigTreePropertySource.Option;
 import org.springframework.boot.env.ConfigTreePropertySource.Value;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,15 +49,18 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ConfigTreePropertySourceTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path directory;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource(null, this.directory))
 			.withMessageContaining("name must contain");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", null))
 			.withMessage("Property source must not be null");
@@ -134,17 +139,25 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		Path b = this.directory.resolve("b");
 		Files.delete(b);
-		assertThatIllegalStateException().isThrownBy(() -> propertySource.getProperty("b").toString())
-			.withMessage("The property file '" + b + "' no longer exists");
+		assertThatIllegalStateException().isThrownBy(() -> {
+			Value property = propertySource.getProperty("b");
+			assertThat(property).isNotNull();
+			property.toString();
+		}).withMessage("The property file '" + b + "' no longer exists");
 	}
 
 	@Test
 	void getOriginFromFlatReturnsOrigin() throws Exception {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		TextResourceOrigin origin = (TextResourceOrigin) propertySource.getOrigin("b");
-		assertThat(origin.getResource().getFile()).isEqualTo(this.directory.resolve("b").toFile());
-		assertThat(origin.getLocation().getLine()).isZero();
-		assertThat(origin.getLocation().getColumn()).isZero();
+		assertThat(origin).isNotNull();
+		Resource resource = origin.getResource();
+		assertThat(resource).isNotNull();
+		assertThat(resource.getFile()).isEqualTo(this.directory.resolve("b").toFile());
+		Location location = origin.getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.getLine()).isZero();
+		assertThat(location.getColumn()).isZero();
 	}
 
 	@Test
@@ -161,7 +174,9 @@ class ConfigTreePropertySourceTests {
 		environment.getPropertySources().addFirst(getFlatPropertySource());
 		assertThat(environment.getProperty("a")).isEqualTo("A");
 		assertThat(environment.getProperty("b")).isEqualTo("B");
-		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
+		InputStreamSource c = environment.getProperty("c", InputStreamSource.class);
+		assertThat(c).isNotNull();
+		assertThat(c.getInputStream()).hasContent("C");
 		assertThat(environment.getProperty("c", byte[].class)).contains('C');
 		assertThat(environment.getProperty("one", Integer.class)).isOne();
 	}
@@ -177,6 +192,7 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = getNestedPropertySource();
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
+		assertThat(v1).isNotNull();
 		assertThat(v1).isSameAs(v2);
 		assertThat(v1).hasToString("AB");
 		assertThat(FileCopyUtils.copyToByteArray(v1.getInputStream())).containsExactly('A', 'B');
@@ -192,6 +208,7 @@ class ConfigTreePropertySourceTests {
 				Option.ALWAYS_READ);
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
+		assertThat(v1).isNotNull();
 		assertThat(v1).isNotSameAs(v2);
 		assertThat(v1).hasToString("AB");
 		assertThat(FileCopyUtils.copyToByteArray(v1.getInputStream())).containsExactly('A', 'B');

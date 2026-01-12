@@ -17,15 +17,16 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import java.net.URI;
-import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties.Insert;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.ApiVersionInserter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PropertiesApiVersionInserter}.
@@ -35,57 +36,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PropertiesApiVersionInserterTests {
 
 	@Test
-	void getWhenEmptyPropertiesArrayAndNoDeleteReturnsNull() {
-		assertThat(PropertiesApiVersionInserter.get(null, null)).isNull();
+	@SuppressWarnings("NullAway") // Test null check
+	void getWhenPropertiesIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> PropertiesApiVersionInserter.get(null))
+			.withMessage("'properties' must not be null");
 	}
 
 	@Test
-	void getWhenNoPropertiesAndNoDelegateReturnsNull() {
-		assertThat(PropertiesApiVersionInserter.get(null, null, new ApiversionProperties(), new ApiversionProperties()))
-			.isNull();
-	}
-
-	@Test
-	void getWhenNoPropertiesAndDelegateUsesDelegate() throws Exception {
-		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(ApiVersionInserter.useQueryParam("v"), null);
-		URI uri = new URI("https://example.com");
-		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com?v=123");
-	}
-
-	@Test
-	void getReturnsInserterThatAppliesProperties() throws Exception {
-		ApiversionProperties properties1 = new ApiversionProperties();
-		properties1.getInsert().setHeader("x-test");
-		properties1.getInsert().setQueryParameter("v1");
-		ApiversionProperties properties2 = new ApiversionProperties();
-		properties2.getInsert().setQueryParameter("v2");
-		properties2.getInsert().setPathSegment(1);
-		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(null, null, properties1, properties2);
+	void getReturnsInserterBasedOnProperties() throws Exception {
+		Insert properties = new ApiversionProperties().getInsert();
+		properties.setHeader("x-test");
+		properties.setQueryParameter("v");
+		properties.setPathSegment(1);
+		properties.setMediaTypeParameter("mtp");
+		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(properties);
 		URI uri = new URI("https://example.com/foo/bar");
-		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com/foo/123/bar?v1=123&v2=123");
+		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com/foo/123/bar?v=123");
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		inserter.insertVersion("123", headers);
 		assertThat(headers.get("x-test")).containsExactly("123");
+		MediaType contentType = headers.getContentType();
+		assertThat(contentType).isNotNull();
+		assertThat(contentType.getParameters()).containsEntry("mtp", "123");
 	}
 
 	@Test
-	void getWhenHasDelegateReturnsInserterThatAppliesPropertiesAndDelegate() throws Exception {
-		ApiVersionInserter delegate = ApiVersionInserter.useQueryParam("d");
-		ApiversionProperties properties = new ApiversionProperties();
-		properties.getInsert().setQueryParameter("v");
-		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(delegate, null, properties);
-		assertThat(inserter.insertVersion("123", new URI("https://example.com")))
-			.hasToString("https://example.com?d=123&v=123");
-	}
-
-	@Test
-	void getWhenHasFormatterAppliesToProperties() throws Exception {
-		ApiversionProperties properties1 = new ApiversionProperties();
-		properties1.getInsert().setQueryParameter("v");
-		ApiVersionFormatter formatter = (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
-		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(null, formatter, properties1);
-		URI uri = new URI("https://example.com");
-		assertThat(inserter.insertVersion("latest", uri)).hasToString("https://example.com?v=LATEST");
+	void getWhenNoPropertiesReturnsEmpty() {
+		Insert properties = new ApiversionProperties().getInsert();
+		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(properties);
+		assertThat(inserter).isEqualTo(PropertiesApiVersionInserter.EMPTY);
 	}
 
 }

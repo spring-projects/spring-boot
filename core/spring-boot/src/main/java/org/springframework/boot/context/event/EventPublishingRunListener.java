@@ -22,12 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;

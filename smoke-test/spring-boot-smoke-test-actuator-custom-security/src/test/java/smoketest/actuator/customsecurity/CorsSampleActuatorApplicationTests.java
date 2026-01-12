@@ -24,9 +24,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.client.LocalHostUriTemplateHandler;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
+@AutoConfigureTestRestTemplate
 class CorsSampleActuatorApplicationTests {
 
 	private TestRestTemplate testRestTemplate;
@@ -52,9 +54,8 @@ class CorsSampleActuatorApplicationTests {
 	@BeforeEach
 	void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
-				"http");
-		builder = builder.uriTemplateHandler(handler);
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(this.applicationContext);
+		builder = builder.uriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}
 

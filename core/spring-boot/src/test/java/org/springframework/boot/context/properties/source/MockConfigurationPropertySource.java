@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.MockOrigin;
 import org.springframework.boot.origin.OriginTrackedValue;
 
@@ -41,7 +43,7 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 		this(configurationPropertyName, value, null);
 	}
 
-	public MockConfigurationPropertySource(String configurationPropertyName, Object value, String origin) {
+	public MockConfigurationPropertySource(String configurationPropertyName, Object value, @Nullable String origin) {
 		put(ConfigurationPropertyName.of(configurationPropertyName),
 				OriginTrackedValue.of(value, MockOrigin.of(origin)));
 	}
@@ -82,7 +84,7 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		OriginTrackedValue result = this.map.get(name);
 		if (result == null) {
 			result = findValue(name);
@@ -90,7 +92,7 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 		return ConfigurationProperty.of(name, result);
 	}
 
-	private OriginTrackedValue findValue(ConfigurationPropertyName name) {
+	private @Nullable OriginTrackedValue findValue(ConfigurationPropertyName name) {
 		return this.map.get(name);
 	}
 
@@ -102,7 +104,7 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 		}
 
 		@Override
-		public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+		public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 			return MockConfigurationPropertySource.this.getConfigurationProperty(name);
 		}
 

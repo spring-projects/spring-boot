@@ -17,4 +17,7 @@
 /**
  * Health registry support.
  */
+@NullMarked
 package org.springframework.boot.health.registry;
+
+import org.jspecify.annotations.NullMarked;

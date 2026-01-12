@@ -21,15 +21,19 @@ plugins {
 description = "Spring Boot Hibernate smoke test"
 
 dependencies {
+	implementation(project(":module:spring-boot-hibernate"))
 	implementation(project(":starter:spring-boot-starter-freemarker"))
 	implementation(project(":starter:spring-boot-starter-jdbc"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
-	implementation(project(":module:spring-boot-hibernate"))
 
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("jakarta.transaction:jakarta.transaction-api")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

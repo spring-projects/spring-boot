@@ -22,8 +22,6 @@ description = "Starter for using Spring Batch"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
-	api(project(":starter:spring-boot-starter-jdbc"))
 
 	api(project(":module:spring-boot-batch"))
-	api(project(":module:spring-boot-jdbc"))
 }

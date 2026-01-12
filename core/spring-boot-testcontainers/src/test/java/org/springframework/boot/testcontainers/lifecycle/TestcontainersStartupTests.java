@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
@@ -169,7 +170,7 @@ class TestcontainersStartupTests {
 
 		private int index;
 
-		private String threadName;
+		private @Nullable String threadName;
 
 		TestStartable() {
 			super("test");
@@ -206,7 +207,7 @@ class TestcontainersStartupTests {
 			return this.index;
 		}
 
-		String getThreadName() {
+		@Nullable String getThreadName() {
 			return this.threadName;
 		}
 

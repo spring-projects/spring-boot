@@ -25,5 +25,9 @@ dependencies {
 
 	runtimeOnly("org.apache.activemq:activemq-broker")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-activemq-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

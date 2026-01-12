@@ -70,10 +70,14 @@ class LoaderHidingResourceTests {
 		URI warUri = createExampleWar(temp);
 		Resource resource = new PathResourceFactory().newResource(warUri);
 		LoaderHidingResource loaderHidingResource = new LoaderHidingResource(resource, resource);
-		assertThat(loaderHidingResource.resolve("/assets/image.jpg").exists()).isTrue();
-		assertThat(loaderHidingResource.resolve("/assets/image.jpg")).isInstanceOf(LoaderHidingResource.class);
-		assertThat(loaderHidingResource.resolve("/assets/non-existent.jpg").exists()).isFalse();
-		assertThat(loaderHidingResource.resolve("/assets/non-existent.jpg")).isInstanceOf(LoaderHidingResource.class);
+		Resource image = loaderHidingResource.resolve("/assets/image.jpg");
+		assertThat(image).isNotNull();
+		assertThat(image.exists()).isTrue();
+		assertThat(image).isInstanceOf(LoaderHidingResource.class);
+		Resource doesntExist = loaderHidingResource.resolve("/assets/non-existent.jpg");
+		assertThat(doesntExist).isNotNull();
+		assertThat(doesntExist.exists()).isFalse();
+		assertThat(doesntExist).isInstanceOf(LoaderHidingResource.class);
 		assertThat(loaderHidingResource.resolve("/org/springframework/boot/Loader.class")).isNull();
 	}
 

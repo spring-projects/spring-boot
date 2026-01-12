@@ -120,7 +120,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	 * @param options the options
 	 * @return a new instance, or {@code null} if the options are invalid
 	 */
-	public static @Nullable ColorConverter newInstance(Configuration config, @Nullable String[] options) {
+	public static @Nullable ColorConverter newInstance(@Nullable Configuration config, @Nullable String[] options) {
 		if (options.length < 1) {
 			LOGGER.error("Incorrect number of options on style. Expected at least 1, received {}", options.length);
 			return null;

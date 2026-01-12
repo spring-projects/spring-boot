@@ -33,12 +33,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigurationPropertyStateTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void searchWhenIterableIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
 			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void searchWhenPredicateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))

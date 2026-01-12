@@ -70,6 +70,7 @@ class ConversionServiceDeducerTests {
 		applicationContext.getBeanFactory().setConversionService(conversionService);
 		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
 		List<ConversionService> conversionServices = deducer.getConversionServices();
+		assertThat(conversionServices).isNotNull();
 		assertThat(conversionServices).containsOnly(conversionService);
 		assertThat(conversionServices.get(0)).isSameAs(conversionService);
 	}
@@ -106,6 +107,7 @@ class ConversionServiceDeducerTests {
 		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
 		List<ConversionService> conversionServices = deducer.getConversionServices();
 		InputStream inputStream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
+		assertThat(conversionServices).isNotNull();
 		assertThat(conversionServices.get(0).convert(inputStream, String.class)).isEqualTo("test");
 	}
 

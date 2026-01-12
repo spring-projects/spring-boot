@@ -19,6 +19,8 @@ package org.springframework.boot.webmvc.autoconfigure.error;
 import java.time.Clock;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -57,10 +59,12 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
+			HttpServletResponse response = webRequest.getResponse();
+			assertThat(response).isNotNull();
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
-					webRequest.getResponse());
-			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
-			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
+					response);
+			assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
+			String responseString = ((MockHttpServletResponse) response).getContentAsString();
 			assertThat(responseString).contains(
 					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
 				.contains("<div>Exception message</div>")
@@ -75,11 +79,13 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, withAllOptions());
+			Map<String, @Nullable Object> attributes = errorAttributes.getErrorAttributes(webRequest, withAllOptions());
 			attributes.put("timestamp", Clock.systemUTC().instant());
-			errorView.render(attributes, webRequest.getRequest(), webRequest.getResponse());
-			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
-			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
+			HttpServletResponse response = webRequest.getResponse();
+			assertThat(response).isNotNull();
+			errorView.render(attributes, webRequest.getRequest(), response);
+			assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
+			String responseString = ((MockHttpServletResponse) response).getContentAsString();
 			assertThat(responseString).contains("This application has no explicit mapping for /error");
 		});
 	}
@@ -91,8 +97,10 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					true);
+			HttpServletResponse response = webRequest.getResponse();
+			assertThat(response).isNotNull();
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
-					webRequest.getResponse());
+					response);
 			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "
 					+ "already been committed. As a result, the response may have the wrong status code.");

@@ -20,13 +20,15 @@ import java.time.Duration;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JettyClientHttpConnectorBuilder} and {@link JettyHttpClientBuilder}.
@@ -45,7 +47,7 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 		TestCustomizer<HttpClient> httpClientCustomizer2 = new TestCustomizer<>();
 		TestCustomizer<HttpClientTransport> httpClientTransportCustomizer = new TestCustomizer<>();
 		TestCustomizer<ClientConnector> clientConnectorCustomizerCustomizer = new TestCustomizer<>();
-		ClientHttpRequestFactoryBuilder.jetty()
+		ClientHttpConnectorBuilder.jetty()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.withHttpClientTransportCustomizer(httpClientTransportCustomizer)
@@ -57,15 +59,45 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 		clientConnectorCustomizerCustomizer.assertCalled();
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClient> customizer = new TestCustomizer<>();
+		ClientHttpConnectorBuilder.jetty().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
+	@Test
+	void withHttpClientTransportFactory() {
+		JettyClientHttpConnector connector = ClientHttpConnectorBuilder.jetty()
+			.withHttpClientTransportFactory(TestHttpClientTransport::new)
+			.build();
+		assertThat(connector).extracting("httpClient")
+			.extracting("transport")
+			.isInstanceOf(TestHttpClientTransport.class);
+	}
+
 	@Override
 	protected long connectTimeout(JettyClientHttpConnector connector) {
-		return ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).getConnectTimeout();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient.getConnectTimeout();
 	}
 
 	@Override
 	protected long readTimeout(JettyClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
-		return ((Duration) ReflectionTestUtils.getField(httpClient, "readTimeout")).toMillis();
+		assertThat(httpClient).isNotNull();
+		Object field = ReflectionTestUtils.getField(httpClient, "readTimeout");
+		assertThat(field).isNotNull();
+		return ((Duration) field).toMillis();
+	}
+
+	static class TestHttpClientTransport extends HttpClientTransportOverHTTP {
+
+		TestHttpClientTransport(ClientConnector connector) {
+			super(connector);
+		}
+
 	}
 
 }

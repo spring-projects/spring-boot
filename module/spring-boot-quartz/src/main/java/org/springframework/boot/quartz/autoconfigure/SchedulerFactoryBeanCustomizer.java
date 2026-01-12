@@ -22,8 +22,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the Quartz
- * {@link SchedulerFactoryBean} before it is fully initialized, in particular to tune its
- * configuration.
+ * {@link SchedulerFactoryBean} to fine-tune its auto-configuration.
  * <p>
  * For customization of the {@link DataSource} used by Quartz, use of
  * {@link QuartzDataSource @QuartzDataSource} is preferred. It will ensure consistent

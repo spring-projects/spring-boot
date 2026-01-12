@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import jakarta.servlet.Registration.Dynamic;
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,13 +53,13 @@ class DynamicRegistrationBeanTests {
 	private static DynamicRegistrationBean<?> createBean() {
 		return new DynamicRegistrationBean<>() {
 			@Override
-			protected Dynamic addRegistration(String description, ServletContext servletContext) {
+			protected @Nullable Dynamic addRegistration(String description, ServletContext servletContext) {
 				return null;
 			}
 
 			@Override
 			protected String getDescription() {
-				return null;
+				return "";
 			}
 		};
 	}

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,11 +50,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ControllerEndpointWebMvcIntegrationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
 	void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
@@ -68,6 +71,7 @@ class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	private MockMvcTester createMockMvcTester() {
+		assertThat(this.context).isNotNull();
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		return MockMvcTester.from(this.context);

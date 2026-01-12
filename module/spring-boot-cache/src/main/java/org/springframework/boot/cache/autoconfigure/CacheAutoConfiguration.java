@@ -51,8 +51,8 @@ import org.springframework.util.Assert;
  * @since 4.0.0
  * @see EnableCaching
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.data.couchbase.autoconfigure.CouchbaseDataAutoConfiguration",
-		"org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
+@AutoConfiguration(afterName = { "org.springframework.boot.data.couchbase.autoconfigure.DataCouchbaseAutoConfiguration",
+		"org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration",
 		"org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration",
 		"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration" })
 @ConditionalOnClass(CacheManager.class)

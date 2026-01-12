@@ -19,6 +19,7 @@ package org.springframework.boot.convert;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -76,22 +77,23 @@ public final class ConversionServiceArguments {
 		}
 
 		@Override
-		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+		public boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType) {
 			return this.delegate.canConvert(sourceType, targetType);
 		}
 
 		@Override
-		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return this.delegate.canConvert(sourceType, targetType);
 		}
 
 		@Override
-		public <T> T convert(Object source, Class<T> targetType) {
+		public <T> @Nullable T convert(@Nullable Object source, Class<T> targetType) {
 			return this.delegate.convert(source, targetType);
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType,
+				TypeDescriptor targetType) {
 			return this.delegate.convert(source, sourceType, targetType);
 		}
 

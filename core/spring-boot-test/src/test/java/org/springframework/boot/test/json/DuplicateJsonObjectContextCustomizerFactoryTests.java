@@ -43,6 +43,7 @@ class DuplicateJsonObjectContextCustomizerFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Uses null for quick test setup
 	void warningForMultipleVersions() {
 		new DuplicateJsonObjectContextCustomizerFactory().createContextCustomizer(null, null)
 			.customizeContext(null, null);

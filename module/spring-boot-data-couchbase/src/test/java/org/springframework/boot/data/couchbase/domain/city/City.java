@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.couchbase.domain.city;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
@@ -24,9 +26,9 @@ import org.springframework.data.couchbase.core.mapping.Field;
 public class City {
 
 	@Id
-	private String id;
+	private @Nullable String id;
 
 	@Field
-	private String name;
+	private @Nullable String name;
 
 }

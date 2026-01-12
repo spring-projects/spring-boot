@@ -209,7 +209,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @see #build()
 	 */
 	public <T extends ThreadPoolTaskScheduler> T configure(T taskScheduler) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.poolSize).to(taskScheduler::setPoolSize);
 		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
 		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);

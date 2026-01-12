@@ -43,8 +43,10 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		SystemRequirementsExtension systemRequirements = project.getExtensions()
+			.create("systemRequirements", SystemRequirementsExtension.class);
 		new NoHttpConventions().apply(project);
-		new JavaConventions().apply(project);
+		new JavaConventions(systemRequirements.getJava()).apply(project);
 		new MavenPublishingConventions().apply(project);
 		new AntoraConventions().apply(project);
 		new KotlinConventions().apply(project);

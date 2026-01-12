@@ -22,15 +22,16 @@ description = "Starter for using JAX-RS and Jersey"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
-	api(project(":starter:spring-boot-starter-jackson"))
 	api(project(":starter:spring-boot-starter-tomcat"))
 	api(project(":starter:spring-boot-starter-validation"))
 
+	api(project(":module:spring-boot-jackson2"))
 	api(project(":module:spring-boot-jersey"))
 
 	api("org.glassfish.jersey.ext:jersey-bean-validation") {
 		exclude group: "jakarta.el", module: "jakarta.el-api"
 	}
+
 }
 
 checkRuntimeClasspathForConflicts {

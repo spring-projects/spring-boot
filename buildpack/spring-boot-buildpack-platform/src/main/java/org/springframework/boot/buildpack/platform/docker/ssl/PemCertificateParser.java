@@ -27,6 +27,9 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -54,7 +57,8 @@ final class PemCertificateParser {
 	 * @param text the text to parse
 	 * @return the parsed certificates
 	 */
-	static List<X509Certificate> parse(String text) {
+	@Contract("!null -> !null")
+	static @Nullable List<X509Certificate> parse(@Nullable String text) {
 		if (text == null) {
 			return null;
 		}

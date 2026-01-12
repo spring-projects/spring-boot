@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.Bean;
@@ -271,8 +272,10 @@ class JavaBeanBinderTests {
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
 		ExampleNestedBean bean = this.binder.bind("foo", Bindable.of(ExampleNestedBean.class)).get();
-		assertThat(bean.getValueBean().getIntValue()).isEqualTo(123);
-		assertThat(bean.getValueBean().getStringValue()).isEqualTo("foo");
+		ExampleValueBean valueBean = bean.getValueBean();
+		assertThat(valueBean).isNotNull();
+		assertThat(valueBean.getIntValue()).isEqualTo(123);
+		assertThat(valueBean.getStringValue()).isEqualTo("foo");
 	}
 
 	@Test
@@ -505,8 +508,12 @@ class JavaBeanBinderTests {
 		source.put("foo.booleans[b].value", "true");
 		this.sources.add(source);
 		ExampleWithGenericMap bean = this.binder.bind("foo", Bindable.of(ExampleWithGenericMap.class)).get();
-		assertThat(bean.getIntegers().get("a").getValue()).isOne();
-		assertThat(bean.getBooleans().get("b").getValue()).isTrue();
+		GenericValue<Integer> a = bean.getIntegers().get("a");
+		assertThat(a).isNotNull();
+		assertThat(a.getValue()).isOne();
+		GenericValue<Boolean> b = bean.getBooleans().get("b");
+		assertThat(b).isNotNull();
+		assertThat(b.getValue()).isTrue();
 	}
 
 	@Test
@@ -524,7 +531,9 @@ class JavaBeanBinderTests {
 	void beanPropertiesPreferMatchingType() {
 		// gh-16206
 		ResolvableType type = ResolvableType.forClass(PropertyWithOverloadedSetter.class);
-		Bean<PropertyWithOverloadedSetter> bean = new Bean<>(type, type.resolve()) {
+		Class<?> resolvedType = type.resolve();
+		assertThat(resolvedType).isNotNull();
+		Bean<PropertyWithOverloadedSetter> bean = new Bean<>(type, resolvedType) {
 
 			@Override
 			protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
@@ -553,6 +562,7 @@ class JavaBeanBinderTests {
 
 		};
 		BeanProperty property = bean.getProperties().get("property");
+		assertThat(property).isNotNull();
 		PropertyWithOverloadedSetter target = new PropertyWithOverloadedSetter();
 		property.setValue(() -> target, "some string");
 	}
@@ -621,9 +631,9 @@ class JavaBeanBinderTests {
 
 		private long longValue;
 
-		private String stringValue;
+		private @Nullable String stringValue;
 
-		private ExampleEnum enumValue;
+		private @Nullable ExampleEnum enumValue;
 
 		int getIntValue() {
 			return this.intValue;
@@ -641,19 +651,19 @@ class JavaBeanBinderTests {
 			this.longValue = longValue;
 		}
 
-		String getStringValue() {
+		@Nullable String getStringValue() {
 			return this.stringValue;
 		}
 
-		void setStringValue(String stringValue) {
+		void setStringValue(@Nullable String stringValue) {
 			this.stringValue = stringValue;
 		}
 
-		ExampleEnum getEnumValue() {
+		@Nullable ExampleEnum getEnumValue() {
 			return this.enumValue;
 		}
 
-		void setEnumValue(ExampleEnum enumValue) {
+		void setEnumValue(@Nullable ExampleEnum enumValue) {
 			this.enumValue = enumValue;
 		}
 
@@ -662,13 +672,13 @@ class JavaBeanBinderTests {
 	static class ExampleRenamedPropertyBean {
 
 		@Name("public")
-		private String exampleProperty;
+		private @Nullable String exampleProperty;
 
-		String getExampleProperty() {
+		@Nullable String getExampleProperty() {
 			return this.exampleProperty;
 		}
 
-		void setExampleProperty(String exampleProperty) {
+		void setExampleProperty(@Nullable String exampleProperty) {
 			this.exampleProperty = exampleProperty;
 		}
 
@@ -700,13 +710,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleMapBean {
 
-		private Map<ExampleEnum, Integer> map;
+		private @Nullable Map<ExampleEnum, Integer> map;
 
-		Map<ExampleEnum, Integer> getMap() {
+		@Nullable Map<ExampleEnum, Integer> getMap() {
 			return this.map;
 		}
 
-		void setMap(Map<ExampleEnum, Integer> map) {
+		void setMap(@Nullable Map<ExampleEnum, Integer> map) {
 			this.map = map;
 		}
 
@@ -714,13 +724,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleListBean {
 
-		private List<ExampleEnum> list;
+		private @Nullable List<ExampleEnum> list;
 
-		List<ExampleEnum> getList() {
+		@Nullable List<ExampleEnum> getList() {
 			return this.list;
 		}
 
-		void setList(List<ExampleEnum> list) {
+		void setList(@Nullable List<ExampleEnum> list) {
 			this.list = list;
 		}
 
@@ -728,13 +738,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleSetBean {
 
-		private Set<ExampleEnum> set;
+		private @Nullable Set<ExampleEnum> set;
 
-		Set<ExampleEnum> getSet() {
+		@Nullable Set<ExampleEnum> getSet() {
 			return this.set;
 		}
 
-		void setSet(Set<ExampleEnum> set) {
+		void setSet(@Nullable Set<ExampleEnum> set) {
 			this.set = set;
 		}
 
@@ -742,13 +752,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleCollectionBean {
 
-		private Collection<ExampleEnum> collection;
+		private @Nullable Collection<ExampleEnum> collection;
 
-		Collection<ExampleEnum> getCollection() {
+		@Nullable Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(@Nullable Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
@@ -797,13 +807,13 @@ class JavaBeanBinderTests {
 	static class ExampleCollectionBeanWithDelimiter {
 
 		@Delimiter("|")
-		private Collection<ExampleEnum> collection;
+		private @Nullable Collection<ExampleEnum> collection;
 
-		Collection<ExampleEnum> getCollection() {
+		@Nullable Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(@Nullable Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
@@ -811,13 +821,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleNestedBean {
 
-		private ExampleValueBean valueBean;
+		private @Nullable ExampleValueBean valueBean;
 
-		ExampleValueBean getValueBean() {
+		@Nullable ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
-		void setValueBean(ExampleValueBean valueBean) {
+		void setValueBean(@Nullable ExampleValueBean valueBean) {
 			this.valueBean = valueBean;
 		}
 
@@ -863,14 +873,14 @@ class JavaBeanBinderTests {
 
 	static class ExampleNestedSubclassBean extends ExampleNestedBean {
 
-		private ExampleValueSubclassBean valueBean;
+		private @Nullable ExampleValueSubclassBean valueBean;
 
 		@Override
-		ExampleValueSubclassBean getValueBean() {
+		@Nullable ExampleValueSubclassBean getValueBean() {
 			return this.valueBean;
 		}
 
-		void setValueBean(ExampleValueSubclassBean valueBean) {
+		void setValueBean(@Nullable ExampleValueSubclassBean valueBean) {
 			this.valueBean = valueBean;
 		}
 
@@ -892,17 +902,17 @@ class JavaBeanBinderTests {
 
 	static class ExampleWithNonDefaultConstructor {
 
-		private String value;
+		private @Nullable String value;
 
-		ExampleWithNonDefaultConstructor(String value) {
+		ExampleWithNonDefaultConstructor(@Nullable String value) {
 			this.value = value;
 		}
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
@@ -976,7 +986,7 @@ class JavaBeanBinderTests {
 
 		private int value;
 
-		private ExampleWithSelfReference self;
+		private @Nullable ExampleWithSelfReference self;
 
 		int getValue() {
 			return this.value;
@@ -986,11 +996,11 @@ class JavaBeanBinderTests {
 			this.value = value;
 		}
 
-		ExampleWithSelfReference getSelf() {
+		@Nullable ExampleWithSelfReference getSelf() {
 			return this.self;
 		}
 
-		void setSelf(ExampleWithSelfReference self) {
+		void setSelf(@Nullable ExampleWithSelfReference self) {
 			this.self = self;
 		}
 
@@ -998,13 +1008,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleWithInvalidAccessors {
 
-		private String name;
+		private @Nullable String name;
 
-		String getName() {
+		@Nullable String getName() {
 			return this.name;
 		}
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -1020,15 +1030,15 @@ class JavaBeanBinderTests {
 
 	static class ExampleWithStaticAccessors {
 
-		private static String name;
+		private static @Nullable String name;
 
 		private int counter;
 
-		static String getName() {
+		static @Nullable String getName() {
 			return name;
 		}
 
-		static void setName(String name) {
+		static void setName(@Nullable String name) {
 			ExampleWithStaticAccessors.name = name;
 		}
 
@@ -1053,13 +1063,13 @@ class JavaBeanBinderTests {
 	static class ConverterAnnotatedExampleBean {
 
 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-		private LocalDate date;
+		private @Nullable LocalDate date;
 
-		LocalDate getDate() {
+		@Nullable LocalDate getDate() {
 			return this.date;
 		}
 
-		void setDate(LocalDate date) {
+		void setDate(@Nullable LocalDate date) {
 			this.date = date;
 		}
 
@@ -1067,13 +1077,13 @@ class JavaBeanBinderTests {
 
 	static class ExampleWithPropertyEditorType {
 
-		private Class<? extends Throwable> value;
+		private @Nullable Class<? extends Throwable> value;
 
-		Class<? extends Throwable> getValue() {
+		@Nullable Class<? extends Throwable> getValue() {
 			return this.value;
 		}
 
-		void setValue(Class<? extends Throwable> value) {
+		void setValue(@Nullable Class<? extends Throwable> value) {
 			this.value = value;
 		}
 
@@ -1097,13 +1107,13 @@ class JavaBeanBinderTests {
 
 	static class GenericValue<T> {
 
-		private T value;
+		private @Nullable T value;
 
-		T getValue() {
+		@Nullable T getValue() {
 			return this.value;
 		}
 
-		void setValue(T value) {
+		void setValue(@Nullable T value) {
 			this.value = value;
 		}
 
@@ -1111,17 +1121,17 @@ class JavaBeanBinderTests {
 
 	static class PropertyWithOverloadedSetter {
 
-		private String property;
+		private @Nullable String property;
 
 		void setProperty(int property) {
 			this.property = String.valueOf(property);
 		}
 
-		void setProperty(String property) {
+		void setProperty(@Nullable String property) {
 			this.property = property;
 		}
 
-		String getProperty() {
+		@Nullable String getProperty() {
 			return this.property;
 		}
 
@@ -1143,13 +1153,13 @@ class JavaBeanBinderTests {
 
 	static class PackagePrivateSetterBean {
 
-		private String property;
+		private @Nullable String property;
 
-		String getProperty() {
+		@Nullable String getProperty() {
 			return this.property;
 		}
 
-		void setProperty(String property) {
+		void setProperty(@Nullable String property) {
 			this.property = property;
 		}
 
@@ -1225,13 +1235,13 @@ class JavaBeanBinderTests {
 
 	static class BridgeMethodsBase<T extends BridgeBaseType> {
 
-		private T value;
+		private @Nullable T value;
 
-		T getValue() {
+		@Nullable T getValue() {
 			return this.value;
 		}
 
-		void setValue(T value) {
+		void setValue(@Nullable T value) {
 			this.value = value;
 		}
 
@@ -1240,7 +1250,7 @@ class JavaBeanBinderTests {
 	static class BridgeMethods extends BridgeMethodsBase<BridgeType> {
 
 		@Override
-		BridgeType getValue() {
+		@Nullable BridgeType getValue() {
 			return super.getValue();
 		}
 

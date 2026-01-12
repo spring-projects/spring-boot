@@ -45,7 +45,7 @@ public class DateTimeFormatters {
 	 * @param pattern the pattern for formatting dates
 	 * @return {@code this} for chained method invocation
 	 */
-	public DateTimeFormatters dateFormat(String pattern) {
+	public DateTimeFormatters dateFormat(@Nullable String pattern) {
 		if (isIso(pattern)) {
 			this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
 			this.datePattern = "yyyy-MM-dd";
@@ -62,7 +62,7 @@ public class DateTimeFormatters {
 	 * @param pattern the pattern for formatting times
 	 * @return {@code this} for chained method invocation
 	 */
-	public DateTimeFormatters timeFormat(String pattern) {
+	public DateTimeFormatters timeFormat(@Nullable String pattern) {
 		this.timeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_TIME
 				: (isIsoOffset(pattern) ? DateTimeFormatter.ISO_OFFSET_TIME : formatter(pattern));
 		return this;
@@ -73,7 +73,7 @@ public class DateTimeFormatters {
 	 * @param pattern the pattern for formatting date-times
 	 * @return {@code this} for chained method invocation
 	 */
-	public DateTimeFormatters dateTimeFormat(String pattern) {
+	public DateTimeFormatters dateTimeFormat(@Nullable String pattern) {
 		this.dateTimeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_DATE_TIME
 				: (isIsoOffset(pattern) ? DateTimeFormatter.ISO_OFFSET_DATE_TIME : formatter(pattern));
 		return this;
@@ -99,16 +99,16 @@ public class DateTimeFormatters {
 		return this.dateFormatter != null || this.timeFormatter != null || this.dateTimeFormatter != null;
 	}
 
-	private static @Nullable DateTimeFormatter formatter(String pattern) {
+	private static @Nullable DateTimeFormatter formatter(@Nullable String pattern) {
 		return StringUtils.hasText(pattern)
 				? DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.SMART) : null;
 	}
 
-	private static boolean isIso(String pattern) {
+	private static boolean isIso(@Nullable String pattern) {
 		return "iso".equalsIgnoreCase(pattern);
 	}
 
-	private static boolean isIsoOffset(String pattern) {
+	private static boolean isIsoOffset(@Nullable String pattern) {
 		return "isooffset".equalsIgnoreCase(pattern) || "iso-offset".equalsIgnoreCase(pattern);
 	}
 

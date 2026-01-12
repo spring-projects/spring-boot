@@ -81,7 +81,7 @@ final class AutoConfigurationReplacements {
 	}
 
 	/**
-	 * Loads the relocations from the classpath. Relactions are stored in files named
+	 * Loads the relocations from the classpath. Relocations are stored in files named
 	 * {@code META-INF/spring/full-qualified-annotation-name.replacements} on the
 	 * classpath. The file is loaded using {@link Properties#load(java.io.InputStream)}
 	 * with each entry containing an auto-configuration class name as the key and the

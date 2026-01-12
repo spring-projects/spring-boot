@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import org.apache.hc.core5.http.Header;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
@@ -61,7 +62,7 @@ public interface HttpTransport {
 	 * @return the operation response
 	 * @throws IOException on IO error
 	 */
-	Response post(URI uri, String registryAuth) throws IOException;
+	Response post(URI uri, @Nullable String registryAuth) throws IOException;
 
 	/**
 	 * Perform an HTTP POST operation.
@@ -104,7 +105,7 @@ public interface HttpTransport {
 	 * @param connectionConfiguration the Docker host information
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(DockerConnectionConfiguration connectionConfiguration) {
+	static HttpTransport create(@Nullable DockerConnectionConfiguration connectionConfiguration) {
 		ResolvedDockerHost host = ResolvedDockerHost.from(connectionConfiguration);
 		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(host);
 		return (remote != null) ? remote : LocalHttpClientTransport.create(host);
@@ -122,7 +123,7 @@ public interface HttpTransport {
 		 */
 		InputStream getContent() throws IOException;
 
-		default Header getHeader(String name) {
+		default @Nullable Header getHeader(String name) {
 			throw new UnsupportedOperationException();
 		}
 

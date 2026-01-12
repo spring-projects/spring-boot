@@ -25,8 +25,10 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 
 import org.apache.kafka.common.security.auth.SslEngineFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.util.Assert;
 
 /**
  * An {@link SslEngineFactory} that configures creates an {@link SSLEngine} from an
@@ -40,9 +42,9 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	private static final String SSL_BUNDLE_CONFIG_NAME = SslBundle.class.getName();
 
-	private Map<String, ?> configs;
+	private @Nullable Map<String, ?> configs;
 
-	private volatile SslBundle sslBundle;
+	private volatile @Nullable SslBundle sslBundle;
 
 	@Override
 	public void configure(Map<String, ?> configs) {
@@ -57,7 +59,9 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createClientSslEngine(String peerHost, int peerPort, String endpointIdentification) {
-		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(true);
 		SSLParameters sslParams = sslEngine.getSSLParameters();
 		sslParams.setEndpointIdentificationAlgorithm(endpointIdentification);
@@ -67,7 +71,9 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createServerSslEngine(String peerHost, int peerPort) {
-		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(false);
 		return sslEngine;
 	}
@@ -83,13 +89,17 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 	}
 
 	@Override
-	public KeyStore keystore() {
-		return this.sslBundle.getStores().getKeyStore();
+	public @Nullable KeyStore keystore() {
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		return sslBundle.getStores().getKeyStore();
 	}
 
 	@Override
-	public KeyStore truststore() {
-		return this.sslBundle.getStores().getTrustStore();
+	public @Nullable KeyStore truststore() {
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		return sslBundle.getStores().getTrustStore();
 	}
 
 }

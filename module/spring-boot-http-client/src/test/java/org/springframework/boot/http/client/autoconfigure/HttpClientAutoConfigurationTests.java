@@ -17,27 +17,16 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,117 +37,37 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HttpClientAutoConfigurationTests {
 
-	private static final AutoConfigurations autoConfigurations = AutoConfigurations
-		.of(HttpClientAutoConfiguration.class, SslAutoConfiguration.class);
-
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(autoConfigurations);
+		.withConfiguration(AutoConfigurations.of(HttpClientAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
-	void configuresDetectedClientHttpRequestFactoryBuilder() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClientHttpRequestFactoryBuilder.class));
+	void createsDefaultHttpClientSettings() {
+		this.contextRunner.run((context) -> assertThat(context.getBean(HttpClientSettings.class))
+			.isEqualTo(HttpClientSettings.defaults()));
 	}
 
 	@Test
-	void configuresDefinedClientHttpRequestFactoryBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.client.factory=simple")
-			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
-				.isInstanceOf(SimpleClientHttpRequestFactoryBuilder.class));
-	}
-
-	@Test
-	void configuresClientHttpRequestFactorySettings() {
-		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
-			.withPropertyValues("spring.http.client.redirects=dont-follow", "spring.http.client.connect-timeout=10s",
-					"spring.http.client.read-timeout=20s", "spring.http.client.ssl.bundle=test")
-			.run((context) -> {
-				ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
-				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
-				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
-				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
-				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
-			});
-	}
-
-	@Test
-	void configuresClientHttpRequestFactorySettingsUsingDeprecatedProperties() {
-		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
-			.withPropertyValues("spring.http.client.redirects=dont-follow", "spring.http.client.connect-timeout=10s",
-					"spring.http.client.read-timeout=20s", "spring.http.client.ssl.bundle=test")
-			.run((context) -> {
-				ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
-				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
-				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
-				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
-				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
-			});
-	}
-
-	private List<String> sslPropertyValues() {
-		List<String> propertyValues = new ArrayList<>();
-		String location = "classpath:org/springframework/boot/autoconfigure/ssl/";
-		propertyValues.add("spring.ssl.bundle.pem.test.key.alias=alias1");
-		propertyValues.add("spring.ssl.bundle.pem.test.truststore.type=PKCS12");
-		propertyValues.add("spring.ssl.bundle.pem.test.truststore.certificate=" + location + "rsa-cert.pem");
-		propertyValues.add("spring.ssl.bundle.pem.test.truststore.private-key=" + location + "rsa-key.pem");
-		return propertyValues;
-	}
-
-	@Test
-	void whenHttpComponentsIsUnavailableThenJettyClientBeansAreDefined() {
+	void createsHttpClientSettingsFromProperties() {
 		this.contextRunner
-			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class))
-			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
-				.isExactlyInstanceOf(JettyClientHttpRequestFactoryBuilder.class));
+			.withPropertyValues("spring.http.clients.redirects=dont-follow", "spring.http.clients.connect-timeout=1s",
+					"spring.http.clients.read-timeout=2s")
+			.run((context) -> assertThat(context.getBean(HttpClientSettings.class)).isEqualTo(new HttpClientSettings(
+					HttpRedirects.DONT_FOLLOW, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
 	}
 
 	@Test
-	void whenHttpComponentsAndJettyAreUnavailableThenReactorClientBeansAreDefined() {
-		this.contextRunner
-			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
-					org.eclipse.jetty.client.HttpClient.class))
-			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
-				.isExactlyInstanceOf(ReactorClientHttpRequestFactoryBuilder.class));
-	}
-
-	@Test
-	void whenHttpComponentsAndJettyAndReactorAreUnavailableThenJdkClientBeansAreDefined() {
-		this.contextRunner
-			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
-					org.eclipse.jetty.client.HttpClient.class, reactor.netty.http.client.HttpClient.class))
-			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
-				.isExactlyInstanceOf(JdkClientHttpRequestFactoryBuilder.class));
-	}
-
-	@Test
-	void whenReactiveWebApplicationBeansAreNotConfigured() {
-		new ReactiveWebApplicationContextRunner().withConfiguration(autoConfigurations)
-			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpRequestFactoryBuilder.class)
-				.doesNotHaveBean(ClientHttpRequestFactorySettings.class));
-	}
-
-	@Test
-	void clientHttpRequestFactoryBuilderCustomizersAreApplied() {
-		this.contextRunner.withUserConfiguration(ClientHttpRequestFactoryBuilderCustomizersConfiguration.class)
-			.run((context) -> {
-				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
-				assertThat(factory).extracting("connectTimeout").isEqualTo(5L);
-			});
+	void doesNotReplaceUserProvidedHttpClientSettings() {
+		this.contextRunner.withUserConfiguration(TestHttpClientConfiguration.class)
+			.run((context) -> assertThat(context.getBean(HttpClientSettings.class))
+				.isEqualTo(new HttpClientSettings(null, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ClientHttpRequestFactoryBuilderCustomizersConfiguration {
+	static class TestHttpClientConfiguration {
 
 		@Bean
-		ClientHttpRequestFactoryBuilderCustomizer<HttpComponentsClientHttpRequestFactoryBuilder> httpComponentsCustomizer() {
-			return (builder) -> builder.withCustomizer((factory) -> factory.setConnectTimeout(5));
-		}
-
-		@Bean
-		ClientHttpRequestFactoryBuilderCustomizer<JettyClientHttpRequestFactoryBuilder> jettyCustomizer() {
-			return (builder) -> {
-				throw new IllegalStateException();
-			};
+		HttpClientSettings httpClientSettings() {
+			return HttpClientSettings.defaults().withTimeouts(Duration.ofSeconds(1), Duration.ofSeconds(2));
 		}
 
 	}

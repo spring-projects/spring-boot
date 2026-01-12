@@ -63,7 +63,7 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 	private Exception createFailure(Class<?> configuration) {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			fail("Expected failure did not occur");
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (Exception ex) {
 			return ex;

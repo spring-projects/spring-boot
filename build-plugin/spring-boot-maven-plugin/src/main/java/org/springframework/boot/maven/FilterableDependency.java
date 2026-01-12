@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -33,19 +34,21 @@ public abstract class FilterableDependency {
 	 * The groupId of the artifact to exclude.
 	 */
 	@Parameter(required = true)
+	@SuppressWarnings("NullAway.Init")
 	private String groupId;
 
 	/**
 	 * The artifactId of the artifact to exclude.
 	 */
 	@Parameter(required = true)
+	@SuppressWarnings("NullAway.Init")
 	private String artifactId;
 
 	/**
 	 * The classifier of the artifact to exclude.
 	 */
 	@Parameter
-	private String classifier;
+	private @Nullable String classifier;
 
 	String getGroupId() {
 		return this.groupId;
@@ -63,11 +66,11 @@ public abstract class FilterableDependency {
 		this.artifactId = artifactId;
 	}
 
-	String getClassifier() {
+	@Nullable String getClassifier() {
 		return this.classifier;
 	}
 
-	void setClassifier(String classifier) {
+	void setClassifier(@Nullable String classifier) {
 		this.classifier = classifier;
 	}
 

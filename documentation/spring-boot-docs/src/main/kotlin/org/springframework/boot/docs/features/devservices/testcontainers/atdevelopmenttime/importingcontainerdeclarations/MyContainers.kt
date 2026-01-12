@@ -17,9 +17,9 @@
 package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.importingcontainerdeclarations
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.testcontainers.containers.MongoDBContainer
-import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.mongodb.MongoDBContainer
+import org.testcontainers.neo4j.Neo4jContainer
 
 interface MyContainers {
 

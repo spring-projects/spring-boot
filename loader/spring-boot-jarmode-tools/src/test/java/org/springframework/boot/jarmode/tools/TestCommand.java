@@ -20,6 +20,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * @author Moritz Halbritter
  */
@@ -33,7 +35,7 @@ class TestCommand extends Command {
 	}
 
 	@Override
-	protected void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	protected void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 
 	}
 

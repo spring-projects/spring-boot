@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class EnclosedInSquareBracketsConverterTests {
 
-	private TestLogEvent event;
+	private final TestLogEvent event = new TestLogEvent();
 
 	@Test
 	void transformWhenEmpty() {
@@ -46,7 +46,10 @@ class EnclosedInSquareBracketsConverterTests {
 	}
 
 	private EnclosedInSquareBracketsConverter newConverter(String in) {
-		return EnclosedInSquareBracketsConverter.newInstance(null, new String[] { in });
+		EnclosedInSquareBracketsConverter converter = EnclosedInSquareBracketsConverter.newInstance(null,
+				new String[] { in });
+		assertThat(converter).isNotNull();
+		return converter;
 	}
 
 }

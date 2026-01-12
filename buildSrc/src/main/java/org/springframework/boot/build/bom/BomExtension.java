@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -40,6 +41,7 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 
 import org.springframework.boot.build.bom.BomExtension.LibraryHandler.AlignWithHandler.PropertyHandler;
 import org.springframework.boot.build.bom.BomExtension.LibraryHandler.AlignWithHandler.VersionHandler;
+import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.DependencyVersionAlignment;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
@@ -51,6 +53,7 @@ import org.springframework.boot.build.bom.Library.PermittedDependency;
 import org.springframework.boot.build.bom.Library.PomPropertyVersionAlignment;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
+import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.util.PropertyPlaceholderHelper;
@@ -112,8 +115,8 @@ public class BomExtension {
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots,
-				versionAlignment(libraryHandler), libraryHandler.alignWith.dependencyManagementDeclaredIn,
-				libraryHandler.linkRootName, libraryHandler.links));
+				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.linkRootName,
+				libraryHandler.links));
 	}
 
 	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
@@ -404,7 +407,7 @@ public class BomExtension {
 
 			private PropertyHandler property;
 
-			private String dependencyManagementDeclaredIn;
+			private BomAlignment bomAlignment;
 
 			public void version(Action<VersionHandler> action) {
 				this.version = new VersionHandler();
@@ -417,7 +420,14 @@ public class BomExtension {
 			}
 
 			public void dependencyManagementDeclaredIn(String bomCoordinates) {
-				this.dependencyManagementDeclaredIn = bomCoordinates;
+				this.bomAlignment = new BomAlignment(bomCoordinates, (id) -> false);
+			}
+
+			public void dependencyManagementDeclaredIn(String bomCoordinates,
+					Action<DependencyManagementDeclaredInHandler> action) {
+				DependencyManagementDeclaredInHandler handler = new DependencyManagementDeclaredInHandler();
+				action.execute(handler);
+				this.bomAlignment = new BomAlignment(bomCoordinates, handler.exclusions);
 			}
 
 			public static class VersionHandler {
@@ -460,6 +470,16 @@ public class BomExtension {
 
 				public void managedBy(String managedBy) {
 					this.managedBy = managedBy;
+				}
+
+			}
+
+			public static class DependencyManagementDeclaredInHandler {
+
+				private Predicate<Id> exclusions = (id) -> false;
+
+				public void excluding(Predicate<Id> exclusion) {
+					this.exclusions = this.exclusions.or(exclusion);
 				}
 
 			}

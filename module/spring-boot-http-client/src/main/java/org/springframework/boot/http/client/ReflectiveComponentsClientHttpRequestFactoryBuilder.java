@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -64,7 +66,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 	}
 
 	@Override
-	public T build(ClientHttpRequestFactorySettings settings) {
+	public T build(@Nullable HttpClientSettings settings) {
 		T requestFactory = this.requestFactorySupplier.get();
 		if (settings != null) {
 			configure(requestFactory, settings);
@@ -72,12 +74,12 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		return requestFactory;
 	}
 
-	private void configure(ClientHttpRequestFactory requestFactory, ClientHttpRequestFactorySettings settings) {
+	private void configure(ClientHttpRequestFactory requestFactory, HttpClientSettings settings) {
 		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundle using reflection");
-		Assert.state(settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
+		Assert.state(settings.redirects() == null || settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				"Unable to set redirect follow using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));
 		map.from(settings::readTimeout).to((readTimeout) -> setReadTimeout(unwrapped, readTimeout));
 	}
@@ -87,12 +89,14 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 			return requestFactory;
 		}
 		Field field = ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
+		Assert.state(field != null, "'field' must not be null");
 		ReflectionUtils.makeAccessible(field);
 		ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
 		while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper) {
 			unwrappedRequestFactory = (ClientHttpRequestFactory) ReflectionUtils.getField(field,
 					unwrappedRequestFactory);
 		}
+		Assert.state(unwrappedRequestFactory != null, "'unwrappedRequestFactory' must not be null");
 		return unwrappedRequestFactory;
 	}
 
@@ -128,7 +132,8 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		return method;
 	}
 
-	private Method tryFindMethod(ClientHttpRequestFactory requestFactory, String methodName, Class<?>... parameters) {
+	private @Nullable Method tryFindMethod(ClientHttpRequestFactory requestFactory, String methodName,
+			Class<?>... parameters) {
 		Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
 		if (method == null) {
 			return null;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.util;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Listener that can be attached to the {@link Log} to capture calls.
  *
@@ -23,11 +25,11 @@ package org.springframework.boot.cli.util;
  */
 interface LogListener {
 
-	void info(String message);
+	void info(@Nullable String message);
 
-	void infoPrint(String message);
+	void infoPrint(@Nullable String message);
 
-	void error(String message);
+	void error(@Nullable String message);
 
 	void error(Exception ex);
 

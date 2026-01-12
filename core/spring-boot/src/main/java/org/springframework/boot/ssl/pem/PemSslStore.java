@@ -78,7 +78,9 @@ public interface PemSslStore {
 	 * @return a new {@link PemSslStore} instance
 	 */
 	default PemSslStore withAlias(@Nullable String alias) {
-		return of(type(), alias, password(), certificates(), privateKey());
+		List<X509Certificate> certificates = certificates();
+		Assert.notNull(certificates, "'certificates' must not be null");
+		return of(type(), alias, password(), certificates, privateKey());
 	}
 
 	/**
@@ -87,7 +89,9 @@ public interface PemSslStore {
 	 * @return a new {@link PemSslStore} instance
 	 */
 	default PemSslStore withPassword(@Nullable String password) {
-		return of(type(), alias(), password, certificates(), privateKey());
+		List<X509Certificate> certificates = certificates();
+		Assert.notNull(certificates, "'certificates' must not be null");
+		return of(type(), alias(), password, certificates, privateKey());
 	}
 
 	/**
@@ -123,7 +127,7 @@ public interface PemSslStore {
 	 * @param privateKey the private key
 	 * @return a new {@link PemSslStore} instance
 	 */
-	static PemSslStore of(String type, List<X509Certificate> certificates, PrivateKey privateKey) {
+	static PemSslStore of(@Nullable String type, List<X509Certificate> certificates, @Nullable PrivateKey privateKey) {
 		return of(type, null, null, certificates, privateKey);
 	}
 
@@ -134,7 +138,7 @@ public interface PemSslStore {
 	 * @param privateKey the private key
 	 * @return a new {@link PemSslStore} instance
 	 */
-	static PemSslStore of(List<X509Certificate> certificates, PrivateKey privateKey) {
+	static PemSslStore of(List<X509Certificate> certificates, @Nullable PrivateKey privateKey) {
 		return of(null, null, null, certificates, privateKey);
 	}
 
@@ -151,7 +155,7 @@ public interface PemSslStore {
 	 * @return a new {@link PemSslStore} instance
 	 */
 	static PemSslStore of(@Nullable String type, @Nullable String alias, @Nullable String password,
-			@Nullable List<X509Certificate> certificates, @Nullable PrivateKey privateKey) {
+			List<X509Certificate> certificates, @Nullable PrivateKey privateKey) {
 		Assert.notEmpty(certificates, "'certificates' must not be empty");
 		return new PemSslStore() {
 
@@ -171,7 +175,7 @@ public interface PemSslStore {
 			}
 
 			@Override
-			public @Nullable List<X509Certificate> certificates() {
+			public List<X509Certificate> certificates() {
 				return certificates;
 			}
 

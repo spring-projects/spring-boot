@@ -49,7 +49,6 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 				TestConfigurationMetadataAnnotationProcessor.AUTOWIRED_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEFAULT_VALUE_ANNOTATION, endpointAnnotations,
 				TestConfigurationMetadataAnnotationProcessor.READ_OPERATION_ANNOTATION,
-				TestConfigurationMetadataAnnotationProcessor.OPTIONAL_PARAMETER_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NAME_ANNOTATION);
 	}
 

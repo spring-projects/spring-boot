@@ -32,6 +32,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -41,6 +42,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Banner implementation that prints from a source text {@link Resource}.
@@ -112,11 +114,11 @@ public class ResourceBanner implements Banner {
 		return emptyDefaultSources;
 	}
 
-	private MapPropertySource getTitleSource(@Nullable Class<?> sourceClass, @Nullable String defaultValue) {
+	private MapWithNullsPropertySource getTitleSource(@Nullable Class<?> sourceClass, @Nullable String defaultValue) {
 		String applicationTitle = getApplicationTitle(sourceClass);
-		Map<String, Object> titleMap = Collections.singletonMap("application.title",
+		Map<String, @Nullable Object> titleMap = Collections.singletonMap("application.title",
 				(applicationTitle != null) ? applicationTitle : defaultValue);
-		return new MapPropertySource("title", titleMap);
+		return new MapWithNullsPropertySource("title", titleMap);
 	}
 
 	/**
@@ -134,14 +136,14 @@ public class ResourceBanner implements Banner {
 		return new AnsiPropertySource("ansi", true);
 	}
 
-	private MapPropertySource getVersionSource(Environment environment, @Nullable String defaultValue) {
-		return new MapPropertySource("version", getVersionsMap(environment, defaultValue));
+	private MapWithNullsPropertySource getVersionSource(Environment environment, @Nullable String defaultValue) {
+		return new MapWithNullsPropertySource("version", getVersionsMap(environment, defaultValue));
 	}
 
-	private Map<String, Object> getVersionsMap(Environment environment, @Nullable String defaultValue) {
+	private Map<String, @Nullable Object> getVersionsMap(Environment environment, @Nullable String defaultValue) {
 		String appVersion = getApplicationVersion(environment);
 		String bootVersion = getBootVersion();
-		Map<String, Object> versions = new HashMap<>();
+		Map<String, @Nullable Object> versions = new HashMap<>();
 		versions.put("application.version", getVersionString(appVersion, false, defaultValue));
 		versions.put("spring-boot.version", getVersionString(bootVersion, false, defaultValue));
 		versions.put("application.formatted-version", getVersionString(appVersion, true, defaultValue));
@@ -153,7 +155,7 @@ public class ResourceBanner implements Banner {
 		return environment.getProperty("spring.application.version");
 	}
 
-	protected String getBootVersion() {
+	protected @Nullable String getBootVersion() {
 		return SpringBootVersion.getVersion();
 	}
 
@@ -162,6 +164,32 @@ public class ResourceBanner implements Banner {
 			return fallback;
 		}
 		return format ? " (v" + version + ")" : version;
+	}
+
+	/**
+	 * Like {@link MapPropertySource}, but allows {@code null} as map values.
+	 */
+	private static class MapWithNullsPropertySource extends EnumerablePropertySource<Map<String, @Nullable Object>> {
+
+		MapWithNullsPropertySource(String name, Map<String, @Nullable Object> source) {
+			super(name, source);
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return StringUtils.toStringArray(this.source.keySet());
+		}
+
+		@Override
+		public @Nullable Object getProperty(String name) {
+			return this.source.get(name);
+		}
+
+		@Override
+		public boolean containsProperty(String name) {
+			return this.source.containsKey(name);
+		}
+
 	}
 
 }

@@ -40,6 +40,7 @@ class AvailabilityChangeEventTests {
 	private final Object source = new Object();
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenStateIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityChangeEvent<>(this.source, null))
 			.withMessage("Payload must not be null");

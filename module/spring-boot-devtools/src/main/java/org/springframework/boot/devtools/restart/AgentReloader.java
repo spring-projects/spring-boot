@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ClassUtils;
 
 /**
@@ -52,7 +54,7 @@ public abstract class AgentReloader {
 				|| isActive(ClassLoader.getSystemClassLoader());
 	}
 
-	private static boolean isActive(ClassLoader classLoader) {
+	private static boolean isActive(@Nullable ClassLoader classLoader) {
 		for (String agentClass : AGENT_CLASSES) {
 			if (ClassUtils.isPresent(agentClass, classLoader)) {
 				return true;

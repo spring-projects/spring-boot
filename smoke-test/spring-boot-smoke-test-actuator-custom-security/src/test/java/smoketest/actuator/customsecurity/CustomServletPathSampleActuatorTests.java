@@ -18,8 +18,8 @@ package smoketest.actuator.customsecurity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Integration tests for actuator endpoints with custom dispatcher servlet path.
@@ -34,7 +34,7 @@ class CustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomS
 	private int port;
 
 	@Autowired
-	private Environment environment;
+	private ApplicationContext applicationContext;
 
 	@Override
 	String getPath() {
@@ -47,8 +47,8 @@ class CustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomS
 	}
 
 	@Override
-	Environment getEnvironment() {
-		return this.environment;
+	ApplicationContext getApplicationContext() {
+		return this.applicationContext;
 	}
 
 }

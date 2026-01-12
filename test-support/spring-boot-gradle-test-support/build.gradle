@@ -30,3 +30,7 @@ dependencies {
 	implementation("org.assertj:assertj-core")
 	implementation("org.springframework:spring-core")
 }
+
+nullability {
+	requireExplicitNullMarking = false
+}

@@ -336,7 +336,7 @@ class FileWatcherTests {
 
 		private CountDownLatch latch = new CountDownLatch(1);
 
-		volatile boolean changed = false;
+		volatile boolean changed;
 
 		@Override
 		public void run() {

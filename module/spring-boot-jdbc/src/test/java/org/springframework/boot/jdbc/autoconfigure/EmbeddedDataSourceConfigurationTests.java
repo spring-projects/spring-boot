@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class EmbeddedDataSourceConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void closeContext() {

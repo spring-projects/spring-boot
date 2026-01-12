@@ -22,9 +22,12 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -46,7 +49,8 @@ public final class SimpleClientHttpRequestFactoryBuilder
 		this(null);
 	}
 
-	private SimpleClientHttpRequestFactoryBuilder(List<Consumer<SimpleClientHttpRequestFactory>> customizers) {
+	private SimpleClientHttpRequestFactoryBuilder(
+			@Nullable List<Consumer<SimpleClientHttpRequestFactory>> customizers) {
 		super(customizers);
 	}
 
@@ -61,13 +65,24 @@ public final class SimpleClientHttpRequestFactoryBuilder
 		return new SimpleClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
 	}
 
+	/**
+	 * Return a new {@link SimpleClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link SimpleClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public SimpleClientHttpRequestFactoryBuilder with(UnaryOperator<SimpleClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
-	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
+	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		SslBundle sslBundle = settings.sslBundle();
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
 				"SSL Options cannot be specified with Java connections");
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		return requestFactory;
@@ -79,9 +94,9 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	 */
 	private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
 
-		private final ClientHttpRequestFactorySettings settings;
+		private final HttpClientSettings settings;
 
-		SimpleClientHttpsRequestFactory(ClientHttpRequestFactorySettings settings) {
+		SimpleClientHttpsRequestFactory(HttpClientSettings settings) {
 			this.settings = settings;
 		}
 

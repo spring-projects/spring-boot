@@ -352,11 +352,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 			addBean(registry, converterBean, beanType, GenericConverter.class, registry::addConverter, (Runnable) null);
 		}
 		else if (bean instanceof Converter<?, ?> converterBean) {
-			addBean(registry, converterBean, beanType, Converter.class, registry::addConverter,
+			Assert.state(beanType != null, "beanType is missing");
+			addBeanWithType(registry, converterBean, beanType, Converter.class, registry::addConverter,
 					ConverterBeanAdapter::new);
 		}
 		else if (bean instanceof ConverterFactory<?, ?> converterBean) {
-			addBean(registry, converterBean, beanType, ConverterFactory.class, registry::addConverterFactory,
+			Assert.state(beanType != null, "beanType is missing");
+			addBeanWithType(registry, converterBean, beanType, ConverterFactory.class, registry::addConverterFactory,
 					ConverterFactoryBeanAdapter::new);
 		}
 		else if (bean instanceof Formatter<?> formatterBean) {
@@ -367,16 +369,19 @@ public class ApplicationConversionService extends FormattingConversionService {
 			});
 		}
 		else if (bean instanceof Printer<?> printerBean) {
-			addBean(registry, printerBean, beanType, Printer.class, registry::addPrinter, PrinterBeanAdapter::new);
+			Assert.state(beanType != null, "beanType is missing");
+			addBeanWithType(registry, printerBean, beanType, Printer.class, registry::addPrinter,
+					PrinterBeanAdapter::new);
 		}
 		else if (bean instanceof Parser<?> parserBean) {
-			addBean(registry, parserBean, beanType, Parser.class, registry::addParser, ParserBeanAdapter::new);
+			Assert.state(beanType != null, "beanType is missing");
+			addBeanWithType(registry, parserBean, beanType, Parser.class, registry::addParser, ParserBeanAdapter::new);
 		}
 	}
 
-	private static <B, T> void addBean(FormatterRegistry registry, B bean, @Nullable ResolvableType beanType,
+	private static <B, T> void addBeanWithType(FormatterRegistry registry, B bean, ResolvableType beanType,
 			Class<T> type, Consumer<B> standardRegistrar,
-			BiFunction<B, @Nullable ResolvableType, BeanAdapter<?>> beanAdapterFactory) {
+			BiFunction<B, ResolvableType, BeanAdapter<?>> beanAdapterFactory) {
 		addBean(registry, bean, beanType, type, standardRegistrar,
 				() -> registry.addConverter(beanAdapterFactory.apply(bean, beanType)));
 	}

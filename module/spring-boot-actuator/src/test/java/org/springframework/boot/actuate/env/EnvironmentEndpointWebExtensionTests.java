@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.env;
 import java.security.Principal;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -37,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class EnvironmentEndpointWebExtensionTests {
 
-	private EnvironmentEndpointWebExtension webExtension;
+	private @Nullable EnvironmentEndpointWebExtension webExtension;
 
 	private EnvironmentEndpoint delegate;
 
@@ -49,17 +51,17 @@ class EnvironmentEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsNever() {
 		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.NEVER, Collections.emptySet());
-		this.webExtension.environment(null, null);
+		this.webExtension.environment(SecurityContext.NONE, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, false);
-		verifyPrefixed(null, false);
+		verifyPrefixed(SecurityContext.NONE, false);
 	}
 
 	@Test
 	void whenShowValuesIsAlways() {
 		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.ALWAYS, Collections.emptySet());
-		this.webExtension.environment(null, null);
+		this.webExtension.environment(SecurityContext.NONE, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, true);
-		verifyPrefixed(null, true);
+		verifyPrefixed(SecurityContext.NONE, true);
 	}
 
 	@Test
@@ -88,6 +90,7 @@ class EnvironmentEndpointWebExtensionTests {
 		given(this.delegate.getEnvironmentEntryDescriptor("test", showUnsanitized))
 			.willReturn(new EnvironmentEntryDescriptor(null, Collections.emptyList(), Collections.emptyList(),
 					Collections.emptyList()));
+		assertThat(this.webExtension).isNotNull();
 		this.webExtension.environmentEntry(securityContext, "test");
 		then(this.delegate).should().getEnvironmentEntryDescriptor("test", showUnsanitized);
 	}

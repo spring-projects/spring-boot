@@ -66,6 +66,7 @@ class ContextConsumerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void andThenWithNull() {
 		ContextConsumer<?> consumer = (context) -> {
 		};

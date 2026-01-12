@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
@@ -48,13 +49,13 @@ public class ContainerConfig {
 
 	private final String json;
 
-	ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
-			List<Binding> bindings, Map<String, String> env, String networkMode, List<String> securityOptions)
-			throws IOException {
+	ContainerConfig(@Nullable String user, ImageReference image, String command, List<String> args,
+			Map<String, String> labels, List<Binding> bindings, Map<String, String> env, @Nullable String networkMode,
+			List<String> securityOptions) {
 		Assert.notNull(image, "'image' must not be null");
 		Assert.hasText(command, "'command' must not be empty");
-		ObjectMapper objectMapper = SharedObjectMapper.get();
-		ObjectNode node = objectMapper.createObjectNode();
+		JsonMapper jsonMapper = SharedJsonMapper.get();
+		ObjectNode node = jsonMapper.createObjectNode();
 		if (StringUtils.hasText(user)) {
 			node.put("User", user);
 		}
@@ -76,7 +77,7 @@ public class ContainerConfig {
 			ArrayNode securityOptsNode = hostConfigNode.putArray("SecurityOpt");
 			securityOptions.forEach(securityOptsNode::add);
 		}
-		this.json = objectMapper.writeValueAsString(node);
+		this.json = jsonMapper.writeValueAsString(node);
 	}
 
 	/**
@@ -112,9 +113,9 @@ public class ContainerConfig {
 
 		private final ImageReference image;
 
-		private String user;
+		private @Nullable String user;
 
-		private String command;
+		private @Nullable String command;
 
 		private final List<String> args = new ArrayList<>();
 
@@ -124,7 +125,7 @@ public class ContainerConfig {
 
 		private final Map<String, String> env = new LinkedHashMap<>();
 
-		private String networkMode;
+		private @Nullable String networkMode;
 
 		private final List<String> securityOptions = new ArrayList<>();
 
@@ -134,13 +135,9 @@ public class ContainerConfig {
 
 		private ContainerConfig run(Consumer<Update> update) {
 			update.accept(this);
-			try {
-				return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.bindings,
-						this.env, this.networkMode, this.securityOptions);
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
-			}
+			Assert.state(this.command != null, "'command' must not be null");
+			return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.bindings,
+					this.env, this.networkMode, this.securityOptions);
 		}
 
 		/**
@@ -201,7 +198,7 @@ public class ContainerConfig {
 		 * connect to.
 		 * @param networkMode the network
 		 */
-		public void withNetworkMode(String networkMode) {
+		public void withNetworkMode(@Nullable String networkMode) {
 			this.networkMode = networkMode;
 		}
 

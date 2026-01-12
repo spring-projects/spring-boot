@@ -18,12 +18,10 @@ package org.springframework.boot.maven;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.maven.AbstractRunMojo.SystemPropertyFormatter;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AbstractRunMojo.SystemPropertyFormatter}.
+ * Tests for {@link SystemPropertyFormatter}.
  */
 class SystemPropertyFormatterTests {
 
@@ -39,7 +37,7 @@ class SystemPropertyFormatterTests {
 
 	@Test
 	void parseKeyWithValue() {
-		assertThat(SystemPropertyFormatter.format("key1", "value1")).isEqualTo("-Dkey1=\"value1\"");
+		assertThat(SystemPropertyFormatter.format("key1", "value1")).isEqualTo("-Dkey1=value1");
 	}
 
 	@Test
@@ -49,7 +47,7 @@ class SystemPropertyFormatterTests {
 
 	@Test
 	void parseKeyWithOnlySpaces() {
-		assertThat(SystemPropertyFormatter.format("key1", "   ")).isEqualTo("-Dkey1=\"   \"");
+		assertThat(SystemPropertyFormatter.format("key1", "   ")).isEqualTo("-Dkey1=   ");
 	}
 
 }

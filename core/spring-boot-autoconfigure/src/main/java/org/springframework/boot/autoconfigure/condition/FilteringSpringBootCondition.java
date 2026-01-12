@@ -55,13 +55,14 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		@Nullable ConditionOutcome[] outcomes = getOutcomes(autoConfigurationClasses, autoConfigurationMetadata);
 		boolean[] match = new boolean[outcomes.length];
 		for (int i = 0; i < outcomes.length; i++) {
-			match[i] = (outcomes[i] == null || outcomes[i].isMatch());
-			if (!match[i] && outcomes[i] != null) {
+			ConditionOutcome outcome = outcomes[i];
+			match[i] = (outcome == null || outcome.isMatch());
+			if (!match[i] && outcome != null) {
 				String autoConfigurationClass = autoConfigurationClasses[i];
 				Assert.state(autoConfigurationClass != null, "'autoConfigurationClass' must not be null");
-				logOutcome(autoConfigurationClass, outcomes[i]);
+				logOutcome(autoConfigurationClass, outcome);
 				if (report != null) {
-					report.recordConditionEvaluation(autoConfigurationClass, this, outcomes[i]);
+					report.recordConditionEvaluation(autoConfigurationClass, this, outcome);
 				}
 			}
 		}

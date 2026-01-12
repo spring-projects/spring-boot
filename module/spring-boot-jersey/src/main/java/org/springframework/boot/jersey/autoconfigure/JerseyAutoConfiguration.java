@@ -19,10 +19,6 @@ package org.springframework.boot.jersey.autoconfigure;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -72,7 +68,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -181,11 +177,12 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JacksonFeature.class)
-	@ConditionalOnSingleCandidate(ObjectMapper.class)
-	static class JacksonResourceConfigCustomizer {
+	@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
+	static class Jackson2ResourceConfigCustomizerConfiguration {
 
 		@Bean
-		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectMapper objectMapper) {
+		ResourceConfigCustomizer jacksonResourceConfigCustomizer(
+				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
@@ -193,35 +190,39 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass({ JakartaXmlBindAnnotationIntrospector.class, XmlElement.class })
-		static class JaxbObjectMapperCustomizer {
+		@ConditionalOnClass({ com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector.class,
+				XmlElement.class })
+		static class JaxbJackson2ObjectMapperCustomizerConfiguration {
 
 			@Autowired
-			void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
-				JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new JakartaXmlBindAnnotationIntrospector(
+			void addJaxbAnnotationIntrospector(com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+				com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(
 						createPair(objectMapper.getSerializationConfig(), jaxbAnnotationIntrospector),
 						createPair(objectMapper.getDeserializationConfig(), jaxbAnnotationIntrospector));
 			}
 
-			private AnnotationIntrospector createPair(MapperConfig<?> config,
-					JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
-				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(), jaxbAnnotationIntrospector);
+			private com.fasterxml.jackson.databind.AnnotationIntrospector createPair(
+					com.fasterxml.jackson.databind.cfg.MapperConfig<?> config,
+					com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
+				return com.fasterxml.jackson.databind.AnnotationIntrospector.pair(config.getAnnotationIntrospector(),
+						jaxbAnnotationIntrospector);
 			}
 
 		}
 
-		private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+		private static final class ObjectMapperContextResolver
+				implements ContextResolver<com.fasterxml.jackson.databind.ObjectMapper> {
 
-			private final ObjectMapper objectMapper;
+			private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-			private ObjectMapperContextResolver(ObjectMapper objectMapper) {
+			private ObjectMapperContextResolver(com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
 				this.objectMapper = objectMapper;
 			}
 
 			@Override
-			public ObjectMapper getContext(Class<?> type) {
+			public com.fasterxml.jackson.databind.ObjectMapper getContext(Class<?> type) {
 				return this.objectMapper;
 			}
 

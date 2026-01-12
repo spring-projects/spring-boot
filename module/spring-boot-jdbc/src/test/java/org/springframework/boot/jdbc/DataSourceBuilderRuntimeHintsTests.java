@@ -40,7 +40,7 @@ class DataSourceBuilderRuntimeHintsTests {
 		ReflectionHints hints = registerHints();
 		Stream
 			.of(com.mchange.v2.c3p0.ComboPooledDataSource.class, com.zaxxer.hikari.HikariDataSource.class,
-					oracle.jdbc.datasource.OracleDataSource.class, oracle.ucp.jdbc.PoolDataSource.class,
+					oracle.jdbc.datasource.OracleDataSource.class, oracle.ucp.jdbc.PoolDataSourceImpl.class,
 					org.apache.commons.dbcp2.BasicDataSource.class, org.apache.tomcat.jdbc.pool.DataSource.class,
 					org.h2.jdbcx.JdbcDataSource.class, org.postgresql.ds.PGSimpleDataSource.class,
 					org.springframework.jdbc.datasource.SimpleDriverDataSource.class,
@@ -49,6 +49,7 @@ class DataSourceBuilderRuntimeHintsTests {
 				TypeHint typeHint = hints.getTypeHint(dataSourceType);
 				assertThat(typeHint).withFailMessage(() -> "No hints found for data source type " + dataSourceType)
 					.isNotNull();
+				assertThat(typeHint).isNotNull();
 				Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
 				assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 			});

@@ -56,11 +56,19 @@ import org.springframework.util.Assert;
  * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, StackTrace stackTrace, Context context,
+		Map<String, String> add, @Nullable StackTrace stackTrace, @Nullable Context context,
 		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
-	StructuredLoggingJsonProperties {
-		customizer = (customizer != null) ? customizer : Collections.emptySet();
+	StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
+			Map<String, String> add, @Nullable StackTrace stackTrace, @Nullable Context context,
+			@Nullable Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
+		this.include = include;
+		this.exclude = exclude;
+		this.rename = rename;
+		this.add = add;
+		this.stackTrace = stackTrace;
+		this.context = context;
+		this.customizer = (customizer != null) ? customizer : Collections.emptySet();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -90,8 +98,9 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 	 * @param includeCommonFrames whether common frames should be included
 	 * @param includeHashes whether stack trace hashes should be included
 	 */
-	record StackTrace(@Nullable String printer, Root root, Integer maxLength, Integer maxThrowableDepth,
-			Boolean includeCommonFrames, Boolean includeHashes) {
+	record StackTrace(@Nullable String printer, @Nullable Root root, @Nullable Integer maxLength,
+			@Nullable Integer maxThrowableDepth, @Nullable Boolean includeCommonFrames,
+			@Nullable Boolean includeHashes) {
 
 		@Nullable StackTracePrinter createPrinter() {
 			String name = sanitizePrinter();
@@ -128,7 +137,7 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		private StandardStackTracePrinter createStandardPrinter() {
 			StandardStackTracePrinter printer = (root() == Root.FIRST) ? StandardStackTracePrinter.rootFirst()
 					: StandardStackTracePrinter.rootLast();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			printer = map.from(this::maxLength).to(printer, StandardStackTracePrinter::withMaximumLength);
 			printer = map.from(this::maxThrowableDepth)
 				.to(printer, StandardStackTracePrinter::withMaximumThrowableDepth);

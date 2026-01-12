@@ -45,6 +45,12 @@ public @interface AutoConfigureAfter {
 
 	/**
 	 * The auto-configuration classes that should have already been applied.
+	 * <p>
+	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
+	 * classes here that may ultimately not be on the classpath, but only if this
+	 * annotation is directly on the affected component and <b>not</b> if this annotation
+	 * is used as a composed, meta-annotation. In order to use this annotation as a
+	 * meta-annotation, only use the {@link #name} attribute.
 	 * @return the classes
 	 */
 	Class<?>[] value() default {};

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 

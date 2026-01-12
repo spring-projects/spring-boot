@@ -31,6 +31,7 @@ import static org.mockito.Mockito.mock;
 class BindValidationExceptionTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenValidationErrorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BindValidationException(null))
 			.withMessageContaining("'validationErrors' must not be null");

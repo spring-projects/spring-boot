@@ -29,6 +29,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -157,7 +158,7 @@ class CustomLayersProvider {
 		return patterns;
 	}
 
-	private Element getChildElement(Element element, String tagName) {
+	private @Nullable Element getChildElement(Element element, String tagName) {
 		NodeList nodes = element.getElementsByTagName(tagName);
 		if (nodes.getLength() == 0) {
 			return null;

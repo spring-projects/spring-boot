@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.classpath;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
@@ -37,7 +39,7 @@ public class PatternClassPathRestartStrategy implements ClassPathRestartStrategy
 		this.excludePatterns = excludePatterns;
 	}
 
-	public PatternClassPathRestartStrategy(String excludePatterns) {
+	public PatternClassPathRestartStrategy(@Nullable String excludePatterns) {
 		this(StringUtils.commaDelimitedListToStringArray(excludePatterns));
 	}
 

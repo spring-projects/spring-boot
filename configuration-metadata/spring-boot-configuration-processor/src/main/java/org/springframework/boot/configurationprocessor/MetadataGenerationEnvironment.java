@@ -55,7 +55,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class MetadataGenerationEnvironment {
 
-	private static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
+	private static final String NULLABLE_ANNOTATION = "org.jspecify.annotations.Nullable";
 
 	private static final Set<String> TYPE_EXCLUDES = Set.of("com.zaxxer.hikari.IConnectionCustomizer",
 			"groovy.lang.MetaClass", "groovy.text.markup.MarkupTemplateEngine", "java.io.Writer", "java.io.PrintWriter",
@@ -98,8 +98,6 @@ class MetadataGenerationEnvironment {
 
 	private final String readOperationAnnotation;
 
-	private final String optionalParameterAnnotation;
-
 	private final String nameAnnotation;
 
 	private final String autowiredAnnotation;
@@ -108,7 +106,7 @@ class MetadataGenerationEnvironment {
 			String configurationPropertiesSourceAnnotation, String nestedConfigurationPropertyAnnotation,
 			String deprecatedConfigurationPropertyAnnotation, String constructorBindingAnnotation,
 			String autowiredAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
-			String readOperationAnnotation, String optionalParameterAnnotation, String nameAnnotation) {
+			String readOperationAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -123,7 +121,6 @@ class MetadataGenerationEnvironment {
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotations = endpointAnnotations;
 		this.readOperationAnnotation = readOperationAnnotation;
-		this.optionalParameterAnnotation = optionalParameterAnnotation;
 		this.nameAnnotation = nameAnnotation;
 	}
 
@@ -145,14 +142,15 @@ class MetadataGenerationEnvironment {
 	}
 
 	/**
-	 * Return the default value of the field with the specified {@code name}.
+	 * Return the default value of the given {@code field}.
 	 * @param type the type to consider
-	 * @param name the name of the field
+	 * @param field the field or {@code null} if it is not available
 	 * @return the default value or {@code null} if the field does not exist or no default
 	 * value has been detected
 	 */
-	Object getFieldDefaultValue(TypeElement type, String name) {
-		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
+	Object getFieldDefaultValue(TypeElement type, VariableElement field) {
+		return (field != null) ? this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
+			.get(field.getSimpleName().toString()) : null;
 	}
 
 	/**
@@ -268,6 +266,17 @@ class MetadataGenerationEnvironment {
 		return null;
 	}
 
+	private AnnotationMirror getTypeUseAnnotation(Element element, String type) {
+		if (element != null) {
+			for (AnnotationMirror annotation : element.asType().getAnnotationMirrors()) {
+				if (type.equals(annotation.getAnnotationType().toString())) {
+					return annotation;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Collect the annotations that are annotated or meta-annotated with the specified
 	 * {@link TypeElement annotation}.
@@ -367,11 +376,7 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean hasNullableAnnotation(Element element) {
-		return getAnnotation(element, NULLABLE_ANNOTATION) != null;
-	}
-
-	boolean hasOptionalParameterAnnotation(Element element) {
-		return getAnnotation(element, this.optionalParameterAnnotation) != null;
+		return getTypeUseAnnotation(element, NULLABLE_ANNOTATION) != null;
 	}
 
 	private boolean isElementDeprecated(Element element) {

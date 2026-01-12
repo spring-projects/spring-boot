@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.error.Error;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
@@ -71,14 +73,15 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	private static final String ERROR_INTERNAL_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
+	public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		Map<String, @Nullable Object> errorAttributes = getErrorAttributes(request,
+				options.isIncluded(Include.STACK_TRACE));
 		options.retainIncluded(errorAttributes);
 		return errorAttributes;
 	}
 
-	private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+	private Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+		Map<String, @Nullable Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.requestPath().value());
 		Throwable error = getError(request);
@@ -103,14 +106,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
+	private void addStackTrace(Map<String, @Nullable Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
 		error.printStackTrace(new PrintWriter(stackTrace));
 		stackTrace.flush();
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error,
+	private void handleException(Map<String, @Nullable Object> errorAttributes, Throwable error,
 			MergedAnnotation<ResponseStatus> responseStatusAnnotation, boolean includeStackTrace) {
 		Throwable exception;
 		if (error instanceof BindingResult bindingResult) {

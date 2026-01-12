@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
-import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -69,9 +71,9 @@ public class BuildRequest {
 
 	private final ImageReference builder;
 
-	private final Boolean trustBuilder;
+	private final @Nullable Boolean trustBuilder;
 
-	private final ImageReference runImage;
+	private final @Nullable ImageReference runImage;
 
 	private final Creator creator;
 
@@ -89,23 +91,23 @@ public class BuildRequest {
 
 	private final List<Binding> bindings;
 
-	private final String network;
+	private final @Nullable String network;
 
 	private final List<ImageReference> tags;
 
-	private final Cache buildWorkspace;
+	private final @Nullable Cache buildWorkspace;
 
-	private final Cache buildCache;
+	private final @Nullable Cache buildCache;
 
-	private final Cache launchCache;
+	private final @Nullable Cache launchCache;
 
-	private final Instant createdDate;
+	private final @Nullable Instant createdDate;
 
-	private final String applicationDirectory;
+	private final @Nullable String applicationDirectory;
 
-	private final List<String> securityOptions;
+	private final @Nullable List<String> securityOptions;
 
-	private final ImagePlatform platform;
+	private final @Nullable ImagePlatform platform;
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "'name' must not be null");
@@ -135,11 +137,12 @@ public class BuildRequest {
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
-			Boolean trustBuilder, ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
-			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
-			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildWorkspace, Cache buildCache,
-			Cache launchCache, Instant createdDate, String applicationDirectory, List<String> securityOptions,
-			ImagePlatform platform) {
+			@Nullable Boolean trustBuilder, @Nullable ImageReference runImage, Creator creator, Map<String, String> env,
+			boolean cleanCache, boolean verboseLogging, PullPolicy pullPolicy, boolean publish,
+			List<BuildpackReference> buildpacks, List<Binding> bindings, @Nullable String network,
+			List<ImageReference> tags, @Nullable Cache buildWorkspace, @Nullable Cache buildCache,
+			@Nullable Cache launchCache, @Nullable Instant createdDate, @Nullable String applicationDirectory,
+			@Nullable List<String> securityOptions, @Nullable ImagePlatform platform) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -356,7 +359,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 * @since 2.6.0
 	 */
-	public BuildRequest withNetwork(String network) {
+	public BuildRequest withNetwork(@Nullable String network) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, network, this.tags, this.buildWorkspace, this.buildCache,
@@ -538,7 +541,7 @@ public class BuildRequest {
 	 * Return the run image that should be used, if provided.
 	 * @return the run image
 	 */
-	public ImageReference getRunImage() {
+	public @Nullable ImageReference getRunImage() {
 		return this.runImage;
 	}
 
@@ -612,7 +615,7 @@ public class BuildRequest {
 	 * @return the network
 	 * @since 2.6.0
 	 */
-	public String getNetwork() {
+	public @Nullable String getNetwork() {
 		return this.network;
 	}
 
@@ -629,7 +632,7 @@ public class BuildRequest {
 	 * @return the build workspace or {@code null}
 	 * @since 3.2.0
 	 */
-	public Cache getBuildWorkspace() {
+	public @Nullable Cache getBuildWorkspace() {
 		return this.buildWorkspace;
 	}
 
@@ -637,7 +640,7 @@ public class BuildRequest {
 	 * Return the custom build cache that should be used by the lifecycle.
 	 * @return the build cache
 	 */
-	public Cache getBuildCache() {
+	public @Nullable Cache getBuildCache() {
 		return this.buildCache;
 	}
 
@@ -645,7 +648,7 @@ public class BuildRequest {
 	 * Return the custom launch cache that should be used by the lifecycle.
 	 * @return the launch cache
 	 */
-	public Cache getLaunchCache() {
+	public @Nullable Cache getLaunchCache() {
 		return this.launchCache;
 	}
 
@@ -653,7 +656,7 @@ public class BuildRequest {
 	 * Return the custom created date that should be used by the lifecycle.
 	 * @return the created date
 	 */
-	public Instant getCreatedDate() {
+	public @Nullable Instant getCreatedDate() {
 		return this.createdDate;
 	}
 
@@ -661,7 +664,7 @@ public class BuildRequest {
 	 * Return the application directory that should be used by the lifecycle.
 	 * @return the application directory
 	 */
-	public String getApplicationDirectory() {
+	public @Nullable String getApplicationDirectory() {
 		return this.applicationDirectory;
 	}
 
@@ -670,7 +673,7 @@ public class BuildRequest {
 	 * @return the security options or {@code null}
 	 * @since 3.2.0
 	 */
-	public List<String> getSecurityOptions() {
+	public @Nullable List<String> getSecurityOptions() {
 		return this.securityOptions;
 	}
 
@@ -679,7 +682,7 @@ public class BuildRequest {
 	 * @return the platform or {@code null}
 	 * @since 3.4.0
 	 */
-	public ImagePlatform getImagePlatform() {
+	public @Nullable ImagePlatform getImagePlatform() {
 		return this.platform;
 	}
 

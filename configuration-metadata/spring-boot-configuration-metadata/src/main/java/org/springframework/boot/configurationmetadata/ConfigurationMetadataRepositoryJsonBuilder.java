@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public final class ConfigurationMetadataRepositoryJsonBuilder {
 
-	private Charset defaultCharset = StandardCharsets.UTF_8;
+	private final Charset defaultCharset;
 
 	private final JsonReader reader = new JsonReader();
 
@@ -45,7 +45,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Add the content of a {@link ConfigurationMetadataRepository} defined by the
-	 * specified {@link InputStream} json document using the default charset. If this
+	 * specified {@link InputStream} JSON document using the default charset. If this
 	 * metadata repository holds items that were loaded previously, these are ignored.
 	 * <p>
 	 * Leaves the stream open when done.
@@ -59,7 +59,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Add the content of a {@link ConfigurationMetadataRepository} defined by the
-	 * specified {@link InputStream} json document using the specified {@link Charset}. If
+	 * specified {@link InputStream} JSON document using the specified {@link Charset}. If
 	 * this metadata repository holds items that were loaded previously, these are
 	 * ignored.
 	 * <p>
@@ -91,10 +91,13 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 		return result;
 	}
 
-	private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset) {
+	private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset) throws IOException {
 		try {
 			RawConfigurationMetadata metadata = this.reader.read(in, charset);
 			return create(metadata);
+		}
+		catch (IOException ex) {
+			throw ex;
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to read configuration metadata", ex);
@@ -142,7 +145,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Create a new builder instance using {@link StandardCharsets#UTF_8} as the default
-	 * charset and the specified json resource.
+	 * charset and the specified JSON resource.
 	 * @param inputStreams the source input streams
 	 * @return a new {@link ConfigurationMetadataRepositoryJsonBuilder} instance.
 	 * @throws IOException on error

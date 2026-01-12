@@ -18,9 +18,9 @@ package org.springframework.boot.flyway.testcontainers;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -46,7 +46,7 @@ class FlywayContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final PostgreSQLContainer<?> postgres = TestImage.container(PostgreSQLContainer.class);
+	static final PostgreSQLContainer postgres = TestImage.container(PostgreSQLContainer.class);
 
 	@Autowired(required = false)
 	private JdbcConnectionDetails connectionDetails;

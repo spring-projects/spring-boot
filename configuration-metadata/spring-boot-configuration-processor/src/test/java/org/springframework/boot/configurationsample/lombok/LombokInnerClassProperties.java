@@ -18,8 +18,8 @@ package org.springframework.boot.configurationsample.lombok;
 
 import lombok.Data;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
 /**
  * Demonstrate the auto-detection of inner config classes using Lombok.
@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties("config")
+@TestConfigurationProperties("config")
 @SuppressWarnings("unused")
 public class LombokInnerClassProperties {
 
@@ -35,7 +35,7 @@ public class LombokInnerClassProperties {
 
 	private Foo second = new Foo();
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final SimpleLombokPojo third = new SimpleLombokPojo();
 
 	private Fourth fourth;

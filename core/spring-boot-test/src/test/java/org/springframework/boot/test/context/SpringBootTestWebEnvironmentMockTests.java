@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringBootTestWebEnvironmentMockTests {
 
 	@Value("${value}")
-	private int value = 0;
+	private int value;
 
 	@Autowired
 	private WebApplicationContext context;

@@ -30,6 +30,7 @@ import java.util.Random;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -79,6 +80,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
 		assertAppliesExpectedLayers(buildpack);
 	}
@@ -93,6 +95,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1:1.0.0");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
 		assertAppliesExpectedLayers(buildpack);
 	}
@@ -107,6 +110,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
 		assertAppliesExpectedLayers(buildpack);
 	}
@@ -122,6 +126,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1@" + digest);
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
 		assertAppliesExpectedLayers(buildpack);
 	}
@@ -137,6 +142,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
 		assertAppliesNoLayers(buildpack);
 	}
@@ -177,7 +183,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		assertThat(buildpack).isNull();
 	}
 
-	private Object withMockLayers(InvocationOnMock invocation) {
+	private @Nullable Object withMockLayers(InvocationOnMock invocation) {
 		try {
 			IOBiConsumer<String, TarArchive> consumer = invocation.getArgument(1);
 			File tarFile = File.createTempFile("create-builder-test-", null);

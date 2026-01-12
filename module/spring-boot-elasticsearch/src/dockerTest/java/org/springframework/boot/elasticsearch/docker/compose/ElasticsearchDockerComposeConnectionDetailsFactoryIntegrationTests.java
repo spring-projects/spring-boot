@@ -39,11 +39,6 @@ class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "elasticsearch-bitnami-compose.yaml", image = TestImage.BITNAMI_ELASTICSEARCH)
-	void runWithBitnamiImageCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-	}
-
 	private void assertConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("elastic");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");

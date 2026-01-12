@@ -32,9 +32,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class TriggerFileFilterTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TriggerFileFilter(null))
 			.withMessageContaining("'name' must not be null");

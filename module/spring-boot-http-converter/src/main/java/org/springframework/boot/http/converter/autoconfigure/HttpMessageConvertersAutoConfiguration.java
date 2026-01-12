@@ -30,7 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
 /**
@@ -45,37 +48,76 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Dmitry Sulman
+ * @author Brian Clozel
  * @since 4.0.0
  */
+@SuppressWarnings("removal")
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration",
 		"org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration",
-		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration" })
+		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration",
+		"org.springframework.boot.kotlinx.serialization.json.autoconfigure.KotlinxSerializationJsonAutoConfiguration" })
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
-		JsonbHttpMessageConvertersConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class, Jackson2HttpMessageConvertersConfiguration.class,
+		GsonHttpMessageConvertersConfiguration.class, JsonbHttpMessageConvertersConfiguration.class,
+		KotlinSerializationHttpMessageConvertersConfiguration.class })
 public final class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Bean
-	@ConditionalOnMissingBean
-	HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new HttpMessageConverters(converters.orderedStream().toList());
+	@Order(0)
+	@SuppressWarnings("deprecation")
+	ClientHttpMessageConvertersCustomizer clientConvertersCustomizer(
+			ObjectProvider<HttpMessageConverters> legacyConverters,
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new DefaultClientHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
+				converters.orderedStream().toList());
+	}
+
+	@Bean
+	@Order(0)
+	@SuppressWarnings("deprecation")
+	ServerHttpMessageConvertersCustomizer serverConvertersCustomizer(
+			ObjectProvider<HttpMessageConverters> legacyConverters,
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new DefaultServerHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
+				converters.orderedStream().toList());
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(StringHttpMessageConverter.class)
 	@EnableConfigurationProperties(HttpMessageConvertersProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		StringHttpMessageConverter stringHttpMessageConverter(HttpMessageConvertersProperties properties) {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					properties.getStringEncodingCharset());
-			converter.setWriteAcceptCharset(false);
-			return converter;
+		@ConditionalOnMissingBean(StringHttpMessageConverter.class)
+		StringHttpMessageConvertersCustomizer stringHttpMessageConvertersCustomizer(
+				HttpMessageConvertersProperties properties) {
+			return new StringHttpMessageConvertersCustomizer(properties);
+		}
+
+	}
+
+	static class StringHttpMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		StringHttpMessageConverter converter;
+
+		StringHttpMessageConvertersCustomizer(HttpMessageConvertersProperties properties) {
+			this.converter = new StringHttpMessageConverter(properties.getStringEncodingCharset());
+			this.converter.setWriteAcceptCharset(false);
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withStringConverter(this.converter);
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withStringConverter(this.converter);
 		}
 
 	}

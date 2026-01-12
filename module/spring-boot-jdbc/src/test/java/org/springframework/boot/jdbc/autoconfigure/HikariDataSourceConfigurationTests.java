@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
@@ -239,12 +240,12 @@ class HikariDataSourceConfigurationTests {
 	public static class MockDataSource implements DataSource {
 
 		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		public @Nullable Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return null;
 		}
 
 		@Override
-		public <T> T unwrap(Class<T> iface) throws SQLException {
+		public <T> @Nullable T unwrap(Class<T> iface) throws SQLException {
 			return null;
 		}
 
@@ -264,7 +265,7 @@ class HikariDataSourceConfigurationTests {
 		}
 
 		@Override
-		public PrintWriter getLogWriter() throws SQLException {
+		public @Nullable PrintWriter getLogWriter() throws SQLException {
 			return null;
 		}
 

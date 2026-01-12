@@ -18,14 +18,14 @@ package org.springframework.boot.configurationsample.simple;
 
 import java.util.Map;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Properties with array.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("array")
+@TestConfigurationProperties("array")
 public class SimpleArrayProperties {
 
 	private int[] primitive;

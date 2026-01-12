@@ -16,13 +16,13 @@
 
 package org.springframework.boot.r2dbc.autoconfigure;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 import io.r2dbc.spi.Option;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -71,34 +72,44 @@ public final class R2dbcAutoConfiguration {
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(this.properties.getUrl());
+			String url = this.properties.getUrl();
+			Assert.state(url != null, "'url' must not be null");
+			ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(url);
 			Builder optionsBuilder = urlOptions.mutate();
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, this.properties::getUsername,
-					StringUtils::hasText);
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, this.properties::getPassword,
-					StringUtils::hasText);
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-					() -> determineDatabaseName(this.properties), StringUtils::hasText);
-			if (this.properties.getProperties() != null) {
-				this.properties.getProperties()
-					.forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
-			}
+			configureUser(optionsBuilder, urlOptions);
+			configurePassword(optionsBuilder, urlOptions);
+			configureDatabase(optionsBuilder, urlOptions);
+			this.properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
 			return optionsBuilder.build();
 		}
 
+		private void configureDatabase(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			Supplier<@Nullable String> getDatabaseName = () -> determineDatabaseName(this.properties);
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE, getDatabaseName);
+		}
+
+		private void configurePassword(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			Supplier<@Nullable CharSequence> getPassword = this.properties::getPassword;
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, getPassword);
+		}
+
+		private void configureUser(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			Supplier<@Nullable String> getUsername = this.properties::getUsername;
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, getUsername);
+		}
+
 		private <T extends CharSequence> void configureIf(Builder optionsBuilder,
-				ConnectionFactoryOptions originalOptions, Option<T> option, Supplier<T> valueSupplier,
-				Predicate<T> setIf) {
+				ConnectionFactoryOptions originalOptions, Option<T> option, Supplier<@Nullable T> valueSupplier) {
 			if (originalOptions.hasOption(option)) {
 				return;
 			}
 			T value = valueSupplier.get();
-			if (setIf.test(value)) {
+			if (StringUtils.hasText(value)) {
 				optionsBuilder.option(option, value);
 			}
 		}
 
-		private String determineDatabaseName(R2dbcProperties properties) {
+		private @Nullable String determineDatabaseName(R2dbcProperties properties) {
 			if (properties.isGenerateUniqueName()) {
 				return properties.determineUniqueName();
 			}

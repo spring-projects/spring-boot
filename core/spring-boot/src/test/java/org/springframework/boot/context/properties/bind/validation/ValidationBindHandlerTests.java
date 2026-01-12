@@ -25,6 +25,7 @@ import java.util.Set;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -268,7 +269,9 @@ class ValidationBindHandlerTests {
 			action.run();
 		}
 		catch (BindException ex) {
-			return (BindValidationException) ex.getCause();
+			Throwable cause = ex.getCause();
+			assertThat(cause).isNotNull();
+			return (BindValidationException) cause;
 		}
 		throw new IllegalStateException("Did not throw");
 	}
@@ -341,19 +344,20 @@ class ValidationBindHandlerTests {
 
 	static class ExampleNested {
 
-		private String name;
+		private @Nullable String name;
 
 		@Min(5)
 		private int age;
 
 		@NotNull
+		@SuppressWarnings("NullAway.Init")
 		private String address;
 
-		String getName() {
+		@Nullable String getName() {
 			return this.name;
 		}
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -423,13 +427,13 @@ class ValidationBindHandlerTests {
 
 	static class ExampleMapValue {
 
-		private String number;
+		private @Nullable String number;
 
-		String getNumber() {
+		@Nullable String getNumber() {
 			return this.number;
 		}
 
-		void setNumber(String number) {
+		void setNumber(@Nullable String number) {
 			this.number = number;
 		}
 
@@ -437,14 +441,14 @@ class ValidationBindHandlerTests {
 
 	static class TestHandler extends AbstractBindHandler {
 
-		private final Object result;
+		private final @Nullable Object result;
 
-		TestHandler(Object result) {
+		TestHandler(@Nullable Object result) {
 			this.result = result;
 		}
 
 		@Override
-		public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+		public @Nullable Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
 				Exception error) throws Exception {
 			return this.result;
 		}

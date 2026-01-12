@@ -27,7 +27,7 @@ The `assemble` task is automatically configured to depend upon the `bootWar` tas
 === Packaging Executable and Deployable Wars
 
 A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
-To do so, the embedded servlet container dependencies should be added to the `providedRuntime` configuration, for example:
+To do so, the embedded servlet container runtime should be added to the `providedRuntime` configuration, for example:
 
 [tabs]
 ======
@@ -45,7 +45,7 @@ include::example$packaging/war-container-dependency.gradle.kts[tags=dependencies
 ----
 ======
 
-This ensures that they are package in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
+This ensures that the runtime jars are packaged in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
 
 NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
 
@@ -243,75 +243,6 @@ include::example$packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unp
 
 For more control a closure can also be used.
 The closure is passed a `FileTreeElement` and should return a `boolean` indicating whether or not unpacking is required.
-
-
-
-[[packaging-executable.configuring.launch-script]]
-=== Making an Archive Fully Executable
-
-Spring Boot provides support for fully executable archives.
-An archive is made fully executable by prepending a shell script that knows how to launch the application.
-On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
-
-NOTE: Currently, some tools do not accept this format so you may not always be able to use this technique.
-For example, `jar -xf` may silently fail to extract a jar or war that has been made fully-executable.
-It is recommended that you only enable this option if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
-
-To use this feature, the inclusion of the launch script must be enabled:
-
-[tabs]
-======
-Groovy::
-+
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
-----
-Kotlin::
-+
-[source,kotlin,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
-----
-======
-
-This will add Spring Boot's default launch script to the archive.
-The default launch script includes several properties with sensible default values.
-The values can be customized using the `properties` property:
-
-[tabs]
-======
-Groovy::
-+
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
-----
-Kotlin::
-+
-[source,kotlin,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
-----
-======
-
-If the default launch script does not meet your needs, the `script` property can be used to provide a custom launch script:
-
-[tabs]
-======
-Groovy::
-+
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
-----
-Kotlin::
-+
-[source,kotlin,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
-----
-======
 
 
 

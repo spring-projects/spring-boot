@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.sql.init.ScriptDatabaseInitializerSettings;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +42,8 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		QuartzJdbcProperties properties = new QuartzJdbcProperties();
 		properties.setPlatform("test");
-		DatabaseInitializationSettings settings = QuartzDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+		DatabaseInitializationSettings settings = ScriptDatabaseInitializerSettings
+			.get(new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties));
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
 		then(dataSource).shouldHaveNoInteractions();

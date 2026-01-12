@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties with a single deprecated element.
  *
  * @author Andy Wilkinson
  */
-@ConfigurationProperties("singlefielddeprecated")
+@TestConfigurationProperties("singlefielddeprecated")
 public class DeprecatedFieldSingleProperty {
 
 	@Deprecated

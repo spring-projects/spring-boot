@@ -28,11 +28,19 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-data-r2dbc-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-liquibase-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation("io.projectreactor:reactor-test")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
-	dockerTestImplementation("org.testcontainers:r2dbc")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-r2dbc")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

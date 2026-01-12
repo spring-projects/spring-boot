@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import smoketest.webservices.service.HumanResourceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
+import org.springframework.boot.webservices.test.autoconfigure.server.WebServiceServerTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.RequestCreators;

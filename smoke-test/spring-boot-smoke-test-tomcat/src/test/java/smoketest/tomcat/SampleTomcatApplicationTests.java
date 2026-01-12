@@ -17,6 +17,7 @@
 package smoketest.tomcat;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
@@ -28,14 +29,19 @@ import smoketest.tomcat.util.RandomStringUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -55,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
+@AutoConfigureTestRestTemplate
 class SampleTomcatApplicationTests {
 
 	@Autowired
@@ -70,16 +77,18 @@ class SampleTomcatApplicationTests {
 	void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getHeaders().get(HttpHeaders.CONTENT_ENCODING)).isNull();
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 	@Test
-	void testCompression() throws Exception {
+	void testCompression() throws IOException {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET, requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getHeaders().get(HttpHeaders.CONTENT_ENCODING)).containsExactly("gzip");
 		try (GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(entity.getBody()))) {
 			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8)).isEqualTo("Hello World");
 		}
@@ -89,6 +98,7 @@ class SampleTomcatApplicationTests {
 	void testTimeout() {
 		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
 		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context.getWebServer();
+		assertThat(embeddedServletContainer).isNotNull();
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat().getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();
 		assertThat(timeout).isEqualTo(5000);
@@ -111,6 +121,17 @@ class SampleTomcatApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, httpEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(output).contains("java.lang.IllegalArgumentException: Request header is too large");
+	}
+
+	@TestConfiguration
+	static class DisableCompressionConfiguration {
+
+		@Bean
+		RestTemplateBuilder restTemplateBuilder() {
+			return new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()
+				.withCustomizer((factory) -> factory.enableCompression(false)));
+		}
+
 	}
 
 }

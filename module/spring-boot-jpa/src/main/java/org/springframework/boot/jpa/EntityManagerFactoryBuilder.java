@@ -17,14 +17,19 @@
 package org.springframework.boot.jpa;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
 import javax.sql.DataSource;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -53,15 +58,15 @@ public class EntityManagerFactoryBuilder {
 
 	private final JpaVendorAdapter jpaVendorAdapter;
 
-	private final PersistenceUnitManager persistenceUnitManager;
+	private final @Nullable PersistenceUnitManager persistenceUnitManager;
 
 	private final Function<DataSource, Map<String, ?>> jpaPropertiesFactory;
 
-	private final URL persistenceUnitRootLocation;
+	private final @Nullable URL persistenceUnitRootLocation;
 
-	private AsyncTaskExecutor bootstrapExecutor;
+	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
-	private PersistenceUnitPostProcessor[] persistenceUnitPostProcessors;
+	private @Nullable List<PersistenceUnitPostProcessor> persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -71,10 +76,10 @@ public class EntityManagerFactoryBuilder {
 	 * provider, based on the {@linkplain #dataSource(DataSource) configured data source}
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
-	 * @since 3.4.4
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager) {
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager) {
 		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, null);
 	}
 
@@ -88,11 +93,10 @@ public class EntityManagerFactoryBuilder {
 	 * be null)
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
 	 * fallback or {@code null}
-	 * @since 3.4.4
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager,
-			URL persistenceUnitRootLocation) {
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaPropertiesFactory = jpaPropertiesFactory;
@@ -113,7 +117,6 @@ public class EntityManagerFactoryBuilder {
 	 * Configure the bootstrap executor to be used by the
 	 * {@link LocalContainerEntityManagerFactoryBean}.
 	 * @param bootstrapExecutor the executor
-	 * @since 2.1.0
 	 */
 	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
 		this.bootstrapExecutor = bootstrapExecutor;
@@ -124,10 +127,25 @@ public class EntityManagerFactoryBuilder {
 	 * to be applied to the PersistenceUnitInfo used for creating the
 	 * {@link LocalContainerEntityManagerFactoryBean}.
 	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
-	 * @since 2.5.0
 	 */
 	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
-		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+		this.persistenceUnitPostProcessors = new ArrayList<>(Arrays.asList(persistenceUnitPostProcessors));
+	}
+
+	/**
+	 * Add {@linkplain PersistenceUnitPostProcessor persistence unit post processors} to
+	 * be applied to the PersistenceUnitInfo used for creating the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param persistenceUnitPostProcessors the persistence unit post processors to add
+	 * @since 4.1.0
+	 */
+	public void addPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
+		if (this.persistenceUnitPostProcessors != null) {
+			this.persistenceUnitPostProcessors.addAll(Arrays.asList(persistenceUnitPostProcessors));
+		}
+		else {
+			setPersistenceUnitPostProcessors(persistenceUnitPostProcessors);
+		}
 	}
 
 	/**
@@ -137,15 +155,15 @@ public class EntityManagerFactoryBuilder {
 
 		private final DataSource dataSource;
 
-		private PersistenceManagedTypes managedTypes;
+		private @Nullable PersistenceManagedTypes managedTypes;
 
-		private String[] packagesToScan;
+		private String @Nullable [] packagesToScan;
 
-		private String persistenceUnit;
+		private @Nullable String persistenceUnit;
 
 		private final Map<String, Object> properties = new HashMap<>();
 
-		private String[] mappingResources;
+		private String @Nullable [] mappingResources;
 
 		private boolean jta;
 
@@ -159,7 +177,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param managedTypes managed types.
 		 * @return the builder for fluent usage
 		 */
-		public Builder managedTypes(PersistenceManagedTypes managedTypes) {
+		public Builder managedTypes(@Nullable PersistenceManagedTypes managedTypes) {
 			this.managedTypes = managedTypes;
 			return this;
 		}
@@ -170,7 +188,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 * @see #managedTypes(PersistenceManagedTypes)
 		 */
-		public Builder packages(String... packagesToScan) {
+		public Builder packages(String @Nullable ... packagesToScan) {
 			this.packagesToScan = packagesToScan;
 			return this;
 		}
@@ -197,7 +215,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param persistenceUnit the name of the persistence unit
 		 * @return the builder for fluent usage
 		 */
-		public Builder persistenceUnit(String persistenceUnit) {
+		public Builder persistenceUnit(@Nullable String persistenceUnit) {
 			this.persistenceUnit = persistenceUnit;
 			return this;
 		}
@@ -223,7 +241,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param mappingResources the mapping resources to use
 		 * @return the builder for fluent usage
 		 */
-		public Builder mappingResources(String... mappingResources) {
+		public Builder mappingResources(String @Nullable ... mappingResources) {
 			this.mappingResources = mappingResources;
 			return this;
 		}
@@ -263,7 +281,7 @@ public class EntityManagerFactoryBuilder {
 			if (this.managedTypes != null) {
 				entityManagerFactoryBean.setManagedTypes(this.managedTypes);
 			}
-			else {
+			else if (this.packagesToScan != null) {
 				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			}
 			Map<String, ?> jpaProperties = EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource);
@@ -281,7 +299,8 @@ public class EntityManagerFactoryBuilder {
 			}
 			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
 				entityManagerFactoryBean
-					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors
+						.toArray(PersistenceUnitPostProcessor[]::new));
 			}
 			return entityManagerFactoryBean;
 		}

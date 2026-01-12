@@ -21,8 +21,12 @@ plugins {
 description = "Spring Boot Configuration Metadata Changelog Generator"
 
 configurations {
-	oldMetadata
-	newMetadata
+	oldMetadata {
+		transitive = false
+	}
+	newMetadata {
+		transitive = false
+	}
 }
 
 dependencies {
@@ -34,15 +38,135 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+nullability {
+	requireExplicitNullMarking = false
+}
+
+def dependenciesOf(String version) {
+	if (version.startsWith("4.0")) {
+		return [
+			"spring-boot",
+			"spring-boot-activemq",
+			"spring-boot-actuator",
+			"spring-boot-actuator-autoconfigure",
+			"spring-boot-amqp",
+			"spring-boot-artemis",
+			"spring-boot-autoconfigure",
+			"spring-boot-batch",
+			"spring-boot-batch-jdbc",
+			"spring-boot-cache",
+			"spring-boot-cassandra",
+			"spring-boot-couchbase",
+			"spring-boot-data-cassandra",
+			"spring-boot-data-commons",
+			"spring-boot-data-couchbase",
+			"spring-boot-data-elasticsearch",
+			"spring-boot-data-jdbc",
+			"spring-boot-data-jpa",
+			"spring-boot-data-ldap",
+			"spring-boot-data-mongodb",
+			"spring-boot-data-neo4j",
+			"spring-boot-data-r2dbc",
+			"spring-boot-data-redis",
+			"spring-boot-data-rest",
+			"spring-boot-devtools",
+			"spring-boot-docker-compose",
+			"spring-boot-elasticsearch",
+			"spring-boot-flyway",
+			"spring-boot-freemarker",
+			"spring-boot-graphql",
+			"spring-boot-groovy-templates",
+			"spring-boot-gson",
+			"spring-boot-h2console",
+			"spring-boot-hateoas",
+			"spring-boot-hazelcast",
+			"spring-boot-health",
+			"spring-boot-hibernate",
+			"spring-boot-http-client",
+			"spring-boot-http-codec",
+			"spring-boot-http-converter",
+			"spring-boot-integration",
+			"spring-boot-jackson",
+			"spring-boot-jackson2",
+			"spring-boot-jdbc",
+			"spring-boot-jdbc-test",
+			"spring-boot-jersey",
+			"spring-boot-jetty",
+			"spring-boot-jms",
+			"spring-boot-jooq",
+			"spring-boot-jpa",
+			"spring-boot-kafka",
+			"spring-boot-ldap",
+			"spring-boot-liquibase",
+			"spring-boot-mail",
+			"spring-boot-micrometer-metrics",
+			"spring-boot-micrometer-metrics-test",
+			"spring-boot-micrometer-observation",
+			"spring-boot-micrometer-tracing",
+			"spring-boot-micrometer-tracing-brave",
+			"spring-boot-micrometer-tracing-opentelemetry",
+			"spring-boot-micrometer-tracing-test",
+			"spring-boot-mongodb",
+			"spring-boot-mustache",
+			"spring-boot-neo4j",
+			"spring-boot-netty",
+			"spring-boot-opentelemetry",
+			"spring-boot-persistence",
+			"spring-boot-pulsar",
+			"spring-boot-quartz",
+			"spring-boot-r2dbc",
+			"spring-boot-reactor",
+			"spring-boot-reactor-netty",
+			"spring-boot-restclient",
+			"spring-boot-restclient-test",
+			"spring-boot-restdocs",
+			"spring-boot-rsocket",
+			"spring-boot-security",
+			"spring-boot-security-oauth2-authorization-server",
+			"spring-boot-security-oauth2-client",
+			"spring-boot-security-oauth2-resource-server",
+			"spring-boot-security-saml2",
+			"spring-boot-sendgrid",
+			"spring-boot-servlet",
+			"spring-boot-session",
+			"spring-boot-session-data-redis",
+			"spring-boot-session-jdbc",
+			"spring-boot-sql",
+			"spring-boot-test-autoconfigure",
+			"spring-boot-testcontainers",
+			"spring-boot-thymeleaf",
+			"spring-boot-tomcat",
+			"spring-boot-transaction",
+			"spring-boot-validation",
+			"spring-boot-web-server",
+			"spring-boot-webclient",
+			"spring-boot-webflux",
+			"spring-boot-webflux-test",
+			"spring-boot-webmvc",
+			"spring-boot-webmvc-test",
+			"spring-boot-webservices",
+			"spring-boot-webservices-test",
+			"spring-boot-zipkin"
+		]
+	}
+	return [
+		"spring-boot",
+		"spring-boot-actuator",
+		"spring-boot-actuator-autoconfigure",
+		"spring-boot-autoconfigure",
+		"spring-boot-devtools",
+		"spring-boot-docker-compose",
+		"spring-boot-test-autoconfigure",
+		"spring-boot-testcontainers"
+	]
+}
+
 if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
 	dependencies {
-		["spring-boot",
-		 "spring-boot-actuator",
-		 "spring-boot-actuator-autoconfigure",
-		 "spring-boot-autoconfigure",
-		 "spring-boot-devtools",
-		 "spring-boot-test-autoconfigure"].each {
+		dependenciesOf(oldVersion).each {
 			oldMetadata("org.springframework.boot:$it:$oldVersion")
+		}
+		dependenciesOf(newVersion).each {
 			newMetadata("org.springframework.boot:$it:$newVersion")
 		}
 	}

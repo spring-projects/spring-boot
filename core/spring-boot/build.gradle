@@ -15,10 +15,10 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.jetbrains.dokka"
 	id "java-library"
 	id "java-test-fixtures"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
@@ -33,7 +33,6 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
@@ -49,6 +48,9 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.yaml:snakeyaml")
+	optional("tools.jackson.core:jackson-databind")
+
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testFixturesCompileOnly(project(":test-support:spring-boot-test-support"))
 
@@ -87,6 +89,12 @@ tasks.named("checkFormatMain") {
 	source(fileTree("src/main/javaTemplates"))
 }
 
+tasks.named("compileJava") {
+	// Provide the project coordinates to the `GraalVmProcessor`:
+	options.compilerArgs << '-Alog4j.graalvm.groupId=org.springframework.boot'
+	options.compilerArgs << '-Alog4j.graalvm.artifactId=spring-boot-log4j'
+}
+
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		synchronizationTasks syncJavaTemplates
@@ -99,4 +107,8 @@ sourceSets {
 			srcDirs syncJavaTemplates
 		}
 	}
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

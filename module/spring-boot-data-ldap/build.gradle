@@ -27,7 +27,7 @@ description = "Spring Boot Data LDAP"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-ldap"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.data:spring-data-ldap")
 
 	optional(project(":core:spring-boot-autoconfigure"))
@@ -37,4 +37,8 @@ dependencies {
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -36,6 +36,7 @@ class ClassPathChangedEventTests {
 	private final Object source = new Object();
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void changeSetMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
 			.withMessageContaining("'changeSet' must not be null");

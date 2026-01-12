@@ -16,6 +16,7 @@
 
 package smoketest.parent;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,8 +28,9 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
-import org.springframework.integration.file.FileReadingMessageSource;
-import org.springframework.integration.file.FileWritingMessageHandler;
+import org.springframework.integration.file.inbound.FileReadingMessageSource;
+import org.springframework.integration.file.outbound.FileWritingMessageHandler;
+import org.springframework.util.Assert;
 
 @SpringBootApplication
 public class SampleParentContextApplication {
@@ -50,7 +52,9 @@ public class SampleParentContextApplication {
 		@Bean
 		public FileReadingMessageSource fileReader() {
 			FileReadingMessageSource reader = new FileReadingMessageSource();
-			reader.setDirectory(this.serviceProperties.getInputDir());
+			File inputDir = this.serviceProperties.getInputDir();
+			Assert.state(inputDir != null, "'inputDir' must not be null");
+			reader.setDirectory(inputDir);
 			return reader;
 		}
 
@@ -66,7 +70,9 @@ public class SampleParentContextApplication {
 
 		@Bean
 		public FileWritingMessageHandler fileWriter() {
-			FileWritingMessageHandler writer = new FileWritingMessageHandler(this.serviceProperties.getOutputDir());
+			File outputDir = this.serviceProperties.getOutputDir();
+			Assert.state(outputDir != null, "'outputDir' must not be null");
+			FileWritingMessageHandler writer = new FileWritingMessageHandler(outputDir);
 			writer.setExpectReply(false);
 			return writer;
 		}

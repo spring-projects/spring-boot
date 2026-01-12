@@ -35,20 +35,31 @@ dependencies {
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
-	optional("org.testcontainers:neo4j")
+	optional(project(":module:spring-boot-micrometer-observation"))
+	optional("org.neo4j.driver:neo4j-java-driver-observation-micrometer")
+	optional("org.testcontainers:testcontainers-neo4j")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-neo4j")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
+	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

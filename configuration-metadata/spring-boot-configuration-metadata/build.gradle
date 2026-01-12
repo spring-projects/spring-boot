@@ -21,10 +21,20 @@ plugins {
 
 description = "Spring Boot Configuration Metadata"
 
-dependencies {
-	implementation("com.vaadin.external.google:android-json")
+sourceSets {
+	main {
+		java {
+			srcDir file("src/json-shade/java")
+		}
+	}
+}
 
+dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.springframework:spring-core")
+}
+
+nullability {
+	requireExplicitNullMarking = false
 }

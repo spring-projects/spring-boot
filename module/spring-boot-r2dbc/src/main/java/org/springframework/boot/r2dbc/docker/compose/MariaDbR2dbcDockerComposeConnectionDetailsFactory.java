@@ -35,10 +35,8 @@ import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb" };
-
 	MariaDbR2dbcDockerComposeConnectionDetailsFactory() {
-		super(MARIADB_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
+		super("mariadb", "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override

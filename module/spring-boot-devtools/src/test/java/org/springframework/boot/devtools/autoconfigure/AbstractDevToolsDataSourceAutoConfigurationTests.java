@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
@@ -99,18 +101,21 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		});
 		thread.start();
 		thread.join();
-		return atomicReference.get();
+		ConfigurableApplicationContext context = atomicReference.get();
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
 		return createContext(null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
+	protected final ConfigurableApplicationContext createContext(@Nullable String driverClassName,
+			Class<?>... classes) {
 		return createContext(driverClassName, null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,
+	protected final ConfigurableApplicationContext createContext(@Nullable String driverClassName, @Nullable String url,
 			Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);

@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
@@ -39,12 +41,12 @@ public class Session {
 	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration timeout = Duration.ofMinutes(30);
+	private @Nullable Duration timeout = Duration.ofMinutes(30);
 
 	/**
 	 * Session tracking modes.
 	 */
-	private Set<Session.SessionTrackingMode> trackingModes;
+	private @Nullable Set<Session.SessionTrackingMode> trackingModes;
 
 	/**
 	 * Whether to persist session data between restarts.
@@ -54,18 +56,18 @@ public class Session {
 	/**
 	 * Directory used to store session data.
 	 */
-	private File storeDir;
+	private @Nullable File storeDir;
 
 	@NestedConfigurationProperty
 	private final Cookie cookie = new Cookie();
 
 	private final SessionStoreDirectory sessionStoreDirectory = new SessionStoreDirectory();
 
-	public Duration getTimeout() {
+	public @Nullable Duration getTimeout() {
 		return this.timeout;
 	}
 
-	public void setTimeout(Duration timeout) {
+	public void setTimeout(@Nullable Duration timeout) {
 		this.timeout = timeout;
 	}
 
@@ -73,11 +75,11 @@ public class Session {
 	 * Return the {@link SessionTrackingMode session tracking modes}.
 	 * @return the session tracking modes
 	 */
-	public Set<Session.SessionTrackingMode> getTrackingModes() {
+	public @Nullable Set<Session.SessionTrackingMode> getTrackingModes() {
 		return this.trackingModes;
 	}
 
-	public void setTrackingModes(Set<Session.SessionTrackingMode> trackingModes) {
+	public void setTrackingModes(@Nullable Set<Session.SessionTrackingMode> trackingModes) {
 		this.trackingModes = trackingModes;
 	}
 
@@ -97,11 +99,11 @@ public class Session {
 	 * Return the directory used to store session data.
 	 * @return the session data store directory
 	 */
-	public File getStoreDir() {
+	public @Nullable File getStoreDir() {
 		return this.storeDir;
 	}
 
-	public void setStoreDir(File storeDir) {
+	public void setStoreDir(@Nullable File storeDir) {
 		this.sessionStoreDirectory.setDirectory(storeDir);
 		this.storeDir = storeDir;
 	}

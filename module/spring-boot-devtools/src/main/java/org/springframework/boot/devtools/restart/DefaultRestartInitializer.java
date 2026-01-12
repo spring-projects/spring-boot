@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 
 /**
@@ -32,7 +34,7 @@ import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 public class DefaultRestartInitializer implements RestartInitializer {
 
 	@Override
-	public URL[] getInitialUrls(Thread thread) {
+	public URL @Nullable [] getInitialUrls(Thread thread) {
 		if (!isMain(thread)) {
 			return null;
 		}

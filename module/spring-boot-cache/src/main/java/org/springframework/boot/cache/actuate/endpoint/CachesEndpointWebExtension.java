@@ -16,8 +16,9 @@
 
 package org.springframework.boot.cache.actuate.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -40,8 +41,7 @@ public class CachesEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<CacheEntryDescriptor> cache(@Selector String cache,
-			@OptionalParameter String cacheManager) {
+	public WebEndpointResponse<CacheEntryDescriptor> cache(@Selector String cache, @Nullable String cacheManager) {
 		try {
 			CacheEntryDescriptor entry = this.delegate.cache(cache, cacheManager);
 			int status = (entry != null) ? WebEndpointResponse.STATUS_OK : WebEndpointResponse.STATUS_NOT_FOUND;
@@ -53,7 +53,7 @@ public class CachesEndpointWebExtension {
 	}
 
 	@DeleteOperation
-	public WebEndpointResponse<Void> clearCache(@Selector String cache, @OptionalParameter String cacheManager) {
+	public WebEndpointResponse<Void> clearCache(@Selector String cache, @Nullable String cacheManager) {
 		try {
 			boolean cleared = this.delegate.clearCache(cache, cacheManager);
 			int status = (cleared ? WebEndpointResponse.STATUS_NO_CONTENT : WebEndpointResponse.STATUS_NOT_FOUND);

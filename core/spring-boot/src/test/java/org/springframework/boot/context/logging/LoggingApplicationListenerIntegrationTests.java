@@ -18,6 +18,7 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -103,7 +104,7 @@ class LoggingApplicationListenerIntegrationTests {
 
 		private final LoggingSystem loggingSystem;
 
-		private final LogFile logFile;
+		private final @Nullable LogFile logFile;
 
 		SampleService(LoggingSystem loggingSystem, ObjectProvider<LogFile> logFile) {
 			this.loggingSystem = loggingSystem;

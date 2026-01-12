@@ -467,8 +467,9 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				return this.hash;
 			}
 			int hash = 0;
-			if (cause() != null && seen.add(cause().throwable())) {
-				hash = cause().hash(seen, frameHasher);
+			StackTrace cause = cause();
+			if (cause != null && seen.add(cause.throwable())) {
+				hash = cause.hash(seen, frameHasher);
 			}
 			hash = 31 * hash + throwable().getClass().getName().hashCode();
 			if (frames() != null) {

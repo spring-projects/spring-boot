@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataneo4j.nopropagation;
 
-import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+import org.springframework.boot.data.neo4j.test.autoconfigure.DataNeo4jTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 

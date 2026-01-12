@@ -29,6 +29,7 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.Nullable;
 import org.mockito.ArgumentMatcher;
 
 import org.springframework.core.io.ClassPathResource;
@@ -91,7 +92,7 @@ public abstract class AbstractHttpClientMockTests {
 		given(this.http.executeOpen(any(HttpHost.class), argThat(getForNonMetadata()), isNull())).willReturn(response);
 	}
 
-	protected void mockProjectGenerationError(int status, String message) throws IOException, JSONException {
+	protected void mockProjectGenerationError(int status, @Nullable String message) throws IOException, JSONException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
 		ClassicHttpResponse response = mock(ClassicHttpResponse.class);
@@ -107,7 +108,7 @@ public abstract class AbstractHttpClientMockTests {
 		given(this.http.executeOpen(any(HttpHost.class), isA(HttpGet.class), isNull())).willReturn(response);
 	}
 
-	protected HttpEntity mockHttpEntity(ClassicHttpResponse response, byte[] content, String contentType) {
+	protected HttpEntity mockHttpEntity(ClassicHttpResponse response, byte[] content, @Nullable String contentType) {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
@@ -126,7 +127,7 @@ public abstract class AbstractHttpClientMockTests {
 		given(response.getCode()).willReturn(status);
 	}
 
-	protected void mockHttpHeader(ClassicHttpResponse response, String headerName, String value) {
+	protected void mockHttpHeader(ClassicHttpResponse response, String headerName, @Nullable String value) {
 		Header header = (value != null) ? new BasicHeader(headerName, value) : null;
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
@@ -146,7 +147,7 @@ public abstract class AbstractHttpClientMockTests {
 		return "attachment; filename=\"" + fileName + "\"";
 	}
 
-	private String createJsonError(int status, String message) throws JSONException {
+	private String createJsonError(int status, @Nullable String message) throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("status", status);
 		if (message != null) {
@@ -157,17 +158,17 @@ public abstract class AbstractHttpClientMockTests {
 
 	static class MockHttpProjectGenerationRequest {
 
-		String contentType;
+		@Nullable String contentType;
 
-		String fileName;
+		@Nullable String fileName;
 
 		byte[] content = new byte[] { 0, 0, 0, 0 };
 
-		MockHttpProjectGenerationRequest(String contentType, String fileName) {
+		MockHttpProjectGenerationRequest(@Nullable String contentType, @Nullable String fileName) {
 			this(contentType, fileName, new byte[] { 0, 0, 0, 0 });
 		}
 
-		MockHttpProjectGenerationRequest(String contentType, String fileName, byte[] content) {
+		MockHttpProjectGenerationRequest(@Nullable String contentType, @Nullable String fileName, byte[] content) {
 			this.contentType = (contentType != null) ? contentType : "application/text";
 			this.fileName = fileName;
 			this.content = content;

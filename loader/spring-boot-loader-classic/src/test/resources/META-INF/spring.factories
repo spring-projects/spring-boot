@@ -1,3 +1,0 @@
-# Jar Modes
-org.springframework.boot.loader.jarmode.JarMode=\
-org.springframework.boot.loader.jarmode.TestJarMode

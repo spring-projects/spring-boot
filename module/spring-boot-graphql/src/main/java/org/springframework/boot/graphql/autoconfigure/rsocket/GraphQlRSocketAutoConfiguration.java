@@ -20,21 +20,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.GraphQL;
 import io.rsocket.core.RSocketServer;
 import reactor.netty.http.server.HttpServer;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.codec.Encoder;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.server.GraphQlRSocketHandler;
 import org.springframework.graphql.server.RSocketGraphQlInterceptor;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 /**
@@ -45,7 +52,9 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * @since 4.0.0
  */
 @AutoConfiguration(after = GraphQlAutoConfiguration.class,
-		afterName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration")
+		afterName = { "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration",
+				"org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+				"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, RSocketServer.class, HttpServer.class })
 @ConditionalOnBean({ RSocketMessageHandler.class, AnnotatedControllerConfigurer.class })
 @ConditionalOnProperty("spring.graphql.rsocket.mapping")
@@ -53,17 +62,67 @@ public final class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings({ "removal", "deprecation" })
 	GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
-			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
+			ObjectProvider<RSocketGraphQlInterceptor> interceptors, JsonEncoderSupplier jsonEncoderSupplier) {
 		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),
-				new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper));
+				jsonEncoderSupplier.jsonEncoder());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
 		return new GraphQlRSocketController(handler);
+	}
+
+	interface JsonEncoderSupplier {
+
+		Encoder<?> jsonEncoder();
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(JsonMapper.class)
+	@ConditionalOnProperty(name = "spring.graphql.rsocket.preferred-json-mapper", havingValue = "jackson",
+			matchIfMissing = true)
+	static class JacksonJsonEncoderSupplierConfiguration {
+
+		@Bean
+		JsonEncoderSupplier jacksonJsonEncoderSupplier(JsonMapper jsonMapper) {
+			return () -> new JacksonJsonEncoder(jsonMapper);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(ObjectMapper.class)
+	@Conditional(NoJacksonOrJackson2Preferred.class)
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class Jackson2JsonEncoderSupplierConfiguration {
+
+		@Bean
+		JsonEncoderSupplier jackson2JsonEncoderSupplier(ObjectMapper objectMapper) {
+			return () -> new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper);
+		}
+
+	}
+
+	static class NoJacksonOrJackson2Preferred extends AnyNestedCondition {
+
+		NoJacksonOrJackson2Preferred() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnMissingClass("tools.jackson.databind.json.JsonMapper")
+		static class NoJackson {
+
+		}
+
+		@ConditionalOnProperty(name = "spring.graphql.rsocket.preferred-json-mapper", havingValue = "jackson2")
+		static class Jackson2Preferred {
+
+		}
+
 	}
 
 }

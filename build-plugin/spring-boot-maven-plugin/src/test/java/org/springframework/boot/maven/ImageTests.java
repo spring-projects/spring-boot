@@ -31,8 +31,8 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
-import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -41,6 +41,7 @@ import org.springframework.boot.maven.CacheInfo.VolumeCacheInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Image}.
@@ -305,7 +306,7 @@ class ImageTests {
 	}
 
 	private Function<Owner, TarArchive> mockApplicationContent() {
-		return (owner) -> null;
+		return (owner) -> mock(TarArchive.class);
 	}
 
 }

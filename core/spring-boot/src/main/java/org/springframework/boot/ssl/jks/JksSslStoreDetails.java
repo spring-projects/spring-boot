@@ -61,7 +61,7 @@ public record JksSslStoreDetails(@Nullable String type, @Nullable String provide
 	 * @param location the location
 	 * @return a new {@link JksSslStoreDetails} instance.
 	 */
-	public static JksSslStoreDetails forLocation(String location) {
+	public static JksSslStoreDetails forLocation(@Nullable String location) {
 		return new JksSslStoreDetails(null, null, location, null);
 	}
 

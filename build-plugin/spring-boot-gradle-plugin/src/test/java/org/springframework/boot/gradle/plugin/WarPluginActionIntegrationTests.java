@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
@@ -43,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class WarPluginActionIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -60,8 +62,12 @@ class WarPluginActionIntegrationTests {
 	@TestTemplate
 	void assembleRunsBootWarAndWar() {
 		BuildResult result = this.gradleBuild.build("assemble");
-		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask bootWar = result.task(":bootWar");
+		assertThat(bootWar).isNotNull();
+		assertThat(bootWar.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask war = result.task(":war");
+		assertThat(war).isNotNull();
+		assertThat(war.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		List<File> expected = new ArrayList<>();
 		expected.add(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
@@ -75,7 +81,9 @@ class WarPluginActionIntegrationTests {
 	@TestTemplate
 	void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
-		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		BuildTask task = result.task(":bootWar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
 	}
 

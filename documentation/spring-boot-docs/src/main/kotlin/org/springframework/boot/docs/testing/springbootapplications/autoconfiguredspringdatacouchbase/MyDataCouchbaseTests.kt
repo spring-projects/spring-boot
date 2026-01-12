@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdatacouchbase
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest
+import org.springframework.boot.data.couchbase.test.autoconfigure.DataCouchbaseTest
 
 @DataCouchbaseTest
 class MyDataCouchbaseTests(@Autowired val repository: SomeRepository) {

@@ -22,8 +22,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
-import org.junit.jupiter.api.Disabled;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -53,7 +54,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link GraphQlWebFluxAutoConfiguration}
@@ -79,7 +79,6 @@ import static org.hamcrest.Matchers.containsString;
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
-@Disabled("Waiting on compatible release")
 class GraphQlWebFluxAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/";
@@ -210,7 +209,7 @@ class GraphQlWebFluxAutoConfigurationTests {
 			.expectHeader()
 			.contentType(MediaType.TEXT_PLAIN)
 			.expectBody(String.class)
-			.value(containsString("type Book")));
+			.value((Consumer<@Nullable String>) (body) -> assertThat(body).contains("type Book")));
 	}
 
 	@Test
@@ -356,13 +355,13 @@ class GraphQlWebFluxAutoConfigurationTests {
 		@Bean
 		@Order(-1)
 		RouterFunction<?> before() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 		@Bean
 		@Order(1)
 		RouterFunction<?> after() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 	}

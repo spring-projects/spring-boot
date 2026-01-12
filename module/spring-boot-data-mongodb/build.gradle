@@ -19,7 +19,6 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -28,26 +27,19 @@ description = "Spring Boot Data MongoDB"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-mongodb"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.data:spring-data-mongodb")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 	compileOnly("com.google.code.findbugs:jsr305")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-reactor"))
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 
-	dockerTestImplementation(project(":core:spring-boot-test"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:mongodb")
-
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -55,4 +47,8 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

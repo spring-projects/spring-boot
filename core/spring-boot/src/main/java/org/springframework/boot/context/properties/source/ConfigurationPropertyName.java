@@ -210,7 +210,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a new {@link ConfigurationPropertyName}
 	 * @throws InvalidConfigurationPropertyNameException if the result is not valid
 	 */
-	public ConfigurationPropertyName append(String suffix) {
+	public ConfigurationPropertyName append(@Nullable String suffix) {
 		if (!StringUtils.hasLength(suffix)) {
 			return this;
 		}
@@ -625,7 +625,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @param name the name to test
 	 * @return {@code true} if the name is valid
 	 */
-	public static boolean isValid(CharSequence name) {
+	public static boolean isValid(@Nullable CharSequence name) {
 		return of(name, true) != null;
 	}
 
@@ -636,7 +636,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
 	@SuppressWarnings("NullAway") // See https://github.com/uber/NullAway/issues/1232
-	public static ConfigurationPropertyName of(CharSequence name) {
+	public static ConfigurationPropertyName of(@Nullable CharSequence name) {
 		return of(name, false);
 	}
 
@@ -647,7 +647,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a {@link ConfigurationPropertyName} instance
 	 * @since 2.3.1
 	 */
-	public static @Nullable ConfigurationPropertyName ofIfValid(CharSequence name) {
+	public static @Nullable ConfigurationPropertyName ofIfValid(@Nullable CharSequence name) {
 		return of(name, true);
 	}
 
@@ -660,7 +660,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * {@code returnNullIfInvalid} is {@code false}
 	 */
 	@Contract("_, false -> !null")
-	static @Nullable ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
+	static @Nullable ConfigurationPropertyName of(@Nullable CharSequence name, boolean returnNullIfInvalid) {
 		Elements elements = elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
 		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
 	}
@@ -881,8 +881,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		CharSequence get(int index) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index];
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element;
+				}
 			}
 			int start = this.start[index];
 			int end = this.end[index];
@@ -890,8 +893,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		int getLength(int index) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index].length();
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element.length();
+				}
 			}
 			int start = this.start[index];
 			int end = this.end[index];
@@ -899,8 +905,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		char charAt(int index, int charIndex) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index].charAt(charIndex);
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element.charAt(charIndex);
+				}
 			}
 			int start = this.start[index];
 			return this.source.charAt(start + charIndex);

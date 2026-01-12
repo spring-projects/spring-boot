@@ -32,12 +32,10 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class CassandraDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<CassandraConnectionDetails> {
 
-	private static final String[] CASSANDRA_CONTAINER_NAMES = { "cassandra", "bitnami/cassandra" };
-
 	private static final int CASSANDRA_PORT = 9042;
 
 	CassandraDockerComposeConnectionDetailsFactory() {
-		super(CASSANDRA_CONTAINER_NAMES);
+		super("cassandra");
 	}
 
 	@Override

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.node.ObjectNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ class JsonStreamTests extends AbstractJsonTests {
 	private final JsonStream jsonStream;
 
 	JsonStreamTests() {
-		this.jsonStream = new JsonStream(getObjectMapper());
+		this.jsonStream = new JsonStream(getJsonMapper());
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class JsonStreamTests extends AbstractJsonTests {
 		List<ObjectNode> result = new ArrayList<>();
 		this.jsonStream.get(getContent("stream.json"), result::add);
 		assertThat(result).hasSize(595);
-		assertThat(result.get(594).toString())
+		assertThat(result.get(594).get("status").asString())
 			.contains("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
 	}
 

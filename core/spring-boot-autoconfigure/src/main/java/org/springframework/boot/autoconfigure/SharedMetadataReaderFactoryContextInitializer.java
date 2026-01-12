@@ -33,7 +33,6 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
-import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -187,20 +186,19 @@ class SharedMetadataReaderFactoryContextInitializer implements
 	/**
 	 * {@link FactoryBean} to create the shared {@link MetadataReaderFactory}.
 	 */
-	static class SharedMetadataReaderFactoryBean
-			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>, ResourceLoaderAware,
-			ApplicationListener<ContextRefreshedEvent> {
+	static class SharedMetadataReaderFactoryBean implements FactoryBean<CachingMetadataReaderFactory>,
+			ResourceLoaderAware, ApplicationListener<ContextRefreshedEvent> {
 
 		@SuppressWarnings("NullAway.Init")
-		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
+		private CachingMetadataReaderFactory metadataReaderFactory;
 
 		@Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
-			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(resourceLoader);
+			this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
 		}
 
 		@Override
-		public ConcurrentReferenceCachingMetadataReaderFactory getObject() throws Exception {
+		public CachingMetadataReaderFactory getObject() throws Exception {
 			return this.metadataReaderFactory;
 		}
 

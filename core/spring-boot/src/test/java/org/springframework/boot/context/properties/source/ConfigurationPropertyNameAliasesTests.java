@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigurationPropertyNameAliasesTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithStringWhenNullNameShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
 			.withMessageContaining("'name' must not be null");

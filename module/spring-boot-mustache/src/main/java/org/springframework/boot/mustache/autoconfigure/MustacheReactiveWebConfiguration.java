@@ -18,7 +18,6 @@ package org.springframework.boot.mustache.autoconfigure;
 
 import com.samskivert.mustache.Mustache.Compiler;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -34,15 +33,14 @@ class MustacheReactiveWebConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBooleanProperty(name = "spring.mustache.enabled", matchIfMissing = true)
 	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(mustache::getPrefix).to(resolver::setPrefix);
 		map.from(mustache::getSuffix).to(resolver::setSuffix);
 		map.from(mustache::getViewNames).to(resolver::setViewNames);
 		map.from(mustache::getRequestContextAttribute).to(resolver::setRequestContextAttribute);
-		map.from(mustache::getCharsetName).to(resolver::setCharset);
+		map.from(mustache::getCharset).to(resolver::setCharset);
 		map.from(mustache.getReactive()::getMediaTypes).to(resolver::setSupportedMediaTypes);
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;

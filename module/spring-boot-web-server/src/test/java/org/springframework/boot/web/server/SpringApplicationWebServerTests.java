@@ -18,6 +18,7 @@ package org.springframework.boot.web.server;
 
 import java.util.Iterator;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,9 +53,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SpringApplicationWebServerTests {
 
-	private String headlessProperty;
+	private @Nullable String headlessProperty;
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@BeforeEach
 	void storeAndClearHeadlessProperty() {

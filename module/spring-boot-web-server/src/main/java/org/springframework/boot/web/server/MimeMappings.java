@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.core.io.ClassPathResource;
@@ -91,7 +93,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param mimeType the mime type to map
 	 * @return any previous mapping or {@code null}
 	 */
-	public String add(String extension, String mimeType) {
+	public @Nullable String add(String extension, String mimeType) {
 		Assert.notNull(extension, "'extension' must not be null");
 		Assert.notNull(mimeType, "'mimeType' must not be null");
 		Mapping previous = this.map.put(extension.toLowerCase(Locale.ENGLISH), new Mapping(extension, mimeType));
@@ -103,7 +105,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param extension the file extension (excluding '.')
 	 * @return the removed mime mapping or {@code null} if no item was removed
 	 */
-	public String remove(String extension) {
+	public @Nullable String remove(String extension) {
 		Assert.notNull(extension, "'extension' must not be null");
 		Mapping previous = this.map.remove(extension.toLowerCase(Locale.ENGLISH));
 		return (previous != null) ? previous.getMimeType() : null;
@@ -114,7 +116,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param extension the file extension (excluding '.')
 	 * @return a mime mapping or {@code null}
 	 */
-	public String get(String extension) {
+	public @Nullable String get(String extension) {
 		Assert.notNull(extension, "'extension' must not be null");
 		Mapping mapping = this.map.get(extension.toLowerCase(Locale.ENGLISH));
 		return (mapping != null) ? mapping.getMimeType() : null;
@@ -281,7 +283,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			COMMON = unmodifiableMappings(mappings);
 		}
 
-		private volatile Map<String, Mapping> loaded;
+		private volatile @Nullable Map<String, Mapping> loaded;
 
 		DefaultMimeMappings() {
 			super(new MimeMappings(), false);
@@ -293,7 +295,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		}
 
 		@Override
-		public String get(String extension) {
+		public @Nullable String get(String extension) {
 			Assert.notNull(extension, "'extension' must not be null");
 			extension = extension.toLowerCase(Locale.ENGLISH);
 			Map<String, Mapping> loaded = this.loaded;
@@ -308,7 +310,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			return get(loaded, extension);
 		}
 
-		private String get(Map<String, Mapping> mappings, String extension) {
+		private @Nullable String get(Map<String, Mapping> mappings, String extension) {
 			Mapping mapping = mappings.get(extension);
 			return (mapping != null) ? mapping.getMimeType() : null;
 		}
@@ -357,13 +359,13 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		}
 
 		@Override
-		public String add(String extension, String mimeType) {
+		public @Nullable String add(String extension, String mimeType) {
 			copyIfNecessary();
 			return super.add(extension, mimeType);
 		}
 
 		@Override
-		public String remove(String extension) {
+		public @Nullable String remove(String extension) {
 			copyIfNecessary();
 			return super.remove(extension);
 		}
@@ -375,7 +377,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		}
 
 		@Override
-		public String get(String extension) {
+		public @Nullable String get(String extension) {
 			return !this.copied.get() ? this.source.get(extension) : super.get(extension);
 		}
 
@@ -394,7 +396,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	static class MimeMappingsRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources()
 				.registerPattern("org/springframework/boot/web/server/" + DefaultMimeMappings.MIME_MAPPINGS_PROPERTIES);
 		}

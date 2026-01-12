@@ -19,6 +19,8 @@ package org.springframework.boot.webflux.error;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -41,7 +43,7 @@ public interface ErrorAttributes {
 	 * @param options options for error attribute contents
 	 * @return a map of error attributes
 	 */
-	default Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+	default Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		return Collections.emptyMap();
 	}
 
@@ -51,7 +53,7 @@ public interface ErrorAttributes {
 	 * @param request the source ServerRequest
 	 * @return the {@link Exception} that caused the error or {@code null}
 	 */
-	Throwable getError(ServerRequest request);
+	@Nullable Throwable getError(ServerRequest request);
 
 	/**
 	 * Store the given error information in the current {@link ServerWebExchange}.

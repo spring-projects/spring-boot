@@ -24,14 +24,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletHolder;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
@@ -65,7 +66,7 @@ public class JettyWebServer implements WebServer {
 
 	private final boolean autoStart;
 
-	private final GracefulShutdown gracefulShutdown;
+	private final @Nullable GracefulShutdown gracefulShutdown;
 
 	private Connector[] connectors;
 
@@ -92,7 +93,7 @@ public class JettyWebServer implements WebServer {
 		initialize();
 	}
 
-	private GracefulShutdown createGracefulShutdown(Server server) {
+	private @Nullable GracefulShutdown createGracefulShutdown(Server server) {
 		StatisticsHandler statisticsHandler = findStatisticsHandler(server);
 		if (statisticsHandler == null) {
 			return null;
@@ -100,11 +101,11 @@ public class JettyWebServer implements WebServer {
 		return new GracefulShutdown(server, statisticsHandler::getRequestsActive);
 	}
 
-	private StatisticsHandler findStatisticsHandler(Server server) {
+	private @Nullable StatisticsHandler findStatisticsHandler(Server server) {
 		return findStatisticsHandler(server.getHandler());
 	}
 
-	private StatisticsHandler findStatisticsHandler(Handler handler) {
+	private @Nullable StatisticsHandler findStatisticsHandler(Handler handler) {
 		if (handler instanceof StatisticsHandler statisticsHandler) {
 			return statisticsHandler;
 		}
@@ -209,7 +210,7 @@ public class JettyWebServer implements WebServer {
 		return " (" + StringUtils.collectionToDelimitedString(protocols, ", ") + ")";
 	}
 
-	private String getContextPath() {
+	private @Nullable String getContextPath() {
 		List<ContextHandler> imperativeContextHandlers = this.server.getHandlers()
 			.stream()
 			.map(this::findContextHandler)
@@ -222,7 +223,7 @@ public class JettyWebServer implements WebServer {
 		return imperativeContextHandlers.stream().map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
 	}
 
-	private ContextHandler findContextHandler(Handler handler) {
+	private @Nullable ContextHandler findContextHandler(Handler handler) {
 		while (handler instanceof Handler.Wrapper handlerWrapper) {
 			if (handler instanceof ContextHandler contextHandler) {
 				return contextHandler;

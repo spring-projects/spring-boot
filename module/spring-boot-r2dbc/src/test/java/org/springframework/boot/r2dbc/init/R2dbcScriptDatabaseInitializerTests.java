@@ -26,6 +26,8 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests for {@link R2dbcScriptDatabaseInitializer}.
  *
@@ -70,12 +72,14 @@ class R2dbcScriptDatabaseInitializerTests
 	}
 
 	private int numberOfRows(ConnectionFactory connectionFactory, String sql) {
-		return DatabaseClient.create(connectionFactory)
+		Integer result = DatabaseClient.create(connectionFactory)
 			.sql(sql)
 			.map((row, metadata) -> row.get(0))
 			.first()
 			.map((number) -> ((Number) number).intValue())
 			.block();
+		assertThat(result).isNotNull();
+		return result;
 	}
 
 	@Override

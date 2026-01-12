@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 @ExtendWith(MavenBuildExtension.class)
 class AotTests {
@@ -96,6 +97,15 @@ class AotTests {
 	@TestTemplate
 	void whenAotRunsWithArgumentsSourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-arguments").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+				.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
+		});
+	}
+
+	@TestTemplate
+	void whenAotRunsWithSystemPropertiesSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-system-properties").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
 			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
 				.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
@@ -167,6 +177,17 @@ class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-exclude-devtools").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
+		});
+	}
+
+	@TestTemplate
 	void whenAotTestRunsSourcesAndResourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-test").goals("test").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
@@ -177,6 +198,27 @@ class AotTests {
 					"org.springframework.boot.maven.it", "aot-test", "reachability-metadata.json"));
 			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("org", "test",
 					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.class"));
+		});
+	}
+
+	@TestTemplate
+	void whenTestAotRunsWithTestSkipItIsAlsoSkipped(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test-skip").goals("test").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(aotDirectory).doesNotExist();
+			Path testClassesDirectory = project.toPath().resolve("target/test-classes");
+			assertThat(testClassesDirectory.resolve("META-INF").resolve("native-image")).doesNotExist();
+		});
+	}
+
+	@TestTemplate
+	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
 		});
 	}
 

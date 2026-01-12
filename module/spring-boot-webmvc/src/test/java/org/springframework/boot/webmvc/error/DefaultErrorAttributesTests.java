@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -45,6 +47,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.servlet.ModelAndView;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
@@ -65,7 +68,7 @@ class DefaultErrorAttributesTests {
 
 	@Test
 	void includeTimeStamp() {
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes.get("timestamp")).isInstanceOf(Date.class);
 	}
@@ -73,7 +76,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void specificStatusCode() {
 		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).containsEntry("error", HttpStatus.NOT_FOUND.getReasonPhrase());
 		assertThat(attributes).containsEntry("status", 404);
@@ -81,7 +84,7 @@ class DefaultErrorAttributesTests {
 
 	@Test
 	void missingStatusCode() {
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).containsEntry("error", "None");
 		assertThat(attributes).containsEntry("status", 999);
@@ -90,9 +93,10 @@ class DefaultErrorAttributesTests {
 	@Test
 	void mvcError() {
 		RuntimeException ex = new RuntimeException("Test");
-		ModelAndView modelAndView = this.errorAttributes.resolveException(this.request, null, null, ex);
+		ModelAndView modelAndView = this.errorAttributes.resolveException(this.request, mock(HttpServletResponse.class),
+				null, ex);
 		this.request.setAttribute("jakarta.servlet.error.exception", new RuntimeException("Ignored"));
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(modelAndView).isNull();
@@ -104,7 +108,7 @@ class DefaultErrorAttributesTests {
 	void servletErrorWithMessage() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
@@ -115,7 +119,7 @@ class DefaultErrorAttributesTests {
 	void servletErrorWithoutMessage() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
@@ -125,7 +129,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void servletMessageWithMessage() {
 		this.request.setAttribute("jakarta.servlet.error.message", "Test");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test");
@@ -134,7 +138,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void servletMessageWithoutMessage() {
 		this.request.setAttribute("jakarta.servlet.error.message", "Test");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).doesNotContainKey("message");
@@ -144,7 +148,7 @@ class DefaultErrorAttributesTests {
 	void nullExceptionMessage() {
 		this.request.setAttribute("jakarta.servlet.error.exception", new RuntimeException());
 		this.request.setAttribute("jakarta.servlet.error.message", "Test");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test");
@@ -153,7 +157,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void nullExceptionMessageAndServletMessage() {
 		this.request.setAttribute("jakarta.servlet.error.exception", new RuntimeException());
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "No message available");
@@ -164,7 +168,7 @@ class DefaultErrorAttributesTests {
 		RuntimeException ex = new RuntimeException("Test");
 		ServletException wrapped = new ServletException(new ServletException(ex));
 		this.request.setAttribute("jakarta.servlet.error.exception", wrapped);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
 		assertThat(attributes).doesNotContainKey("exception");
@@ -175,7 +179,7 @@ class DefaultErrorAttributesTests {
 	void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		this.request.setAttribute("jakarta.servlet.error.exception", error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
 		assertThat(attributes).doesNotContainKey("exception");
@@ -201,6 +205,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void withMethodArgumentNotValidExceptionBindingErrors() {
 		Method method = ReflectionUtils.findMethod(String.class, "substring", int.class);
+		assertThat(method).isNotNull();
 		MethodParameter parameter = new MethodParameter(method, 0);
 		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
@@ -212,6 +217,7 @@ class DefaultErrorAttributesTests {
 	void withHandlerMethodValidationExceptionBindingErrors() {
 		Object target = "test";
 		Method method = ReflectionUtils.findMethod(String.class, "substring", int.class);
+		assertThat(method).isNotNull();
 		MethodParameter parameter = new MethodParameter(method, 0);
 		MethodValidationResult methodValidationResult = MethodValidationResult.create(target, method,
 				List.of(new ParameterValidationResult(parameter, -1,
@@ -233,7 +239,7 @@ class DefaultErrorAttributesTests {
 	private void testErrors(List<? extends MessageSourceResolvable> errors, String expectedMessage, Exception ex,
 			ErrorAttributeOptions options) {
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, options);
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, options);
 		if (options.isIncluded(Include.MESSAGE)) {
 			assertThat(attributes).containsEntry("message", expectedMessage);
 		}
@@ -254,7 +260,7 @@ class DefaultErrorAttributesTests {
 		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
 		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
 		assertThat(attributes).containsEntry("message", "Test");
@@ -264,16 +270,18 @@ class DefaultErrorAttributesTests {
 	void withStackTraceAttribute() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.STACK_TRACE));
-		assertThat(attributes.get("trace").toString()).startsWith("java.lang");
+		Object trace = attributes.get("trace");
+		assertThat(trace).isNotNull();
+		assertThat(trace.toString()).startsWith("java.lang");
 	}
 
 	@Test
 	void withoutStackTraceAttribute() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).doesNotContainKey("trace");
 	}
@@ -281,7 +289,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void shouldIncludePathByDefault() {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).containsEntry("path", "path");
 	}
@@ -289,7 +297,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void shouldIncludePath() {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.PATH));
 		assertThat(attributes).containsEntry("path", "path");
 	}
@@ -297,17 +305,17 @@ class DefaultErrorAttributesTests {
 	@Test
 	void shouldExcludePath() {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of());
 		assertThat(attributes).doesNotContainEntry("path", "path");
 	}
 
 	@Test
 	void whenGetMessageIsOverriddenThenMessageAttributeContainsValueReturnedFromIt() {
-		Map<String, Object> attributes = new DefaultErrorAttributes() {
+		Map<String, @Nullable Object> attributes = new DefaultErrorAttributes() {
 
 			@Override
-			protected String getMessage(WebRequest webRequest, Throwable error) {
+			protected String getMessage(WebRequest webRequest, @Nullable Throwable error) {
 				return "custom message";
 			}
 
@@ -318,7 +326,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void excludeStatus() {
 		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults().excluding(Include.STATUS));
 		assertThat(attributes).doesNotContainKey("status");
 	}
@@ -326,7 +334,7 @@ class DefaultErrorAttributesTests {
 	@Test
 	void excludeError() {
 		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+		Map<String, @Nullable Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults().excluding(Include.ERROR));
 		assertThat(attributes).doesNotContainKey("error");
 	}

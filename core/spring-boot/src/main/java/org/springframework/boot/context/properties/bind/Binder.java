@@ -71,11 +71,11 @@ public class Binder {
 
 	private final BindHandler defaultBindHandler;
 
-	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
+	private final Map<@Nullable BindMethod, List<DataObjectBinder>> dataObjectBinders;
 
 	private final Map<Object, Object> cache = new ConcurrentReferenceHashMap<>();
 
-	private ConfigurationPropertyCaching configurationPropertyCaching;
+	private final ConfigurationPropertyCaching configurationPropertyCaching;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -215,7 +215,7 @@ public class Binder {
 		}
 		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
 		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
-		Map<BindMethod, List<DataObjectBinder>> dataObjectBinders = new HashMap<>();
+		Map<@Nullable BindMethod, List<DataObjectBinder>> dataObjectBinders = new HashMap<>();
 		dataObjectBinders.put(BindMethod.VALUE_OBJECT, List.of(valueObjectBinder));
 		dataObjectBinders.put(BindMethod.JAVA_BEAN, List.of(javaBeanBinder));
 		dataObjectBinders.put(null, List.of(valueObjectBinder, javaBeanBinder));
@@ -459,14 +459,15 @@ public class Binder {
 		return null;
 	}
 
-	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	private <T> @Nullable Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
 			boolean allowRecursiveBinding = aggregateBinder.isAllowRecursiveBinding(source);
 			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context, allowRecursiveBinding, false);
 			return context.withSource(source, supplier);
 		};
-		return context.withIncreasedDepth(() -> aggregateBinder.bind(name, target, elementBinder));
+		Supplier<@Nullable Object> supplier = () -> aggregateBinder.bind(name, target, elementBinder);
+		return context.withIncreasedDepth(supplier);
 	}
 
 	private <T> @Nullable ConfigurationProperty findProperty(ConfigurationPropertyName name, Bindable<T> target,
@@ -503,8 +504,9 @@ public class Binder {
 		}
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
-		return context.withDataObject(type, () -> fromDataObjectBinders(bindMethod,
-				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder)));
+		Supplier<@Nullable Object> supplier = () -> fromDataObjectBinders(bindMethod,
+				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder));
+		return context.withDataObject(type, supplier);
 	}
 
 	private @Nullable Object fromDataObjectBinders(@Nullable BindMethod bindMethod,
@@ -610,7 +612,7 @@ public class Binder {
 			}
 		}
 
-		private <T> T withDataObject(Class<?> type, Supplier<T> supplier) {
+		private <T> @Nullable T withDataObject(Class<?> type, Supplier<@Nullable T> supplier) {
 			this.dataObjectBindings.push(type);
 			try {
 				return withIncreasedDepth(supplier);
@@ -624,7 +626,7 @@ public class Binder {
 			return this.dataObjectBindings.contains(type);
 		}
 
-		private <T> T withIncreasedDepth(Supplier<T> supplier) {
+		private <T> @Nullable T withIncreasedDepth(Supplier<@Nullable T> supplier) {
 			increaseDepth();
 			try {
 				return supplier.get();

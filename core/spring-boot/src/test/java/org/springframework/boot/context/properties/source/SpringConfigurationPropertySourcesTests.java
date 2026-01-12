@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.env.RandomValuePropertySource;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class SpringConfigurationPropertySourcesTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertySourcesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringConfigurationPropertySources(null))
 			.withMessageContaining("'sources' must not be null");
@@ -52,7 +54,9 @@ class SpringConfigurationPropertySourcesTests {
 		sources.addFirst(new MapPropertySource("test", Collections.singletonMap("a", "b")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("b");
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("b");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
@@ -63,7 +67,9 @@ class SpringConfigurationPropertySourcesTests {
 				Collections.singletonMap("SERVER_PORT", "1234")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("1234");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
@@ -75,7 +81,9 @@ class SpringConfigurationPropertySourcesTests {
 				Collections.singletonMap("SERVER_PORT", "1234")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("1234");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
@@ -86,7 +94,9 @@ class SpringConfigurationPropertySourcesTests {
 			.addLast(new SystemEnvironmentPropertySource("override", Collections.singletonMap("server.port", "1234")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("1234");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
@@ -109,10 +119,15 @@ class SpringConfigurationPropertySourcesTests {
 		sources.addLast(new MapPropertySource("test2", Collections.singletonMap("a", "b")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("4567");
-		assertThat(iterator.next().getConfigurationProperty(ConfigurationPropertyName.of("a")).getValue())
-			.isEqualTo("b");
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("1234");
+		configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("4567");
+		configurationProperty = iterator.next().getConfigurationProperty(ConfigurationPropertyName.of("a"));
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("b");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
@@ -125,7 +140,7 @@ class SpringConfigurationPropertySourcesTests {
 		sources.addFirst(new PropertySource<Environment>("env", environment) {
 
 			@Override
-			public String getProperty(String key) {
+			public @Nullable String getProperty(String key) {
 				return this.source.getProperty(key);
 			}
 
@@ -155,11 +170,17 @@ class SpringConfigurationPropertySourcesTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
 		MapPropertySource source1 = new MapPropertySource("test", Collections.singletonMap("a", "s1"));
 		sources.addLast(source1);
-		assertThat(configurationSources.iterator().next().getConfigurationProperty(name).getValue()).isEqualTo("s1");
+		ConfigurationProperty configurationProperty = configurationSources.iterator()
+			.next()
+			.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("s1");
 		MapPropertySource source2 = new MapPropertySource("test", Collections.singletonMap("a", "s2"));
 		sources.remove("test");
 		sources.addLast(source2);
-		assertThat(configurationSources.iterator().next().getConfigurationProperty(name).getValue()).isEqualTo("s2");
+		configurationProperty = configurationSources.iterator().next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("s2");
 	}
 
 	@Test // gh-21659
@@ -168,7 +189,9 @@ class SpringConfigurationPropertySourcesTests {
 		sources.addFirst(new RandomValuePropertySource());
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("random.int");
-		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isNotNull();
+		ConfigurationProperty configurationProperty = iterator.next().getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isNotNull();
 		assertThat(iterator.hasNext()).isFalse();
 	}
 

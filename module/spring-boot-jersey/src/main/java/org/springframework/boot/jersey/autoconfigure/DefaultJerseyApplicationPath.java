@@ -18,6 +18,7 @@ package org.springframework.boot.jersey.autoconfigure;
 
 import jakarta.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -33,11 +34,11 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 
-	private final String applicationPath;
+	private final @Nullable String applicationPath;
 
 	private final ResourceConfig config;
 
-	public DefaultJerseyApplicationPath(String applicationPath, ResourceConfig config) {
+	public DefaultJerseyApplicationPath(@Nullable String applicationPath, ResourceConfig config) {
 		this.applicationPath = applicationPath;
 		this.config = config;
 	}

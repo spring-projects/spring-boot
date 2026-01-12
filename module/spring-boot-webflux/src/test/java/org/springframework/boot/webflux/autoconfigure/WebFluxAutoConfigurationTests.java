@@ -36,13 +36,14 @@ import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import reactor.core.publisher.Mono;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -109,6 +110,7 @@ import org.springframework.web.reactive.resource.CachingResourceTransformer;
 import org.springframework.web.reactive.resource.PathResourceResolver;
 import org.springframework.web.reactive.resource.ResourceWebHandler;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
+import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
@@ -130,6 +132,7 @@ import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.setExtractBareNamePropertyMethods;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -178,8 +181,10 @@ class WebFluxAutoConfigurationTests {
 	void shouldRegisterCustomHandlerMethodArgumentResolver() {
 		this.contextRunner.withUserConfiguration(CustomArgumentResolvers.class).run((context) -> {
 			RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
+			ArgumentResolverConfigurer configurer = adapter.getArgumentResolverConfigurer();
+			assertThat(configurer).isNotNull();
 			List<HandlerMethodArgumentResolver> customResolvers = (List<HandlerMethodArgumentResolver>) ReflectionTestUtils
-				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers");
+				.getField(configurer, "customResolvers");
 			assertThat(customResolvers).contains(context.getBean("firstResolver", HandlerMethodArgumentResolver.class),
 					context.getBean("secondResolver", HandlerMethodArgumentResolver.class));
 		});
@@ -483,7 +488,7 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void cachePeriod() {
-		Assertions.setExtractBareNamePropertyMethods(false);
+		setExtractBareNamePropertyMethods(false);
 		this.contextRunner.withPropertyValues("spring.web.resources.cache.period:5").run((context) -> {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
@@ -494,12 +499,12 @@ class WebFluxAutoConfigurationTests {
 				}
 			}
 		});
-		Assertions.setExtractBareNamePropertyMethods(true);
+		setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
 	void cacheControl() {
-		Assertions.setExtractBareNamePropertyMethods(false);
+		setExtractBareNamePropertyMethods(false);
 		this.contextRunner
 			.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
 					"spring.web.resources.cache.cachecontrol.proxy-revalidate:true")
@@ -513,7 +518,7 @@ class WebFluxAutoConfigurationTests {
 					}
 				}
 			});
-		Assertions.setExtractBareNamePropertyMethods(true);
+		setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
@@ -564,9 +569,9 @@ class WebFluxAutoConfigurationTests {
 	void whenFixedLocalContextResolverIsUsedThenAcceptLanguagesHeaderIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
 			.run((context) -> {
-				MockServerHttpRequest request = MockServerHttpRequest.get("/")
-					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
-					.build();
+				Locale locale = StringUtils.parseLocaleString("nl_NL");
+				assertThat(locale).isNotNull();
+				MockServerHttpRequest request = MockServerHttpRequest.get("/").acceptLanguageAsLocales(locale).build();
 				MockServerWebExchange exchange = MockServerWebExchange.from(request);
 				LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 				assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
@@ -578,14 +583,14 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void whenAcceptHeaderLocaleContextResolverIsUsedThenAcceptLanguagesHeaderIsHonoured() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
-			MockServerHttpRequest request = MockServerHttpRequest.get("/")
-				.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
-				.build();
+			Locale locale = StringUtils.parseLocaleString("nl_NL");
+			assertThat(locale).isNotNull();
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").acceptLanguageAsLocales(locale).build();
 			MockServerWebExchange exchange = MockServerWebExchange.from(request);
 			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
 			LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
-			assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("nl_NL"));
+			assertThat(localeContext.getLocale()).isEqualTo(locale);
 		});
 	}
 
@@ -674,12 +679,15 @@ class WebFluxAutoConfigurationTests {
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 				assertThat(cookies).isNotEmpty();
-				assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-				assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getDomain() != null && cookie.getDomain().equals(".example.com"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getPath() != null && cookie.getPath().equals("/example"));
 				assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
 				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
 				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getSameSite() != null && cookie.getSameSite().equals("Strict"));
 				assertThat(cookies).allMatch(ResponseCookie::isPartitioned);
 			}));
 	}
@@ -807,7 +815,7 @@ class WebFluxAutoConfigurationTests {
 					"spring.webflux.apiversion.required=true", "spring.webflux.apiversion.supported=123,456",
 					"spring.webflux.apiversion.detect-supported=false")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com"));
@@ -826,7 +834,7 @@ class WebFluxAutoConfigurationTests {
 			.withPropertyValues("spring.webflux.apiversion.use.header=version",
 					"spring.webflux.apiversion.default=1.0.0")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com"));
@@ -841,7 +849,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionUseHeaderPropertyIsApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.header=hv").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com").header("hv", "123"));
@@ -850,9 +858,9 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void apiVersionUseRequestParameterPropertyIsApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.request-parameter=rpv").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+	void apiVersionUseQueryParameterPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.query-parameter=rpv").run((context) -> {
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com?rpv=123"));
@@ -863,7 +871,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionUsePathSegmentPropertyIsApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.path-segment=1").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com/test/123"));
@@ -876,7 +884,7 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.webflux.apiversion.use.media-type-parameter[application/json]=mtpv")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com")
@@ -888,7 +896,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionBeansAreInjected() {
 		this.contextRunner.withUserConfiguration(ApiVersionConfiguration.class).run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			assertThat(versionStrategy).extracting("versionResolvers")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)
@@ -906,6 +914,7 @@ class WebFluxAutoConfigurationTests {
 			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
 			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
 			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			assertThat(webSession).isNotNull();
 			webSession.start();
 			webExchange.getResponse().setComplete().block();
 			exchange.accept(webExchange);
@@ -1024,7 +1033,7 @@ class WebFluxAutoConfigurationTests {
 
 		@Bean
 		HttpHandler httpHandler() {
-			return (serverHttpRequest, serverHttpResponse) -> null;
+			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
 	}
@@ -1086,7 +1095,7 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerAdapter {
 
-		private int handlerAdapters = 0;
+		private int handlerAdapters;
 
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
@@ -1117,7 +1126,7 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerMapping {
 
-		private int handlerMappings = 0;
+		private int handlerMappings;
 
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
@@ -1198,7 +1207,7 @@ class WebFluxAutoConfigurationTests {
 		}
 
 		@Override
-		public void setLocaleContext(ServerWebExchange exchange, LocaleContext localeContext) {
+		public void setLocaleContext(ServerWebExchange exchange, @Nullable LocaleContext localeContext) {
 		}
 
 	}

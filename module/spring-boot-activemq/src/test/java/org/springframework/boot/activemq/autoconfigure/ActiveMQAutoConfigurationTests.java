@@ -53,8 +53,9 @@ class ActiveMQAutoConfigurationTests {
 			assertThat(context).hasSingleBean(CachingConnectionFactory.class).hasBean("jmsConnectionFactory");
 			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 			assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
-			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
-			assertThat(((ActiveMQConnectionFactory) connectionFactory.getTargetConnectionFactory()).getBrokerURL())
+			ConnectionFactory targetConnectionFactory = connectionFactory.getTargetConnectionFactory();
+			assertThat(targetConnectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
+			assertThat(((ActiveMQConnectionFactory) targetConnectionFactory).getBrokerURL())
 				.isEqualTo("vm://localhost?broker.persistent=false");
 		});
 	}

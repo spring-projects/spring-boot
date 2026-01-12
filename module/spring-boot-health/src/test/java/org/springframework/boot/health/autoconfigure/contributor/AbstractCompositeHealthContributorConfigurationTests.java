@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends C> {
 
-	private final Class<?> indicatorType;
+	private final @Nullable Class<?> indicatorType;
 
 	AbstractCompositeHealthContributorConfigurationTests() {
 		ResolvableType type = ResolvableType.forClass(AbstractCompositeHealthContributorConfigurationTests.class,

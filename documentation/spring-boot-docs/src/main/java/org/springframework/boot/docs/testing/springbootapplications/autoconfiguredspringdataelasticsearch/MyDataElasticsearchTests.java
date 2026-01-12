@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataelasticsearch;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
+import org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest;
 
 @DataElasticsearchTest
 class MyDataElasticsearchTests {

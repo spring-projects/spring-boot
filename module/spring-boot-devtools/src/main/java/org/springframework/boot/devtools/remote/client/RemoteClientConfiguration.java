@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
@@ -77,7 +78,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	private final DevToolsProperties properties;
 
 	@Value("${remoteUrl}")
-	private String remoteUrl;
+	private @Nullable String remoteUrl;
 
 	public RemoteClientConfiguration(DevToolsProperties properties) {
 		this.properties = properties;
@@ -119,7 +120,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		if (!remoteProperties.getRestart().isEnabled()) {
 			logger.warn("Remote restart is disabled.");
 		}
-		if (!this.remoteUrl.startsWith("https://")) {
+		if (this.remoteUrl == null || !this.remoteUrl.startsWith("https://")) {
 			logger.warn(LogMessage.format(
 					"The connection to %s is insecure. You should use a URL starting with 'https://'.",
 					this.remoteUrl));
@@ -130,7 +131,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled")
 	static class LiveReloadConfiguration {
 
 		private final DevToolsProperties properties;

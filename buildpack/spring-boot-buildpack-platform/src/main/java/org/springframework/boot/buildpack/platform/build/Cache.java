@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -67,7 +69,7 @@ public class Cache {
 	 * Return the details of the cache if it is a volume cache.
 	 * @return the cache, or {@code null} if it is not a volume cache
 	 */
-	public Volume getVolume() {
+	public @Nullable Volume getVolume() {
 		return (this.format.equals(Format.VOLUME)) ? (Volume) this : null;
 	}
 
@@ -75,7 +77,7 @@ public class Cache {
 	 * Return the details of the cache if it is a bind cache.
 	 * @return the cache, or {@code null} if it is not a bind cache
 	 */
-	public Bind getBind() {
+	public @Nullable Bind getBind() {
 		return (this.format.equals(Format.BIND)) ? (Bind) this : null;
 	}
 
@@ -110,7 +112,7 @@ public class Cache {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -147,7 +149,7 @@ public class Cache {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -192,7 +194,7 @@ public class Cache {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}

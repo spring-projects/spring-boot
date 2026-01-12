@@ -25,9 +25,11 @@ import org.springframework.stereotype.Component;
 public class HelloWorldService {
 
 	@Value("${test.name:World}")
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Value("${test.duration:10s}")
+	@SuppressWarnings("NullAway.Init")
 	private Duration duration;
 
 	public String getHelloMessage() {

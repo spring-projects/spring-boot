@@ -22,9 +22,11 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.Assert;
 
 /**
  * A distribution manifest list as defined in
@@ -39,22 +41,28 @@ public class ManifestList extends MappedObject {
 
 	private final Integer schemaVersion;
 
-	private final String mediaType;
+	private final @Nullable String mediaType;
 
 	private final List<BlobReference> manifests;
 
 	protected ManifestList(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.schemaVersion = valueAt("/schemaVersion", Integer.class);
+		this.schemaVersion = extractSchemaVersion();
 		this.mediaType = valueAt("/mediaType", String.class);
 		this.manifests = childrenAt("/manifests", BlobReference::new);
+	}
+
+	private Integer extractSchemaVersion() {
+		Integer result = valueAt("/schemaVersion", Integer.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	public Integer getSchemaVersion() {
 		return this.schemaVersion;
 	}
 
-	public String getMediaType() {
+	public @Nullable String getMediaType() {
 		return this.mediaType;
 	}
 

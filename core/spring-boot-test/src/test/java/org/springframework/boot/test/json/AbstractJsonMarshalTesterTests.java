@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -90,6 +91,7 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
@@ -97,6 +99,7 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> createTester(getClass(), null))
 			.withMessageContaining("'type' must not be null");
@@ -188,14 +191,15 @@ abstract class AbstractJsonMarshalTesterTests {
 	 */
 	static class ResolvableTypes {
 
-		public List<ExampleObject> listOfExampleObject;
+		public @Nullable List<ExampleObject> listOfExampleObject;
 
-		public ExampleObject[] arrayOfExampleObject;
+		public ExampleObject @Nullable [] arrayOfExampleObject;
 
-		public Map<String, ExampleObject> mapOfExampleObject;
+		public @Nullable Map<String, ExampleObject> mapOfExampleObject;
 
 		static ResolvableType get(String name) {
 			Field field = ReflectionUtils.findField(ResolvableTypes.class, name);
+			assertThat(field).isNotNull();
 			return ResolvableType.forField(field);
 		}
 

@@ -16,6 +16,7 @@
 
 package smoketest.test.service;
 
+import org.jspecify.annotations.Nullable;
 import smoketest.test.domain.VehicleIdentificationNumber;
 
 /**
@@ -31,7 +32,7 @@ public class VehicleIdentificationNumberNotFoundException extends RuntimeExcepti
 		this(vin, null);
 	}
 
-	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin, Throwable cause) {
+	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin, @Nullable Throwable cause) {
 		super("Unable to find VehicleIdentificationNumber " + vin, cause);
 		this.vehicleIdentificationNumber = vin;
 	}

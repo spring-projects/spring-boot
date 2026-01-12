@@ -18,11 +18,11 @@ package org.springframework.boot.elasticsearch.autoconfigure;
 
 import java.io.InputStream;
 
+import co.elastic.clients.transport.rest5_client.low_level.Request;
+import co.elastic.clients.transport.rest5_client.low_level.Response;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -57,7 +57,7 @@ class ElasticsearchRestClientAutoConfigurationIntegrationTests {
 			.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
 					"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
 			.run((context) -> {
-				RestClient client = context.getBean(RestClient.class);
+				Rest5Client client = context.getBean(Rest5Client.class);
 				Request index = new Request("PUT", "/test/_doc/2");
 				index.setJsonEntity("{" + "  \"a\": \"alpha\"," + "  \"b\": \"bravo\"" + "}");
 				client.performRequest(index);

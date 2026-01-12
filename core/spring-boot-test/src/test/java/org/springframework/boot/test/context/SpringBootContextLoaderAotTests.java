@@ -60,6 +60,7 @@ class SpringBootContextLoaderAotTests {
 		Class<?> testClass = ExampleTest.class;
 		generator.processAheadOfTime(Stream.of(testClass));
 		TestCompiler.forSystem()
+			.withCompilerOptions("-Xlint:deprecation,removal", "-Werror")
 			.with(CompilerFiles.from(generatedFiles))
 			.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
 	}
@@ -73,6 +74,7 @@ class SpringBootContextLoaderAotTests {
 			MergedContextConfiguration mergedConfig = testContextBootstrapper.buildMergedContextConfiguration();
 			ApplicationContextInitializer<ConfigurableApplicationContext> contextInitializer = aotContextInitializers
 				.getContextInitializer(testClass);
+			assertThat(contextInitializer).isNotNull();
 			ConfigurableApplicationContext context = (ConfigurableApplicationContext) ((AotContextLoader) mergedConfig
 				.getContextLoader()).loadContextForAotRuntime(mergedConfig, contextInitializer);
 			assertThat(context).isExactlyInstanceOf(GenericApplicationContext.class);

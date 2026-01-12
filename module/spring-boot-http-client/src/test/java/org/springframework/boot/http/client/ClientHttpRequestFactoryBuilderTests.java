@@ -129,6 +129,7 @@ class ClientHttpRequestFactoryBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWithSupplierWhenSupplierIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ClientHttpRequestFactoryBuilder.of((Supplier<ClientHttpRequestFactory>) null))

@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -41,9 +43,10 @@ import org.springframework.util.Assert;
  */
 public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ListableBeanFactory beanFactory;
 
-	private List<WebServerFactoryCustomizer<?>> customizers;
+	private @Nullable List<WebServerFactoryCustomizer<?>> customizers;
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {

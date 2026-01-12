@@ -7,7 +7,8 @@
       "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
       "deprecation": {
         "level": "error",
-        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings."
+        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings.",
+        "since": "3.0.0"
       }
     }
   ],

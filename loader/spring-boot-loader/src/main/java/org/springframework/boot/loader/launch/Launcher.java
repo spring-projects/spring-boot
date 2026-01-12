@@ -97,9 +97,23 @@ public abstract class Launcher {
 	protected void launch(ClassLoader classLoader, String mainClassName, String[] args) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
 		Class<?> mainClass = Class.forName(mainClassName, false, classLoader);
-		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
+		Method mainMethod = getMainMethod(mainClass);
 		mainMethod.setAccessible(true);
-		mainMethod.invoke(null, new Object[] { args });
+		if (mainMethod.getParameterCount() == 0) {
+			mainMethod.invoke(null);
+		}
+		else {
+			mainMethod.invoke(null, new Object[] { args });
+		}
+	}
+
+	private Method getMainMethod(Class<?> mainClass) throws Exception {
+		try {
+			return mainClass.getDeclaredMethod("main", String[].class);
+		}
+		catch (NoSuchMethodException ex) {
+			return mainClass.getDeclaredMethod("main");
+		}
 	}
 
 	/**

@@ -133,6 +133,7 @@ public final class JooqAutoConfiguration {
 			throw new JaxbNotAvailableException();
 		}
 		Resource resource = properties.getConfig();
+		Assert.state(resource != null, "'resource' must not be null");
 		Assert.state(resource.exists(),
 				() -> "Resource %s set in spring.jooq.config does not exist".formatted(resource));
 		try (InputStream stream = resource.getInputStream()) {

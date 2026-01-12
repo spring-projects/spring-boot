@@ -38,14 +38,14 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("io.micrometer:micrometer-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}
 	optional("org.springframework:spring-webflux")
-	
+
 	runtimeOnly("jakarta.annotation:jakarta.annotation-api")
 
 	testImplementation(project(":core:spring-boot-test"))
@@ -82,4 +82,8 @@ sourceSets {
 
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

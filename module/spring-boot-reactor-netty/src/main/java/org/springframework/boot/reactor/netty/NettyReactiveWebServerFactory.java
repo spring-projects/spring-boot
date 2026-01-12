@@ -25,9 +25,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
 
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -53,13 +55,11 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private final List<NettyRouteProvider> routeProviders = new ArrayList<>();
 
-	private Duration lifecycleTimeout;
+	private @Nullable Duration lifecycleTimeout;
 
 	private boolean useForwardHeaders;
 
-	private ReactorResourceFactory resourceFactory;
-
-	private Shutdown shutdown;
+	private @Nullable ReactorResourceFactory resourceFactory;
 
 	public NettyReactiveWebServerFactory() {
 	}
@@ -79,7 +79,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
-			Duration lifecycleTimeout, Shutdown shutdown) {
+			@Nullable Duration lifecycleTimeout, Shutdown shutdown) {
 		return new NettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown, this.resourceFactory);
 	}
 
@@ -127,14 +127,13 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * server.
 	 * @param lifecycleTimeout the lifecycle timeout
 	 */
-	public void setLifecycleTimeout(Duration lifecycleTimeout) {
+	public void setLifecycleTimeout(@Nullable Duration lifecycleTimeout) {
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	/**
 	 * Set if x-forward-* headers should be processed.
 	 * @param useForwardHeaders if x-forward headers should be used
-	 * @since 4.0.0
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
@@ -143,26 +142,16 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
-	 * @since 4.0.0
 	 */
-	public void setResourceFactory(ReactorResourceFactory resourceFactory) {
+	public void setResourceFactory(@Nullable ReactorResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
-	}
-
-	@Override
-	public void setShutdown(Shutdown shutdown) {
-		this.shutdown = shutdown;
-	}
-
-	@Override
-	public Shutdown getShutdown() {
-		return this.shutdown;
 	}
 
 	private HttpServer createHttpServer() {
 		HttpServer server = HttpServer.create().bindAddress(this::getListenAddress);
-		if (Ssl.isEnabled(getSsl())) {
-			server = customizeSslConfiguration(server);
+		Ssl ssl = getSsl();
+		if (Ssl.isEnabled(ssl)) {
+			server = customizeSslConfiguration(server, ssl);
 		}
 		if (getCompression() != null && getCompression().getEnabled()) {
 			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
@@ -172,19 +161,22 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return applyCustomizers(server);
 	}
 
-	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		SslServerCustomizer customizer = new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle(),
+	private HttpServer customizeSslConfiguration(HttpServer httpServer, Ssl ssl) {
+		SslServerCustomizer customizer = new SslServerCustomizer(getHttp2(), ssl.getClientAuth(), getSslBundle(),
 				getServerNameSslBundles());
-		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
-		getSsl().getServerNameBundles()
+		addBundleUpdateHandler(null, ssl.getBundle(), customizer);
+		ssl.getServerNameBundles()
 			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
 					serverNameSslBundle.bundle(), customizer));
 		return customizer.apply(httpServer);
 	}
 
-	private void addBundleUpdateHandler(String serverName, String bundleName, SslServerCustomizer customizer) {
+	private void addBundleUpdateHandler(@Nullable String serverName, @Nullable String bundleName,
+			SslServerCustomizer customizer) {
 		if (StringUtils.hasText(bundleName)) {
-			getSslBundles().addBundleUpdateHandler(bundleName,
+			SslBundles sslBundles = getSslBundles();
+			Assert.state(sslBundles != null, "'sslBundles' must not be null");
+			sslBundles.addBundleUpdateHandler(bundleName,
 					(sslBundle) -> customizer.updateSslBundle(serverName, sslBundle));
 		}
 	}

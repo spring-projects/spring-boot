@@ -16,6 +16,7 @@
 
 package org.springframework.boot.r2dbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -40,6 +41,7 @@ class ConnectionFactoryBeanCreationFailureAnalyzerTests {
 	@Test
 	void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
+		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getDescription()).contains("'url' attribute is not specified",
 				"no embedded database could be configured");
 		assertThat(failureAnalysis.getAction()).contains(
@@ -52,10 +54,11 @@ class ConnectionFactoryBeanCreationFailureAnalyzerTests {
 	void failureAnalysisIsPerformedWithActiveProfiles() {
 		this.environment.setActiveProfiles("first", "second");
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
+		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getAction()).contains("(the profiles first,second are currently active)");
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration) {
+	private @Nullable FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
 		ConnectionFactoryBeanCreationFailureAnalyzer failureAnalyzer = new ConnectionFactoryBeanCreationFailureAnalyzer(
@@ -71,7 +74,7 @@ class ConnectionFactoryBeanCreationFailureAnalyzerTests {
 			context.register(configuration);
 			context.refresh();
 			context.close();
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (BeanCreationException ex) {
 			return ex;

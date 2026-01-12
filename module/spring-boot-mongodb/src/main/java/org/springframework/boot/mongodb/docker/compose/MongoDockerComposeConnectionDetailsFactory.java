@@ -34,12 +34,10 @@ import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
  */
 class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<MongoConnectionDetails> {
 
-	private static final String[] MONGODB_CONTAINER_NAMES = { "mongo", "bitnami/mongodb" };
-
 	private static final int MONGODB_PORT = 27017;
 
 	protected MongoDockerComposeConnectionDetailsFactory() {
-		super(MONGODB_CONTAINER_NAMES, "com.mongodb.ConnectionString");
+		super("mongo", "com.mongodb.ConnectionString");
 	}
 
 	@Override

@@ -66,8 +66,8 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
-		project.replaceText(BarProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
-		project.replaceText(FooProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
+		project.replaceText(BarProperties.class, "@TestConfigurationProperties", "//@TestConfigurationProperties");
+		project.replaceText(FooProperties.class, "@TestConfigurationProperties", "//@TestConfigurationProperties");
 		metadata = project.compile();
 		assertThat(metadata).isNull();
 	}

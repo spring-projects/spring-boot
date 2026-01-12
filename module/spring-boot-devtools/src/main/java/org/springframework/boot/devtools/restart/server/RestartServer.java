@@ -107,7 +107,9 @@ public class RestartServer {
 				if (classLoaderFile.getKind() == Kind.DELETED) {
 					return file.delete();
 				}
-				FileCopyUtils.copy(classLoaderFile.getContents(), file);
+				byte[] contents = classLoaderFile.getContents();
+				Assert.state(contents != null, "'contents' must not be null");
+				FileCopyUtils.copy(contents, file);
 				return true;
 			}
 		}

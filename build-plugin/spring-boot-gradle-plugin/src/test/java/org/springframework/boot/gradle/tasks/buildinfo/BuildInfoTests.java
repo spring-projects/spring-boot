@@ -24,8 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import org.gradle.api.Project;
-import org.gradle.api.internal.project.ProjectInternal;
-import org.gradle.initialization.GradlePropertiesController;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatException;
 class BuildInfoTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
@@ -165,6 +164,7 @@ class BuildInfoTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
 		assertThatException().isThrownBy(() -> task.getProperties().getAdditional().put("a", null))
@@ -173,11 +173,7 @@ class BuildInfoTests {
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
-		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
-		((ProjectInternal) project).getServices()
-			.get(GradlePropertiesController.class)
-			.loadGradlePropertiesFrom(projectDir, false);
-		return project;
+		return GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 	}
 
 	private BuildInfo createTask(Project project) {

@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataredis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest;
 
 @DataRedisTest
 class MyDataRedisTests {

@@ -19,6 +19,8 @@ package org.springframework.boot.ldap.health;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -54,7 +56,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 	private static final class VersionContextExecutor implements ContextExecutor<String> {
 
 		@Override
-		public String executeWithContext(DirContext ctx) throws NamingException {
+		public @Nullable String executeWithContext(DirContext ctx) throws NamingException {
 			Object version = ctx.getEnvironment().get("java.naming.ldap.version");
 			if (version != null) {
 				return (String) version;

@@ -65,7 +65,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private List<Descriptor> getDescriptors(String propertyName) {
-		Set<Origin> seen = new HashSet<>();
+		Set<@Nullable Origin> seen = new HashSet<>();
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
 			.map((source) -> Descriptor.get(source, propertyName))
 			.filter((descriptor) -> seen.add(getOrigin(descriptor)))

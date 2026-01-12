@@ -16,9 +16,11 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactsFilter;
@@ -79,6 +81,24 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 
 	protected final List<? extends FilterableDependency> getFilters() {
 		return this.filters;
+	}
+
+	/**
+	 * Return a new {@link DependencyFilter} the excludes artifacts based on the given
+	 * predicate.
+	 * @param filter the predicate used to filter the artifacts.
+	 * @return a new {@link DependencyFilter} instance
+	 * @since 3.5.7
+	 */
+	public static DependencyFilter exclude(Predicate<Artifact> filter) {
+		return new DependencyFilter(Collections.emptyList()) {
+
+			@Override
+			protected boolean filter(Artifact artifact) {
+				return filter.test(artifact);
+			}
+
+		};
 	}
 
 }

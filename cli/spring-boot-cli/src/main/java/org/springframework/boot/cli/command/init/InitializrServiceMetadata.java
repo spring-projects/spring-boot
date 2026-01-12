@@ -22,9 +22,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.cli.json.JSONArray;
+import org.springframework.boot.cli.json.JSONException;
+import org.springframework.boot.cli.json.JSONObject;
+import org.springframework.util.Assert;
 
 /**
  * Define the metadata available for a particular service instance.
@@ -88,7 +91,7 @@ class InitializrServiceMetadata {
 	 * @param id the id
 	 * @return the dependency or {@code null}
 	 */
-	Dependency getDependency(String id) {
+	@Nullable Dependency getDependency(String id) {
 		return this.dependencies.get(id);
 	}
 
@@ -105,7 +108,7 @@ class InitializrServiceMetadata {
 	 * default.
 	 * @return the default project type or {@code null}
 	 */
-	ProjectType getDefaultType() {
+	@Nullable ProjectType getDefaultType() {
 		if (this.projectTypes.getDefaultItem() != null) {
 			return this.projectTypes.getDefaultItem();
 		}
@@ -189,20 +192,24 @@ class InitializrServiceMetadata {
 		return new Dependency(id, name, description);
 	}
 
-	private ProjectType parseType(JSONObject object, String defaultId) throws JSONException {
+	private ProjectType parseType(JSONObject object, @Nullable String defaultId) throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
+		Assert.state(id != null, "'id' must not be null");
 		boolean defaultType = id.equals(defaultId);
 		Map<String, String> tags = new HashMap<>();
 		if (object.has("tags")) {
 			JSONObject jsonTags = object.getJSONObject("tags");
 			tags.putAll(parseStringItems(jsonTags));
 		}
+		Assert.state(name != null, "'name' must not be null");
+		Assert.state(action != null, "'action' must not be null");
 		return new ProjectType(id, name, action, defaultType, tags);
 	}
 
-	private String getStringValue(JSONObject object, String name, String defaultValue) throws JSONException {
+	private @Nullable String getStringValue(JSONObject object, String name, @Nullable String defaultValue)
+			throws JSONException {
 		return object.has(name) ? object.getString(name) : defaultValue;
 	}
 
@@ -222,7 +229,7 @@ class InitializrServiceMetadata {
 
 		private final Map<K, T> content;
 
-		private T defaultItem;
+		private @Nullable T defaultItem;
 
 		private MetadataHolder() {
 			this.content = new HashMap<>();
@@ -232,11 +239,11 @@ class InitializrServiceMetadata {
 			return this.content;
 		}
 
-		T getDefaultItem() {
+		@Nullable T getDefaultItem() {
 			return this.defaultItem;
 		}
 
-		void setDefaultItem(T defaultItem) {
+		void setDefaultItem(@Nullable T defaultItem) {
 			this.defaultItem = defaultItem;
 		}
 

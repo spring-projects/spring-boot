@@ -50,6 +50,7 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 	private final ExceptionTranslatorExecuteListener listener = new DefaultExceptionTranslatorExecuteListener();
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenTranslatorFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DefaultExceptionTranslatorExecuteListener(
@@ -74,7 +75,7 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 
 	@Test
 	void exceptionWhenHasCustomTranslatorFactory() {
-		SQLExceptionTranslator translator = BadSqlGrammarException::new;
+		SQLExceptionTranslator translator = (task, sql, ex) -> new BadSqlGrammarException(task, "sql", ex);
 		ExceptionTranslatorExecuteListener listener = new DefaultExceptionTranslatorExecuteListener(
 				(context) -> translator);
 		SQLException sqlException = sqlException(123);

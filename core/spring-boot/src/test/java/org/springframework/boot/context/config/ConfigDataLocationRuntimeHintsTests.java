@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ResourcePatternHint;
@@ -60,7 +61,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints() {
 			@Override
-			protected List<String> getFileNames(ClassLoader classLoader) {
+			protected List<String> getFileNames(@Nullable ClassLoader classLoader) {
 				return List.of("test");
 			}
 
@@ -77,7 +78,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints() {
 			@Override
-			protected List<String> getLocations(ClassLoader classLoader) {
+			protected List<String> getLocations(@Nullable ClassLoader classLoader) {
 				return List.of("config/");
 			}
 		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
@@ -93,7 +94,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ConfigDataLocationRuntimeHints() {
 			@Override
-			protected List<String> getExtensions(ClassLoader classLoader) {
+			protected List<String> getExtensions(@Nullable ClassLoader classLoader) {
 				return List.of(".conf");
 			}
 		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
@@ -106,7 +107,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ConfigDataLocationRuntimeHints() {
 			@Override
-			protected List<String> getLocations(ClassLoader classLoader) {
+			protected List<String> getLocations(@Nullable ClassLoader classLoader) {
 				return List.of(UUID.randomUUID().toString());
 			}
 		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
@@ -138,7 +139,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		}
 
 		@Override
-		protected SpringFactoriesLoader getSpringFactoriesLoader(ClassLoader classLoader) {
+		protected SpringFactoriesLoader getSpringFactoriesLoader(@Nullable ClassLoader classLoader) {
 			return this.springFactoriesLoader;
 		}
 

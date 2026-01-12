@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.restart;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -44,7 +46,7 @@ class OnInitializedRestarterCondition extends SpringBootCondition {
 		return ConditionOutcome.match(message.because("available and initialized"));
 	}
 
-	private Restarter getRestarter() {
+	private @Nullable Restarter getRestarter() {
 		try {
 			return Restarter.getInstance();
 		}

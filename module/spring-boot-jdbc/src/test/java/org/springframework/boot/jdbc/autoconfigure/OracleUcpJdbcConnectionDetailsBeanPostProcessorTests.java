@@ -22,9 +22,11 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 import oracle.ucp.util.OpaqueString;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OracleUcpJdbcConnectionDetailsBeanPostProcessor}.
@@ -36,13 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OracleUcpJdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void setUsernamePasswordUrlAndDriverClassName() throws SQLException {
 		PoolDataSourceImpl dataSource = new PoolDataSourceImpl();
 		dataSource.setURL("will-be-overwritten");
 		dataSource.setUser("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
 		dataSource.setConnectionFactoryClassName("will-be-overwritten");
-		new OracleUcpJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
+		new OracleUcpJdbcConnectionDetailsBeanPostProcessor(mock(ObjectProvider.class)).processDataSource(dataSource,
 				new TestJdbcConnectionDetails());
 		assertThat(dataSource.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		assertThat(dataSource.getUser()).isEqualTo("user-1");

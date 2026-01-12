@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
@@ -35,12 +36,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
 			.withMessageContaining("'testInstance' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
@@ -55,8 +58,10 @@ class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 		GsonTester.initFields(test, new GsonBuilder().create());
 		assertThat(test.test).isNotNull();
 		assertThat(test.base).isNotNull();
-		assertThat(test.test.getType().resolve()).isEqualTo(List.class);
-		assertThat(test.test.getType().resolveGeneric()).isEqualTo(ExampleObject.class);
+		ResolvableType type = test.test.getType();
+		assertThat(type).isNotNull();
+		assertThat(type.resolve()).isEqualTo(List.class);
+		assertThat(type.resolveGeneric()).isEqualTo(ExampleObject.class);
 	}
 
 	@Override
@@ -66,7 +71,7 @@ class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	abstract static class InitFieldsBaseClass {
 
-		public GsonTester<ExampleObject> base;
+		public @Nullable GsonTester<ExampleObject> base;
 
 		public GsonTester<ExampleObject> baseSet = new GsonTester<>(InitFieldsBaseClass.class,
 				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
@@ -75,7 +80,7 @@ class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	static class InitFieldsTestClass extends InitFieldsBaseClass {
 
-		public GsonTester<List<ExampleObject>> test;
+		public @Nullable GsonTester<List<ExampleObject>> test;
 
 		public GsonTester<ExampleObject> testSet = new GsonTester<>(InitFieldsBaseClass.class,
 				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());

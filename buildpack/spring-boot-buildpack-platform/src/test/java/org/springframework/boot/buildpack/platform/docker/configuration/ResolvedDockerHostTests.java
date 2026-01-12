@@ -212,7 +212,9 @@ class ResolvedDockerHostTests {
 
 	private String pathToResource(String resource) throws URISyntaxException {
 		URL url = getClass().getResource(resource);
-		return Paths.get(url.toURI()).getParent().toAbsolutePath().toString();
+		Path parent = Paths.get(url.toURI()).getParent();
+		assertThat(parent).isNotNull();
+		return parent.toAbsolutePath().toString();
 	}
 
 }

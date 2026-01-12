@@ -18,9 +18,9 @@ package org.springframework.boot.logging.logback;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -69,7 +69,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			log.add("logger", ILoggingEvent::getLoggerName);
 		});
 		members.add("process").usingMembers((process) -> {
-			process.add("pid", environment.getProperty("spring.application.pid", Long.class)).when(Objects::nonNull);
+			process.add("pid", environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
 			process.add("thread").usingMembers((thread) -> thread.add("name", ILoggingEvent::getThreadName));
 		});
 		ElasticCommonSchemaProperties.get(environment).jsonMembers(members);
@@ -78,7 +78,9 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			pairs.addMapEntries(ILoggingEvent::getMDCPropertyMap);
 			pairs.add(ILoggingEvent::getKeyValuePairs, keyValuePairExtractor);
 		}));
-		members.add().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
+		Function<@Nullable ILoggingEvent, @Nullable Object> getThrowableProxy = (event) -> (event != null)
+				? event.getThrowableProxy() : null;
+		members.add().whenNotNull(getThrowableProxy).usingMembers((throwableMembers) -> {
 			throwableMembers.add("error").usingMembers((error) -> {
 				error.add("type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
 				error.add("message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);

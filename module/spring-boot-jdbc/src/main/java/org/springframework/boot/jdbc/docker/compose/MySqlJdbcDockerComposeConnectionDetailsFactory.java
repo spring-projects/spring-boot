@@ -33,10 +33,8 @@ import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 class MySqlJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql" };
-
 	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
-		super(MYSQL_CONTAINER_NAMES);
+		super("mysql");
 	}
 
 	@Override

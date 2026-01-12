@@ -18,13 +18,16 @@ package org.springframework.boot.devtools.settings;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.core.io.UrlResource;
@@ -45,20 +48,29 @@ public class DevToolsSettings {
 
 	private static final Log logger = DevToolsLogFactory.getLog(DevToolsSettings.class);
 
-	private static DevToolsSettings settings;
+	private static @Nullable DevToolsSettings settings;
 
 	private final List<Pattern> restartIncludePatterns = new ArrayList<>();
 
 	private final List<Pattern> restartExcludePatterns = new ArrayList<>();
 
+	private final Map<String, Object> propertyDefaults = new HashMap<>();
+
 	DevToolsSettings() {
 	}
 
-	void add(Map<?, ?> properties) {
+	private void add(Map<?, ?> properties) {
 		Map<String, Pattern> includes = getPatterns(properties, "restart.include.");
 		this.restartIncludePatterns.addAll(includes.values());
 		Map<String, Pattern> excludes = getPatterns(properties, "restart.exclude.");
 		this.restartExcludePatterns.addAll(excludes.values());
+		properties.forEach((key, value) -> {
+			String name = String.valueOf(key);
+			if (name.startsWith("defaults.")) {
+				name = name.substring("defaults.".length());
+				this.propertyDefaults.put(name, value);
+			}
+		});
 	}
 
 	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
@@ -79,6 +91,10 @@ public class DevToolsSettings {
 
 	public boolean isRestartExclude(URL url) {
 		return isMatch(url.toString(), this.restartExcludePatterns);
+	}
+
+	public Map<String, Object> getPropertyDefaults() {
+		return Collections.unmodifiableMap(this.propertyDefaults);
 	}
 
 	private boolean isMatch(String url, List<Pattern> patterns) {

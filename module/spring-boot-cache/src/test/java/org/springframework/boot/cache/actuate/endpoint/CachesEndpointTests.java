@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint.CacheDescriptor;
 import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint.CacheEntryDescriptor;
 import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint.CacheManagerDescriptor;
 import org.springframework.cache.Cache;
@@ -52,9 +53,14 @@ class CachesEndpointTests {
 		Map<String, CacheManagerDescriptor> allDescriptors = endpoint.caches().getCacheManagers();
 		assertThat(allDescriptors).containsOnlyKeys("test");
 		CacheManagerDescriptor descriptors = allDescriptors.get("test");
+		assertThat(descriptors).isNotNull();
 		assertThat(descriptors.getCaches()).containsOnlyKeys("a", "b");
-		assertThat(descriptors.getCaches().get("a").getTarget()).isEqualTo(ConcurrentHashMap.class.getName());
-		assertThat(descriptors.getCaches().get("b").getTarget()).isEqualTo(ConcurrentHashMap.class.getName());
+		CacheDescriptor a = descriptors.getCaches().get("a");
+		assertThat(a).isNotNull();
+		assertThat(a.getTarget()).isEqualTo(ConcurrentHashMap.class.getName());
+		CacheDescriptor b = descriptors.getCaches().get("b");
+		assertThat(b).isNotNull();
+		assertThat(b.getTarget()).isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
@@ -65,8 +71,12 @@ class CachesEndpointTests {
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		Map<String, CacheManagerDescriptor> allDescriptors = endpoint.caches().getCacheManagers();
 		assertThat(allDescriptors).containsOnlyKeys("test", "another");
-		assertThat(allDescriptors.get("test").getCaches()).containsOnlyKeys("a", "b");
-		assertThat(allDescriptors.get("another").getCaches()).containsOnlyKeys("a", "c");
+		CacheManagerDescriptor test = allDescriptors.get("test");
+		assertThat(test).isNotNull();
+		assertThat(test.getCaches()).containsOnlyKeys("a", "b");
+		CacheManagerDescriptor another = allDescriptors.get("another");
+		assertThat(another).isNotNull();
+		assertThat(another.getCaches()).containsOnlyKeys("a", "c");
 	}
 
 	@Test

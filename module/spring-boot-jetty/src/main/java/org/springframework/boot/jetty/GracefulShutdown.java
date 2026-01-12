@@ -29,6 +29,7 @@ import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -45,7 +46,7 @@ final class GracefulShutdown {
 
 	private final Supplier<Integer> activeRequests;
 
-	private volatile boolean aborted = false;
+	private volatile boolean aborted;
 
 	GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
 		this.server = server;
@@ -70,10 +71,12 @@ final class GracefulShutdown {
 		}
 		catch (NoSuchMethodError ex) {
 			Method shutdown = ReflectionUtils.findMethod(connector.getClass(), "shutdown");
+			Assert.state(shutdown != null, "'shutdown' must not be null");
 			result = (Future<Void>) ReflectionUtils.invokeMethod(shutdown, connector);
 		}
 		if (getResult) {
 			try {
+				Assert.state(result != null, "'result' must not be null");
 				result.get();
 			}
 			catch (InterruptedException ex) {

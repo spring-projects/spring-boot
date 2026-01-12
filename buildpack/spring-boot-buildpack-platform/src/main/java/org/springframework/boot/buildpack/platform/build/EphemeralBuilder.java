@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.IOException;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive.Update;
@@ -63,7 +65,8 @@ class EphemeralBuilder {
 	 * @param buildpacks an optional set of buildpacks to apply
 	 */
 	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, ImageReference targetImage,
-			BuilderMetadata builderMetadata, Creator creator, Map<String, String> env, Buildpacks buildpacks) {
+			BuilderMetadata builderMetadata, Creator creator, @Nullable Map<String, String> env,
+			@Nullable Buildpacks buildpacks) {
 		this.name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
 		this.creator = creator;
@@ -126,7 +129,7 @@ class EphemeralBuilder {
 	 * @return the ephemeral builder archive
 	 * @throws IOException on IO error
 	 */
-	ImageArchive getArchive(String applicationDirectory) throws IOException {
+	ImageArchive getArchive(@Nullable String applicationDirectory) throws IOException {
 		return ImageArchive.from(this.builderImage, (update) -> {
 			this.archiveUpdate.accept(update);
 			if (StringUtils.hasLength(applicationDirectory)) {

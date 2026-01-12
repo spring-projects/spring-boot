@@ -16,35 +16,36 @@
 
 package org.springframework.boot.data.rest.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jspecify.annotations.Nullable;
+import java.util.List;
 
+import tools.jackson.databind.cfg.MapperBuilder;
+import tools.jackson.databind.json.JsonMapper;
+
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 /**
  * A {@code RepositoryRestConfigurer} that applies configuration items from the
- * {@code spring.data.rest} namespace to Spring Data REST. Also, if a
- * {@link Jackson2ObjectMapperBuilder} is available, it is used to configure Spring Data
- * REST's {@link ObjectMapper ObjectMappers}.
+ * {@code spring.data.rest} namespace to Spring Data REST. Also, if any
+ * {@link JsonMapperBuilderCustomizer JsonMapperBuilderCustomizers} are available, they
+ * are used to configure Spring Data REST's {@link JsonMapper JsonMappers}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
 @Order(0)
-@SuppressWarnings("removal")
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
-	private final @Nullable Jackson2ObjectMapperBuilder objectMapperBuilder;
+	private final List<JsonMapperBuilderCustomizer> jsonMapperBuilderCustomizers;
 
-	private final RepositoryRestProperties properties;
+	private final DataRestProperties properties;
 
-	SpringBootRepositoryRestConfigurer(@Nullable Jackson2ObjectMapperBuilder objectMapperBuilder,
-			RepositoryRestProperties properties) {
-		this.objectMapperBuilder = objectMapperBuilder;
+	SpringBootRepositoryRestConfigurer(List<JsonMapperBuilderCustomizer> jsonMapperBuilderCustomizers,
+			DataRestProperties properties) {
+		this.jsonMapperBuilderCustomizers = jsonMapperBuilderCustomizers;
 		this.properties = properties;
 	}
 
@@ -54,9 +55,9 @@ class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 	}
 
 	@Override
-	public void configureJacksonObjectMapper(ObjectMapper objectMapper) {
-		if (this.objectMapperBuilder != null) {
-			this.objectMapperBuilder.configure(objectMapper);
+	public void configureJacksonObjectMapper(MapperBuilder<?, ?> mapperBuilder) {
+		if (mapperBuilder instanceof JsonMapper.Builder jsonMapperBuilder) {
+			this.jsonMapperBuilderCustomizers.forEach((customizer) -> customizer.customize(jsonMapperBuilder));
 		}
 	}
 

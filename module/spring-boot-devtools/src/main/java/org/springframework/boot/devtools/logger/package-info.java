@@ -17,4 +17,7 @@
 /**
  * Devtools specific logging concerns.
  */
+@NullMarked
 package org.springframework.boot.devtools.logger;
+
+import org.jspecify.annotations.NullMarked;

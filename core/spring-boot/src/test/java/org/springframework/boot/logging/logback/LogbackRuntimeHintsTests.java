@@ -76,8 +76,10 @@ class LogbackRuntimeHintsTests {
 
 	private Class<?> loadClass(Resource resource) {
 		try {
+			String filename = resource.getFilename();
+			assertThat(filename).isNotNull();
 			return getClass().getClassLoader()
-				.loadClass("org.springframework.boot.logging.logback." + resource.getFilename().replace(".class", ""));
+				.loadClass("org.springframework.boot.logging.logback." + filename.replace(".class", ""));
 		}
 		catch (ClassNotFoundException ex) {
 			throw new RuntimeException(ex);
@@ -94,8 +96,7 @@ class LogbackRuntimeHintsTests {
 	private ReflectionHints registerHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new LogbackRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		ReflectionHints reflection = hints.reflection();
-		return reflection;
+		return hints.reflection();
 	}
 
 	private Consumer<Class<?>> registeredForPublicConstructorInvocation(ReflectionHints reflection) {

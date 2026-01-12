@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -55,6 +56,7 @@ class AuditEventTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullTimestamp() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN", Collections.singletonMap("a", "b")))
@@ -62,6 +64,7 @@ class AuditEventTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullType() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AuditEvent("phil", null, Collections.singletonMap("a", "b")))
@@ -69,13 +72,10 @@ class AuditEventTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "removal", "deprecation" })
 	void jsonFormat() throws Exception {
 		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
 				Collections.singletonMap("type", (Object) "BadCredentials"));
-		String json = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
-			.build()
-			.writeValueAsString(event);
+		String json = new JsonMapper().writeValueAsString(event);
 		JSONObject jsonObject = new JSONObject(json);
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
 		assertThat(jsonObject.getJSONObject("data").getString("type")).isEqualTo("BadCredentials");

@@ -73,6 +73,7 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskSchedulerCustomizer[]) null))
@@ -80,6 +81,7 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))
@@ -115,6 +117,7 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((ThreadPoolTaskSchedulerCustomizer[]) null))
@@ -122,6 +125,7 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))

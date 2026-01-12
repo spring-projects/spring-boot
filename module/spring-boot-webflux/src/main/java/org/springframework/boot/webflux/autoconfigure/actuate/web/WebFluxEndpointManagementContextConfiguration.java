@@ -21,10 +21,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -41,21 +40,21 @@ import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.webflux.actuate.endpoint.web.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
 import org.springframework.boot.webflux.actuate.endpoint.web.WebFluxEndpointHandlerMapping;
 import org.springframework.context.annotation.Bean;
@@ -66,8 +65,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -86,6 +85,9 @@ import org.springframework.web.reactive.DispatcherHandler;
 @ConditionalOnBean(WebEndpointsSupplier.class)
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebFluxEndpointManagementContextConfiguration {
+
+	private static final List<MediaType> MEDIA_TYPES = Collections
+		.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -141,29 +143,34 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(EndpointObjectMapper.class)
+	@ConditionalOnBean(EndpointJsonMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	static ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor serverCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-			ObjectProvider<EndpointObjectMapper> endpointObjectMapper) {
-		return new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-				SingletonSupplier.of(endpointObjectMapper::getObject));
+	static ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor serverCodecConfigurerEndpointJsonMapperBeanPostProcessor(
+			ObjectProvider<EndpointJsonMapper> endpointJsonMapper) {
+		return new ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor(
+				SingletonSupplier.of(endpointJsonMapper::getObject));
+	}
+
+	@Bean
+	@SuppressWarnings("removal")
+	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor serverCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor(
+			ObjectProvider<org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper> endpointJsonMapper) {
+		return new ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor(
+				SingletonSupplier.of(endpointJsonMapper::getObject));
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to apply {@link EndpointObjectMapper} for
-	 * {@link OperationResponseBody} to
-	 * {@link org.springframework.http.codec.json.Jackson2JsonEncoder} instances.
+	 * {@link BeanPostProcessor} to apply {@link EndpointJsonMapper} for
+	 * {@link OperationResponseBody} to {@link JacksonJsonEncoder} instances.
 	 */
-	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
+	static class ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor implements BeanPostProcessor {
 
-		private static final List<MediaType> MEDIA_TYPES = Collections
-			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+		private final Supplier<EndpointJsonMapper> mapper;
 
-		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
-
-		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-				Supplier<EndpointObjectMapper> endpointObjectMapper) {
-			this.endpointObjectMapper = endpointObjectMapper;
+		ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor(Supplier<EndpointJsonMapper> mapper) {
+			this.mapper = mapper;
 		}
 
 		@Override
@@ -182,19 +189,59 @@ public class WebFluxEndpointManagementContextConfiguration {
 			}
 		}
 
-		@SuppressWarnings({ "removal", "deprecation" })
 		private void process(Encoder<?> encoder) {
-			if (encoder instanceof org.springframework.http.codec.json.Jackson2JsonEncoder jackson2JsonEncoder) {
-				this.endpointObjectMapper.get()
-					.getSupportedTypes()
-					.forEach((type) -> jackson2JsonEncoder.registerObjectMappersForType(type,
-							this::registerForAllMimeTypes));
+			if (encoder instanceof JacksonJsonEncoder jacksonEncoder) {
+				jacksonEncoder.registerMappersForType(OperationResponseBody.class, (associations) -> {
+					JsonMapper mapper = this.mapper.get().get();
+					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, mapper));
+				});
 			}
 		}
 
-		private void registerForAllMimeTypes(Map<MimeType, ObjectMapper> registrar) {
-			ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
-			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, objectMapper));
+	}
+
+	/**
+	 * {@link BeanPostProcessor} to apply
+	 * {@link org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper}
+	 * for {@link OperationResponseBody} to
+	 * {@link org.springframework.http.codec.json.Jackson2JsonEncoder} instances.
+	 *
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+	 */
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor implements BeanPostProcessor {
+
+		private final Supplier<org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper> mapper;
+
+		ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor(
+				Supplier<org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper> mapper) {
+			this.mapper = mapper;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof ServerCodecConfigurer serverCodecConfigurer) {
+				process(serverCodecConfigurer);
+			}
+			return bean;
+		}
+
+		private void process(ServerCodecConfigurer configurer) {
+			for (HttpMessageWriter<?> writer : configurer.getWriters()) {
+				if (writer instanceof EncoderHttpMessageWriter<?> encoderHttpMessageWriter) {
+					process((encoderHttpMessageWriter).getEncoder());
+				}
+			}
+		}
+
+		private void process(Encoder<?> encoder) {
+			if (encoder instanceof org.springframework.http.codec.json.Jackson2JsonEncoder jacksonEncoder) {
+				jacksonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
+					com.fasterxml.jackson.databind.ObjectMapper mapper = this.mapper.get().get();
+					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, mapper));
+				});
+			}
 		}
 
 	}

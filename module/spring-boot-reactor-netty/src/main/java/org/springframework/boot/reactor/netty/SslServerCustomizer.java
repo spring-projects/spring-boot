@@ -22,6 +22,7 @@ import java.util.Map;
 import io.netty.handler.ssl.ClientAuth;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.Http2SslContextSpec;
 import reactor.netty.http.server.HttpServer;
@@ -52,7 +53,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private static final Log logger = LogFactory.getLog(SslServerCustomizer.class);
 
-	private final Http2 http2;
+	private final @Nullable Http2 http2;
 
 	private final ClientAuth clientAuth;
 
@@ -60,7 +61,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Map<String, SslProvider> serverNameSslProviders;
 
-	public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle,
+	public SslServerCustomizer(@Nullable Http2 http2, Ssl.@Nullable ClientAuth clientAuth, SslBundle sslBundle,
 			Map<String, SslBundle> serverNameSslBundles) {
 		this.http2 = http2;
 		this.clientAuth = Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE);
@@ -82,7 +83,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		});
 	}
 
-	void updateSslBundle(String serverName, SslBundle sslBundle) {
+	void updateSslBundle(@Nullable String serverName, SslBundle sslBundle) {
 		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
 		if (serverName == null) {
 			this.sslProvider = createSslProvider(sslBundle);
@@ -107,7 +108,6 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	 * Create an {@link AbstractProtocolSslContextSpec} for a given {@link SslBundle}.
 	 * @param sslBundle the {@link SslBundle} to use
 	 * @return an {@link AbstractProtocolSslContextSpec} instance
-	 * @since 4.0.0
 	 */
 	protected final AbstractProtocolSslContextSpec<?> createSslContextSpec(SslBundle sslBundle) {
 		AbstractProtocolSslContextSpec<?> sslContextSpec = (this.http2 != null && this.http2.isEnabled())

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -39,23 +39,18 @@ public class RestClientBuilderConfigurer {
 
 	private final ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private final ClientHttpRequestFactorySettings requestFactorySettings;
+	private final HttpClientSettings clientSettings;
 
 	private final List<RestClientCustomizer> customizers;
 
-	private final PropertiesRestClientCustomizer propertiesCustomizer;
-
 	public RestClientBuilderConfigurer() {
-		this(ClientHttpRequestFactoryBuilder.detect(), ClientHttpRequestFactorySettings.defaults(), null,
-				Collections.emptyList());
+		this(ClientHttpRequestFactoryBuilder.detect(), HttpClientSettings.defaults(), Collections.emptyList());
 	}
 
 	RestClientBuilderConfigurer(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			ClientHttpRequestFactorySettings requestFactorySettings,
-			PropertiesRestClientCustomizer propertiesCustomizer, List<RestClientCustomizer> customizers) {
+			HttpClientSettings clientSettings, List<RestClientCustomizer> customizers) {
 		this.requestFactoryBuilder = requestFactoryBuilder;
-		this.requestFactorySettings = requestFactorySettings;
-		this.propertiesCustomizer = propertiesCustomizer;
+		this.clientSettings = clientSettings;
 		this.customizers = customizers;
 	}
 
@@ -66,15 +61,12 @@ public class RestClientBuilderConfigurer {
 	 * @return the configured builder
 	 */
 	public RestClient.Builder configure(RestClient.Builder builder) {
-		builder.requestFactory(this.requestFactoryBuilder.build(this.requestFactorySettings));
+		builder.requestFactory(this.requestFactoryBuilder.build(this.clientSettings));
 		applyCustomizers(builder);
 		return builder;
 	}
 
 	private void applyCustomizers(RestClient.Builder builder) {
-		if (this.propertiesCustomizer != null) {
-			this.propertiesCustomizer.customize(builder);
-		}
 		for (RestClientCustomizer customizer : this.customizers) {
 			customizer.customize(builder);
 		}

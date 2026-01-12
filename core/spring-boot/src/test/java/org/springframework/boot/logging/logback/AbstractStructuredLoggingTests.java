@@ -26,10 +26,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +35,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 import org.slf4j.helpers.BasicMarkerFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMembersCustomizerBuilder;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -54,13 +53,14 @@ abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochSecond(1719910193L);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
 	private ThrowableProxyConverter throwableProxyConverter;
 
 	private BasicMarkerFactory markerFactory;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	MockStructuredLoggingJsonMembersCustomizerBuilder<?> customizerBuilder = new MockStructuredLoggingJsonMembersCustomizerBuilder<>(
@@ -108,7 +108,7 @@ abstract class AbstractStructuredLoggingTests {
 		return createEvent(null);
 	}
 
-	protected static LoggingEvent createEvent(Throwable thrown) {
+	protected static LoggingEvent createEvent(@Nullable Throwable thrown) {
 		LoggingEvent event = new LoggingEvent();
 		event.setInstant(EVENT_TIME);
 		event.setLevel(Level.INFO);
@@ -122,14 +122,8 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected Map<String, Object> deserialize(String json) {
-		try {
-			return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
-			});
-		}
-		catch (JsonProcessingException ex) {
-			Assertions.fail("Failed to deserialize JSON: " + json, ex);
-			return null;
-		}
+		return JSON_MAPPER.readValue(json, new TypeReference<>() {
+		});
 	}
 
 }

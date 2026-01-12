@@ -35,7 +35,8 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
 		after = RabbitAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, AbstractConnectionFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ org.springframework.amqp.rabbit.connection.ConnectionFactory.class, MeterRegistry.class })

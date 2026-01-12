@@ -19,6 +19,8 @@ package org.springframework.boot.web.server;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.convert.DurationUnit;
 
@@ -37,32 +39,32 @@ public class Cookie {
 	/**
 	 * Name for the cookie.
 	 */
-	private String name;
+	private @Nullable String name;
 
 	/**
 	 * Domain for the cookie.
 	 */
-	private String domain;
+	private @Nullable String domain;
 
 	/**
 	 * Path of the cookie.
 	 */
-	private String path;
+	private @Nullable String path;
 
 	/**
 	 * Whether to use "HttpOnly" cookies for the cookie.
 	 */
-	private Boolean httpOnly;
+	private @Nullable Boolean httpOnly;
 
 	/**
 	 * Whether to always mark the cookie as secure.
 	 */
-	private Boolean secure;
+	private @Nullable Boolean secure;
 
 	/**
 	 * Whether the generated cookie carries the Partitioned attribute.
 	 */
-	private Boolean partitioned;
+	private @Nullable Boolean partitioned;
 
 	/**
 	 * Maximum age of the cookie. If a duration suffix is not specified, seconds will be
@@ -71,74 +73,74 @@ public class Cookie {
 	 * means no "Max-Age".
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration maxAge;
+	private @Nullable Duration maxAge;
 
 	/**
 	 * SameSite setting for the cookie.
 	 */
-	private SameSite sameSite;
+	private @Nullable SameSite sameSite;
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 
-	public String getDomain() {
+	public @Nullable String getDomain() {
 		return this.domain;
 	}
 
-	public void setDomain(String domain) {
+	public void setDomain(@Nullable String domain) {
 		this.domain = domain;
 	}
 
-	public String getPath() {
+	public @Nullable String getPath() {
 		return this.path;
 	}
 
-	public void setPath(String path) {
+	public void setPath(@Nullable String path) {
 		this.path = path;
 	}
 
-	public Boolean getHttpOnly() {
+	public @Nullable Boolean getHttpOnly() {
 		return this.httpOnly;
 	}
 
-	public void setHttpOnly(Boolean httpOnly) {
+	public void setHttpOnly(@Nullable Boolean httpOnly) {
 		this.httpOnly = httpOnly;
 	}
 
-	public Boolean getSecure() {
+	public @Nullable Boolean getSecure() {
 		return this.secure;
 	}
 
-	public void setSecure(Boolean secure) {
+	public void setSecure(@Nullable Boolean secure) {
 		this.secure = secure;
 	}
 
-	public Duration getMaxAge() {
+	public @Nullable Duration getMaxAge() {
 		return this.maxAge;
 	}
 
-	public void setMaxAge(Duration maxAge) {
+	public void setMaxAge(@Nullable Duration maxAge) {
 		this.maxAge = maxAge;
 	}
 
-	public SameSite getSameSite() {
+	public @Nullable SameSite getSameSite() {
 		return this.sameSite;
 	}
 
-	public void setSameSite(SameSite sameSite) {
+	public void setSameSite(@Nullable SameSite sameSite) {
 		this.sameSite = sameSite;
 	}
 
-	public Boolean getPartitioned() {
+	public @Nullable Boolean getPartitioned() {
 		return this.partitioned;
 	}
 
-	public void setPartitioned(Boolean partitioned) {
+	public void setPartitioned(@Nullable Boolean partitioned) {
 		this.partitioned = partitioned;
 	}
 
@@ -170,13 +172,13 @@ public class Cookie {
 		 */
 		STRICT("Strict");
 
-		private final String attributeValue;
+		private @Nullable final String attributeValue;
 
-		SameSite(String attributeValue) {
+		SameSite(@Nullable String attributeValue) {
 			this.attributeValue = attributeValue;
 		}
 
-		public String attributeValue() {
+		public @Nullable String attributeValue() {
 			return this.attributeValue;
 		}
 

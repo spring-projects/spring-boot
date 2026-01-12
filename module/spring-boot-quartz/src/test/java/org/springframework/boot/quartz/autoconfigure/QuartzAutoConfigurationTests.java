@@ -30,6 +30,7 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -630,14 +631,14 @@ class QuartzAutoConfigurationTests {
 		@Autowired
 		private Environment env;
 
-		private String jobDataKey;
+		private @Nullable String jobDataKey;
 
 		@Override
 		protected void executeInternal(JobExecutionContext context) {
 			System.out.println(this.env.getProperty("test-name", "unknown") + " - " + this.jobDataKey);
 		}
 
-		public void setJobDataKey(String jobDataKey) {
+		public void setJobDataKey(@Nullable String jobDataKey) {
 			this.jobDataKey = jobDataKey;
 		}
 

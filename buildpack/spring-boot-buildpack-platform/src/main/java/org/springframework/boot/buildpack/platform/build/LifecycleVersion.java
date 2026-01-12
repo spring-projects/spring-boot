@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.util.Comparator;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -44,7 +46,7 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

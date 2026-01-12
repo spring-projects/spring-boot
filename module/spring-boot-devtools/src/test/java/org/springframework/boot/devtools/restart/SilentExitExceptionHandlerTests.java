@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +56,9 @@ class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown().getMessage()).isEqualTo("Expected");
+		Throwable thrown = testThread.getThrown();
+		assertThat(thrown).isNotNull();
+		assertThat(thrown.getMessage()).isEqualTo("Expected");
 	}
 
 	@Test
@@ -78,13 +81,13 @@ class SilentExitExceptionHandlerTests {
 
 	static class TestThread extends Thread {
 
-		private Throwable thrown;
+		private @Nullable Throwable thrown;
 
 		TestThread() {
 			setUncaughtExceptionHandler((thread, exception) -> TestThread.this.thrown = exception);
 		}
 
-		Throwable getThrown() {
+		@Nullable Throwable getThrown() {
 			return this.thrown;
 		}
 

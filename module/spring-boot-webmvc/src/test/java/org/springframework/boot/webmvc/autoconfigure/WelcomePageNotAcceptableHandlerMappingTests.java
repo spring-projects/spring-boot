@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
+import jakarta.servlet.ServletContext;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link WelcomePageNotAcceptableHandlerMapping}.
@@ -58,7 +60,7 @@ class WelcomePageNotAcceptableHandlerMappingTests {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class).run((context) -> {
 			WelcomePageNotAcceptableHandlerMapping handler = context
 				.getBean(WelcomePageNotAcceptableHandlerMapping.class);
-			ResourceHandlerRegistry registry = new ResourceHandlerRegistry(context, null);
+			ResourceHandlerRegistry registry = new ResourceHandlerRegistry(context, mock(ServletContext.class));
 			Integer resourceOrder = (Integer) ReflectionTestUtils.getField(registry, "order");
 			assertThat(handler.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE - 10);
 			assertThat(handler.getOrder()).isLessThan(resourceOrder);

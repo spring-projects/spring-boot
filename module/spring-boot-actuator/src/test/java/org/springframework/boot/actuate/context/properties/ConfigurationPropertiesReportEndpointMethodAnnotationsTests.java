@@ -51,6 +51,7 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 				.get(context.getId());
+			assertThat(contextProperties).isNotNull();
 			ConfigurationPropertiesBeanDescriptor other = contextProperties.getBeans().get("other");
 			assertThat(other).isNotNull();
 			assertThat(other.getPrefix()).isEqualTo("other");
@@ -71,6 +72,7 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 				.get(context.getId());
+			assertThat(contextProperties).isNotNull();
 			ConfigurationPropertiesBeanDescriptor bar = contextProperties.getBeans().get("bar");
 			assertThat(bar).isNotNull();
 			assertThat(bar.getPrefix()).isEqualTo("other");

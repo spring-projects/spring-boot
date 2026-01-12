@@ -21,12 +21,18 @@ plugins {
 description = "Spring Boot Prometheus smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
+	implementation(project(":module:spring-boot-micrometer-tracing-brave"))
 	implementation('io.micrometer:micrometer-tracing-bridge-brave')
 
 	runtimeOnly('io.micrometer:micrometer-registry-prometheus')
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-micrometer-metrics-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

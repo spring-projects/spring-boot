@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jspecify.annotations.Nullable;
+
 public class InMemoryMessageRepository implements MessageRepository {
 
 	private static final AtomicLong counter = new AtomicLong();
@@ -43,7 +45,7 @@ public class InMemoryMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public Message findMessage(Long id) {
+	public @Nullable Message findMessage(Long id) {
 		return this.messages.get(id);
 	}
 

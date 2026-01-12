@@ -32,21 +32,21 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	implementation(project(":module:spring-boot-tx"))
+	implementation(project(":module:spring-boot-transaction"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("io.micrometer:micrometer-core")
 	optional("org.springframework.amqp:spring-rabbit-stream")
-	optional("org.testcontainers:rabbitmq")
+	optional("org.testcontainers:testcontainers-rabbitmq")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
@@ -54,4 +54,12 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

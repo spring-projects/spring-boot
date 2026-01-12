@@ -17,6 +17,7 @@
 package org.springframework.boot.servlet.autoconfigure;
 
 import jakarta.servlet.MultipartConfigElement;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -57,7 +58,7 @@ public class MultipartProperties {
 	/**
 	 * Intermediate location of uploaded files.
 	 */
-	private String location;
+	private @Nullable String location;
 
 	/**
 	 * Max file size.
@@ -78,13 +79,13 @@ public class MultipartProperties {
 	 * Whether to resolve the multipart request lazily at the time of file or parameter
 	 * access.
 	 */
-	private boolean resolveLazily = false;
+	private boolean resolveLazily;
 
 	/**
 	 * Whether to resolve the multipart request strictly complying with the Servlet
 	 * specification, only to be used for "multipart/form-data" requests.
 	 */
-	private boolean strictServletCompliance = false;
+	private boolean strictServletCompliance;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -94,11 +95,11 @@ public class MultipartProperties {
 		this.enabled = enabled;
 	}
 
-	public String getLocation() {
+	public @Nullable String getLocation() {
 		return this.location;
 	}
 
-	public void setLocation(String location) {
+	public void setLocation(@Nullable String location) {
 		this.location = location;
 	}
 
@@ -148,7 +149,7 @@ public class MultipartProperties {
 	 */
 	public MultipartConfigElement createMultipartConfig() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.fileSizeThreshold).to(factory::setFileSizeThreshold);
 		map.from(this.location).whenHasText().to(factory::setLocation);
 		map.from(this.maxRequestSize).to(factory::setMaxRequestSize);

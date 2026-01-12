@@ -16,14 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.Method;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +29,6 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,12 +52,13 @@ class ReflectiveOperationInvokerTests {
 	@BeforeEach
 	void setup() {
 		this.target = new Example();
-		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse",
-				ApiVersion.class, SecurityContext.class, String.class), OperationType.READ, this::isOptional);
+		this.operationMethod = new OperationMethod(
+				findMethod("reverse", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
 		this.parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
@@ -70,6 +66,7 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
@@ -77,6 +74,7 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
@@ -102,9 +100,9 @@ class ReflectiveOperationInvokerTests {
 
 	@Test
 	void invokeWhenMissingOptionalArgumentShouldInvoke() {
-		OperationMethod operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class,
-				"reverseOptional", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ,
-				this::isOptional);
+		OperationMethod operationMethod = new OperationMethod(
+				findMethod("reverseOptional", ApiVersion.class, SecurityContext.class, String.class),
+				OperationType.READ);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
@@ -121,8 +119,10 @@ class ReflectiveOperationInvokerTests {
 		assertThat(result).isEqualTo("4321");
 	}
 
-	private boolean isOptional(Parameter parameter) {
-		return MergedAnnotations.from(parameter).isPresent(TestOptional.class);
+	private Method findMethod(String name, Class<?>... parameters) {
+		Method method = ReflectionUtils.findMethod(Example.class, name, parameters);
+		assertThat(method).as("Method '%s'", name).isNotNull();
+		return method;
 	}
 
 	static class Example {
@@ -133,18 +133,11 @@ class ReflectiveOperationInvokerTests {
 			return new StringBuilder(name).reverse().toString();
 		}
 
-		String reverseOptional(ApiVersion apiVersion, SecurityContext securityContext, @TestOptional String name) {
+		String reverseOptional(ApiVersion apiVersion, SecurityContext securityContext, @Nullable String name) {
 			assertThat(apiVersion).isEqualTo(ApiVersion.LATEST);
 			assertThat(securityContext).isNotNull();
 			return new StringBuilder(String.valueOf(name)).reverse().toString();
 		}
-
-	}
-
-	@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface TestOptional {
 
 	}
 

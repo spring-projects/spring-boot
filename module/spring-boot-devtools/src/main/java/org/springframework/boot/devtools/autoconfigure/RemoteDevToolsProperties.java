@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Configuration properties for remote Spring Boot applications.
  *
@@ -39,7 +41,7 @@ public class RemoteDevToolsProperties {
 	 * A shared secret required to establish a connection (required to enable remote
 	 * support).
 	 */
-	private String secret;
+	private @Nullable String secret;
 
 	/**
 	 * HTTP header used to transfer the shared secret.
@@ -58,11 +60,11 @@ public class RemoteDevToolsProperties {
 		this.contextPath = contextPath;
 	}
 
-	public String getSecret() {
+	public @Nullable String getSecret() {
 		return this.secret;
 	}
 
-	public void setSecret(String secret) {
+	public void setSecret(@Nullable String secret) {
 		this.secret = secret;
 	}
 
@@ -104,26 +106,26 @@ public class RemoteDevToolsProperties {
 		/**
 		 * The host of the proxy to use to connect to the remote application.
 		 */
-		private String host;
+		private @Nullable String host;
 
 		/**
 		 * The port of the proxy to use to connect to the remote application.
 		 */
-		private Integer port;
+		private @Nullable Integer port;
 
-		public String getHost() {
+		public @Nullable String getHost() {
 			return this.host;
 		}
 
-		public void setHost(String host) {
+		public void setHost(@Nullable String host) {
 			this.host = host;
 		}
 
-		public Integer getPort() {
+		public @Nullable Integer getPort() {
 			return this.port;
 		}
 
-		public void setPort(Integer port) {
+		public void setPort(@Nullable Integer port) {
 			this.port = port;
 		}
 

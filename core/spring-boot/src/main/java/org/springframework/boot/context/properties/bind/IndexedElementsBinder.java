@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -102,12 +101,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		Object aggregate = convert(value, aggregateType, target.getAnnotations());
 		ResolvableType collectionType = ResolvableType.forClassWithGenerics(collection.getClass(), elementType);
 		Collection<Object> elements = convert(aggregate, collectionType);
-		collection.addAll(elements);
+		if (elements != null) {
+			collection.addAll(elements);
+		}
 	}
 
 	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType elementType) {
-		Set<String> knownIndexedChildren = Collections.emptySet();
+		Set<String> knownIndexedChildren = new HashSet<>();
 		if (source instanceof IterableConfigurationPropertySource iterableSource) {
 			knownIndexedChildren = getKnownIndexedChildren(iterableSource, root);
 		}

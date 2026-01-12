@@ -31,17 +31,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
-import org.springframework.boot.configurationsample.immutable.ConstructorParameterNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
-import org.springframework.boot.configurationsample.immutable.JavaBeanNameAnnotationProperties;
-import org.springframework.boot.configurationsample.immutable.RecordComponentNameAnnotationProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
+import org.springframework.boot.configurationsample.name.ConstructorParameterNameAnnotationProperties;
+import org.springframework.boot.configurationsample.name.JavaBeanNameAnnotationProperties;
+import org.springframework.boot.configurationsample.name.LombokNameAnnotationProperties;
+import org.springframework.boot.configurationsample.name.RecordComponentNameAnnotationProperties;
 import org.springframework.boot.configurationsample.simple.AutowiredProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
@@ -162,21 +163,27 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void contructorParameterPropertyWithNameAnnotationParameter() {
+	void constructorParameterPropertyWithNameAnnotationParameter() {
 		process(ConstructorParameterNameAnnotationProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+				propertyNames((stream) -> assertThat(stream).containsOnly("import", "default")));
 	}
 
 	@Test
 	void recordComponentPropertyWithNameAnnotationParameter() {
 		process(RecordComponentNameAnnotationProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+				propertyNames((stream) -> assertThat(stream).containsOnly("import", "default")));
 	}
 
 	@Test
 	void javaBeanPropertyWithNameAnnotationParameter() {
 		process(JavaBeanNameAnnotationProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+				propertyNames((stream) -> assertThat(stream).containsOnly("import", "default")));
+	}
+
+	@Test
+	void lombokPropertyWithNameAnnotationParameter() {
+		process(LombokNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsOnly("import", "default")));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(

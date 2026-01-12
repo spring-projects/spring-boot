@@ -41,6 +41,7 @@ class LoggerGroupsTests {
 		LoggerGroups loggerGroups = new LoggerGroups();
 		loggerGroups.putAll(groups);
 		LoggerGroup group = loggerGroups.get("test");
+		assertThat(group).isNotNull();
 		assertThat(group.getMembers()).containsExactly("test.member", "test.member2");
 	}
 

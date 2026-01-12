@@ -39,6 +39,7 @@ class BindingTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWithNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Binding.of(null))
 			.withMessageContaining("'value' must not be null");
@@ -51,12 +52,14 @@ class BindingTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromWithNullSourceThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Binding.from((String) null, "container-dest"))
 			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromWithNullDestinationThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Binding.from("host-src", null))
 			.withMessageContaining("'destination' must not be null");
@@ -69,6 +72,7 @@ class BindingTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromVolumeNameSourceWithNullSourceThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Binding.from((VolumeName) null, "container-dest"))
 			.withMessageContaining("'sourceVolume' must not be null");

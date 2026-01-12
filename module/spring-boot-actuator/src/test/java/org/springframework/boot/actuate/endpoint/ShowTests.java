@@ -37,14 +37,14 @@ class ShowTests {
 
 	@Test
 	void isShownWhenNever() {
-		assertThat(Show.NEVER.isShown(null, Collections.emptySet())).isFalse();
+		assertThat(Show.NEVER.isShown(SecurityContext.NONE, Collections.emptySet())).isFalse();
 		assertThat(Show.NEVER.isShown(true)).isFalse();
 		assertThat(Show.NEVER.isShown(false)).isFalse();
 	}
 
 	@Test
 	void isShownWhenAlways() {
-		assertThat(Show.ALWAYS.isShown(null, Collections.emptySet())).isTrue();
+		assertThat(Show.ALWAYS.isShown(SecurityContext.NONE, Collections.emptySet())).isTrue();
 		assertThat(Show.ALWAYS.isShown(true)).isTrue();
 		assertThat(Show.ALWAYS.isShown(true)).isTrue();
 	}

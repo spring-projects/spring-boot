@@ -21,10 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -54,12 +52,12 @@ public class ContextPairs {
 	/**
 	 * Add pairs using flat naming.
 	 * @param <T> the item type
-	 * @param delimeter the delimiter used if there is a prefix
+	 * @param delimiter the delimiter used if there is a prefix
 	 * @param pairs callback to add all the pairs
 	 * @return a {@link BiConsumer} for use with the {@link JsonWriter}
 	 */
-	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(String delimeter, Consumer<Pairs<T>> pairs) {
-		return flat(joinWith(delimeter), pairs);
+	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(String delimiter, Consumer<Pairs<T>> pairs) {
+		return flat(joinWith(delimiter), pairs);
 	}
 
 	/**
@@ -69,8 +67,7 @@ public class ContextPairs {
 	 * @param pairs callback to add all the pairs
 	 * @return a {@link BiConsumer} for use with the {@link JsonWriter}
 	 */
-	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(BinaryOperator<@Nullable String> joiner,
-			Consumer<Pairs<T>> pairs) {
+	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(Joiner joiner, Consumer<Pairs<T>> pairs) {
 		return (!this.include) ? none() : new Pairs<>(joiner, pairs)::flat;
 	}
 
@@ -89,16 +86,32 @@ public class ContextPairs {
 		};
 	}
 
-	private BinaryOperator<@Nullable String> joinWith(String delimeter) {
+	private Joiner joinWith(String delimiter) {
 		return (prefix, name) -> {
-			StringBuilder joined = new StringBuilder(prefix.length() + delimeter.length() + name.length());
+			StringBuilder joined = new StringBuilder(prefix.length() + delimiter.length() + name.length());
 			joined.append(prefix);
-			if (!prefix.isEmpty() && !prefix.endsWith(delimeter) && !name.startsWith(delimeter)) {
-				joined.append(delimeter);
+			if (!prefix.isEmpty() && !prefix.endsWith(delimiter) && !name.startsWith(delimiter)) {
+				joined.append(delimiter);
 			}
 			joined.append(name);
 			return joined.toString();
 		};
+	}
+
+	/**
+	 * Joins a prefix and a name.
+	 */
+	@FunctionalInterface
+	public interface Joiner {
+
+		/**
+		 * Joins the given prefix and name.
+		 * @param prefix the prefix
+		 * @param name the name
+		 * @return the joined result or {@code null}
+		 */
+		@Nullable String join(String prefix, String name);
+
 	}
 
 	/**
@@ -108,11 +121,11 @@ public class ContextPairs {
 	 */
 	public class Pairs<T> {
 
-		private final BinaryOperator<@Nullable String> joiner;
+		private final Joiner joiner;
 
 		private final List<BiConsumer<T, BiConsumer<String, ?>>> addedPairs;
 
-		Pairs(BinaryOperator<@Nullable String> joiner, Consumer<Pairs<T>> pairs) {
+		Pairs(Joiner joiner, Consumer<Pairs<T>> pairs) {
 			this.joiner = joiner;
 			this.addedPairs = new ArrayList<>();
 			pairs.accept(this);
@@ -120,11 +133,11 @@ public class ContextPairs {
 
 		/**
 		 * Add pairs from map entries.
-		 * @param <K> the map key type
 		 * @param <V> the map value type
 		 * @param extractor the extractor used to provide the map
 		 */
-		public <K, V> void addMapEntries(Function<T, Map<String, V>> extractor) {
+		@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
+		public <V> void addMapEntries(Function<T, Map<String, V>> extractor) {
 			add(extractor.andThen(Map::entrySet), Map.Entry::getKey, Map.Entry::getValue);
 		}
 
@@ -133,9 +146,8 @@ public class ContextPairs {
 		 * @param elementsExtractor the extractor used to provide the iterable
 		 * @param pairExtractor the extractor used to provide the name and value
 		 * @param <E> the element type
-		 * @param <V> the value type
 		 */
-		public <E, V> void add(Function<T, Iterable<E>> elementsExtractor, PairExtractor<E> pairExtractor) {
+		public <E> void add(Function<T, @Nullable Iterable<E>> elementsExtractor, PairExtractor<E> pairExtractor) {
 			add(elementsExtractor, pairExtractor::getName, pairExtractor::getValue);
 		}
 
@@ -147,7 +159,7 @@ public class ContextPairs {
 		 * @param nameExtractor the extractor used to provide the name
 		 * @param valueExtractor the extractor used to provide the value
 		 */
-		public <E, V> void add(Function<T, Iterable<E>> elementsExtractor, Function<E, String> nameExtractor,
+		public <E, V> void add(Function<T, @Nullable Iterable<E>> elementsExtractor, Function<E, String> nameExtractor,
 				Function<E, V> valueExtractor) {
 			add((item, pairs) -> {
 				Iterable<E> elements = elementsExtractor.apply(item);
@@ -186,7 +198,7 @@ public class ContextPairs {
 					for (int i = 0; i < nameParts.size() - 1; i++) {
 						Object existing = destination.computeIfAbsent(nameParts.get(i), (key) -> new LinkedHashMap<>());
 						if (!(existing instanceof Map)) {
-							String common = nameParts.subList(0, i + 1).stream().collect(Collectors.joining("."));
+							String common = String.join(".", nameParts.subList(0, i + 1));
 							throw new IllegalStateException(
 									"Duplicate nested pairs added under '%s'".formatted(common));
 						}
@@ -196,12 +208,12 @@ public class ContextPairs {
 					Assert.state(previous == null, () -> "Duplicate nested pairs added under '%s'".formatted(name));
 				}));
 			});
-			result.forEach(pairs::accept);
+			result.forEach(pairs);
 		}
 
 		private <V> BiConsumer<String, V> joining(BiConsumer<String, V> pairs) {
 			return (name, value) -> {
-				name = this.joiner.apply(ContextPairs.this.prefix, (name != null) ? name : "");
+				name = this.joiner.join(ContextPairs.this.prefix, (name != null) ? name : "");
 				if (StringUtils.hasLength(name)) {
 					pairs.accept(name, value);
 				}

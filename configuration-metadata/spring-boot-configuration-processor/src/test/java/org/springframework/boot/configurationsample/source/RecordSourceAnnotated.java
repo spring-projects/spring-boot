@@ -16,10 +16,10 @@
 
 package org.springframework.boot.configurationsample.source;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
-@ConfigurationProperties("example")
-public record RecordSourceAnnotated(@NestedConfigurationProperty RecordSource nested) {
+@TestConfigurationProperties("example")
+public record RecordSourceAnnotated(@TestNestedConfigurationProperty RecordSource nested) {
 
 }

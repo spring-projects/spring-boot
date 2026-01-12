@@ -35,7 +35,9 @@ This leads to smaller images.
 
 NOTE: The CNB builder used for the images is `paketobuildpacks/builder-noble-java-tiny:latest`.
 It has a small footprint and reduced attack surface. It does not include a shell and contains a reduced set of system libraries.
-If you need more tools in the resulting image, you can use `paketobuildpacks/ubuntu-noble-run-base:latest` as the *run* image.
+If you need more tools in the resulting image, you can use `paketobuildpacks/ubuntu-noble-run:latest` as the *run* image.
+
+NOTE: You have to build your application with at least JDK 25, because Buildpacks use the same GraalVM native-image version as the Java version used for compilation.
 
 
 
@@ -175,8 +177,8 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ sdk install java {version-graal}.r17-nik
-$ sdk use java {version-graal}.r17-nik
+$ sdk install java 25.r25-nik
+$ sdk use java 25.r25-nik
 ----
 
 Verify that the correct version has been configured by checking the output of `java -version`:
@@ -184,9 +186,9 @@ Verify that the correct version has been configured by checking the output of `j
 [source,shell,subs="verbatim,attributes"]
 ----
 $ java -version
-openjdk version "17.0.5" 2022-10-18 LTS
-OpenJDK Runtime Environment GraalVM 22.3.0 (build 17.0.5+8-LTS)
-OpenJDK 64-Bit Server VM GraalVM 22.3.0 (build 17.0.5+8-LTS, mixed mode)
+openjdk version "25" 2025-09-16 LTS
+OpenJDK Runtime Environment Liberica-NIK-25.0.0-1 (build 25+37-LTS)
+OpenJDK 64-Bit Server VM Liberica-NIK-25.0.0-1 (build 25+37-LTS, mixed mode, sharing)
 ----
 
 

@@ -19,6 +19,8 @@ package org.springframework.boot.ldap.autoconfigure.embedded;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
@@ -37,7 +39,7 @@ public class EmbeddedLdapProperties {
 	/**
 	 * Embedded LDAP port.
 	 */
-	private int port = 0;
+	private int port;
 
 	/**
 	 * Embedded LDAP credentials.
@@ -59,6 +61,11 @@ public class EmbeddedLdapProperties {
 	 * Schema validation.
 	 */
 	private final Validation validation = new Validation();
+
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
 
 	public int getPort() {
 		return this.port;
@@ -96,36 +103,71 @@ public class EmbeddedLdapProperties {
 		return this.validation;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public static class Credential {
 
 		/**
 		 * Embedded LDAP username.
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Embedded LDAP password.
 		 */
-		private String password;
+		private @Nullable String password;
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
 		boolean isAvailable() {
 			return StringUtils.hasText(this.username) && StringUtils.hasText(this.password);
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
 		}
 
 	}
@@ -140,7 +182,7 @@ public class EmbeddedLdapProperties {
 		/**
 		 * Path to the custom schema.
 		 */
-		private Resource schema;
+		private @Nullable Resource schema;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -150,11 +192,11 @@ public class EmbeddedLdapProperties {
 			this.enabled = enabled;
 		}
 
-		public Resource getSchema() {
+		public @Nullable Resource getSchema() {
 			return this.schema;
 		}
 
-		public void setSchema(Resource schema) {
+		public void setSchema(@Nullable Resource schema) {
 			this.schema = schema;
 		}
 

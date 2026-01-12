@@ -24,6 +24,8 @@ import org.apache.pulsar.client.api.Authentication;
 import org.apache.pulsar.client.api.AuthenticationDataProvider;
 import org.apache.pulsar.client.api.PulsarClientException;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * Test plugin-class-name for Authentication
  *
@@ -36,12 +38,12 @@ public class MockAuthentication implements Authentication {
 
 	@Override
 	public String getAuthMethodName() {
-		return null;
+		return "";
 	}
 
 	@Override
 	public AuthenticationDataProvider getAuthData() {
-		return null;
+		return mock(AuthenticationDataProvider.class);
 	}
 
 	@Override

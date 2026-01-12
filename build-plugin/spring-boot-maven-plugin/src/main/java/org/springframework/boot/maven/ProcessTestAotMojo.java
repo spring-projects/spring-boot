@@ -71,6 +71,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	 * the archive.
 	 */
 	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File testClassesDirectory;
 
 	/**
@@ -78,30 +79,35 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	 * tests.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File classesDirectory;
 
 	/**
 	 * Directory containing the generated sources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/sources", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedSources;
 
 	/**
 	 * Directory containing the generated test resources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/resources", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedResources;
 
 	/**
 	 * Directory containing the generated test classes.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/classes", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedTestClasses;
 
 	/**
 	 * Directory containing the generated test classes.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File generatedClasses;
 
 	private final RepositorySystem repositorySystem;
@@ -118,7 +124,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 			getLog().debug("process-test-aot goal could not be applied to pom project.");
 			return;
 		}
-		if (Boolean.getBoolean("skipTests") || Boolean.getBoolean("maven.test.skip")) {
+		if (Boolean.getBoolean("maven.test.skip")) {
 			getLog().info("Skipping AOT test processing since tests are skipped");
 			return;
 		}
@@ -148,7 +154,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	protected URL[] getClassPath(boolean includeJUnitPlatformLauncher) throws Exception {
 		File[] directories = new File[] { this.testClassesDirectory, this.generatedTestClasses, this.classesDirectory,
 				this.generatedClasses };
-		URL[] classPath = getClassPath(directories);
+		URL[] classPath = getClassPath(directories, DEVTOOLS_EXCLUDE_FILTER);
 		if (!includeJUnitPlatformLauncher || this.project.getArtifactMap()
 			.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
 			return classPath;

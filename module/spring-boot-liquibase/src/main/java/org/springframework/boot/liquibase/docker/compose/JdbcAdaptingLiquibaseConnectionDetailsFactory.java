@@ -16,6 +16,8 @@
 
 package org.springframework.boot.liquibase.docker.compose;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseConnectionDetails;
@@ -34,12 +36,12 @@ class JdbcAdaptingLiquibaseConnectionDetailsFactory
 		return new LiquibaseConnectionDetails() {
 
 			@Override
-			public String getUsername() {
+			public @Nullable String getUsername() {
 				return input.getUsername();
 			}
 
 			@Override
-			public String getPassword() {
+			public @Nullable String getPassword() {
 				return input.getPassword();
 			}
 

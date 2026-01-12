@@ -43,12 +43,16 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		builder.up().withDetail("version", getVersion());
+		builder.up();
+		String version = getVersion();
+		if (version != null) {
+			builder.withDetail("version", version);
+		}
 	}
 
 	private @Nullable String getVersion() {
 		return this.rabbitTemplate.execute((channel) -> {
-			Object version = channel.getConnection().getServerProperties().get("version");
+			Object version = channel.getConnection().getServerProperties().getOrDefault("version", "unknown");
 			Assert.state(version != null, "'version' must not be null");
 			return version.toString();
 		});

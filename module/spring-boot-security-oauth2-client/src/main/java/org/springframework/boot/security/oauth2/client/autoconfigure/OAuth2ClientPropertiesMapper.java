@@ -19,6 +19,8 @@ package org.springframework.boot.security.oauth2.client.autoconfigure;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties.Provider;
@@ -72,7 +74,7 @@ public final class OAuth2ClientPropertiesMapper {
 		if (builder == null) {
 			builder = getBuilder(registrationId, properties.getProvider(), providers);
 		}
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
 		map.from(properties::getClientAuthenticationMethod)
@@ -87,8 +89,8 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder.build();
 	}
 
-	private static Builder getBuilderFromIssuerIfPossible(String registrationId, String configuredProviderId,
-			Map<String, Provider> providers) {
+	private static @Nullable Builder getBuilderFromIssuerIfPossible(String registrationId,
+			@Nullable String configuredProviderId, Map<String, Provider> providers) {
 		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		if (providers.containsKey(providerId)) {
 			Provider provider = providers.get(providerId);
@@ -101,7 +103,7 @@ public final class OAuth2ClientPropertiesMapper {
 		return null;
 	}
 
-	private static Builder getBuilder(String registrationId, String configuredProviderId,
+	private static Builder getBuilder(String registrationId, @Nullable String configuredProviderId,
 			Map<String, Provider> providers) {
 		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		CommonOAuth2Provider provider = getCommonProvider(providerId);
@@ -116,13 +118,13 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder;
 	}
 
-	private static String getErrorMessage(String configuredProviderId, String registrationId) {
+	private static String getErrorMessage(@Nullable String configuredProviderId, String registrationId) {
 		return ((configuredProviderId != null) ? "Unknown provider ID '" + configuredProviderId + "'"
 				: "Provider ID must be specified for client registration '" + registrationId + "'");
 	}
 
 	private static Builder getBuilder(Builder builder, Provider provider) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
 		map.from(provider::getTokenUri).to(builder::tokenUri);
 		map.from(provider::getUserInfoUri).to(builder::userInfoUri);
@@ -134,7 +136,7 @@ public final class OAuth2ClientPropertiesMapper {
 		return builder;
 	}
 
-	private static CommonOAuth2Provider getCommonProvider(String providerId) {
+	private static @Nullable CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
 			return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
 		}

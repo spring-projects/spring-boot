@@ -21,9 +21,10 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class SampleWebFreeMarkerApplicationTests {
 
 	@Autowired
@@ -63,6 +65,19 @@ class SampleWebFreeMarkerApplicationTests {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(responseEntity.getBody()).contains("Something went wrong: 404 Not Found");
+	}
+
+	@Test
+	void templateErrorPageForSpecificStatusCode() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+		ResponseEntity<String> responseEntity = this.testRestTemplate.exchange("/insufficient-storage", HttpMethod.GET,
+				requestEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_STORAGE);
+		assertThat(responseEntity.getBody()).contains("We are out of storage");
 	}
 
 }

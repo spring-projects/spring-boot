@@ -1,4 +1,0 @@
-# AutoConfigureTestDatabase auto-configuration imports
-org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
-org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

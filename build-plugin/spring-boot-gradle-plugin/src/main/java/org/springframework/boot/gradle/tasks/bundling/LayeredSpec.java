@@ -31,6 +31,7 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
@@ -57,7 +58,7 @@ public abstract class LayeredSpec {
 
 	private DependenciesSpec dependencies;
 
-	private Layers layers;
+	private @Nullable Layers layers;
 
 	@Inject
 	public LayeredSpec(ObjectFactory objects) {
@@ -143,12 +144,10 @@ public abstract class LayeredSpec {
 	 * @return the layers
 	 */
 	Layers asLayers() {
-		Layers layers = this.layers;
-		if (layers == null) {
-			layers = createLayers();
-			this.layers = layers;
+		if (this.layers == null) {
+			this.layers = createLayers();
 		}
-		return layers;
+		return this.layers;
 	}
 
 	private Layers createLayers() {

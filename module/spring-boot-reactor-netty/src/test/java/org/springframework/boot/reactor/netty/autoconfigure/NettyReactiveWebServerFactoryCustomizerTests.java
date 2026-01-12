@@ -63,6 +63,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 	private NettyReactiveWebServerFactoryCustomizer customizer;
 
 	@Captor
+	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<NettyServerCustomizer> customizerCaptor;
 
 	@BeforeEach
@@ -196,6 +197,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Http2SettingsSpec decoder = httpServer.configuration().http2SettingsSpec();
+		assertThat(decoder).isNotNull();
 		assertThat(decoder.maxHeaderListSize()).isEqualTo(expected);
 	}
 

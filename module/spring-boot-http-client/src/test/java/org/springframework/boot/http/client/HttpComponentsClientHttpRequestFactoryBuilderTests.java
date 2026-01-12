@@ -18,18 +18,18 @@ package org.springframework.boot.http.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.hc.client5.http.HttpRoute;
-import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -81,9 +81,9 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 	@Test
 	@WithPackageResources("test.jks")
 	void withTlsSocketStrategyFactory() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());
 		List<SslBundle> bundles = new ArrayList<>();
-		Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory = (bundle) -> {
+		TlsSocketStrategyFactory tlsSocketStrategyFactory = (bundle) -> {
 			bundles.add(bundle);
 			return (socket, target, port, attachment, context) -> null;
 		};
@@ -93,20 +93,36 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		assertThat(bundles).contains(settings.sslBundle());
 	}
 
-	@Override
-	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+	@Test
+	void with() {
+		TestCustomizer<HttpClientBuilder> customizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.with((builder) -> builder.withHttpClientCustomizer(customizer))
+			.build();
+		customizer.assertCalled();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
+		return getConnectorConfig(requestFactory).getConnectTimeout().toMilliseconds();
+	}
+
+	@Override
 	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		HttpClient httpClient = requestFactory.getHttpClient();
-		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
-		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
-				"socketConfigResolver"))
-			.resolve(null);
-		return socketConfig.getSoTimeout().toMilliseconds();
+		return getConnectorConfig(requestFactory).getSocketTimeout().toMilliseconds();
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConnectionConfig getConnectorConfig(HttpComponentsClientHttpRequestFactory requestFactory) {
+		CloseableHttpClient httpClient = (CloseableHttpClient) ReflectionTestUtils.getField(requestFactory,
+				"httpClient");
+		assertThat(httpClient).isNotNull();
+		Object manager = ReflectionTestUtils.getField(httpClient, "connManager");
+		assertThat(manager).isNotNull();
+		Resolver<HttpRoute, ConnectionConfig> resolver = (Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
+			.getField(manager, "connectionConfigResolver");
+		assertThat(resolver).isNotNull();
+		return resolver.resolve(null);
 	}
 
 }

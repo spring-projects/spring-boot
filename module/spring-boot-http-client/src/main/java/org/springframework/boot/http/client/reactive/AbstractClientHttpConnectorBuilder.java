@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.reactive.ClientHttpConnector;
@@ -38,7 +40,7 @@ abstract class AbstractClientHttpConnectorBuilder<T extends ClientHttpConnector>
 
 	private final List<Consumer<T>> customizers;
 
-	protected AbstractClientHttpConnectorBuilder(List<Consumer<T>> customizers) {
+	protected AbstractClientHttpConnectorBuilder(@Nullable List<Consumer<T>> customizers) {
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 	}
 
@@ -65,18 +67,13 @@ abstract class AbstractClientHttpConnectorBuilder<T extends ClientHttpConnector>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final T build(ClientHttpConnectorSettings settings) {
-		T connector = createClientHttpConnector((settings != null) ? settings : ClientHttpConnectorSettings.defaults());
+	public final T build(@Nullable HttpClientSettings settings) {
+		T connector = createClientHttpConnector((settings != null) ? settings : HttpClientSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, connector)
 			.invoke((consumer) -> consumer.accept(connector));
 		return connector;
 	}
 
-	protected abstract T createClientHttpConnector(ClientHttpConnectorSettings settings);
-
-	protected final HttpClientSettings asHttpClientSettings(ClientHttpConnectorSettings settings) {
-		return (settings != null) ? new HttpClientSettings(settings.redirects(), settings.connectTimeout(),
-				settings.readTimeout(), settings.sslBundle()) : null;
-	}
+	protected abstract T createClientHttpConnector(HttpClientSettings settings);
 
 }

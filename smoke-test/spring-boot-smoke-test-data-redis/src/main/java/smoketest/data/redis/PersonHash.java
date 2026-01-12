@@ -16,6 +16,8 @@
 
 package smoketest.data.redis;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -23,23 +25,23 @@ import org.springframework.data.redis.core.RedisHash;
 public class PersonHash {
 
 	@Id
-	private String id;
+	private @Nullable String id;
 
-	private String description;
+	private @Nullable String description;
 
-	public String getId() {
+	public @Nullable String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	public void setId(@Nullable String id) {
 		this.id = id;
 	}
 
-	public String getDescription() {
+	public @Nullable String getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(@Nullable String description) {
 		this.description = description;
 	}
 

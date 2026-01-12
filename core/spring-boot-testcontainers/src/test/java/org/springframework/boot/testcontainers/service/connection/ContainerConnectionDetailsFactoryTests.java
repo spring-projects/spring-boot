@@ -20,11 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
@@ -49,7 +50,7 @@ class ContainerConnectionDetailsFactoryTests {
 
 	private Origin origin;
 
-	private PostgreSQLContainer<?> container;
+	private PostgreSQLContainer container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -125,6 +126,7 @@ class ContainerConnectionDetailsFactoryTests {
 	void getContainerWhenNotInitializedThrowsException() {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		TestDatabaseConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
+		assertThat(connectionDetails).isNotNull();
 		assertThatIllegalStateException().isThrownBy(connectionDetails::callGetContainer)
 			.withMessage("Container cannot be obtained before the connection details bean has been initialized");
 	}
@@ -133,6 +135,7 @@ class ContainerConnectionDetailsFactoryTests {
 	void getContainerWhenInitializedReturnsSuppliedContainer() throws Exception {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		TestDatabaseConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
+		assertThat(connectionDetails).isNotNull();
 		connectionDetails.afterPropertiesSet();
 		assertThat(connectionDetails.callGetContainer()).isSameAs(this.container);
 	}
@@ -144,13 +147,14 @@ class ContainerConnectionDetailsFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void creatingFactoryWithNullNamesThrows() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestContainerConnectionDetailsFactory((List<String>) null));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private TestDatabaseConnectionDetails getConnectionDetails(ConnectionDetailsFactory<?, ?> factory,
+	private @Nullable TestDatabaseConnectionDetails getConnectionDetails(ConnectionDetailsFactory<?, ?> factory,
 			ContainerConnectionSource<?> source) {
 		return (TestDatabaseConnectionDetails) ((ConnectionDetailsFactory) factory).getConnectionDetails(source);
 	}
@@ -165,7 +169,7 @@ class ContainerConnectionDetailsFactoryTests {
 			this(ANY_CONNECTION_NAME);
 		}
 
-		TestContainerConnectionDetailsFactory(String connectionName) {
+		TestContainerConnectionDetailsFactory(@Nullable String connectionName) {
 			super(connectionName);
 		}
 

@@ -33,12 +33,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigTreeConfigDataResourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void constructorWhenPathStringIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((String) null))
 			.withMessage("'path' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void constructorWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((Path) null))
 			.withMessage("'path' must not be null");

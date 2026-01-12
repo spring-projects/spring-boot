@@ -18,6 +18,7 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +66,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ApiVersionParser;
@@ -137,7 +140,7 @@ public final class WebFluxAutoConfiguration {
 	static class WelcomePageConfiguration {
 
 		@Bean
-		RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
+		@Nullable RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
 				WebFluxProperties webFluxProperties, WebProperties webProperties) {
 			String[] staticLocations = webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
@@ -258,7 +261,10 @@ public final class WebFluxAutoConfiguration {
 			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
 				cacheControl.setMaxAge(cachePeriod);
 			}
-			registration.setCacheControl(cacheControl.toHttpCacheControl());
+			CacheControl httpCacheControl = cacheControl.toHttpCacheControl();
+			if (httpCacheControl != null) {
+				registration.setCacheControl(httpCacheControl);
+			}
 			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 		}
 
@@ -274,12 +280,12 @@ public final class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureApiVersioning(ApiVersionConfigurer configurer) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			Apiversion properties = this.webFluxProperties.getApiversion();
-			map.from(properties::isRequired).to(configurer::setVersionRequired);
+			map.from(properties::getRequired).to(configurer::setVersionRequired);
 			map.from(properties::getDefaultVersion).to(configurer::setDefaultVersion);
 			map.from(properties::getSupported).to((supported) -> supported.forEach(configurer::addSupportedVersions));
-			map.from(properties::isDetectSupported).to(configurer::detectSupportedVersions);
+			map.from(properties::getDetectSupported).to(configurer::detectSupportedVersions);
 			configureApiVersioningUse(configurer, properties.getUse());
 			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
 			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
@@ -287,9 +293,9 @@ public final class WebFluxAutoConfiguration {
 		}
 
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
-			map.from(use::getRequestParameter).whenHasText().to(configurer::useRequestParam);
+			map.from(use::getQueryParameter).whenHasText().to(configurer::useQueryParam);
 			map.from(use::getPathSegment).to(configurer::usePathSegment);
 			use.getMediaTypeParameter()
 				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
@@ -310,7 +316,7 @@ public final class WebFluxAutoConfiguration {
 
 		private final ServerProperties serverProperties;
 
-		private final WebFluxRegistrations webFluxRegistrations;
+		private final @Nullable WebFluxRegistrations webFluxRegistrations;
 
 		EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
 				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
@@ -340,7 +346,9 @@ public final class WebFluxAutoConfiguration {
 							getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
-			return ValidatorAdapter.get(getApplicationContext(), getValidator());
+			ApplicationContext applicationContext = getApplicationContext();
+			Assert.state(applicationContext != null, "'applicationContext' must not be null");
+			return ValidatorAdapter.get(applicationContext, getValidator());
 		}
 
 		@Override
@@ -369,11 +377,13 @@ public final class WebFluxAutoConfiguration {
 		@Override
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.LOCALE_CONTEXT_RESOLVER_BEAN_NAME)
 		public LocaleContextResolver localeContextResolver() {
+			Locale locale = this.webProperties.getLocale();
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
-				return new FixedLocaleContextResolver(this.webProperties.getLocale());
+				Assert.state(locale != null, "'locale' must not be null");
+				return new FixedLocaleContextResolver(locale);
 			}
 			AcceptHeaderLocaleContextResolver localeContextResolver = new AcceptHeaderLocaleContextResolver();
-			localeContextResolver.setDefaultLocale(this.webProperties.getLocale());
+			localeContextResolver.setDefaultLocale(locale);
 			return localeContextResolver;
 		}
 
@@ -391,9 +401,9 @@ public final class WebFluxAutoConfiguration {
 		}
 
 		@Override
-		@ConditionalOnMissingBean(name = "mvcApiVersionStrategy")
-		public @Nullable ApiVersionStrategy mvcApiVersionStrategy() {
-			return super.mvcApiVersionStrategy();
+		@ConditionalOnMissingBean(name = "webFluxApiVersionStrategy")
+		public @Nullable ApiVersionStrategy webFluxApiVersionStrategy() {
+			return super.webFluxApiVersionStrategy();
 		}
 
 	}

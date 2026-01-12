@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -41,6 +42,7 @@ final class GradleBuildFieldSetter implements BeforeEachCallback {
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		Field field = ReflectionUtils.findField(context.getRequiredTestClass(), "gradleBuild");
+		Assert.notNull(field, "Field named gradleBuild not found in " + context.getRequiredTestClass().getName());
 		field.setAccessible(true);
 		field.set(context.getRequiredTestInstance(), this.gradleBuild);
 

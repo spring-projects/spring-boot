@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.concurrent.Callable;
@@ -38,6 +39,7 @@ import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.util.Assert;
 
 /**
  * Action that is executed in response to the {@link ApplicationPlugin} being applied.
@@ -70,8 +72,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	private void applyApplicationDefaultJvmArgsToRunTask(TaskContainer tasks, JavaApplication javaApplication,
 			String taskName) {
 		tasks.named(taskName, BootRun.class)
-			.configure((bootRun) -> bootRun.getConventionMapping()
-				.map("jvmArgs", javaApplication::getApplicationDefaultJvmArgs));
+			.configure(
+					(bootRun) -> bootRun.getJvmArguments().convention(javaApplication.getApplicationDefaultJvmArgs()));
 	}
 
 	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
@@ -110,7 +112,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	private String loadResource(String name) {
-		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
+		try (InputStreamReader reader = new InputStreamReader(getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
 			int read;
 			StringWriter writer = new StringWriter();
@@ -124,6 +126,12 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 	}
 
+	private InputStream getResourceAsStream(String name) {
+		InputStream stream = getClass().getResourceAsStream(name);
+		Assert.state(stream != null, "Resource '%s' not found'".formatted(name));
+		return stream;
+	}
+
 	private void configureFilePermissions(CopySpec copySpec, int mode) {
 		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
 			copySpec.filePermissions((filePermissions) -> filePermissions.unix(Integer.toString(mode, 8)));
@@ -133,9 +141,13 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureFileMode(CopySpec copySpec, int mode) {
-		copySpec.setFileMode(mode);
+		try {
+			copySpec.getClass().getMethod("setFileMode", Integer.class).invoke(copySpec, Integer.valueOf(mode));
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to set file mode on CopySpec", ex);
+		}
 	}
 
 }

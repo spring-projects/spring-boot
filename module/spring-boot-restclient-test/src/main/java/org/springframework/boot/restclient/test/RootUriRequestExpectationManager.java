@@ -49,7 +49,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * </pre>
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see RootUriTemplateHandler
  * @see #bindTo(RestTemplate)
  * @see #forRestTemplate(RestTemplate, RequestExpectationManager)
@@ -158,7 +158,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 			RequestExpectationManager expectationManager) {
 		Assert.notNull(restTemplate, "'restTemplate' must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
-		if (templateHandler instanceof RootUriTemplateHandler rootHandler) {
+		if (templateHandler instanceof RootUriTemplateHandler rootHandler && rootHandler.getRootUri() != null) {
 			return new RootUriRequestExpectationManager(rootHandler.getRootUri(), expectationManager);
 		}
 		return expectationManager;

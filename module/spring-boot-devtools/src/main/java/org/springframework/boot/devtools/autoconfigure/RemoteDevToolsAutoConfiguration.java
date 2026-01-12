@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for remote development support.
@@ -58,7 +59,8 @@ import org.springframework.http.server.ServerHttpRequest;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
+@AutoConfiguration(
+		afterName = "org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration")
 @ConditionalOnEnabledDevTools
 @ConditionalOnProperty("spring.devtools.remote.secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class, ServerProperties.class })
@@ -78,7 +80,9 @@ public final class RemoteDevToolsAutoConfiguration {
 	@ConditionalOnMissingBean
 	AccessManager remoteDevToolsAccessManager() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
-		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(), remoteProperties.getSecret());
+		String secret = remoteProperties.getSecret();
+		Assert.state(secret != null, "'secret' must not be null");
+		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(), secret);
 	}
 
 	@Bean

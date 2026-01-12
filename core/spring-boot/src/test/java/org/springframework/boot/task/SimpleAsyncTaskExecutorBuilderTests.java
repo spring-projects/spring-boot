@@ -60,6 +60,12 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	void cancelRemainingTasksOnCloseShouldApply() {
+		SimpleAsyncTaskExecutor executor = this.builder.cancelRemainingTasksOnClose(true).build();
+		assertThat(executor).extracting("cancelRemainingTasksOnClose").isEqualTo(true);
+	}
+
+	@Test
 	void rejectTasksWhenLimitReachedShouldApply() {
 		SimpleAsyncTaskExecutor executor = this.builder.rejectTasksWhenLimitReached(true).build();
 		assertThat(executor).extracting("rejectTasksWhenLimitReached").isEqualTo(true);
@@ -79,6 +85,7 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((SimpleAsyncTaskExecutorCustomizer[]) null))
@@ -86,6 +93,7 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<SimpleAsyncTaskExecutorCustomizer>) null))
@@ -128,6 +136,7 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((SimpleAsyncTaskExecutorCustomizer[]) null))
@@ -135,6 +144,7 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<SimpleAsyncTaskExecutorCustomizer>) null))

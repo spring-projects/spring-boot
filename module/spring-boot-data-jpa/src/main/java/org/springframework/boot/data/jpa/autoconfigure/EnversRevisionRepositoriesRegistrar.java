@@ -26,7 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  *
  * @author Stefano Cordio
  */
-class EnversRevisionRepositoriesRegistrar extends JpaRepositoriesRegistrar {
+class EnversRevisionRepositoriesRegistrar extends DataJpaRepositoriesRegistrar {
 
 	@Override
 	protected Class<?> getConfiguration() {

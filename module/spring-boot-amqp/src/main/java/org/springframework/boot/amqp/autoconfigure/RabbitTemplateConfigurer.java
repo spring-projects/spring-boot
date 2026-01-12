@@ -27,6 +27,10 @@ import org.springframework.amqp.support.converter.AllowedListDeserializingMessag
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.core.retry.RetryListener;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryTemplate;
+import org.springframework.core.retry.support.CompositeRetryListener;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -46,7 +50,7 @@ public class RabbitTemplateConfigurer {
 
 	private @Nullable MessageConverter messageConverter;
 
-	private @Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+	private @Nullable List<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers;
 
 	private final RabbitProperties rabbitProperties;
 
@@ -69,11 +73,12 @@ public class RabbitTemplateConfigurer {
 	}
 
 	/**
-	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
-	 * @param retryTemplateCustomizers the retry template customizers
+	 * Set the {@link RabbitTemplateRetrySettingsCustomizer} instances to use.
+	 * @param retrySettingsCustomizers the retry settings customizers
 	 */
-	public void setRetryTemplateCustomizers(@Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
-		this.retryTemplateCustomizers = retryTemplateCustomizers;
+	public void setRetrySettingsCustomizers(
+			@Nullable List<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers) {
+		this.retrySettingsCustomizers = retrySettingsCustomizers;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {
@@ -95,24 +100,44 @@ public class RabbitTemplateConfigurer {
 		template.setMandatory(determineMandatoryFlag());
 		RabbitProperties.Template templateProperties = this.rabbitProperties.getTemplate();
 		if (templateProperties.getRetry().isEnabled()) {
-			template.setRetryTemplate(new RetryTemplateFactory(this.retryTemplateCustomizers)
-				.createRetryTemplate(templateProperties.getRetry(), RabbitRetryTemplateCustomizer.Target.SENDER));
+			template.setRetryTemplate(createRetryTemplate(templateProperties.getRetry()));
 		}
-		map.from(templateProperties::getReceiveTimeout)
-			.whenNonNull()
-			.as(Duration::toMillis)
-			.to(template::setReceiveTimeout);
-		map.from(templateProperties::getReplyTimeout)
-			.whenNonNull()
-			.as(Duration::toMillis)
-			.to(template::setReplyTimeout);
+		map.from(templateProperties::getReceiveTimeout).as(Duration::toMillis).to(template::setReceiveTimeout);
+		map.from(templateProperties::getReplyTimeout).as(Duration::toMillis).to(template::setReplyTimeout);
 		map.from(templateProperties::getExchange).to(template::setExchange);
 		map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
-		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
+		map.from(templateProperties::getDefaultReceiveQueue).to(template::setDefaultReceiveQueue);
 		map.from(templateProperties::isObservationEnabled).to(template::setObservationEnabled);
 		map.from(templateProperties::getAllowedListPatterns)
 			.whenNot(CollectionUtils::isEmpty)
 			.to((allowedListPatterns) -> setAllowedListPatterns(template.getMessageConverter(), allowedListPatterns));
+	}
+
+	protected RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
+		RabbitRetryTemplateSettings retrySettings = new RabbitRetryTemplateSettings(
+				properties.initializeRetryPolicySettings());
+		if (this.retrySettingsCustomizers != null) {
+			for (RabbitTemplateRetrySettingsCustomizer customizer : this.retrySettingsCustomizers) {
+				customizer.customize(retrySettings);
+			}
+		}
+		RetryPolicy retryPolicy = retrySettings.getRetryPolicySettings().createRetryPolicy();
+		RetryListener retryListener = createRetryListener(retrySettings.getRetryListeners());
+		RetryTemplate retryTemplate = new RetryTemplate(retryPolicy);
+		if (retryListener != null) {
+			retryTemplate.setRetryListener(retryListener);
+		}
+		return retryTemplate;
+	}
+
+	private @Nullable RetryListener createRetryListener(List<RetryListener> configuredListeners) {
+		if (configuredListeners.size() > 1) {
+			return new CompositeRetryListener(configuredListeners);
+		}
+		if (configuredListeners.size() == 1) {
+			return configuredListeners.get(0);
+		}
+		return null;
 	}
 
 	private void setAllowedListPatterns(MessageConverter messageConverter, List<String> allowedListPatterns) {

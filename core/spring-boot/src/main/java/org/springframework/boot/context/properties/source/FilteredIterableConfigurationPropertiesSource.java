@@ -33,7 +33,7 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 
 	private ConfigurationPropertyName @Nullable [] filteredNames;
 
-	private int numerOfFilteredNames;
+	private int numberOfFilteredNames;
 
 	FilteredIterableConfigurationPropertiesSource(IterableConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
@@ -41,13 +41,13 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 		@Nullable ConfigurationPropertyName[] filterableNames = getFilterableNames(source);
 		if (filterableNames != null) {
 			this.filteredNames = new ConfigurationPropertyName[filterableNames.length];
-			this.numerOfFilteredNames = 0;
+			this.numberOfFilteredNames = 0;
 			for (ConfigurationPropertyName name : filterableNames) {
 				if (name == null) {
 					break;
 				}
 				if (filter.test(name)) {
-					this.filteredNames[this.numerOfFilteredNames++] = name;
+					this.filteredNames[this.numberOfFilteredNames++] = name;
 				}
 			}
 		}
@@ -68,7 +68,7 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
 		if (this.filteredNames != null) {
-			return Arrays.stream(this.filteredNames, 0, this.numerOfFilteredNames);
+			return Arrays.stream(this.filteredNames, 0, this.numberOfFilteredNames);
 		}
 		return getSource().stream().filter(getFilter());
 	}
@@ -81,7 +81,7 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		if (this.filteredNames != null) {
-			return ConfigurationPropertyState.search(this.filteredNames, 0, this.numerOfFilteredNames,
+			return ConfigurationPropertyState.search(this.filteredNames, 0, this.numberOfFilteredNames,
 					name::isAncestorOf);
 		}
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);

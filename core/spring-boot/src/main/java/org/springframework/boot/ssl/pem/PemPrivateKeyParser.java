@@ -115,11 +115,11 @@ final class PemPrivateKeyParser {
 	private PemPrivateKeyParser() {
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs1Rsa(byte[] bytes, @Nullable String password) {
 		return createKeySpecForAlgorithm(bytes, RSA_ALGORITHM, null);
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, @Nullable String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey != null, "Unable to find private key");
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
@@ -164,7 +164,7 @@ final class PemPrivateKeyParser {
 		}
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, @Nullable String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
 		Assert.state(ecPrivateKey != null, "Unable to find private key");
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
@@ -182,7 +182,7 @@ final class PemPrivateKeyParser {
 		return (algorithmName != null) ? new PKCS8EncodedKeySpec(bytes, algorithmName) : new PKCS8EncodedKeySpec(bytes);
 	}
 
-	private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, String password) {
+	private static PKCS8EncodedKeySpec createKeySpecForPkcs8Encrypted(byte[] bytes, @Nullable String password) {
 		return Pkcs8PrivateKeyDecryptor.decrypt(bytes, password);
 	}
 

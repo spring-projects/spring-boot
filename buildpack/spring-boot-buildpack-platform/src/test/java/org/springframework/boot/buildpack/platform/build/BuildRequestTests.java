@@ -37,9 +37,9 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
-import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -61,6 +61,7 @@ class BuildRequestTests {
 	private static final ZoneId UTC = ZoneId.of("UTC");
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
@@ -86,6 +87,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void forJarFileWhenJarFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(null))
 			.withMessage("'jarFile' must not be null");
@@ -214,6 +216,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withEnvWhenKeyIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withEnv(null, "test"))
@@ -221,6 +224,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withEnvWhenValueIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withEnv("test", null))
@@ -238,6 +242,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withBuildpacksWhenBuildpacksIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<BuildpackReference>) null))
@@ -255,6 +260,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withBindingsWhenBindingsIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBindings((List<Binding>) null))
@@ -280,6 +286,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withTagsWhenTagsIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withTags((List<ImageReference>) null))
@@ -319,6 +326,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildCache(null))
@@ -342,6 +350,7 @@ class BuildRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withLaunchVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withLaunchCache(null))

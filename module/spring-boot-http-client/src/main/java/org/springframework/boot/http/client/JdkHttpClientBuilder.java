@@ -18,9 +18,12 @@ package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLParameters;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -48,6 +51,18 @@ public final class JdkHttpClientBuilder {
 	}
 
 	/**
+	 * Return a new {@link JdkHttpClientBuilder} that uses the given executor with the
+	 * underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param executor the executor to use
+	 * @return a new {@link JdkHttpClientBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JdkHttpClientBuilder withExecutor(Executor executor) {
+		Assert.notNull(executor, "'executor' must not be null");
+		return withCustomizer((httpClient) -> httpClient.executor(executor));
+	}
+
+	/**
 	 * Return a new {@link JdkHttpClientBuilder} that applies additional customization to
 	 * the underlying {@link java.net.http.HttpClient.Builder}.
 	 * @param customizer the customizer to apply
@@ -63,12 +78,12 @@ public final class JdkHttpClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+	public HttpClient build(@Nullable HttpClientSettings settings) {
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		PropertyMapper map = PropertyMapper.get();
+		map.from(settings::redirects).always().as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
@@ -84,7 +99,10 @@ public final class JdkHttpClientBuilder {
 		return parameters;
 	}
 
-	private Redirect asHttpClientRedirect(HttpRedirects redirects) {
+	private Redirect asHttpClientRedirect(@Nullable HttpRedirects redirects) {
+		if (redirects == null) {
+			return Redirect.NORMAL;
+		}
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;

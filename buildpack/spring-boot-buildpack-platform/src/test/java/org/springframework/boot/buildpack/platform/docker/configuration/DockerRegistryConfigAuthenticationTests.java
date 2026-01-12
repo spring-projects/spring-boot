@@ -23,14 +23,16 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import tools.jackson.core.type.TypeReference;
 
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.testsupport.classpath.resources.ResourcesRoot;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -74,10 +76,11 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForDockerDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForDockerDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "https://index.docker.io/v1/")
 			.containsEntry("username", "username")
@@ -96,10 +99,11 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForLegacyDockerDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForLegacyDockerDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("index.docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "https://index.docker.io/v1/")
 			.containsEntry("username", "username")
@@ -117,10 +121,11 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForCustomDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForCustomDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "my-registry.example.com")
 			.containsEntry("username", "customUser")
@@ -138,10 +143,11 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForCustomDomainWithLegacyFormat(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForCustomDomainWithLegacyFormat(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "https://my-registry.example.com")
 			.containsEntry("username", "customUser")
@@ -154,10 +160,11 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenEmptyConfigDirectoryReturnsFallback(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenEmptyConfigDirectoryReturnsFallback(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "")
 			.containsEntry("username", "")
@@ -183,6 +190,7 @@ class DockerRegistryConfigAuthenticationTests {
 		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
 		mockHelper("desktop", "https://index.docker.io/v1/", "credentials.json");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(1).containsEntry("identitytoken", "secret");
 	}
 
@@ -212,6 +220,7 @@ class DockerRegistryConfigAuthenticationTests {
 		ImageReference imageReference = ImageReference.of("gcr.io/ubuntu:latest");
 		mockHelper("gcr", "gcr.io", "credentials.json");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "https://my-gcr.io")
 			.containsEntry("username", "username")
@@ -240,6 +249,7 @@ class DockerRegistryConfigAuthenticationTests {
 		ImageReference imageReference = ImageReference.of("gcr.io/ubuntu:latest");
 		mockHelper("gcr", "gcr.io", "credentials.json");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "gcr.io")
 			.containsEntry("username", "username")
@@ -269,6 +279,7 @@ class DockerRegistryConfigAuthenticationTests {
 		CredentialHelper helper = mockHelper("gcr");
 		given(helper.get("gcr.io")).willThrow(new IOException("Failed to obtain credentials for registry"));
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "gcr.io")
 			.containsEntry("username", "username")
@@ -295,6 +306,7 @@ class DockerRegistryConfigAuthenticationTests {
 		CredentialHelper helper = mockHelper("gcr");
 		given(helper.get("gcr.io")).willThrow(new IOException("Failed to obtain credentials for registry"));
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
 		assertThat(this.helperExceptions).hasSize(1);
 		assertThat(this.helperExceptions.keySet().iterator().next())
 			.contains("Error retrieving credentials for 'gcr.io' due to: Failed to obtain credentials for registry");
@@ -320,6 +332,7 @@ class DockerRegistryConfigAuthenticationTests {
 		ImageReference imageReference = ImageReference.of("gcr.io/ubuntu:latest");
 		CredentialHelper desktopHelper = mockHelper("desktop");
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
 		// The Docker CLI appears to prioritize the credential helper over the
 		// credential store, even when the helper is empty.
 		assertThat(decode(authHeader)).hasSize(4)
@@ -340,6 +353,7 @@ class DockerRegistryConfigAuthenticationTests {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		CredentialHelper desktopHelper = mockHelper("desktop");
 		String authHeader = getAuthHeader(null, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "")
 			.containsEntry("username", "")
@@ -371,6 +385,7 @@ class DockerRegistryConfigAuthenticationTests {
 		mockHelper("desktop", "my-registry.example.com", "credentials.json");
 		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
+		assertThat(authHeader).isNotNull();
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "my-registry.example.com")
 			.containsEntry("username", "username")
@@ -378,18 +393,20 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("email", "test@example.com");
 	}
 
-	private String getAuthHeader(ImageReference imageReference) {
+	private @Nullable String getAuthHeader(@Nullable ImageReference imageReference) {
 		return getAuthHeader(imageReference, null);
 	}
 
-	private String getAuthHeader(ImageReference imageReference, DockerRegistryAuthentication fallback) {
+	private @Nullable String getAuthHeader(@Nullable ImageReference imageReference,
+			@Nullable DockerRegistryAuthentication fallback) {
 		DockerRegistryConfigAuthentication authentication = getAuthentication(fallback);
 		return authentication.getAuthHeader(imageReference);
 	}
 
-	private DockerRegistryConfigAuthentication getAuthentication(DockerRegistryAuthentication fallback) {
+	private DockerRegistryConfigAuthentication getAuthentication(@Nullable DockerRegistryAuthentication fallback) {
+		Function<String, @Nullable CredentialHelper> credentialHelperFactory = this.credentialHelpers::get;
 		return new DockerRegistryConfigAuthentication(fallback, this.helperExceptions::put, this.environment::get,
-				this.credentialHelpers::get);
+				credentialHelperFactory);
 	}
 
 	private void mockHelper(String name, String serverUrl, String credentialsResourceName) throws Exception {
@@ -405,13 +422,12 @@ class DockerRegistryConfigAuthenticationTests {
 
 	private Credential getCredentials(String resourceName) throws Exception {
 		try (InputStream inputStream = new ClassPathResource(resourceName).getInputStream()) {
-			return new Credential(SharedObjectMapper.get().readTree(inputStream));
+			return new Credential(SharedJsonMapper.get().readTree(inputStream));
 		}
 	}
 
-	private Map<String, String> decode(String authHeader) throws Exception {
-		assertThat(authHeader).isNotNull();
-		return SharedObjectMapper.get().readValue(Base64.getDecoder().decode(authHeader), new TypeReference<>() {
+	private Map<String, String> decode(String authHeader) {
+		return SharedJsonMapper.get().readValue(Base64.getDecoder().decode(authHeader), new TypeReference<>() {
 		});
 	}
 

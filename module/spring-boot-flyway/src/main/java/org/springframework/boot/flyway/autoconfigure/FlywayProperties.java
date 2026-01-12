@@ -61,6 +61,15 @@ public class FlywayProperties {
 	private List<String> locations = new ArrayList<>(Collections.singletonList("classpath:db/migration"));
 
 	/**
+	 * Locations of callbacks. Can contain the special "{vendor}" placeholder to use
+	 * vendor-specific callbacks. Unprefixed locations or locations starting with
+	 * "classpath:" point to a package on the classpath and may contain both SQL and
+	 * Java-based callbacks. Locations starting with "filesystem:" point to a directory on
+	 * the filesystem, may only contain SQL callbacks.
+	 */
+	private List<String> callbackLocations = new ArrayList<>();
+
+	/**
 	 * Encoding of SQL migrations.
 	 */
 	private Charset encoding = StandardCharsets.UTF_8;
@@ -243,7 +252,7 @@ public class FlywayProperties {
 	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
 	 * naming convention.
 	 */
-	private boolean validateMigrationNaming = false;
+	private boolean validateMigrationNaming;
 
 	/**
 	 * Whether to automatically call validate when performing a migration.
@@ -323,7 +332,7 @@ public class FlywayProperties {
 	/**
 	 * List of patterns that identify migrations to ignore when performing validation.
 	 */
-	private @Nullable List<String> ignoreMigrationPatterns;
+	private List<String> ignoreMigrationPatterns = Collections.singletonList("*:future");
 
 	/**
 	 * Whether to attempt to automatically detect SQL migration file encoding.
@@ -363,6 +372,14 @@ public class FlywayProperties {
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
+	}
+
+	public List<String> getCallbackLocations() {
+		return this.callbackLocations;
+	}
+
+	public void setCallbackLocations(List<String> callbackLocations) {
+		this.callbackLocations = callbackLocations;
 	}
 
 	public Charset getEncoding() {
@@ -757,11 +774,11 @@ public class FlywayProperties {
 		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
-	public @Nullable List<String> getIgnoreMigrationPatterns() {
+	public List<String> getIgnoreMigrationPatterns() {
 		return this.ignoreMigrationPatterns;
 	}
 
-	public void setIgnoreMigrationPatterns(@Nullable List<String> ignoreMigrationPatterns) {
+	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
 		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
 	}
 

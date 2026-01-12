@@ -37,7 +37,7 @@ class PatternParseFailureAnalyzerTests {
 	void patternParseFailureQuotesPattern() {
 		FailureAnalysis failureAnalysis = performAnalysis("/spring/**/framework");
 		assertThat(failureAnalysis.getDescription())
-			.contains("Invalid mapping pattern detected:\n" + "/spring/**/framework\n" + "       ^");
+			.contains("Invalid mapping pattern detected:\n" + "/spring/**/framework\n" + "        ^");
 		assertThat(failureAnalysis.getAction())
 			.contains("Fix this pattern in your application or switch to the legacy parser"
 					+ " implementation with 'spring.mvc.pathmatch.matching-strategy=ant_path_matcher'.");
@@ -45,14 +45,15 @@ class PatternParseFailureAnalyzerTests {
 
 	private FailureAnalysis performAnalysis(String pattern) {
 		PatternParseException failure = createFailure(pattern);
-		assertThat(failure).isNotNull();
-		return new PatternParseFailureAnalyzer().analyze(failure);
+		FailureAnalysis analyze = new PatternParseFailureAnalyzer().analyze(failure);
+		assertThat(analyze).isNotNull();
+		return analyze;
 	}
 
 	PatternParseException createFailure(String pattern) {
 		try {
 			this.parser.parse(pattern);
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (PatternParseException ex) {
 			return ex;

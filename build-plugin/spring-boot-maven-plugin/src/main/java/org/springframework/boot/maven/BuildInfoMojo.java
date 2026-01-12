@@ -33,6 +33,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import org.springframework.boot.loader.tools.BuildPropertiesWriter;
@@ -56,18 +57,21 @@ public class BuildInfoMojo extends AbstractMojo {
 	 * The Maven session.
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenSession session;
 
 	/**
 	 * The Maven project.
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenProject project;
 
 	/**
 	 * The location of the generated {@code build-info.properties} file.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
+	@SuppressWarnings("NullAway.Init")
 	private File outputFile;
 
 	/**
@@ -79,14 +83,14 @@ public class BuildInfoMojo extends AbstractMojo {
 	 * @since 2.2.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputTimestamp}")
-	private String time;
+	private @Nullable String time;
 
 	/**
 	 * Additional properties to store in the {@code build-info.properties} file. Each
 	 * entry is prefixed by {@code build.} in the generated {@code build-info.properties}.
 	 */
 	@Parameter
-	private Map<String, String> additionalProperties;
+	private @Nullable Map<String, String> additionalProperties;
 
 	/**
 	 * Properties that should be excluded {@code build-info.properties} file. Can be used
@@ -95,7 +99,7 @@ public class BuildInfoMojo extends AbstractMojo {
 	 * {@code additionalProperties}.
 	 */
 	@Parameter
-	private List<String> excludeInfoProperties;
+	private @Nullable List<String> excludeInfoProperties;
 
 	/**
 	 * Skip the execution.
@@ -138,11 +142,11 @@ public class BuildInfoMojo extends AbstractMojo {
 		return new ProjectDetails(group, artifact, version, name, time, additionalProperties);
 	}
 
-	private <T> T getIfNotExcluded(String name, T value) {
+	private <T> @Nullable T getIfNotExcluded(String name, @Nullable T value) {
 		return (this.excludeInfoProperties == null || !this.excludeInfoProperties.contains(name)) ? value : null;
 	}
 
-	private Map<String, String> applyExclusions(Map<String, String> source) {
+	private @Nullable Map<String, String> applyExclusions(@Nullable Map<String, String> source) {
 		if (source == null || this.excludeInfoProperties == null) {
 			return source;
 		}
@@ -151,7 +155,7 @@ public class BuildInfoMojo extends AbstractMojo {
 		return result;
 	}
 
-	private Instant getBuildTime() {
+	private @Nullable Instant getBuildTime() {
 		if (this.time == null || this.time.isEmpty()) {
 			Date startTime = this.session.getRequest().getStartTime();
 			return (startTime != null) ? startTime.toInstant() : Instant.now();

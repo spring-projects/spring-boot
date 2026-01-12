@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Thymeleaf.
  */
+@NullMarked
 package org.springframework.boot.thymeleaf.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

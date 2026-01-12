@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -43,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class RestartServerTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void sourceDirectoryUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartServer((SourceDirectoryUrlFilter) null))
 			.withMessageContaining("'sourceDirectoryUrlFilter' must not be null");
@@ -110,9 +112,9 @@ class RestartServerTests {
 			super(sourceDirectoryUrlFilter, classLoader);
 		}
 
-		private Set<URL> restartUrls;
+		private @Nullable Set<URL> restartUrls;
 
-		private ClassLoaderFiles restartFiles;
+		private @Nullable ClassLoaderFiles restartFiles;
 
 		@Override
 		protected void restart(Set<URL> urls, ClassLoaderFiles files) {

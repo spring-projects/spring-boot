@@ -22,6 +22,7 @@ import java.util.Map;
  * A configuration property.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ConfigurationProperty {
 
@@ -35,16 +36,20 @@ class ConfigurationProperty {
 
 	private final boolean deprecated;
 
+	private final Deprecation deprecation;
+
 	ConfigurationProperty(String name, String type) {
-		this(name, type, null, null, false);
+		this(name, type, null, null, false, null);
 	}
 
-	ConfigurationProperty(String name, String type, Object defaultValue, String description, boolean deprecated) {
+	ConfigurationProperty(String name, String type, Object defaultValue, String description, boolean deprecated,
+			Deprecation deprecation) {
 		this.name = name;
 		this.type = type;
 		this.defaultValue = defaultValue;
 		this.description = description;
 		this.deprecated = deprecated;
+		this.deprecation = deprecation;
 	}
 
 	String getName() {
@@ -71,18 +76,40 @@ class ConfigurationProperty {
 		return this.deprecated;
 	}
 
+	Deprecation getDeprecation() {
+		return this.deprecation;
+	}
+
 	@Override
 	public String toString() {
 		return "ConfigurationProperty [name=" + this.name + ", type=" + this.type + "]";
 	}
 
+	@SuppressWarnings("unchecked")
 	static ConfigurationProperty fromJsonProperties(Map<String, Object> property) {
 		String name = (String) property.get("name");
 		String type = (String) property.get("type");
 		Object defaultValue = property.get("defaultValue");
 		String description = (String) property.get("description");
 		boolean deprecated = property.containsKey("deprecated");
-		return new ConfigurationProperty(name, type, defaultValue, description, deprecated);
+		Map<String, Object> deprecation = (Map<String, Object>) property.get("deprecation");
+		return new ConfigurationProperty(name, type, defaultValue, description, deprecated,
+				Deprecation.fromJsonProperties(deprecation));
+	}
+
+	record Deprecation(String reason, String replacement, String since, String level) {
+
+		static Deprecation fromJsonProperties(Map<String, Object> property) {
+			if (property == null) {
+				return null;
+			}
+			String reason = (String) property.get("reason");
+			String replacement = (String) property.get("replacement");
+			String since = (String) property.get("since");
+			String level = (String) property.get("level");
+			return new Deprecation(reason, replacement, since, level);
+		}
+
 	}
 
 }

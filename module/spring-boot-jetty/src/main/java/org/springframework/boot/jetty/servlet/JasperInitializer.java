@@ -24,8 +24,9 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import jakarta.servlet.ServletContainerInitializer;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.ClassUtils;
 
@@ -42,14 +43,14 @@ class JasperInitializer extends AbstractLifeCycle {
 
 	private final WebAppContext context;
 
-	private final ServletContainerInitializer initializer;
+	private final @Nullable ServletContainerInitializer initializer;
 
 	JasperInitializer(WebAppContext context) {
 		this.context = context;
 		this.initializer = newInitializer();
 	}
 
-	private ServletContainerInitializer newInitializer() {
+	private @Nullable ServletContainerInitializer newInitializer() {
 		for (String className : INITIALIZER_CLASSES) {
 			try {
 				Class<?> initializerClass = ClassUtils.forName(className, null);
@@ -101,7 +102,7 @@ class JasperInitializer extends AbstractLifeCycle {
 	private static final class WarUrlStreamHandlerFactory implements URLStreamHandlerFactory {
 
 		@Override
-		public URLStreamHandler createURLStreamHandler(String protocol) {
+		public @Nullable URLStreamHandler createURLStreamHandler(String protocol) {
 			if ("war".equals(protocol)) {
 				return new WarUrlStreamHandler();
 			}

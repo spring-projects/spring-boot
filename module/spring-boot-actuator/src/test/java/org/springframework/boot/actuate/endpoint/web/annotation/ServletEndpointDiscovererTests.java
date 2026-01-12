@@ -27,8 +27,12 @@ import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.validation.ValidatorFactory;
+import org.assertj.core.extractor.Extractors;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -38,14 +42,15 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -76,22 +81,24 @@ class ServletEndpointDiscovererTests {
 			ExposableServletEndpoint endpoint = endpoints.iterator().next();
 			assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testservlet"));
 			assertThat(endpoint.getEndpointServlet()).isNotNull();
+			Object servlet = Extractors.byName("servlet").apply(endpoint.getEndpointServlet());
+			assertThat(ClassUtils.isCglibProxy(servlet)).isFalse();
 			assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 		}));
 	}
 
 	@Test
 	void getEndpointsShouldDiscoverProxyServletEndpoints() {
-		this.contextRunner.withUserConfiguration(TestProxyServletEndpoint.class)
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-			.run(assertDiscoverer((discoverer) -> {
-				Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
-				assertThat(endpoints).hasSize(1);
-				ExposableServletEndpoint endpoint = endpoints.iterator().next();
-				assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testservlet"));
-				assertThat(endpoint.getEndpointServlet()).isNotNull();
-				assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
-			}));
+		this.contextRunner.withUserConfiguration(TestProxyServletEndpoint.class).run(assertDiscoverer((discoverer) -> {
+			Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
+			assertThat(endpoints).hasSize(1);
+			ExposableServletEndpoint endpoint = endpoints.iterator().next();
+			assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testservlet"));
+			assertThat(endpoint.getEndpointServlet()).isNotNull();
+			Object servlet = Extractors.byName("servlet").apply(endpoint.getEndpointServlet());
+			assertThat(ClassUtils.isCglibProxy(servlet)).isTrue();
+			assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
+		}));
 	}
 
 	@Test
@@ -178,7 +185,17 @@ class ServletEndpointDiscovererTests {
 
 		@Override
 		public EndpointServlet get() {
-			return new EndpointServlet(TestServlet.class);
+			ValidatorFactory validator = new LocalValidatorFactoryBean();
+			TestServlet target = new TestServlet();
+			MethodValidationInterceptor interceptor = new MethodValidationInterceptor(validator);
+			ProxyFactory proxyFactory = new ProxyFactory();
+			proxyFactory.setTargetClass(EndpointServlet.class);
+			proxyFactory.setTarget(target);
+			proxyFactory.setProxyTargetClass(true);
+			proxyFactory.addAdvice(interceptor);
+			proxyFactory.getProxy();
+			TestServlet servlet = (TestServlet) proxyFactory.getProxy();
+			return new EndpointServlet(servlet);
 		}
 
 	}
@@ -230,7 +247,7 @@ class ServletEndpointDiscovererTests {
 	static class TestServletEndpointSupplierOfNull implements Supplier<EndpointServlet> {
 
 		@Override
-		public EndpointServlet get() {
+		public @Nullable EndpointServlet get() {
 			return null;
 		}
 

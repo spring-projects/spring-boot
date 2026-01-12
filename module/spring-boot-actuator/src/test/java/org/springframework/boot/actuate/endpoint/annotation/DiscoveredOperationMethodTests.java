@@ -38,8 +38,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class DiscoveredOperationMethodTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenAnnotationAttributesIsNullShouldThrowException() {
-		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		Method method = getMethod();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
 			.withMessageContaining("'annotationAttributes' must not be null");
@@ -47,7 +48,7 @@ class DiscoveredOperationMethodTests {
 
 	@Test
 	void getProducesMediaTypesShouldReturnMediaTypes() {
-		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		Method method = getMethod();
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
 		annotationAttributes.put("produces", produces);
@@ -59,13 +60,19 @@ class DiscoveredOperationMethodTests {
 
 	@Test
 	void getProducesMediaTypesWhenProducesFromShouldReturnMediaTypes() {
-		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		Method method = getMethod();
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		annotationAttributes.put("produces", new String[0]);
 		annotationAttributes.put("producesFrom", ExampleProducible.class);
 		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
 				annotationAttributes);
 		assertThat(discovered.getProducesMediaTypes()).containsExactly("one/*", "two/*", "three/*");
+	}
+
+	private Method getMethod() {
+		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		assertThat(method).isNotNull();
+		return method;
 	}
 
 	void example() {

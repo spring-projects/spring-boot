@@ -18,6 +18,7 @@ package org.springframework.boot.jdbc.metadata;
 
 import org.apache.tomcat.jdbc.pool.ConnectionPool;
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link DataSourcePoolMetadata} for a Tomcat DataSource.
@@ -32,33 +33,33 @@ public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	@Override
-	public Integer getActive() {
+	public @Nullable Integer getActive() {
 		ConnectionPool pool = getDataSource().getPool();
 		return (pool != null) ? pool.getActive() : 0;
 	}
 
 	@Override
-	public Integer getIdle() {
+	public @Nullable Integer getIdle() {
 		return getDataSource().getNumIdle();
 	}
 
 	@Override
-	public Integer getMax() {
+	public @Nullable Integer getMax() {
 		return getDataSource().getMaxActive();
 	}
 
 	@Override
-	public Integer getMin() {
+	public @Nullable Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 
 	@Override
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
 
 	@Override
-	public Boolean getDefaultAutoCommit() {
+	public @Nullable Boolean getDefaultAutoCommit() {
 		return getDataSource().isDefaultAutoCommit();
 	}
 

@@ -37,11 +37,6 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "mariadb-bitnami-compose.yaml", image = TestImage.BITNAMI_MARIADB)
-	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-	}
-
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");

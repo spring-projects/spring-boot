@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -36,20 +37,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class SpringApplicationAotProcessorTests {
 
+	private static final ApplicationInvoker invoker = new ApplicationInvoker();
+
 	@BeforeEach
 	void setup() {
-		SampleApplication.argsHolder = null;
-		SampleApplication.postRunInvoked = false;
+		invoker.clean();
 	}
 
 	@Test
-	void processApplicationInvokesRunMethod(@TempDir Path directory) {
+	void processApplicationInvokesMainMethod(@TempDir Path directory) {
 		String[] arguments = new String[] { "1", "2" };
-		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(SampleApplication.class,
+		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(PublicMainMethod.class,
 				settings(directory), arguments);
 		processor.process();
-		assertThat(SampleApplication.argsHolder).isEqualTo(arguments);
-		assertThat(SampleApplication.postRunInvoked).isFalse();
+		assertThat(ApplicationInvoker.argsHolder).isEqualTo(arguments);
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
 	}
 
 	@Test
@@ -62,23 +64,53 @@ class SpringApplicationAotProcessorTests {
 	}
 
 	@Test
-	void invokeMainParsesArgumentsAndInvokesRunMethod(@TempDir Path directory) throws Exception {
-		String[] mainArguments = new String[] { SampleApplication.class.getName(),
+	void invokeMainParsesArgumentsAndInvokesMainMethod(@TempDir Path directory) throws Exception {
+		String[] mainArguments = new String[] { PublicMainMethod.class.getName(),
 				directory.resolve("source").toString(), directory.resolve("resource").toString(),
 				directory.resolve("class").toString(), "com.example", "example", "1", "2" };
 		SpringApplicationAotProcessor.main(mainArguments);
-		assertThat(SampleApplication.argsHolder).containsExactly("1", "2");
-		assertThat(SampleApplication.postRunInvoked).isFalse();
+		assertThat(ApplicationInvoker.argsHolder).containsExactly("1", "2");
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
+	}
+
+	@Test
+	void invokeMainParsesArgumentsAndInvokesPackagePrivateMainMethod(@TempDir Path directory) throws Exception {
+		String[] mainArguments = new String[] { PackagePrivateMainMethod.class.getName(),
+				directory.resolve("source").toString(), directory.resolve("resource").toString(),
+				directory.resolve("class").toString(), "com.example", "example", "1", "2" };
+		SpringApplicationAotProcessor.main(mainArguments);
+		assertThat(ApplicationInvoker.argsHolder).containsExactly("1", "2");
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
+	}
+
+	@Test
+	void invokeMainParsesArgumentsAndInvokesParameterLessMainMethod(@TempDir Path directory) throws Exception {
+		String[] mainArguments = new String[] { PublicParameterlessMainMethod.class.getName(),
+				directory.resolve("source").toString(), directory.resolve("resource").toString(),
+				directory.resolve("class").toString(), "com.example", "example", "1", "2" };
+		SpringApplicationAotProcessor.main(mainArguments);
+		assertThat(ApplicationInvoker.argsHolder).isNull();
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
+	}
+
+	@Test
+	void invokeMainParsesArgumentsAndInvokesPackagePrivateRunMethod(@TempDir Path directory) throws Exception {
+		String[] mainArguments = new String[] { PackagePrivateParameterlessMainMethod.class.getName(),
+				directory.resolve("source").toString(), directory.resolve("resource").toString(),
+				directory.resolve("class").toString(), "com.example", "example", "1", "2" };
+		SpringApplicationAotProcessor.main(mainArguments);
+		assertThat(ApplicationInvoker.argsHolder).isNull();
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
 	}
 
 	@Test
 	void invokeMainParsesArgumentsAndInvokesRunMethodWithoutGroupId(@TempDir Path directory) throws Exception {
-		String[] mainArguments = new String[] { SampleApplication.class.getName(),
+		String[] mainArguments = new String[] { PublicMainMethod.class.getName(),
 				directory.resolve("source").toString(), directory.resolve("resource").toString(),
 				directory.resolve("class").toString(), "", "example", "1", "2" };
 		SpringApplicationAotProcessor.main(mainArguments);
-		assertThat(SampleApplication.argsHolder).containsExactly("1", "2");
-		assertThat(SampleApplication.postRunInvoked).isFalse();
+		assertThat(ApplicationInvoker.argsHolder).containsExactly("1", "2");
+		assertThat(ApplicationInvoker.postRunInvoked).isFalse();
 	}
 
 	@Test
@@ -99,16 +131,37 @@ class SpringApplicationAotProcessorTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class SampleApplication {
-
-		public static String[] argsHolder;
-
-		public static boolean postRunInvoked;
+	public static class PublicMainMethod {
 
 		public static void main(String[] args) {
-			argsHolder = args;
-			SpringApplication.run(SampleApplication.class, args);
-			postRunInvoked = true;
+			invoker.invoke(args, () -> SpringApplication.run(PublicMainMethod.class, args));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class PackagePrivateMainMethod {
+
+		static void main(String[] args) {
+			invoker.invoke(args, () -> SpringApplication.run(PackagePrivateMainMethod.class, args));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class PublicParameterlessMainMethod {
+
+		public static void main() {
+			invoker.invoke(null, () -> SpringApplication.run(PublicParameterlessMainMethod.class));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class PackagePrivateParameterlessMainMethod {
+
+		static void main() {
+			invoker.invoke(null, () -> SpringApplication.run(PackagePrivateParameterlessMainMethod.class));
 		}
 
 	}
@@ -117,6 +170,25 @@ class SpringApplicationAotProcessorTests {
 
 		public static void main(String[] args) {
 			// Does not run an application
+		}
+
+	}
+
+	private static final class ApplicationInvoker {
+
+		public static String @Nullable [] argsHolder;
+
+		public static boolean postRunInvoked;
+
+		void invoke(String @Nullable [] args, Runnable applicationRun) {
+			argsHolder = args;
+			applicationRun.run();
+			postRunInvoked = true;
+		}
+
+		void clean() {
+			argsHolder = null;
+			postRunInvoked = false;
 		}
 
 	}

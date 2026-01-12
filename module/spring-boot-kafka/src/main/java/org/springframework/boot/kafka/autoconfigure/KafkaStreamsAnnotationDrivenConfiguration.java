@@ -22,19 +22,18 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer;
 import org.springframework.kafka.core.CleanupConfig;
 
 /**
@@ -76,11 +75,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	@Bean
-	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
-			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean,
-			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
-		customizers.orderedStream().forEach((customizer) -> customizer.customize(factoryBean));
-		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
+	StreamsBuilderFactoryBeanConfigurer kafkaPropertiesStreamsBuilderFactoryBeanConfigurer() {
+		return new KafkaPropertiesStreamsBuilderFactoryBeanConfigurer(this.properties);
 	}
 
 	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
@@ -91,24 +87,25 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		KafkaAutoConfiguration.applySslBundle(properties, streams.getSslBundle());
 	}
 
-	// Separate class required to avoid BeanCurrentlyInCreationException
-	static class KafkaStreamsFactoryBeanConfigurer implements InitializingBean {
+	static class KafkaPropertiesStreamsBuilderFactoryBeanConfigurer implements StreamsBuilderFactoryBeanConfigurer {
 
 		private final KafkaProperties properties;
 
-		private final StreamsBuilderFactoryBean factoryBean;
-
-		KafkaStreamsFactoryBeanConfigurer(KafkaProperties properties, StreamsBuilderFactoryBean factoryBean) {
+		KafkaPropertiesStreamsBuilderFactoryBeanConfigurer(KafkaProperties properties) {
 			this.properties = properties;
-			this.factoryBean = factoryBean;
 		}
 
 		@Override
-		public void afterPropertiesSet() {
-			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
+		public void configure(StreamsBuilderFactoryBean factoryBean) {
+			factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
 			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
 			CleanupConfig cleanupConfig = new CleanupConfig(cleanup.isOnStartup(), cleanup.isOnShutdown());
-			this.factoryBean.setCleanupConfig(cleanupConfig);
+			factoryBean.setCleanupConfig(cleanupConfig);
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
 		}
 
 	}

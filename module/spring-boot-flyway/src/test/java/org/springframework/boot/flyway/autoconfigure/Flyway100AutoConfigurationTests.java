@@ -47,8 +47,13 @@ class Flyway100AutoConfigurationTests {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
 			assertThat(flyway.getConfiguration().getLocations())
-				.containsExactly(new Location("classpath:db/migration"));
+				.containsExactly(createLocation("classpath:db/migration"));
 		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Location createLocation(String location) {
+		return new Location(location);
 	}
 
 }

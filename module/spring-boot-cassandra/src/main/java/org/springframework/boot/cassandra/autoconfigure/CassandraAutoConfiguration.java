@@ -174,7 +174,7 @@ public final class CassandraAutoConfiguration {
 
 	private Config mapConfig(CassandraConnectionDetails connectionDetails) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.properties.getSessionName())
 			.whenHasText()
 			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
@@ -196,7 +196,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapConnectionOptions(CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		Connection connectionProperties = this.properties.getConnection();
 		map.from(connectionProperties::getConnectTimeout)
 			.asInt(Duration::toMillis)
@@ -207,7 +207,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapPoolingOptions(CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		CassandraProperties.Pool poolProperties = this.properties.getPool();
 		map.from(poolProperties::getIdleTimeout)
 			.asInt(Duration::toMillis)
@@ -218,7 +218,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapRequestOptions(CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		Request requestProperties = this.properties.getRequest();
 		map.from(requestProperties::getTimeout)
 			.asInt(Duration::toMillis)
@@ -247,7 +247,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapControlConnectionOptions(CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		Controlconnection controlProperties = this.properties.getControlconnection();
 		map.from(controlProperties::getTimeout)
 			.asInt(Duration::toMillis)
@@ -260,7 +260,7 @@ public final class CassandraAutoConfiguration {
 
 	private static final class CassandraDriverOptions {
 
-		private final Map<String, String> options = new LinkedHashMap<>();
+		private final Map<String, @Nullable String> options = new LinkedHashMap<>();
 
 		private CassandraDriverOptions add(DriverOption option, @Nullable String value) {
 			String key = createKeyFor(option);

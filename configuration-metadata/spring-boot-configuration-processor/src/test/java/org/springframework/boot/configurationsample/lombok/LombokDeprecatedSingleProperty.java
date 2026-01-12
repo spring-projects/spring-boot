@@ -18,7 +18,7 @@ package org.springframework.boot.configurationsample.lombok;
 
 import lombok.Data;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties with a single deprecated element.
@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties("singledeprecated")
+@TestConfigurationProperties("singledeprecated")
 @SuppressWarnings("unused")
 public class LombokDeprecatedSingleProperty {
 

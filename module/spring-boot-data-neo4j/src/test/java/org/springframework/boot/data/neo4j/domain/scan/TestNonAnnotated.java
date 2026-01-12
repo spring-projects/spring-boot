@@ -23,6 +23,7 @@ public class TestNonAnnotated {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 }

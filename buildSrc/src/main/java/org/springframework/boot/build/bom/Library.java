@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -46,6 +47,7 @@ import org.gradle.api.artifacts.result.DependencyResult;
 import org.gradle.api.artifacts.result.ResolutionResult;
 import org.w3c.dom.Document;
 
+import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
@@ -74,7 +76,7 @@ public class Library {
 
 	private final VersionAlignment versionAlignment;
 
-	private final String alignsWithBom;
+	private final BomAlignment bomAlignment;
 
 	private final String linkRootName;
 
@@ -93,15 +95,14 @@ public class Library {
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param considerSnapshots whether to consider snapshots
 	 * @param versionAlignment version alignment, if any, for the library
-	 * @param alignsWithBom the coordinates of the bom, if any, that this library should
-	 * align with
+	 * @param bomAlignment the bom, if any, that this library should align with
 	 * @param linkRootName the root name to use when generating link variable or
 	 * {@code null} to generate one based on the library {@code name}
 	 * @param links a list of HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots,
-			VersionAlignment versionAlignment, String alignsWithBom, String linkRootName,
+			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName,
 			Map<String, List<Link>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
@@ -113,7 +114,7 @@ public class Library {
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
-		this.alignsWithBom = alignsWithBom;
+		this.bomAlignment = bomAlignment;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
 		this.links = (links != null) ? Collections.unmodifiableMap(new TreeMap<>(links)) : Collections.emptyMap();
 	}
@@ -162,8 +163,8 @@ public class Library {
 		return this.linkRootName;
 	}
 
-	public String getAlignsWithBom() {
-		return this.alignsWithBom;
+	public BomAlignment getAlignsWithBom() {
+		return this.bomAlignment;
 	}
 
 	public Map<String, List<Link>> getLinks() {
@@ -191,7 +192,7 @@ public class Library {
 
 	public Library withVersion(LibraryVersion version) {
 		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
-				this.prohibitedVersions, this.considerSnapshots, this.versionAlignment, this.alignsWithBom,
+				this.prohibitedVersions, this.considerSnapshots, this.versionAlignment, this.bomAlignment,
 				this.linkRootName, this.links);
 	}
 
@@ -427,6 +428,27 @@ public class Library {
 	public interface VersionAlignment {
 
 		Set<String> resolve();
+
+	}
+
+	public static class BomAlignment {
+
+		private final String coordinates;
+
+		private final Predicate<Id> excluding;
+
+		public BomAlignment(String bomCoordinates, Predicate<Id> excluding) {
+			this.coordinates = bomCoordinates;
+			this.excluding = excluding;
+		}
+
+		public String getCoordinates() {
+			return this.coordinates;
+		}
+
+		public boolean exclude(Id id) {
+			return this.excluding.test(id);
+		}
 
 	}
 

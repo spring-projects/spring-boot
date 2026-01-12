@@ -17,8 +17,8 @@
 package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -34,15 +34,14 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class PostgresR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<PostgreSQLContainer<?>, R2dbcConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<PostgreSQLContainer, R2dbcConnectionDetails> {
 
 	PostgresR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<PostgreSQLContainer<?>> source) {
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer> source) {
 		return new PostgresR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
@@ -50,9 +49,9 @@ class PostgresR2dbcContainerConnectionDetailsFactory
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class PostgresR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<PostgreSQLContainer<?>> implements R2dbcConnectionDetails {
+			extends ContainerConnectionDetails<PostgreSQLContainer> implements R2dbcConnectionDetails {
 
-		PostgresR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer<?>> source) {
+		PostgresR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer> source) {
 			super(source);
 		}
 

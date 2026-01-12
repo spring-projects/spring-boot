@@ -34,7 +34,7 @@ class MyReactiveCloudFoundryConfiguration {
 	@Bean
 	fun httpHandler(applicationContext: ApplicationContext, properties: WebFluxProperties): HttpHandler {
 		val httpHandler = WebHttpHandlerBuilder.applicationContext(applicationContext).build()
-		return CloudFoundryHttpHandler(properties.basePath, httpHandler)
+		return CloudFoundryHttpHandler(properties.basePath ?: "/", httpHandler)
 	}
 
 	private class CloudFoundryHttpHandler(basePath: String, private val delegate: HttpHandler) : HttpHandler {

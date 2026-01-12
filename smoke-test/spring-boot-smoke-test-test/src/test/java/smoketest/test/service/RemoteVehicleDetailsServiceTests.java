@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import smoketest.test.domain.VehicleIdentificationNumber;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,6 +52,7 @@ class RemoteVehicleDetailsServiceTests {
 	private MockRestServiceServer server;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
 			.withMessage("'vin' must not be null");

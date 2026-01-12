@@ -46,12 +46,14 @@ class StandardConfigDataResourceTests {
 	private final Resource resource = mock(Resource.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenReferenceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(null, this.resource))
 			.withMessage("'reference' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(this.reference, null))
 			.withMessage("'resource' must not be null");
@@ -78,6 +80,7 @@ class StandardConfigDataResourceTests {
 	@WithResource(name = "test.resource", content = "test")
 	void equalsAndHashCodeWhenSameUnderlyingResource(@ResourcePath("test.resource") Path path) throws IOException {
 		Path directory = path.getParent();
+		assertThat(directory).isNotNull();
 		URLClassLoader classLoader = new URLClassLoader(new URL[] { directory.toUri().toURL() },
 				getClass().getClassLoader());
 		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();

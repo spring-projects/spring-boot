@@ -48,9 +48,11 @@ import static org.mockito.BDDMockito.given;
 class ListCommandTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Context context;
 
 	private ListCommand command;
@@ -68,6 +70,7 @@ class ListCommandTests {
 	@Test
 	void listLayersShouldListLayers() {
 		Layers layers = IndexedLayers.get(this.context);
+		assertThat(layers).isNotNull();
 		this.command.printLayers(layers, this.out);
 		assertThat(this.out).hasSameContentAsResource("list-output-without-deprecation.txt");
 	}

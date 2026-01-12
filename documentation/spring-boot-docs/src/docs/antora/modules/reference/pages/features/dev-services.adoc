@@ -83,55 +83,55 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
-| javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails[]
+| javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq" or "apache/activemq-classic"
 
-| javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
+| javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis"
 
 | javadoc:org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails[]
-| Containers named "cassandra" or "bitnami/cassandra"
+| Containers named "cassandra"
 
 | javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]
-| Containers named "elasticsearch" or "bitnami/elasticsearch"
+| Containers named "elasticsearch"
 
-| javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails[]
+| javadoc:org.springframework.boot.hazelcast.autoconfigure.HazelcastConnectionDetails[]
 | Containers named "hazelcast/hazelcast".
 
-| javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
-| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| javadoc:org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails[]
+| Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[]
 | Containers named "osixia/openldap", "lldap/lldap"
 
-| javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
-| Containers named "mongo" or "bitnami/mongodb"
+| javadoc:org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails[]
+| Containers named "mongo"
 
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
-| Containers named "neo4j" or "bitnami/neo4j"
+| Containers named "neo4j"
 
-| javadoc:org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails[]
+| javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails[]
+| javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails[]
+| javadoc:org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
+| javadoc:org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails[]
 | Containers named "apachepulsar/pulsar"
 
-| javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
-| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[]
+| Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
-| javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
-| Containers named "rabbitmq" or "bitnami/rabbitmq"
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
+| Containers named "rabbitmq"
 
-| javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
-| Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
+| javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
+| Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
 
-| javadoc:org.springframework.boot.tracing.autoconfigure.zipkin.ZipkinConnectionDetails[]
+| javadoc:org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin".
 |===
 

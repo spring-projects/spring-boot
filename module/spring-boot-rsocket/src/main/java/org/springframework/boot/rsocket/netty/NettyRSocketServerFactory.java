@@ -33,6 +33,7 @@ import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.server.HttpServer;
@@ -70,21 +71,21 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private int port = 9898;
 
-	private DataSize fragmentSize;
+	private @Nullable DataSize fragmentSize;
 
-	private InetAddress address;
+	private @Nullable InetAddress address;
 
 	private RSocketServer.Transport transport = RSocketServer.Transport.TCP;
 
-	private ReactorResourceFactory resourceFactory;
+	private @Nullable ReactorResourceFactory resourceFactory;
 
-	private Duration lifecycleTimeout;
+	private @Nullable Duration lifecycleTimeout;
 
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
-	private Ssl ssl;
+	private @Nullable Ssl ssl;
 
-	private SslBundles sslBundles;
+	private @Nullable SslBundles sslBundles;
 
 	@Override
 	public void setPort(int port) {
@@ -92,12 +93,12 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
-	public void setFragmentSize(DataSize fragmentSize) {
+	public void setFragmentSize(@Nullable DataSize fragmentSize) {
 		this.fragmentSize = fragmentSize;
 	}
 
 	@Override
-	public void setAddress(InetAddress address) {
+	public void setAddress(@Nullable InetAddress address) {
 		this.address = address;
 	}
 
@@ -107,12 +108,12 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
-	public void setSsl(Ssl ssl) {
+	public void setSsl(@Nullable Ssl ssl) {
 		this.ssl = ssl;
 	}
 
 	@Override
-	public void setSslBundles(SslBundles sslBundles) {
+	public void setSslBundles(@Nullable SslBundles sslBundles) {
 		this.sslBundles = sslBundles;
 	}
 
@@ -120,7 +121,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
 	 */
-	public void setResourceFactory(ReactorResourceFactory resourceFactory) {
+	public void setResourceFactory(@Nullable ReactorResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
 	}
 
@@ -166,7 +167,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private void configureServer(io.rsocket.core.RSocketServer server) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.fragmentSize).asInt(DataSize::toBytes).to(server::fragment);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 	}
@@ -184,13 +185,13 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (Ssl.isEnabled(this.ssl)) {
-			httpServer = customizeSslConfiguration(httpServer);
+			httpServer = customizeSslConfiguration(httpServer, this.ssl);
 		}
 		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
 	}
 
-	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		return new HttpServerSslCustomizer(this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
+	private HttpServer customizeSslConfiguration(HttpServer httpServer, Ssl ssl) {
+		return new HttpServerSslCustomizer(ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
 			.apply(httpServer);
 	}
 
@@ -211,12 +212,14 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	protected final Map<String, SslBundle> getServerNameSslBundles() {
+		Assert.state(this.ssl != null, "'ssl' must not be null");
 		return this.ssl.getServerNameBundles()
 			.stream()
 			.collect(Collectors.toMap(Ssl.ServerNameSslBundle::serverName, this::getBundle));
 	}
 
 	private SslBundle getBundle(ServerNameSslBundle serverNameSslBundle) {
+		Assert.state(this.sslBundles != null, "'sslBundles' must not be null");
 		return this.sslBundles.getBundle(serverNameSslBundle.bundle());
 	}
 
@@ -253,7 +256,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 		private final SslBundle sslBundle;
 
-		private TcpServerSslCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle,
+		private TcpServerSslCustomizer(Ssl.@Nullable ClientAuth clientAuth, SslBundle sslBundle,
 				Map<String, SslBundle> serverNameSslBundles) {
 			super(Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 			this.sslBundle = sslBundle;
@@ -272,7 +275,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 		private final Map<String, SslProvider> serverNameSslProviders;
 
-		private HttpServerSslCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle,
+		private HttpServerSslCustomizer(Ssl.@Nullable ClientAuth clientAuth, SslBundle sslBundle,
 				Map<String, SslBundle> serverNameSslBundles) {
 			super(Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 			this.sslProvider = createSslProvider(sslBundle);

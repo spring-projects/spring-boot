@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.reactive.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.WebApplicationType;
@@ -37,14 +39,14 @@ import org.springframework.util.StringUtils;
  * from a contained {@link ReactiveWebServerFactory} bean.
  *
  * @author Brian Clozel
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class ReactiveWebServerApplicationContext extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
-	private volatile WebServerManager serverManager;
+	private volatile @Nullable WebServerManager serverManager;
 
-	private String serverNamespace;
+	private @Nullable String serverNamespace;
 
 	/**
 	 * Create a new {@link ReactiveWebServerApplicationContext}.
@@ -100,11 +102,11 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			createWebServer.tag("factory", webServerFactory.getClass().toString());
 			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
-			this.serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
+			serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
+			this.serverManager = serverManager;
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
-					new WebServerGracefulShutdownLifecycle(this.serverManager.getWebServer()));
-			getBeanFactory().registerSingleton("webServerStartStop",
-					new WebServerStartStopLifecycle(this.serverManager));
+					new WebServerGracefulShutdownLifecycle(serverManager.getWebServer()));
+			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(serverManager));
 			createWebServer.end();
 		}
 		initPropertySources();
@@ -166,18 +168,18 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	 * @return the web server
 	 */
 	@Override
-	public WebServer getWebServer() {
+	public @Nullable WebServer getWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		return (serverManager != null) ? serverManager.getWebServer() : null;
 	}
 
 	@Override
-	public String getServerNamespace() {
+	public @Nullable String getServerNamespace() {
 		return this.serverNamespace;
 	}
 
 	@Override
-	public void setServerNamespace(String serverNamespace) {
+	public void setServerNamespace(@Nullable String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}
 

@@ -39,7 +39,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Safeer Ansari
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.data.mongodb")
+@ConfigurationProperties("spring.mongodb")
 public class MongoProperties {
 
 	/**
@@ -89,8 +89,6 @@ public class MongoProperties {
 	 */
 	private @Nullable String authenticationDatabase;
 
-	private final Gridfs gridfs = new Gridfs();
-
 	/**
 	 * Login user of the mongo server. Ignored if 'uri' is set.
 	 */
@@ -106,22 +104,9 @@ public class MongoProperties {
 	 */
 	private @Nullable String replicaSetName;
 
-	/**
-	 * Fully qualified name of the FieldNamingStrategy to use.
-	 */
-	private @Nullable Class<?> fieldNamingStrategy;
-
-	/**
-	 * Representation to use when converting a UUID to a BSON binary value.
-	 */
-	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+	private final Representation representation = new Representation();
 
 	private final Ssl ssl = new Ssl();
-
-	/**
-	 * Whether to enable auto-index creation.
-	 */
-	private @Nullable Boolean autoIndexCreation;
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
@@ -179,22 +164,6 @@ public class MongoProperties {
 		this.replicaSetName = replicaSetName;
 	}
 
-	public @Nullable Class<?> getFieldNamingStrategy() {
-		return this.fieldNamingStrategy;
-	}
-
-	public void setFieldNamingStrategy(@Nullable Class<?> fieldNamingStrategy) {
-		this.fieldNamingStrategy = fieldNamingStrategy;
-	}
-
-	public UuidRepresentation getUuidRepresentation() {
-		return this.uuidRepresentation;
-	}
-
-	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
-		this.uuidRepresentation = uuidRepresentation;
-	}
-
 	public @Nullable String getUri() {
 		return this.uri;
 	}
@@ -215,23 +184,11 @@ public class MongoProperties {
 		this.port = port;
 	}
 
-	public Gridfs getGridfs() {
-		return this.gridfs;
-	}
-
 	public @Nullable String getMongoClientDatabase() {
 		if (this.database != null) {
 			return this.database;
 		}
 		return new ConnectionString(determineUri()).getDatabase();
-	}
-
-	public @Nullable Boolean isAutoIndexCreation() {
-		return this.autoIndexCreation;
-	}
-
-	public void setAutoIndexCreation(@Nullable Boolean autoIndexCreation) {
-		this.autoIndexCreation = autoIndexCreation;
 	}
 
 	public @Nullable List<String> getAdditionalHosts() {
@@ -242,36 +199,27 @@ public class MongoProperties {
 		this.additionalHosts = additionalHosts;
 	}
 
+	public Representation getRepresentation() {
+		return this.representation;
+	}
+
 	public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public static class Gridfs {
+	public static class Representation {
 
 		/**
-		 * GridFS database name.
+		 * Representation to use when converting a UUID to a BSON binary value.
 		 */
-		private @Nullable String database;
+		private UuidRepresentation uuid = UuidRepresentation.UNSPECIFIED;
 
-		/**
-		 * GridFS bucket name.
-		 */
-		private @Nullable String bucket;
-
-		public @Nullable String getDatabase() {
-			return this.database;
+		public UuidRepresentation getUuid() {
+			return this.uuid;
 		}
 
-		public void setDatabase(@Nullable String database) {
-			this.database = database;
-		}
-
-		public @Nullable String getBucket() {
-			return this.bucket;
-		}
-
-		public void setBucket(@Nullable String bucket) {
-			this.bucket = bucket;
+		public void setUuid(UuidRepresentation uuid) {
+			this.uuid = uuid;
 		}
 
 	}

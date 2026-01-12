@@ -16,22 +16,24 @@
 
 package org.springframework.boot.build.devtools;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 /**
@@ -41,22 +43,22 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 
-	private final Configuration devtools;
+	private FileCollection defaults;
 
 	public DocumentDevtoolsPropertyDefaults() {
-		this.devtools = getProject().getConfigurations().create("devtools");
 		getOutputFile().convention(getProject().getLayout()
 			.getBuildDirectory()
 			.file("generated/docs/using/devtools-property-defaults.adoc"));
-		Map<String, String> dependency = new HashMap<>();
-		dependency.put("path", ":module:spring-boot-devtools");
-		dependency.put("configuration", "propertyDefaults");
-		this.devtools.getDependencies().add(getProject().getDependencies().project(dependency));
 	}
 
 	@InputFiles
-	public FileCollection getDevtools() {
-		return this.devtools;
+	@PathSensitive(PathSensitivity.RELATIVE)
+	public FileCollection getDefaults() {
+		return this.defaults;
+	}
+
+	public void setDefaults(FileCollection defaults) {
+		this.defaults = defaults;
 	}
 
 	@OutputFile
@@ -64,23 +66,36 @@ public abstract class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 
 	@TaskAction
 	void documentPropertyDefaults() throws IOException {
-		Map<String, String> properties = loadProperties();
-		documentProperties(properties);
+		Map<String, String> propertyDefaults = loadPropertyDefaults();
+		documentPropertyDefaults(propertyDefaults);
 	}
 
-	private Map<String, String> loadProperties() throws IOException, FileNotFoundException {
+	private Map<String, String> loadPropertyDefaults() throws IOException, FileNotFoundException {
 		Properties properties = new Properties();
-		Map<String, String> sortedProperties = new TreeMap<>();
-		try (FileInputStream stream = new FileInputStream(this.devtools.getSingleFile())) {
-			properties.load(stream);
-			for (String name : properties.stringPropertyNames()) {
-				sortedProperties.put(name, properties.getProperty(name));
+		Map<String, String> propertyDefaults = new TreeMap<>();
+		for (File contribution : this.defaults.getFiles()) {
+			if (contribution.isFile()) {
+				try (JarFile jar = new JarFile(contribution)) {
+					ZipEntry entry = jar.getEntry("META-INF/spring-devtools.properties");
+					if (entry != null) {
+						properties.load(jar.getInputStream(entry));
+					}
+				}
+			}
+			else if (contribution.exists()) {
+				throw new IllegalStateException(
+						"Unexpected Devtools default properties contribution from '" + contribution + "'");
 			}
 		}
-		return sortedProperties;
+		for (String name : properties.stringPropertyNames()) {
+			if (name.startsWith("defaults.")) {
+				propertyDefaults.put(name.substring("defaults.".length()), properties.getProperty(name));
+			}
+		}
+		return propertyDefaults;
 	}
 
-	private void documentProperties(Map<String, String> properties) throws IOException {
+	private void documentPropertyDefaults(Map<String, String> properties) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(getOutputFile().getAsFile().get()))) {
 			writer.println("[cols=\"3,1\"]");
 			writer.println("|===");

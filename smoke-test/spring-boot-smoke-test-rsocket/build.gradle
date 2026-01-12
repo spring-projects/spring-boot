@@ -25,6 +25,9 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation("org.springframework.security:spring-security-rsocket")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
-	testImplementation("io.projectreactor:reactor-test")
+	testImplementation(project(":starter:spring-boot-starter-rsocket-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

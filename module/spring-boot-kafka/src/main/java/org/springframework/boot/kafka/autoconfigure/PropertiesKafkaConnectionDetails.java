@@ -18,6 +18,8 @@ package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -35,9 +37,9 @@ class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 
 	private final KafkaProperties properties;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
-	PropertiesKafkaConnectionDetails(KafkaProperties properties, SslBundles sslBundles) {
+	PropertiesKafkaConnectionDetails(KafkaProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
 	}
@@ -86,16 +88,16 @@ class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 	}
 
 	@Override
-	public SslBundle getSslBundle() {
+	public @Nullable SslBundle getSslBundle() {
 		return getBundle(this.properties.getSsl());
 	}
 
 	@Override
-	public String getSecurityProtocol() {
+	public @Nullable String getSecurityProtocol() {
 		return this.properties.getSecurity().getProtocol();
 	}
 
-	private SslBundle getBundle(Ssl ssl) {
+	private @Nullable SslBundle getBundle(Ssl ssl) {
 		if (StringUtils.hasLength(ssl.getBundle())) {
 			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
 			return this.sslBundles.getBundle(ssl.getBundle());

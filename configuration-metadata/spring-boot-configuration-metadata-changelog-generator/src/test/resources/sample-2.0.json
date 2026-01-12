@@ -7,6 +7,24 @@
       "defaultValue": "new"
     },
     {
+      "name": "test.replace",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "test.add"
+      }
+    },
+    {
+      "name": "test.add.deprecated",
+      "type": "java.lang.String",
+      "description": "Test add deprecated.",
+      "defaultValue": "test2",
+      "deprecation": {
+        "replacement": "test.equal",
+        "reason": "Deprecated  in favor of Equal"
+      }
+    },
+    {
       "name": "test.equal",
       "type": "java.lang.String",
       "description": "Test equality.",
@@ -18,7 +36,7 @@
       "description": "Test deprecate.",
       "defaultValue": "wrong",
       "deprecation": {
-        "level": "error"
+        "level": "warn"
       }
     },
     {

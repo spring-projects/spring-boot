@@ -34,6 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSessionIdListener;
 import org.assertj.core.api.ThrowingConsumer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -56,13 +57,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ServletContextInitializerBeansTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@Test
 	void servletThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
 		load(ServletConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory());
+				getContext().getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServlet.class);
 	}
@@ -71,7 +72,7 @@ class ServletContextInitializerBeansTests {
 	void filterThatImplementsServletContextInitializerIsOnlyRegisteredOnce() {
 		load(FilterConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory());
+				getContext().getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestFilter.class);
 	}
@@ -80,7 +81,7 @@ class ServletContextInitializerBeansTests {
 	void looksForInitializerBeansOfSpecifiedType() {
 		load(TestConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServletContextInitializer.class);
 	}
@@ -89,7 +90,7 @@ class ServletContextInitializerBeansTests {
 	void whenAnHttpSessionIdListenerBeanIsDefinedThenARegistrationBeanIsCreatedForIt() {
 		load(HttpSessionIdListenerConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory());
+				getContext().getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans).first()
 			.isInstanceOf(ServletListenerRegistrationBean.class)
@@ -101,7 +102,7 @@ class ServletContextInitializerBeansTests {
 	void classesThatImplementMultipleInterfacesAreRegisteredForAllOfThem() {
 		load(MultipleInterfacesConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory());
+				getContext().getBeanFactory());
 		assertThat(initializerBeans).hasSize(3);
 		assertThat(initializerBeans).element(0)
 			.isInstanceOf(ServletRegistrationBean.class)
@@ -122,7 +123,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyServletRegistrationAnnotation() {
 		load(ServletConfigurationWithAnnotation.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class, (servletRegistrationBean) -> {
 			assertThat(servletRegistrationBean.isEnabled()).isFalse();
 			assertThat(servletRegistrationBean.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
@@ -144,7 +145,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyFilterRegistrationAnnotation() {
 		load(FilterConfigurationWithAnnotation.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, FilterRegistrationBean.class, (filterRegistrationBean) -> {
 			assertThat(filterRegistrationBean.isEnabled()).isFalse();
 			assertThat(filterRegistrationBean.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
@@ -170,7 +171,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyFilterRegistrationAnnotationWithDefaultDispatcherTypes() {
 		load(FilterConfigurationWithAnnotationAndDefaultDispatcherTypes.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, FilterRegistrationBean.class,
 				(filterRegistrationBean) -> assertThat(filterRegistrationBean.determineDispatcherTypes())
 					.containsExactlyElementsOf(EnumSet.allOf(DispatcherType.class)));
@@ -180,7 +181,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyOrderFromBean() {
 		load(OrderedServletConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(OrderedTestServlet.ORDER));
@@ -190,7 +191,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyOrderFromOrderAnnotationOnBeanMethod() {
 		load(ServletConfigurationWithAnnotationAndOrderAnnotation.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrderAnnotation.ORDER));
@@ -200,7 +201,7 @@ class ServletContextInitializerBeansTests {
 	void orderedInterfaceShouldTakePrecedenceOverOrderAnnotation() {
 		load(OrderedServletConfigurationWithAnnotationAndOrder.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(OrderedTestServlet.ORDER));
@@ -210,7 +211,7 @@ class ServletContextInitializerBeansTests {
 	void shouldApplyOrderFromOrderAttribute() {
 		load(ServletConfigurationWithAnnotationAndOrder.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
+				getContext().getBeanFactory(), TestServletContextInitializer.class);
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
@@ -226,6 +227,11 @@ class ServletContextInitializerBeansTests {
 		ServletContextInitializer initializer = initializerBeans.iterator().next();
 		assertThat(initializer).isInstanceOf(clazz);
 		code.accept(clazz.cast(initializer));
+	}
+
+	private ConfigurableApplicationContext getContext() {
+		assertThat(this.context).isNotNull();
+		return this.context;
 	}
 
 	@Configuration(proxyBeanMethods = false)

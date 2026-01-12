@@ -35,12 +35,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class EndpointIdTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(null))
 			.withMessage("'value' must not be empty");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(""))
 			.withMessage("'value' must not be empty");

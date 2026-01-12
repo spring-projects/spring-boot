@@ -17,4 +17,7 @@
 /**
  * Infrastructure for establishing database initialization bean dependencies.
  */
+@NullMarked
 package org.springframework.boot.sql.init.dependency;
+
+import org.jspecify.annotations.NullMarked;

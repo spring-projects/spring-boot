@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -59,21 +61,27 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 
 		OpenLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			Map<String, String> env = service.env();
+			Map<String, @Nullable String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
-			String ldapPort = usesTls ? env.getOrDefault("LDAPS_PORT", "636") : env.getOrDefault("LDAP_PORT", "389");
+			String ldapPort = usesTls ? getFromEnv(env, "LDAPS_PORT", "636") : getFromEnv(env, "LDAP_PORT", "389");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
 					service.ports().get(Integer.parseInt(ldapPort))) };
-			if (env.containsKey("LDAP_BASE_DN")) {
-				this.base = env.get("LDAP_BASE_DN");
+			String baseDn = env.get("LDAP_BASE_DN");
+			if (baseDn != null) {
+				this.base = baseDn;
 			}
 			else {
-				this.base = Arrays.stream(env.getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
+				this.base = Arrays.stream(getFromEnv(env, "LDAP_DOMAIN", "example.org").split("\\."))
 					.map("dc=%s"::formatted)
 					.collect(Collectors.joining(","));
 			}
-			this.password = env.getOrDefault("LDAP_ADMIN_PASSWORD", "admin");
+			this.password = getFromEnv(env, "LDAP_ADMIN_PASSWORD", "admin");
 			this.username = "cn=admin,%s".formatted(this.base);
+		}
+
+		private static String getFromEnv(Map<String, @Nullable String> env, String key, String defaultValue) {
+			String result = env.get(key);
+			return (result != null) ? result : defaultValue;
 		}
 
 		@Override

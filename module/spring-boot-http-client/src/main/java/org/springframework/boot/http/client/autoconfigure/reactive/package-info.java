@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for client-side reactive HTTP.
  */
+@NullMarked
 package org.springframework.boot.http.client.autoconfigure.reactive;
+
+import org.jspecify.annotations.NullMarked;

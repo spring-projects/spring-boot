@@ -19,6 +19,8 @@ package org.springframework.boot.jdbc.docker.compose;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -38,10 +40,8 @@ import org.springframework.util.StringUtils;
 class PostgresJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql" };
-
 	protected PostgresJdbcDockerComposeConnectionDetailsFactory() {
-		super(POSTGRES_CONTAINER_NAMES);
+		super("postgres");
 	}
 
 	@Override
@@ -74,7 +74,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.environment.getPassword();
 		}
 

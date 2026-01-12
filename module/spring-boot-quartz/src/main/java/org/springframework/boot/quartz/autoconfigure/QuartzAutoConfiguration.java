@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -120,7 +121,7 @@ public final class QuartzAutoConfiguration {
 			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
 		}
 
-		private PlatformTransactionManager getTransactionManager(
+		private @Nullable PlatformTransactionManager getTransactionManager(
 				ObjectProvider<PlatformTransactionManager> transactionManager,
 				ObjectProvider<PlatformTransactionManager> quartzTransactionManager) {
 			PlatformTransactionManager transactionManagerIfAvailable = quartzTransactionManager.getIfAvailable();

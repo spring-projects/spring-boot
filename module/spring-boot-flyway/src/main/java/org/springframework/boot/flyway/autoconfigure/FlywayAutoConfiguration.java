@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -144,24 +145,6 @@ public final class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
-		SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer() {
-			return new SqlServerFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
-		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
-			return new OracleFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
-		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
-			return new PostgresqlFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
 		Flyway flyway(FlywayConnectionDetails connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
@@ -228,11 +211,16 @@ public final class FlywayAutoConfiguration {
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			// NOTE: Using method references in the mapper methods can break
 			// back-compatibility (see gh-38164)
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
 				.toArray(new String[0]);
 			configuration.locations(locations);
+			map.from(properties.getCallbackLocations())
+				.when((callbackLocations) -> !ObjectUtils.isEmpty(callbackLocations))
+				.to((callbackLocations) -> configuration.callbackLocations(
+						new LocationResolver(configuration.getDataSource()).resolveLocations(callbackLocations)
+							.toArray(new String[0])));
 			map.from(properties.isFailOnMissingLocations())
 				.to((failOnMissingLocations) -> configuration.failOnMissingLocations(failOnMissingLocations));
 			map.from(properties.getEncoding()).to((encoding) -> configuration.encoding(encoding));
@@ -319,7 +307,6 @@ public final class FlywayAutoConfiguration {
 			map.from(properties.getSkipExecutingMigrations())
 				.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 			map.from(properties.getIgnoreMigrationPatterns())
-				.whenNot(List::isEmpty)
 				.to((ignoreMigrationPatterns) -> configuration
 					.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			map.from(properties.getDetectEncoding())
@@ -353,6 +340,40 @@ public final class FlywayAutoConfiguration {
 		FlywayMigrationInitializer flywayInitializer(Flyway flyway,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
+		}
+
+		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
+		@Configuration(proxyBeanMethods = false)
+		static class SqlServerConfiguration {
+
+			@Bean
+			SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer(FlywayProperties properties) {
+				return new SqlServerFlywayConfigurationCustomizer(properties);
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
+		static class OracleConfiguration {
+
+			@Bean
+			OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer(FlywayProperties properties) {
+				return new OracleFlywayConfigurationCustomizer(properties);
+			}
+
+		}
+
+		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
+		@Configuration(proxyBeanMethods = false)
+		static class PostgresqlConfiguration {
+
+			@Bean
+			PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer(
+					FlywayProperties properties) {
+				return new PostgresqlFlywayConfigurationCustomizer(properties);
+			}
+
 		}
 
 	}
@@ -511,7 +532,7 @@ public final class FlywayAutoConfiguration {
 			Extension<OracleConfigurationExtension> extension = new Extension<>(configuration,
 					OracleConfigurationExtension.class, "Oracle");
 			Oracle properties = this.properties.getOracle();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getSqlplus).to(extension.via((ext, sqlplus) -> ext.setSqlplus(sqlplus)));
 			map.from(properties::getSqlplusWarn)
 				.to(extension.via((ext, sqlplusWarn) -> ext.setSqlplusWarn(sqlplusWarn)));
@@ -537,7 +558,7 @@ public final class FlywayAutoConfiguration {
 			Extension<PostgreSQLConfigurationExtension> extension = new Extension<>(configuration,
 					PostgreSQLConfigurationExtension.class, "PostgreSQL");
 			Postgresql properties = this.properties.getPostgresql();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getTransactionalLock)
 				.to(extension.via((ext, transactionalLock) -> ext.setTransactionalLock(transactionalLock)));
 		}
@@ -558,7 +579,7 @@ public final class FlywayAutoConfiguration {
 			Extension<SQLServerConfigurationExtension> extension = new Extension<>(configuration,
 					SQLServerConfigurationExtension.class, "SQL Server");
 			Sqlserver properties = this.properties.getSqlserver();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getKerberosLoginFile).to(extension.via(this::setKerberosLoginFile));
 		}
 
@@ -575,11 +596,11 @@ public final class FlywayAutoConfiguration {
 	 */
 	static class Extension<E extends ConfigurationExtension> {
 
-		private final SingletonSupplier<E> extension;
+		private final Supplier<E> extension;
 
 		Extension(FluentConfiguration configuration, Class<E> type, String name) {
 			this.extension = SingletonSupplier.of(() -> {
-				E extension = configuration.getPluginRegister().getPlugin(type);
+				E extension = configuration.getPluginRegister().getExact(type);
 				Assert.state(extension != null, () -> "Flyway %s extension missing".formatted(name));
 				return extension;
 			});

@@ -16,6 +16,8 @@
 
 package smoketest.data.elasticsearch;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -28,23 +30,23 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class SampleDocument {
 
 	@Id
-	private String id;
+	private @Nullable String id;
 
-	private String text;
+	private @Nullable String text;
 
-	public String getId() {
+	public @Nullable String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	public void setId(@Nullable String id) {
 		this.id = id;
 	}
 
-	public String getText() {
+	public @Nullable String getText() {
 		return this.text;
 	}
 
-	public void setText(String text) {
+	public void setText(@Nullable String text) {
 		this.text = text;
 	}
 

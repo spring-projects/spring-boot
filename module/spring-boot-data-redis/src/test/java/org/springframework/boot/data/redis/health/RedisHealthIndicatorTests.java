@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.health.contributor.Health;
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link RedisHealthIndicator}.
+ * Tests for {@link DataRedisHealthIndicator}.
  *
  * @author Christian Dupuis
  * @author Richard Santana
@@ -55,10 +56,23 @@ class RedisHealthIndicatorTests {
 		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
 		given(redisConnection.serverCommands()).willReturn(serverCommands);
 		given(serverCommands.info()).willReturn(info);
-		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
+		DataRedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("version", "2.8.9");
+	}
+
+	@Test
+	void redisIsUpWithMissingVersion() {
+		Properties info = new Properties();
+		RedisConnection redisConnection = mock(RedisConnection.class);
+		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
+		given(redisConnection.serverCommands()).willReturn(serverCommands);
+		given(serverCommands.info()).willReturn(info);
+		DataRedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("version", "unknown");
 	}
 
 	@Test
@@ -67,7 +81,7 @@ class RedisHealthIndicatorTests {
 		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
 		given(redisConnection.serverCommands()).willReturn(serverCommands);
 		given(serverCommands.info()).willThrow(new RedisConnectionFailureException("Connection failed"));
-		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
+		DataRedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
@@ -76,7 +90,7 @@ class RedisHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsAbsentShouldBeUp() {
 		RedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory(null);
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		DataRedisHealthIndicator healthIndicator = new DataRedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
@@ -88,7 +102,7 @@ class RedisHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsOkShouldBeUp() {
 		RedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("ok");
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		DataRedisHealthIndicator healthIndicator = new DataRedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
@@ -100,7 +114,7 @@ class RedisHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsFailShouldBeDown() {
 		RedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("fail");
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		DataRedisHealthIndicator healthIndicator = new DataRedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
@@ -109,13 +123,13 @@ class RedisHealthIndicatorTests {
 		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
-	private RedisHealthIndicator createHealthIndicator(RedisConnection redisConnection) {
+	private DataRedisHealthIndicator createHealthIndicator(RedisConnection redisConnection) {
 		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
-		return new RedisHealthIndicator(redisConnectionFactory);
+		return new DataRedisHealthIndicator(redisConnectionFactory);
 	}
 
-	private RedisConnectionFactory createClusterConnectionFactory(String state) {
+	private RedisConnectionFactory createClusterConnectionFactory(@Nullable String state) {
 		Properties clusterProperties = new Properties();
 		if (state != null) {
 			clusterProperties.setProperty("cluster_state", state);

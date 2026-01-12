@@ -43,8 +43,7 @@ dependencies {
 	}
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	implementation(project(":buildpack:spring-boot-buildpack-platform"))
 	implementation(project(":loader:spring-boot-loader-tools"))
@@ -193,4 +192,16 @@ tasks.named("generateAntoraPlaybook") {
 
 tasks.named("dockerTest").configure {
 	dependsOn tasks.named("prepareMavenBinaries")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileIntTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

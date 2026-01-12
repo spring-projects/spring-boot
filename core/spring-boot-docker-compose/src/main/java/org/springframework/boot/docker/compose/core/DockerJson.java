@@ -16,16 +16,13 @@
 
 package org.springframework.boot.docker.compose.core;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Support class used to handle JSON returned from the {@link DockerCli}.
@@ -36,11 +33,11 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
  */
 final class DockerJson {
 
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
+	private static final JsonMapper jsonMapper = JsonMapper.builder()
 		.defaultLocale(Locale.ENGLISH)
 		.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-		.addModule(new ParameterNamesModule())
+		.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 		.build();
 
 	private DockerJson() {
@@ -56,7 +53,7 @@ final class DockerJson {
 	 */
 	static <T> List<T> deserializeToList(String json, Class<T> itemType) {
 		if (json.startsWith("[")) {
-			JavaType javaType = objectMapper.getTypeFactory().constructCollectionType(List.class, itemType);
+			JavaType javaType = jsonMapper.getTypeFactory().constructCollectionType(List.class, itemType);
 			return deserialize(json, javaType);
 		}
 		return json.trim().lines().map((line) -> deserialize(line, itemType)).toList();
@@ -70,16 +67,11 @@ final class DockerJson {
 	 * @return the deserialized result
 	 */
 	static <T> T deserialize(String json, Class<T> type) {
-		return deserialize(json, objectMapper.getTypeFactory().constructType(type));
+		return deserialize(json, jsonMapper.getTypeFactory().constructType(type));
 	}
 
 	private static <T> T deserialize(String json, JavaType type) {
-		try {
-			return objectMapper.readValue(json.trim(), type);
-		}
-		catch (IOException ex) {
-			throw new DockerOutputParseException(json, ex);
-		}
+		return jsonMapper.readValue(json.trim(), type);
 	}
 
 }

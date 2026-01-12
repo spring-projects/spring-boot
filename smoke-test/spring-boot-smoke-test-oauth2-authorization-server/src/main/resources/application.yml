@@ -9,6 +9,7 @@ spring:
           jwk-set-uri: /jwks
           token-revocation-uri: /revoke
           token-introspection-uri: /introspect
+          pushed-authorization-request-uri: /par
           oidc:
             logout-uri: /logout
             client-registration-uri: /register

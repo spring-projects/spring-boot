@@ -26,3 +26,7 @@ dependencies {
 	testImplementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 }
+
+nullability {
+	requireExplicitNullMarking = false
+}

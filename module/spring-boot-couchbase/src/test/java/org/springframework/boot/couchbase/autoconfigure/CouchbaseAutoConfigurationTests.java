@@ -17,7 +17,6 @@
 package org.springframework.boot.couchbase.autoconfigure;
 
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -33,6 +32,7 @@ import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.json.JsonValueModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -129,14 +129,14 @@ class CouchbaseAutoConfigurationTests {
 
 	@Test
 	void whenObjectMapperBeanIsDefinedThenClusterEnvironmentObjectMapperIsDerivedFromIt() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new SimpleModule("custom"));
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withBean(ObjectMapper.class, () -> objectMapper)
 			.withPropertyValues("spring.couchbase.connection-string=localhost")
 			.run((context) -> {
 				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
-				Set<Object> expectedModuleIds = new HashSet<>(
-						context.getBean(ObjectMapper.class).getRegisteredModuleIds());
-				expectedModuleIds.add(new JsonValueModule().getTypeId());
+				Set<Object> expectedModuleIds = Set.of("custom", new JsonValueModule().getTypeId());
 				JsonSerializer serializer = env.jsonSerializer();
 				assertThat(serializer).extracting("wrapped")
 					.isInstanceOf(JacksonJsonSerializer.class)

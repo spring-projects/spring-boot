@@ -6,3 +6,6 @@ org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplica
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.testcontainers.service.connection.ServiceConnectionContextCustomizerFactory
 
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.testcontainers.lifecycle.DockerEnvironmentNotFoundFailureAnalyzer

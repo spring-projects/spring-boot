@@ -39,7 +39,7 @@ import org.springframework.core.annotation.AliasFor;
  * absence, scanning will be performed from the package of the class with the annotation.
  *
  * @author Andy Wilkinson
- * @since 1.3.0
+ * @since 4.0.0
  * @see WebServlet
  * @see WebFilter
  * @see WebListener

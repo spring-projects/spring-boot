@@ -22,11 +22,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.origin.Origin;
-import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -130,7 +130,7 @@ class ConfigurationPropertySourcesTests {
 		sources.addFirst(new PropertySource<Environment>("env", environment) {
 
 			@Override
-			public String getProperty(String key) {
+			public @Nullable String getProperty(String key) {
 				return this.source.getProperty(key);
 			}
 
@@ -207,7 +207,7 @@ class ConfigurationPropertySourcesTests {
 		return total;
 	}
 
-	static class TestPropertySource extends MapPropertySource implements OriginLookup<String> {
+	static class TestPropertySource extends MapPropertySource implements PropertySourceInfo {
 
 		private final boolean immutable;
 
@@ -224,11 +224,6 @@ class ConfigurationPropertySourcesTests {
 				map.put(name, value);
 			}
 			return map;
-		}
-
-		@Override
-		public Origin getOrigin(String key) {
-			return null;
 		}
 
 		@Override

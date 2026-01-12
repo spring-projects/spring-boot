@@ -16,9 +16,6 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
 
@@ -112,23 +109,10 @@ class RabbitStreamConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(stream.getHost()).to(builder::host);
 		map.from(stream.getPort()).to(builder::port);
-		map.from(stream.getVirtualHost())
-			.as(withFallback(connectionDetails::getVirtualHost))
-			.whenNonNull()
-			.to(builder::virtualHost);
-		map.from(stream.getUsername())
-			.as(withFallback(connectionDetails::getUsername))
-			.whenNonNull()
-			.to(builder::username);
-		map.from(stream.getPassword())
-			.as(withFallback(connectionDetails::getPassword))
-			.whenNonNull()
-			.to(builder::password);
+		map.from(stream.getVirtualHost()).orFrom(connectionDetails::getVirtualHost).to(builder::virtualHost);
+		map.from(stream.getUsername()).orFrom(connectionDetails::getUsername).to(builder::username);
+		map.from(stream.getPassword()).orFrom(connectionDetails::getPassword).to(builder::password);
 		return builder;
-	}
-
-	private static Function<String, String> withFallback(Supplier<String> fallback) {
-		return (value) -> (value != null) ? value : fallback.get();
 	}
 
 }

@@ -87,7 +87,9 @@ class Connection {
 			runWebSocket();
 		}
 		if (lowerCaseHeader.contains("get /livereload.js")) {
-			this.outputStream.writeHttp(getClass().getResourceAsStream("livereload.js"), "text/javascript");
+			InputStream stream = getClass().getResourceAsStream("livereload.js");
+			Assert.state(stream != null, "Resource 'livereload.js' not found");
+			this.outputStream.writeHttp(stream, "text/javascript");
 		}
 	}
 

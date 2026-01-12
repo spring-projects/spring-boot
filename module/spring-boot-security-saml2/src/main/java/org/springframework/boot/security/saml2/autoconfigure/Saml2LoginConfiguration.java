@@ -17,7 +17,7 @@
 package org.springframework.boot.security.saml2.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,7 +38,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class Saml2LoginConfiguration {
 
 	@Bean
-	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.saml2Login(withDefaults());
 		http.saml2Logout(withDefaults());

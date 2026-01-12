@@ -61,7 +61,7 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 	}
 
 	@SuppressWarnings("unchecked")
-	private class LenientToEnumConverter<E extends Enum> implements Converter<T, E> {
+	private class LenientToEnumConverter<E extends Enum> implements Converter<T, @Nullable E> {
 
 		private final Class<E> enumType;
 

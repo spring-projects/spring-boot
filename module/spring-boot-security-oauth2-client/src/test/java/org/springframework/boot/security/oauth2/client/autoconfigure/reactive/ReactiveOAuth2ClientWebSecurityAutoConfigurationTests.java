@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -60,7 +60,7 @@ class ReactiveOAuth2ClientWebSecurityAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientWebSecurityAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class));
+				ReactiveWebSecurityAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationShouldBackOffForServletEnvironments() {
@@ -107,7 +107,7 @@ class ReactiveOAuth2ClientWebSecurityAutoConfigurationTests {
 	void securityWebFilterChainBeanConditionalOnWebApplication() {
 		new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientWebSecurityAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class))
+					ReactiveWebSecurityAutoConfiguration.class))
 			.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(SecurityWebFilterChain.class));
 	}
@@ -117,6 +117,7 @@ class ReactiveOAuth2ClientWebSecurityAutoConfigurationTests {
 		SecurityWebFilterChain filterChain = (SecurityWebFilterChain) context
 			.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
+		assertThat(filters).isNotNull();
 		return filters.stream().anyMatch(filter::isInstance);
 	}
 

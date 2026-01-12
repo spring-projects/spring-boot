@@ -22,30 +22,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Function;
 
 import org.gradle.api.file.ConfigurableFilePermissions;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.file.RelativePath;
 import org.gradle.api.internal.file.copy.CopyAction;
-import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
-import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
-import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.util.GradleVersion;
-
-import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Support class for implementations of {@link BootArchive}.
@@ -82,8 +75,6 @@ class BootArchiveSupport {
 
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
-	private LaunchScriptConfiguration launchScript;
-
 	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
@@ -92,8 +83,9 @@ class BootArchiveSupport {
 		this.requiresUnpack.include(Specs.satisfyNone());
 	}
 
-	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
-			String layersIndex, String jdkVersion, String implementationTitle, Object implementationVersion) {
+	void configureManifest(Manifest manifest, String mainClass, String classes, String lib,
+			@Nullable String classPathIndex, @Nullable String layersIndex, String jdkVersion,
+			String implementationTitle, @Nullable Object implementationVersion) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClass);
@@ -121,14 +113,12 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile) {
-		return createCopyAction(jar, resolvedDependencies, loaderImplementation, supportsSignatureFile, null, null);
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies) {
+		return createCopyAction(jar, resolvedDependencies, null, null);
 	}
 
 	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile, LayerResolver layerResolver,
-			String jarmodeToolsLocation) {
+			@Nullable LayerResolver layerResolver, @Nullable String jarmodeToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -137,51 +127,49 @@ class BootArchiveSupport {
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
-		LaunchScriptConfiguration launchScript = this.launchScript;
 		Spec<FileCopyDetails> librarySpec = this.librarySpec;
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
-				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
-				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
-				loaderImplementation);
-		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
+				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, librarySpec,
+				compressionResolver, encoding, resolvedDependencies, layerResolver);
+		return action;
 	}
 
-	private Integer getUnixNumericDirPermissions(CopySpec copySpec) {
+	private @Nullable Integer getUnixNumericDirPermissions(CopySpec copySpec) {
 		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
 				? asUnixNumeric(copySpec.getDirPermissions()) : getDirMode(copySpec);
 	}
 
-	private Integer getUnixNumericFilePermissions(CopySpec copySpec) {
+	private @Nullable Integer getUnixNumericFilePermissions(CopySpec copySpec) {
 		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
 				? asUnixNumeric(copySpec.getFilePermissions()) : getFileMode(copySpec);
 	}
 
-	private Integer asUnixNumeric(Property<ConfigurableFilePermissions> permissions) {
+	private @Nullable Integer asUnixNumeric(Property<ConfigurableFilePermissions> permissions) {
 		return permissions.isPresent() ? permissions.get().toUnixNumeric() : null;
 	}
 
-	@SuppressWarnings("deprecation")
-	private Integer getDirMode(CopySpec copySpec) {
-		return copySpec.getDirMode();
+	private @Nullable Integer getDirMode(CopySpec copySpec) {
+		try {
+			return (Integer) copySpec.getClass().getMethod("getDirMode").invoke(copySpec);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to get dir mode from CopySpec", ex);
+		}
 	}
 
-	@SuppressWarnings("deprecation")
-	private Integer getFileMode(CopySpec copySpec) {
-		return copySpec.getFileMode();
+	private @Nullable Integer getFileMode(CopySpec copySpec) {
+		try {
+			return (Integer) copySpec.getClass().getMethod("getFileMode").invoke(copySpec);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to get file mode from CopySpec", ex);
+		}
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
 		return DEFAULT_LAUNCHER_CLASSES.contains(jar.getManifest().getAttributes().get("Main-Class"));
-	}
-
-	LaunchScriptConfiguration getLaunchScript() {
-		return this.launchScript;
-	}
-
-	void setLaunchScript(LaunchScriptConfiguration launchScript) {
-		this.launchScript = launchScript;
 	}
 
 	void requiresUnpack(String... patterns) {
@@ -230,28 +218,6 @@ class BootArchiveSupport {
 
 	void moveToRoot(FileCopyDetails details) {
 		details.setRelativePath(details.getRelativeSourcePath());
-	}
-
-	/**
-	 * {@link CopyAction} variant that sorts entries to ensure reproducible ordering.
-	 */
-	private static final class ReproducibleOrderingCopyAction implements CopyAction {
-
-		private final CopyAction delegate;
-
-		private ReproducibleOrderingCopyAction(CopyAction delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public WorkResult execute(CopyActionProcessingStream stream) {
-			return this.delegate.execute((action) -> {
-				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();
-				stream.process((details) -> detailsByPath.put(details.getRelativePath(), details));
-				detailsByPath.values().forEach(action::processFile);
-			});
-		}
-
 	}
 
 }

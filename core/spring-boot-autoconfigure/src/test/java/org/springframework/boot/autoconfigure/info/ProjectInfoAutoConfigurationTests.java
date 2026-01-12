@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.info;
 
+import java.time.Instant;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,9 @@ class ProjectInfoAutoConfigurationTests {
 			assertThat(buildProperties.getArtifact()).isEqualTo("demo");
 			assertThat(buildProperties.getName()).isEqualTo("Demo Project");
 			assertThat(buildProperties.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
-			assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457100965000L);
+			Instant time = buildProperties.getTime();
+			assertThat(time).isNotNull();
+			assertThat(time.toEpochMilli()).isEqualTo(1457100965000L);
 		});
 	}
 
@@ -120,7 +123,9 @@ class ProjectInfoAutoConfigurationTests {
 				assertThat(buildProperties.getArtifact()).isEqualTo("acme");
 				assertThat(buildProperties.getName()).isEqualTo("acme");
 				assertThat(buildProperties.getVersion()).isEqualTo("1.0.1-SNAPSHOT");
-				assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457088120000L);
+				Instant time = buildProperties.getTime();
+				assertThat(time).isNotNull();
+				assertThat(time.toEpochMilli()).isEqualTo(1457088120000L);
 			});
 	}
 

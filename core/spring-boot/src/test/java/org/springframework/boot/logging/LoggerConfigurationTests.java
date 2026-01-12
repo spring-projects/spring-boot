@@ -34,18 +34,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class LoggerConfigurationTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithLogLevelWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration(null, null, LogLevel.DEBUG))
 			.withMessage("'name' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithLogLevelWhenEffectiveLevelIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration("test", null, (LogLevel) null))
 			.withMessage("'effectiveLevel' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithLevelConfigurationWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration(null, null, LevelConfiguration.of(LogLevel.DEBUG)))
@@ -53,6 +56,7 @@ class LoggerConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithLevelConfigurationWhenInheritedLevelConfigurationIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration("test", null, (LevelConfiguration) null))
@@ -116,6 +120,7 @@ class LoggerConfigurationTests {
 	class LevelConfigurationTests {
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void ofWhenLogLevelIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.of(null))
 				.withMessage("'logLevel' must not be null");
@@ -128,6 +133,7 @@ class LoggerConfigurationTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void ofCustomWhenNameIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.ofCustom(null))
 				.withMessage("'name' must not be empty");

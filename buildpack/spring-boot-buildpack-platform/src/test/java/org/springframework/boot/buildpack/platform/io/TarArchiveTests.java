@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TarArchiveTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

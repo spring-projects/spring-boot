@@ -37,13 +37,13 @@ import org.springframework.util.MimeTypeUtils;
  */
 public class ProducibleOperationArgumentResolver implements OperationArgumentResolver {
 
-	private final Supplier<List<String>> accepts;
+	private final Supplier<@Nullable List<String>> accepts;
 
 	/**
 	 * Create a new {@link ProducibleOperationArgumentResolver} instance.
 	 * @param accepts supplier that returns accepted mime types
 	 */
-	public ProducibleOperationArgumentResolver(Supplier<List<String>> accepts) {
+	public ProducibleOperationArgumentResolver(Supplier<@Nullable List<String>> accepts) {
 		this.accepts = accepts;
 	}
 

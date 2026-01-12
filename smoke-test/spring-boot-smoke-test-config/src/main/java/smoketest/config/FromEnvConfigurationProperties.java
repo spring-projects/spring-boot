@@ -16,18 +16,20 @@
 
 package smoketest.config;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("from-env")
 class FromEnvConfigurationProperties {
 
-	private String key1;
+	private @Nullable String key1;
 
-	String getKey1() {
+	@Nullable String getKey1() {
 		return this.key1;
 	}
 
-	void setKey1(String key1) {
+	void setKey1(@Nullable String key1) {
 		this.key1 = key1;
 	}
 

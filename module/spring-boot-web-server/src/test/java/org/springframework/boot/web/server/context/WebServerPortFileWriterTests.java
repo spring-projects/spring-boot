@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
 class WebServerPortFileWriterTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@BeforeEach
@@ -87,8 +88,9 @@ class WebServerPortFileWriterTests {
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		assertThat(contentOf(file)).isEqualTo("8080");
 		String managementFile = file.getName();
-		managementFile = managementFile.substring(0,
-				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
+		String extension = StringUtils.getFilenameExtension(managementFile);
+		assertThat(extension).isNotNull();
+		managementFile = managementFile.substring(0, managementFile.length() - extension.length() - 1);
 		managementFile = managementFile + "-management." + StringUtils.getFilenameExtension(file.getName());
 		String content = contentOf(new File(file.getParentFile(), managementFile));
 		assertThat(content).isEqualTo("9090");
@@ -102,8 +104,9 @@ class WebServerPortFileWriterTests {
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		String managementFile = file.getName();
-		managementFile = managementFile.substring(0,
-				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
+		String extension = StringUtils.getFilenameExtension(managementFile);
+		assertThat(extension).isNotNull();
+		managementFile = managementFile.substring(0, managementFile.length() - extension.length() - 1);
 		managementFile = managementFile + "-MANAGEMENT." + StringUtils.getFilenameExtension(file.getName());
 		String content = contentOf(new File(file.getParentFile(), managementFile));
 		assertThat(content).isEqualTo("9090");

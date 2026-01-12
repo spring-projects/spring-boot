@@ -48,7 +48,7 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 	protected static class ApplicationSecurity {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
@@ -60,9 +60,7 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 
 		@Bean
 		public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
-			JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
-			jdbcUserDetailsManager.setDataSource(dataSource);
-			return jdbcUserDetailsManager;
+			return new JdbcUserDetailsManager(dataSource);
 		}
 
 	}

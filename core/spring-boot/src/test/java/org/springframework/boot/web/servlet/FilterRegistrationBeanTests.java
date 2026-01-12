@@ -74,12 +74,14 @@ class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void constructFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FilterRegistrationBean<>(null))
 			.withMessageContaining("'filter' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createServletRegistrationBeanMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilterRegistrationBean<>(this.filter, (ServletRegistrationBean[]) null))

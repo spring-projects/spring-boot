@@ -23,6 +23,8 @@ import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.core.SmartClassLoader;
 import org.springframework.util.Assert;
@@ -80,7 +82,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	public URL getResource(String name) {
+	public @Nullable URL getResource(String name) {
 		ClassLoaderFile file = this.updatedFiles.getFile(name);
 		if (file != null && file.getKind() == Kind.DELETED) {
 			return null;
@@ -93,7 +95,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	public URL findResource(String name) {
+	public @Nullable URL findResource(String name) {
 		final ClassLoaderFile file = this.updatedFiles.getFile(name);
 		if (file == null) {
 			return super.findResource(name);
@@ -139,11 +141,12 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 			throw new ClassNotFoundException(name);
 		}
 		byte[] bytes = file.getContents();
+		Assert.state(bytes != null, "'bytes' must not be null");
 		return defineClass(name, bytes, 0, bytes.length);
 	}
 
 	@Override
-	public Class<?> publicDefineClass(String name, byte[] b, ProtectionDomain protectionDomain) {
+	public Class<?> publicDefineClass(String name, byte[] b, @Nullable ProtectionDomain protectionDomain) {
 		return defineClass(name, b, 0, b.length, protectionDomain);
 	}
 
@@ -171,11 +174,11 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 */
 	private static class CompoundEnumeration<E> implements Enumeration<E> {
 
-		private E firstElement;
+		private @Nullable E firstElement;
 
 		private final Enumeration<E> enumeration;
 
-		CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+		CompoundEnumeration(@Nullable E firstElement, Enumeration<E> enumeration) {
 			this.firstElement = firstElement;
 			this.enumeration = enumeration;
 		}

@@ -34,5 +34,11 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.micrometer:context-propagation")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

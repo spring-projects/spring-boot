@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -72,6 +74,7 @@ public final class DataSourceHealthContributorAutoConfiguration implements Initi
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
+	@SuppressWarnings("NullAway.Init")
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	DataSourceHealthContributorAutoConfiguration(ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
@@ -114,7 +117,7 @@ public final class DataSourceHealthContributorAutoConfiguration implements Initi
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
 
-	private String getValidationQuery(DataSource source) {
+	private @Nullable String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
@@ -165,7 +168,7 @@ public final class DataSourceHealthContributorAutoConfiguration implements Initi
 		}
 
 		@Override
-		public HealthContributor getContributor(String name) {
+		public @Nullable HealthContributor getContributor(String name) {
 			return this.delegate.getContributor(name);
 		}
 

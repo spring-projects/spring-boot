@@ -22,19 +22,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
@@ -57,7 +55,7 @@ class SpringProfileArbiterTests {
 
 	private CapturedOutput output;
 
-	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
+	private TestLog4J2LoggingSystem loggingSystem;
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -66,32 +64,30 @@ class SpringProfileArbiterTests {
 
 	private Logger logger;
 
-	private Configuration configuration;
-
 	@BeforeEach
-	void setup(CapturedOutput output) {
+	void setup(CapturedOutput output, TestInfo testInfo) {
 		this.output = output;
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-		this.configuration = loggerContext.getConfiguration();
-		this.loggingSystem.cleanUp();
-		this.logger = LogManager.getLogger(getClass());
+		this.loggingSystem = new TestLog4J2LoggingSystem(testInfo.getDisplayName());
+		this.logger = this.loggingSystem.getLoggerContext().getLogger(getClass().getName());
 		cleanUpPropertySources();
 	}
 
 	@AfterEach
 	void cleanUp() {
 		this.loggingSystem.cleanUp();
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-		loggerContext.stop();
-		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
 		cleanUpPropertySources();
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
 		PropertiesUtil properties = PropertiesUtil.getProperties();
 		Object environment = ReflectionTestUtils.getField(properties, "environment");
+		assertThat(environment).isNotNull();
 		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
+		assertThat(sources).isNotNull();
 		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
 				|| candidate instanceof SpringBootPropertySource);
 	}
@@ -168,11 +164,11 @@ class SpringProfileArbiterTests {
 	@WithResource(name = "multi-profile-names.xml", content = """
 			<?xml version="1.0" encoding="UTF-8"?>
 			<Configuration>
-				<SpringProfile name="production, test">
-					<Loggers>
+			    <Loggers>
+				    <SpringProfile name="production, test">
 						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
-					</Loggers>
-				</SpringProfile>
+					</SpringProfile>
+				</Loggers>
 			</Configuration>
 			""")
 	private @interface WithMultiProfileNamesXmlResource {
@@ -184,11 +180,11 @@ class SpringProfileArbiterTests {
 	@WithResource(name = "profile-expression.xml", content = """
 			<?xml version="1.0" encoding="UTF-8"?>
 			<Configuration>
-				<SpringProfile name="production | test">
-					<Loggers>
+			    <Loggers>
+				    <SpringProfile name="production | test">
 						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
-					</Loggers>
-				</SpringProfile>
+					</SpringProfile>
+				</Loggers>
 			</Configuration>
 			""")
 	private @interface WithProfileExpressionXmlResource {
@@ -200,11 +196,11 @@ class SpringProfileArbiterTests {
 	@WithResource(name = "production-profile.xml", content = """
 			<?xml version="1.0" encoding="UTF-8"?>
 			<Configuration>
-				<SpringProfile name="production">
-					<Loggers>
+			    <Loggers>
+				    <SpringProfile name="production">
 						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
-					</Loggers>
-				</SpringProfile>
+					</SpringProfile>
+				</Loggers>
 			</Configuration>
 			""")
 	private @interface WithProductionProfileXmlResource {

@@ -21,6 +21,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryMetadata;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Wrapped;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 
 /**
@@ -77,7 +78,7 @@ public class OptionsCapableConnectionFactory implements Wrapped<ConnectionFactor
 	 * @return the {@code OptionsCapableConnectionFactory} or {@code null}
 	 * @since 2.5.1
 	 */
-	public static OptionsCapableConnectionFactory unwrapFrom(ConnectionFactory connectionFactory) {
+	public static @Nullable OptionsCapableConnectionFactory unwrapFrom(ConnectionFactory connectionFactory) {
 		if (connectionFactory instanceof OptionsCapableConnectionFactory optionsCapableConnectionFactory) {
 			return optionsCapableConnectionFactory;
 		}

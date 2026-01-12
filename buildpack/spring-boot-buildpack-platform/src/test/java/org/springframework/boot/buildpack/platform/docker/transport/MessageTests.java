@@ -31,13 +31,13 @@ class MessageTests extends AbstractJsonTests {
 
 	@Test
 	void readValueDeserializesJson() throws Exception {
-		Message message = getObjectMapper().readValue(getContent("message.json"), Message.class);
+		Message message = getJsonMapper().readValue(getContent("message.json"), Message.class);
 		assertThat(message.getMessage()).isEqualTo("test message");
 	}
 
 	@Test
 	void toStringHasErrorDetails() throws Exception {
-		Message errors = getObjectMapper().readValue(getContent("message.json"), Message.class);
+		Message errors = getJsonMapper().readValue(getContent("message.json"), Message.class);
 		assertThat(errors).hasToString("test message");
 	}
 

@@ -21,23 +21,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Role;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -68,14 +75,14 @@ class ControllerEndpointDiscovererTests {
 			ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 			assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testcontroller"));
 			assertThat(endpoint.getController()).isInstanceOf(TestControllerEndpoint.class);
+			assertThat(ClassUtils.isCglibProxy(endpoint.getController())).isFalse();
 			assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 		}));
 	}
 
 	@Test
 	void getEndpointsShouldDiscoverProxyControllerEndpoints() {
-		this.contextRunner.withUserConfiguration(TestProxyControllerEndpoint.class)
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+		this.contextRunner.withUserConfiguration(ProxyBeanConfiguration.class, TestProxyControllerEndpoint.class)
 			.run(assertDiscoverer((discoverer) -> {
 				Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
 				assertThat(endpoints).hasSize(1);
@@ -83,6 +90,7 @@ class ControllerEndpointDiscovererTests {
 				assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testcontroller"));
 				assertThat(endpoint.getController()).isInstanceOf(TestProxyControllerEndpoint.class);
 				assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
+				assertThat(ClassUtils.isCglibProxy(endpoint.getController())).isTrue();
 			}));
 	}
 
@@ -95,19 +103,20 @@ class ControllerEndpointDiscovererTests {
 				ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 				assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testrestcontroller"));
 				assertThat(endpoint.getController()).isInstanceOf(TestRestControllerEndpoint.class);
+				assertThat(ClassUtils.isCglibProxy(endpoint.getController())).isFalse();
 			}));
 	}
 
 	@Test
 	void getEndpointsShouldDiscoverProxyRestControllerEndpoints() {
-		this.contextRunner.withUserConfiguration(TestProxyRestControllerEndpoint.class)
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+		this.contextRunner.withUserConfiguration(ProxyBeanConfiguration.class, TestProxyRestControllerEndpoint.class)
 			.run(assertDiscoverer((discoverer) -> {
 				Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
 				assertThat(endpoints).hasSize(1);
 				ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 				assertThat(endpoint.getEndpointId()).isEqualTo(EndpointId.of("testrestcontroller"));
 				assertThat(endpoint.getController()).isInstanceOf(TestProxyRestControllerEndpoint.class);
+				assertThat(ClassUtils.isCglibProxy(endpoint.getController())).isTrue();
 				assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 			}));
 	}
@@ -193,6 +202,24 @@ class ControllerEndpointDiscovererTests {
 		@ReadOperation
 		String read() {
 			return "error";
+		}
+
+	}
+
+	static class ProxyBeanConfiguration {
+
+		@Bean
+		@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+		static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext) {
+			return new LocalValidatorFactoryBean();
+		}
+
+		@Bean
+		static MethodValidationPostProcessor methodValidationPostProcessor(ObjectProvider<Validator> validator) {
+			MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+			processor.setProxyTargetClass(true);
+			processor.setValidatorProvider(validator);
+			return processor;
 		}
 
 	}

@@ -162,10 +162,10 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
-		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
-		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
-		addDependencyVersion(attributes, "jackson-dataformat-xml",
-				"com.fasterxml.jackson.dataformat:jackson-dataformat-xml");
+		addDependencyVersion(attributes, "jackson-core", "tools.jackson.core:jackson-core");
+		addDependencyVersion(attributes, "jackson-databind", "tools.jackson.core:jackson-databind");
+		addDependencyVersion(attributes, "jackson-dataformat-xml", "tools.jackson.dataformat:jackson-dataformat-xml");
+		addDependencyVersion(attributes, "jackson2-databind", "com.fasterxml.jackson.core:jackson-databind");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
@@ -178,7 +178,6 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
-		addDependencyVersion(attributes, "pulsar-client-reactive-api", "org.apache.pulsar:pulsar-client-reactive-api");
 		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 

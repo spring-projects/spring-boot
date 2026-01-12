@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -55,6 +56,7 @@ class BootBuildImageRegistryIntegrationTests {
 
 	String registryAddress;
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@BeforeEach
@@ -69,7 +71,9 @@ class BootBuildImageRegistryIntegrationTests {
 		String repoName = "test-image";
 		String imageName = this.registryAddress + "/" + repoName;
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=" + imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootBuildImage");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Building image")
 			.contains("Successfully built image")
 			.contains("Pushing image '" + imageName + ":latest" + "'")

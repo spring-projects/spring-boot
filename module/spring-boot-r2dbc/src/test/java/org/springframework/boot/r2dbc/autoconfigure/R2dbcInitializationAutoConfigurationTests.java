@@ -132,7 +132,8 @@ class R2dbcInitializationAutoConfigurationTests {
 
 		@Bean
 		R2dbcScriptDatabaseInitializer customInitializer() {
-			return new R2dbcScriptDatabaseInitializer(null, new DatabaseInitializationSettings()) {
+			return new R2dbcScriptDatabaseInitializer(mock(ConnectionFactory.class),
+					new DatabaseInitializationSettings()) {
 
 				@Override
 				protected void runScripts(Scripts scripts) {

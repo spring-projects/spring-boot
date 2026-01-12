@@ -29,6 +29,8 @@ dependencies {
 	api("io.projectreactor.netty:reactor-netty-http")
 	api("org.springframework:spring-web")
 
+	compileOnly("com.google.code.findbugs:jsr305")
+
 	implementation(project(":module:spring-boot-netty"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
@@ -41,8 +43,14 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework:spring-webflux")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.eclipse.jetty:jetty-client")
 	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client")
 	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

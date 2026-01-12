@@ -18,6 +18,8 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import java.util.Arrays;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -41,7 +43,7 @@ final class WelcomePageRouterFunctionFactory {
 
 	private final String staticPathPattern;
 
-	private final Resource welcomePage;
+	private final @Nullable Resource welcomePage;
 
 	private final boolean welcomePageTemplateExists;
 
@@ -52,7 +54,7 @@ final class WelcomePageRouterFunctionFactory {
 		this.welcomePageTemplateExists = welcomeTemplateExists(templateAvailabilityProviders, applicationContext);
 	}
 
-	private Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
+	private @Nullable Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
 		return Arrays.stream(staticLocations)
 			.map((location) -> getIndexHtml(resourceLoader, location))
 			.filter(this::isReadable)
@@ -78,7 +80,7 @@ final class WelcomePageRouterFunctionFactory {
 		return templateAvailabilityProviders.getProvider("index", applicationContext) != null;
 	}
 
-	RouterFunction<ServerResponse> createRouterFunction() {
+	@Nullable RouterFunction<ServerResponse> createRouterFunction() {
 		if (this.welcomePage != null && "/**".equals(this.staticPathPattern)) {
 			return RouterFunctions.route(GET("/").and(accept(MediaType.TEXT_HTML)),
 					(req) -> ServerResponse.ok().contentType(MediaType.TEXT_HTML).bodyValue(this.welcomePage));

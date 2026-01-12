@@ -25,6 +25,8 @@ NOTE: The `outputFileNameMapping` feature of the `maven-war-plugin` is currently
 
 The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
 In order to make that work with `war` packaging, the `spring-boot-devtools` and `spring-boot-docker-compose` dependencies must be set as `optional` or with the `provided` scope.
+Pay also attention that optional dependencies are not included by default.
+If you have defined those modules as optional, you also need to set the `includeOptional` property to `true`.
 
 The plugin rewrites your manifest, and in particular it manages the `Main-Class` and `Start-Class` entries.
 If the defaults don't work you have to configure the values in the Spring Boot plugin, not in the jar plugin.

@@ -39,4 +39,10 @@ class SampleLogbackApplicationTests {
 		assertThat(output).contains("Sample Debug Message").contains("Sample Trace Message");
 	}
 
+	@Test
+	void testDisableConsoleLogging(CapturedOutput output) {
+		SampleLogbackApplication.main(new String[] { "--logging.console.enabled=false" });
+		assertThat(output).doesNotContain("---");
+	}
+
 }

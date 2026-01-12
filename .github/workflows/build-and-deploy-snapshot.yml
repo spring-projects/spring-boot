@@ -15,28 +15,29 @@ jobs:
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build and Publish
         id: build-and-publish
         uses: ./.github/actions/build
         with:
           commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
-          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
           commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           gradle-cache-read-only: false
           publish: true
       - name: Deploy
-        uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
+        uses: spring-io/artifactory-deploy-action@926d7f7cc810569395346bf3a4d91b380b3e355b # v0.0.4
         with:
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.0.x') || format('spring-boot-{0}', '4.0.x') }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.1.x') || format('spring-boot-{0}', '4.1.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
           repository: ${{ vars.COMMERCIAL && 'spring-enterprise-maven-dev-local' || 'libs-snapshot-local' }}
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          threads: 8
           uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
           username: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_USERNAME || secrets.ARTIFACTORY_USERNAME }}
       - name: Send Notification
@@ -44,7 +45,7 @@ jobs:
         uses: ./.github/actions/send-notification
         with:
           build-scan-url: ${{ steps.build-and-publish.outputs.build-scan-url }}
-          run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
+          run-name: ${{ format('{0} | Linux | Java 25', github.ref_name) }}
           status: ${{ job.status }}
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
@@ -59,14 +60,14 @@ jobs:
       - name: Run Deploy Docs Workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-deploy-snapshot.outputs.version }}
+        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-sha=${{ github.sha }} -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-deploy-snapshot.outputs.version }}
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
     uses: ./.github/workflows/verify.yml
     secrets:
-      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
       google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
       opensource-repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
       opensource-repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}

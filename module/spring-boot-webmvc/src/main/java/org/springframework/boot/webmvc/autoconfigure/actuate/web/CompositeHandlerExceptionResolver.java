@@ -21,6 +21,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
@@ -46,11 +47,11 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	@Autowired
 	private ListableBeanFactory beanFactory;
 
-	private volatile List<HandlerExceptionResolver> resolvers;
+	private volatile @Nullable List<HandlerExceptionResolver> resolvers;
 
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-			Exception ex) {
+	public @Nullable ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
+			@Nullable Object handler, Exception ex) {
 		for (HandlerExceptionResolver resolver : getResolvers()) {
 			ModelAndView resolved = resolver.resolveException(request, response, handler, ex);
 			if (resolved != null) {
@@ -76,7 +77,7 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		return resolvers;
 	}
 
-	private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
+	private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, @Nullable BeanFactory beanFactory) {
 		if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
 			resolvers.addAll(listableBeanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		}

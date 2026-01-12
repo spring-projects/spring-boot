@@ -115,18 +115,21 @@ class ConfigDataLocationTests {
 	}
 
 	@Test
-	void ofWhenNullValueReturnsNull() {
-		assertThat(ConfigDataLocation.of(null)).isNull();
+	void ofWhenNullValueReturnsEmptyLocation() {
+		ConfigDataLocation location = ConfigDataLocation.of(null);
+		assertThat(location.getValue().isEmpty()).isTrue();
 	}
 
 	@Test
-	void ofWhenEmptyValueReturnsNull() {
-		assertThat(ConfigDataLocation.of("")).isNull();
+	void ofWhenEmptyValueReturnsEmptyLocation() {
+		ConfigDataLocation location = ConfigDataLocation.of("");
+		assertThat(location.getValue().isEmpty()).isTrue();
 	}
 
 	@Test
-	void ofWhenEmptyOptionalValueReturnsNull() {
-		assertThat(ConfigDataLocation.of("optional:")).isNull();
+	void ofWhenEmptyOptionalValueReturnsEmptyLocation() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:");
+		assertThat(location.getValue().isEmpty()).isTrue();
 	}
 
 	@Test

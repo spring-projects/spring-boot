@@ -57,8 +57,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class BasicErrorControllerDirectMockMvcTests {
 
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurableWebApplicationContext wac;
 
+	@SuppressWarnings("NullAway.Init")
 	private MockMvcTester mvc;
 
 	@AfterEach
@@ -93,7 +95,7 @@ class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	void errorPageNotAvailableWithWhitelabelDisabled() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
-			.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
+			.run("--server.port=0", "--spring.web.error.whitelabel.enabled=false"));
 		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasFailed()
 			.failure()
 			.isInstanceOf(ServletException.class);

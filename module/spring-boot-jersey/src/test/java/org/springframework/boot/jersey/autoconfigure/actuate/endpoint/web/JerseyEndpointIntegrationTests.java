@@ -36,9 +36,7 @@ import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoCon
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -134,11 +132,13 @@ class JerseyEndpointIntegrationTests {
 			.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0");
 	}
 
+	@SuppressWarnings("removal")
 	private Class<?>[] getAutoconfigurations(Class<?>... additional) {
-		List<Class<?>> autoconfigurations = new ArrayList<>(Arrays.asList(JacksonAutoConfiguration.class,
-				JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
-				TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
+		List<Class<?>> autoconfigurations = new ArrayList<>(
+				Arrays.asList(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+						JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
+						TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
 		autoconfigurations.addAll(Arrays.asList(additional));
 		return autoconfigurations.toArray(new Class<?>[0]);
 	}
@@ -185,12 +185,11 @@ class JerseyEndpointIntegrationTests {
 	static class EndpointObjectMapperConfiguration {
 
 		@Bean
-		EndpointObjectMapper endpointObjectMapper() {
+		org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper() {
 			SimpleModule module = new SimpleModule();
 			module.addSerializer(String.class, new ReverseStringSerializer());
-			ObjectMapper objectMapper = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
-				.modules(module)
-				.build();
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(module);
 			return () -> objectMapper;
 		}
 
@@ -201,7 +200,7 @@ class JerseyEndpointIntegrationTests {
 			}
 
 			@Override
-			public boolean isEmpty(SerializerProvider prov, Object value) {
+			public boolean isEmpty(SerializerProvider provider, Object value) {
 				return ((String) value).isEmpty();
 			}
 

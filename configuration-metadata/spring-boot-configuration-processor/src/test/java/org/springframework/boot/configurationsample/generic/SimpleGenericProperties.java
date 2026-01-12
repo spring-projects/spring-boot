@@ -18,14 +18,14 @@ package org.springframework.boot.configurationsample.generic;
 
 import java.time.Duration;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Simple properties with resolved generic information.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("generic")
+@TestConfigurationProperties("generic")
 public class SimpleGenericProperties extends AbstractIntermediateGenericProperties<Duration> {
 
 }

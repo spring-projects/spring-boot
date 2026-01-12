@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingSystemProperties {
 
-	private static final BiConsumer<String, String> systemPropertySetter = (name, value) -> {
+	private static final BiConsumer<String, @Nullable String> systemPropertySetter = (name, value) -> {
 		if (System.getProperty(name) == null && value != null) {
 			System.setProperty(name, value);
 		}
@@ -57,7 +57,7 @@ public class LoggingSystemProperties {
 
 	private final Function<@Nullable String, @Nullable String> defaultValueResolver;
 
-	private final BiConsumer<String, String> setter;
+	private final BiConsumer<String, @Nullable String> setter;
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
@@ -74,7 +74,7 @@ public class LoggingSystemProperties {
 	 * properties
 	 * @since 2.4.2
 	 */
-	public LoggingSystemProperties(Environment environment, @Nullable BiConsumer<String, String> setter) {
+	public LoggingSystemProperties(Environment environment, @Nullable BiConsumer<String, @Nullable String> setter) {
 		this(environment, null, setter);
 	}
 
@@ -88,7 +88,7 @@ public class LoggingSystemProperties {
 	 */
 	public LoggingSystemProperties(Environment environment,
 			@Nullable Function<@Nullable String, @Nullable String> defaultValueResolver,
-			@Nullable BiConsumer<String, String> setter) {
+			@Nullable BiConsumer<String, @Nullable String> setter) {
 		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
@@ -142,6 +142,9 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
+		}
+		if (!this.environment.getProperty("logging.console.enabled", Boolean.class, true)) {
+			setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName(), "OFF");
 		}
 	}
 

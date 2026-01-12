@@ -17,6 +17,7 @@
 package org.springframework.boot.jooq.autoconfigure;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -35,7 +36,7 @@ class NoDslContextBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBean
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
 		if (DSLContext.class.equals(cause.getBeanType()) && hasR2dbcAutoConfiguration()) {
 			return new FailureAnalysis(
 					"jOOQ has not been auto-configured as R2DBC has been auto-configured in favor of JDBC and jOOQ "

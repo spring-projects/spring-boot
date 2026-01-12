@@ -18,6 +18,8 @@ package org.springframework.boot.web.server.servlet;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.util.Assert;
@@ -30,13 +32,13 @@ import org.springframework.util.Assert;
  */
 public class SessionStoreDirectory {
 
-	private File directory;
+	private @Nullable File directory;
 
-	File getDirectory() {
+	@Nullable File getDirectory() {
 		return this.directory;
 	}
 
-	void setDirectory(File directory) {
+	void setDirectory(@Nullable File directory) {
 		this.directory = directory;
 	}
 

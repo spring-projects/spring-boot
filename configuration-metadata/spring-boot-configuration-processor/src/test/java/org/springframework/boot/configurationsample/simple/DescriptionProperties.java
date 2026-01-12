@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties with various description styles.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("description")
+@TestConfigurationProperties("description")
 public class DescriptionProperties {
 
 	/**

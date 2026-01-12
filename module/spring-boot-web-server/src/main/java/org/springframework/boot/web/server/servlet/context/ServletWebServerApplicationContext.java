@@ -29,6 +29,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -86,7 +87,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  * @see AnnotationConfigServletWebServerApplicationContext
  * @see XmlServletWebServerApplicationContext
  * @see ServletWebServerFactory
@@ -104,11 +105,11 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
-	private volatile WebServer webServer;
+	private volatile @Nullable WebServer webServer;
 
-	private ServletConfig servletConfig;
+	private @Nullable ServletConfig servletConfig;
 
-	private String serverNamespace;
+	private @Nullable String serverNamespace;
 
 	/**
 	 * Create a new {@link ServletWebServerApplicationContext}.
@@ -186,12 +187,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			ServletWebServerFactory factory = getWebServerFactory();
 			createWebServer.tag("factory", factory.getClass().toString());
-			this.webServer = factory.getWebServer(getSelfInitializer());
+			webServer = factory.getWebServer(getSelfInitializer());
+			this.webServer = webServer;
 			createWebServer.end();
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
-					new WebServerGracefulShutdownLifecycle(this.webServer));
-			getBeanFactory().registerSingleton("webServerStartStop",
-					new WebServerStartStopLifecycle(this, this.webServer));
+					new WebServerGracefulShutdownLifecycle(webServer));
+			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this, webServer));
 		}
 		else if (servletContext != null) {
 			try {
@@ -249,22 +250,22 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	@Override
-	public String getServerNamespace() {
+	public @Nullable String getServerNamespace() {
 		return this.serverNamespace;
 	}
 
 	@Override
-	public void setServerNamespace(String serverNamespace) {
+	public void setServerNamespace(@Nullable String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}
 
 	@Override
-	public void setServletConfig(ServletConfig servletConfig) {
+	public void setServletConfig(@Nullable ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 	}
 
 	@Override
-	public ServletConfig getServletConfig() {
+	public @Nullable ServletConfig getServletConfig() {
 		return this.servletConfig;
 	}
 
@@ -274,7 +275,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * @return the embedded web server
 	 */
 	@Override
-	public WebServer getWebServer() {
+	public @Nullable WebServer getWebServer() {
 		return this.webServer;
 	}
 

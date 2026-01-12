@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class LayerTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("'name' must not be empty");
 	}

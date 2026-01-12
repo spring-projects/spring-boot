@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,7 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mock.env.MockPropertySource;
@@ -79,8 +81,12 @@ class EnvironmentEndpointTests {
 		assertThat(descriptor.getActiveProfiles()).isEmpty();
 		Map<String, PropertySourceDescriptor> sources = propertySources(descriptor);
 		assertThat(sources.keySet()).containsExactly("one", "two");
-		assertThat(sources.get("one").getProperties()).containsOnlyKeys("my.key");
-		assertThat(sources.get("two").getProperties()).containsOnlyKeys("my.key");
+		PropertySourceDescriptor one = sources.get("one");
+		assertThat(one).isNotNull();
+		assertThat(one.getProperties()).containsOnlyKeys("my.key");
+		PropertySourceDescriptor two = sources.get("two");
+		assertThat(two).isNotNull();
+		assertThat(two.getProperties()).containsOnlyKeys("my.key");
 	}
 
 	@Test
@@ -90,11 +96,17 @@ class EnvironmentEndpointTests {
 		TestPropertyValues.of("system.service=123456").applyToSystemProperties(() -> {
 			EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.NEVER)
 				.environment(null);
-			assertThat(propertySources(descriptor).get("test").getProperties().get("other.service").getValue())
-				.isEqualTo("******");
-			Map<String, PropertyValueDescriptor> systemProperties = propertySources(descriptor).get("systemProperties")
-				.getProperties();
-			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("******");
+			PropertySourceDescriptor test = propertySources(descriptor).get("test");
+			assertThat(test).isNotNull();
+			PropertyValueDescriptor otherService = test.getProperties().get("other.service");
+			assertThat(otherService).isNotNull();
+			assertThat(otherService.getValue()).isEqualTo("******");
+			PropertySourceDescriptor systemPropertiesDescriptor = propertySources(descriptor).get("systemProperties");
+			assertThat(systemPropertiesDescriptor).isNotNull();
+			Map<String, PropertyValueDescriptor> systemProperties = systemPropertiesDescriptor.getProperties();
+			PropertyValueDescriptor systemService = systemProperties.get("system.service");
+			assertThat(systemService).isNotNull();
+			assertThat(systemService.getValue()).isEqualTo("******");
 			return null;
 		});
 	}
@@ -107,11 +119,17 @@ class EnvironmentEndpointTests {
 			EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(),
 					Show.WHEN_AUTHORIZED)
 				.environment(null);
-			assertThat(propertySources(descriptor).get("test").getProperties().get("other.service").getValue())
-				.isEqualTo("abcde");
-			Map<String, PropertyValueDescriptor> systemProperties = propertySources(descriptor).get("systemProperties")
-				.getProperties();
-			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("123456");
+			PropertySourceDescriptor test = propertySources(descriptor).get("test");
+			assertThat(test).isNotNull();
+			PropertyValueDescriptor otherService = test.getProperties().get("other.service");
+			assertThat(otherService).isNotNull();
+			assertThat(otherService.getValue()).isEqualTo("abcde");
+			PropertySourceDescriptor systemPropertiesDescriptor = propertySources(descriptor).get("systemProperties");
+			assertThat(systemPropertiesDescriptor).isNotNull();
+			Map<String, PropertyValueDescriptor> systemProperties = systemPropertiesDescriptor.getProperties();
+			PropertyValueDescriptor systemServiceDescriptor = systemProperties.get("system.service");
+			assertThat(systemServiceDescriptor).isNotNull();
+			assertThat(systemServiceDescriptor.getValue()).isEqualTo("123456");
 			return null;
 		});
 	}
@@ -127,8 +145,16 @@ class EnvironmentEndpointTests {
 			.environment(null);
 		Map<String, PropertySourceDescriptor> sources = propertySources(descriptor);
 		assertThat(sources.keySet()).containsExactly("composite:one", "composite:two");
-		assertThat(sources.get("composite:one").getProperties().get("foo").getValue()).isEqualTo("bar");
-		assertThat(sources.get("composite:two").getProperties().get("foo").getValue()).isEqualTo("spam");
+		PropertySourceDescriptor one = sources.get("composite:one");
+		assertThat(one).isNotNull();
+		PropertyValueDescriptor oneFoo = one.getProperties().get("foo");
+		assertThat(oneFoo).isNotNull();
+		assertThat(oneFoo.getValue()).isEqualTo("bar");
+		PropertySourceDescriptor two = sources.get("composite:two");
+		assertThat(two).isNotNull();
+		PropertyValueDescriptor twoFoo = two.getProperties().get("foo");
+		assertThat(twoFoo).isNotNull();
+		assertThat(twoFoo.getValue()).isEqualTo("spam");
 	}
 
 	@Test
@@ -138,18 +164,26 @@ class EnvironmentEndpointTests {
 		TestPropertyValues.of("system.service=123456").applyToSystemProperties(() -> {
 			EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment,
 					Collections.singletonList((data) -> {
-						String name = data.getPropertySource().getName();
+						PropertySource<?> propertySource = data.getPropertySource();
+						assertThat(propertySource).isNotNull();
+						String name = propertySource.getName();
 						if (name.equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)) {
 							return data.withValue("******");
 						}
 						return data;
 					}), Show.ALWAYS)
 				.environment(null);
-			assertThat(propertySources(descriptor).get("test").getProperties().get("other.service").getValue())
-				.isEqualTo("abcde");
-			Map<String, PropertyValueDescriptor> systemProperties = propertySources(descriptor).get("systemProperties")
-				.getProperties();
-			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("******");
+			PropertySourceDescriptor test = propertySources(descriptor).get("test");
+			assertThat(test).isNotNull();
+			PropertyValueDescriptor otherService = test.getProperties().get("other.service");
+			assertThat(otherService).isNotNull();
+			assertThat(otherService.getValue()).isEqualTo("abcde");
+			PropertySourceDescriptor systemPropertiesDescriptor = propertySources(descriptor).get("systemProperties");
+			assertThat(systemPropertiesDescriptor).isNotNull();
+			Map<String, PropertyValueDescriptor> systemProperties = systemPropertiesDescriptor.getProperties();
+			PropertyValueDescriptor systemService = systemProperties.get("system.service");
+			assertThat(systemService).isNotNull();
+			assertThat(systemService.getValue()).isEqualTo("******");
 			return null;
 		});
 	}
@@ -160,7 +194,11 @@ class EnvironmentEndpointTests {
 		TestPropertyValues.of("my.foo: ${bar.blah}", "bar.blah: hello").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS)
 			.environment(null);
-		assertThat(propertySources(descriptor).get("test").getProperties().get("my.foo").getValue()).isEqualTo("hello");
+		PropertySourceDescriptor test = propertySources(descriptor).get("test");
+		assertThat(test).isNotNull();
+		PropertyValueDescriptor foo = test.getProperties().get("my.foo");
+		assertThat(foo).isNotNull();
+		assertThat(foo.getValue()).isEqualTo("hello");
 	}
 
 	@Test
@@ -169,8 +207,11 @@ class EnvironmentEndpointTests {
 		TestPropertyValues.of("my.foo: ${bar.blah}").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS)
 			.environment(null);
-		assertThat(propertySources(descriptor).get("test").getProperties().get("my.foo").getValue())
-			.isEqualTo("${bar.blah}");
+		PropertySourceDescriptor test = propertySources(descriptor).get("test");
+		assertThat(test).isNotNull();
+		PropertyValueDescriptor foo = test.getProperties().get("my.foo");
+		assertThat(foo).isNotNull();
+		assertThat(foo.getValue()).isEqualTo("${bar.blah}");
 	}
 
 	@Test
@@ -180,7 +221,11 @@ class EnvironmentEndpointTests {
 			.addFirst(singleKeyPropertySource("test", "foo", Collections.singletonMap("bar", "baz")));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS)
 			.environment(null);
-		String value = (String) propertySources(descriptor).get("test").getProperties().get("foo").getValue();
+		PropertySourceDescriptor test = propertySources(descriptor).get("test");
+		assertThat(test).isNotNull();
+		PropertyValueDescriptor foo = test.getProperties().get("foo");
+		assertThat(foo).isNotNull();
+		String value = (String) foo.getValue();
 		assertThat(value).isEqualTo("Complex property type java.util.Collections$SingletonMap");
 	}
 
@@ -195,11 +240,21 @@ class EnvironmentEndpointTests {
 		environment.getPropertySources().addFirst(new MapPropertySource("test", map));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS)
 			.environment(null);
-		Map<String, PropertyValueDescriptor> properties = propertySources(descriptor).get("test").getProperties();
-		assertThat(properties.get("char").getValue()).isEqualTo('a');
-		assertThat(properties.get("integer").getValue()).isEqualTo(100);
-		assertThat(properties.get("boolean").getValue()).isEqualTo(true);
-		assertThat(properties.get("biginteger").getValue()).isEqualTo(BigInteger.valueOf(200));
+		PropertySourceDescriptor test = propertySources(descriptor).get("test");
+		assertThat(test).isNotNull();
+		Map<String, PropertyValueDescriptor> properties = test.getProperties();
+		PropertyValueDescriptor aChar = properties.get("char");
+		assertThat(aChar).isNotNull();
+		assertThat(aChar.getValue()).isEqualTo('a');
+		PropertyValueDescriptor integer = properties.get("integer");
+		assertThat(integer).isNotNull();
+		assertThat(integer.getValue()).isEqualTo(100);
+		PropertyValueDescriptor aBoolean = properties.get("boolean");
+		assertThat(aBoolean).isNotNull();
+		assertThat(aBoolean.getValue()).isEqualTo(true);
+		PropertyValueDescriptor bigInteger = properties.get("biginteger");
+		assertThat(bigInteger).isNotNull();
+		assertThat(bigInteger.getValue()).isEqualTo(BigInteger.valueOf(200));
 	}
 
 	@Test
@@ -208,7 +263,11 @@ class EnvironmentEndpointTests {
 		environment.getPropertySources().addFirst(singleKeyPropertySource("test", "foo", new CharSequenceProperty()));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS)
 			.environment(null);
-		String value = (String) propertySources(descriptor).get("test").getProperties().get("foo").getValue();
+		PropertySourceDescriptor test = propertySources(descriptor).get("test");
+		assertThat(test).isNotNull();
+		PropertyValueDescriptor foo = test.getProperties().get("foo");
+		assertThat(foo).isNotNull();
+		String value = (String) foo.getValue();
 		assertThat(value).isEqualTo("test value");
 	}
 
@@ -258,8 +317,11 @@ class EnvironmentEndpointTests {
 				Show.ALWAYS)
 			.environmentEntry("name");
 		PropertySourceEntryDescriptor entryDescriptor = propertySources(descriptor).get("mockProperties");
-		assertThat(entryDescriptor.getProperty().getOrigin()).isEqualTo("name");
-		assertThat(entryDescriptor.getProperty().getOriginParents()).containsExactly("spring", "boot");
+		assertThat(entryDescriptor).isNotNull();
+		PropertyValueDescriptor property = entryDescriptor.getProperty();
+		assertThat(property).isNotNull();
+		assertThat(property.getOrigin()).isEqualTo("name");
+		assertThat(property.getOriginParents()).containsExactly("spring", "boot");
 	}
 
 	@Test
@@ -285,8 +347,16 @@ class EnvironmentEndpointTests {
 			.environment(null);
 		Map<String, PropertySourceDescriptor> sources = propertySources(descriptor);
 		assertThat(sources.keySet()).containsExactly("two", "one");
-		assertThat(sources.get("one").getProperties().get("a").getValue()).isEqualTo("alpha");
-		assertThat(sources.get("two").getProperties().get("a").getValue()).isEqualTo("apple");
+		PropertySourceDescriptor one = sources.get("one");
+		assertThat(one).isNotNull();
+		PropertyValueDescriptor oneA = one.getProperties().get("a");
+		assertThat(oneA).isNotNull();
+		assertThat(oneA.getValue()).isEqualTo("alpha");
+		PropertySourceDescriptor two = sources.get("two");
+		assertThat(two).isNotNull();
+		PropertyValueDescriptor twoA = two.getProperties().get("a");
+		assertThat(twoA).isNotNull();
+		assertThat(twoA.getValue()).isEqualTo("apple");
 	}
 
 	private static ConfigurableEnvironment emptyEnvironment() {
@@ -312,12 +382,14 @@ class EnvironmentEndpointTests {
 		return sources;
 	}
 
-	private void assertPropertySourceEntryDescriptor(PropertySourceEntryDescriptor actual, Object value,
-			String origin) {
+	private void assertPropertySourceEntryDescriptor(@Nullable PropertySourceEntryDescriptor actual,
+			@Nullable Object value, @Nullable String origin) {
 		assertThat(actual).isNotNull();
 		if (value != null) {
-			assertThat(actual.getProperty().getValue()).isEqualTo(value);
-			assertThat(actual.getProperty().getOrigin()).isEqualTo(origin);
+			PropertyValueDescriptor property = actual.getProperty();
+			assertThat(property).isNotNull();
+			assertThat(property.getValue()).isEqualTo(value);
+			assertThat(property.getOrigin()).isEqualTo(origin);
 		}
 		else {
 			assertThat(actual.getProperty()).isNull();
@@ -338,15 +410,15 @@ class EnvironmentEndpointTests {
 
 		private final String value;
 
-		private final MockOrigin parent;
+		private final @Nullable MockOrigin parent;
 
-		MockOrigin(String value, MockOrigin parent) {
+		MockOrigin(String value, @Nullable MockOrigin parent) {
 			this.value = value;
 			this.parent = parent;
 		}
 
 		@Override
-		public Origin getParent() {
+		public @Nullable Origin getParent() {
 			return this.parent;
 		}
 

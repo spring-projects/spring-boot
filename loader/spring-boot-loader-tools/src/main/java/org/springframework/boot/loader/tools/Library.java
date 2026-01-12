@@ -21,6 +21,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
+
 /**
  * Encapsulates information about a single library that may be packed into the archive.
  *
@@ -33,11 +37,11 @@ public class Library {
 
 	private final String name;
 
-	private final File file;
+	private final @Nullable File file;
 
-	private final LibraryScope scope;
+	private final @Nullable LibraryScope scope;
 
-	private final LibraryCoordinates coordinates;
+	private final @Nullable LibraryCoordinates coordinates;
 
 	private final boolean unpackRequired;
 
@@ -67,15 +71,20 @@ public class Library {
 	 * @param included if the library is included in the uber jar
 	 * @since 2.4.8
 	 */
-	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired,
-			boolean local, boolean included) {
-		this.name = (name != null) ? name : file.getName();
+	public Library(@Nullable String name, @Nullable File file, @Nullable LibraryScope scope,
+			@Nullable LibraryCoordinates coordinates, boolean unpackRequired, boolean local, boolean included) {
+		this.name = (name != null) ? name : getFileName(file);
 		this.file = file;
 		this.scope = scope;
 		this.coordinates = coordinates;
 		this.unpackRequired = unpackRequired;
 		this.local = local;
 		this.included = included;
+	}
+
+	private static String getFileName(@Nullable File file) {
+		Assert.state(file != null, "'file' must not be null");
+		return file.getName();
 	}
 
 	/**
@@ -90,7 +99,7 @@ public class Library {
 	 * Return the library file.
 	 * @return the file
 	 */
-	public File getFile() {
+	public @Nullable File getFile() {
 		return this.file;
 	}
 
@@ -100,6 +109,7 @@ public class Library {
 	 * @throws IOException on error
 	 */
 	InputStream openStream() throws IOException {
+		Assert.state(this.file != null, "'file' must not be null");
 		return new FileInputStream(this.file);
 	}
 
@@ -107,7 +117,7 @@ public class Library {
 	 * Return the scope of the library.
 	 * @return the scope
 	 */
-	public LibraryScope getScope() {
+	public @Nullable LibraryScope getScope() {
 		return this.scope;
 	}
 
@@ -115,7 +125,7 @@ public class Library {
 	 * Return the {@linkplain LibraryCoordinates coordinates} of the library.
 	 * @return the coordinates
 	 */
-	public LibraryCoordinates getCoordinates() {
+	public @Nullable LibraryCoordinates getCoordinates() {
 		return this.coordinates;
 	}
 
@@ -129,6 +139,7 @@ public class Library {
 	}
 
 	long getLastModified() {
+		Assert.state(this.file != null, "'file' must not be null");
 		return this.file.lastModified();
 	}
 

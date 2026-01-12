@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.servlet.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
@@ -34,17 +36,18 @@ import org.springframework.core.env.ConfigurableEnvironment;
 class ServletWebServerApplicationContextFactory implements ApplicationContextFactory {
 
 	@Override
-	public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
+	public @Nullable Class<? extends ConfigurableEnvironment> getEnvironmentType(
+			@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : ApplicationServletEnvironment.class;
 	}
 
 	@Override
-	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+	public @Nullable ConfigurableEnvironment createEnvironment(@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : new ApplicationServletEnvironment();
 	}
 
 	@Override
-	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+	public @Nullable ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.SERVLET) ? null : createContext();
 	}
 

@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
@@ -51,11 +53,11 @@ import org.springframework.util.StringUtils;
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
 
-	private DataSource dataSource;
+	private @Nullable DataSource dataSource;
 
-	private String query;
+	private @Nullable String query;
 
-	private JdbcTemplate jdbcTemplate;
+	private @Nullable JdbcTemplate jdbcTemplate;
 
 	/**
 	 * Create a new {@link DataSourceHealthIndicator} instance.
@@ -69,7 +71,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	 * {@link DataSource}.
 	 * @param dataSource the data source
 	 */
-	public DataSourceHealthIndicator(DataSource dataSource) {
+	public DataSourceHealthIndicator(@Nullable DataSource dataSource) {
 		this(dataSource, null);
 	}
 
@@ -79,7 +81,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	 * @param dataSource the data source
 	 * @param query the validation query to use (can be {@code null})
 	 */
-	public DataSourceHealthIndicator(DataSource dataSource, String query) {
+	public DataSourceHealthIndicator(@Nullable DataSource dataSource, @Nullable String query) {
 		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
@@ -102,7 +104,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	private void doDataSourceHealthCheck(Health.Builder builder) {
-		builder.up().withDetail("database", getProduct());
+		Assert.state(this.jdbcTemplate != null, "'jdbcTemplate' must not be null");
+		builder.up().withDetail("database", getProduct(this.jdbcTemplate));
 		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {
 			builder.withDetail("validationQuery", validationQuery);
@@ -113,21 +116,21 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 		}
 		else {
 			builder.withDetail("validationQuery", "isValid()");
-			boolean valid = isConnectionValid();
+			boolean valid = isConnectionValid(this.jdbcTemplate);
 			builder.status((valid) ? Status.UP : Status.DOWN);
 		}
 	}
 
-	private String getProduct() {
-		return this.jdbcTemplate.execute((ConnectionCallback<String>) this::getProduct);
+	private String getProduct(JdbcTemplate jdbcTemplate) {
+		return jdbcTemplate.execute((ConnectionCallback<String>) this::getProduct);
 	}
 
 	private String getProduct(Connection connection) throws SQLException {
 		return connection.getMetaData().getDatabaseProductName();
 	}
 
-	private Boolean isConnectionValid() {
-		return this.jdbcTemplate.execute((ConnectionCallback<Boolean>) this::isConnectionValid);
+	private Boolean isConnectionValid(JdbcTemplate jdbcTemplate) {
+		return jdbcTemplate.execute((ConnectionCallback<Boolean>) this::isConnectionValid);
 	}
 
 	private Boolean isConnectionValid(Connection connection) throws SQLException {
@@ -156,7 +159,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	 * Return the validation query or {@code null}.
 	 * @return the query
 	 */
-	public String getQuery() {
+	public @Nullable String getQuery() {
 		return this.query;
 	}
 
@@ -172,7 +175,9 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 			if (columns != 1) {
 				throw new IncorrectResultSetColumnCountException(1, columns);
 			}
-			return JdbcUtils.getResultSetValue(rs, 1);
+			Object result = JdbcUtils.getResultSetValue(rs, 1);
+			Assert.state(result != null, "'result' must not be null");
+			return result;
 		}
 
 	}

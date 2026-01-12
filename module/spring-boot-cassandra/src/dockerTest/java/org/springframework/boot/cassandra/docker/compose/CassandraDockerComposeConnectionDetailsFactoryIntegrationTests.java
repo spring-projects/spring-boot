@@ -37,11 +37,6 @@ class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "cassandra-bitnami-compose.yaml", image = TestImage.BITNAMI_CASSANDRA)
-	void runWithBitnamiImageCreatesConnectionDetails(CassandraConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-	}
-
 	private void assertConnectionDetails(CassandraConnectionDetails connectionDetails) {
 		List<Node> contactPoints = connectionDetails.getContactPoints();
 		assertThat(contactPoints).hasSize(1);

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -48,7 +49,8 @@ public final class ReactorClientHttpRequestFactoryBuilder
 		this(null, new ReactorHttpClientBuilder());
 	}
 
-	private ReactorClientHttpRequestFactoryBuilder(List<Consumer<ReactorClientHttpRequestFactory>> customizers,
+	private ReactorClientHttpRequestFactoryBuilder(
+			@Nullable List<Consumer<ReactorClientHttpRequestFactory>> customizers,
 			ReactorHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -105,12 +107,23 @@ public final class ReactorClientHttpRequestFactoryBuilder
 				this.httpClientBuilder.withHttpClientCustomizer(httpClientCustomizer));
 	}
 
+	/**
+	 * Return a new {@link ReactorClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link ReactorClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public ReactorClientHttpRequestFactoryBuilder with(
+			UnaryOperator<ReactorClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
-	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(
-			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withTimeouts(null, null)));
+	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withTimeouts(null, null));
 		ReactorClientHttpRequestFactory requestFactory = new ReactorClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
@@ -120,7 +133,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "reactor.netty.http.client.HttpClient";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
 		}
 

@@ -15,8 +15,7 @@
  */
 
 /**
- * Classes and annotations related to configuring Spring's {@code ApplicationContext} for
- * tests.
+ * Support for mapping annotation attribute values in the Spring {@code Environment}.
  */
 @NullMarked
 package org.springframework.boot.test.context;

@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -42,16 +43,17 @@ public enum EmbeddedDatabaseConnection {
 	 * H2 Database Connection.
 	 */
 	H2("io.r2dbc.h2.H2ConnectionFactoryProvider", "r2dbc:h2:mem:///%s?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-			(options) -> options.getValue(ConnectionFactoryOptions.DRIVER).equals("h2")
-					&& options.getValue(ConnectionFactoryOptions.PROTOCOL).equals("mem"));
+			(options) -> "h2".equals(options.getValue(ConnectionFactoryOptions.DRIVER))
+					&& "mem".equals(options.getValue(ConnectionFactoryOptions.PROTOCOL)));
 
-	private final String driverClassName;
+	private final @Nullable String driverClassName;
 
-	private final String url;
+	private final @Nullable String url;
 
 	private final Predicate<ConnectionFactoryOptions> embedded;
 
-	EmbeddedDatabaseConnection(String driverClassName, String url, Predicate<ConnectionFactoryOptions> embedded) {
+	EmbeddedDatabaseConnection(@Nullable String driverClassName, @Nullable String url,
+			Predicate<ConnectionFactoryOptions> embedded) {
 		this.driverClassName = driverClassName;
 		this.url = url;
 		this.embedded = embedded;
@@ -61,7 +63,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the driver class name.
 	 * @return the driver class name
 	 */
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		return this.driverClassName;
 	}
 
@@ -70,7 +72,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
-	public String getUrl(String databaseName) {
+	public @Nullable String getUrl(String databaseName) {
 		Assert.hasText(databaseName, "'databaseName' must not be empty");
 		return (this.url != null) ? String.format(this.url, databaseName) : null;
 	}
@@ -81,9 +83,10 @@ public enum EmbeddedDatabaseConnection {
 	 * @param classLoader the class loader used to check for classes
 	 * @return an {@link EmbeddedDatabaseConnection} or {@link #NONE}.
 	 */
-	public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
+	public static EmbeddedDatabaseConnection get(@Nullable ClassLoader classLoader) {
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
+			String driverClassName = candidate.getDriverClassName();
+			if (candidate != NONE && driverClassName != null && ClassUtils.isPresent(driverClassName, classLoader)) {
 				return candidate;
 			}
 		}

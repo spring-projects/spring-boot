@@ -23,6 +23,7 @@ import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceMXBean;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -123,7 +124,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	static class HikariDataSourcePoolMetadataRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection().registerType(HikariDataSource.class, (builder) -> builder.withField("pool"));
 		}
 

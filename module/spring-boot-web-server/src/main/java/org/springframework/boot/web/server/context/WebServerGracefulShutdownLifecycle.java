@@ -23,7 +23,7 @@ import org.springframework.context.SmartLifecycle;
  * {@link SmartLifecycle} to trigger {@link WebServer} graceful shutdown.
  *
  * @author Andy Wilkinson
- * @since 2.5.0
+ * @since 4.0.0
  */
 public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
 
@@ -73,6 +73,11 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 	@Override
 	public int getPhase() {
 		return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE;
+	}
+
+	@Override
+	public boolean isPauseable() {
+		return false;
 	}
 
 }

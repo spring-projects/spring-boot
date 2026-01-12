@@ -26,6 +26,14 @@ plugins {
 
 description = "Spring Boot CLI"
 
+sourceSets {
+	main {
+		java {
+			srcDir file("src/json-shade/java")
+		}
+	}
+}
+
 configurations {
 	loader
 	testRepository
@@ -37,7 +45,6 @@ dependencies {
 	compileOnlyProject(project(":core:spring-boot"))
 
 	implementation(project(":loader:spring-boot-loader-tools"))
-	implementation("com.vaadin.external.google:android-json")
 	implementation("jline:jline")
 	implementation("net.sf.jopt-simple:jopt-simple")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
@@ -52,6 +59,10 @@ dependencies {
 	testImplementation(project(":core:spring-boot"))
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+}
+
+nullability {
+	requireExplicitNullMarking = false
 }
 
 tasks.register("fullJar", Jar) {
@@ -113,23 +124,20 @@ tasks.register("tar", Tar) {
 }
 
 if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
-	tasks.register("homebrewFormula", org.springframework.boot.build.cli.HomebrewFormula) {
+	def homebrewFormula = tasks.register("homebrewFormula", org.springframework.boot.build.cli.HomebrewFormula) {
 		dependsOn tar
 		outputDir = layout.buildDirectory.dir("homebrew")
 		template = file("src/main/homebrew/spring-boot.rb")
 		archive = tar.archiveFile
 	}
 
-	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
-		type = "rb"
-		classifier = "homebrew"
-		builtBy "homebrewFormula"
-	}
-
 	publishing {
 		publications {
 			getByName("maven") {
-				artifact homebrewFormulaArtifact
+				artifact(homebrewFormula.map { it.outputDir.file("spring-boot.rb") }) { formula ->
+					formula.classifier = "homebrew"
+					formula.extension = "rb"
+				}
 			}
 		}
 	}
@@ -147,4 +155,12 @@ publishing {
 
 eclipse.classpath { // https://github.com/eclipse/buildship/issues/939
 	plusConfigurations += [ configurations.compileOnlyProject ]
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileIntTestJava") {
+	options.nullability.checking = "tests"
 }

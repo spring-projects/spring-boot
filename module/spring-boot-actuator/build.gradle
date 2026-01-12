@@ -27,10 +27,6 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":core:spring-boot"))
 
-	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-http-converter"))
-	optional(project(":module:spring-boot-jsonb"))
-	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-web-server"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -57,8 +53,9 @@ dependencies {
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
+	optional("tools.jackson.core:jackson-databind")
 
-	testFixturesApi("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	testFixturesImplementation(project(":module:spring-boot-web-server"))
 	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
 	testFixturesImplementation("org.springframework:spring-test")
 	testFixturesImplementation("org.springframework:spring-webflux")
@@ -79,4 +76,8 @@ dependencies {
 	testRuntimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.hsqldb:hsqldb")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

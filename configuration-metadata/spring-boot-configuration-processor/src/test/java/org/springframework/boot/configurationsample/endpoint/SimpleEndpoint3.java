@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Access;
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestAccess;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * A simple endpoint with no default override, with the same id as {@link SimpleEndpoint},
@@ -26,10 +26,10 @@ import org.springframework.boot.configurationsample.ReadOperation;
  *
  * @author Moritz Halbritter
  */
-@Endpoint(id = "simple", defaultAccess = Access.NONE)
+@TestEndpoint(id = "simple", defaultAccess = TestAccess.NONE)
 public class SimpleEndpoint3 {
 
-	@ReadOperation
+	@TestReadOperation
 	public String invoke() {
 		return "test";
 	}

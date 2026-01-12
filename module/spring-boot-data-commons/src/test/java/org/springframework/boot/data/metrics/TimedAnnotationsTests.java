@@ -37,6 +37,7 @@ class TimedAnnotationsTests {
 	void getWhenNoneReturnsEmptySet() {
 		Object bean = new None();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
+		assertThat(method).isNotNull();
 		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).isEmpty();
 	}
@@ -45,6 +46,7 @@ class TimedAnnotationsTests {
 	void getWhenOnMethodReturnsMethodAnnotations() {
 		Object bean = new OnMethod();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
+		assertThat(method).isNotNull();
 		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).extracting(Timed::value).containsOnly("y", "z");
 	}
@@ -53,6 +55,7 @@ class TimedAnnotationsTests {
 	void getWhenNonOnMethodReturnsBeanAnnotations() {
 		Object bean = new OnBean();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
+		assertThat(method).isNotNull();
 		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).extracting(Timed::value).containsOnly("y", "z");
 	}

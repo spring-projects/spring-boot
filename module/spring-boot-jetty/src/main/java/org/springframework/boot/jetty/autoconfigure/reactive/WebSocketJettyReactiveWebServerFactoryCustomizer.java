@@ -17,13 +17,14 @@
 package org.springframework.boot.jetty.autoconfigure.reactive;
 
 import jakarta.servlet.ServletContext;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.websocket.jakarta.server.JakartaWebSocketServerContainer;
-import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.websocket.jakarta.server.JakartaWebSocketServerContainer;
+import org.eclipse.jetty.ee11.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee11.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
 import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -58,7 +59,7 @@ public class WebSocketJettyReactiveWebServerFactoryCustomizer
 		});
 	}
 
-	private ServletContextHandler findServletContextHandler(Handler handler) {
+	private @Nullable ServletContextHandler findServletContextHandler(Handler handler) {
 		if (handler instanceof ServletContextHandler servletContextHandler) {
 			return servletContextHandler;
 		}

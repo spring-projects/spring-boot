@@ -16,11 +16,11 @@
 
 package org.springframework.boot.configurationsample.inheritance;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 public class ChildPropertiesConfig {
 
-	@ConfigurationProperties("inheritance")
+	@TestConfigurationProperties("inheritance")
 	public ChildProperties childConfig() {
 		return new ChildProperties();
 	}

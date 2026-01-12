@@ -21,9 +21,10 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class SampleHateoasApplicationTests {
 
 	@Autowired
@@ -45,8 +47,8 @@ class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
 				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
-		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
 	}
 
 	@Test
@@ -56,8 +58,8 @@ class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
 				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
-		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
 	}
 
 	@Test

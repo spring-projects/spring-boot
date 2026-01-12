@@ -39,9 +39,11 @@ import static org.mockito.Mockito.never;
 class ServletListenerRegistrationBeanTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletContextListener listener;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Test

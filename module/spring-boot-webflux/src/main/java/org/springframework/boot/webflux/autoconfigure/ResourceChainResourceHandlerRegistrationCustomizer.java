@@ -17,6 +17,7 @@
 package org.springframework.boot.webflux.autoconfigure;
 
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.config.ResourceChainRegistration;
 import org.springframework.web.reactive.config.ResourceHandlerRegistration;
 import org.springframework.web.reactive.resource.EncodedResourceResolver;
@@ -58,6 +59,7 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 		if (properties.getFixed().isEnabled()) {
 			String version = properties.getFixed().getVersion();
 			String[] paths = properties.getFixed().getPaths();
+			Assert.state(version != null, "'version' must not be null");
 			resolver.addFixedVersionStrategy(version, paths);
 		}
 		if (properties.getContent().isEnabled()) {

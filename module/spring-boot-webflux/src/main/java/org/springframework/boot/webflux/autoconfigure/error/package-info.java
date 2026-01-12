@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring WebFlux error handling.
  */
+@NullMarked
 package org.springframework.boot.webflux.autoconfigure.error;
+
+import org.jspecify.annotations.NullMarked;

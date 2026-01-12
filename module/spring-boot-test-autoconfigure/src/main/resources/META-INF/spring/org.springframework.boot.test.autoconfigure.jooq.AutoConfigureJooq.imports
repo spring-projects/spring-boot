@@ -1,9 +1,0 @@
-# AutoConfigureJooq auto-configuration imports
-org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
-org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
-org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration
-org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
-org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
-optional:org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
-optional:org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

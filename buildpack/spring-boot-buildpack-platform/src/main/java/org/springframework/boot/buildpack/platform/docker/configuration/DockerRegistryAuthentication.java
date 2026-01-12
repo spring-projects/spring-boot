@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.util.function.BiConsumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.util.Assert;
 
@@ -43,7 +45,7 @@ public interface DockerRegistryAuthentication {
 	 * @return the auth header
 	 * @since 3.5.0
 	 */
-	default String getAuthHeader(ImageReference imageReference) {
+	default @Nullable String getAuthHeader(@Nullable ImageReference imageReference) {
 		return getAuthHeader();
 	}
 
@@ -51,7 +53,7 @@ public interface DockerRegistryAuthentication {
 	 * Returns the auth header that should be used for docker authentication.
 	 * @return the auth header
 	 */
-	String getAuthHeader();
+	@Nullable String getAuthHeader();
 
 	/**
 	 * Factory method to that returns a new {@link DockerRegistryAuthentication} instance
@@ -76,7 +78,8 @@ public interface DockerRegistryAuthentication {
 	 * @return a new {@link DockerRegistryAuthentication} instance
 	 * @since 3.5.0
 	 */
-	static DockerRegistryAuthentication user(String username, String password, String serverAddress, String email) {
+	static DockerRegistryAuthentication user(String username, String password, @Nullable String serverAddress,
+			@Nullable String email) {
 		return new DockerRegistryUserAuthentication(username, password, serverAddress, email);
 	}
 
@@ -90,7 +93,7 @@ public interface DockerRegistryAuthentication {
 	 * @since 3.5.0
 	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
 	 */
-	static DockerRegistryAuthentication configuration(DockerRegistryAuthentication fallback) {
+	static DockerRegistryAuthentication configuration(@Nullable DockerRegistryAuthentication fallback) {
 		return configuration(fallback, (message, ex) -> System.out.println(message));
 	}
 
@@ -106,7 +109,7 @@ public interface DockerRegistryAuthentication {
 	 * @since 3.5.0
 	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
 	 */
-	static DockerRegistryAuthentication configuration(DockerRegistryAuthentication fallback,
+	static DockerRegistryAuthentication configuration(@Nullable DockerRegistryAuthentication fallback,
 			BiConsumer<String, Exception> credentialHelperExceptionHandler) {
 		Assert.notNull(credentialHelperExceptionHandler, () -> "'credentialHelperExceptionHandler' must not be null");
 		return new DockerRegistryConfigAuthentication(fallback, credentialHelperExceptionHandler);

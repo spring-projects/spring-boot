@@ -17,93 +17,70 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.autoconfigure.ApiversionProperties.Insert;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.util.Assert;
 import org.springframework.web.client.ApiVersionInserter;
 
 /**
- * {@link ApiVersionInserter} to apply {@link ApiversionProperties}.
+ * {@link ApiVersionInserter} backed by {@link ApiversionProperties}.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
 public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 
-	private final List<ApiVersionInserter> inserters;
+	static final PropertiesApiVersionInserter EMPTY = new PropertiesApiVersionInserter(new ApiVersionInserter() {
+	});
 
-	private PropertiesApiVersionInserter(List<ApiVersionInserter> inserters) {
-		this.inserters = inserters;
+	private final ApiVersionInserter delegate;
+
+	private PropertiesApiVersionInserter(ApiVersionInserter delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
 	public URI insertVersion(Object version, URI uri) {
-		for (ApiVersionInserter delegate : this.inserters) {
-			uri = delegate.insertVersion(version, uri);
-		}
-		return uri;
+		return this.delegate.insertVersion(version, uri);
 	}
 
 	@Override
 	public void insertVersion(Object version, HttpHeaders headers) {
-		for (ApiVersionInserter delegate : this.inserters) {
-			delegate.insertVersion(version, headers);
-		}
+		this.delegate.insertVersion(version, headers);
 	}
 
 	/**
-	 * Factory method that returns an {@link ApiVersionInserter} to apply the given
-	 * properties and delegate.
-	 * @param apiVersionInserter a delegate {@link ApiVersionInserter} that should also
-	 * apply (may be {@code null})
-	 * @param apiVersionFormatter the version formatter to use or {@code null}
-	 * @param properties the properties that should be applied
-	 * @return an {@link ApiVersionInserter} or {@code null} if no API version should be
-	 * inserted
+	 * Factory method to get a new {@link PropertiesApiVersionInserter} for the given
+	 * properties.
+	 * @param properties the API version properties
+	 * @return an {@link PropertiesApiVersionInserter} configured from the properties
 	 */
-	public static ApiVersionInserter get(ApiVersionInserter apiVersionInserter, ApiVersionFormatter apiVersionFormatter,
-			ApiversionProperties... properties) {
-		return get(apiVersionInserter, apiVersionFormatter, Arrays.stream(properties));
+	public static PropertiesApiVersionInserter get(ApiversionProperties.Insert properties) {
+		Builder builder = builder(properties);
+		return (builder != null) ? new PropertiesApiVersionInserter(builder.build()) : EMPTY;
 	}
 
 	/**
-	 * Factory method that returns an {@link ApiVersionInserter} to apply the given
-	 * properties and delegate.
-	 * @param apiVersionInserter a delegate {@link ApiVersionInserter} that should also
-	 * apply (may be {@code null})
-	 * @param apiVersionFormatter the version formatter to use or {@code null}
-	 * @param propertiesStream the properties that should be applied
-	 * @return an {@link ApiVersionInserter} or {@code null} if no API version should be
-	 * inserted
+	 * Factory method to create a new
+	 * {@link org.springframework.web.client.ApiVersionInserter.Builder builder} from the
+	 * given properties, if there are any.
+	 * @param properties the API version properties
+	 * @return a builder configured from the properties or {@code null} if no properties
+	 * were mapped
 	 */
-	public static ApiVersionInserter get(ApiVersionInserter apiVersionInserter, ApiVersionFormatter apiVersionFormatter,
-			Stream<ApiversionProperties> propertiesStream) {
-		List<ApiVersionInserter> inserters = new ArrayList<>();
-		if (apiVersionInserter != null) {
-			inserters.add(apiVersionInserter);
-		}
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertiesStream.forEach((properties) -> {
-			if (properties != null && properties.getInsert() != null) {
-				Insert insert = properties.getInsert();
-				Counter counter = new Counter();
-				ApiVersionInserter.Builder builder = ApiVersionInserter.builder();
-				map.from(apiVersionFormatter).to(builder::withVersionFormatter);
-				map.from(insert::getHeader).whenHasText().as(counter::counted).to(builder::useHeader);
-				map.from(insert::getQueryParameter).whenHasText().as(counter::counted).to(builder::useQueryParam);
-				map.from(insert::getPathSegment).as(counter::counted).to(builder::usePathSegment);
-				if (!counter.isEmpty()) {
-					inserters.add(builder.build());
-				}
-			}
-		});
-		return (!inserters.isEmpty()) ? new PropertiesApiVersionInserter(inserters) : null;
+	private static ApiVersionInserter.@Nullable Builder builder(ApiversionProperties.Insert properties) {
+		Assert.notNull(properties, "'properties' must not be null");
+		PropertyMapper map = PropertyMapper.get();
+		ApiVersionInserter.Builder builder = ApiVersionInserter.builder();
+		Counter counter = new Counter();
+		map.from(properties::getHeader).whenHasText().as(counter::counted).to(builder::useHeader);
+		map.from(properties::getQueryParameter).whenHasText().as(counter::counted).to(builder::useQueryParam);
+		map.from(properties::getPathSegment).as(counter::counted).to(builder::usePathSegment);
+		map.from(properties::getMediaTypeParameter).as(counter::counted).to(builder::useMediaTypeParam);
+		return (!counter.isEmpty()) ? builder : null;
 	}
 
 	/**

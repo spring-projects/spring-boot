@@ -17,4 +17,7 @@
 /**
  * Servlet web server implementation backed by Tomcat.
  */
+@NullMarked
 package org.springframework.boot.tomcat.servlet;
+
+import org.jspecify.annotations.NullMarked;

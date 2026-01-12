@@ -26,6 +26,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.util.Assert;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -46,9 +47,13 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		SpringReactiveOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaquetoken = properties.getOpaquetoken();
+			String clientId = opaquetoken.getClientId();
+			Assert.state(clientId != null, "'clientId' must not be null");
+			String clientSecret = opaquetoken.getClientSecret();
+			Assert.state(clientSecret != null, "'clientSecret' must not be null");
 			return SpringReactiveOpaqueTokenIntrospector.withIntrospectionUri(opaquetoken.getIntrospectionUri())
-				.clientId(opaquetoken.getClientId())
-				.clientSecret(opaquetoken.getClientSecret())
+				.clientId(clientId)
+				.clientSecret(clientSecret)
 				.build();
 		}
 

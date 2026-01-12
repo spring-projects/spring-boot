@@ -38,6 +38,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesTests.JavaBeanNestedConstructorBindingProperties.Nested;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -368,7 +370,9 @@ class ConfigurationPropertiesTests {
 	void loadShouldBindToJavaTimeDuration() {
 		load(BasicConfiguration.class, "duration=PT1M");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
-		assertThat(bean.getDuration().getSeconds()).isEqualTo(60);
+		Duration duration = bean.getDuration();
+		assertThat(duration).isNotNull();
+		assertThat(duration.getSeconds()).isEqualTo(60);
 	}
 
 	@Test
@@ -480,7 +484,9 @@ class ConfigurationPropertiesTests {
 	void loadShouldBindToMapWithNumericKey() {
 		load(MapWithNumericKeyProperties.class, "sample.properties.1.name=One");
 		MapWithNumericKeyProperties bean = this.context.getBean(MapWithNumericKeyProperties.class);
-		assertThat(bean.getProperties().get("1").name).isEqualTo("One");
+		BasicProperties one = bean.getProperties().get("1");
+		assertThat(one).isNotNull();
+		assertThat(one.name).isEqualTo("One");
 	}
 
 	@Test
@@ -491,8 +497,10 @@ class ConfigurationPropertiesTests {
 					Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
 		load(WithComplexMapProperties.class);
 		WithComplexMapProperties bean = this.context.getBean(WithComplexMapProperties.class);
-		assertThat(bean.getMap()).containsOnlyKeys("foo");
-		assertThat(bean.getMap().get("foo")).containsOnly(entry("bar", "baz"));
+		Map<String, Map<String, String>> map = bean.getMap();
+		assertThat(map).isNotNull();
+		assertThat(map).containsOnlyKeys("foo");
+		assertThat(map.get("foo")).containsOnly(entry("bar", "baz"));
 	}
 
 	@Test
@@ -692,6 +700,7 @@ class ConfigurationPropertiesTests {
 	void loadShouldUseConverterBean() {
 		prepareConverterContext(PersonConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person).isNotNull();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
@@ -727,6 +736,7 @@ class ConfigurationPropertiesTests {
 		this.context.getEnvironment().getPropertySources().addLast(testProperties);
 		this.context.refresh();
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person).isNotNull();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
@@ -739,9 +749,13 @@ class ConfigurationPropertiesTests {
 		load(new Class<?>[] { PersonConverterConfiguration.class, PersonAndAlienProperties.class },
 				"test.person=John Smith", "test.alien=Alf Tanner");
 		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
-		assertThat(properties.getPerson().firstName).isEqualTo("John");
-		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
-		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
+		Person person = properties.getPerson();
+		assertThat(person).isNotNull();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+		Alien alien = properties.getAlien();
+		assertThat(alien).isNotNull();
+		assertThat(alien.name).isEqualTo("rennaT flA");
 	}
 
 	@Test
@@ -752,9 +766,13 @@ class ConfigurationPropertiesTests {
 		load(new Class<?>[] { AlienConverterConfiguration.class, PersonAndAlienProperties.class },
 				"test.person=John Smith", "test.alien=Alf Tanner");
 		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
-		assertThat(properties.getPerson().firstName).isEqualTo("John");
-		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
-		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
+		Person person = properties.getPerson();
+		assertThat(person).isNotNull();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+		Alien alien = properties.getAlien();
+		assertThat(alien).isNotNull();
+		assertThat(alien.name).isEqualTo("rennaT flA");
 	}
 
 	@Test // gh-38734
@@ -765,10 +783,14 @@ class ConfigurationPropertiesTests {
 		load(new Class<?>[] { AlienConverterConfiguration.class, PersonAndAliensProperties.class },
 				"test.person=John Smith", "test.aliens=Alf Tanner,Gilbert");
 		PersonAndAliensProperties properties = this.context.getBean(PersonAndAliensProperties.class);
-		assertThat(properties.getPerson().firstName).isEqualTo("John");
-		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
-		assertThat(properties.getAliens().get(0).name).isEqualTo("rennaT flA");
-		assertThat(properties.getAliens().get(1).name).isEqualTo("trebliG");
+		Person person = properties.getPerson();
+		assertThat(person).isNotNull();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+		List<Alien> aliens = properties.getAliens();
+		assertThat(aliens).isNotNull();
+		assertThat(aliens.get(0).name).isEqualTo("rennaT flA");
+		assertThat(aliens.get(1).name).isEqualTo("trebliG");
 	}
 
 	@Test
@@ -782,6 +804,7 @@ class ConfigurationPropertiesTests {
 	void loadShouldUseGenericConverterBean() {
 		prepareConverterContext(GenericConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person).isNotNull();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
@@ -790,6 +813,7 @@ class ConfigurationPropertiesTests {
 	void loadShouldUseFormatterBean() {
 		prepareConverterContext(FormatterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person).isNotNull();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
@@ -875,8 +899,10 @@ class ConfigurationPropertiesTests {
 		this.context.getBeanFactory().registerCustomEditor(Person.class, PersonPropertyEditor.class);
 		load(PersonProperties.class, "test.person=boot,spring");
 		PersonProperties bean = this.context.getBean(PersonProperties.class);
-		assertThat(bean.getPerson().firstName).isEqualTo("spring");
-		assertThat(bean.getPerson().lastName).isEqualTo("boot");
+		Person person = bean.getPerson();
+		assertThat(person).isNotNull();
+		assertThat(person.firstName).isEqualTo("spring");
+		assertThat(person.lastName).isEqualTo("boot");
 	}
 
 	@Test
@@ -918,11 +944,18 @@ class ConfigurationPropertiesTests {
 		sources.addLast(new MapPropertySource("test", source));
 		load(WithIntegerMapProperties.class);
 		WithIntegerMapProperties bean = this.context.getBean(WithIntegerMapProperties.class);
-		Map<Integer, Foo> x = bean.getMap().get("x");
-		assertThat(x.get(-1).getA()).isEqualTo("baz");
-		assertThat(x.get(-1).getB()).isZero();
-		assertThat(x.get(1).getA()).isEqualTo("bar");
-		assertThat(x.get(1).getB()).isOne();
+		Map<String, Map<Integer, Foo>> map = bean.getMap();
+		assertThat(map).isNotNull();
+		Map<Integer, Foo> x = map.get("x");
+		assertThat(x).isNotNull();
+		Foo minus1 = x.get(-1);
+		assertThat(minus1).isNotNull();
+		assertThat(minus1.getA()).isEqualTo("baz");
+		assertThat(minus1.getB()).isZero();
+		Foo one = x.get(1);
+		assertThat(one).isNotNull();
+		assertThat(one.getA()).isEqualTo("bar");
+		assertThat(one.getB()).isOne();
 	}
 
 	@Test
@@ -1133,7 +1166,9 @@ class ConfigurationPropertiesTests {
 		load(JavaBeanNestedConstructorBindingPropertiesConfiguration.class);
 		JavaBeanNestedConstructorBindingProperties bean = this.context
 			.getBean(JavaBeanNestedConstructorBindingProperties.class);
-		assertThat(bean.getNested().getAge()).isEqualTo(5);
+		Nested nested = bean.getNested();
+		assertThat(nested).isNotNull();
+		assertThat(nested.getAge()).isEqualTo(5);
 	}
 
 	@Test
@@ -1156,7 +1191,9 @@ class ConfigurationPropertiesTests {
 		load(JavaBeanNonDefaultConstructorPropertiesConfiguration.class);
 		JavaBeanNonDefaultConstructorProperties bean = this.context
 			.getBean(JavaBeanNonDefaultConstructorProperties.class);
-		assertThat(bean.getNested().getAge()).isEqualTo(10);
+		JavaBeanNonDefaultConstructorProperties.Nested nested = bean.getNested();
+		assertThat(nested).isNotNull();
+		assertThat(nested.getAge()).isEqualTo(10);
 	}
 
 	@Test // gh-18652
@@ -1177,7 +1214,9 @@ class ConfigurationPropertiesTests {
 		load(ConstructorBindingWithOuterClassConstructorBoundConfiguration.class);
 		ConstructorBindingWithOuterClassConstructorBoundProperties bean = this.context
 			.getBean(ConstructorBindingWithOuterClassConstructorBoundProperties.class);
-		assertThat(bean.getNested().getOuter().getAge()).isEqualTo(5);
+		Outer outer = bean.getNested().getOuter();
+		assertThat(outer).isNotNull();
+		assertThat(outer.getAge()).isEqualTo(5);
 	}
 
 	@Test
@@ -1218,6 +1257,7 @@ class ConfigurationPropertiesTests {
 	void boundPropertiesShouldBeRecorded() {
 		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
+		assertThat(bound).isNotNull();
 		Set<ConfigurationPropertyName> keys = bound.getAll().keySet();
 		assertThat(keys.stream().map(ConfigurationPropertyName::toString)).contains("name", "nested.name");
 	}
@@ -1228,7 +1268,9 @@ class ConfigurationPropertiesTests {
 		load(WithCustomConverterAndObjectToObjectMethodConfiguration.class, "test.item=foo");
 		WithCustomConverterAndObjectToObjectMethodProperties bean = this.context
 			.getBean(WithCustomConverterAndObjectToObjectMethodProperties.class);
-		assertThat(bean.getItem().getValue()).isEqualTo("foo");
+		WithPublicObjectToObjectMethod item = bean.getItem();
+		assertThat(item).isNotNull();
+		assertThat(item.getValue()).isEqualTo("foo");
 	}
 
 	@Test // gh-33710
@@ -1465,15 +1507,15 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	static class WithPostConstructConfiguration {
 
-		private String bar;
+		private @Nullable String bar;
 
 		private boolean initialized;
 
-		void setBar(String bar) {
+		void setBar(@Nullable String bar) {
 			this.bar = bar;
 		}
 
-		String getBar() {
+		@Nullable String getBar() {
 			return this.bar;
 		}
 
@@ -1564,13 +1606,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class PropertiesWithResource {
 
-		private Resource resource;
+		private @Nullable Resource resource;
 
-		Resource getResource() {
+		@Nullable Resource getResource() {
 			return this.resource;
 		}
 
-		void setResource(Resource resource) {
+		void setResource(@Nullable Resource resource) {
 			this.resource = resource;
 		}
 
@@ -1581,7 +1623,7 @@ class ConfigurationPropertiesTests {
 		static final String PREFIX = "test:/";
 
 		@Override
-		public Resource resolve(String location, ResourceLoader resourceLoader) {
+		public @Nullable Resource resolve(String location, ResourceLoader resourceLoader) {
 			if (location.startsWith(PREFIX)) {
 				String path = location.substring(PREFIX.length());
 				return new ClassPathResource(path);
@@ -1691,13 +1733,13 @@ class ConfigurationPropertiesTests {
 
 	static class AGenericClass<T> {
 
-		private T bar;
+		private @Nullable T bar;
 
-		T getBar() {
+		@Nullable T getBar() {
 			return this.bar;
 		}
 
-		void setBar(T bar) {
+		void setBar(@Nullable T bar) {
 			this.bar = bar;
 		}
 
@@ -1705,23 +1747,23 @@ class ConfigurationPropertiesTests {
 
 	static class PrototypeBean {
 
-		private String one;
+		private @Nullable String one;
 
-		private String two;
+		private @Nullable String two;
 
-		String getOne() {
+		@Nullable String getOne() {
 			return this.one;
 		}
 
-		void setOne(String one) {
+		void setOne(@Nullable String one) {
 			this.one = one;
 		}
 
-		String getTwo() {
+		@Nullable String getTwo() {
 			return this.two;
 		}
 
-		void setTwo(String two) {
+		void setTwo(@Nullable String two) {
 			this.two = two;
 		}
 
@@ -1737,7 +1779,7 @@ class ConfigurationPropertiesTests {
 		}
 
 		@Override
-		public Class<?> getObjectType() {
+		public @Nullable Class<?> getObjectType() {
 			return null;
 		}
 
@@ -1756,17 +1798,17 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	public static class BasicProperties {
 
-		private String name;
+		private @Nullable String name;
 
-		private int[] array;
+		private int @Nullable [] array;
 
-		private List<Integer> list = new ArrayList<>();
+		private @Nullable List<Integer> list = new ArrayList<>();
 
-		private Duration duration;
+		private @Nullable Duration duration;
 
 		// No getter - you should be able to bind to a write-only bean
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			// Must be public for XML
 			this.name = name;
 		}
@@ -1775,23 +1817,23 @@ class ConfigurationPropertiesTests {
 			this.array = values;
 		}
 
-		int[] getArray() {
+		int @Nullable [] getArray() {
 			return this.array;
 		}
 
-		List<Integer> getList() {
+		@Nullable List<Integer> getList() {
 			return this.list;
 		}
 
-		void setList(List<Integer> list) {
+		void setList(@Nullable List<Integer> list) {
 			this.list = list;
 		}
 
-		Duration getDuration() {
+		@Nullable Duration getDuration() {
 			return this.duration;
 		}
 
-		void setDuration(Duration duration) {
+		void setDuration(@Nullable Duration duration) {
 			this.duration = duration;
 		}
 
@@ -1800,11 +1842,11 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	static class NestedProperties {
 
-		private String name;
+		private @Nullable String name;
 
 		private final Nested nested = new Nested();
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -1814,9 +1856,9 @@ class ConfigurationPropertiesTests {
 
 		static class Nested {
 
-			private String name;
+			private @Nullable String name;
 
-			void setName(String name) {
+			void setName(@Nullable String name) {
 				this.name = name;
 			}
 
@@ -1863,6 +1905,7 @@ class ConfigurationPropertiesTests {
 	static class Jsr303Properties extends BasicProperties {
 
 		@NotEmpty
+		@SuppressWarnings("NullAway.Init")
 		private String description;
 
 		String getDescription() {
@@ -1920,9 +1963,9 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	static class WithoutAnnotationValueProperties {
 
-		private String name;
+		private @Nullable String name;
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -1934,13 +1977,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	static class MapProperties {
 
-		private Map<String, String> mymap;
+		private @Nullable Map<String, String> mymap;
 
-		void setMymap(Map<String, String> mymap) {
+		void setMymap(@Nullable Map<String, String> mymap) {
 			this.mymap = mymap;
 		}
 
-		Map<String, String> getMymap() {
+		@Nullable Map<String, String> getMymap() {
 			return this.mymap;
 		}
 
@@ -1957,7 +2000,7 @@ class ConfigurationPropertiesTests {
 			assertThat(this.properties).isNotNull();
 		}
 
-		String getName() {
+		@Nullable String getName() {
 			return this.properties.name;
 		}
 
@@ -1974,6 +2017,7 @@ class ConfigurationPropertiesTests {
 	static class ValidatedImplementationProperties implements InterfaceForValidatedImplementation {
 
 		@NotNull
+		@SuppressWarnings("NullAway.Init")
 		private String foo;
 
 		@Override
@@ -1992,13 +2036,13 @@ class ConfigurationPropertiesTests {
 	static class WithPropertyPlaceholderValueProperties {
 
 		@Value("${default.value}")
-		private String value;
+		private @Nullable String value;
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
@@ -2008,23 +2052,23 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithEnumProperties {
 
-		private FooEnum theValue;
+		private @Nullable FooEnum theValue;
 
-		private List<FooEnum> theValues;
+		private @Nullable List<FooEnum> theValues;
 
-		void setTheValue(FooEnum value) {
+		void setTheValue(@Nullable FooEnum value) {
 			this.theValue = value;
 		}
 
-		FooEnum getTheValue() {
+		@Nullable FooEnum getTheValue() {
 			return this.theValue;
 		}
 
-		List<FooEnum> getTheValues() {
+		@Nullable List<FooEnum> getTheValues() {
 			return this.theValues;
 		}
 
-		void setTheValues(List<FooEnum> theValues) {
+		void setTheValues(@Nullable List<FooEnum> theValues) {
 			this.theValues = theValues;
 		}
 
@@ -2040,13 +2084,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
 	static class WithCharArrayProperties {
 
-		private char[] chars;
+		private char @Nullable [] chars;
 
-		char[] getChars() {
+		char @Nullable [] getChars() {
 			return this.chars;
 		}
 
-		void setChars(char[] chars) {
+		void setChars(char @Nullable [] chars) {
 			this.chars = chars;
 		}
 
@@ -2056,23 +2100,23 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithRelaxedNamesProperties {
 
-		private String fooBar;
+		private @Nullable String fooBar;
 
-		private String barBAZ;
+		private @Nullable String barBAZ;
 
-		String getFooBar() {
+		@Nullable String getFooBar() {
 			return this.fooBar;
 		}
 
-		void setFooBar(String fooBar) {
+		void setFooBar(@Nullable String fooBar) {
 			this.fooBar = fooBar;
 		}
 
-		String getBarBAZ() {
+		@Nullable String getBarBAZ() {
 			return this.barBAZ;
 		}
 
-		void setBarBAZ(String barBAZ) {
+		void setBarBAZ(@Nullable String barBAZ) {
 			this.barBAZ = barBAZ;
 		}
 
@@ -2083,13 +2127,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithMapProperties {
 
-		private Map<String, String> map;
+		private @Nullable Map<String, String> map;
 
-		Map<String, String> getMap() {
+		@Nullable Map<String, String> getMap() {
 			return this.map;
 		}
 
-		void setMap(Map<String, String> map) {
+		void setMap(@Nullable Map<String, String> map) {
 			this.map = map;
 		}
 
@@ -2099,13 +2143,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithComplexMapProperties {
 
-		private Map<String, Map<String, String>> map;
+		private @Nullable Map<String, Map<String, String>> map;
 
-		Map<String, Map<String, String>> getMap() {
+		@Nullable Map<String, Map<String, String>> getMap() {
 			return this.map;
 		}
 
-		void setMap(Map<String, Map<String, String>> map) {
+		void setMap(@Nullable Map<String, Map<String, String>> map) {
 			this.map = map;
 		}
 
@@ -2115,13 +2159,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithIntegerMapProperties {
 
-		private Map<String, Map<Integer, Foo>> map;
+		private @Nullable Map<String, Map<Integer, Foo>> map;
 
-		Map<String, Map<Integer, Foo>> getMap() {
+		@Nullable Map<String, Map<Integer, Foo>> getMap() {
 			return this.map;
 		}
 
-		void setMap(Map<String, Map<Integer, Foo>> map) {
+		void setMap(@Nullable Map<String, Map<Integer, Foo>> map) {
 			this.map = map;
 		}
 
@@ -2133,13 +2177,13 @@ class ConfigurationPropertiesTests {
 
 		private int foo;
 
-		private String bar;
+		private @Nullable String bar;
 
-		String getBar() {
+		@Nullable String getBar() {
 			return this.bar;
 		}
 
-		void setBar(String bar) {
+		void setBar(@Nullable String bar) {
 			this.bar = bar;
 		}
 
@@ -2157,13 +2201,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class PersonProperties {
 
-		private Person person;
+		private @Nullable Person person;
 
-		Person getPerson() {
+		@Nullable Person getPerson() {
 			return this.person;
 		}
 
-		void setPerson(Person person) {
+		void setPerson(@Nullable Person person) {
 			this.person = person;
 		}
 
@@ -2173,23 +2217,23 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class PersonAndAlienProperties {
 
-		private Person person;
+		private @Nullable Person person;
 
-		private Alien alien;
+		private @Nullable Alien alien;
 
-		Person getPerson() {
+		@Nullable Person getPerson() {
 			return this.person;
 		}
 
-		void setPerson(Person person) {
+		void setPerson(@Nullable Person person) {
 			this.person = person;
 		}
 
-		Alien getAlien() {
+		@Nullable Alien getAlien() {
 			return this.alien;
 		}
 
-		void setAlien(Alien alien) {
+		void setAlien(@Nullable Alien alien) {
 			this.alien = alien;
 		}
 
@@ -2199,23 +2243,23 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class PersonAndAliensProperties {
 
-		private Person person;
+		private @Nullable Person person;
 
-		private List<Alien> aliens;
+		private @Nullable List<Alien> aliens;
 
-		Person getPerson() {
+		@Nullable Person getPerson() {
 			return this.person;
 		}
 
-		void setPerson(Person person) {
+		void setPerson(@Nullable Person person) {
 			this.person = person;
 		}
 
-		List<Alien> getAliens() {
+		@Nullable List<Alien> getAliens() {
 			return this.aliens;
 		}
 
-		void setAliens(List<Alien> aliens) {
+		void setAliens(@Nullable List<Alien> aliens) {
 			this.aliens = aliens;
 		}
 
@@ -2237,7 +2281,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties
 	static class ValidatorProperties implements Validator {
 
-		private String foo;
+		private @Nullable String foo;
 
 		@Override
 		public boolean supports(Class<?> type) {
@@ -2249,11 +2293,11 @@ class ConfigurationPropertiesTests {
 			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
 		}
 
-		String getFoo() {
+		@Nullable String getFoo() {
 			return this.foo;
 		}
 
-		void setFoo(String foo) {
+		void setFoo(@Nullable String foo) {
 			this.foo = foo;
 		}
 
@@ -2293,9 +2337,9 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithSetterThatThrowsValidationExceptionProperties {
 
-		private String foo;
+		private @Nullable String foo;
 
-		String getFoo() {
+		@Nullable String getFoo() {
 			return this.foo;
 		}
 
@@ -2311,13 +2355,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("custom")
 	static class WithCustomValidatorProperties {
 
-		private String foo;
+		private @Nullable String foo;
 
-		String getFoo() {
+		@Nullable String getFoo() {
 			return this.foo;
 		}
 
-		void setFoo(String foo) {
+		void setFoo(@Nullable String foo) {
 			this.foo = foo;
 		}
 
@@ -2327,13 +2371,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class ListOfGenericClassProperties {
 
-		private List<Class<? extends Throwable>> list;
+		private @Nullable List<Class<? extends Throwable>> list;
 
-		List<Class<? extends Throwable>> getList() {
+		@Nullable List<Class<? extends Throwable>> getList() {
 			return this.list;
 		}
 
-		void setList(List<Class<? extends Throwable>> list) {
+		void setList(@Nullable List<Class<? extends Throwable>> list) {
 			this.list = list;
 		}
 
@@ -2343,13 +2387,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class FileProperties {
 
-		private File file;
+		private @Nullable File file;
 
-		File getFile() {
+		@Nullable File getFile() {
 			return this.file;
 		}
 
-		void setFile(File file) {
+		void setFile(@Nullable File file) {
 			this.file = file;
 		}
 
@@ -2359,24 +2403,24 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class DataSizeProperties {
 
-		private DataSize size;
+		private @Nullable DataSize size;
 
 		@DataSizeUnit(DataUnit.KILOBYTES)
-		private DataSize anotherSize;
+		private @Nullable DataSize anotherSize;
 
-		DataSize getSize() {
+		@Nullable DataSize getSize() {
 			return this.size;
 		}
 
-		void setSize(DataSize size) {
+		void setSize(@Nullable DataSize size) {
 			this.size = size;
 		}
 
-		DataSize getAnotherSize() {
+		@Nullable DataSize getAnotherSize() {
 			return this.anotherSize;
 		}
 
-		void setAnotherSize(DataSize anotherSize) {
+		void setAnotherSize(@Nullable DataSize anotherSize) {
 			this.anotherSize = anotherSize;
 		}
 
@@ -2385,7 +2429,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class OtherInjectedProperties {
 
-		final DataSizeProperties dataSizeProperties;
+		final @Nullable DataSizeProperties dataSizeProperties;
 
 		OtherInjectedProperties(ObjectProvider<DataSizeProperties> dataSizeProperties) {
 			this.dataSizeProperties = dataSizeProperties.getIfUnique();
@@ -2578,6 +2622,7 @@ class ConfigurationPropertiesTests {
 		@Override
 		public Person convert(String source) {
 			String[] content = StringUtils.split(source, " ");
+			assertThat(content).isNotNull();
 			return new Person(content[0], content[1]);
 		}
 
@@ -2600,8 +2645,9 @@ class ConfigurationPropertiesTests {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
+			assertThat(content).isNotNull();
 			return new Person(content[0], content[1]);
 		}
 
@@ -2669,15 +2715,15 @@ class ConfigurationPropertiesTests {
 
 	static class Foo {
 
-		private String a;
+		private @Nullable String a;
 
 		private int b;
 
-		String getA() {
+		@Nullable String getA() {
 			return this.a;
 		}
 
-		void setA(String a) {
+		void setA(@Nullable String a) {
 			this.a = a;
 		}
 
@@ -2796,13 +2842,13 @@ class ConfigurationPropertiesTests {
 
 		static class Nested {
 
-			private Outer outer;
+			private @Nullable Outer outer;
 
-			Outer getOuter() {
+			@Nullable Outer getOuter() {
 				return this.outer;
 			}
 
-			void setOuter(Outer nested) {
+			void setOuter(@Nullable Outer nested) {
 				this.outer = nested;
 			}
 
@@ -2890,13 +2936,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class JavaBeanNestedConstructorBindingProperties {
 
-		private Nested nested;
+		private @Nullable Nested nested;
 
-		Nested getNested() {
+		@Nullable Nested getNested() {
 			return this.nested;
 		}
 
-		void setNested(Nested nested) {
+		void setNested(@Nullable Nested nested) {
 			this.nested = nested;
 		}
 
@@ -2926,13 +2972,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class JavaBeanNonDefaultConstructorProperties {
 
-		private Nested nested;
+		private @Nullable Nested nested;
 
-		Nested getNested() {
+		@Nullable Nested getNested() {
 			return this.nested;
 		}
 
-		void setNested(Nested nested) {
+		void setNested(@Nullable Nested nested) {
 			this.nested = nested;
 		}
 
@@ -3076,13 +3122,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class WithCustomConverterAndObjectToObjectMethodProperties {
 
-		private WithPublicObjectToObjectMethod item;
+		private @Nullable WithPublicObjectToObjectMethod item;
 
-		WithPublicObjectToObjectMethod getItem() {
+		@Nullable WithPublicObjectToObjectMethod getItem() {
 			return this.item;
 		}
 
-		void setItem(WithPublicObjectToObjectMethod item) {
+		void setItem(@Nullable WithPublicObjectToObjectMethod item) {
 			this.item = item;
 		}
 
@@ -3199,17 +3245,17 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class PotentiallyConstructorBoundProperties {
 
-		private String prop;
+		private @Nullable String prop;
 
 		PotentiallyConstructorBoundProperties(String notAProperty) {
 
 		}
 
-		String getProp() {
+		@Nullable String getProp() {
 			return this.prop;
 		}
 
-		void setProp(String prop) {
+		void setProp(@Nullable String prop) {
 			this.prop = prop;
 		}
 
@@ -3223,13 +3269,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class ResourceArrayProperties {
 
-		private Resource[] resources;
+		private Resource @Nullable [] resources;
 
-		Resource[] getResources() {
+		Resource @Nullable [] getResources() {
 			return this.resources;
 		}
 
-		void setResources(Resource[] resources) {
+		void setResources(Resource @Nullable [] resources) {
 			this.resources = resources;
 		}
 
@@ -3243,13 +3289,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class ResourceCollectionProperties {
 
-		private Collection<Resource> resources;
+		private @Nullable Collection<Resource> resources;
 
-		Collection<Resource> getResources() {
+		@Nullable Collection<Resource> getResources() {
 			return this.resources;
 		}
 
-		void setResources(Collection<Resource> resources) {
+		void setResources(@Nullable Collection<Resource> resources) {
 			this.resources = resources;
 		}
 
@@ -3311,13 +3357,13 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class SetterBoundCustomListProperties {
 
-		private CustomList<String> values;
+		private @Nullable CustomList<String> values;
 
-		CustomList<String> getValues() {
+		@Nullable CustomList<String> getValues() {
 			return this.values;
 		}
 
-		void setValues(CustomList<String> values) {
+		void setValues(@Nullable CustomList<String> values) {
 			this.values = values;
 		}
 

@@ -38,6 +38,7 @@ import org.springframework.integration.config.IntegrationComponentScanRegistrar;
  */
 class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar implements BeanFactoryAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private BeanFactory beanFactory;
 
 	@Override

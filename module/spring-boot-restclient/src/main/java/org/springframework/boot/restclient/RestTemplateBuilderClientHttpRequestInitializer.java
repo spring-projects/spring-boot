@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequest;
@@ -34,13 +36,13 @@ import org.springframework.http.client.ClientHttpRequestInitializer;
  */
 class RestTemplateBuilderClientHttpRequestInitializer implements ClientHttpRequestInitializer {
 
-	private final BasicAuthentication basicAuthentication;
+	private final @Nullable BasicAuthentication basicAuthentication;
 
 	private final Map<String, List<String>> defaultHeaders;
 
 	private final Set<RestTemplateRequestCustomizer<?>> requestCustomizers;
 
-	RestTemplateBuilderClientHttpRequestInitializer(BasicAuthentication basicAuthentication,
+	RestTemplateBuilderClientHttpRequestInitializer(@Nullable BasicAuthentication basicAuthentication,
 			Map<String, List<String>> defaultHeaders, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.basicAuthentication = basicAuthentication;
 		this.defaultHeaders = defaultHeaders;

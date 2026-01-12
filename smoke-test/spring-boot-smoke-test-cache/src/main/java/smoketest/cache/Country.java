@@ -18,6 +18,8 @@ package smoketest.cache;
 
 import java.io.Serializable;
 
+import org.jspecify.annotations.Nullable;
+
 @SuppressWarnings("serial")
 public class Country implements Serializable {
 
@@ -32,7 +34,7 @@ public class Country implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) {
 			return true;
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
@@ -44,7 +46,7 @@ public interface WebMvcRegistrations {
 	 * processed by the MVC configuration.
 	 * @return the custom {@link RequestMappingHandlerMapping} instance
 	 */
-	default RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+	default @Nullable RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
 		return null;
 	}
 
@@ -53,7 +55,7 @@ public interface WebMvcRegistrations {
 	 * processed by the MVC configuration.
 	 * @return the custom {@link RequestMappingHandlerAdapter} instance
 	 */
-	default RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+	default @Nullable RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
 		return null;
 	}
 
@@ -62,7 +64,7 @@ public interface WebMvcRegistrations {
 	 * processed by the MVC configuration.
 	 * @return the custom {@link ExceptionHandlerExceptionResolver} instance
 	 */
-	default ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
+	default @Nullable ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
 		return null;
 	}
 

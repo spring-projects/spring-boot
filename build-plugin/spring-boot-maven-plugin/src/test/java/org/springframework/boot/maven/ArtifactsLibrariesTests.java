@@ -38,6 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,9 +57,11 @@ import static org.mockito.Mockito.times;
 class ArtifactsLibrariesTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Artifact artifact;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ArtifactHandler artifactHandler;
 
 	private Set<Artifact> artifacts;
@@ -68,9 +71,11 @@ class ArtifactsLibrariesTests {
 	private ArtifactsLibraries libs;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private LibraryCallback callback;
 
 	@Captor
+	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<Library> libraryCaptor;
 
 	@BeforeEach
@@ -146,7 +151,9 @@ class ArtifactsLibrariesTests {
 			.doWithLibraries((library) -> {
 				assertThat(library.isIncluded()).isTrue();
 				assertThat(library.isLocal()).isFalse();
-				assertThat(library.getCoordinates().getVersion()).isEqualTo("1.0-SNAPSHOT");
+				LibraryCoordinates coordinates = library.getCoordinates();
+				assertThat(coordinates).isNotNull();
+				assertThat(coordinates.getVersion()).isEqualTo("1.0-SNAPSHOT");
 			});
 	}
 

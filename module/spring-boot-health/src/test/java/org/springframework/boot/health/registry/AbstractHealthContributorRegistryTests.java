@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +51,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerContributorWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.registry.registerContributor(null, mockHealthIndicator()))
@@ -57,6 +59,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerContributorWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.registerContributor("one", null))
 			.withMessage("'contributor' must not be null");
@@ -147,7 +150,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 
 	protected abstract AbstractRegistry<C, E> createRegistry(
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, C>> initialRegistrations);
+			@Nullable Consumer<BiConsumer<String, C>> initialRegistrations);
 
 	protected abstract C mockHealthIndicator();
 

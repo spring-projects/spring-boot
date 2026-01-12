@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,12 +42,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 abstract class MapCompositeTests<T, C, E> {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMapIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> createWithData(null, Function.identity()))
 			.withMessage("'map' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenValueAdapterIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> createWithData(Collections.emptyMap(), null))
 			.withMessage("'valueAdapter' must not be null");
@@ -133,19 +136,21 @@ abstract class MapCompositeTests<T, C, E> {
 		return create(map, (dataAdapter != null) ? (key) -> createContributor(dataAdapter.apply(key)) : null);
 	}
 
-	private String getContributorData(T composite, String name) {
-		return getData(getContributor(composite, name));
+	private @Nullable String getContributorData(T composite, String name) {
+		C contributor = getContributor(composite, name);
+		assertThat(contributor).isNotNull();
+		return getData(contributor);
 	}
 
-	protected abstract T create(Map<String, String> map, Function<String, C> valueAdapter);
+	protected abstract T create(Map<String, String> map, @Nullable Function<String, C> valueAdapter);
 
 	protected abstract Stream<E> stream(T composite);
 
-	protected abstract C getContributor(T composite, String name);
+	protected abstract @Nullable C getContributor(T composite, String name);
 
 	protected abstract C createContributor(String data);
 
-	protected abstract String getData(C contributor);
+	protected abstract @Nullable String getData(C contributor);
 
 	protected abstract String getName(E entry);
 

@@ -27,7 +27,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../docker-test-maven-repository"}
+	maven { url = layout.projectDirectory.dir("../docker-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
@@ -43,7 +43,7 @@ tasks.register("bootJarUnpack", BootJar.class) {
 	classpath = bootJar.classpath
 	requiresUnpack '**/bcprov-jdk18on-*.jar'
 	archiveClassifier.set("unpack")
-	targetJavaVersion = targetCompatibility
+	targetJavaVersion = java.targetCompatibility
 }
 
 build.dependsOn bootJarUnpack

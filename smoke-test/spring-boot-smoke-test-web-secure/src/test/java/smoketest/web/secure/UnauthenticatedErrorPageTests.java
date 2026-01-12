@@ -32,7 +32,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { AbstractErrorPageTests.TestConfiguration.class,
 				UnauthenticatedErrorPageTests.SecurityConfiguration.class, SampleWebSecureApplication.class },
-		properties = { "server.error.include-message=always", "spring.security.user.name=username",
+		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password" })
 class UnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
 
@@ -44,7 +44,7 @@ class UnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTest
 	static class SecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers("/error").permitAll();
 				requests.requestMatchers("/public/**").permitAll();

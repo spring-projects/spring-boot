@@ -28,6 +28,7 @@ import org.springframework.stereotype.Repository;
 class JpaNoteRepository implements NoteRepository {
 
 	@PersistenceContext
+	@SuppressWarnings("NullAway.Init")
 	private EntityManager entityManager;
 
 	@Override

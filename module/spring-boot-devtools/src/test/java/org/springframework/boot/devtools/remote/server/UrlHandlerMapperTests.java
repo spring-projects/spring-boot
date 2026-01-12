@@ -38,6 +38,7 @@ class UrlHandlerMapperTests {
 	private final Handler handler = mock(Handler.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void requestUriMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
 			.withMessageContaining("'url' must not be empty");

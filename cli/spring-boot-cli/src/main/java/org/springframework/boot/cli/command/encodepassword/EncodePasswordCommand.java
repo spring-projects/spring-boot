@@ -79,6 +79,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 	private static final class EncodePasswordOptionHandler extends OptionHandler {
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> algorithm;
 
 		@Override

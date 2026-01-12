@@ -39,3 +39,7 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

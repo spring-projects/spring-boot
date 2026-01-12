@@ -40,7 +40,7 @@ import org.springframework.util.ClassUtils;
  */
 public final class AnnotatedClassFinder {
 
-	private static final Map<String, Class<?>> cache = Collections.synchronizedMap(new Cache(40));
+	private static final Map<String, @Nullable Class<?>> cache = Collections.synchronizedMap(new Cache(40));
 
 	private final Class<? extends Annotation> annotationType;
 
@@ -110,7 +110,7 @@ public final class AnnotatedClassFinder {
 	/**
 	 * Cache implementation based on {@link LinkedHashMap}.
 	 */
-	private static class Cache extends LinkedHashMap<String, Class<?>> {
+	private static class Cache extends LinkedHashMap<String, @Nullable Class<?>> {
 
 		private final int maxSize;
 
@@ -120,7 +120,7 @@ public final class AnnotatedClassFinder {
 		}
 
 		@Override
-		protected boolean removeEldestEntry(Map.Entry<String, Class<?>> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<String, @Nullable Class<?>> eldest) {
 			return size() > this.maxSize;
 		}
 

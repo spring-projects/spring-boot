@@ -26,8 +26,12 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

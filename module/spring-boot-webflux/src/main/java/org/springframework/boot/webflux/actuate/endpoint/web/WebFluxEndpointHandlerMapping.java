@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -65,7 +67,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
+			EndpointMediaTypes endpointMediaTypes, @Nullable CorsConfiguration corsConfiguration,
 			EndpointLinksResolver linksResolver, boolean shouldRegisterLinksMapping) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
 		this.linksResolver = linksResolver;
@@ -107,7 +109,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, WebFluxLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}

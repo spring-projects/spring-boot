@@ -1,0 +1,3 @@
+# Spring Test Execution Listeners
+org.springframework.test.context.TestExecutionListener=\
+org.springframework.boot.restdocs.test.autoconfigure.RestDocsTestExecutionListener

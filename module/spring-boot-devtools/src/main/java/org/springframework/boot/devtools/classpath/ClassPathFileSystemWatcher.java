@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.classpath;
 
 import java.net.URL;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,8 +41,9 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 
 	private final FileSystemWatcher fileSystemWatcher;
 
-	private final ClassPathRestartStrategy restartStrategy;
+	private final @Nullable ClassPathRestartStrategy restartStrategy;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
 	private boolean stopWatcherOnRestart;
@@ -53,7 +56,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	 * @param urls the URLs to watch
 	 */
 	public ClassPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
-			ClassPathRestartStrategy restartStrategy, URL[] urls) {
+			@Nullable ClassPathRestartStrategy restartStrategy, URL[] urls) {
 		Assert.notNull(fileSystemWatcherFactory, "'fileSystemWatcherFactory' must not be null");
 		Assert.notNull(urls, "'urls' must not be null");
 		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();

@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.classpath;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile;
@@ -82,7 +83,7 @@ class PatternClassPathRestartStrategyTests {
 		assertRestartRequired(strategy, "com/example/Example.class", true);
 	}
 
-	private ClassPathRestartStrategy createStrategy(String pattern) {
+	private ClassPathRestartStrategy createStrategy(@Nullable String pattern) {
 		return new PatternClassPathRestartStrategy(pattern);
 	}
 

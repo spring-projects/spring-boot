@@ -18,7 +18,7 @@ package org.springframework.boot.graphql.autoconfigure.security;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.assertj.core.api.ThrowingConsumer;
-import org.junit.jupiter.api.Disabled;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,7 +28,7 @@ import org.springframework.boot.graphql.autoconfigure.GraphQlTestDataFetchers;
 import org.springframework.boot.graphql.autoconfigure.servlet.GraphQlWebMvcAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
@@ -80,7 +80,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
-@Disabled("Waiting on compatible release")
 class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -144,8 +143,11 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById", (env) -> {
+				String id = env.getArgument("id");
+				assertThat(id).isNotNull();
+				return bookService.getBookdById(id);
+			}));
 		}
 
 		@Bean
@@ -158,7 +160,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	static class BookService {
 
 		@PreAuthorize("hasRole('USER')")
-		Book getBookdById(String id) {
+		@Nullable Book getBookdById(String id) {
 			return GraphQlTestDataFetchers.getBookById(id);
 		}
 
@@ -171,7 +173,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	static class SecurityConfig {
 
 		@Bean
-		DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
+		DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) {
 			return http.csrf(CsrfConfigurer::disable)
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth

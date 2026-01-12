@@ -54,7 +54,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.cassandra.ssl.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.1.0"
       }
     }
   ],

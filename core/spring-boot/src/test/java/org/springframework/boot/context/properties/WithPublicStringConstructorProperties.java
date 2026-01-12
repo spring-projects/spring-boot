@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A {@link ConfigurationProperties @ConfigurationProperties} with an additional
  * single-arg public constructor. Used in {@link ConfigurationPropertiesTests}.
@@ -25,7 +27,7 @@ package org.springframework.boot.context.properties;
 @ConfigurationProperties("test")
 public class WithPublicStringConstructorProperties {
 
-	private String a;
+	private @Nullable String a;
 
 	public WithPublicStringConstructorProperties() {
 	}
@@ -34,11 +36,11 @@ public class WithPublicStringConstructorProperties {
 		this.a = a;
 	}
 
-	public String getA() {
+	public @Nullable String getA() {
 		return this.a;
 	}
 
-	public void setA(String a) {
+	public void setA(@Nullable String a) {
 		this.a = a;
 	}
 

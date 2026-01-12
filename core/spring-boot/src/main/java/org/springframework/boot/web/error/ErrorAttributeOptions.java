@@ -23,6 +23,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Options controlling the contents of {@code ErrorAttributes}.
  *
@@ -85,7 +87,7 @@ public final class ErrorAttributeOptions {
 	 * @param map the map to update
 	 * @since 3.2.7
 	 */
-	public void retainIncluded(Map<String, Object> map) {
+	public void retainIncluded(Map<String, @Nullable Object> map) {
 		for (Include candidate : Include.values()) {
 			if (!this.includes.contains(candidate)) {
 				map.remove(candidate.key);

@@ -30,6 +30,7 @@ import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.util.Timeout;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
@@ -51,11 +52,11 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		super(client, host);
 	}
 
-	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost) {
+	static @Nullable RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost) {
 		return createIfPossible(dockerHost, new SslContextFactory());
 	}
 
-	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost,
+	static @Nullable RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost,
 			SslContextFactory sslContextFactory) {
 		if (!dockerHost.isRemote()) {
 			return null;

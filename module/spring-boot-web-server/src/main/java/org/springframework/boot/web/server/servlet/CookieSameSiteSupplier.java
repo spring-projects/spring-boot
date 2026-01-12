@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import jakarta.servlet.http.Cookie;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.util.Assert;
@@ -49,7 +50,7 @@ public interface CookieSameSiteSupplier {
 	 * @return the {@link SameSite} value to use or {@code null} if the next supplier
 	 * should be checked
 	 */
-	SameSite getSameSite(Cookie cookie);
+	@Nullable SameSite getSameSite(Cookie cookie);
 
 	/**
 	 * Limit this supplier so that it's only called if the Cookie has the given name.

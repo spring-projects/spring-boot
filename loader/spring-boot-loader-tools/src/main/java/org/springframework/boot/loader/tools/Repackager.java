@@ -23,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.jar.JarFile;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -51,7 +53,8 @@ public class Repackager extends Packager {
 	@Override
 	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
-		if (getSource().getName().toLowerCase(Locale.ROOT).endsWith(".jar") && hasSignedLibrary(writtenLibraries)) {
+		String sourceName = getSource().getName().toLowerCase(Locale.ROOT);
+		if ((sourceName.endsWith(".jar") || sourceName.endsWith(".war")) && hasSignedLibrary(writtenLibraries)) {
 			writer.writeEntry("META-INF/BOOT.SF", (entryWriter) -> {
 			});
 		}
@@ -99,26 +102,12 @@ public class Repackager extends Packager {
 	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @param launchScript an optional launch script prepended to the front of the jar
-	 * @throws IOException if the file cannot be repackaged
-	 * @since 1.3.0
-	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
-		repackage(destination, libraries, launchScript, null);
-	}
-
-	/**
-	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'.
-	 * @param destination the destination file (may be the same as the source)
-	 * @param libraries the libraries required to run the archive
-	 * @param launchScript an optional launch script prepended to the front of the jar
 	 * @param lastModifiedTime an optional last modified time to apply to the archive and
 	 * its contents
 	 * @throws IOException if the file cannot be repackaged
-	 * @since 2.3.0
+	 * @since 4.0.0
 	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
+	public void repackage(File destination, Libraries libraries, @Nullable FileTime lastModifiedTime)
 			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
 		getLayout(); // get layout early
@@ -136,7 +125,7 @@ public class Repackager extends Packager {
 		destination.delete();
 		try {
 			try (JarFile sourceJar = new JarFile(workingSource)) {
-				repackage(sourceJar, destination, libraries, launchScript, lastModifiedTime);
+				repackage(sourceJar, destination, libraries, lastModifiedTime);
 			}
 		}
 		finally {
@@ -146,9 +135,9 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
-			FileTime lastModifiedTime) throws IOException {
-		try (JarWriter writer = new JarWriter(destination, launchScript, lastModifiedTime)) {
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
+			@Nullable FileTime lastModifiedTime) throws IOException {
+		try (JarWriter writer = new JarWriter(destination, lastModifiedTime)) {
 			write(sourceJar, libraries, writer, lastModifiedTime != null);
 		}
 		if (lastModifiedTime != null) {

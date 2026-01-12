@@ -26,16 +26,18 @@ description = "Spring Boot Jetty"
 
 dependencies {
 	api(project(":module:spring-boot-web-server"))
-	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
-	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	api("org.eclipse.jetty.ee11:jetty-ee11-webapp")
+
+	implementation("org.eclipse.jetty.compression:jetty-compression-server")
+	implementation("org.eclipse.jetty.compression:jetty-compression-gzip")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
-	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
-	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
+	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jakarta-server")
+	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jetty-server")
 	optional("org.eclipse.jetty.http2:jetty-http2-server")
 	optional("org.springframework:spring-webflux")
 
@@ -44,6 +46,8 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor:reactor-test")
@@ -58,3 +62,6 @@ test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
 
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

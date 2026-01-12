@@ -29,7 +29,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../test-repository"}
+	maven { url = layout.projectDirectory.dir("../test-repository") }
 	mavenCentral()
 	spring.mavenRepositoriesExcludingBootGroup()
 }
@@ -42,9 +42,6 @@ configurations {
 		extendsFrom(app)
 	}
 	tomcat {
-		extendsFrom(app)
-	}
-	undertow {
 		extendsFrom(app)
 	}
 }
@@ -77,20 +74,19 @@ dependencies {
 	app("org.springframework:spring-web")
 	jetty("org.springframework.boot:spring-boot-starter-jetty")
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
-	undertow("org.springframework.boot:spring-boot-starter-undertow")
 }
 
 static boolean isWindows() {
 	return File.separatorChar == '\\'
 }
 
-["jetty", "tomcat", "undertow"].each { webServer ->
+["jetty", "tomcat"].each { webServer ->
 	def configurer = { task ->
 		task.dependsOn resourcesJar
 		task.mainClass = "com.example.ResourceHandlingApplication"
 		task.classpath = configurations.getByName(webServer)
 		task.archiveClassifier = webServer
-		task.targetJavaVersion = project.getTargetCompatibility()
+		task.targetJavaVersion = java.targetCompatibility
 	}
 	tasks.register("${webServer}BootJar", BootJar, configurer)
 	tasks.register("${webServer}BootWar", BootWar, configurer)

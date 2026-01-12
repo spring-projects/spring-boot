@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.util.MimeType;
@@ -93,16 +94,16 @@ class ProducibleOperationArgumentResolverTests {
 			.withMessageContaining("Multiple default values");
 	}
 
-	private Supplier<List<String>> acceptHeader(String... types) {
+	private Supplier<@Nullable List<String>> acceptHeader(String... types) {
 		List<String> value = Arrays.asList(types);
 		return () -> (value.isEmpty() ? null : value);
 	}
 
-	private ApiVersion resolve(Supplier<List<String>> accepts) {
+	private @Nullable ApiVersion resolve(Supplier<@Nullable List<String>> accepts) {
 		return resolve(accepts, ApiVersion.class);
 	}
 
-	private <T> T resolve(Supplier<List<String>> accepts, Class<T> type) {
+	private <T> @Nullable T resolve(Supplier<@Nullable List<String>> accepts, Class<T> type) {
 		return new ProducibleOperationArgumentResolver(accepts).resolve(type);
 	}
 

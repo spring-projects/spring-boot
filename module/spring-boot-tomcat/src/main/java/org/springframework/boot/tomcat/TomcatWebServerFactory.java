@@ -40,7 +40,9 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.modeler.Registry;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
@@ -66,7 +68,7 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private File baseDirectory;
+	private @Nullable File baseDirectory;
 
 	private int backgroundProcessorDelay;
 
@@ -108,11 +110,11 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	}
 
 	@Override
-	public void setBaseDirectory(File baseDirectory) {
+	public void setBaseDirectory(@Nullable File baseDirectory) {
 		this.baseDirectory = baseDirectory;
 	}
 
-	public File getBaseDirectory() {
+	public @Nullable File getBaseDirectory() {
 		return this.baseDirectory;
 	}
 
@@ -406,8 +408,9 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 		if (getHttp2() != null && getHttp2().isEnabled()) {
 			connector.addUpgradeProtocol(new Http2Protocol());
 		}
-		if (Ssl.isEnabled(getSsl())) {
-			customizeSsl(connector);
+		Ssl ssl = getSsl();
+		if (Ssl.isEnabled(ssl)) {
+			customizeSsl(connector, ssl);
 		}
 		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
 		compression.customize(connector);
@@ -429,20 +432,21 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 			.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
-	private void customizeSsl(Connector connector) {
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector,
-				getSsl().getClientAuth());
+	private void customizeSsl(Connector connector, Ssl ssl) {
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(getSslBundle(), getServerNameSslBundles());
-		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
-		getSsl().getServerNameBundles()
+		addBundleUpdateHandler(null, ssl.getBundle(), customizer);
+		ssl.getServerNameBundles()
 			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
 					serverNameSslBundle.bundle(), customizer));
 	}
 
-	private void addBundleUpdateHandler(String serverName, String sslBundleName, SslConnectorCustomizer customizer) {
+	private void addBundleUpdateHandler(@Nullable String serverName, @Nullable String sslBundleName,
+			SslConnectorCustomizer customizer) {
 		if (StringUtils.hasText(sslBundleName)) {
-			getSslBundles().addBundleUpdateHandler(sslBundleName,
-					(sslBundle) -> customizer.update(serverName, sslBundle));
+			SslBundles sslBundles = getSslBundles();
+			Assert.state(sslBundles != null, "'sslBundles' must not be null");
+			sslBundles.addBundleUpdateHandler(sslBundleName, (sslBundle) -> customizer.update(serverName, sslBundle));
 		}
 	}
 

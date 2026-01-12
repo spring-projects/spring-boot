@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.generic;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Properties with unresolved generic information.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @param <C> mapping value type
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("generic")
+@TestConfigurationProperties("generic")
 public class UnresolvedGenericProperties<B extends Number, C> extends AbstractGenericProperties<String, B, C> {
 
 }

@@ -19,8 +19,10 @@ package org.springframework.boot.rsocket.autoconfigure;
 import java.net.URI;
 import java.time.Duration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -67,13 +69,16 @@ class RSocketWebSocketNettyRouteProviderTests {
 			.run((context) -> {
 				ReactiveWebServerApplicationContext serverContext = (ReactiveWebServerApplicationContext) context
 					.getSourceApplicationContext();
-				RSocketRequester requester = createRSocketRequester(context, serverContext.getWebServer());
+				WebServer webServer = serverContext.getWebServer();
+				assertThat(webServer).isNotNull();
+				RSocketRequester requester = createRSocketRequester(context, webServer);
 				TestProtocol rsocketResponse = requester.route("websocket")
 					.data(new TestProtocol("rsocket"))
 					.retrieveMono(TestProtocol.class)
 					.block(Duration.ofSeconds(3));
+				assertThat(rsocketResponse).isNotNull();
 				assertThat(rsocketResponse.getName()).isEqualTo("rsocket");
-				WebTestClient client = createWebTestClient(serverContext.getWebServer());
+				WebTestClient client = createWebTestClient(webServer);
 				client.get()
 					.uri("/protocol")
 					.exchange()
@@ -121,14 +126,13 @@ class RSocketWebSocketNettyRouteProviderTests {
 		}
 
 		@Bean
-		ObjectMapper objectMapper() {
-			return new ObjectMapper();
+		JsonMapper jsonMapper() {
+			return JsonMapper.builder().build();
 		}
 
 		@Bean
-		@SuppressWarnings({ "removal", "deprecation" })
-		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder() {
-			return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
+		CBORMapper cborMapper() {
+			return CBORMapper.builder().build();
 		}
 
 	}
@@ -151,20 +155,20 @@ class RSocketWebSocketNettyRouteProviderTests {
 
 	public static class TestProtocol {
 
-		private String name;
+		private @Nullable String name;
 
 		TestProtocol() {
 		}
 
-		TestProtocol(String name) {
+		TestProtocol(@Nullable String name) {
 			this.name = name;
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 

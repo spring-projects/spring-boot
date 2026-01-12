@@ -29,9 +29,9 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
-import org.springframework.boot.actuate.health.HealthEndpointGroup;
-import org.springframework.boot.actuate.health.HealthEndpointGroups;
+import org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpointPath;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 
 /**
  * A factory for creating Jersey {@link Resource Resources} for health groups with

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -170,12 +171,12 @@ class ResourceBannerTests {
 		assertThat(banner).startsWith("banner bar");
 	}
 
-	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
-			String applicationTitle) {
+	private String printBanner(Resource resource, @Nullable String bootVersion, @Nullable String applicationVersion,
+			@Nullable String applicationTitle) {
 		return printBanner(new MockResourceBanner(resource, bootVersion, applicationTitle), applicationVersion);
 	}
 
-	private String printBanner(ResourceBanner banner, String applicationVersion) {
+	private String printBanner(ResourceBanner banner, @Nullable String applicationVersion) {
 		MockEnvironment environment = new MockEnvironment();
 		if (applicationVersion != null) {
 			environment.setProperty("spring.application.version", applicationVersion);
@@ -189,23 +190,23 @@ class ResourceBannerTests {
 
 	static class MockResourceBanner extends ResourceBanner {
 
-		private final String bootVersion;
+		private final @Nullable String bootVersion;
 
-		private final String applicationTitle;
+		private final @Nullable String applicationTitle;
 
-		MockResourceBanner(Resource resource, String bootVersion, String applicationTitle) {
+		MockResourceBanner(Resource resource, @Nullable String bootVersion, @Nullable String applicationTitle) {
 			super(resource);
 			this.bootVersion = bootVersion;
 			this.applicationTitle = applicationTitle;
 		}
 
 		@Override
-		protected String getBootVersion() {
+		protected @Nullable String getBootVersion() {
 			return this.bootVersion;
 		}
 
 		@Override
-		protected String getApplicationTitle(Class<?> sourceClass) {
+		protected @Nullable String getApplicationTitle(@Nullable Class<?> sourceClass) {
 			return this.applicationTitle;
 		}
 
@@ -213,23 +214,23 @@ class ResourceBannerTests {
 
 	static class MutatingResourceBanner extends MockResourceBanner {
 
-		MutatingResourceBanner(Resource resource, String bootVersion, String applicationTitle) {
+		MutatingResourceBanner(Resource resource, String bootVersion, @Nullable String applicationTitle) {
 			super(resource, bootVersion, applicationTitle);
 		}
 
 		@Override
-		protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
+		protected List<PropertyResolver> getPropertyResolvers(Environment environment, @Nullable Class<?> sourceClass) {
 			List<PropertyResolver> resolvers = super.getPropertyResolvers(environment, sourceClass);
 			PropertyResolver resolver = new AbstractPropertyResolver() {
 
 				@Override
 				@SuppressWarnings("unchecked")
-				public <T> T getProperty(String key, Class<T> targetType) {
+				public <T> @Nullable T getProperty(String key, Class<T> targetType) {
 					return String.class.equals(targetType) ? (T) getPropertyAsRawString(key) : null;
 				}
 
 				@Override
-				protected String getPropertyAsRawString(String key) {
+				protected @Nullable String getPropertyAsRawString(String key) {
 					return ("foo".equals(key)) ? "bar" : null;
 				}
 

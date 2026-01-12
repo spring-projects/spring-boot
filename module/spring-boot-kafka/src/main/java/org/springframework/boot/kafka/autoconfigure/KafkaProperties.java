@@ -32,6 +32,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -72,7 +73,7 @@ public class KafkaProperties {
 	/**
 	 * ID to pass to the server when making requests. Used for server-side logging.
 	 */
-	private String clientId;
+	private @Nullable String clientId;
 
 	/**
 	 * Additional properties, common to producers and consumers, used to configure the
@@ -108,11 +109,11 @@ public class KafkaProperties {
 		this.bootstrapServers = bootstrapServers;
 	}
 
-	public String getClientId() {
+	public @Nullable String getClientId() {
 		return this.clientId;
 	}
 
-	public void setClientId(String clientId) {
+	public void setClientId(@Nullable String clientId) {
 		this.clientId = clientId;
 	}
 
@@ -241,52 +242,52 @@ public class KafkaProperties {
 		 * Frequency with which the consumer offsets are auto-committed to Kafka if
 		 * 'enable.auto.commit' is set to true.
 		 */
-		private Duration autoCommitInterval;
+		private @Nullable Duration autoCommitInterval;
 
 		/**
 		 * What to do when there is no initial offset in Kafka or if the current offset no
 		 * longer exists on the server.
 		 */
-		private String autoOffsetReset;
+		private @Nullable String autoOffsetReset;
 
 		/**
 		 * List of host:port pairs to use for establishing the initial connections to the
 		 * Kafka cluster. Overrides the global property, for consumers.
 		 */
-		private List<String> bootstrapServers;
+		private @Nullable List<String> bootstrapServers;
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Whether the consumer's offset is periodically committed in the background.
 		 */
-		private Boolean enableAutoCommit;
+		private @Nullable Boolean enableAutoCommit;
 
 		/**
 		 * Maximum amount of time the server blocks before answering the fetch request if
 		 * there isn't sufficient data to immediately satisfy the requirement given by
 		 * "fetch-min-size".
 		 */
-		private Duration fetchMaxWait;
+		private @Nullable Duration fetchMaxWait;
 
 		/**
 		 * Minimum amount of data the server should return for a fetch request.
 		 */
-		private DataSize fetchMinSize;
+		private @Nullable DataSize fetchMinSize;
 
 		/**
 		 * Unique string that identifies the consumer group to which this consumer
 		 * belongs.
 		 */
-		private String groupId;
+		private @Nullable String groupId;
 
 		/**
 		 * Expected time between heartbeats to the consumer coordinator.
 		 */
-		private Duration heartbeatInterval;
+		private @Nullable Duration heartbeatInterval;
 
 		/**
 		 * Isolation level for reading messages that have been written transactionally.
@@ -306,13 +307,13 @@ public class KafkaProperties {
 		/**
 		 * Maximum number of records returned in a single call to poll().
 		 */
-		private Integer maxPollRecords;
+		private @Nullable Integer maxPollRecords;
 
 		/**
 		 * Maximum delay between invocations of poll() when using consumer group
 		 * management.
 		 */
-		private Duration maxPollInterval;
+		private @Nullable Duration maxPollInterval;
 
 		/**
 		 * Additional consumer-specific properties used to configure the client.
@@ -327,75 +328,75 @@ public class KafkaProperties {
 			return this.security;
 		}
 
-		public Duration getAutoCommitInterval() {
+		public @Nullable Duration getAutoCommitInterval() {
 			return this.autoCommitInterval;
 		}
 
-		public void setAutoCommitInterval(Duration autoCommitInterval) {
+		public void setAutoCommitInterval(@Nullable Duration autoCommitInterval) {
 			this.autoCommitInterval = autoCommitInterval;
 		}
 
-		public String getAutoOffsetReset() {
+		public @Nullable String getAutoOffsetReset() {
 			return this.autoOffsetReset;
 		}
 
-		public void setAutoOffsetReset(String autoOffsetReset) {
+		public void setAutoOffsetReset(@Nullable String autoOffsetReset) {
 			this.autoOffsetReset = autoOffsetReset;
 		}
 
-		public List<String> getBootstrapServers() {
+		public @Nullable List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
-		public void setBootstrapServers(List<String> bootstrapServers) {
+		public void setBootstrapServers(@Nullable List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public Boolean getEnableAutoCommit() {
+		public @Nullable Boolean getEnableAutoCommit() {
 			return this.enableAutoCommit;
 		}
 
-		public void setEnableAutoCommit(Boolean enableAutoCommit) {
+		public void setEnableAutoCommit(@Nullable Boolean enableAutoCommit) {
 			this.enableAutoCommit = enableAutoCommit;
 		}
 
-		public Duration getFetchMaxWait() {
+		public @Nullable Duration getFetchMaxWait() {
 			return this.fetchMaxWait;
 		}
 
-		public void setFetchMaxWait(Duration fetchMaxWait) {
+		public void setFetchMaxWait(@Nullable Duration fetchMaxWait) {
 			this.fetchMaxWait = fetchMaxWait;
 		}
 
-		public DataSize getFetchMinSize() {
+		public @Nullable DataSize getFetchMinSize() {
 			return this.fetchMinSize;
 		}
 
-		public void setFetchMinSize(DataSize fetchMinSize) {
+		public void setFetchMinSize(@Nullable DataSize fetchMinSize) {
 			this.fetchMinSize = fetchMinSize;
 		}
 
-		public String getGroupId() {
+		public @Nullable String getGroupId() {
 			return this.groupId;
 		}
 
-		public void setGroupId(String groupId) {
+		public void setGroupId(@Nullable String groupId) {
 			this.groupId = groupId;
 		}
 
-		public Duration getHeartbeatInterval() {
+		public @Nullable Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(Duration heartbeatInterval) {
+		public void setHeartbeatInterval(@Nullable Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
@@ -423,19 +424,19 @@ public class KafkaProperties {
 			this.valueDeserializer = valueDeserializer;
 		}
 
-		public Integer getMaxPollRecords() {
+		public @Nullable Integer getMaxPollRecords() {
 			return this.maxPollRecords;
 		}
 
-		public void setMaxPollRecords(Integer maxPollRecords) {
+		public void setMaxPollRecords(@Nullable Integer maxPollRecords) {
 			this.maxPollRecords = maxPollRecords;
 		}
 
-		public Duration getMaxPollInterval() {
+		public @Nullable Duration getMaxPollInterval() {
 			return this.maxPollInterval;
 		}
 
-		public void setMaxPollInterval(Duration maxPollInterval) {
+		public void setMaxPollInterval(@Nullable Duration maxPollInterval) {
 			this.maxPollInterval = maxPollInterval;
 		}
 
@@ -445,7 +446,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getAutoCommitInterval)
 				.asInt(Duration::toMillis)
 				.to(properties.in(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
@@ -486,35 +487,35 @@ public class KafkaProperties {
 		 * Number of acknowledgments the producer requires the leader to have received
 		 * before considering a request complete.
 		 */
-		private String acks;
+		private @Nullable String acks;
 
 		/**
 		 * Default batch size. A small batch size will make batching less common and may
 		 * reduce throughput (a batch size of zero disables batching entirely).
 		 */
-		private DataSize batchSize;
+		private @Nullable DataSize batchSize;
 
 		/**
 		 * List of host:port pairs to use for establishing the initial connections to the
 		 * Kafka cluster. Overrides the global property, for producers.
 		 */
-		private List<String> bootstrapServers;
+		private @Nullable List<String> bootstrapServers;
 
 		/**
 		 * Total memory size the producer can use to buffer records waiting to be sent to
 		 * the server.
 		 */
-		private DataSize bufferMemory;
+		private @Nullable DataSize bufferMemory;
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Compression type for all data generated by the producer.
 		 */
-		private String compressionType;
+		private @Nullable String compressionType;
 
 		/**
 		 * Serializer class for keys.
@@ -529,12 +530,12 @@ public class KafkaProperties {
 		/**
 		 * When greater than zero, enables retrying of failed sends.
 		 */
-		private Integer retries;
+		private @Nullable Integer retries;
 
 		/**
 		 * When non empty, enables transaction support for producer.
 		 */
-		private String transactionIdPrefix;
+		private @Nullable String transactionIdPrefix;
 
 		/**
 		 * Additional producer-specific properties used to configure the client.
@@ -549,51 +550,51 @@ public class KafkaProperties {
 			return this.security;
 		}
 
-		public String getAcks() {
+		public @Nullable String getAcks() {
 			return this.acks;
 		}
 
-		public void setAcks(String acks) {
+		public void setAcks(@Nullable String acks) {
 			this.acks = acks;
 		}
 
-		public DataSize getBatchSize() {
+		public @Nullable DataSize getBatchSize() {
 			return this.batchSize;
 		}
 
-		public void setBatchSize(DataSize batchSize) {
+		public void setBatchSize(@Nullable DataSize batchSize) {
 			this.batchSize = batchSize;
 		}
 
-		public List<String> getBootstrapServers() {
+		public @Nullable List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
-		public void setBootstrapServers(List<String> bootstrapServers) {
+		public void setBootstrapServers(@Nullable List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		public DataSize getBufferMemory() {
+		public @Nullable DataSize getBufferMemory() {
 			return this.bufferMemory;
 		}
 
-		public void setBufferMemory(DataSize bufferMemory) {
+		public void setBufferMemory(@Nullable DataSize bufferMemory) {
 			this.bufferMemory = bufferMemory;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getCompressionType() {
+		public @Nullable String getCompressionType() {
 			return this.compressionType;
 		}
 
-		public void setCompressionType(String compressionType) {
+		public void setCompressionType(@Nullable String compressionType) {
 			this.compressionType = compressionType;
 		}
 
@@ -613,19 +614,19 @@ public class KafkaProperties {
 			this.valueSerializer = valueSerializer;
 		}
 
-		public Integer getRetries() {
+		public @Nullable Integer getRetries() {
 			return this.retries;
 		}
 
-		public void setRetries(Integer retries) {
+		public void setRetries(@Nullable Integer retries) {
 			this.retries = retries;
 		}
 
-		public String getTransactionIdPrefix() {
+		public @Nullable String getTransactionIdPrefix() {
 			return this.transactionIdPrefix;
 		}
 
-		public void setTransactionIdPrefix(String transactionIdPrefix) {
+		public void setTransactionIdPrefix(@Nullable String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
@@ -635,7 +636,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
 			map.from(this::getBatchSize).asInt(DataSize::toBytes).to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
 			map.from(this::getBootstrapServers).to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
@@ -661,7 +662,7 @@ public class KafkaProperties {
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Additional admin-specific properties used to configure the client.
@@ -671,12 +672,12 @@ public class KafkaProperties {
 		/**
 		 * Close timeout.
 		 */
-		private Duration closeTimeout;
+		private @Nullable Duration closeTimeout;
 
 		/**
 		 * Operation timeout.
 		 */
-		private Duration operationTimeout;
+		private @Nullable Duration operationTimeout;
 
 		/**
 		 * Whether to fail fast if the broker is not available on startup.
@@ -702,27 +703,27 @@ public class KafkaProperties {
 			return this.security;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public Duration getCloseTimeout() {
+		public @Nullable Duration getCloseTimeout() {
 			return this.closeTimeout;
 		}
 
-		public void setCloseTimeout(Duration closeTimeout) {
+		public void setCloseTimeout(@Nullable Duration closeTimeout) {
 			this.closeTimeout = closeTimeout;
 		}
 
-		public Duration getOperationTimeout() {
+		public @Nullable Duration getOperationTimeout() {
 			return this.operationTimeout;
 		}
 
-		public void setOperationTimeout(Duration operationTimeout) {
+		public void setOperationTimeout(@Nullable Duration operationTimeout) {
 			this.operationTimeout = operationTimeout;
 		}
 
@@ -756,7 +757,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
 		}
@@ -777,7 +778,7 @@ public class KafkaProperties {
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
 		 */
-		private String applicationId;
+		private @Nullable String applicationId;
 
 		/**
 		 * Whether to auto-start the streams factory bean.
@@ -788,28 +789,28 @@ public class KafkaProperties {
 		 * List of host:port pairs to use for establishing the initial connections to the
 		 * Kafka cluster. Overrides the global property, for streams.
 		 */
-		private List<String> bootstrapServers;
+		private @Nullable List<String> bootstrapServers;
 
 		/**
 		 * Maximum size of the in-memory state store cache across all threads.
 		 */
-		private DataSize stateStoreCacheMaxSize;
+		private @Nullable DataSize stateStoreCacheMaxSize;
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * The replication factor for change log topics and repartition topics created by
 		 * the stream processing application.
 		 */
-		private Integer replicationFactor;
+		private @Nullable Integer replicationFactor;
 
 		/**
 		 * Directory location for the state store.
 		 */
-		private String stateDir;
+		private @Nullable String stateDir;
 
 		/**
 		 * Additional Kafka properties used to configure the streams.
@@ -828,11 +829,11 @@ public class KafkaProperties {
 			return this.cleanup;
 		}
 
-		public String getApplicationId() {
+		public @Nullable String getApplicationId() {
 			return this.applicationId;
 		}
 
-		public void setApplicationId(String applicationId) {
+		public void setApplicationId(@Nullable String applicationId) {
 			this.applicationId = applicationId;
 		}
 
@@ -844,43 +845,43 @@ public class KafkaProperties {
 			this.autoStartup = autoStartup;
 		}
 
-		public List<String> getBootstrapServers() {
+		public @Nullable List<String> getBootstrapServers() {
 			return this.bootstrapServers;
 		}
 
-		public void setBootstrapServers(List<String> bootstrapServers) {
+		public void setBootstrapServers(@Nullable List<String> bootstrapServers) {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		public DataSize getStateStoreCacheMaxSize() {
+		public @Nullable DataSize getStateStoreCacheMaxSize() {
 			return this.stateStoreCacheMaxSize;
 		}
 
-		public void setStateStoreCacheMaxSize(DataSize stateStoreCacheMaxSize) {
+		public void setStateStoreCacheMaxSize(@Nullable DataSize stateStoreCacheMaxSize) {
 			this.stateStoreCacheMaxSize = stateStoreCacheMaxSize;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public Integer getReplicationFactor() {
+		public @Nullable Integer getReplicationFactor() {
 			return this.replicationFactor;
 		}
 
-		public void setReplicationFactor(Integer replicationFactor) {
+		public void setReplicationFactor(@Nullable Integer replicationFactor) {
 			this.replicationFactor = replicationFactor;
 		}
 
-		public String getStateDir() {
+		public @Nullable String getStateDir() {
 			return this.stateDir;
 		}
 
-		public void setStateDir(String stateDir) {
+		public void setStateDir(@Nullable String stateDir) {
 			this.stateDir = stateDir;
 		}
 
@@ -890,7 +891,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers).to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
 			map.from(this::getStateStoreCacheMaxSize)
@@ -909,32 +910,32 @@ public class KafkaProperties {
 		/**
 		 * Default topic to which messages are sent.
 		 */
-		private String defaultTopic;
+		private @Nullable String defaultTopic;
 
 		/**
 		 * Transaction id prefix, override the transaction id prefix in the producer
 		 * factory.
 		 */
-		private String transactionIdPrefix;
+		private @Nullable String transactionIdPrefix;
 
 		/**
 		 * Whether to enable observation.
 		 */
 		private boolean observationEnabled;
 
-		public String getDefaultTopic() {
+		public @Nullable String getDefaultTopic() {
 			return this.defaultTopic;
 		}
 
-		public void setDefaultTopic(String defaultTopic) {
+		public void setDefaultTopic(@Nullable String defaultTopic) {
 			this.defaultTopic = defaultTopic;
 		}
 
-		public String getTransactionIdPrefix() {
+		public @Nullable String getTransactionIdPrefix() {
 			return this.transactionIdPrefix;
 		}
 
-		public void setTransactionIdPrefix(String transactionIdPrefix) {
+		public void setTransactionIdPrefix(@Nullable String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
@@ -972,45 +973,45 @@ public class KafkaProperties {
 		/**
 		 * Listener AckMode. See the spring-kafka documentation.
 		 */
-		private AckMode ackMode;
+		private @Nullable AckMode ackMode;
 
 		/**
 		 * Support for asynchronous record acknowledgements. Only applies when
 		 * spring.kafka.listener.ack-mode is manual or manual-immediate.
 		 */
-		private Boolean asyncAcks;
+		private @Nullable Boolean asyncAcks;
 
 		/**
 		 * Prefix for the listener's consumer client.id property.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Number of threads to run in the listener containers.
 		 */
-		private Integer concurrency;
+		private @Nullable Integer concurrency;
 
 		/**
 		 * Timeout to use when polling the consumer.
 		 */
-		private Duration pollTimeout;
+		private @Nullable Duration pollTimeout;
 
 		/**
 		 * Multiplier applied to "pollTimeout" to determine if a consumer is
 		 * non-responsive.
 		 */
-		private Float noPollThreshold;
+		private @Nullable Float noPollThreshold;
 
 		/**
 		 * Number of records between offset commits when ackMode is "COUNT" or
 		 * "COUNT_TIME".
 		 */
-		private Integer ackCount;
+		private @Nullable Integer ackCount;
 
 		/**
 		 * Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
 		 */
-		private Duration ackTime;
+		private @Nullable Duration ackTime;
 
 		/**
 		 * Sleep interval between Consumer.poll(Duration) calls.
@@ -1020,37 +1021,37 @@ public class KafkaProperties {
 		/**
 		 * Time between publishing idle consumer events (no data received).
 		 */
-		private Duration idleEventInterval;
+		private @Nullable Duration idleEventInterval;
 
 		/**
 		 * Time between publishing idle partition consumer events (no data received for
 		 * partition).
 		 */
-		private Duration idlePartitionEventInterval;
+		private @Nullable Duration idlePartitionEventInterval;
 
 		/**
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
 		 * specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration monitorInterval;
+		private @Nullable Duration monitorInterval;
 
 		/**
 		 * Whether to log the container configuration during initialization (INFO level).
 		 */
-		private Boolean logContainerConfig;
+		private @Nullable Boolean logContainerConfig;
 
 		/**
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = false;
+		private boolean missingTopicsFatal;
 
 		/**
 		 * Whether the container stops after the current record is processed or after all
 		 * the records from the previous poll are processed.
 		 */
-		private boolean immediateStop = false;
+		private boolean immediateStop;
 
 		/**
 		 * Whether to auto start the container.
@@ -1061,7 +1062,7 @@ public class KafkaProperties {
 		 * Whether to instruct the container to change the consumer thread name during
 		 * initialization.
 		 */
-		private Boolean changeConsumerThreadName;
+		private @Nullable Boolean changeConsumerThreadName;
 
 		/**
 		 * Whether to enable observation.
@@ -1071,7 +1072,7 @@ public class KafkaProperties {
 		/**
 		 * Time between retries after authentication exceptions.
 		 */
-		private Duration authExceptionRetryInterval;
+		private @Nullable Duration authExceptionRetryInterval;
 
 		public Type getType() {
 			return this.type;
@@ -1081,67 +1082,67 @@ public class KafkaProperties {
 			this.type = type;
 		}
 
-		public AckMode getAckMode() {
+		public @Nullable AckMode getAckMode() {
 			return this.ackMode;
 		}
 
-		public void setAckMode(AckMode ackMode) {
+		public void setAckMode(@Nullable AckMode ackMode) {
 			this.ackMode = ackMode;
 		}
 
-		public Boolean getAsyncAcks() {
+		public @Nullable Boolean getAsyncAcks() {
 			return this.asyncAcks;
 		}
 
-		public void setAsyncAcks(Boolean asyncAcks) {
+		public void setAsyncAcks(@Nullable Boolean asyncAcks) {
 			this.asyncAcks = asyncAcks;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public Integer getConcurrency() {
+		public @Nullable Integer getConcurrency() {
 			return this.concurrency;
 		}
 
-		public void setConcurrency(Integer concurrency) {
+		public void setConcurrency(@Nullable Integer concurrency) {
 			this.concurrency = concurrency;
 		}
 
-		public Duration getPollTimeout() {
+		public @Nullable Duration getPollTimeout() {
 			return this.pollTimeout;
 		}
 
-		public void setPollTimeout(Duration pollTimeout) {
+		public void setPollTimeout(@Nullable Duration pollTimeout) {
 			this.pollTimeout = pollTimeout;
 		}
 
-		public Float getNoPollThreshold() {
+		public @Nullable Float getNoPollThreshold() {
 			return this.noPollThreshold;
 		}
 
-		public void setNoPollThreshold(Float noPollThreshold) {
+		public void setNoPollThreshold(@Nullable Float noPollThreshold) {
 			this.noPollThreshold = noPollThreshold;
 		}
 
-		public Integer getAckCount() {
+		public @Nullable Integer getAckCount() {
 			return this.ackCount;
 		}
 
-		public void setAckCount(Integer ackCount) {
+		public void setAckCount(@Nullable Integer ackCount) {
 			this.ackCount = ackCount;
 		}
 
-		public Duration getAckTime() {
+		public @Nullable Duration getAckTime() {
 			return this.ackTime;
 		}
 
-		public void setAckTime(Duration ackTime) {
+		public void setAckTime(@Nullable Duration ackTime) {
 			this.ackTime = ackTime;
 		}
 
@@ -1153,35 +1154,35 @@ public class KafkaProperties {
 			this.idleBetweenPolls = idleBetweenPolls;
 		}
 
-		public Duration getIdleEventInterval() {
+		public @Nullable Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
-		public void setIdleEventInterval(Duration idleEventInterval) {
+		public void setIdleEventInterval(@Nullable Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
 		}
 
-		public Duration getIdlePartitionEventInterval() {
+		public @Nullable Duration getIdlePartitionEventInterval() {
 			return this.idlePartitionEventInterval;
 		}
 
-		public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
+		public void setIdlePartitionEventInterval(@Nullable Duration idlePartitionEventInterval) {
 			this.idlePartitionEventInterval = idlePartitionEventInterval;
 		}
 
-		public Duration getMonitorInterval() {
+		public @Nullable Duration getMonitorInterval() {
 			return this.monitorInterval;
 		}
 
-		public void setMonitorInterval(Duration monitorInterval) {
+		public void setMonitorInterval(@Nullable Duration monitorInterval) {
 			this.monitorInterval = monitorInterval;
 		}
 
-		public Boolean getLogContainerConfig() {
+		public @Nullable Boolean getLogContainerConfig() {
 			return this.logContainerConfig;
 		}
 
-		public void setLogContainerConfig(Boolean logContainerConfig) {
+		public void setLogContainerConfig(@Nullable Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
 		}
 
@@ -1209,11 +1210,11 @@ public class KafkaProperties {
 			this.autoStartup = autoStartup;
 		}
 
-		public Boolean getChangeConsumerThreadName() {
+		public @Nullable Boolean getChangeConsumerThreadName() {
 			return this.changeConsumerThreadName;
 		}
 
-		public void setChangeConsumerThreadName(Boolean changeConsumerThreadName) {
+		public void setChangeConsumerThreadName(@Nullable Boolean changeConsumerThreadName) {
 			this.changeConsumerThreadName = changeConsumerThreadName;
 		}
 
@@ -1225,11 +1226,11 @@ public class KafkaProperties {
 			this.observationEnabled = observationEnabled;
 		}
 
-		public Duration getAuthExceptionRetryInterval() {
+		public @Nullable Duration getAuthExceptionRetryInterval() {
 			return this.authExceptionRetryInterval;
 		}
 
-		public void setAuthExceptionRetryInterval(Duration authExceptionRetryInterval) {
+		public void setAuthExceptionRetryInterval(@Nullable Duration authExceptionRetryInterval) {
 			this.authExceptionRetryInterval = authExceptionRetryInterval;
 		}
 
@@ -1240,156 +1241,156 @@ public class KafkaProperties {
 		/**
 		 * Name of the SSL bundle to use.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		/**
 		 * Password of the private key in either key store key or key store file.
 		 */
-		private String keyPassword;
+		private @Nullable String keyPassword;
 
 		/**
 		 * Certificate chain in PEM format with a list of X.509 certificates.
 		 */
-		private String keyStoreCertificateChain;
+		private @Nullable String keyStoreCertificateChain;
 
 		/**
 		 * Private key in PEM format with PKCS#8 keys.
 		 */
-		private String keyStoreKey;
+		private @Nullable String keyStoreKey;
 
 		/**
 		 * Location of the key store file.
 		 */
-		private Resource keyStoreLocation;
+		private @Nullable Resource keyStoreLocation;
 
 		/**
 		 * Store password for the key store file.
 		 */
-		private String keyStorePassword;
+		private @Nullable String keyStorePassword;
 
 		/**
 		 * Type of the key store.
 		 */
-		private String keyStoreType;
+		private @Nullable String keyStoreType;
 
 		/**
 		 * Trusted certificates in PEM format with X.509 certificates.
 		 */
-		private String trustStoreCertificates;
+		private @Nullable String trustStoreCertificates;
 
 		/**
 		 * Location of the trust store file.
 		 */
-		private Resource trustStoreLocation;
+		private @Nullable Resource trustStoreLocation;
 
 		/**
 		 * Store password for the trust store file.
 		 */
-		private String trustStorePassword;
+		private @Nullable String trustStorePassword;
 
 		/**
 		 * Type of the trust store.
 		 */
-		private String trustStoreType;
+		private @Nullable String trustStoreType;
 
 		/**
 		 * SSL protocol to use.
 		 */
-		private String protocol;
+		private @Nullable String protocol;
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 
-		public String getKeyPassword() {
+		public @Nullable String getKeyPassword() {
 			return this.keyPassword;
 		}
 
-		public void setKeyPassword(String keyPassword) {
+		public void setKeyPassword(@Nullable String keyPassword) {
 			this.keyPassword = keyPassword;
 		}
 
-		public String getKeyStoreCertificateChain() {
+		public @Nullable String getKeyStoreCertificateChain() {
 			return this.keyStoreCertificateChain;
 		}
 
-		public void setKeyStoreCertificateChain(String keyStoreCertificateChain) {
+		public void setKeyStoreCertificateChain(@Nullable String keyStoreCertificateChain) {
 			this.keyStoreCertificateChain = keyStoreCertificateChain;
 		}
 
-		public String getKeyStoreKey() {
+		public @Nullable String getKeyStoreKey() {
 			return this.keyStoreKey;
 		}
 
-		public void setKeyStoreKey(String keyStoreKey) {
+		public void setKeyStoreKey(@Nullable String keyStoreKey) {
 			this.keyStoreKey = keyStoreKey;
 		}
 
-		public Resource getKeyStoreLocation() {
+		public @Nullable Resource getKeyStoreLocation() {
 			return this.keyStoreLocation;
 		}
 
-		public void setKeyStoreLocation(Resource keyStoreLocation) {
+		public void setKeyStoreLocation(@Nullable Resource keyStoreLocation) {
 			this.keyStoreLocation = keyStoreLocation;
 		}
 
-		public String getKeyStorePassword() {
+		public @Nullable String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
-		public void setKeyStorePassword(String keyStorePassword) {
+		public void setKeyStorePassword(@Nullable String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
 		}
 
-		public String getKeyStoreType() {
+		public @Nullable String getKeyStoreType() {
 			return this.keyStoreType;
 		}
 
-		public void setKeyStoreType(String keyStoreType) {
+		public void setKeyStoreType(@Nullable String keyStoreType) {
 			this.keyStoreType = keyStoreType;
 		}
 
-		public String getTrustStoreCertificates() {
+		public @Nullable String getTrustStoreCertificates() {
 			return this.trustStoreCertificates;
 		}
 
-		public void setTrustStoreCertificates(String trustStoreCertificates) {
+		public void setTrustStoreCertificates(@Nullable String trustStoreCertificates) {
 			this.trustStoreCertificates = trustStoreCertificates;
 		}
 
-		public Resource getTrustStoreLocation() {
+		public @Nullable Resource getTrustStoreLocation() {
 			return this.trustStoreLocation;
 		}
 
-		public void setTrustStoreLocation(Resource trustStoreLocation) {
+		public void setTrustStoreLocation(@Nullable Resource trustStoreLocation) {
 			this.trustStoreLocation = trustStoreLocation;
 		}
 
-		public String getTrustStorePassword() {
+		public @Nullable String getTrustStorePassword() {
 			return this.trustStorePassword;
 		}
 
-		public void setTrustStorePassword(String trustStorePassword) {
+		public void setTrustStorePassword(@Nullable String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
 		}
 
-		public String getTrustStoreType() {
+		public @Nullable String getTrustStoreType() {
 			return this.trustStoreType;
 		}
 
-		public void setTrustStoreType(String trustStoreType) {
+		public void setTrustStoreType(@Nullable String trustStoreType) {
 			this.trustStoreType = trustStoreType;
 		}
 
-		public String getProtocol() {
+		public @Nullable String getProtocol() {
 			return this.protocol;
 		}
 
-		public void setProtocol(String protocol) {
+		public void setProtocol(@Nullable String protocol) {
 			this.protocol = protocol;
 		}
 
@@ -1400,7 +1401,7 @@ public class KafkaProperties {
 			if (StringUtils.hasText(bundleName)) {
 				return properties;
 			}
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreCertificateChain)
 				.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
@@ -1420,6 +1421,7 @@ public class KafkaProperties {
 			return properties;
 		}
 
+		@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 		private void validate() {
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
@@ -1447,7 +1449,7 @@ public class KafkaProperties {
 			}, this::hasValue);
 		}
 
-		private boolean hasValue(Object value) {
+		private boolean hasValue(@Nullable Object value) {
 			return (value instanceof String string) ? StringUtils.hasText(string) : value != null;
 		}
 
@@ -1525,19 +1527,19 @@ public class KafkaProperties {
 		/**
 		 * Security protocol used to communicate with brokers.
 		 */
-		private String protocol;
+		private @Nullable String protocol;
 
-		public String getProtocol() {
+		public @Nullable String getProtocol() {
 			return this.protocol;
 		}
 
-		public void setProtocol(String protocol) {
+		public void setProtocol(@Nullable String protocol) {
 			this.protocol = protocol;
 		}
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
 		}
@@ -1593,26 +1595,31 @@ public class KafkaProperties {
 			public static class Backoff {
 
 				/**
-				 * Canonical backoff period. Used as an initial value in the exponential
-				 * case, and as a minimum value in the uniform case.
+				 * Base delay after the initial invocation. Can be combined with a
+				 * "multiplier" to use an exponential back off strategy.
 				 */
 				private Duration delay = Duration.ofSeconds(1);
 
 				/**
-				 * Multiplier to use for generating the next backoff delay.
+				 * Multiplier for a delay for the next retry attempt, applied to the
+				 * previous delay, starting with the initial delay as well as to the
+				 * applicable jitter for each attempt. Fixed delay by default.
 				 */
-				private double multiplier = 0.0;
+				private double multiplier = 1.0;
 
 				/**
-				 * Maximum wait between retries. If less than the delay then the default
-				 * of 30 seconds is applied.
+				 * Maximum delay for any retry attempt, limiting how far jitter and the
+				 * multiplier can increase the delay.
 				 */
-				private Duration maxDelay = Duration.ZERO;
+				private Duration maxDelay = Duration.ofSeconds(30);
 
 				/**
-				 * Whether to have the backoff delays.
+				 * Jitter value for the base retry attempt, randomly subtracted or added
+				 * to the calculated delay, resulting in a value between 'delay - jitter'
+				 * and 'delay + jitter' but never below the base delay or above the max
+				 * delay.
 				 */
-				private boolean random = false;
+				private Duration jitter = Duration.ZERO;
 
 				public Duration getDelay() {
 					return this.delay;
@@ -1638,12 +1645,12 @@ public class KafkaProperties {
 					this.maxDelay = maxDelay;
 				}
 
-				public boolean isRandom() {
-					return this.random;
+				public Duration getJitter() {
+					return this.jitter;
 				}
 
-				public void setRandom(boolean random) {
-					this.random = random;
+				public void setJitter(Duration jitter) {
+					this.jitter = jitter;
 				}
 
 			}
@@ -1657,12 +1664,12 @@ public class KafkaProperties {
 		/**
 		 * Cleanup the application’s local state directory on startup.
 		 */
-		private boolean onStartup = false;
+		private boolean onStartup;
 
 		/**
 		 * Cleanup the application’s local state directory on shutdown.
 		 */
-		private boolean onShutdown = false;
+		private boolean onShutdown;
 
 		public boolean isOnStartup() {
 			return this.onStartup;

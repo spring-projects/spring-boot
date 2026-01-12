@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,22 +83,22 @@ class SpringBootTestWithTestPropertySourceTests {
 	static class Config {
 
 		@Value("${boot-test-inlined}")
-		private String bootTestInlined;
+		private @Nullable String bootTestInlined;
 
 		@Value("${property-source-inlined}")
-		private String propertySourceInlined;
+		private @Nullable String propertySourceInlined;
 
 		@Value("${property-source-location}")
-		private String propertySourceLocation;
+		private @Nullable String propertySourceLocation;
 
 		@Value("${a}")
-		private String propertySourceInlinedOverridesPropertySourceLocation;
+		private @Nullable String propertySourceInlinedOverridesPropertySourceLocation;
 
 		@Value("${b}")
-		private String bootTestInlinedOverridesPropertySourceLocation;
+		private @Nullable String bootTestInlinedOverridesPropertySourceLocation;
 
 		@Value("${c}")
-		private String propertySourceInlinedOverridesBootTestInlined;
+		private @Nullable String propertySourceInlinedOverridesBootTestInlined;
 
 		@Bean
 		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {

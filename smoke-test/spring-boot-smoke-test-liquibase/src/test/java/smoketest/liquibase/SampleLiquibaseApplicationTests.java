@@ -69,7 +69,10 @@ class SampleLiquibaseApplicationTests {
 		};
 		if (nested.contains(ConnectException.class)) {
 			Throwable root = nested.getRootCause();
-			return root.getMessage().contains("Connection refused");
+			assertThat(root).isNotNull();
+			String message = root.getMessage();
+			assertThat(message).isNotNull();
+			return message.contains("Connection refused");
 		}
 		return false;
 	}

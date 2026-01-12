@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class FilePermissionsTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path tempDir;
 
 	@Test
@@ -72,6 +73,7 @@ class FilePermissionsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void umaskForPathWithNullPath() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FilePermissions.umaskForPath(null));
 	}
@@ -89,6 +91,7 @@ class FilePermissionsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void posixPermissionsToUmaskWithNullPermissions() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FilePermissions.posixPermissionsToUmask(null));
 	}

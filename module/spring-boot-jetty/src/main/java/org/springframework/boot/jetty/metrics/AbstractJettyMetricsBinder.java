@@ -17,6 +17,7 @@
 package org.springframework.boot.jetty.metrics;
 
 import org.eclipse.jetty.server.Server;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.jetty.JettyWebServer;
@@ -41,7 +42,7 @@ public abstract class AbstractJettyMetricsBinder implements ApplicationListener<
 		}
 	}
 
-	private Server findServer(ApplicationContext applicationContext) {
+	private @Nullable Server findServer(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
 			WebServer webServer = webServerApplicationContext.getWebServer();
 			if (webServer instanceof JettyWebServer jettyWebServer) {

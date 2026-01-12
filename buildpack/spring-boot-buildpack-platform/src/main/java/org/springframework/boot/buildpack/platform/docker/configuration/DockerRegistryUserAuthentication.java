@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link DockerRegistryAuthentication} for
@@ -33,12 +34,12 @@ class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthenti
 	private final String password;
 
 	@JsonProperty("serveraddress")
-	private final String url;
+	private final @Nullable String url;
 
 	@JsonProperty
-	private final String email;
+	private final @Nullable String email;
 
-	DockerRegistryUserAuthentication(String username, String password, String url, String email) {
+	DockerRegistryUserAuthentication(String username, String password, @Nullable String url, @Nullable String email) {
 		this.username = username;
 		this.password = password;
 		this.url = url;
@@ -54,11 +55,11 @@ class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthenti
 		return this.password;
 	}
 
-	String getUrl() {
+	@Nullable String getUrl() {
 		return this.url;
 	}
 
-	String getEmail() {
+	@Nullable String getEmail() {
 		return this.email;
 	}
 

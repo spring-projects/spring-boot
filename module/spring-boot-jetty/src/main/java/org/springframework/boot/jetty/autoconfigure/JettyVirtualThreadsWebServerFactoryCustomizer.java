@@ -17,53 +17,34 @@
 package org.springframework.boot.jetty.autoconfigure;
 
 import org.eclipse.jetty.util.VirtualThreads;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.VirtualThreadPool;
 
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
  * Activates virtual threads on the {@link ConfigurableJettyWebServerFactory}.
  *
  * @author Moritz Halbritter
+ * @author Brian Clozel
  * @since 4.0.0
  */
 public class JettyVirtualThreadsWebServerFactoryCustomizer
-		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered, EnvironmentAware {
-
-	private final JettyServerProperties jettyProperties;
-
-	private final boolean bind;
-
-	public JettyVirtualThreadsWebServerFactoryCustomizer(JettyServerProperties jettyProperties) {
-		this.jettyProperties = jettyProperties;
-		this.bind = false;
-	}
+		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
-		QueuedThreadPool threadPool = JettyThreadPool.create(this.jettyProperties.getThreads());
-		threadPool.setVirtualThreadsExecutor(VirtualThreads.getNamedVirtualThreadsExecutor("jetty-"));
-		factory.setThreadPool(threadPool);
+		VirtualThreadPool virtualThreadPool = new VirtualThreadPool();
+		virtualThreadPool.setName("jetty-");
+		factory.setThreadPool(virtualThreadPool);
 	}
 
 	@Override
 	public int getOrder() {
 		return JettyWebServerFactoryCustomizer.ORDER + 1;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		if (this.bind) {
-			Binder.get(environment).bind("server.jetty", Bindable.ofInstance(this.jettyProperties));
-		}
 	}
 
 }

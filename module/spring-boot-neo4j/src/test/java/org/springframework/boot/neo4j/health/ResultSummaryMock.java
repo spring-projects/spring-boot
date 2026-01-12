@@ -16,6 +16,7 @@
 
 package org.springframework.boot.neo4j.health;
 
+import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.summary.DatabaseInfo;
 import org.neo4j.driver.summary.ResultSummary;
 import org.neo4j.driver.summary.ServerInfo;
@@ -33,7 +34,7 @@ final class ResultSummaryMock {
 	private ResultSummaryMock() {
 	}
 
-	static ResultSummary createResultSummary(String serverAddress, String databaseName) {
+	static ResultSummary createResultSummary(String serverAddress, @Nullable String databaseName) {
 		ServerInfo serverInfo = mock(ServerInfo.class);
 		given(serverInfo.address()).willReturn(serverAddress);
 		DatabaseInfo databaseInfo = mock(DatabaseInfo.class);

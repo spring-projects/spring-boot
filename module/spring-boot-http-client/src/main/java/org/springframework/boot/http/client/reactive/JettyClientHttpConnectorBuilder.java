@@ -19,11 +19,15 @@ package org.springframework.boot.http.client.reactive;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.util.Assert;
@@ -44,7 +48,7 @@ public final class JettyClientHttpConnectorBuilder
 		this(null, new JettyHttpClientBuilder());
 	}
 
-	private JettyClientHttpConnectorBuilder(List<Consumer<JettyClientHttpConnector>> customizers,
+	private JettyClientHttpConnectorBuilder(@Nullable List<Consumer<JettyClientHttpConnector>> customizers,
 			JettyHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -58,6 +62,20 @@ public final class JettyClientHttpConnectorBuilder
 	@Override
 	public JettyClientHttpConnectorBuilder withCustomizers(Collection<Consumer<JettyClientHttpConnector>> customizers) {
 		return new JettyClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpConnectorBuilder} that uses the given factory to
+	 * create the {@link HttpClientTransport}.
+	 * @param httpClientTransportFactory the {@link HttpClientTransport} factory to use
+	 * @return a new {@link JettyClientHttpConnectorBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpConnectorBuilder withHttpClientTransportFactory(
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory) {
+		Assert.notNull(httpClientTransportFactory, "'httpClientTransportFactory' must not be null");
+		return new JettyClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientTransportFactory(httpClientTransportFactory));
 	}
 
 	/**
@@ -98,9 +116,20 @@ public final class JettyClientHttpConnectorBuilder
 				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
 	}
 
+	/**
+	 * Return a new {@link JettyClientHttpConnectorBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link JettyClientHttpConnectorBuilder}
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpConnectorBuilder with(UnaryOperator<JettyClientHttpConnectorBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
-	protected JettyClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings));
+	protected JettyClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings);
 		return new JettyClientHttpConnector(httpClient);
 	}
 
@@ -110,7 +139,7 @@ public final class JettyClientHttpConnectorBuilder
 
 		static final String REACTIVE_REQUEST = "org.eclipse.jetty.reactive.client.ReactiveRequest";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader)
 					&& ClassUtils.isPresent(REACTIVE_REQUEST, classLoader);
 		}

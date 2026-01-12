@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -63,7 +64,7 @@ public final class PemContent {
 	 * @return the certificates
 	 * @throws IllegalStateException if no certificates could be loaded
 	 */
-	public @Nullable List<X509Certificate> getCertificates() {
+	public List<X509Certificate> getCertificates() {
 		return PemCertificateParser.parse(this.text);
 	}
 
@@ -136,7 +137,7 @@ public final class PemContent {
 	 * @return the loaded PEM content
 	 * @throws IOException on IO error
 	 */
-	public static @Nullable PemContent load(Path path) throws IOException {
+	public static PemContent load(Path path) throws IOException {
 		Assert.notNull(path, "'path' must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
 			return load(in);
@@ -149,7 +150,7 @@ public final class PemContent {
 	 * @return the loaded PEM content
 	 * @throws IOException on IO error
 	 */
-	public static @Nullable PemContent load(InputStream in) throws IOException {
+	public static PemContent load(InputStream in) throws IOException {
 		return of(StreamUtils.copyToString(in, StandardCharsets.UTF_8));
 	}
 
@@ -158,6 +159,7 @@ public final class PemContent {
 	 * @param text the text containing PEM encoded content
 	 * @return a new {@link PemContent} instance
 	 */
+	@Contract("!null -> !null")
 	public static @Nullable PemContent of(@Nullable String text) {
 		return (text != null) ? new PemContent(text) : null;
 	}

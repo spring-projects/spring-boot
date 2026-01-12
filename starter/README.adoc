@@ -242,7 +242,7 @@ do as they were designed before this was clarified.
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
-| https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface[Spring Http Interface]
+| https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-service-client[Spring Http Service Client]
 | https://github.com/DanielLiu1123/httpexchange-spring-boot-starter
 
 | https://projects.spring.io/spring-shell/[Spring Shell]

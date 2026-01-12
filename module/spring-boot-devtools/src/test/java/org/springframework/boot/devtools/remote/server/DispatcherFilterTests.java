@@ -51,9 +51,11 @@ import static org.mockito.Mockito.mock;
 class DispatcherFilterTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Dispatcher dispatcher;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private FilterChain chain;
 
 	private DispatcherFilter filter;
@@ -64,6 +66,7 @@ class DispatcherFilterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void dispatcherMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DispatcherFilter(null))
 			.withMessageContaining("'dispatcher' must not be null");

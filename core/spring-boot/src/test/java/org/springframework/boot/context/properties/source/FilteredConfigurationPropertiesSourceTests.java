@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
@@ -39,6 +40,7 @@ class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenFilterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
@@ -50,10 +52,16 @@ class FilteredConfigurationPropertiesSourceTests {
 		ConfigurationPropertySource source = createTestSource();
 		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
-		assertThat(source.getConfigurationProperty(name).getValue()).isEqualTo("1");
-		assertThat(filtered.getConfigurationProperty(name).getValue()).isEqualTo("1");
+		ConfigurationProperty configurationProperty = source.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("1");
+		ConfigurationProperty configurationProperty2 = filtered.getConfigurationProperty(name);
+		assertThat(configurationProperty2).isNotNull();
+		assertThat(configurationProperty2.getValue()).isEqualTo("1");
 		ConfigurationPropertyName bracketName = ConfigurationPropertyName.of("a[1]");
-		assertThat(source.getConfigurationProperty(bracketName).getValue()).isEqualTo("2");
+		ConfigurationProperty configurationProperty3 = source.getConfigurationProperty(bracketName);
+		assertThat(configurationProperty3).isNotNull();
+		assertThat(configurationProperty3.getValue()).isEqualTo("2");
 		assertThat(filtered.getConfigurationProperty(bracketName)).isNull();
 	}
 

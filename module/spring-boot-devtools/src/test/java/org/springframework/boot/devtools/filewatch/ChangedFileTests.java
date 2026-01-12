@@ -34,9 +34,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ChangedFileTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
@@ -44,6 +46,7 @@ class ChangedFileTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
@@ -51,6 +54,7 @@ class ChangedFileTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void typeMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(

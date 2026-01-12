@@ -24,6 +24,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,11 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class Log4j2XmlTests {
 
-	protected Configuration configuration;
+	protected @Nullable Configuration configuration;
 
 	@AfterEach
 	void stopConfiguration() {
-		this.configuration.stop();
+		if (this.configuration != null) {
+			this.configuration.stop();
+		}
 	}
 
 	@Test
@@ -92,6 +95,7 @@ class Log4j2XmlTests {
 
 	private String consolePattern() {
 		prepareConfiguration();
+		assertThat(this.configuration).isNotNull();
 		return ((PatternLayout) this.configuration.getAppender("Console").getLayout()).getConversionPattern();
 	}
 

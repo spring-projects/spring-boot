@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

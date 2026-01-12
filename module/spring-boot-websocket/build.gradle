@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -30,6 +31,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
@@ -38,4 +40,12 @@ dependencies {
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("test") {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

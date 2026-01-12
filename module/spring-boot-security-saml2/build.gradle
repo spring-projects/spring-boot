@@ -20,17 +20,10 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Security SAML2"
-
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
 
 dependencies {
 	api(project(":core:spring-boot"))
@@ -40,13 +33,19 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
-	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
     testImplementation(project(":module:spring-boot-actuator-autoconfigure"))
-	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(project(":module:spring-boot-health"))
 	testImplementation(project(":module:spring-boot-webmvc"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation(project(":module:spring-boot-webmvc-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("tools.jackson.core:jackson-databind")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

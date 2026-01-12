@@ -22,9 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
-import org.springframework.boot.security.autoconfigure.actuate.reactive.EndpointRequest;
-import org.springframework.boot.security.autoconfigure.reactive.PathRequest;
+import org.springframework.boot.security.autoconfigure.actuate.web.reactive.EndpointRequest;
+import org.springframework.boot.security.autoconfigure.web.reactive.PathRequest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -42,8 +43,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		SampleSecureWebFluxCustomSecurityTests.SecurityConfiguration.class, SampleSecureWebFluxApplication.class })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { SampleSecureWebFluxCustomSecurityTests.SecurityConfiguration.class,
+				SampleSecureWebFluxApplication.class })
+@AutoConfigureWebTestClient
 class SampleSecureWebFluxCustomSecurityTests {
 
 	@Autowired

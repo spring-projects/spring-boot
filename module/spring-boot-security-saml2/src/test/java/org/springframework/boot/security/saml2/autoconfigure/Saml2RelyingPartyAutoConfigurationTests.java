@@ -23,11 +23,13 @@ import jakarta.servlet.Filter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okio.Buffer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -68,8 +70,9 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	private static final String MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN = "managementSecurityFilterChain";
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class, SecurityAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class,
+				SecurityAutoConfiguration.class, ServletWebSecurityAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClass() {
@@ -344,7 +347,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
-	private void testMultipleProviders(String specifiedEntityId, String expected) throws Exception {
+	private void testMultipleProviders(@Nullable String specifiedEntityId, String expected) throws Exception {
 		try (MockWebServer server = new MockWebServer()) {
 			server.start();
 			String metadataUrl = server.url("").toString();
@@ -413,6 +416,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		}
 		if (filter instanceof CompositeFilter) {
 			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			assertThat(filters).isNotNull();
 			return (FilterChainProxy) filters.stream()
 				.filter(FilterChainProxy.class::isInstance)
 				.findFirst()
@@ -442,7 +446,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	}
 
 	@EnableWebSecurity
-	static class WebSecurityEnablerConfiguration {
+	static class EnableWebSecurityConfiguration {
 
 	}
 
@@ -450,7 +454,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			return http.securityMatcher("/**")
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 				.build();

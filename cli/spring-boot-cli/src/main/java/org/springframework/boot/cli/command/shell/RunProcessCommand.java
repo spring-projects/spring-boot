@@ -20,10 +20,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,10 +39,10 @@ class RunProcessCommand extends AbstractCommand {
 
 	private final String[] command;
 
-	private volatile RunProcess process;
+	private volatile @Nullable RunProcess process;
 
 	RunProcessCommand(String... command) {
-		super(null, null);
+		super("", "");
 		this.command = command;
 	}
 
@@ -49,8 +52,9 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	protected ExitStatus run(Collection<String> args) throws IOException {
-		this.process = new RunProcess(this.command);
-		int code = this.process.run(true, StringUtils.toStringArray(args));
+		RunProcess process = new RunProcess(this.command);
+		this.process = process;
+		int code = process.run(true, StringUtils.toStringArray(args));
 		if (code == 0) {
 			return ExitStatus.OK;
 		}
@@ -60,7 +64,9 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	boolean handleSigInt() {
-		return this.process.handleSigInt();
+		RunProcess process = this.process;
+		Assert.state(process != null, "'process' must not be null");
+		return process.handleSigInt();
 	}
 
 }

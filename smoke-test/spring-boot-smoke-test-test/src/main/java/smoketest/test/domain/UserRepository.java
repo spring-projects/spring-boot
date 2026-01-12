@@ -16,6 +16,8 @@
 
 package smoketest.test.domain;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.repository.Repository;
 
 /**
@@ -25,6 +27,6 @@ import org.springframework.data.repository.Repository;
  */
 public interface UserRepository extends Repository<User, Long> {
 
-	User findByUsername(String username);
+	@Nullable User findByUsername(String username);
 
 }

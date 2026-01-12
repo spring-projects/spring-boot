@@ -22,6 +22,7 @@ import java.util.Map;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.description.annotation.AnnotationDescription;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
@@ -60,18 +61,21 @@ class ConfigurationPropertiesBeanTests {
 			Map<String, ConfigurationPropertiesBean> all = ConfigurationPropertiesBean.getAll(context);
 			assertThat(all).containsOnlyKeys("annotatedComponent", "annotatedBean", ValueObject.class.getName());
 			ConfigurationPropertiesBean component = all.get("annotatedComponent");
+			assertThat(component).isNotNull();
 			assertThat(component.getName()).isEqualTo("annotatedComponent");
 			assertThat(component.getInstance()).isInstanceOf(AnnotatedComponent.class);
 			assertThat(component.getAnnotation()).isNotNull();
 			assertThat(component.getType()).isEqualTo(AnnotatedComponent.class);
 			assertThat(component.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ConfigurationPropertiesBean bean = all.get("annotatedBean");
+			assertThat(bean).isNotNull();
 			assertThat(bean.getName()).isEqualTo("annotatedBean");
 			assertThat(bean.getInstance()).isInstanceOf(AnnotatedBean.class);
 			assertThat(bean.getType()).isEqualTo(AnnotatedBean.class);
 			assertThat(bean.getAnnotation()).isNotNull();
 			assertThat(bean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ConfigurationPropertiesBean valueObject = all.get(ValueObject.class.getName());
+			assertThat(valueObject).isNotNull();
 			assertThat(valueObject.getName()).isEqualTo(ValueObject.class.getName());
 			assertThat(valueObject.getInstance()).isInstanceOf(ValueObject.class);
 			assertThat(valueObject.getType()).isEqualTo(ValueObject.class);
@@ -157,6 +161,7 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenHasFactoryMethodBindsUsingMethodReturnType() throws Throwable {
 		get(NonAnnotatedGenericBeanConfiguration.class, "nonAnnotatedGenericBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedGenericBean.class);
 			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
@@ -168,6 +173,7 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenHasFactoryMethodWithoutAnnotationBindsUsingMethodType() throws Throwable {
 		get(AnnotatedGenericBeanConfiguration.class, "annotatedGenericBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			assertThat(propertiesBean.getType()).isEqualTo(AnnotatedGenericBean.class);
 			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
@@ -179,6 +185,7 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenHasNoFactoryMethodBindsUsingObjectType() throws Throwable {
 		get(AnnotatedGenericComponent.class, "annotatedGenericComponent", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			assertThat(propertiesBean.getType()).isEqualTo(AnnotatedGenericComponent.class);
 			assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 			ResolvableType type = propertiesBean.asBindTarget().getType();
@@ -189,14 +196,18 @@ class ConfigurationPropertiesBeanTests {
 
 	@Test
 	void getWhenHasFactoryMethodAndBeanAnnotationFavorsFactoryMethod() throws Throwable {
-		get(AnnotatedBeanConfiguration.class, "annotatedBean",
-				(propertiesBean) -> assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("factory"));
+		get(AnnotatedBeanConfiguration.class, "annotatedBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
+			assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("factory");
+		});
 	}
 
 	@Test
 	void getWhenHasValidatedBeanBindsWithBeanAnnotation() throws Throwable {
 		get(ValidatedBeanConfiguration.class, "validatedBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(BeanGroup.class);
 		});
 	}
@@ -204,7 +215,9 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenHasValidatedFactoryMethodBindsWithFactoryMethodAnnotation() throws Throwable {
 		get(ValidatedMethodConfiguration.class, "annotatedBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(FactoryMethodGroup.class);
 		});
 	}
@@ -212,7 +225,9 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenHasValidatedBeanAndFactoryMethodBindsWithFactoryMethodAnnotation() throws Throwable {
 		get(ValidatedMethodAndBeanConfiguration.class, "validatedBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(FactoryMethodGroup.class);
 		});
 	}
@@ -336,18 +351,18 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
-	private void get(Class<?> configuration, String beanName, ThrowingConsumer<ConfigurationPropertiesBean> consumer)
-			throws Throwable {
+	private void get(Class<?> configuration, String beanName,
+			ThrowingConsumer<@Nullable ConfigurationPropertiesBean> consumer) throws Throwable {
 		get(configuration, beanName, true, consumer);
 	}
 
 	private void getWithoutBeanMetadataCaching(Class<?> configuration, String beanName,
-			ThrowingConsumer<ConfigurationPropertiesBean> consumer) throws Throwable {
+			ThrowingConsumer<@Nullable ConfigurationPropertiesBean> consumer) throws Throwable {
 		get(configuration, beanName, false, consumer);
 	}
 
 	private void get(Class<?> configuration, String beanName, boolean cacheBeanMetadata,
-			ThrowingConsumer<ConfigurationPropertiesBean> consumer) throws Throwable {
+			ThrowingConsumer<@Nullable ConfigurationPropertiesBean> consumer) throws Throwable {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.getBeanFactory().setCacheBeanMetadata(cacheBeanMetadata);
 			context.register(configuration);

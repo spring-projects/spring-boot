@@ -17,17 +17,19 @@ runs:
   using: composite
   steps:
     - name: Set Up JFrog CLI
-      uses: jfrog/setup-jfrog-cli@ff5cb544114ffc152db9cea1cd3d5978d5074946 # v4.5.11
+      uses: jfrog/setup-jfrog-cli@5b06f730cc5a6f55d78b30753f8583454b08c0aa # v4.8.1
       env:
         JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
     - name: Download Release Artifacts
       shell: bash
       run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.spring-boot-version) }};buildNumber=${{ github.run_number }}'
     - name: Sync
-      uses: spring-io/central-publish-action@0cdd90d12e6876341e82860d951e1bcddc1e51b6 # v0.2.0
+      uses: spring-io/central-publish-action@0c03960e9b16fdfe70e2443e1d5393cbc3a35622 # v0.3.0
       with:
         token: ${{ inputs.central-token-password }}
         token-name: ${{ inputs.central-token-username }}
+        ignore-already-exists-error: true
+        timeout: "90m"
     - name: Await
       uses: ./.github/actions/await-http-resource
       with:

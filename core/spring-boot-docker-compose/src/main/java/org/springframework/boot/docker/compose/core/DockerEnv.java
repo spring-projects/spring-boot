@@ -34,21 +34,21 @@ import org.springframework.util.CollectionUtils;
  */
 class DockerEnv {
 
-	private final Map<String, String> map;
+	private final Map<String, @Nullable String> map;
 
 	/**
 	 * Create a new {@link DockerEnv} instance.
 	 * @param env a list of env entries in the form {@code name=value} or {@code name}.
 	 */
-	DockerEnv(List<String> env) {
+	DockerEnv(@Nullable List<String> env) {
 		this.map = parse(env);
 	}
 
-	private Map<String, String> parse(List<String> env) {
+	private Map<String, @Nullable String> parse(@Nullable List<String> env) {
 		if (CollectionUtils.isEmpty(env)) {
 			return Collections.emptyMap();
 		}
-		Map<String, String> result = new LinkedHashMap<>();
+		Map<String, @Nullable String> result = new LinkedHashMap<>();
 		env.stream().map(this::parseEntry).forEach((entry) -> result.put(entry.key(), entry.value()));
 		return Collections.unmodifiableMap(result);
 	}
@@ -67,7 +67,7 @@ class DockerEnv {
 	 * Return the env as a {@link Map}.
 	 * @return the env as a map
 	 */
-	Map<String, String> asMap() {
+	Map<String, @Nullable String> asMap() {
 		return this.map;
 	}
 

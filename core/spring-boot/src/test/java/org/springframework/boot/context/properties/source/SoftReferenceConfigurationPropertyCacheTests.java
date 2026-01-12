@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyCaching.CacheOverride;
@@ -186,14 +187,14 @@ class SoftReferenceConfigurationPropertyCacheTests {
 	 */
 	class TestSoftReferenceConfigurationPropertyCache extends SoftReferenceConfigurationPropertyCache<Value> {
 
-		private Value value;
+		private @Nullable Value value;
 
 		TestSoftReferenceConfigurationPropertyCache(boolean neverExpire) {
 			super(neverExpire);
 		}
 
 		@Override
-		protected Value getValue() {
+		protected @Nullable Value getValue() {
 			return this.value;
 		}
 

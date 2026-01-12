@@ -19,6 +19,9 @@ package org.springframework.boot.http.client;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.time.Duration;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
@@ -45,13 +48,13 @@ import org.springframework.util.ReflectionUtils;
 class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		if (ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestFactory", classLoader)) {
 			registerHints(hints.reflection(), classLoader);
 		}
 	}
 
-	private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
+	private void registerHints(ReflectionHints hints, @Nullable ClassLoader classLoader) {
 		hints.registerField(findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory"));
 		registerClientHttpRequestFactoryHints(hints, classLoader,
 				HttpComponentsClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENTS,
@@ -71,8 +74,8 @@ class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 		});
 	}
 
-	private void registerClientHttpRequestFactoryHints(ReflectionHints hints, ClassLoader classLoader, String className,
-			Runnable action) {
+	private void registerClientHttpRequestFactoryHints(ReflectionHints hints, @Nullable ClassLoader classLoader,
+			String className, Runnable action) {
 		hints.registerTypeIfPresent(classLoader, className, (typeHint) -> {
 			typeHint.onReachableType(TypeReference.of(className));
 			action.run();
@@ -87,7 +90,9 @@ class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 	private void registerReflectionHints(ReflectionHints hints,
 			Class<? extends ClientHttpRequestFactory> requestFactoryType, Class<?> readTimeoutType) {
 		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
+		registerMethod(hints, requestFactoryType, "setConnectTimeout", Duration.class);
 		registerMethod(hints, requestFactoryType, "setReadTimeout", readTimeoutType);
+		registerMethod(hints, requestFactoryType, "setReadTimeout", Duration.class);
 	}
 
 	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,

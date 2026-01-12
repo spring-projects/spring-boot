@@ -20,7 +20,7 @@ import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.EndpointRequest;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -75,7 +75,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	protected static class ApplicationSecurity {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
@@ -94,7 +94,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	protected static class ActuatorSecurity {
 
 		@Bean
-		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
+		SecurityFilterChain actuatorSecurity(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());

@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigurationPropertiesTestBeanTests {
 
 	@TestBean
+	@SuppressWarnings("NullAway.Init")
 	private ImmutableProperties properties;
 
 	@Autowired

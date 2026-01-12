@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.FatalBeanException;
@@ -42,6 +43,7 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 	void failureAnalysisForConfigurationPropertiesThatShouldHaveBeenConstructorBound() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(ShouldHaveUsedConstructorBindingPropertiesConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).isEqualTo(ConstructorBoundProperties.class.getSimpleName()
 				+ " is annotated with @" + ConstructorBinding.class.getSimpleName()
 				+ " but it is defined as a regular bean which caused dependency injection to fail.");
@@ -57,7 +59,7 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 		assertThat(analysis).isNull();
 	}
 
-	private FatalBeanException createFailure(Class<?> config) {
+	private @Nullable FatalBeanException createFailure(Class<?> config) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.register(config);
 			context.refresh();
@@ -68,7 +70,7 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 		}
 	}
 
-	private FailureAnalysis analyzeFailure(Exception failure) {
+	private @Nullable FailureAnalysis analyzeFailure(@Nullable Exception failure) {
 		assertThat(failure).isNotNull();
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		if (analysis != null) {
@@ -101,18 +103,18 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 	@ConfigurationProperties("test")
 	static class JavaBeanBoundProperties {
 
-		private String name;
+		private @Nullable String name;
 
 		@Autowired
 		JavaBeanBoundProperties(String dependency) {
 
 		}
 
-		String getName() {
+		@Nullable String getName() {
 			return this.name;
 		}
 
-		void setName(String name) {
+		void setName(@Nullable String name) {
 			this.name = name;
 		}
 

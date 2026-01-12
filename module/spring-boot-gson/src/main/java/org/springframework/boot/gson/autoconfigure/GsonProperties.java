@@ -19,6 +19,7 @@ package org.springframework.boot.gson.autoconfigure;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.LongSerializationPolicy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -35,150 +36,150 @@ public class GsonProperties {
 	 * Whether to generate non-executable JSON by prefixing the output with some special
 	 * text.
 	 */
-	private Boolean generateNonExecutableJson;
+	private @Nullable Boolean generateNonExecutableJson;
 
 	/**
 	 * Whether to exclude all fields from consideration for serialization or
 	 * deserialization that do not have the "Expose" annotation.
 	 */
-	private Boolean excludeFieldsWithoutExposeAnnotation;
+	private @Nullable Boolean excludeFieldsWithoutExposeAnnotation;
 
 	/**
 	 * Whether to serialize null fields.
 	 */
-	private Boolean serializeNulls;
+	private @Nullable Boolean serializeNulls;
 
 	/**
 	 * Whether to enable serialization of complex map keys (i.e. non-primitives).
 	 */
-	private Boolean enableComplexMapKeySerialization;
+	private @Nullable Boolean enableComplexMapKeySerialization;
 
 	/**
 	 * Whether to exclude inner classes during serialization.
 	 */
-	private Boolean disableInnerClassSerialization;
+	private @Nullable Boolean disableInnerClassSerialization;
 
 	/**
 	 * Serialization policy for Long and long types.
 	 */
-	private LongSerializationPolicy longSerializationPolicy;
+	private @Nullable LongSerializationPolicy longSerializationPolicy;
 
 	/**
 	 * Naming policy that should be applied to an object's field during serialization and
 	 * deserialization.
 	 */
-	private FieldNamingPolicy fieldNamingPolicy;
+	private @Nullable FieldNamingPolicy fieldNamingPolicy;
 
 	/**
 	 * Whether to output serialized JSON that fits in a page for pretty printing.
 	 */
-	private Boolean prettyPrinting;
+	private @Nullable Boolean prettyPrinting;
 
 	/**
 	 * Sets how strictly the RFC 8259 specification will be enforced when reading and
 	 * writing JSON.
 	 */
-	private Strictness strictness;
+	private @Nullable Strictness strictness;
 
 	/**
 	 * Whether to disable the escaping of HTML characters such as '<', '>', etc.
 	 */
-	private Boolean disableHtmlEscaping;
+	private @Nullable Boolean disableHtmlEscaping;
 
 	/**
 	 * Format to use when serializing Date objects.
 	 */
-	private String dateFormat;
+	private @Nullable String dateFormat;
 
-	public Boolean getGenerateNonExecutableJson() {
+	public @Nullable Boolean getGenerateNonExecutableJson() {
 		return this.generateNonExecutableJson;
 	}
 
-	public void setGenerateNonExecutableJson(Boolean generateNonExecutableJson) {
+	public void setGenerateNonExecutableJson(@Nullable Boolean generateNonExecutableJson) {
 		this.generateNonExecutableJson = generateNonExecutableJson;
 	}
 
-	public Boolean getExcludeFieldsWithoutExposeAnnotation() {
+	public @Nullable Boolean getExcludeFieldsWithoutExposeAnnotation() {
 		return this.excludeFieldsWithoutExposeAnnotation;
 	}
 
-	public void setExcludeFieldsWithoutExposeAnnotation(Boolean excludeFieldsWithoutExposeAnnotation) {
+	public void setExcludeFieldsWithoutExposeAnnotation(@Nullable Boolean excludeFieldsWithoutExposeAnnotation) {
 		this.excludeFieldsWithoutExposeAnnotation = excludeFieldsWithoutExposeAnnotation;
 	}
 
-	public Boolean getSerializeNulls() {
+	public @Nullable Boolean getSerializeNulls() {
 		return this.serializeNulls;
 	}
 
-	public void setSerializeNulls(Boolean serializeNulls) {
+	public void setSerializeNulls(@Nullable Boolean serializeNulls) {
 		this.serializeNulls = serializeNulls;
 	}
 
-	public Boolean getEnableComplexMapKeySerialization() {
+	public @Nullable Boolean getEnableComplexMapKeySerialization() {
 		return this.enableComplexMapKeySerialization;
 	}
 
-	public void setEnableComplexMapKeySerialization(Boolean enableComplexMapKeySerialization) {
+	public void setEnableComplexMapKeySerialization(@Nullable Boolean enableComplexMapKeySerialization) {
 		this.enableComplexMapKeySerialization = enableComplexMapKeySerialization;
 	}
 
-	public Boolean getDisableInnerClassSerialization() {
+	public @Nullable Boolean getDisableInnerClassSerialization() {
 		return this.disableInnerClassSerialization;
 	}
 
-	public void setDisableInnerClassSerialization(Boolean disableInnerClassSerialization) {
+	public void setDisableInnerClassSerialization(@Nullable Boolean disableInnerClassSerialization) {
 		this.disableInnerClassSerialization = disableInnerClassSerialization;
 	}
 
-	public LongSerializationPolicy getLongSerializationPolicy() {
+	public @Nullable LongSerializationPolicy getLongSerializationPolicy() {
 		return this.longSerializationPolicy;
 	}
 
-	public void setLongSerializationPolicy(LongSerializationPolicy longSerializationPolicy) {
+	public void setLongSerializationPolicy(@Nullable LongSerializationPolicy longSerializationPolicy) {
 		this.longSerializationPolicy = longSerializationPolicy;
 	}
 
-	public FieldNamingPolicy getFieldNamingPolicy() {
+	public @Nullable FieldNamingPolicy getFieldNamingPolicy() {
 		return this.fieldNamingPolicy;
 	}
 
-	public void setFieldNamingPolicy(FieldNamingPolicy fieldNamingPolicy) {
+	public void setFieldNamingPolicy(@Nullable FieldNamingPolicy fieldNamingPolicy) {
 		this.fieldNamingPolicy = fieldNamingPolicy;
 	}
 
-	public Boolean getPrettyPrinting() {
+	public @Nullable Boolean getPrettyPrinting() {
 		return this.prettyPrinting;
 	}
 
-	public void setPrettyPrinting(Boolean prettyPrinting) {
+	public void setPrettyPrinting(@Nullable Boolean prettyPrinting) {
 		this.prettyPrinting = prettyPrinting;
 	}
 
-	public Strictness getStrictness() {
+	public @Nullable Strictness getStrictness() {
 		return this.strictness;
 	}
 
-	public void setStrictness(Strictness strictness) {
+	public void setStrictness(@Nullable Strictness strictness) {
 		this.strictness = strictness;
 	}
 
-	public void setLenient(Boolean lenient) {
+	public void setLenient(@Nullable Boolean lenient) {
 		setStrictness((lenient != null && lenient) ? Strictness.LENIENT : Strictness.STRICT);
 	}
 
-	public Boolean getDisableHtmlEscaping() {
+	public @Nullable Boolean getDisableHtmlEscaping() {
 		return this.disableHtmlEscaping;
 	}
 
-	public void setDisableHtmlEscaping(Boolean disableHtmlEscaping) {
+	public void setDisableHtmlEscaping(@Nullable Boolean disableHtmlEscaping) {
 		this.disableHtmlEscaping = disableHtmlEscaping;
 	}
 
-	public String getDateFormat() {
+	public @Nullable String getDateFormat() {
 		return this.dateFormat;
 	}
 
-	public void setDateFormat(String dateFormat) {
+	public void setDateFormat(@Nullable String dateFormat) {
 		this.dateFormat = dateFormat;
 	}
 

@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 import org.apache.commons.logging.Log;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.BindContext;

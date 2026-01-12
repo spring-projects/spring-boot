@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Strategy interface used to resolve a {@link BuildpackReference} to a {@link Buildpack}.
  *
@@ -31,6 +33,6 @@ interface BuildpackResolver {
 	 * @param reference the reference to resolve
 	 * @return a resolved {@link Buildpack} instance or {@code null}
 	 */
-	Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference);
+	@Nullable Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference);
 
 }

@@ -30,6 +30,7 @@ import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
@@ -137,9 +138,10 @@ class WebFluxEndpointAccessIntegrationTests {
 	}
 
 	private WebTestClient createClient(AssertableReactiveWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ReactiveWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context.getSourceApplicationContext(ReactiveWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 			.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1))
 			.build();

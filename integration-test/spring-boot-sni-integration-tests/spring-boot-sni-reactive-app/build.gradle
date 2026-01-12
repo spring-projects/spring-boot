@@ -27,7 +27,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	maven { url = layout.projectDirectory.dir("../int-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
@@ -42,9 +42,6 @@ configurations {
 	tomcat {
 		extendsFrom(app)
 	}
-	undertow {
-		extendsFrom(app)
-	}
 }
 
 dependencies {
@@ -53,20 +50,20 @@ dependencies {
 	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-jackson")
 
 	app(files(sourceSets.main.output))
 	app("org.springframework.boot:spring-boot-webflux")
 	netty("org.springframework.boot:spring-boot-starter-webflux")
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
-	undertow("org.springframework.boot:spring-boot-starter-undertow")
 }
 
-["netty", "tomcat", "undertow"].each { webServer ->
+["netty", "tomcat"].each { webServer ->
 	def configurer = { task ->
 		task.mainClass = "org.springframework.boot.sni.server.SniServerApplication"
 		task.classpath = configurations.getByName(webServer)
 		task.archiveClassifier = webServer
-		task.targetJavaVersion = project.getTargetCompatibility()
+		task.targetJavaVersion = project.java.targetCompatibility
 	}
 	tasks.register("${webServer}ServerApp", BootJar, configurer)
 }

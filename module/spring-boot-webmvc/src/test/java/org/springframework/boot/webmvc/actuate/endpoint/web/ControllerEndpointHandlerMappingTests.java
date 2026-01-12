@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webmvc.actuate.endpoint.web;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -53,25 +55,30 @@ class ControllerEndpointHandlerMappingTests {
 
 	@Test
 	void mappingWithNoPrefix() throws Exception {
-		ExposableControllerEndpoint first = firstEndpoint();
-		ExposableControllerEndpoint second = secondEndpoint();
-		ControllerEndpointHandlerMapping mapping = createMapping("", first, second);
-		assertThat(mapping.getHandler(request("GET", "/first")).getHandler())
-			.isEqualTo(handlerOf(first.getController(), "get"));
-		assertThat(mapping.getHandler(request("POST", "/second")).getHandler())
-			.isEqualTo(handlerOf(second.getController(), "save"));
-		assertThat(mapping.getHandler(request("GET", "/third"))).isNull();
+		ExposableControllerEndpoint firstEndpoint = firstEndpoint();
+		ExposableControllerEndpoint secondEndpoint = secondEndpoint();
+		ControllerEndpointHandlerMapping mapping = createMapping("", firstEndpoint, secondEndpoint);
+		HandlerExecutionChain firstHandler = mapping.getHandler(request("GET", "/first"));
+		assertThat(firstHandler).isNotNull();
+		assertThat(firstHandler.getHandler()).isEqualTo(handlerOf(firstEndpoint.getController(), "get"));
+		HandlerExecutionChain secondHandler = mapping.getHandler(request("POST", "/second"));
+		assertThat(secondHandler).isNotNull();
+		assertThat(secondHandler.getHandler()).isEqualTo(handlerOf(secondEndpoint.getController(), "save"));
+		HandlerExecutionChain thirdHandler = mapping.getHandler(request("GET", "/third"));
+		assertThat(thirdHandler).isNull();
 	}
 
 	@Test
 	void mappingWithPrefix() throws Exception {
-		ExposableControllerEndpoint first = firstEndpoint();
-		ExposableControllerEndpoint second = secondEndpoint();
-		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first, second);
-		assertThat(mapping.getHandler(request("GET", "/actuator/first")).getHandler())
-			.isEqualTo(handlerOf(first.getController(), "get"));
-		assertThat(mapping.getHandler(request("POST", "/actuator/second")).getHandler())
-			.isEqualTo(handlerOf(second.getController(), "save"));
+		ExposableControllerEndpoint firstEndpoint = firstEndpoint();
+		ExposableControllerEndpoint secondEndpoint = secondEndpoint();
+		ControllerEndpointHandlerMapping mapping = createMapping("actuator", firstEndpoint, secondEndpoint);
+		HandlerExecutionChain firstHandler = mapping.getHandler(request("GET", "/actuator/first"));
+		assertThat(firstHandler).isNotNull();
+		assertThat(firstHandler.getHandler()).isEqualTo(handlerOf(firstEndpoint.getController(), "get"));
+		HandlerExecutionChain secondHandler = mapping.getHandler(request("POST", "/actuator/second"));
+		assertThat(secondHandler).isNotNull();
+		assertThat(secondHandler.getHandler()).isEqualTo(handlerOf(secondEndpoint.getController(), "save"));
 		assertThat(mapping.getHandler(request("GET", "/first"))).isNull();
 		assertThat(mapping.getHandler(request("GET", "/second"))).isNull();
 	}
@@ -88,8 +95,9 @@ class ControllerEndpointHandlerMappingTests {
 	void mappingWithNoPath() throws Exception {
 		ExposableControllerEndpoint pathless = pathlessEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", pathless);
-		assertThat(mapping.getHandler(request("GET", "/actuator/pathless")).getHandler())
-			.isEqualTo(handlerOf(pathless.getController(), "get"));
+		HandlerExecutionChain handler = mapping.getHandler(request("GET", "/actuator/pathless"));
+		assertThat(handler).isNotNull();
+		assertThat(handler.getHandler()).isEqualTo(handlerOf(pathless.getController(), "get"));
 		assertThat(mapping.getHandler(request("GET", "/pathless"))).isNull();
 		assertThat(mapping.getHandler(request("GET", "/"))).isNull();
 	}
@@ -103,7 +111,9 @@ class ControllerEndpointHandlerMappingTests {
 	}
 
 	private HandlerMethod handlerOf(Object source, String methodName) {
-		return new HandlerMethod(source, ReflectionUtils.findMethod(source.getClass(), methodName));
+		Method method = ReflectionUtils.findMethod(source.getClass(), methodName);
+		assertThat(method).isNotNull();
+		return new HandlerMethod(source, method);
 	}
 
 	private MockHttpServletRequest request(String method, String requestURI) {

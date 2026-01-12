@@ -28,10 +28,10 @@ import graphql.execution.instrumentation.Instrumentation;
 import graphql.introspection.Introspection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -82,12 +82,6 @@ import org.springframework.graphql.execution.SubscriptionExceptionResolver;
 public final class GraphQlAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
-
-	private final ListableBeanFactory beanFactory;
-
-	GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -204,7 +198,7 @@ public final class GraphQlAutoConfiguration {
 	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("graphql/**/*.graphqls").registerPattern("graphql/**/*.gqls");
 		}
 

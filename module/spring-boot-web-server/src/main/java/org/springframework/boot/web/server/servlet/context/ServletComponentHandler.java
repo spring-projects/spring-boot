@@ -20,6 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -48,9 +50,11 @@ abstract class ServletComponentHandler {
 		return this.typeFilter;
 	}
 
-	protected String[] extractUrlPatterns(Map<String, Object> attributes) {
+	protected String[] extractUrlPatterns(Map<String, @Nullable Object> attributes) {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
+		Assert.state(urlPatterns != null, "'urlPatterns' must not be null");
+		Assert.state(value != null, "'value' must not be null");
 		if (urlPatterns.length > 0) {
 			Assert.state(value.length == 0, "The urlPatterns and value attributes are mutually exclusive");
 			return urlPatterns;
@@ -58,25 +62,29 @@ abstract class ServletComponentHandler {
 		return value;
 	}
 
-	protected final Map<String, String> extractInitParameters(Map<String, Object> attributes) {
+	protected final Map<String, String> extractInitParameters(Map<String, @Nullable Object> attributes) {
 		Map<String, String> initParameters = new HashMap<>();
-		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes.get("initParams")) {
+		AnnotationAttributes[] initParams = (AnnotationAttributes[]) attributes.get("initParams");
+		Assert.state(initParams != null, "'initParams' must not be null");
+		for (AnnotationAttributes initParam : initParams) {
 			String name = (String) initParam.get("name");
 			String value = (String) initParam.get("value");
+			Assert.state(name != null, "'name' must not be null");
+			Assert.state(value != null, "'value' must not be null");
 			initParameters.put(name, value);
 		}
 		return initParameters;
 	}
 
 	void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
-		Map<String, Object> attributes = beanDefinition.getMetadata()
+		Map<String, @Nullable Object> attributes = beanDefinition.getMetadata()
 			.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
 			doHandle(attributes, beanDefinition, registry);
 		}
 	}
 
-	protected abstract void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
+	protected abstract void doHandle(Map<String, @Nullable Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry);
 
 }

@@ -18,6 +18,8 @@ package org.springframework.boot.convert;
 
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.unit.DataSize;
@@ -38,7 +40,7 @@ public final class MockDataSizeTypeDescriptor {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static TypeDescriptor get(DataUnit unit) {
+	public static TypeDescriptor get(@Nullable DataUnit unit) {
 		TypeDescriptor descriptor = mock(TypeDescriptor.class);
 		if (unit != null) {
 			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(Collections.singletonMap("value", unit),

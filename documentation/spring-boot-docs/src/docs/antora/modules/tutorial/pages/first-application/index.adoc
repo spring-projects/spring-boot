@@ -24,9 +24,9 @@ Before we begin, open a terminal and run the following commands to ensure that y
 [source,shell]
 ----
 $ java -version
-openjdk version "17.0.4.1" 2022-08-12 LTS
-OpenJDK Runtime Environment (build 17.0.4.1+1-LTS)
-OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
+openjdk version "17.0.16" 2025-07-15 LTS
+OpenJDK Runtime Environment (build 17.0.16+12-LTS)
+OpenJDK 64-Bit Server VM (build 17.0.16+12-LTS, mixed mode, sharing)
 ----
 
 NOTE: This sample needs to be created in its own directory.
@@ -42,9 +42,9 @@ If you want to use Maven, ensure that you have Maven installed:
 [source,shell]
 ----
 $ mvn -v
-Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
-Maven home: usr/Users/developer/tools/maven/3.8.5
-Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
+Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)
+Maven home: /Users/developer/.sdkman/candidates/maven/current
+Java version: 17.0.16, vendor: BellSoft, runtime: /Users/developer/.sdkman/candidates/java/17.0.16-librca
 ----
 
 
@@ -59,17 +59,18 @@ If you want to use Gradle, ensure that you have Gradle installed:
 $ gradle --version
 
 ------------------------------------------------------------
-Gradle 8.1.1
+Gradle 8.14.3
 ------------------------------------------------------------
 
-Build time:   2023-04-21 12:31:26 UTC
-Revision:     1cf537a851c635c364a4214885f8b9798051175b
+Build time:    2025-07-04 13:15:44 UTC
+Revision:      e5ee1df3d88b8ca3a8074787a94f373e3090e1db
 
-Kotlin:       1.8.10
-Groovy:       3.0.15
-Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
-JVM:          17.0.7 (BellSoft 17.0.7+7-LTS)
-OS:           Linux 6.2.12-200.fc37.aarch64 aarch64
+Kotlin:        2.0.21
+Groovy:        3.0.24
+Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
+Launcher JVM:  17.0.16 (BellSoft 17.0.16+12-LTS)
+Daemon JVM:    /Users/developer/.sdkman/candidates/java/17.0.16-librca (no JDK specified, using current Java home)
+OS:            Mac OS X 15.7.1 aarch64
 ----
 
 
@@ -100,21 +101,6 @@ Open your favorite text editor and add the following:
 
 	<!-- Additional lines to be added here... -->
 
-ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
-		<!-- (you don't need this if you are using a release version) -->
-		<repositories>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
-endif::[]
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 		<!-- (you don't need this if you are using a release version) -->
 		<repositories>
@@ -180,12 +166,14 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+	sourceCompatibility = '17'
+}
 
 repositories {
 	mavenCentral()
-ifeval::["{artifact-release-type}" != "release"]
-	maven { url 'https://repo.spring.io/milestone' }
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }

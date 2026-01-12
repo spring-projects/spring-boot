@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -108,7 +109,7 @@ class ConfigurationPropertySourcesCachingTests {
 		new ConfigurationPropertySourcesCaching(null).enable();
 	}
 
-	private ConfigurationPropertyCaching getCaching(int index) {
+	private @Nullable ConfigurationPropertyCaching getCaching(int index) {
 		return CachingConfigurationPropertySource.find(this.sources.get(index));
 	}
 

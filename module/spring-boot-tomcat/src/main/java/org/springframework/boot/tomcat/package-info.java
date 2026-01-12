@@ -20,4 +20,7 @@
  * @see org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory
  * @see org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory
  */
+@NullMarked
 package org.springframework.boot.tomcat;
+
+import org.jspecify.annotations.NullMarked;

@@ -18,6 +18,7 @@ package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
@@ -60,7 +61,7 @@ class ConfluentKafkaContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return super.getSslBundle();
 		}
 

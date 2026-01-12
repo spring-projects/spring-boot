@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class OnlyDependencyManagementIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate

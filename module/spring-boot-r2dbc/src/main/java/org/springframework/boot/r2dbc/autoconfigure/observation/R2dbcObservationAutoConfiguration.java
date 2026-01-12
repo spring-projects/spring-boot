@@ -23,6 +23,7 @@ import io.r2dbc.proxy.observation.QueryObservationConvention;
 import io.r2dbc.proxy.observation.QueryParametersTagProvider;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -42,7 +43,8 @@ import org.springframework.core.annotation.Order;
  * @author Tadaya Tsuyukubo
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class, ObservationRegistry.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties(R2dbcObservationProperties.class)
@@ -87,7 +89,7 @@ public final class R2dbcObservationAutoConfiguration {
 		return new HostAndPort(hostAsString, portAsInt);
 	}
 
-	private record HostAndPort(String host, Integer port) {
+	private record HostAndPort(@Nullable String host, @Nullable Integer port) {
 		static HostAndPort empty() {
 			return new HostAndPort(null, null);
 		}

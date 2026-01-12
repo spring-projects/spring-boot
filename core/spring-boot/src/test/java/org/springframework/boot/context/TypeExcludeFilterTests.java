@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class TypeExcludeFilterTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void cleanUp() {
@@ -56,8 +57,10 @@ class TypeExcludeFilterTests {
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(ExampleFilteredComponent.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(ExampleFilteredComponent.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

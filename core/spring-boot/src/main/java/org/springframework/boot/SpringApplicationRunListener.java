@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;

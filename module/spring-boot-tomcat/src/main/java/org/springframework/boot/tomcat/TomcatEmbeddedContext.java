@@ -30,9 +30,11 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -45,9 +47,9 @@ import org.springframework.util.ClassUtils;
  */
 public class TomcatEmbeddedContext extends StandardContext {
 
-	private TomcatStarter starter;
+	private DeferredStartupExceptions deferredStartupExceptions = DeferredStartupExceptions.NONE;
 
-	private MimeMappings mimeMappings;
+	private @Nullable MimeMappings mimeMappings;
 
 	@Override
 	public boolean loadOnStartup(Container[] children) {
@@ -102,7 +104,7 @@ public class TomcatEmbeddedContext extends StandardContext {
 	 * @param classLoader the class loader to use
 	 * @param code the code to run
 	 */
-	private void doWithThreadContextClassLoader(ClassLoader classLoader, Runnable code) {
+	private void doWithThreadContextClassLoader(@Nullable ClassLoader classLoader, Runnable code) {
 		ClassLoader existingLoader = (classLoader != null) ? ClassUtils.overrideThreadContextClassLoader(classLoader)
 				: null;
 		try {
@@ -115,12 +117,17 @@ public class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(TomcatStarter starter) {
-		this.starter = starter;
+	/**
+	 * Set a strategy used to capture and rethrow deferred startup exceptions.
+	 * @param deferredStartupExceptions the strategy to use
+	 */
+	public void setDeferredStartupExceptions(DeferredStartupExceptions deferredStartupExceptions) {
+		Assert.notNull(deferredStartupExceptions, "'deferredStartupExceptions' must not be null");
+		this.deferredStartupExceptions = deferredStartupExceptions;
 	}
 
-	TomcatStarter getStarter() {
-		return this.starter;
+	DeferredStartupExceptions getDeferredStartupExceptions() {
+		return this.deferredStartupExceptions;
 	}
 
 	public void setMimeMappings(MimeMappings mimeMappings) {
@@ -137,12 +144,32 @@ public class TomcatEmbeddedContext extends StandardContext {
 	}
 
 	@Override
-	public String findMimeMapping(String extension) {
+	public @Nullable String findMimeMapping(String extension) {
 		String mimeMapping = super.findMimeMapping(extension);
 		if (mimeMapping != null) {
 			return mimeMapping;
 		}
 		return (this.mimeMappings != null) ? this.mimeMappings.get(extension) : null;
+	}
+
+	/**
+	 * Strategy interface that can be used to rethrow deferred startup exceptions.
+	 */
+	@FunctionalInterface
+	public interface DeferredStartupExceptions {
+
+		/**
+		 * {@link DeferredStartupExceptions} that does nothing.
+		 */
+		DeferredStartupExceptions NONE = () -> {
+		};
+
+		/**
+		 * Rethrow deferred startup exceptions if there are any.
+		 * @throws Exception the deferred startup exception
+		 */
+		void rethrow() throws Exception;
+
 	}
 
 }

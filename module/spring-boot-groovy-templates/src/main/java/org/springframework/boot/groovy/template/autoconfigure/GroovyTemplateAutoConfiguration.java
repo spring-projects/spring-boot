@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -137,7 +136,6 @@ public final class GroovyTemplateAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnBooleanProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	static class GroovyWebConfiguration {
 
 		@Bean

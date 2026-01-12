@@ -33,10 +33,10 @@ import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFact
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.BootstrapRegistryInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistryInitializer;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;

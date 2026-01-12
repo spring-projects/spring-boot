@@ -32,14 +32,13 @@ configurations {
 dependencies {
 	app project(path: ":platform:spring-boot-dependencies", configuration: "mavenRepository")
 	app project(path: ":build-plugin:spring-boot-gradle-plugin", configuration: "mavenRepository")
-	app project(path: ":starter:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":starter:spring-boot-starter-webmvc", configuration: "mavenRepository")
 	app project(path: ":starter:spring-boot-starter", configuration: "mavenRepository")
 	app("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
 tasks.register("syncMavenRepository", Sync) {

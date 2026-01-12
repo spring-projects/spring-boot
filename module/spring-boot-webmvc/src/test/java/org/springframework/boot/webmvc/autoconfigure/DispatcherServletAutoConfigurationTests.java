@@ -273,7 +273,7 @@ class DispatcherServletAutoConfigurationTests {
 
 		@Override
 		public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) {
-			return null;
+			return mock(MultipartHttpServletRequest.class);
 		}
 
 		@Override

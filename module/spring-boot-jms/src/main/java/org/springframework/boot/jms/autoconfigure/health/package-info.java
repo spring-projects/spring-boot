@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JMS health.
  */
+@NullMarked
 package org.springframework.boot.jms.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

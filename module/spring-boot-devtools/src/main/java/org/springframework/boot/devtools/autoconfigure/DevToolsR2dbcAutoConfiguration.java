@@ -18,12 +18,14 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -40,6 +42,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for DevTools-specific R2DBC
@@ -99,7 +102,7 @@ public final class DevToolsR2dbcAutoConfiguration {
 			return closeConnection(connection, null);
 		}
 
-		private Publisher<Void> closeConnection(Connection connection, Throwable ex) {
+		private Publisher<Void> closeConnection(Connection connection, @Nullable Throwable ex) {
 			return connection.close();
 		}
 
@@ -115,7 +118,9 @@ public final class DevToolsR2dbcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools ConnectionFactory Condition");
-			String[] beanNames = context.getBeanFactory().getBeanNamesForType(ConnectionFactory.class, true, false);
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.state(beanFactory != null, "'beanFactory' must not be null");
+			String[] beanNames = beanFactory.getBeanNamesForType(ConnectionFactory.class, true, false);
 			if (beanNames.length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single ConnectionFactory bean").atAll());
 			}

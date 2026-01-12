@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cache.autoconfigure;
 
+import javax.cache.CacheManager;
+
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.junit.jupiter.api.Test;
 
@@ -88,7 +90,9 @@ class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfiguration
 				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
 
 				Resource configResource = new ClassPathResource(configLocation);
-				assertThat(cacheManager.getCacheManager().getURI()).isEqualTo(configResource.getURI());
+				CacheManager jCache = cacheManager.getCacheManager();
+				assertThat(jCache).isNotNull();
+				assertThat(jCache.getURI()).isEqualTo(configResource.getURI());
 				assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 			});
 	}

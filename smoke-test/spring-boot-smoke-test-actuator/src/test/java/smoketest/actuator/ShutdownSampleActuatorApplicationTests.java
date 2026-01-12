@@ -21,9 +21,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(classes = { ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
 		SampleActuatorApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class ShutdownSampleActuatorApplicationTests {
 
 	@Autowired
@@ -62,7 +64,9 @@ class ShutdownSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.withBasicAuth("user", "password")
 			.postForEntity("/actuator/shutdown", null, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(((String) entity.getBody().get("message"))).contains("Shutting down");
+		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
+		assertThat(((String) body.get("message"))).contains("Shutting down");
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -74,7 +78,7 @@ class ShutdownSampleActuatorApplicationTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			return http.build();
 		}

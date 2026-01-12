@@ -35,8 +35,10 @@ class ConfigurationPropertySourceTests {
 		MockPropertySource source = new MockPropertySource();
 		source.setProperty("spring", "boot");
 		ConfigurationPropertySource adapted = ConfigurationPropertySource.from(source);
-		assertThat(adapted.getConfigurationProperty(ConfigurationPropertyName.of("spring")).getValue())
-			.isEqualTo("boot");
+		assertThat(adapted).isNotNull();
+		ConfigurationProperty spring = adapted.getConfigurationProperty(ConfigurationPropertyName.of("spring"));
+		assertThat(spring).isNotNull();
+		assertThat(spring.getValue()).isEqualTo("boot");
 	}
 
 	@Test

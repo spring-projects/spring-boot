@@ -18,8 +18,6 @@ package org.springframework.boot.gradle.docs;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.jar.JarEntry;
@@ -34,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.junit.GradleMultiDslExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
-import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(GradleMultiDslExtension.class)
 class PackagingDocumentationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -124,38 +122,8 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/lib/jruby-complete-1.7.25.jar");
 			assertThat(entry).isNotNull();
-			assertThat(entry.getComment()).startsWith("UNPACK:");
+			assertThat(entry.getComment()).isEqualTo("UNPACK");
 		}
-	}
-
-	@TestTemplate
-	void bootJarIncludeLaunchScript() throws IOException {
-		this.gradleBuild.script(Examples.DIR + "packaging/boot-jar-include-launch-script").build("bootJar");
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
-		assertThat(file).isFile();
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).startsWith("#!/bin/bash");
-	}
-
-	@TestTemplate
-	void bootJarLaunchScriptProperties() throws IOException {
-		this.gradleBuild.script(Examples.DIR + "packaging/boot-jar-launch-script-properties").build("bootJar");
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
-		assertThat(file).isFile();
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).contains("example-app.log");
-	}
-
-	@TestTemplate
-	void bootJarCustomLaunchScript() throws IOException {
-		File customScriptFile = new File(this.gradleBuild.getProjectDir(), "src/custom.script");
-		customScriptFile.getParentFile().mkdirs();
-		FileCopyUtils.copy("custom", new FileWriter(customScriptFile));
-		this.gradleBuild.script(Examples.DIR + "packaging/boot-jar-custom-launch-script").build("bootJar");
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
-		assertThat(file).isFile();
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).startsWith("custom");
 	}
 
 	@TestTemplate

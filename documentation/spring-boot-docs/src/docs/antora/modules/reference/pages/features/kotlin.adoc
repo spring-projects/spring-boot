@@ -24,7 +24,6 @@ Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin class
 
 https://github.com/FasterXML/jackson-module-kotlin[Jackson's Kotlin module] is required for serializing / deserializing JSON data in Kotlin.
 It is automatically registered when found on the classpath.
-A warning message is logged if Jackson and Kotlin are present but the Jackson Kotlin module is not.
 
 TIP: These dependencies and plugins are provided by default if one bootstraps a Kotlin project on https://start.spring.io/#!language=kotlin[start.spring.io].
 
@@ -38,15 +37,10 @@ It deals with `null` values at compile time rather than deferring the problem to
 This helps to eliminate a common source of bugs without paying the cost of wrappers like javadoc:java.util.Optional[].
 Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
-Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
-By default, types from Java APIs used in Kotlin are recognized as {url-kotlin-docs}/java-interop.html#null-safety-and-platform-types[platform types] for which null-checks are relaxed.
-{url-kotlin-docs}/java-interop.html#nullability-annotations[Kotlin's support for nullability annotations] provides null-safety for the annotated APIs like Spring's one in Kotlin.
+Although Java does not let you express null-safety in its type-system, most Spring projects
+provide {url-spring-framework-docs}/core/null-safety.html[null-safety] via https://jspecify.dev/[JSpecify] annotations.
 
-The https://jspecify.dev[JSpecify] strict checks are https://kotlinlang.org/docs/whatsnew21.html#change-of-jspecify-nullability-mismatch-diagnostics-severity-to-strict[enabled by default], while the JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the following options: `-Xjsr305={strict|warn|ignore}`.
-The default behavior is the same as `-Xjsr305=warn`.
-The `strict` value is required to have null-safety taken in account in Kotlin types inferred from Spring API but should be used with the knowledge that Spring API nullability declaration could evolve even between minor releases and more checks may be added in the future).
-
-WARNING: Be aware that Spring Boot's own API is {url-github-issues}/10712[not yet annotated].
+As of Kotlin 2.1, Kotlin enforces strict handling of nullability annotations from the `org.jspecify.annotations` package.
 
 
 
@@ -91,7 +85,7 @@ runApplication<MyApplication>(*args) {
 Kotlin {url-kotlin-docs}/extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
 The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
 
-javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
+javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
 Among other things, the extensions make it possible to take advantage of Kotlin reified type parameters.
 
 
@@ -142,8 +136,8 @@ Note that some features (such as detecting the default value or deprecated items
 [[features.kotlin.testing]]
 == Testing
 
-While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
-JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
+While it is possible to use JUnit 4 to test Kotlin code, JUnit 6 is provided by default and is recommended.
+JUnit 6 enables a test class to be instantiated once and reused for all of the class's tests.
 This makes it possible to use javadoc:org.junit.jupiter.api.BeforeAll[format=annotation] and javadoc:org.junit.jupiter.api.AfterAll[format=annotation] annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.

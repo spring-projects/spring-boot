@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Demonstrate that a method that exposes a root group within an annotated class is
@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("specific")
+@TestConfigurationProperties("specific")
 public class InnerClassAnnotatedGetterConfig {
 
 	private String value;
@@ -37,7 +37,7 @@ public class InnerClassAnnotatedGetterConfig {
 		this.value = value;
 	}
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	public Foo getFoo() {
 		return new Foo();
 	}

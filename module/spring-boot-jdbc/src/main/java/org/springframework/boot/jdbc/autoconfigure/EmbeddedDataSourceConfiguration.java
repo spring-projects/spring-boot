@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.Assert;
 
 /**
  * Configuration for embedded data sources.
@@ -36,6 +38,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader classLoader;
 
 	@Override
@@ -44,10 +47,12 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	}
 
 	@Bean(destroyMethod = "shutdown")
-	public EmbeddedDatabase dataSource(DataSourceProperties properties) {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.get(this.classLoader).getType())
-			.setName(properties.determineDatabaseName())
-			.build();
+	EmbeddedDatabase dataSource(DataSourceProperties properties) {
+		EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(this.classLoader).getType();
+		String databaseName = properties.determineDatabaseName();
+		Assert.state(type != null, "'type' must not be null");
+		Assert.state(databaseName != null, "'databaseName' must not be null");
+		return new EmbeddedDatabaseBuilder().setType(type).setName(databaseName).build();
 	}
 
 }

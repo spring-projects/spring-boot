@@ -25,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Properties;
 
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -43,11 +44,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility(configurationCache = true)
 class BuildInfoIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
 	void defaultValues() {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
 		assertThat(buildInfoProperties).containsKey("build.time");
 		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");
@@ -58,7 +62,9 @@ class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void basicExecution() {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
 		assertThat(buildInfoProperties).containsKey("build.time");
 		assertThat(buildInfoProperties).containsEntry("build.artifact", "foo");
@@ -70,11 +76,15 @@ class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void notUpToDateWhenExecutedTwiceAsTimeChanges() {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties first = buildInfoProperties();
 		String firstBuildTime = first.getProperty("build.time");
 		assertThat(firstBuildTime).isNotNull();
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties second = buildInfoProperties();
 		String secondBuildTime = second.getProperty("build.time");
 		assertThat(secondBuildTime).isNotNull();
@@ -83,22 +93,24 @@ class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void upToDateWhenExecutedTwiceWithFixedTime() {
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-			.isEqualTo(TaskOutcome.UP_TO_DATE);
+		BuildTask task = this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		task = this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0")
+		BuildTask task = this.gradleBuild.scriptProperty("projectVersion", "0.1.0")
 			.build("buildInfo")
-			.task(":buildInfo")
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0")
-			.build("buildInfo")
-			.task(":buildInfo")
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+			.task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		task = this.gradleBuild.scriptProperty("projectVersion", "0.2.0").build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
@@ -106,29 +118,37 @@ class BuildInfoIntegrationTests {
 		Path gradleProperties = new File(this.gradleBuild.getProjectDir(), "gradle.properties").toPath();
 		Files.writeString(gradleProperties, "version=0.1.0", StandardOpenOption.CREATE, StandardOpenOption.WRITE,
 				StandardOpenOption.TRUNCATE_EXISTING);
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Files.writeString(gradleProperties, "version=0.2.0", StandardOpenOption.CREATE, StandardOpenOption.WRITE,
 				StandardOpenOption.TRUNCATE_EXISTING);
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void reproducibleOutputWithFixedTime() throws IOException, InterruptedException {
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
 		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(buildInfoProperties.delete()).isTrue();
 		Thread.sleep(1500);
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		task = this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String secondHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(firstHash).isEqualTo(secondHash);
 	}
 
 	@TestTemplate
 	void excludeProperties() {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("buildInfo").task(":buildInfo");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
 		assertThat(buildInfoProperties).doesNotContainKey("build.group");
 		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");

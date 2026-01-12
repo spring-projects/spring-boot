@@ -34,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProjectHelper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
@@ -49,7 +50,7 @@ import org.springframework.boot.loader.tools.EntryWriter;
 import org.springframework.boot.loader.tools.ImagePackager;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
-import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -71,13 +72,15 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File sourceDirectory;
 
 	/**
 	 * Name of the source archive.
 	 * @since 2.3.0
 	 */
-	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
+	@Parameter(defaultValue = "${project.build.finalName}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	private String finalName;
 
 	/**
@@ -92,7 +95,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter
-	private String classifier;
+	private @Nullable String classifier;
 
 	/**
 	 * Image configuration, with {@code builder}, {@code runImage}, {@code name},
@@ -101,7 +104,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter
-	private Image image;
+	private @Nullable Image image;
 
 	/**
 	 * Alias for {@link Image#name} to support configuration through command-line
@@ -109,7 +112,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.imageName")
-	String imageName;
+	@Nullable String imageName;
 
 	/**
 	 * Alias for {@link Image#builder} to support configuration through command-line
@@ -117,14 +120,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.builder")
-	String imageBuilder;
+	@Nullable String imageBuilder;
 
 	/**
 	 * Alias for {@link Image#trustBuilder} to support configuration through command-line
 	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.trustBuilder")
-	Boolean trustBuilder;
+	@Nullable Boolean trustBuilder;
 
 	/**
 	 * Alias for {@link Image#runImage} to support configuration through command-line
@@ -132,7 +135,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.1
 	 */
 	@Parameter(property = "spring-boot.build-image.runImage")
-	String runImage;
+	@Nullable String runImage;
 
 	/**
 	 * Alias for {@link Image#cleanCache} to support configuration through command-line
@@ -140,21 +143,21 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.4.0
 	 */
 	@Parameter(property = "spring-boot.build-image.cleanCache")
-	Boolean cleanCache;
+	@Nullable Boolean cleanCache;
 
 	/**
 	 * Alias for {@link Image#pullPolicy} to support configuration through command-line
 	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.pullPolicy")
-	PullPolicy pullPolicy;
+	@Nullable PullPolicy pullPolicy;
 
 	/**
 	 * Alias for {@link Image#publish} to support configuration through command-line
 	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.publish")
-	Boolean publish;
+	@Nullable Boolean publish;
 
 	/**
 	 * Alias for {@link Image#network} to support configuration through command-line
@@ -162,7 +165,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.6.0
 	 */
 	@Parameter(property = "spring-boot.build-image.network")
-	String network;
+	@Nullable String network;
 
 	/**
 	 * Alias for {@link Image#createdDate} to support configuration through command-line
@@ -170,7 +173,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 3.1.0
 	 */
 	@Parameter(property = "spring-boot.build-image.createdDate")
-	String createdDate;
+	@Nullable String createdDate;
 
 	/**
 	 * Alias for {@link Image#applicationDirectory} to support configuration through
@@ -178,7 +181,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 3.1.0
 	 */
 	@Parameter(property = "spring-boot.build-image.applicationDirectory")
-	String applicationDirectory;
+	@Nullable String applicationDirectory;
 
 	/**
 	 * Alias for {@link Image#imagePlatform} to support configuration through command-line
@@ -186,14 +189,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 3.4.0
 	 */
 	@Parameter(property = "spring-boot.build-image.imagePlatform")
-	String imagePlatform;
+	@Nullable String imagePlatform;
 
 	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
 	@Parameter
-	private Docker docker;
+	private @Nullable Docker docker;
 
 	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
@@ -202,14 +205,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.11
 	 */
 	@Parameter
-	private LayoutType layout;
-
-	/**
-	 * The loader implementation that should be used.
-	 * @since 3.2.0
-	 */
-	@Parameter
-	private LoaderImplementation loaderImplementation;
+	private @Nullable LayoutType layout;
 
 	/**
 	 * The layout factory that will be used to create the executable archive if no
@@ -218,7 +214,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @since 2.3.11
 	 */
 	@Parameter
-	private LayoutFactory layoutFactory;
+	private @Nullable LayoutFactory layoutFactory;
 
 	protected BuildImageMojo(MavenProjectHelper projectHelper) {
 		super(projectHelper);
@@ -230,13 +226,8 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * is not provided
 	 */
 	@Override
-	protected LayoutType getLayout() {
+	protected @Nullable LayoutType getLayout() {
 		return this.layout;
-	}
-
-	@Override
-	protected LoaderImplementation getLoaderImplementation() {
-		return this.loaderImplementation;
 	}
 
 	/**
@@ -246,7 +237,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * parameter is not provided
 	 */
 	@Override
-	protected LayoutFactory getLayoutFactory() {
+	protected @Nullable LayoutFactory getLayoutFactory() {
 		return this.layoutFactory;
 	}
 
@@ -340,7 +331,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * Return the {@link File} to use to back up the original source.
 	 * @return the file to use to back up the original source
 	 */
-	private File getBackupFile() {
+	private @Nullable File getBackupFile() {
 		// We can't use 'project.getAttachedArtifacts()' because package can be done in a
 		// forked lifecycle and will be null
 		if (this.classifier != null) {
@@ -451,11 +442,12 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 			}
 		}
 
-		private void write(ZipEntry jarEntry, EntryWriter entryWriter, TarArchiveOutputStream tar) {
+		private void write(ZipEntry jarEntry, @Nullable EntryWriter entryWriter, TarArchiveOutputStream tar) {
 			try {
 				TarArchiveEntry tarEntry = convert(jarEntry);
 				tar.putArchiveEntry(tarEntry);
 				if (tarEntry.isFile()) {
+					Assert.state(entryWriter != null, "'entryWriter' must not be null");
 					entryWriter.write(tar);
 				}
 				tar.closeArchiveEntry();

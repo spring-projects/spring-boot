@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing mixed method and class configuration.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("conflict")
+@TestConfigurationProperties("conflict")
 public class MethodAndClassConfig {
 
 	private String value;
@@ -36,7 +36,7 @@ public class MethodAndClassConfig {
 		this.value = value;
 	}
 
-	@ConfigurationProperties("conflict")
+	@TestConfigurationProperties("conflict")
 	public Foo foo() {
 		return new Foo();
 	}

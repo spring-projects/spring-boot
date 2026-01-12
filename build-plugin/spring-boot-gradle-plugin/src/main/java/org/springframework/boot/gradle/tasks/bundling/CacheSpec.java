@@ -23,6 +23,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
 
@@ -36,14 +37,14 @@ public class CacheSpec {
 
 	private final ObjectFactory objectFactory;
 
-	private Cache cache = null;
+	private @Nullable Cache cache;
 
 	@Inject
 	public CacheSpec(ObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
 	}
 
-	public Cache asCache() {
+	public @Nullable Cache asCache() {
 		return this.cache;
 	}
 

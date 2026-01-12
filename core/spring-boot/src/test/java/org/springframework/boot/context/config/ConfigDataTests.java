@@ -42,12 +42,14 @@ import static org.mockito.Mockito.mock;
 class ConfigDataTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertySourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(null))
 			.withMessage("'propertySources' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenOptionsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(Collections.emptyList(), (Option[]) null))
 			.withMessage("'options' must not be null");
@@ -127,8 +129,9 @@ class ConfigDataTests {
 	@Test
 	void propertySourceOptionsAlwaysReturnsSameOptionsEachTime() {
 		PropertySourceOptions options = PropertySourceOptions.always(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
-		assertThat(options.get(mock(PropertySource.class)).asSet()).containsExactly(Option.IGNORE_IMPORTS,
-				Option.IGNORE_PROFILES);
+		Options propertySourceOptions = options.get(mock(PropertySource.class));
+		assertThat(propertySourceOptions).isNotNull();
+		assertThat(propertySourceOptions.asSet()).containsExactly(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
 	}
 
 }

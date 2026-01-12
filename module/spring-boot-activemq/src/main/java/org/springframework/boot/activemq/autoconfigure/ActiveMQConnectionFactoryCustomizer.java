@@ -20,7 +20,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ActiveMQConnectionFactory} whilst retaining default auto-configuration.
+ * {@link ActiveMQConnectionFactory} to fine-tune its auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

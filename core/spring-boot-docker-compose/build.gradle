@@ -28,8 +28,7 @@ description = "Spring Boot Docker Compose"
 dependencies {
 	api(project(":core:spring-boot-autoconfigure"))
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
+	implementation("tools.jackson.core:jackson-databind")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 
@@ -38,4 +37,12 @@ dependencies {
 	testImplementation("ch.qos.logback:logback-classic")
 
 	testFixturesImplementation(project(":test-support:spring-boot-docker-test-support"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

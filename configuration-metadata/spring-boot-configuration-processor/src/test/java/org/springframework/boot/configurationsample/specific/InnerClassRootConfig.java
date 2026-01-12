@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample with a simple inner class config.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class InnerClassRootConfig {
 
-	@ConfigurationProperties("config")
+	@TestConfigurationProperties("config")
 	public static class Config {
 
 		private String name;

@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.FactoryBean;
 
 public class EarlyInitFactoryBean implements FactoryBean<String> {
 
-	private String propertyFromConfig;
+	private @Nullable String propertyFromConfig;
 
 	public void setPropertyFromConfig(String propertyFromConfig) {
 		this.propertyFromConfig = propertyFromConfig;
@@ -32,12 +34,12 @@ public class EarlyInitFactoryBean implements FactoryBean<String> {
 	}
 
 	@Override
-	public Class<?> getObjectType() {
+	public @Nullable Class<?> getObjectType() {
 		return null;
 	}
 
 	@Override
-	public String getObject() throws Exception {
+	public @Nullable String getObject() throws Exception {
 		return this.propertyFromConfig;
 	}
 

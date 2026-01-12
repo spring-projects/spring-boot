@@ -90,6 +90,7 @@ class ThreadPoolTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskExecutorCustomizer[]) null))
@@ -97,6 +98,7 @@ class ThreadPoolTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<ThreadPoolTaskExecutorCustomizer>) null))
@@ -149,6 +151,7 @@ class ThreadPoolTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((ThreadPoolTaskExecutorCustomizer[]) null))
@@ -156,6 +159,7 @@ class ThreadPoolTaskExecutorBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<ThreadPoolTaskExecutorCustomizer>) null))

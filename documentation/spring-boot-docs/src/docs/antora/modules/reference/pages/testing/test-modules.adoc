@@ -1,0 +1,79 @@
+[[testing.test-modules]]
+= Test Modules
+
+Spring Boot offers several focused, feature-specific `-test` modules:
+
+[cols="1,3"]
+|===
+|Module | Purpose
+
+|`spring-boot-cache-test`
+|Testing applications that use Spring Framework's cache abstraction.
+
+|`spring-boot-data-cassandra-test`
+|Testing applications that use Spring Data Cassandra. Provides the `@DataCassandraTest` test slice.
+
+|`spring-boot-data-couchbase-test`
+|Testing applications that use Spring Data Couchbase. Provides the `@DataCouchbaseTest` test slice.
+
+|`spring-boot-data-elasticsearch-test`
+|Testing applications that use Spring Data Elasticsearch. Provides the `@DataElasticsearchTest` test slice.
+
+|`spring-boot-data-jdbc-test`
+|Testing applications that use Spring Data JDBC. Provides the `@DataJdbcTest` test slice.
+
+|`spring-boot-data-jpa-test`
+|Testing applications that use Spring Data JPA. Provides the `@DataJpaTest` test slice.
+
+|`spring-boot-data-ldap-test`
+|Testing applications that use Spring Data LDAP. Provides the `@DataLdapTest` test slice.
+
+|`spring-boot-mongodb-test`
+|Testing applications that use Spring Data MongoDB. Provides the `@DataMongoTest` test slice.
+
+|`spring-boot-data-neo4j-test`
+|Testing applications that use Spring Data JPA. Provides the `@DataNeo4jTest` test slice.
+
+|`spring-boot-data-r2dbc-test`
+|Testing applications that use Spring Data R2DBC. Provides the `@DataR2dbcTest` test slice.
+
+|`spring-boot-data-redis-test`
+|Testing applications that use Spring Data Redis. Provides the `@DataRedisTest` test slice.
+
+|`spring-boot-graphql-test`
+|Testing applications that use Spring GraphQL. Provides the `@GraphQlTest` test slice.
+
+|`spring-boot-jdbc-test`
+|Testing applications that using Spring JDBC. Provides the `@JdbcTest` test slice.
+
+|`spring-boot-jooq-test`
+|Testing applications that using jOOQ. Provides the `@JooqTest` test slice.
+
+|`spring-boot-jpa-test`
+|Testing applications that use JPA.
+
+|`spring-boot-micrometer-metrics-test`
+|Testing applications that use Micrometer Metrics.
+
+|`spring-boot-micrometer-tracing-test`
+|Testing applications that use Micrometer Tracing.
+
+|`spring-boot-restclient-test`
+|Testing applications that use REST clients. Provides the `@RestClientTest` test slice.
+
+|`spring-boot-security-test`
+|Testing applications that use Spring Security.
+
+|`spring-boot-webclient-test`
+|Testing applications that use `WebClient`. Provides the `@WebClientTest` test slice.
+
+|`spring-boot-webflux-test`
+|Testing applications that use Spring WebFlux. Provides the `@WebFluxTest` test slice.
+
+|`spring-boot-webmvc-test`
+|Testing applications that use Spring Web MVC. Provides the `@WebMvcTest` test slice.
+
+|`spring-boot-webservices-test`
+|Testing applications that use Spring Web Services. Provides the `@WebServiceClientTest` and `@WebServiceServerTest` test slices.
+
+|===

@@ -21,6 +21,7 @@ plugins {
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Liquibase"
@@ -31,25 +32,35 @@ dependencies {
 	api("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
-	
+
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
-	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:testcontainers-jdbc")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("com.h2database:h2")
 	testImplementation("com.zaxxer:HikariCP")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.postgresql:postgresql")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

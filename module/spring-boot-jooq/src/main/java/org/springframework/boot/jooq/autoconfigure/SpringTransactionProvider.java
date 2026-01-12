@@ -23,6 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.Assert;
 
 /**
  * Allows Spring Transaction to be used with jOOQ.
@@ -61,6 +62,7 @@ public class SpringTransactionProvider implements TransactionProvider {
 
 	private TransactionStatus getTransactionStatus(TransactionContext ctx) {
 		SpringTransaction transaction = (SpringTransaction) ctx.transaction();
+		Assert.state(transaction != null, "'transaction' must not be null");
 		return transaction.getTxStatus();
 	}
 

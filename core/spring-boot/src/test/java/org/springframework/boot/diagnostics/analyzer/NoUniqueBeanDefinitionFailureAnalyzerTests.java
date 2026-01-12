@@ -146,15 +146,17 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 		this.context.setParent(new AnnotationConfigApplicationContext(ParentProducer.class));
 		try {
 			this.context.refresh();
+			throw new AssertionError("Should not be reached");
 		}
 		catch (BeanCreationException ex) {
 			return ex;
 		}
-		return null;
 	}
 
 	private FailureAnalysis analyzeFailure(Exception failure) {
-		return this.analyzer.analyze(failure);
+		FailureAnalysis analyze = this.analyzer.analyze(failure);
+		assertThat(analyze).isNotNull();
+		return analyze;
 	}
 
 	private void assertFoundBeans(FailureAnalysis analysis) {

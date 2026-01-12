@@ -19,7 +19,7 @@ package org.springframework.boot.docs.testing.springbootapplications.autoconfigu
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest
+import org.springframework.boot.webservices.test.autoconfigure.client.WebServiceClientTest
 import org.springframework.ws.test.client.MockWebServiceServer
 import org.springframework.ws.test.client.RequestMatchers
 import org.springframework.ws.test.client.ResponseCreators

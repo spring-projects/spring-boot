@@ -64,7 +64,7 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 
 	private Predicate<StartupStep> filter = (step) -> true;
 
-	private final AtomicReference<BufferedStartupStep> current = new AtomicReference<>();
+	private final AtomicReference<@Nullable BufferedStartupStep> current = new AtomicReference<>();
 
 	private final AtomicInteger estimatedSize = new AtomicInteger();
 

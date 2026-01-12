@@ -22,6 +22,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
+
 /**
  * Common {@link Layout layouts}.
  *
@@ -43,9 +47,7 @@ public final class Layouts {
 	 * @return a {@link Layout}
 	 */
 	public static Layout forFile(File file) {
-		if (file == null) {
-			throw new IllegalArgumentException("File must not be null");
-		}
+		Assert.notNull(file, "'file' must not be null");
 		String lowerCaseFileName = file.getName().toLowerCase(Locale.ENGLISH);
 		if (lowerCaseFileName.endsWith(".jar")) {
 			return new Jar();
@@ -65,12 +67,12 @@ public final class Layouts {
 	public static class Jar implements RepackagingLayout {
 
 		@Override
-		public String getLauncherClassName() {
+		public @Nullable String getLauncherClassName() {
 			return "org.springframework.boot.loader.launch.JarLauncher";
 		}
 
 		@Override
-		public String getLibraryLocation(String libraryName, LibraryScope scope) {
+		public String getLibraryLocation(String libraryName, @Nullable LibraryScope scope) {
 			return "BOOT-INF/lib/";
 		}
 
@@ -119,7 +121,7 @@ public final class Layouts {
 	public static class None extends Jar {
 
 		@Override
-		public String getLauncherClassName() {
+		public @Nullable String getLauncherClassName() {
 			return null;
 		}
 
@@ -152,7 +154,7 @@ public final class Layouts {
 		}
 
 		@Override
-		public String getLibraryLocation(String libraryName, LibraryScope scope) {
+		public @Nullable String getLibraryLocation(String libraryName, @Nullable LibraryScope scope) {
 			return SCOPE_LOCATION.get(scope);
 		}
 

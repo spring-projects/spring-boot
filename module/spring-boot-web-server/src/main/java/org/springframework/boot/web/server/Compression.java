@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.util.unit.DataSize;
 
@@ -44,7 +46,7 @@ public class Compression {
 	/**
 	 * Comma-separated list of user agents for which responses should not be compressed.
 	 */
-	private String[] excludedUserAgents = null;
+	private String @Nullable [] excludedUserAgents;
 
 	/**
 	 * Minimum "Content-Length" value that is required for compression to be performed.
@@ -75,11 +77,11 @@ public class Compression {
 		this.mimeTypes = mimeTypes;
 	}
 
-	public String[] getExcludedUserAgents() {
+	public String @Nullable [] getExcludedUserAgents() {
 		return this.excludedUserAgents;
 	}
 
-	public void setExcludedUserAgents(String[] excludedUserAgents) {
+	public void setExcludedUserAgents(String @Nullable [] excludedUserAgents) {
 		this.excludedUserAgents = excludedUserAgents;
 	}
 

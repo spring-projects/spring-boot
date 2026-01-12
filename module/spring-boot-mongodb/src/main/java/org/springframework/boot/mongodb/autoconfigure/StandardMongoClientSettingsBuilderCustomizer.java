@@ -39,7 +39,7 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 
 	private final MongoConnectionDetails connectionDetails;
 
-	private int order = 0;
+	private int order;
 
 	public StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails connectionDetails,
 			UuidRepresentation uuidRepresentation) {

@@ -25,9 +25,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +47,7 @@ import org.springframework.util.MultiValueMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class SampleOAuth2AuthorizationServerApplicationTests {
 
 	private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new ParameterizedTypeReference<>() {
@@ -71,8 +73,9 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(config.getEndSessionEndpoint()).hasToString("https://provider.com/logout");
 		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
 		assertThat(config.getUserInfoEndpoint()).hasToString("https://provider.com/user");
-		// OIDC Client Registration is disabled by default
+		// PAR endpoint and OIDC Client Registration are disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
+		assertThat(config.getPushedAuthorizationRequestEndpoint()).isNull();
 	}
 
 	@Test
@@ -88,8 +91,9 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
 		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
 		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
-		// OIDC Client Registration is disabled by default
+		// PAR endpoint and OIDC Client Registration are disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
+		assertThat(config.getPushedAuthorizationRequestEndpoint()).isNull();
 	}
 
 	@Test

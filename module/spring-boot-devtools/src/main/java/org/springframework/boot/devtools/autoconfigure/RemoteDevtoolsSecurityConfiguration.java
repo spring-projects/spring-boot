@@ -17,7 +17,7 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,8 +46,8 @@ class RemoteDevtoolsSecurityConfiguration {
 	}
 
 	@Bean
-	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
-	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
+	@Order(SecurityFilterProperties.BASIC_AUTH_ORDER - 1)
+	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) {
 		http.securityMatcher(PathPatternRequestMatcher.withDefaults().matcher(this.url));
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
 		http.csrf(CsrfConfigurer::disable);

@@ -17,14 +17,15 @@
 package org.springframework.boot.restclient.autoconfigure;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -34,12 +35,13 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
@@ -49,6 +51,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -59,8 +62,9 @@ import static org.mockito.Mockito.mock;
  */
 class RestTemplateAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class,
+				ImperativeHttpClientAutoConfiguration.class));
 
 	@Test
 	void restTemplateBuilderConfigurerShouldBeLazilyDefined() {
@@ -82,19 +86,6 @@ class RestTemplateAutoConfigurationTests {
 		this.contextRunner
 			.run((context) -> assertThat(context.getBeanFactory().getBeanDefinition("restTemplateBuilder").isLazyInit())
 				.isTrue());
-	}
-
-	@Test
-	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withUserConfiguration(RestTemplateConfig.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(RestTemplate.class);
-				RestTemplate restTemplate = context.getBean(RestTemplate.class);
-				List<HttpMessageConverter<?>> converters = context.getBean(HttpMessageConverters.class).getConverters();
-				assertThat(restTemplate.getMessageConverters()).containsExactlyElementsOf(converters);
-				assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
-			});
 	}
 
 	@Test
@@ -198,11 +189,29 @@ class RestTemplateAutoConfigurationTests {
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 			.withUserConfiguration(RestTemplateConfig.class)
-			.withPropertyValues("spring.http.client.factory=simple")
+			.withPropertyValues("spring.http.clients.imperative.factory=simple")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestTemplate.class);
 				RestTemplate restTemplate = context.getBean(RestTemplate.class);
 				assertThat(restTemplate.getRequestFactory()).isInstanceOf(SimpleClientHttpRequestFactory.class);
+			});
+	}
+
+	@Test
+	void clientHttpMessageConverterCustomizersAreAppliedInOrder() {
+		this.contextRunner.withUserConfiguration(ClientHttpMessageConverterCustomizersConfiguration.class)
+			.run((context) -> {
+				context.getBean(RestTemplateBuilder.class).build();
+				ClientHttpMessageConvertersCustomizer customizer1 = context.getBean("customizer1",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer2 = context.getBean("customizer2",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer3 = context.getBean("customizer3",
+						ClientHttpMessageConvertersCustomizer.class);
+				InOrder inOrder = inOrder(customizer1, customizer2, customizer3);
+				inOrder.verify(customizer3).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer1).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer2).customize(any(ClientBuilder.class));
 			});
 	}
 
@@ -297,7 +306,30 @@ class RestTemplateAutoConfigurationTests {
 
 	}
 
-	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
+	@Configuration(proxyBeanMethods = false)
+	static class ClientHttpMessageConverterCustomizersConfiguration {
+
+		@Bean
+		@Order(-5)
+		ClientHttpMessageConvertersCustomizer customizer1() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(5)
+		ClientHttpMessageConvertersCustomizer customizer2() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(-10)
+		ClientHttpMessageConvertersCustomizer customizer3() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+	}
+
+	static class CustomHttpMessageConverter extends ByteArrayHttpMessageConverter {
 
 	}
 

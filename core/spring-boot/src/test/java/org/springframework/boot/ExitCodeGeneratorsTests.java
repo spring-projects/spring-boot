@@ -37,6 +37,7 @@ import static org.mockito.Mockito.withSettings;
 class ExitCodeGeneratorsTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addAllWhenGeneratorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> {
 			List<ExitCodeGenerator> generators = null;
@@ -45,6 +46,7 @@ class ExitCodeGeneratorsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addWhenGeneratorIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ExitCodeGenerators().add(null))
 			.withMessageContaining("'generator' must not be null");

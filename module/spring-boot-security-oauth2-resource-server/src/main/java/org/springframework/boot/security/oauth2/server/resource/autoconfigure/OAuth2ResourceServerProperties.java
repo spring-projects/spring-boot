@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
@@ -35,6 +37,7 @@ import org.springframework.util.StreamUtils;
  * @author Artsiom Yudovin
  * @author Mushtaq Ahmed
  * @author Yan Kardziyaka
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.resourceserver")
@@ -57,7 +60,7 @@ public class OAuth2ResourceServerProperties {
 		/**
 		 * JSON Web Key URI to use to verify the JWT token.
 		 */
-		private String jwkSetUri;
+		private @Nullable String jwkSetUri;
 
 		/**
 		 * JSON Web Algorithms used for verifying the digital signatures.
@@ -68,12 +71,12 @@ public class OAuth2ResourceServerProperties {
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
 		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
-		private String issuerUri;
+		private @Nullable String issuerUri;
 
 		/**
 		 * Location of the file containing the public key used to verify a JWT.
 		 */
-		private Resource publicKeyLocation;
+		private @Nullable Resource publicKeyLocation;
 
 		/**
 		 * Identifies the recipients that the JWT is intended for.
@@ -83,28 +86,28 @@ public class OAuth2ResourceServerProperties {
 		/**
 		 * Prefix to use for authorities mapped from JWT.
 		 */
-		private String authorityPrefix;
+		private @Nullable String authorityPrefix;
 
 		/**
 		 * Regex to use for splitting the value of the authorities claim into authorities.
 		 */
-		private String authoritiesClaimDelimiter;
+		private @Nullable String authoritiesClaimDelimiter;
 
 		/**
 		 * Name of token claim to use for mapping authorities from JWT.
 		 */
-		private String authoritiesClaimName;
+		private @Nullable String authoritiesClaimName;
 
 		/**
 		 * JWT principal claim name.
 		 */
-		private String principalClaimName;
+		private @Nullable String principalClaimName;
 
-		public String getJwkSetUri() {
+		public @Nullable String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		public void setJwkSetUri(@Nullable String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
@@ -116,19 +119,19 @@ public class OAuth2ResourceServerProperties {
 			this.jwsAlgorithms = jwsAlgorithms;
 		}
 
-		public String getIssuerUri() {
+		public @Nullable String getIssuerUri() {
 			return this.issuerUri;
 		}
 
-		public void setIssuerUri(String issuerUri) {
+		public void setIssuerUri(@Nullable String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
 
-		public Resource getPublicKeyLocation() {
+		public @Nullable Resource getPublicKeyLocation() {
 			return this.publicKeyLocation;
 		}
 
-		public void setPublicKeyLocation(Resource publicKeyLocation) {
+		public void setPublicKeyLocation(@Nullable Resource publicKeyLocation) {
 			this.publicKeyLocation = publicKeyLocation;
 		}
 
@@ -140,40 +143,40 @@ public class OAuth2ResourceServerProperties {
 			this.audiences = audiences;
 		}
 
-		public String getAuthorityPrefix() {
+		public @Nullable String getAuthorityPrefix() {
 			return this.authorityPrefix;
 		}
 
-		public void setAuthorityPrefix(String authorityPrefix) {
+		public void setAuthorityPrefix(@Nullable String authorityPrefix) {
 			this.authorityPrefix = authorityPrefix;
 		}
 
-		public String getAuthoritiesClaimDelimiter() {
+		public @Nullable String getAuthoritiesClaimDelimiter() {
 			return this.authoritiesClaimDelimiter;
 		}
 
-		public void setAuthoritiesClaimDelimiter(String authoritiesClaimDelimiter) {
+		public void setAuthoritiesClaimDelimiter(@Nullable String authoritiesClaimDelimiter) {
 			this.authoritiesClaimDelimiter = authoritiesClaimDelimiter;
 		}
 
-		public String getAuthoritiesClaimName() {
+		public @Nullable String getAuthoritiesClaimName() {
 			return this.authoritiesClaimName;
 		}
 
-		public void setAuthoritiesClaimName(String authoritiesClaimName) {
+		public void setAuthoritiesClaimName(@Nullable String authoritiesClaimName) {
 			this.authoritiesClaimName = authoritiesClaimName;
 		}
 
-		public String getPrincipalClaimName() {
+		public @Nullable String getPrincipalClaimName() {
 			return this.principalClaimName;
 		}
 
-		public void setPrincipalClaimName(String principalClaimName) {
+		public void setPrincipalClaimName(@Nullable String principalClaimName) {
 			this.principalClaimName = principalClaimName;
 		}
 
 		public String readPublicKey() throws IOException {
-			String key = "spring.security.oauth2.resourceserver.public-key-location";
+			String key = "spring.security.oauth2.resourceserver.jwt.public-key-location";
 			if (this.publicKeyLocation == null) {
 				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
 						"No public key location specified");
@@ -194,39 +197,39 @@ public class OAuth2ResourceServerProperties {
 		/**
 		 * Client id used to authenticate with the token introspection endpoint.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Client secret used to authenticate with the token introspection endpoint.
 		 */
-		private String clientSecret;
+		private @Nullable String clientSecret;
 
 		/**
 		 * OAuth 2.0 endpoint through which token introspection is accomplished.
 		 */
-		private String introspectionUri;
+		private @Nullable String introspectionUri;
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getClientSecret() {
+		public @Nullable String getClientSecret() {
 			return this.clientSecret;
 		}
 
-		public void setClientSecret(String clientSecret) {
+		public void setClientSecret(@Nullable String clientSecret) {
 			this.clientSecret = clientSecret;
 		}
 
-		public String getIntrospectionUri() {
+		public @Nullable String getIntrospectionUri() {
 			return this.introspectionUri;
 		}
 
-		public void setIntrospectionUri(String introspectionUri) {
+		public void setIntrospectionUri(@Nullable String introspectionUri) {
 			this.introspectionUri = introspectionUri;
 		}
 

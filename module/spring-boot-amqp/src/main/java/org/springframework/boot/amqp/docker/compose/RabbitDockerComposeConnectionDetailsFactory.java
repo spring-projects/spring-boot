@@ -18,6 +18,8 @@ package org.springframework.boot.amqp.docker.compose;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -35,12 +37,10 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class RabbitDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
 
-	private static final String[] RABBITMQ_CONTAINER_NAMES = { "rabbitmq", "bitnami/rabbitmq" };
-
 	private static final int RABBITMQ_PORT = 5672;
 
 	protected RabbitDockerComposeConnectionDetailsFactory() {
-		super(RABBITMQ_CONTAINER_NAMES);
+		super("rabbitmq");
 	}
 
 	@Override
@@ -66,12 +66,12 @@ class RabbitDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.environment.getUsername();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.environment.getPassword();
 		}
 

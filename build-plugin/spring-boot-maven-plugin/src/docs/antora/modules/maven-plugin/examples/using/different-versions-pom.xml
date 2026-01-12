@@ -6,7 +6,7 @@
 	<!-- tag::different-versions[] -->
 	<properties>
 		<slf4j.version>1.7.30</slf4j.version>
-		<spring-data-releasetrain.version>Moore-SR6</spring-data-releasetrain.version>
+		<spring-data-bom.version>2024.1.10</spring-data-bom.version>
 	</properties>
 	<!-- end::different-versions[] -->
 

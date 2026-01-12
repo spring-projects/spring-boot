@@ -34,11 +34,11 @@ import org.springframework.util.ReflectionUtils;
  */
 public abstract class AbstractJsonParser implements JsonParser {
 
-	protected final Map<String, Object> parseMap(String json, Function<String, Map<String, Object>> parser) {
+	protected final Map<String, Object> parseMap(@Nullable String json, Function<String, Map<String, Object>> parser) {
 		return trimParse(json, "{", parser);
 	}
 
-	protected final List<Object> parseList(String json, Function<String, List<Object>> parser) {
+	protected final List<Object> parseList(@Nullable String json, Function<String, List<Object>> parser) {
 		return trimParse(json, "[", parser);
 	}
 

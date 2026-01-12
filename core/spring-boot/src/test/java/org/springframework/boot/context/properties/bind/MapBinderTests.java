@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -369,7 +370,9 @@ class MapBinderTests {
 		source.put("foo.bar[2].value", "c");
 		this.sources.add(source);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar").stream().map(JavaBean::getValue).toList();
+		List<JavaBean> bar = map.get("bar");
+		assertThat(bar).isNotNull();
+		List<String> values = bar.stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 
 	}
@@ -387,7 +390,9 @@ class MapBinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar.pattern", "1", "line1"));
 		Bindable<Map<String, Foo>> target = Bindable.mapOf(String.class, Foo.class);
 		Map<String, Foo> map = this.binder.bind("foo", target).get();
-		assertThat(map.get("bar").getPattern()).isEqualTo("1");
+		Foo bar = map.get("bar");
+		assertThat(bar).isNotNull();
+		assertThat(bar.getPattern()).isEqualTo("1");
 	}
 
 	@Test
@@ -434,7 +439,9 @@ class MapBinderTests {
 		mockSource.put("foo.bar.baz[2].value", "c");
 		this.sources.add(mockSource);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).toList();
+		List<JavaBean> barBaz = map.get("bar.baz");
+		assertThat(barBaz).isNotNull();
+		List<String> values = barBaz.stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 	}
 
@@ -495,8 +502,12 @@ class MapBinderTests {
 		this.sources.add(source);
 		BindResult<NestableFoo> foo = this.binder.bind("foo", NestableFoo.class);
 		assertThat(foo.get().getValue()).isNotNull();
-		assertThat(foo.get().getFoos().get("foo1").getValue()).isEqualTo("two");
-		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
+		NestableFoo foo1 = foo.get().getFoos().get("foo1");
+		assertThat(foo1).isNotNull();
+		assertThat(foo1.getValue()).isEqualTo("two");
+		NestableFoo foo2 = foo.get().getFoos().get("foo2");
+		assertThat(foo2).isNotNull();
+		assertThat(foo2.getValue()).isEqualTo("three");
 	}
 
 	@Test
@@ -611,8 +622,11 @@ class MapBinderTests {
 		source.put("foo.addresses.localhost[1]", "127.0.0.2");
 		this.sources.add(source);
 		MapWithWildcardProperties result = this.binder.bind("foo", Bindable.of(MapWithWildcardProperties.class)).get();
-		assertThat(result.getAddresses().get("localhost").stream().map(InetAddress::getHostAddress))
-			.containsExactly("127.0.0.1", "127.0.0.2");
+		Map<String, ? extends List<? extends InetAddress>> addresses = result.getAddresses();
+		assertThat(addresses).isNotNull();
+		List<? extends InetAddress> localhost = addresses.get("localhost");
+		assertThat(localhost).isNotNull();
+		assertThat(localhost.stream().map(InetAddress::getHostAddress)).containsExactly("127.0.0.1", "127.0.0.2");
 	}
 
 	@Test
@@ -670,20 +684,20 @@ class MapBinderTests {
 
 	static class Foo {
 
-		private String pattern;
+		private @Nullable String pattern;
 
 		Foo() {
 		}
 
-		Foo(String pattern) {
+		Foo(@Nullable String pattern) {
 			this.pattern = pattern;
 		}
 
-		String getPattern() {
+		@Nullable String getPattern() {
 			return this.pattern;
 		}
 
-		void setPattern(String pattern) {
+		void setPattern(@Nullable String pattern) {
 			this.pattern = pattern;
 		}
 
@@ -693,17 +707,17 @@ class MapBinderTests {
 
 		private final Map<String, NestableFoo> foos = new LinkedHashMap<>();
 
-		private String value;
+		private @Nullable String value;
 
 		Map<String, NestableFoo> getFoos() {
 			return this.foos;
 		}
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
@@ -762,13 +776,13 @@ class MapBinderTests {
 
 	static class BeanWithGetterException {
 
-		private Map<String, String> values;
+		private @Nullable Map<String, String> values;
 
-		void setValues(Map<String, String> values) {
+		void setValues(@Nullable Map<String, String> values) {
 			this.values = values;
 		}
 
-		Map<String, String> getValues() {
+		@Nullable Map<String, String> getValues() {
 			return Collections.unmodifiableMap(this.values);
 		}
 
@@ -776,13 +790,13 @@ class MapBinderTests {
 
 	static class MapWithWildcardProperties {
 
-		private Map<String, ? extends List<? extends InetAddress>> addresses;
+		private @Nullable Map<String, ? extends List<? extends InetAddress>> addresses;
 
-		Map<String, ? extends List<? extends InetAddress>> getAddresses() {
+		@Nullable Map<String, ? extends List<? extends InetAddress>> getAddresses() {
 			return this.addresses;
 		}
 
-		void setAddresses(Map<String, ? extends List<? extends InetAddress>> addresses) {
+		void setAddresses(@Nullable Map<String, ? extends List<? extends InetAddress>> addresses) {
 			this.addresses = addresses;
 		}
 

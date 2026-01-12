@@ -17,11 +17,13 @@
 package org.springframework.boot.web.server.servlet.context;
 
 import jakarta.servlet.Servlet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.core.io.ClassPathResource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 
 /**
@@ -37,7 +39,7 @@ class XmlServletWebServerApplicationContextTests {
 
 	private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";
 
-	private XmlServletWebServerApplicationContext context;
+	private @Nullable XmlServletWebServerApplicationContext context;
 
 	@Test
 	void createFromResource() {
@@ -82,6 +84,7 @@ class XmlServletWebServerApplicationContextTests {
 	}
 
 	private void verifyContext() {
+		assertThat(this.context).isNotNull();
 		MockServletWebServerFactory factory = this.context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
 		then(factory.getServletContext()).should().addServlet("servlet", servlet);

@@ -47,8 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
-import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider.MockCacheManager;
+import org.springframework.boot.cache.autoconfigure.MockCachingProvider.MockCacheManager;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -402,6 +401,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 				CompleteConfiguration<?, ?> defaultCacheConfiguration = context.getBean(CompleteConfiguration.class);
 				MockCacheManager mockCacheManager = (MockCacheManager) cacheManager.getCacheManager();
+				assertThat(mockCacheManager).isNotNull();
 				assertThat(mockCacheManager.getConfigurations()).containsEntry("one", defaultCacheConfiguration)
 					.containsEntry("two", defaultCacheConfiguration);
 			});
@@ -438,7 +438,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 			.run((context) -> {
 				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
 				Resource configResource = new ClassPathResource(configLocation);
-				assertThat(cacheManager.getCacheManager().getURI()).isEqualTo(configResource.getURI());
+				javax.cache.CacheManager jCache = cacheManager.getCacheManager();
+				assertThat(jCache).isNotNull();
+				assertThat(jCache.getURI()).isEqualTo(configResource.getURI());
 			});
 	}
 
@@ -462,7 +464,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn)
 			.run((context) -> {
 				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
-				assertThat(cacheManager.getCacheManager().getClassLoader()).isEqualTo(context.getClassLoader());
+				javax.cache.CacheManager jCache = cacheManager.getCacheManager();
+				assertThat(jCache).isNotNull();
+				assertThat(jCache.getClassLoader()).isEqualTo(context.getClassLoader());
 			});
 	}
 
@@ -479,7 +483,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 			.withBean(JCachePropertiesCustomizer.class, () -> customizer)
 			.run((context) -> {
 				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
-				assertThat(cacheManager.getCacheManager().getProperties()).containsEntry("customized", "true");
+				javax.cache.CacheManager jCache = cacheManager.getCacheManager();
+				assertThat(jCache).isNotNull();
+				assertThat(jCache.getProperties()).containsEntry("customized", "true");
 			});
 	}
 
@@ -584,7 +590,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				.run((context) -> {
 					JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
 					Resource configResource = new ClassPathResource(configLocation);
-					assertThat(cacheManager.getCacheManager().getURI()).isEqualTo(configResource.getURI());
+					javax.cache.CacheManager jCache = cacheManager.getCacheManager();
+					assertThat(jCache).isNotNull();
+					assertThat(jCache.getURI()).isEqualTo(configResource.getURI());
 					assertThat(Hazelcast.getAllHazelcastInstances()).hasSize(1);
 				});
 		}
@@ -672,8 +680,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					"spring.cache.jcache.config=" + configLocation)
 			.run((context) -> {
 				Resource configResource = new ClassPathResource(configLocation);
-				assertThat(getCacheManager(context, JCacheCacheManager.class).getCacheManager().getURI())
-					.isEqualTo(configResource.getURI());
+				javax.cache.CacheManager jCache = getCacheManager(context, JCacheCacheManager.class).getCacheManager();
+				assertThat(jCache).isNotNull();
+				assertThat(jCache.getURI()).isEqualTo(configResource.getURI());
 			});
 	}
 
@@ -767,6 +776,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
 				assertThat(manager.getCacheNames()).containsOnly("foo");
 				Cache foo = manager.getCache("foo");
+				assertThat(foo).isNotNull();
 				foo.get("1");
 				// See next tests: no spec given so stats should be disabled
 				assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isZero();
@@ -823,16 +833,21 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
 		assertThat(manager.getCacheNames()).containsOnly("foo", "bar");
 		Cache foo = manager.getCache("foo");
+		assertThat(foo).isNotNull();
 		foo.get("1");
 		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isOne();
 	}
 
 	private CouchbaseCacheConfiguration getDefaultCouchbaseCacheConfiguration(CouchbaseCacheManager cacheManager) {
-		return (CouchbaseCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+		Object field = ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+		assertThat(field).isNotNull();
+		return (CouchbaseCacheConfiguration) field;
 	}
 
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
-		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfiguration");
+		Object field = ReflectionTestUtils.getField(cacheManager, "defaultCacheConfiguration");
+		assertThat(field).isNotNull();
+		return (RedisCacheConfiguration) field;
 	}
 
 	@Configuration(proxyBeanMethods = false)

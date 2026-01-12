@@ -16,10 +16,11 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -74,13 +75,13 @@ class TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanInteg
 	@ConfigurationProperties("spring.datasource")
 	public static class MockDataSourceProperties {
 
-		private String url;
+		private @Nullable String url;
 
-		public String getUrl() {
+		public @Nullable String getUrl() {
 			return this.url;
 		}
 
-		public void setUrl(String url) {
+		public void setUrl(@Nullable String url) {
 			this.url = url;
 		}
 
@@ -89,7 +90,7 @@ class TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanInteg
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void setConnectionProperties(DynamicPropertyRegistry registry) {

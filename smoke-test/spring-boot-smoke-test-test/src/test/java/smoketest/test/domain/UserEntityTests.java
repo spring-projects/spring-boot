@@ -19,8 +19,8 @@ package smoketest.test.domain;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -39,6 +39,7 @@ class UserEntityTests {
 	private TestEntityManager entityManager;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User(null, VIN))
 			.withMessage("'username' must not be empty");
@@ -51,6 +52,7 @@ class UserEntityTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User("sboot", null))
 			.withMessage("'vin' must not be null");

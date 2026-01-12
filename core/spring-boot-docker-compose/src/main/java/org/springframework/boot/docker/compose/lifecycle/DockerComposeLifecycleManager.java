@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -74,14 +73,14 @@ class DockerComposeLifecycleManager {
 
 	private final ServiceReadinessChecks serviceReadinessChecks;
 
-	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
+	DockerComposeLifecycleManager(ApplicationContext applicationContext,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners) {
-		this(null, applicationContext, binder, shutdownHandlers, properties, eventListeners,
-				new DockerComposeSkipCheck(), null);
+		this(null, applicationContext, shutdownHandlers, properties, eventListeners, new DockerComposeSkipCheck(),
+				null);
 	}
 
-	DockerComposeLifecycleManager(@Nullable File workingDirectory, ApplicationContext applicationContext, Binder binder,
+	DockerComposeLifecycleManager(@Nullable File workingDirectory, ApplicationContext applicationContext,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners, DockerComposeSkipCheck skipCheck,
 			@Nullable ServiceReadinessChecks serviceReadinessChecks) {

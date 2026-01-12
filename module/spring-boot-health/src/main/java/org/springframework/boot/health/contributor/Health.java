@@ -23,6 +23,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -183,7 +184,7 @@ public final class Health {
 
 		private final Map<String, Object> details;
 
-		private Throwable exception;
+		private @Nullable Throwable exception;
 
 		/**
 		 * Create new Builder instance.
@@ -325,7 +326,7 @@ public final class Health {
 		 * Return the {@link Exception}.
 		 * @return the exception or {@code null} if the builder has no exception
 		 */
-		Throwable getException() {
+		@Nullable Throwable getException() {
 			return this.exception;
 		}
 

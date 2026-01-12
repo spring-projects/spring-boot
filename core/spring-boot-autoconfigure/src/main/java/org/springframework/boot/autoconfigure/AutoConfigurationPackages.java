@@ -110,8 +110,10 @@ public abstract class AutoConfigurationPackages {
 			ValueHolder indexedArgumentValue = constructorArgumentValues.getIndexedArgumentValue(0, String[].class);
 			Assert.state(indexedArgumentValue != null, "'indexedArgumentValue' must not be null");
 			String[] existingPackages = (String[]) indexedArgumentValue.getValue();
+			Stream<String> existingPackagesStream = (existingPackages != null) ? Stream.of(existingPackages)
+					: Stream.empty();
 			constructorArgumentValues.addIndexedArgumentValue(0,
-					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages))
+					Stream.concat(existingPackagesStream, Stream.of(additionalBasePackages))
 						.distinct()
 						.toArray(String[]::new));
 		}

@@ -35,7 +35,7 @@ dependencies {
 	optional(project(":module:spring-boot-data-redis"))
 	optional(project(":module:spring-boot-hazelcast"))
 	optional(project(":module:spring-boot-hibernate"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("com.hazelcast:hazelcast-spring")
 	optional("io.micrometer:micrometer-core")
 	optional("javax.cache:cache-api")
@@ -57,8 +57,7 @@ dependencies {
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -67,5 +66,15 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

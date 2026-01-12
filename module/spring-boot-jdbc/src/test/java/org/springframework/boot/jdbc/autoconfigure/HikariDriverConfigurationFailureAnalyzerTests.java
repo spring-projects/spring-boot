@@ -16,7 +16,9 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import com.mchange.util.AssertException;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -53,7 +55,7 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 		assertThat(failureAnalysis).isNull();
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration) {
+	private @Nullable FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
 		return new HikariDriverConfigurationFailureAnalyzer().analyze(failure);
@@ -69,7 +71,7 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 		try {
 			context.refresh();
 			context.close();
-			return null;
+			throw new AssertException("Shouldn't be reached!");
 		}
 		catch (BeanCreationException ex) {
 			return ex;

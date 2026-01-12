@@ -67,6 +67,7 @@ public class SampleController {
 	protected static class Message {
 
 		@NotBlank(message = "Message value cannot be empty")
+		@SuppressWarnings("NullAway.Init")
 		private String value;
 
 		public String getValue() {

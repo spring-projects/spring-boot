@@ -25,11 +25,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.springframework.boot.configurationmetadata.json.JSONArray;
+import org.springframework.boot.configurationmetadata.json.JSONObject;
 
 /**
- * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
+ * Read standard JSON metadata format as {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
  */

@@ -32,6 +32,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.assertj.core.api.Condition;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	private SpringApplication application;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	public File temp;
 
 	@BeforeEach
@@ -814,7 +816,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		MapPropertySource propertySource = new MapPropertySource("defaultProperties", source) {
 
 			@Override
-			public Object getProperty(String name) {
+			public @Nullable Object getProperty(String name) {
 				if ("spring.config.name".equals(name)) {
 					return "gh17001";
 				}
@@ -1088,8 +1090,11 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		binder.bind("my.value", Bindable.of(String.class), bindHandler);
 		assertThat(properties).hasSize(1);
 		Origin origin = properties.get(0).getOrigin();
+		assertThat(origin).isNotNull();
 		assertThat(origin.toString()).contains("imported.properties");
-		assertThat(origin.getParent().toString()).contains("application.properties");
+		Origin parent = origin.getParent();
+		assertThat(parent).isNotNull();
+		assertThat(parent.toString()).contains("application.properties");
 	}
 
 	@Test
@@ -1315,7 +1320,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	static class Loader implements ConfigDataLoader<TestConfigDataResource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource)
+		public @Nullable ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource)
 				throws IOException, ConfigDataResourceNotFoundException {
 			if (resource.isOptional()) {
 				return null;

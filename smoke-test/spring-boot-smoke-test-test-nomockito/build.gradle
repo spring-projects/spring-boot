@@ -30,3 +30,7 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-test")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

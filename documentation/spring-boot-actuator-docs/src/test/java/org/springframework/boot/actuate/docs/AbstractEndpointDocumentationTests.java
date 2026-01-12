@@ -16,15 +16,14 @@
 
 package org.springframework.boot.actuate.docs;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -32,7 +31,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.docs.AbstractEndpointDocumentationTests.BaseDocumentationConfiguration;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
@@ -77,29 +76,24 @@ public abstract class AbstractEndpointDocumentationTests {
 	@SuppressWarnings("unchecked")
 	protected <T> OperationPreprocessor limit(Predicate<T> filter, String... keys) {
 		return new ContentModifyingOperationPreprocessor((content, mediaType) -> {
-			ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-			try {
-				Map<String, Object> payload = objectMapper.readValue(content, Map.class);
-				Object target = payload;
-				Map<Object, Object> parent = null;
-				for (String key : keys) {
-					if (!(target instanceof Map)) {
-						throw new IllegalStateException();
-					}
-					parent = (Map<Object, Object>) target;
-					target = parent.get(key);
+			JsonMapper jsonMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
+			Map<String, Object> payload = jsonMapper.readValue(content, Map.class);
+			Object target = payload;
+			Map<Object, Object> parent = null;
+			for (String key : keys) {
+				if (!(target instanceof Map)) {
+					throw new IllegalStateException();
 				}
-				if (target instanceof Map) {
-					parent.put(keys[keys.length - 1], select((Map<String, Object>) target, filter));
-				}
-				else {
-					parent.put(keys[keys.length - 1], select((List<Object>) target, filter));
-				}
-				return objectMapper.writeValueAsBytes(payload);
+				parent = (Map<Object, Object>) target;
+				target = parent.get(key);
 			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
+			if (target instanceof Map) {
+				parent.put(keys[keys.length - 1], select((Map<String, Object>) target, filter));
 			}
+			else {
+				parent.put(keys[keys.length - 1], select((List<Object>) target, filter));
+			}
+			return jsonMapper.writeValueAsBytes(payload);
 		});
 	}
 
@@ -135,14 +129,16 @@ public abstract class AbstractEndpointDocumentationTests {
 	static class BaseDocumentationConfiguration {
 
 		@Bean
-		static BeanPostProcessor endpointObjectMapperBeanPostProcessor() {
+		static BeanPostProcessor endpointJsonMapperBeanPostProcessor() {
 			return new BeanPostProcessor() {
 
 				@Override
 				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-					if (bean instanceof EndpointObjectMapper) {
-						return (EndpointObjectMapper) () -> ((EndpointObjectMapper) bean).get()
-							.enable(SerializationFeature.INDENT_OUTPUT);
+					if (bean instanceof EndpointJsonMapper) {
+						return (EndpointJsonMapper) () -> ((EndpointJsonMapper) bean).get()
+							.rebuild()
+							.enable(SerializationFeature.INDENT_OUTPUT)
+							.build();
 					}
 					return bean;
 				}

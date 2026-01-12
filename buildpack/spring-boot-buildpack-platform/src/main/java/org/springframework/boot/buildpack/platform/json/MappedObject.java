@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -74,7 +76,7 @@ public class MappedObject {
 	 * @param type the desired type. May be a simple JSON type or an interface
 	 * @return the value
 	 */
-	protected <T> T valueAt(String expression, Class<T> type) {
+	protected <T> @Nullable T valueAt(String expression, Class<T> type) {
 		return valueAt(this, this.node, this.lookup, expression, type);
 	}
 
@@ -104,13 +106,13 @@ public class MappedObject {
 	 * @return a list of children
 	 * @since 3.2.6
 	 */
-	protected <T> List<T> childrenAt(String expression, Function<JsonNode, T> factory) {
+	protected <T> List<T> childrenAt(@Nullable String expression, Function<JsonNode, T> factory) {
 		JsonNode node = (expression != null) ? this.node.at(expression) : this.node;
 		if (node.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<T> children = new ArrayList<>();
-		node.elements().forEachRemaining((childNode) -> children.add(factory.apply(childNode)));
+		node.values().forEach((childNode) -> children.add(factory.apply(childNode)));
 		return Collections.unmodifiableList(children);
 	}
 
@@ -120,13 +122,14 @@ public class MappedObject {
 		return (T) handler.root;
 	}
 
-	protected static <T> T valueAt(Object proxy, String expression, Class<T> type) {
+	protected static <T> @Nullable T valueAt(Object proxy, String expression, Class<T> type) {
 		MappedInvocationHandler handler = (MappedInvocationHandler) Proxy.getInvocationHandler(proxy);
 		return valueAt(handler.root, handler.node, handler.lookup, expression, type);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T valueAt(MappedObject root, JsonNode node, Lookup lookup, String expression, Class<T> type) {
+	private static <T> @Nullable T valueAt(MappedObject root, JsonNode node, Lookup lookup, String expression,
+			Class<T> type) {
 		JsonNode result = node.at(expression);
 		if (result.isMissingNode() && expression.startsWith("/") && expression.length() > 1
 				&& Character.isLowerCase(expression.charAt(1))) {
@@ -142,9 +145,9 @@ public class MappedObject {
 			return null;
 		}
 		try {
-			return SharedObjectMapper.get().treeToValue(result, type);
+			return SharedJsonMapper.get().treeToValue(result, type);
 		}
-		catch (IOException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -158,7 +161,7 @@ public class MappedObject {
 	 * @throws IOException on IO error
 	 */
 	protected static <T extends MappedObject> T of(String content, Function<JsonNode, T> factory) throws IOException {
-		return of(content, ObjectMapper::readTree, factory);
+		return of(content, JsonMapper::readTree, factory);
 	}
 
 	/**
@@ -171,7 +174,7 @@ public class MappedObject {
 	 */
 	protected static <T extends MappedObject> T of(InputStream content, Function<JsonNode, T> factory)
 			throws IOException {
-		return of(StreamUtils.nonClosing(content), ObjectMapper::readTree, factory);
+		return of(StreamUtils.nonClosing(content), JsonMapper::readTree, factory);
 	}
 
 	/**
@@ -186,8 +189,8 @@ public class MappedObject {
 	 */
 	protected static <T extends MappedObject, C> T of(C content, ContentReader<C> reader, Function<JsonNode, T> factory)
 			throws IOException {
-		ObjectMapper objectMapper = SharedObjectMapper.get();
-		JsonNode node = reader.read(objectMapper, content);
+		JsonMapper jsonMapper = SharedJsonMapper.get();
+		JsonNode node = reader.read(jsonMapper, content);
 		return factory.apply(node);
 	}
 
@@ -201,12 +204,12 @@ public class MappedObject {
 
 		/**
 		 * Read JSON content as a {@link JsonNode}.
-		 * @param objectMapper the source object mapper
+		 * @param jsonMapper the source JSON mapper
 		 * @param content the content to read
 		 * @return a {@link JsonNode}
 		 * @throws IOException on IO error
 		 */
-		JsonNode read(ObjectMapper objectMapper, C content) throws IOException;
+		JsonNode read(JsonMapper jsonMapper, C content) throws IOException;
 
 	}
 
@@ -233,7 +236,7 @@ public class MappedObject {
 		}
 
 		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			Class<?> declaringClass = method.getDeclaringClass();
 			if (method.isDefault()) {
 				Lookup lookup = this.lookup.in(declaringClass);
@@ -262,7 +265,7 @@ public class MappedObject {
 			return result.toString();
 		}
 
-		private Object valueForProperty(String name, Class<?> type) {
+		private @Nullable Object valueForProperty(String name, Class<?> type) {
 			return valueAt(this.root, this.node, this.lookup, "/" + name, type);
 		}
 

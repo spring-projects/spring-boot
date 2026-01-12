@@ -16,10 +16,9 @@
 
 package org.springframework.boot.env;
 
-import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.ConfigurableBootstrapContext;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -48,8 +47,11 @@ import org.springframework.core.env.Environment;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 1.3.0
+ * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
+ * {@link org.springframework.boot.EnvironmentPostProcessor}
  */
 @FunctionalInterface
+@Deprecated(since = "4.0.0", forRemoval = true)
 public interface EnvironmentPostProcessor {
 
 	/**
@@ -57,6 +59,7 @@ public interface EnvironmentPostProcessor {
 	 * @param environment the environment to post-process
 	 * @param application the application to which the environment belongs
 	 */
-	void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application);
+	void postProcessEnvironment(ConfigurableEnvironment environment,
+			org.springframework.boot.SpringApplication application);
 
 }

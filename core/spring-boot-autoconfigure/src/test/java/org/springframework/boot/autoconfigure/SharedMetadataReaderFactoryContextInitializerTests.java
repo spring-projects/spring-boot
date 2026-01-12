@@ -28,11 +28,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer.CachingMetadataReaderFactoryPostProcessor;
-import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +57,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 			.getField(application, "initializers");
 		// Simulate what would happen if an initializer was added using spring.factories
 		// and happened to be loaded first
+		assertThat(initializers).isNotNull();
 		initializers.add(0, new Initializer());
 		GenericApplicationContext context = (GenericApplicationContext) application.run();
 		BeanDefinition definition = context.getBeanDefinition(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME);
@@ -82,7 +83,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		assertThat(bean).isSameAs(configurationAnnotationPostProcessor);
 		then(configurationAnnotationPostProcessor).should()
 			.setMetadataReaderFactory(assertArg((metadataReaderFactory) -> assertThat(metadataReaderFactory)
-				.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class)));
+				.isInstanceOf(CachingMetadataReaderFactory.class)));
 	}
 
 	static class TestConfig {

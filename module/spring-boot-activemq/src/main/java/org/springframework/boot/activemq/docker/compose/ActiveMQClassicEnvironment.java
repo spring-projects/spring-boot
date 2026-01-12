@@ -32,7 +32,7 @@ class ActiveMQClassicEnvironment {
 
 	private final @Nullable String password;
 
-	ActiveMQClassicEnvironment(Map<String, String> env) {
+	ActiveMQClassicEnvironment(Map<String, @Nullable String> env) {
 		this.user = env.get("ACTIVEMQ_CONNECTION_USER");
 		this.password = env.get("ACTIVEMQ_CONNECTION_PASSWORD");
 	}

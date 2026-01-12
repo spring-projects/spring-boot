@@ -19,74 +19,39 @@ package smoketest.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.pulsar.PulsarContainer;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.waitAtMost;
 
 @Testcontainers(disabledWithoutDocker = true)
 @ExtendWith(OutputCaptureExtension.class)
+@SpringBootTest
 class SamplePulsarApplicationTests {
 
 	@Container
 	@ServiceConnection
 	static final PulsarContainer pulsar = TestImage.container(PulsarContainer.class);
 
-	abstract class PulsarApplication {
-
-		private final String type;
-
-		PulsarApplication(String type) {
-			this.type = type;
+	@Test
+	void appProducesAndConsumesMessages(CapturedOutput output) {
+		List<String> expectedOutput = new ArrayList<>();
+		for (int i = 0; i < 10; i++) {
+			expectedOutput.add("++++++PRODUCE:(%s)------".formatted(i));
+			expectedOutput.add("++++++CONSUME:(%s)------".formatted(i));
 		}
-
-		@Test
-		void appProducesAndConsumesMessages(CapturedOutput output) {
-			List<String> expectedOutput = new ArrayList<>();
-			IntStream.range(0, 10).forEachOrdered((i) -> {
-				expectedOutput.add("++++++PRODUCE %s:(%s)------".formatted(this.type, i));
-				expectedOutput.add("++++++CONSUME %s:(%s)------".formatted(this.type, i));
-			});
-			Awaitility.waitAtMost(Duration.ofSeconds(30))
-				.untilAsserted(() -> assertThat(output).contains(expectedOutput));
-		}
-
-	}
-
-	@Nested
-	@SpringBootTest
-	@ActiveProfiles("smoketest-pulsar-imperative")
-	class ImperativePulsarApplication extends PulsarApplication {
-
-		ImperativePulsarApplication() {
-			super("IMPERATIVE");
-		}
-
-	}
-
-	@Nested
-	@SpringBootTest
-	@ActiveProfiles("smoketest-pulsar-reactive")
-	class ReactivePulsarApplication extends PulsarApplication {
-
-		ReactivePulsarApplication() {
-			super("REACTIVE");
-		}
-
+		waitAtMost(Duration.ofSeconds(30)).untilAsserted(() -> assertThat(output).contains(expectedOutput));
 	}
 
 }

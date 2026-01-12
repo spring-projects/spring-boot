@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.xml.transform.TransformerFactory;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.oxm.Marshaller;
@@ -56,27 +58,27 @@ import org.springframework.ws.transport.WebServiceMessageSender;
  */
 public class WebServiceTemplateBuilder {
 
-	private final WebServiceMessageSenderFactory httpMessageSenderFactory;
+	private final @Nullable WebServiceMessageSenderFactory httpMessageSenderFactory;
 
 	private final boolean detectHttpMessageSender;
 
-	private final Set<ClientInterceptor> interceptors;
+	private final @Nullable Set<ClientInterceptor> interceptors;
 
-	private final Set<WebServiceTemplateCustomizer> internalCustomizers;
+	private final @Nullable Set<WebServiceTemplateCustomizer> internalCustomizers;
 
 	private final Set<WebServiceTemplateCustomizer> customizers;
 
 	private final WebServiceMessageSenders messageSenders;
 
-	private final Marshaller marshaller;
+	private final @Nullable Marshaller marshaller;
 
-	private final Unmarshaller unmarshaller;
+	private final @Nullable Unmarshaller unmarshaller;
 
-	private final DestinationProvider destinationProvider;
+	private final @Nullable DestinationProvider destinationProvider;
 
-	private final Class<? extends TransformerFactory> transformerFactoryClass;
+	private final @Nullable Class<? extends TransformerFactory> transformerFactoryClass;
 
-	private final WebServiceMessageFactory messageFactory;
+	private final @Nullable WebServiceMessageFactory messageFactory;
 
 	public WebServiceTemplateBuilder(WebServiceTemplateCustomizer... customizers) {
 		this.httpMessageSenderFactory = null;
@@ -92,12 +94,14 @@ public class WebServiceTemplateBuilder {
 		this.messageFactory = null;
 	}
 
-	private WebServiceTemplateBuilder(WebServiceMessageSenderFactory messageSenderFactory,
-			boolean detectHttpMessageSender, Set<ClientInterceptor> interceptors,
-			Set<WebServiceTemplateCustomizer> internalCustomizers, Set<WebServiceTemplateCustomizer> customizers,
-			WebServiceMessageSenders messageSenders, Marshaller marshaller, Unmarshaller unmarshaller,
-			DestinationProvider destinationProvider, Class<? extends TransformerFactory> transformerFactoryClass,
-			WebServiceMessageFactory messageFactory) {
+	private WebServiceTemplateBuilder(@Nullable WebServiceMessageSenderFactory messageSenderFactory,
+			boolean detectHttpMessageSender, @Nullable Set<ClientInterceptor> interceptors,
+			@Nullable Set<WebServiceTemplateCustomizer> internalCustomizers,
+			Set<WebServiceTemplateCustomizer> customizers, WebServiceMessageSenders messageSenders,
+			@Nullable Marshaller marshaller, @Nullable Unmarshaller unmarshaller,
+			@Nullable DestinationProvider destinationProvider,
+			@Nullable Class<? extends TransformerFactory> transformerFactoryClass,
+			@Nullable WebServiceMessageFactory messageFactory) {
 		this.httpMessageSenderFactory = messageSenderFactory;
 		this.detectHttpMessageSender = detectHttpMessageSender;
 		this.interceptors = interceptors;
@@ -450,7 +454,8 @@ public class WebServiceTemplateBuilder {
 	 * @see #configure(WebServiceTemplate)
 	 */
 	public WebServiceTemplate build() {
-		return configure(new WebServiceTemplate());
+		return configure(
+				(this.messageFactory != null) ? new WebServiceTemplate(this.messageFactory) : new WebServiceTemplate());
 	}
 
 	/**
@@ -478,7 +483,7 @@ public class WebServiceTemplateBuilder {
 	public <T extends WebServiceTemplate> T configure(T webServiceTemplate) {
 		Assert.notNull(webServiceTemplate, "'webServiceTemplate' must not be null");
 		configureMessageSenders(webServiceTemplate);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		applyCustomizers(webServiceTemplate, this.internalCustomizers);
 		map.from(this.marshaller).to(webServiceTemplate::setMarshaller);
 		map.from(this.unmarshaller).to(webServiceTemplate::setUnmarshaller);
@@ -497,7 +502,7 @@ public class WebServiceTemplateBuilder {
 	}
 
 	private void applyCustomizers(WebServiceTemplate webServiceTemplate,
-			Set<WebServiceTemplateCustomizer> customizers) {
+			@Nullable Set<WebServiceTemplateCustomizer> customizers) {
 		if (!CollectionUtils.isEmpty(customizers)) {
 			for (WebServiceTemplateCustomizer customizer : customizers) {
 				customizer.customize(webServiceTemplate);
@@ -520,11 +525,11 @@ public class WebServiceTemplateBuilder {
 		}
 	}
 
-	private <T> Set<T> append(Set<T> set, T addition) {
+	private <T> Set<T> append(@Nullable Set<T> set, T addition) {
 		return append(set, Collections.singleton(addition));
 	}
 
-	private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
+	private static <T> Set<T> append(@Nullable Set<T> set, @Nullable Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		result.addAll((additions != null) ? additions : Collections.emptyList());
 		return Collections.unmodifiableSet(result);

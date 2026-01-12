@@ -16,20 +16,20 @@
 
 package org.springframework.boot.jackson.autoconfigure;
 
+import tools.jackson.databind.json.JsonMapper;
+
 import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * {@link JacksonBackgroundPreinitializer} for Jackson.
+ * {@link BackgroundPreinitializer} for Jackson.
  *
  * @author Phillip Webb
  */
-@SuppressWarnings("removal")
 final class JacksonBackgroundPreinitializer implements BackgroundPreinitializer {
 
 	@Override
 	public void preinitialize() throws Exception {
-		Jackson2ObjectMapperBuilder.json().build();
+		JsonMapper.builder().build();
 	}
 
 }

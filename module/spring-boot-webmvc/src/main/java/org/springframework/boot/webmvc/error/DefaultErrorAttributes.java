@@ -26,6 +26,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.error.Error;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -81,8 +82,8 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-			Exception ex) {
+	public @Nullable ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
+			@Nullable Object handler, Exception ex) {
 		storeErrorAttributes(request, ex);
 		return null;
 	}
@@ -92,14 +93,15 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
+	public Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+		Map<String, @Nullable Object> errorAttributes = getErrorAttributes(webRequest,
+				options.isIncluded(Include.STACK_TRACE));
 		options.retainIncluded(errorAttributes);
 		return errorAttributes;
 	}
 
-	private Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+	private Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+		Map<String, @Nullable Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, webRequest);
 		addErrorDetails(errorAttributes, webRequest, includeStackTrace);
@@ -107,7 +109,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return errorAttributes;
 	}
 
-	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+	private void addStatus(Map<String, @Nullable Object> errorAttributes, RequestAttributes requestAttributes) {
 		Integer status = getAttribute(requestAttributes, RequestDispatcher.ERROR_STATUS_CODE);
 		if (status == null) {
 			errorAttributes.put("status", 999);
@@ -124,7 +126,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 	}
 
-	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
+	private void addErrorDetails(Map<String, @Nullable Object> errorAttributes, WebRequest webRequest,
 			boolean includeStackTrace) {
 		Throwable error = getError(webRequest);
 		if (error != null) {
@@ -139,7 +141,8 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		addErrorMessage(errorAttributes, webRequest, error);
 	}
 
-	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+	private void addErrorMessage(Map<String, @Nullable Object> errorAttributes, WebRequest webRequest,
+			@Nullable Throwable error) {
 		BindingResult bindingResult = extractBindingResult(error);
 		if (bindingResult != null) {
 			addMessageAndErrorsFromBindingResult(errorAttributes, bindingResult);
@@ -153,20 +156,22 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		addExceptionErrorMessage(errorAttributes, webRequest, error);
 	}
 
-	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
+	private void addMessageAndErrorsFromBindingResult(Map<String, @Nullable Object> errorAttributes,
+			BindingResult result) {
 		errorAttributes.put("message", "Validation failed for object='%s'. Error count: %s"
 			.formatted(result.getObjectName(), result.getAllErrors().size()));
 		errorAttributes.put("errors", Error.wrapIfNecessary(result.getAllErrors()));
 	}
 
-	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
+	private void addMessageAndErrorsFromMethodValidationResult(Map<String, @Nullable Object> errorAttributes,
 			MethodValidationResult result) {
 		errorAttributes.put("message", "Validation failed for method='%s'. Error count: %s"
 			.formatted(result.getMethod(), result.getAllErrors().size()));
 		errorAttributes.put("errors", Error.wrapIfNecessary(result.getAllErrors()));
 	}
 
-	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+	private void addExceptionErrorMessage(Map<String, @Nullable Object> errorAttributes, WebRequest webRequest,
+			@Nullable Throwable error) {
 		errorAttributes.put("message", getMessage(webRequest, error));
 	}
 
@@ -183,7 +188,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	 * @param error current error, if any
 	 * @return message to include in the error attributes
 	 */
-	protected String getMessage(WebRequest webRequest, Throwable error) {
+	protected String getMessage(WebRequest webRequest, @Nullable Throwable error) {
 		Object message = getAttribute(webRequest, RequestDispatcher.ERROR_MESSAGE);
 		if (!ObjectUtils.isEmpty(message)) {
 			return message.toString();
@@ -194,28 +199,28 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return "No message available";
 	}
 
-	private BindingResult extractBindingResult(Throwable error) {
+	private @Nullable BindingResult extractBindingResult(@Nullable Throwable error) {
 		if (error instanceof BindingResult bindingResult) {
 			return bindingResult;
 		}
 		return null;
 	}
 
-	private MethodValidationResult extractMethodValidationResult(Throwable error) {
+	private @Nullable MethodValidationResult extractMethodValidationResult(@Nullable Throwable error) {
 		if (error instanceof MethodValidationResult methodValidationResult) {
 			return methodValidationResult;
 		}
 		return null;
 	}
 
-	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
+	private void addStackTrace(Map<String, @Nullable Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
 		error.printStackTrace(new PrintWriter(stackTrace));
 		stackTrace.flush();
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void addPath(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+	private void addPath(Map<String, @Nullable Object> errorAttributes, RequestAttributes requestAttributes) {
 		String path = getAttribute(requestAttributes, RequestDispatcher.ERROR_REQUEST_URI);
 		if (path != null) {
 			errorAttributes.put("path", path);
@@ -223,7 +228,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@Override
-	public Throwable getError(WebRequest webRequest) {
+	public @Nullable Throwable getError(WebRequest webRequest) {
 		Throwable exception = getAttribute(webRequest, ERROR_INTERNAL_ATTRIBUTE);
 		if (exception == null) {
 			exception = getAttribute(webRequest, RequestDispatcher.ERROR_EXCEPTION);
@@ -232,7 +237,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getAttribute(RequestAttributes requestAttributes, String name) {
+	private <T> @Nullable T getAttribute(RequestAttributes requestAttributes, String name) {
 		return (T) requestAttributes.getAttribute(name, RequestAttributes.SCOPE_REQUEST);
 	}
 

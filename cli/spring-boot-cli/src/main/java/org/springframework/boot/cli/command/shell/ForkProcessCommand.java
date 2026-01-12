@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.options.OptionHelp;
 import org.springframework.boot.cli.command.status.ExitStatus;
@@ -53,12 +55,12 @@ class ForkProcessCommand extends RunProcessCommand {
 	}
 
 	@Override
-	public String getUsageHelp() {
+	public @Nullable String getUsageHelp() {
 		return this.command.getUsageHelp();
 	}
 
 	@Override
-	public String getHelp() {
+	public @Nullable String getHelp() {
 		return this.command.getHelp();
 	}
 

@@ -22,6 +22,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,13 +44,13 @@ class MavenBuildOutputTimestamp {
 
 	private static final Instant DATE_MAX = Instant.parse("2099-12-31T23:59:59Z");
 
-	private final String timestamp;
+	private final @Nullable String timestamp;
 
 	/**
 	 * Creates a new {@link MavenBuildOutputTimestamp}.
 	 * @param timestamp timestamp or {@code null}
 	 */
-	MavenBuildOutputTimestamp(String timestamp) {
+	MavenBuildOutputTimestamp(@Nullable String timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -59,7 +61,7 @@ class MavenBuildOutputTimestamp {
 	 * integer, or it's not within the valid range 1980-01-01T00:00:02Z to
 	 * 2099-12-31T23:59:59Z
 	 */
-	FileTime toFileTime() {
+	@Nullable FileTime toFileTime() {
 		Instant instant = toInstant();
 		if (instant == null) {
 			return null;
@@ -74,7 +76,7 @@ class MavenBuildOutputTimestamp {
 	 * integer, or it's not within the valid range 1980-01-01T00:00:02Z to
 	 * 2099-12-31T23:59:59Z
 	 */
-	Instant toInstant() {
+	@Nullable Instant toInstant() {
 		if (!StringUtils.hasLength(this.timestamp)) {
 			return null;
 		}

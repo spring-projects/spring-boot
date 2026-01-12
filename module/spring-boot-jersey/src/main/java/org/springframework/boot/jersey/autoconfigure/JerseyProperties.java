@@ -19,6 +19,8 @@ package org.springframework.boot.jersey.autoconfigure;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -50,7 +52,7 @@ public class JerseyProperties {
 	 * Path that serves as the base URI for the application. If specified, overrides the
 	 * value of "@ApplicationPath".
 	 */
-	private String applicationPath;
+	private @Nullable String applicationPath;
 
 	public Filter getFilter() {
 		return this.filter;
@@ -76,11 +78,11 @@ public class JerseyProperties {
 		this.init = init;
 	}
 
-	public String getApplicationPath() {
+	public @Nullable String getApplicationPath() {
 		return this.applicationPath;
 	}
 
-	public void setApplicationPath(String applicationPath) {
+	public void setApplicationPath(@Nullable String applicationPath) {
 		this.applicationPath = applicationPath;
 	}
 

@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
@@ -50,7 +51,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.error.ErrorPageRegistrar;
 import org.springframework.boot.web.error.ErrorPageRegistry;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
@@ -65,6 +65,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Contract;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
@@ -84,14 +86,14 @@ import org.springframework.web.util.HtmlUtils;
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfiguration(before = WebMvcAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServerProperties.class })
-@EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 public final class ErrorMvcAutoConfiguration {
 
-	private final ServerProperties serverProperties;
+	private final WebProperties webProperties;
 
-	ErrorMvcAutoConfiguration(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
+	ErrorMvcAutoConfiguration(WebProperties webProperties) {
+		this.webProperties = webProperties;
 	}
 
 	@Bean
@@ -104,13 +106,13 @@ public final class ErrorMvcAutoConfiguration {
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
-		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
+		return new BasicErrorController(errorAttributes, this.webProperties.getError(),
 				errorViewResolvers.orderedStream().toList());
 	}
 
 	@Bean
 	ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
-		return new ErrorPageCustomizer(this.serverProperties, dispatcherServletPath);
+		return new ErrorPageCustomizer(this.webProperties, dispatcherServletPath);
 	}
 
 	@Bean
@@ -119,7 +121,6 @@ public final class ErrorMvcAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -141,7 +142,7 @@ public final class ErrorMvcAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBooleanProperty(name = "server.error.whitelabel.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.web.error.whitelabel.enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 
@@ -173,9 +174,11 @@ public final class ErrorMvcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ErrorTemplate Missing");
-			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(context.getClassLoader());
+			ClassLoader classLoader = context.getClassLoader();
+			Assert.state(classLoader != null, "'classLoader' must not be null");
+			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(classLoader);
 			TemplateAvailabilityProvider provider = providers.getProvider("error", context.getEnvironment(),
-					context.getClassLoader(), context.getResourceLoader());
+					classLoader, context.getResourceLoader());
 			if (provider != null) {
 				return ConditionOutcome.noMatch(message.foundExactly("template from " + provider));
 			}
@@ -194,8 +197,9 @@ public final class ErrorMvcAutoConfiguration {
 		private static final Log logger = LogFactory.getLog(StaticView.class);
 
 		@Override
-		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
+		public void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
+			Assert.state(model != null, "'model' must not be null");
 			if (response.isCommitted()) {
 				String message = getMessage(model);
 				logger.error(message);
@@ -229,7 +233,8 @@ public final class ErrorMvcAutoConfiguration {
 			response.getWriter().append(builder.toString());
 		}
 
-		private String htmlEscape(Object input) {
+		@Contract("!null -> !null")
+		private @Nullable String htmlEscape(@Nullable Object input) {
 			return (input != null) ? HtmlUtils.htmlEscape(input.toString()) : null;
 		}
 
@@ -256,11 +261,11 @@ public final class ErrorMvcAutoConfiguration {
 	 */
 	static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
-		private final ServerProperties properties;
+		private final WebProperties properties;
 
 		private final DispatcherServletPath dispatcherServletPath;
 
-		protected ErrorPageCustomizer(ServerProperties properties, DispatcherServletPath dispatcherServletPath) {
+		protected ErrorPageCustomizer(WebProperties properties, DispatcherServletPath dispatcherServletPath) {
 			this.properties = properties;
 			this.dispatcherServletPath = dispatcherServletPath;
 		}

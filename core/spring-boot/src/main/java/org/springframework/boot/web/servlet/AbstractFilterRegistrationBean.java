@@ -197,7 +197,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 * Sets the dispatcher types that should be used with the registration.
 	 * @param dispatcherTypes the dispatcher types
 	 */
-	public void setDispatcherTypes(EnumSet<DispatcherType> dispatcherTypes) {
+	public void setDispatcherTypes(@Nullable EnumSet<DispatcherType> dispatcherTypes) {
 		this.dispatcherTypes = dispatcherTypes;
 	}
 

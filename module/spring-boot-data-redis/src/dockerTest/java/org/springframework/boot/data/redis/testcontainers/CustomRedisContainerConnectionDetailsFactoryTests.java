@@ -17,6 +17,7 @@
 package org.springframework.boot.data.redis.testcontainers;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
@@ -24,13 +25,15 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.TestContainerConnectionSource;
 import org.springframework.core.annotation.MergedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link RedisContainerConnectionDetailsFactory} when using a custom container
@@ -45,10 +48,11 @@ class CustomRedisContainerConnectionDetailsFactoryTests {
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(null);
 		MergedAnnotation<ServiceConnection> annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("value", ""));
-		ContainerConnectionSource<RedisContainer> source = TestContainerConnectionSource.create("test", null,
-				RedisContainer.class, "mycustomimage", annotation, null);
+		Supplier<RedisContainer> containerSupplier = () -> new RedisContainer("redis");
+		ContainerConnectionSource<RedisContainer> source = TestContainerConnectionSource.create("test",
+				mock(Origin.class), RedisContainer.class, "mycustomimage", annotation, containerSupplier);
 		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
-		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
+		assertThat(connectionDetails.get(DataRedisConnectionDetails.class)).isNotNull();
 	}
 
 	@Test
@@ -56,10 +60,11 @@ class CustomRedisContainerConnectionDetailsFactoryTests {
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(null);
 		MergedAnnotation<ServiceConnection> annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("value", ""));
-		ContainerConnectionSource<RedisStackContainer> source = TestContainerConnectionSource.create("test", null,
-				RedisStackContainer.class, "mycustomimage", annotation, null);
+		Supplier<RedisStackContainer> containerSupplier = () -> new RedisStackContainer("redis");
+		ContainerConnectionSource<RedisStackContainer> source = TestContainerConnectionSource.create("test",
+				mock(Origin.class), RedisStackContainer.class, "mycustomimage", annotation, containerSupplier);
 		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
-		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
+		assertThat(connectionDetails.get(DataRedisConnectionDetails.class)).isNotNull();
 	}
 
 }

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class ConditionalOnBooleanPropertyTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
@@ -56,97 +57,97 @@ class ConditionalOnBooleanPropertyTests {
 	@Test
 	void defaultsWhenTrue() {
 		load(Defaults.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void defaultsWhenFalse() {
 		load(Defaults.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void defaultsWhenMissing() {
 		load(Defaults.class);
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingFalseWhenTrue() {
 		load(HavingValueTrueMatchIfMissingFalse.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingFalseWhenFalse() {
 		load(HavingValueTrueMatchIfMissingFalse.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingFalseWhenMissing() {
 		load(HavingValueTrueMatchIfMissingFalse.class);
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingTrueWhenTrue() {
 		load(HavingValueTrueMatchIfMissingTrue.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingTrueWhenFalse() {
 		load(HavingValueTrueMatchIfMissingTrue.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueTrueMatchIfMissingTrueWhenMissing() {
 		load(HavingValueTrueMatchIfMissingTrue.class);
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingFalseWhenTrue() {
 		load(HavingValueFalseMatchIfMissingFalse.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingFalseWhenFalse() {
 		load(HavingValueFalseMatchIfMissingFalse.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingFalseWhenMissing() {
 		load(HavingValueFalseMatchIfMissingFalse.class);
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingTrueWhenTrue() {
 		load(HavingValueFalseMatchIfMissingTrue.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingTrueWhenFalse() {
 		load(HavingValueFalseMatchIfMissingTrue.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void havingValueFalseMatchIfMissingTrueWhenMissing() {
 		load(HavingValueFalseMatchIfMissingTrue.class);
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
 	void withPrefix() {
 		load(HavingValueFalseMatchIfMissingTrue.class, "foo.test=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 	}
 
 	@Test
@@ -166,14 +167,14 @@ class ConditionalOnBooleanPropertyTests {
 	@Test
 	void conditionReportWhenMatched() {
 		load(Defaults.class, "test=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 		assertThat(getConditionEvaluationReport()).contains("@ConditionalOnBooleanProperty (test=true) matched");
 	}
 
 	@Test
 	void conditionReportWhenDoesNotMatch() {
 		load(Defaults.class, "test=false");
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(containsBean()).isFalse();
 		assertThat(getConditionEvaluationReport())
 			.contains("@ConditionalOnBooleanProperty (test=true) found different value in property 'test'");
 	}
@@ -181,7 +182,7 @@ class ConditionalOnBooleanPropertyTests {
 	@Test
 	void repeatablePropertiesConditionReportWhenMatched() {
 		load(RepeatablePropertiesRequiredConfiguration.class, "property1=true", "property2=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(containsBean()).isTrue();
 		String report = getConditionEvaluationReport();
 		assertThat(report).contains("@ConditionalOnBooleanProperty (property1=true) matched");
 		assertThat(report).contains("@ConditionalOnBooleanProperty (property2=true) matched");
@@ -199,6 +200,7 @@ class ConditionalOnBooleanPropertyTests {
 	}
 
 	private String getConditionEvaluationReport() {
+		assertThat(this.context).isNotNull();
 		return ConditionEvaluationReport.get(this.context.getBeanFactory())
 			.getConditionAndOutcomesBySource()
 			.values()
@@ -213,6 +215,11 @@ class ConditionalOnBooleanPropertyTests {
 		this.context = new SpringApplicationBuilder(config).environment(this.environment)
 			.web(WebApplicationType.NONE)
 			.run();
+	}
+
+	private boolean containsBean() {
+		assertThat(this.context).isNotNull();
+		return this.context.containsBean("foo");
 	}
 
 	abstract static class BeanConfiguration {

@@ -18,9 +18,9 @@ package smoketest.actuator;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,7 +45,7 @@ class ManagementDifferentPortAndEndpointWithExceptionHandlerSampleActuatorApplic
 	void testExceptionHandlerRestControllerEndpoint() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
 			.getForEntity("http://localhost:" + this.managementPort + "/actuator/exception", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.I_AM_A_TEAPOT);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.EXPECTATION_FAILED);
 		assertThat(entity.getBody()).isEqualTo("this is a custom exception body");
 	}
 

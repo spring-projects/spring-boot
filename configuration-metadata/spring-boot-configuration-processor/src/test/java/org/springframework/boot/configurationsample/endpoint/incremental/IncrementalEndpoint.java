@@ -16,20 +16,21 @@
 
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.OptionalParameter;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * An endpoint that is enabled by default.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "incremental")
+@TestEndpoint(id = "incremental")
 public class IncrementalEndpoint {
 
-	@ReadOperation
-	public String invoke(@OptionalParameter String param) {
+	@TestReadOperation
+	public String invoke(@Nullable String param) {
 		return "test";
 	}
 

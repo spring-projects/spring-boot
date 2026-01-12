@@ -16,8 +16,8 @@
 
 package org.springframework.boot.elasticsearch.autoconfigure.health;
 
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5ClientBuilder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -52,7 +52,7 @@ class ElasticsearchRestHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWithoutRestClientShouldNotCreateIndicator() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(RestClient.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Rest5Client.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
 				.doesNotHaveBean("elasticsearchHealthContributor"));
 	}
@@ -75,7 +75,7 @@ class ElasticsearchRestHealthContributorAutoConfigurationTests {
 	static class CustomRestClientConfiguration {
 
 		@Bean
-		RestClient customRestClient(RestClientBuilder builder) {
+		Rest5Client customRestClient(Rest5ClientBuilder builder) {
 			return builder.build();
 		}
 

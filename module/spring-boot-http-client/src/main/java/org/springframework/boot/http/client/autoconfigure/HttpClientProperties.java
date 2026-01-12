@@ -16,18 +16,63 @@
 
 package org.springframework.boot.http.client.autoconfigure;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
+ * Base class for configuration properties common to both imperative and reactive HTTP
  * clients.
  *
+ * @author Olga Maciaszek-Sharma
+ * @author Rossen Stoyanchev
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
+ * @since 4.0.0
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+@ConfigurationPropertiesSource
+public class HttpClientProperties extends HttpClientSettingsProperties {
+
+	/**
+	 * Base url to set in the underlying HTTP client group. By default, set to
+	 * {@code null}.
+	 */
+	private @Nullable String baseUrl;
+
+	/**
+	 * Default request headers for interface client group. By default, set to empty
+	 * {@link Map}.
+	 */
+	private Map<String, List<String>> defaultHeader = new LinkedHashMap<>();
+
+	/**
+	 * API version properties.
+	 */
+	@NestedConfigurationProperty
+	private final ApiversionProperties apiversion = new ApiversionProperties();
+
+	public @Nullable String getBaseUrl() {
+		return this.baseUrl;
+	}
+
+	public void setBaseUrl(@Nullable String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public Map<String, List<String>> getDefaultHeader() {
+		return this.defaultHeader;
+	}
+
+	public void setDefaultHeader(Map<String, List<String>> defaultHeaders) {
+		this.defaultHeader = defaultHeaders;
+	}
+
+	public ApiversionProperties getApiversion() {
+		return this.apiversion;
+	}
 
 }

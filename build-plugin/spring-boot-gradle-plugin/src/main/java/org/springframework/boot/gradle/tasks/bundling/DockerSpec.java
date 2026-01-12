@@ -25,6 +25,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
@@ -155,7 +156,7 @@ public abstract class DockerSpec {
 					DockerRegistryAuthentication.configuration(DockerRegistryAuthentication.EMPTY_USER)));
 	}
 
-	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistrySpec registry,
+	private DockerRegistryAuthentication getRegistryAuthentication(String type, @Nullable DockerRegistrySpec registry,
 			DockerRegistryAuthentication fallback) {
 		if (registry == null || registry.hasEmptyAuth()) {
 			return fallback;

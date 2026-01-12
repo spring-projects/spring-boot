@@ -17,8 +17,6 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.gradle.node.NodeExtension;
 import com.github.gradle.node.npm.task.NpmInstallTask;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
@@ -40,12 +37,17 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
+import org.springframework.boot.build.antora.CheckJavadocMacros;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.ResolvedBom;
@@ -97,6 +99,27 @@ public class AntoraConventions {
 				(antoraTask) -> configureAntoraTask(project, antoraTask, npmInstallTask, generateAntoraPlaybookTask));
 		project.getExtensions()
 			.configure(NodeExtension.class, (nodeExtension) -> configureNodeExtension(project, nodeExtension));
+		TaskProvider<CheckJavadocMacros> checkAntoraJavadocMacros = tasks.register("checkAntoraJavadocMacros",
+				CheckJavadocMacros.class, (task) -> {
+					task.setSource(project.files(ANTORA_SOURCE_DIR));
+					task.getOutputDirectory().set(project.getLayout().getBuildDirectory().dir(task.getName()));
+				});
+		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+			String runtimeClasspathConfigurationName = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getRuntimeClasspathConfigurationName();
+			Configuration javadocMacros = project.getConfigurations().create("javadocMacros", (configuration) -> {
+				configuration.extendsFrom(project.getConfigurations().getByName(runtimeClasspathConfigurationName));
+				configuration.setDescription(
+						"Dependencies referenced in javadoc macros. Extends from " + runtimeClasspathConfigurationName);
+				configuration.setCanBeResolved(true);
+				configuration.setCanBeDeclared(true);
+				configuration.setCanBeConsumed(false);
+			});
+			checkAntoraJavadocMacros.configure((macrosTask) -> macrosTask.setClasspath(javadocMacros));
+		});
 	}
 
 	private void configureGenerateAntoraPlaybookTask(Project project,
@@ -198,18 +221,13 @@ public class AntoraConventions {
 	}
 
 	private String getUiBundleUrl(Project project) {
-		try {
-			File packageJson = project.getRootProject().file("antora/package.json");
-			ObjectMapper objectMapper = new ObjectMapper();
-			Map<?, ?> json = objectMapper.readerFor(Map.class).readValue(packageJson);
-			Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
-			String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
-			Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");
-			return url;
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		File packageJson = project.getRootProject().file("antora/package.json");
+		JsonMapper jsonMapper = new JsonMapper();
+		Map<?, ?> json = jsonMapper.readerFor(Map.class).readValue(packageJson);
+		Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
+		String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
+		Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");
+		return url;
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {

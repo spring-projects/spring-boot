@@ -17,6 +17,7 @@
 package org.springframework.boot.test.context;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,13 +31,13 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplication.AbandonedRunException;
 import org.springframework.boot.SpringApplicationHook;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
@@ -140,7 +141,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			}
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
-			return hook.runMain(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			return hook.runMain(() -> {
+				if (mainMethod.getParameterCount() == 0) {
+					ReflectionUtils.invokeMethod(mainMethod, null);
+				}
+				else {
+					ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args });
+				}
+			});
 		}
 		SpringApplication application = getSpringApplication();
 		configure(mergedConfig, application);
@@ -177,7 +185,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private static @Nullable Method findMainMethod(@Nullable Class<?> type) {
-		Method mainMethod = (type != null) ? ReflectionUtils.findMethod(type, "main", String[].class) : null;
+		Method mainMethod = (type != null) ? findMainJavaMethod(type) : null;
 		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
 			try {
 				Assert.state(type != null, "'type' must not be null");
@@ -189,6 +197,30 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			}
 		}
 		return mainMethod;
+	}
+
+	private static @Nullable Method findMainJavaMethod(Class<?> type) {
+		try {
+			Method method = getMainMethod(type);
+			if (Modifier.isStatic(method.getModifiers())) {
+				method.setAccessible(true);
+				return method;
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
+		}
+		return null;
+	}
+
+	private static Method getMainMethod(Class<?> type) throws NoSuchMethodException {
+		try {
+			return type.getDeclaredMethod("main", String[].class);
+		}
+		catch (NoSuchMethodException ex) {
+			return type.getDeclaredMethod("main");
+		}
+
 	}
 
 	private boolean isSpringBootConfiguration(Class<?> candidate) {
@@ -553,7 +585,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 				@Override
 				public void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
-					ContextLoaderHook.this.failedContexts.add(context);
+					if (context != null) {
+						ContextLoaderHook.this.failedContexts.add(context);
+					}
 				}
 
 			};

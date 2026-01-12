@@ -23,6 +23,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -123,14 +124,19 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
-		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.TEXT_HTML);
+		Map<String, @Nullable Object> errorAttributes = getErrorAttributes(request, MediaType.TEXT_HTML);
 		int status = getHttpStatus(request, errorAttributes);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(status).contentType(TEXT_HTML_UTF8);
 		return Flux.just(getData(status).toArray(new String[] {}))
 			.flatMap((viewName) -> renderErrorView(viewName, responseBody, errorAttributes))
 			.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-					? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error(getError(request)))
+					? renderDefaultErrorView(responseBody, errorAttributes) : getErrorMono(request))
 			.next();
+	}
+
+	private Mono<ServerResponse> getErrorMono(ServerRequest request) {
+		Throwable error = getError(request);
+		return (error != null) ? Mono.error(error) : Mono.empty();
 	}
 
 	private List<String> getData(int errorStatus) {
@@ -150,14 +156,14 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
-		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.ALL);
+		Map<String, @Nullable Object> errorAttributes = getErrorAttributes(request, MediaType.ALL);
 		int status = getHttpStatus(request, errorAttributes);
 		return ServerResponse.status(status)
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(BodyInserters.fromValue(errorAttributes));
 	}
 
-	private Map<String, Object> getErrorAttributes(ServerRequest request, MediaType mediaType) {
+	private Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, MediaType mediaType) {
 		return getErrorAttributes(request, getErrorAttributeOptions(request, mediaType));
 	}
 
@@ -235,7 +241,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		};
 	}
 
-	private int getHttpStatus(ServerRequest request, Map<String, Object> errorAttributes) {
+	private int getHttpStatus(ServerRequest request, Map<String, @Nullable Object> errorAttributes) {
 		return getHttpStatus(errorAttributes.containsKey("status") ? errorAttributes
 				: defaultErrorAttributes.getErrorAttributes(request, ONLY_STATUS));
 	}
@@ -245,7 +251,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param errorAttributes the current error information
 	 * @return the error HTTP status
 	 */
-	protected int getHttpStatus(Map<String, Object> errorAttributes) {
+	protected int getHttpStatus(Map<String, @Nullable Object> errorAttributes) {
 		Object status = errorAttributes.get("status");
 		Assert.state(status instanceof Integer, "ErrorAttributes must contain a status integer");
 		return (int) status;

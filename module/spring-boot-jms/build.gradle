@@ -26,7 +26,7 @@ description = "Spring Boot JMS"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("jakarta.jms:jakarta.jms-api")
 	api("org.springframework:spring-jms")
 
@@ -47,4 +47,8 @@ dependencies {
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

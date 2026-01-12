@@ -25,6 +25,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-jersey"))
 	implementation(project(":starter:spring-boot-starter-security"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-jersey-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 }

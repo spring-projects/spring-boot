@@ -27,11 +27,13 @@ import java.util.Set;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.SessionCookieConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.lang.Contract;
 
 /**
  * The {@link ServletContextInitializer ServletContextInitializers} to apply to a servlet
@@ -88,7 +90,7 @@ public final class ServletContextInitializers implements Iterable<ServletContext
 
 		private void configureSessionCookie(SessionCookieConfig config) {
 			Cookie cookie = this.session.getCookie();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(cookie::getName).to(config::setName);
 			map.from(cookie::getDomain).to(config::setDomain);
 			map.from(cookie::getPath).to(config::setPath);
@@ -100,7 +102,9 @@ public final class ServletContextInitializers implements Iterable<ServletContext
 				.to((partitioned) -> config.setAttribute("Partitioned", partitioned));
 		}
 
-		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
+		@Contract("!null -> !null")
+		private @Nullable Set<jakarta.servlet.SessionTrackingMode> unwrap(
+				@Nullable Set<Session.SessionTrackingMode> modes) {
 			if (modes == null) {
 				return null;
 			}

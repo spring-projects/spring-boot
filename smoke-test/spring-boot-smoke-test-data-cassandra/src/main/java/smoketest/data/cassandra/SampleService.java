@@ -29,7 +29,11 @@ public class SampleService {
 	}
 
 	public boolean hasRecord(SampleEntity entity) {
-		return this.cassandraTemplate.exists(entity.getId(), SampleEntity.class);
+		String id = entity.getId();
+		if (id == null) {
+			return false;
+		}
+		return this.cassandraTemplate.exists(id, SampleEntity.class);
 	}
 
 }

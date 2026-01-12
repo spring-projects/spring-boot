@@ -1,5 +1,5 @@
 # Perform the extraction in a separate builder container
-FROM bellsoft/liberica-openjre-debian:24-cds AS builder
+FROM bellsoft/liberica-openjre-debian:25-cds AS builder
 WORKDIR /builder
 # This points to the built jar file in the target folder
 # Adjust this to 'build/libs/*.jar' if you're using Gradle
@@ -10,7 +10,7 @@ COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
 # This is the runtime container
-FROM bellsoft/liberica-openjre-debian:24-cds
+FROM bellsoft/liberica-openjre-debian:25-cds
 WORKDIR /application
 # Copy the extracted jar contents from the builder container into the working directory in the runtime container
 # Every copy step creates a new docker layer

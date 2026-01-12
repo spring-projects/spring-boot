@@ -24,6 +24,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.unit.DataSize;
@@ -62,7 +64,7 @@ public class TomcatServerProperties {
 	/**
 	 * Tomcat base directory. If not specified, a temporary directory is used.
 	 */
-	private File basedir;
+	private @Nullable File basedir;
 
 	/**
 	 * Delay between the invocation of backgroundProcess methods. If a duration suffix is
@@ -134,7 +136,7 @@ public class TomcatServerProperties {
 	 * Time to wait for another HTTP request before the connection is closed. When not set
 	 * the connectionTimeout is used. When set to -1 there will be no timeout.
 	 */
-	private Duration keepAliveTimeout;
+	private @Nullable Duration keepAliveTimeout;
 
 	/**
 	 * Maximum number of HTTP requests that can be pipelined before the connection is
@@ -166,7 +168,7 @@ public class TomcatServerProperties {
 	 * Amount of time the connector will wait, after accepting a connection, for the
 	 * request URI line to be presented.
 	 */
-	private Duration connectionTimeout;
+	private @Nullable Duration connectionTimeout;
 
 	/**
 	 * Maximum size of the HTTP response header.
@@ -217,11 +219,11 @@ public class TomcatServerProperties {
 		this.backgroundProcessorDelay = backgroundProcessorDelay;
 	}
 
-	public File getBasedir() {
+	public @Nullable File getBasedir() {
 		return this.basedir;
 	}
 
-	public void setBasedir(File basedir) {
+	public void setBasedir(@Nullable File basedir) {
 		this.basedir = basedir;
 	}
 
@@ -281,11 +283,11 @@ public class TomcatServerProperties {
 		this.processorCache = processorCache;
 	}
 
-	public Duration getKeepAliveTimeout() {
+	public @Nullable Duration getKeepAliveTimeout() {
 		return this.keepAliveTimeout;
 	}
 
-	public void setKeepAliveTimeout(Duration keepAliveTimeout) {
+	public void setKeepAliveTimeout(@Nullable Duration keepAliveTimeout) {
 		this.keepAliveTimeout = keepAliveTimeout;
 	}
 
@@ -321,11 +323,11 @@ public class TomcatServerProperties {
 		this.relaxedQueryChars = relaxedQueryChars;
 	}
 
-	public Duration getConnectionTimeout() {
+	public @Nullable Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
+	public void setConnectionTimeout(@Nullable Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -405,19 +407,19 @@ public class TomcatServerProperties {
 		/**
 		 * Enable access log.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Whether logging of the request will only be enabled if
 		 * "ServletRequest.getAttribute(conditionIf)" does not yield null.
 		 */
-		private String conditionIf;
+		private @Nullable String conditionIf;
 
 		/**
 		 * Whether logging of the request will only be enabled if
 		 * "ServletRequest.getAttribute(conditionUnless)" yield null.
 		 */
-		private String conditionUnless;
+		private @Nullable String conditionUnless;
 
 		/**
 		 * Format pattern for access logs.
@@ -444,19 +446,19 @@ public class TomcatServerProperties {
 		 * Character set used by the log file. Default to the system default character
 		 * set.
 		 */
-		private String encoding;
+		private @Nullable String encoding;
 
 		/**
 		 * Locale used to format timestamps in log entries and in log file name suffix.
 		 * Default to the default locale of the Java process.
 		 */
-		private String locale;
+		private @Nullable String locale;
 
 		/**
 		 * Whether to check for log file existence so it can be recreated if an external
 		 * process has renamed it.
 		 */
-		private boolean checkExists = false;
+		private boolean checkExists;
 
 		/**
 		 * Whether to enable access log rotation.
@@ -467,7 +469,7 @@ public class TomcatServerProperties {
 		 * Whether to defer inclusion of the date stamp in the file name until rotate
 		 * time.
 		 */
-		private boolean renameOnRotate = false;
+		private boolean renameOnRotate;
 
 		/**
 		 * Number of days to retain the access log files before they are removed.
@@ -482,13 +484,13 @@ public class TomcatServerProperties {
 		/**
 		 * Whether to use IPv6 canonical representation format as defined by RFC 5952.
 		 */
-		private boolean ipv6Canonical = false;
+		private boolean ipv6Canonical;
 
 		/**
 		 * Set request attributes for the IP address, Hostname, protocol, and port used
 		 * for the request.
 		 */
-		private boolean requestAttributesEnabled = false;
+		private boolean requestAttributesEnabled;
 
 		/**
 		 * Whether to buffer output such that it is flushed only periodically.
@@ -503,19 +505,19 @@ public class TomcatServerProperties {
 			this.enabled = enabled;
 		}
 
-		public String getConditionIf() {
+		public @Nullable String getConditionIf() {
 			return this.conditionIf;
 		}
 
-		public void setConditionIf(String conditionIf) {
+		public void setConditionIf(@Nullable String conditionIf) {
 			this.conditionIf = conditionIf;
 		}
 
-		public String getConditionUnless() {
+		public @Nullable String getConditionUnless() {
 			return this.conditionUnless;
 		}
 
-		public void setConditionUnless(String conditionUnless) {
+		public void setConditionUnless(@Nullable String conditionUnless) {
 			this.conditionUnless = conditionUnless;
 		}
 
@@ -551,19 +553,19 @@ public class TomcatServerProperties {
 			this.suffix = suffix;
 		}
 
-		public String getEncoding() {
+		public @Nullable String getEncoding() {
 			return this.encoding;
 		}
 
-		public void setEncoding(String encoding) {
+		public void setEncoding(@Nullable String encoding) {
 			this.encoding = encoding;
 		}
 
-		public String getLocale() {
+		public @Nullable String getLocale() {
 			return this.locale;
 		}
 
-		public void setLocale(String locale) {
+		public void setLocale(@Nullable String locale) {
 			this.locale = locale;
 		}
 
@@ -693,9 +695,14 @@ public class TomcatServerProperties {
 		private boolean allowCaching = true;
 
 		/**
+		 * Maximum size of the static resource cache.
+		 */
+		private DataSize cacheMaxSize = DataSize.ofMegabytes(10);
+
+		/**
 		 * Time-to-live of the static resource cache.
 		 */
-		private Duration cacheTtl;
+		private Duration cacheTtl = Duration.ofSeconds(5);
 
 		public boolean isAllowCaching() {
 			return this.allowCaching;
@@ -703,6 +710,14 @@ public class TomcatServerProperties {
 
 		public void setAllowCaching(boolean allowCaching) {
 			this.allowCaching = allowCaching;
+		}
+
+		public DataSize getCacheMaxSize() {
+			return this.cacheMaxSize;
+		}
+
+		public void setCacheMaxSize(DataSize cacheMaxSize) {
+			this.cacheMaxSize = cacheMaxSize;
 		}
 
 		public Duration getCacheTtl() {
@@ -735,28 +750,16 @@ public class TomcatServerProperties {
 	public static class Remoteip {
 
 		/**
-		 * Regular expression that matches proxies that are to be trusted.
+		 * Internal proxies that are to be trusted. Can be set as a comma separate list of
+		 * CIDR or as a regular expression.
 		 */
-		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
-				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
-				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
-				+ "100\\.6[4-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.[7-9]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.1[0-1]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.12[0-7]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "0:0:0:0:0:0:0:1|" // 0:0:0:0:0:0:0:1
-				+ "::1|" // ::1
-				+ "fe[89ab]\\p{XDigit}:.*|" //
-				+ "f[cd]\\p{XDigit}{2}+:.*";
+		private String internalProxies = "192.168.0.0/16, 172.16.0.0/12, 169.254.0.0/16, fc00::/7, "
+				+ "10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, fe80::/10, ::1/128";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 		 */
-		private String protocolHeader;
+		private @Nullable String protocolHeader;
 
 		/**
 		 * Value of the protocol header indicating whether the incoming request uses SSL.
@@ -777,13 +780,13 @@ public class TomcatServerProperties {
 		 * Name of the HTTP header from which the remote IP is extracted. For instance,
 		 * 'X-FORWARDED-FOR'.
 		 */
-		private String remoteIpHeader;
+		private @Nullable String remoteIpHeader;
 
 		/**
 		 * Regular expression defining proxies that are trusted when they appear in the
 		 * "remote-ip-header" header.
 		 */
-		private String trustedProxies;
+		private @Nullable String trustedProxies;
 
 		public String getInternalProxies() {
 			return this.internalProxies;
@@ -793,11 +796,11 @@ public class TomcatServerProperties {
 			this.internalProxies = internalProxies;
 		}
 
-		public String getProtocolHeader() {
+		public @Nullable String getProtocolHeader() {
 			return this.protocolHeader;
 		}
 
-		public void setProtocolHeader(String protocolHeader) {
+		public void setProtocolHeader(@Nullable String protocolHeader) {
 			this.protocolHeader = protocolHeader;
 		}
 
@@ -825,19 +828,19 @@ public class TomcatServerProperties {
 			this.portHeader = portHeader;
 		}
 
-		public String getRemoteIpHeader() {
+		public @Nullable String getRemoteIpHeader() {
 			return this.remoteIpHeader;
 		}
 
-		public void setRemoteIpHeader(String remoteIpHeader) {
+		public void setRemoteIpHeader(@Nullable String remoteIpHeader) {
 			this.remoteIpHeader = remoteIpHeader;
 		}
 
-		public String getTrustedProxies() {
+		public @Nullable String getTrustedProxies() {
 			return this.trustedProxies;
 		}
 
-		public void setTrustedProxies(String trustedProxies) {
+		public void setTrustedProxies(@Nullable String trustedProxies) {
 			this.trustedProxies = trustedProxies;
 		}
 

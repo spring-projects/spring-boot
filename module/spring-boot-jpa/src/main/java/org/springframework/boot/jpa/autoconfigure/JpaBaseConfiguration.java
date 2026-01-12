@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,9 +37,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.persistence.autoconfigure.EntityScanPackages;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,7 +83,7 @@ public abstract class JpaBaseConfiguration {
 
 	private final JpaProperties properties;
 
-	private final JtaTransactionManager jtaTransactionManager;
+	private final @Nullable JtaTransactionManager jtaTransactionManager;
 
 	protected JpaBaseConfiguration(DataSource dataSource, JpaProperties properties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
@@ -163,7 +164,7 @@ public abstract class JpaBaseConfiguration {
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 	}
 
-	private String[] getMappingResources() {
+	private String @Nullable [] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
 		return (!ObjectUtils.isEmpty(mappingResources) ? StringUtils.toStringArray(mappingResources) : null);
 	}
@@ -172,7 +173,7 @@ public abstract class JpaBaseConfiguration {
 	 * Return the JTA transaction manager.
 	 * @return the transaction manager or {@code null}
 	 */
-	protected JtaTransactionManager getJtaTransactionManager() {
+	protected @Nullable JtaTransactionManager getJtaTransactionManager() {
 		return this.jtaTransactionManager;
 	}
 

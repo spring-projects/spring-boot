@@ -18,10 +18,12 @@ package smoketest.hateoas.domain;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 public interface CustomerRepository {
 
 	List<Customer> findAll();
 
-	Customer findOne(Long id);
+	@Nullable Customer findOne(Long id);
 
 }

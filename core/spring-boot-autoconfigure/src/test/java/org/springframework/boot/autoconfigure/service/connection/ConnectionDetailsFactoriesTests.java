@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.service.connection;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories.Registration;
@@ -145,7 +146,7 @@ class ConnectionDetailsFactoriesTests {
 			implements ConnectionDetailsFactory<String, TestConnectionDetails> {
 
 		@Override
-		public TestConnectionDetails getConnectionDetails(String source) {
+		public @Nullable TestConnectionDetails getConnectionDetails(String source) {
 			return null;
 		}
 

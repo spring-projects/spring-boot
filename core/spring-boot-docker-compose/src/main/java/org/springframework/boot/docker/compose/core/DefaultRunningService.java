@@ -88,7 +88,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 	}
 
 	@Override
-	public Map<String, String> env() {
+	public Map<String, @Nullable String> env() {
 		return this.env.asMap();
 	}
 

@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,10 +50,14 @@ class ConfigurationPropertiesReportEndpointParentTests {
 						.getBean(ConfigurationPropertiesReportEndpoint.class);
 					ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
 					assertThat(applicationProperties.getContexts()).containsOnlyKeys(child.getId(), parent.getId());
-					assertThat(applicationProperties.getContexts().get(child.getId()).getBeans().keySet())
-						.containsExactly("someProperties");
-					assertThat((applicationProperties.getContexts().get(parent.getId()).getBeans().keySet()))
-						.containsExactly("testProperties");
+					ContextConfigurationPropertiesDescriptor childContext = applicationProperties.getContexts()
+						.get(child.getId());
+					assertThat(childContext).isNotNull();
+					assertThat(childContext.getBeans().keySet()).containsExactly("someProperties");
+					ContextConfigurationPropertiesDescriptor parentContext = applicationProperties.getContexts()
+						.get(parent.getId());
+					assertThat(parentContext).isNotNull();
+					assertThat((parentContext.getBeans().keySet())).containsExactly("testProperties");
 				});
 		});
 	}
@@ -66,10 +71,14 @@ class ConfigurationPropertiesReportEndpointParentTests {
 					ConfigurationPropertiesReportEndpoint endpoint = child
 						.getBean(ConfigurationPropertiesReportEndpoint.class);
 					ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
-					assertThat(applicationProperties.getContexts().get(child.getId()).getBeans().keySet())
-						.containsExactlyInAnyOrder("otherProperties");
-					assertThat((applicationProperties.getContexts().get(parent.getId()).getBeans().keySet()))
-						.containsExactly("testProperties");
+					ContextConfigurationPropertiesDescriptor childContext = applicationProperties.getContexts()
+						.get(child.getId());
+					assertThat(childContext).isNotNull();
+					assertThat(childContext.getBeans().keySet()).containsExactlyInAnyOrder("otherProperties");
+					ContextConfigurationPropertiesDescriptor parentContext = applicationProperties.getContexts()
+						.get(parent.getId());
+					assertThat(parentContext).isNotNull();
+					assertThat((parentContext.getBeans().keySet())).containsExactly("testProperties");
 				});
 		});
 	}

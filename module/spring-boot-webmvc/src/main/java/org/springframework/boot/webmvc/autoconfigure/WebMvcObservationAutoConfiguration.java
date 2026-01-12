@@ -17,7 +17,6 @@
 package org.springframework.boot.webmvc.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.servlet.DispatcherType;
@@ -31,9 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilt
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
-import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,15 +52,15 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dmytro Nosan
  * @since 4.0.0
  */
-@AutoConfiguration(
-		afterName = { "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
-				"org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
-				"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
-				"org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration" })
+@AutoConfiguration(afterName = {
+		"org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+		"org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration",
+		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
+		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ DispatcherServlet.class, Observation.class })
+@ConditionalOnClass({ DispatcherServlet.class, Observation.class, ObservationProperties.class })
 @ConditionalOnBean(ObservationRegistry.class)
-@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
+@EnableConfigurationProperties(ObservationProperties.class)
 public final class WebMvcObservationAutoConfiguration {
 
 	@Bean
@@ -80,19 +79,18 @@ public final class WebMvcObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MeterRegistry.class)
+	@ConditionalOnClass({ MeterRegistry.class, MetricsProperties.class })
 	@ConditionalOnBean(MeterRegistry.class)
+	@EnableConfigurationProperties(MetricsProperties.class)
 	static class MeterFilterConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
+		MaximumAllowableTagsMeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {
-			String name = observationProperties.getHttp().getServer().getRequests().getName();
-			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
-			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
-					filter);
+			String meterNamePrefix = observationProperties.getHttp().getServer().getRequests().getName();
+			int maxUriTags = metricsProperties.getWeb().getServer().getMaxUriTags();
+			return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags);
 		}
 
 	}

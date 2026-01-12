@@ -16,6 +16,7 @@
 
 package org.springframework.boot.rsocket.context;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,8 +66,9 @@ public class RSocketPortInfoApplicationContextInitializer
 
 		@Override
 		public void onApplicationEvent(RSocketServerInitializedEvent event) {
-			if (event.getServer().address() != null) {
-				setPortProperty(this.applicationContext, event.getServer().address().getPort());
+			InetSocketAddress address = event.getServer().address();
+			if (address != null) {
+				setPortProperty(this.applicationContext, address.getPort());
 			}
 		}
 

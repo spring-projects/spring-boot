@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.record;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
-@ConfigurationProperties("record-with-getter")
+@TestConfigurationProperties("record-with-getter")
 public record RecordWithGetter(String alpha) {
 
 	public String getBravo() {

@@ -17,6 +17,7 @@
 package org.springframework.boot.jersey.autoconfigure.metrics;
 
 import java.net.URI;
+import java.time.Duration;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -26,6 +27,8 @@ import io.micrometer.observation.Observation.Context;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.awaitility.Awaitility;
 import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
@@ -33,9 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -84,10 +87,14 @@ class JerseyServerMetricsAutoConfigurationTests {
 	void httpRequestsAreTimed() {
 		this.webContextRunner.withUserConfiguration(MetricsConfiguration.class).run((context) -> {
 			doRequest(context);
-			Thread.sleep(500);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			Timer timer = registry.get("http.server.requests").tag("uri", "/users/{id}").timer();
-			assertThat(timer.count()).isOne();
+			// Response is sent before the timer is registered which triggers a race
+			// condition.
+			// https://github.com/apache/tomcat/commit/69eff83577f7c00cbaaca9384ab4b1989f516797
+			Awaitility.await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+				Timer timer = registry.find("http.server.requests").tag("uri", "/users/{id}").timer();
+				assertThat(timer).isNotNull().extracting(Timer::count, InstanceOfAssertFactories.LONG).isOne();
+			});
 		});
 	}
 

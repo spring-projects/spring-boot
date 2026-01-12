@@ -1,5 +1,27 @@
 {
 	"Id": "sha256:9b450bffdb05bcf660d464d0bfdf344ee6ca38e9b8de4f408c8080b0c9319349",
+	"Descriptor": {
+		"mediaType": "application/vnd.oci.image.manifest.v1+json",
+		"digest": "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96",
+		"size": 424,
+		"urls": [
+			"https://example.com"
+		],
+		"annotations": {
+			"com.docker.official-images.bashbrew.arch": "amd64",
+			"org.opencontainers.image.version": "24.04"
+		},
+		"data": null,
+		"platform": {
+			"architecture": "arm",
+			"os": "windows",
+			"os.version": "10.0.19041.1165",
+			"os.features": [
+			],
+			"variant": "v7"
+		},
+		"artifactType": null
+	},
 	"RepoTags": [
 		"paketo-buildpacks/cnb:latest"
 	],

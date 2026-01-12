@@ -28,6 +28,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -67,6 +68,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
+		Assert.state(attributes != null, "'attributes' must not be null");
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));

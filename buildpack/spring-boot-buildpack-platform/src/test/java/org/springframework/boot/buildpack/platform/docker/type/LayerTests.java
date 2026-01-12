@@ -38,12 +38,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class LayerTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenLayoutIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.of((IOConsumer<Layout>) null))
 			.withMessage("'layout' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromTarArchiveWhenTarArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.fromTarArchive(null))
 			.withMessage("'tarArchive' must not be null");

@@ -19,12 +19,13 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -39,15 +40,21 @@ final class BuildpackMetadata extends MappedObject {
 
 	private final String id;
 
-	private final String version;
+	private final @Nullable String version;
 
-	private final String homepage;
+	private final @Nullable String homepage;
 
 	private BuildpackMetadata(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.id = valueAt("/id", String.class);
+		this.id = extractId();
 		this.version = valueAt("/version", String.class);
 		this.homepage = valueAt("/homepage", String.class);
+	}
+
+	private String extractId() {
+		String result = valueAt("/id", String.class);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	/**
@@ -62,7 +69,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * Return the buildpack version.
 	 * @return the version
 	 */
-	String getVersion() {
+	@Nullable String getVersion() {
 		return this.version;
 	}
 
@@ -70,7 +77,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * Return the buildpack homepage address.
 	 * @return the homepage
 	 */
-	String getHomepage() {
+	@Nullable String getHomepage() {
 		return this.homepage;
 	}
 
@@ -106,7 +113,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackMetadata fromJson(String json) throws IOException {
-		return fromJson(SharedObjectMapper.get().readTree(json));
+		return fromJson(SharedJsonMapper.get().readTree(json));
 	}
 
 	/**

@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.Contract;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,7 +57,7 @@ public class BeansEndpoint {
 
 	@ReadOperation
 	public BeansDescriptor beans() {
-		Map<String, ContextBeansDescriptor> contexts = new HashMap<>();
+		Map<@Nullable String, ContextBeansDescriptor> contexts = new HashMap<>();
 		ConfigurableApplicationContext context = this.context;
 		while (context != null) {
 			contexts.put(context.getId(), ContextBeansDescriptor.describing(context));
@@ -79,13 +80,13 @@ public class BeansEndpoint {
 	 */
 	public static final class BeansDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextBeansDescriptor> contexts;
+		private final Map<@Nullable String, ContextBeansDescriptor> contexts;
 
-		private BeansDescriptor(Map<String, ContextBeansDescriptor> contexts) {
+		private BeansDescriptor(Map<@Nullable String, ContextBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextBeansDescriptor> getContexts() {
+		public Map<@Nullable String, ContextBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -113,6 +114,7 @@ public class BeansEndpoint {
 			return this.beans;
 		}
 
+		@Contract("!null -> !null")
 		private static @Nullable ContextBeansDescriptor describing(@Nullable ConfigurableApplicationContext context) {
 			if (context == null) {
 				return null;

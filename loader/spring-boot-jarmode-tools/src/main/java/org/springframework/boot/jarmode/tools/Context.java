@@ -28,6 +28,8 @@ import java.security.ProtectionDomain;
 import java.util.Locale;
 import java.util.jar.JarFile;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -41,7 +43,7 @@ class Context {
 
 	private final File workingDir;
 
-	private final String relativeDir;
+	private final @Nullable String relativeDir;
 
 	/**
 	 * Create a new {@link Context} instance.
@@ -63,7 +65,7 @@ class Context {
 		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
 	}
 
-	private boolean isExistingFile(File archiveFile) {
+	private boolean isExistingFile(@Nullable File archiveFile) {
 		return archiveFile != null && archiveFile.isFile() && archiveFile.exists();
 	}
 
@@ -81,10 +83,10 @@ class Context {
 			if (source != null && source.exists()) {
 				return source.getAbsoluteFile();
 			}
-			return null;
+			throw new IllegalStateException("Unable to find source archive");
 		}
 		catch (Exception ex) {
-			return null;
+			throw new IllegalStateException("Unable to find source archive", ex);
 		}
 	}
 
@@ -105,7 +107,7 @@ class Context {
 		return new File(name);
 	}
 
-	private String deduceRelativeDir(File sourceDirectory, File workingDir) {
+	private @Nullable String deduceRelativeDir(File sourceDirectory, File workingDir) {
 		String sourcePath = sourceDirectory.getAbsolutePath();
 		String workingPath = workingDir.getAbsolutePath();
 		if (sourcePath.equals(workingPath) || !sourcePath.startsWith(workingPath)) {
@@ -136,7 +138,7 @@ class Context {
 	 * or {@code null} if none relative directory can be deduced.
 	 * @return the relative dir ending in {@code /} or {@code null}
 	 */
-	String getRelativeArchiveDir() {
+	@Nullable String getRelativeArchiveDir() {
 		return this.relativeDir;
 	}
 

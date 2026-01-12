@@ -51,6 +51,7 @@ import static org.mockito.Mockito.mock;
 class ClassPathFileSystemWatcherTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void urlsMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
@@ -100,6 +101,7 @@ class ClassPathFileSystemWatcherTests {
 		ClassPathFileSystemWatcher watcher(ClassPathRestartStrategy restartStrategy) {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, Duration.ofMillis(100), Duration.ofMillis(10));
 			URL[] urls = this.environment.getProperty("urls", URL[].class);
+			assertThat(urls).isNotNull();
 			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(watcher), restartStrategy, urls);
 		}
 

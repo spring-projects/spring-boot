@@ -25,10 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * A resolved bom.
@@ -39,18 +36,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
-	private static final ObjectMapper objectMapper;
+	private static final JsonMapper jsonMapper;
 
 	static {
-		ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-			.setDefaultPropertyInclusion(Include.NON_EMPTY);
-		mapper.configOverride(List.class).setSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));
-		objectMapper = mapper;
+		jsonMapper = JsonMapper.builder()
+			.changeDefaultPropertyInclusion((value) -> value.withContentInclusion(Include.NON_EMPTY))
+			.build();
 	}
 
 	public static ResolvedBom readFrom(File file) {
 		try (FileReader reader = new FileReader(file)) {
-			return objectMapper.readValue(reader, ResolvedBom.class);
+			return jsonMapper.readValue(reader, ResolvedBom.class);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -58,12 +54,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public void writeTo(Writer writer) {
-		try {
-			objectMapper.writeValue(writer, this);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		jsonMapper.writeValue(writer, this);
 	}
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
@@ -99,6 +90,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 			builder.append(":");
 			builder.append(this.version);
 			if (this.classifier != null) {
+				builder.append(":");
 				builder.append(this.classifier);
 			}
 			return builder.toString();

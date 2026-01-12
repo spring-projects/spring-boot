@@ -32,6 +32,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 import io.r2dbc.spi.ValidationDepth;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -110,7 +111,7 @@ public final class ConnectionFactoryBuilder {
 		return withOptions(options.mutate());
 	}
 
-	private static ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
+	private static @Nullable ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
 		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
 		if (optionsCapable != null) {
 			return optionsCapable.getOptions();
@@ -262,7 +263,7 @@ public final class ConnectionFactoryBuilder {
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
 				ConnectionFactory connectionFactory) {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(options.getValue(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL))
 				.as(this::toDuration)
 				.to(builder::backgroundEvictionInterval);

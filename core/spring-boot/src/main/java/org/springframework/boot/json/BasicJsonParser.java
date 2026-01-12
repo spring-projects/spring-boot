@@ -44,12 +44,12 @@ public class BasicJsonParser extends AbstractJsonParser {
 	private static final int MAX_DEPTH = 1000;
 
 	@Override
-	public Map<String, Object> parseMap(String json) {
+	public Map<String, Object> parseMap(@Nullable String json) {
 		return tryParse(() -> parseMap(json, (jsonToParse) -> parseMapInternal(0, jsonToParse)), Exception.class);
 	}
 
 	@Override
-	public List<Object> parseList(String json) {
+	public List<Object> parseList(@Nullable String json) {
 		return tryParse(() -> parseList(json, (jsonToParse) -> parseListInternal(0, jsonToParse)), Exception.class);
 	}
 

@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link ReactiveHealthContributors} composed of other
  * {@link ReactiveHealthContributors}.
@@ -38,7 +40,7 @@ class CompositeReactiveHealthContributors implements ReactiveHealthContributors 
 	}
 
 	@Override
-	public ReactiveHealthContributor getContributor(String name) {
+	public @Nullable ReactiveHealthContributor getContributor(String name) {
 		return this.contributors.stream()
 			.map((reactiveContributors) -> reactiveContributors.getContributor(name))
 			.filter(Objects::nonNull)

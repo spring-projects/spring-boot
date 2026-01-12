@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -141,6 +142,7 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 			.formatted(IntegrationPropertiesEnvironmentPostProcessor.class.getName()), getClass().getClassLoader());
 		Map<String, String> mappings = (Map<String, String>) ReflectionTestUtils.getField(propertySource,
 				"KEYS_MAPPING");
+		assertThat(mappings).isNotNull();
 		assertThat(mappings.values()).containsExactlyInAnyOrderElementsOf(integrationPropertyNames());
 	}
 
@@ -148,6 +150,7 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 		List<String> propertiesToMap = new ArrayList<>();
 		ReflectionUtils.doWithFields(IntegrationProperties.class, (field) -> {
 			String value = (String) ReflectionUtils.getField(field, null);
+			assertThat(value).isNotNull();
 			if (value.startsWith(IntegrationProperties.INTEGRATION_PROPERTIES_PREFIX)
 					&& value.length() > IntegrationProperties.INTEGRATION_PROPERTIES_PREFIX.length()) {
 				propertiesToMap.add(value);
@@ -177,6 +180,7 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 				.formatted(IntegrationPropertiesEnvironmentPostProcessor.class.getName()), null);
 			Map<String, String> mappings = (Map<String, String>) ReflectionTestUtils.getField(propertySource,
 					"KEYS_MAPPING");
+			assertThat(mappings).isNotNull();
 			return mappings.keySet();
 		}
 		catch (Exception ex) {
@@ -189,8 +193,10 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 			assertThat(origin).isInstanceOf(TextResourceOrigin.class);
 			TextResourceOrigin textOrigin = (TextResourceOrigin) origin;
 			assertThat(textOrigin.getResource()).isEqualTo(resource);
-			assertThat(textOrigin.getLocation().getLine()).isEqualTo(line);
-			assertThat(textOrigin.getLocation().getColumn()).isEqualTo(column);
+			Location location = textOrigin.getLocation();
+			assertThat(location).isNotNull();
+			assertThat(location.getLine()).isEqualTo(line);
+			assertThat(location.getColumn()).isEqualTo(column);
 		};
 	}
 

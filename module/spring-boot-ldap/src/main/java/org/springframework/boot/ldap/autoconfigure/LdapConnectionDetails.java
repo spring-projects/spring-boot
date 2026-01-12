@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -36,7 +38,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 	 * Base suffix from which all operations should originate.
 	 * @return base suffix
 	 */
-	default String getBase() {
+	default @Nullable String getBase() {
 		return null;
 	}
 
@@ -44,7 +46,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 	 * Login username of the server.
 	 * @return login username
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
@@ -52,7 +54,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 	 * Login password of the server.
 	 * @return login password
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 

@@ -24,8 +24,4 @@ dependencies {
 	api(project(":starter:spring-boot-starter"))
 
 	api(project(":module:spring-boot-jackson"))
-
-	api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-	api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
 }

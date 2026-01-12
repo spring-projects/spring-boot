@@ -22,6 +22,7 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
@@ -51,7 +52,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Resource indexHtmlResource, String staticPathPattern) {
+			ApplicationContext applicationContext, @Nullable Resource indexHtmlResource, String staticPathPattern) {
 		setOrder(2);
 		WelcomePage welcomePage = WelcomePage.resolve(templateAvailabilityProviders, applicationContext,
 				indexHtmlResource, staticPathPattern);
@@ -65,7 +66,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	@Override
-	public Object getHandlerInternal(HttpServletRequest request) throws Exception {
+	public @Nullable Object getHandlerInternal(HttpServletRequest request) throws Exception {
 		return (!isHtmlTextAccepted(request)) ? null : super.getHandlerInternal(request);
 	}
 

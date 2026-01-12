@@ -42,9 +42,11 @@ class FileSnapshotTests {
 	private static final long MODIFIED = new Date().getTime() - TimeUnit.DAYS.toMillis(10);
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(null))
 			.withMessageContaining("'file' must not be null");

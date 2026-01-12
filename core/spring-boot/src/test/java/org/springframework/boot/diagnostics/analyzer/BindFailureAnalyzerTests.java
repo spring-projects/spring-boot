@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jakarta.validation.constraints.Min;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -61,6 +62,7 @@ class BindFailureAnalyzerTests {
 	@Test
 	void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class, "test.foo.value=alpha");
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
 				"\"test.foo.value\" from property source \"test\"", "failed to convert java.lang.String to int"));
 	}
@@ -68,6 +70,7 @@ class BindFailureAnalyzerTests {
 	@Test
 	void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
 		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class, "test.foo.fruit=apple,strawberry");
+		assertThat(analysis).isNotNull();
 		for (Fruit fruit : Fruit.values()) {
 			assertThat(analysis.getAction()).contains(fruit.name());
 		}
@@ -76,6 +79,7 @@ class BindFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
 		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class, "test.foo.value=hello");
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
 				"\"test.foo.value\" from property source \"test\"", "java.lang.RuntimeException: This is a failure"));
 	}
@@ -84,6 +88,7 @@ class BindFailureAnalyzerTests {
 	void bindExceptionDueToClassNotFoundConversionFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
 				"test.foo.type=com.example.Missing");
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("test.foo.type", "com.example.Missing",
 				"\"test.foo.type\" from property source \"test\"",
 				"failed to convert java.lang.String to java.lang.Class<?> (caused by java.lang.ClassNotFoundException: com.example.Missing"));
@@ -92,6 +97,7 @@ class BindFailureAnalyzerTests {
 	@Test
 	void bindExceptionDueToMapConversionFailure() {
 		FailureAnalysis analysis = performAnalysis(LoggingLevelFailureConfiguration.class, "logging.level=debug");
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("logging.level", "debug",
 				"\"logging.level\" from property source \"test\"",
 				"org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting "
@@ -102,9 +108,11 @@ class BindFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithSuppressedMissingParametersException() {
 		BeanCreationException failure = createFailure(GenericFailureConfiguration.class, "test.foo.value=alpha");
+		assertThat(failure).isNotNull();
 		failure.addSuppressed(new IllegalStateException(
 				"Missing parameter names. Ensure that the compiler uses the '-parameters' flag"));
 		FailureAnalysis analysis = new BindFailureAnalyzer().analyze(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.contains(failure("test.foo.value", "alpha", "\"test.foo.value\" from property source \"test\"",
 					"failed to convert java.lang.String to int"))
@@ -117,13 +125,13 @@ class BindFailureAnalyzerTests {
 				reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
+	private @Nullable FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
+	private @Nullable BeanCreationException createFailure(Class<?> configuration, String... environment) {
 		try {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			addEnvironment(context, environment);
@@ -199,13 +207,13 @@ class BindFailureAnalyzerTests {
 	@ConfigurationProperties("test.foo")
 	static class UnboundElementsFailureProperties {
 
-		private List<String> listValue;
+		private @Nullable List<String> listValue;
 
-		List<String> getListValue() {
+		@Nullable List<String> getListValue() {
 			return this.listValue;
 		}
 
-		void setListValue(List<String> listValue) {
+		void setListValue(@Nullable List<String> listValue) {
 			this.listValue = listValue;
 		}
 
@@ -216,7 +224,7 @@ class BindFailureAnalyzerTests {
 
 		private int value;
 
-		private Class<?> type;
+		private @Nullable Class<?> type;
 
 		int getValue() {
 			return this.value;
@@ -226,11 +234,11 @@ class BindFailureAnalyzerTests {
 			this.value = value;
 		}
 
-		Class<?> getType() {
+		@Nullable Class<?> getType() {
 			return this.type;
 		}
 
-		void setType(Class<?> type) {
+		void setType(@Nullable Class<?> type) {
 			this.type = type;
 		}
 
@@ -239,13 +247,13 @@ class BindFailureAnalyzerTests {
 	@ConfigurationProperties("test.foo")
 	static class EnumFailureProperties {
 
-		private Set<Fruit> fruit;
+		private @Nullable Set<Fruit> fruit;
 
-		Set<Fruit> getFruit() {
+		@Nullable Set<Fruit> getFruit() {
 			return this.fruit;
 		}
 
-		void setFruit(Set<Fruit> fruit) {
+		void setFruit(@Nullable Set<Fruit> fruit) {
 			this.fruit = fruit;
 		}
 
@@ -254,13 +262,13 @@ class BindFailureAnalyzerTests {
 	@ConfigurationProperties("test.foo")
 	static class NestedFailureProperties {
 
-		private String value;
+		private @Nullable String value;
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			throw new RuntimeException("This is a failure");
 		}
 

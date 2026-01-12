@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration("src/test/webapp")
 class SpringBootMockServletContextTests implements ServletContextAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Override

@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,16 +34,13 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.boot.webflux.error.DefaultErrorAttributes;
@@ -88,7 +86,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class,
 				HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class, ErrorWebFluxAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, MustacheAutoConfiguration.class))
+				PropertyPlaceholderAutoConfiguration.class))
 		.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0")
 		.withUserConfiguration(Application.class);
 
@@ -151,36 +149,6 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	@WithResource(name = "templates/error/error.mustache", content = """
-			<html>
-			<body>
-			<ul>
-				<li>status: {{status}}</li>
-				<li>message: {{message}}</li>
-			</ul>
-			</body>
-			</html>
-			""")
-	void htmlError() {
-		Schedulers.shutdownNow();
-		this.contextRunner.withPropertyValues("server.error.include-message=always").run((context) -> {
-			WebTestClient client = getWebClient(context);
-			String body = client.get()
-				.uri("/")
-				.accept(MediaType.TEXT_HTML)
-				.exchange()
-				.expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader()
-				.contentType(TEXT_HTML_UTF8)
-				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-			assertThat(body).contains("status: 500").contains("message: Expected!");
-		});
-	}
-
-	@Test
 	void bindingResultError() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
@@ -212,7 +180,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void bindingResultErrorIncludeMessageAndErrors() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-message=on-param", "server.error.include-binding-errors=on-param")
+			.withPropertyValues("spring.web.error.include-message=on-param",
+					"spring.web.error.include-binding-errors=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.post()
@@ -243,7 +212,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void includeStackTraceOnParam() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=on-param")
+			.withPropertyValues("spring.web.error.include-exception=true",
+					"spring.web.error.include-stacktrace=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -268,7 +238,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void alwaysIncludeStackTrace() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=always")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-stacktrace=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -293,7 +263,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void neverIncludeStackTrace() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=never")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-stacktrace=never")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -318,7 +288,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void includeMessageOnParam() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=on-param")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -343,7 +313,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void alwaysIncludeMessage() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=always")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -368,7 +338,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void neverIncludeMessage() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=never")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=never")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -392,7 +362,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	@Test
 	void statusException() {
-		this.contextRunner.withPropertyValues("server.error.include-exception=true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.web.error.include-exception=true").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get()
 				.uri("/badRequest")
@@ -414,8 +384,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void defaultErrorView() {
 		this.contextRunner
-			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-stacktrace=always",
-					"server.error.include-message=always")
+			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
+					"spring.web.error.include-stacktrace=always", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				String body = client.get()
@@ -439,7 +409,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void escapeHtmlInDefaultErrorView() {
 		this.contextRunner
-			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-message=always")
+			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				String body = client.get()
@@ -495,7 +465,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void whitelabelDisabled() {
 		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false", "spring.mustache.prefix=classpath:/unknown/")
+			.withPropertyValues("spring.web.error.whitelabel.enabled=false",
+					"spring.mustache.prefix=classpath:/unknown/")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -506,46 +477,6 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isNotFound()
 					.expectBody()
 					.isEmpty();
-			});
-	}
-
-	@Test
-	void exactStatusTemplateErrorPage() {
-		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false",
-					"spring.mustache.prefix=" + getErrorTemplatesLocation())
-			.run((context) -> {
-				WebTestClient client = getWebClient(context);
-				String body = client.get()
-					.uri("/notfound")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus()
-					.isNotFound()
-					.expectBody(String.class)
-					.returnResult()
-					.getResponseBody();
-				assertThat(body).contains("404 page");
-			});
-	}
-
-	@Test
-	void seriesStatusTemplateErrorPage() {
-		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false",
-					"spring.mustache.prefix=" + getErrorTemplatesLocation())
-			.run((context) -> {
-				WebTestClient client = getWebClient(context);
-				String body = client.get()
-					.uri("/badRequest")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus()
-					.isBadRequest()
-					.expectBody(String.class)
-					.returnResult()
-					.getResponseBody();
-				assertThat(body).contains("4xx page");
 			});
 	}
 
@@ -634,18 +565,13 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
-	private String getErrorTemplatesLocation() {
-		String packageName = getClass().getPackage().getName();
-		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
-	}
-
 	private WebTestClient getWebClient(AssertableReactiveWebApplicationContext context) {
 		return WebTestClient.bindToApplicationContext(context).webFilter(this.logIdFilter).build();
 	}
 
 	private static final class LogIdFilter implements WebFilter {
 
-		private String logId;
+		private @Nullable String logId;
 
 		@Override
 		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -653,7 +579,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return chain.filter(exchange);
 		}
 
-		String getLogId() {
+		@Nullable String getLogId() {
 			return this.logId;
 		}
 
@@ -704,8 +630,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		ErrorAttributes errorAttributes() {
 			return new DefaultErrorAttributes() {
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> errorAttributes = super.getErrorAttributes(request, options);
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> errorAttributes = super.getErrorAttributes(request, options);
 					errorAttributes.put("error", "custom error");
 					errorAttributes.put("newAttribute", "value");
 					errorAttributes.remove("path");
@@ -725,8 +652,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return new DefaultErrorAttributes() {
 
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> errorAttributes = new HashMap<>();
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> errorAttributes = new HashMap<>();
 					errorAttributes.put("status", 400);
 					errorAttributes.put("error", "custom error");
 					return errorAttributes;
@@ -741,12 +669,11 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 		@Bean
 		@Order(-1)
-		ErrorWebExceptionHandler errorWebExceptionHandler(ServerProperties serverProperties,
-				ErrorAttributes errorAttributes, WebProperties webProperties,
+		ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
 				ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer,
 				ApplicationContext applicationContext) {
 			DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
-					webProperties.getResources(), serverProperties.getError(), applicationContext) {
+					webProperties.getResources(), webProperties.getError(), applicationContext) {
 
 				@Override
 				protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
@@ -770,8 +697,10 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return new DefaultErrorAttributes() {
 
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> attributes = new LinkedHashMap<>(super.getErrorAttributes(request, options));
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> attributes = new LinkedHashMap<>(
+							super.getErrorAttributes(request, options));
 					attributes.remove("status");
 					return attributes;
 				}

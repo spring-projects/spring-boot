@@ -56,6 +56,7 @@ class HibernatePropertiesTests {
 		.withUserConfiguration(TestConfiguration.class);
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Supplier<String> ddlAutoSupplier;
 
 	@Test

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.reactor;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.system.JavaVersion;
+import org.springframework.boot.thread.Threading;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ClassUtils;
@@ -56,8 +56,7 @@ public class ReactorEnvironmentPostProcessor implements EnvironmentPostProcessor
 				}
 			}
 		}
-		if (environment.getProperty("spring.threads.virtual.enabled", boolean.class, false)
-				&& JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.TWENTY_ONE)) {
+		if (Threading.VIRTUAL.isActive(environment)) {
 			System.setProperty("reactor.schedulers.defaultBoundedElasticOnVirtualThreads", "true");
 		}
 	}

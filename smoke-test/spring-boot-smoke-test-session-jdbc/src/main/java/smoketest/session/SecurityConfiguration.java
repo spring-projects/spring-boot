@@ -16,8 +16,8 @@
 
 package smoketest.session;
 
-import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.EndpointRequest;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class SecurityConfiguration {
 
 	@Bean
-	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();

@@ -18,19 +18,7 @@ package org.springframework.boot.build.context.properties;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFiles;
@@ -40,6 +28,8 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
+
+import org.springframework.boot.build.context.properties.ConfigurationPropertiesAnalyzer.Report;
 
 /**
  * {@link SourceTask} that checks additional Spring configuration metadata files.
@@ -65,99 +55,17 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 	}
 
 	@TaskAction
-	void check() throws JsonParseException, IOException {
-		Report report = createReport();
+	void check() throws IOException {
+		ConfigurationPropertiesAnalyzer analyzer = new ConfigurationPropertiesAnalyzer(getSource().getFiles());
+		Report report = new Report(this.projectDir);
+		analyzer.analyzeSort(report);
+		analyzer.analyzeDeprecationSince(report);
 		File reportFile = getReportLocation().get().getAsFile();
-		Files.write(reportFile.toPath(), report, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		report.write(reportFile);
 		if (report.hasProblems()) {
 			throw new VerificationException(
 					"Problems found in additional Spring configuration metadata. See " + reportFile + " for details.");
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private Report createReport() throws IOException, JsonParseException, JsonMappingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		Report report = new Report();
-		for (File file : getSource().getFiles()) {
-			Analysis analysis = report.analysis(this.projectDir.toPath().relativize(file.toPath()));
-			Map<String, Object> json = objectMapper.readValue(file, Map.class);
-			check("groups", json, analysis);
-			check("properties", json, analysis);
-			check("hints", json, analysis);
-		}
-		return report;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void check(String key, Map<String, Object> json, Analysis analysis) {
-		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.getOrDefault(key, Collections.emptyList());
-		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
-		List<String> sortedNames = sortedCopy(names);
-		for (int i = 0; i < names.size(); i++) {
-			String actual = names.get(i);
-			String expected = sortedNames.get(i);
-			if (!actual.equals(expected)) {
-				analysis.problems.add("Wrong order at $." + key + "[" + i + "].name - expected '" + expected
-						+ "' but found '" + actual + "'");
-			}
-		}
-	}
-
-	private List<String> sortedCopy(Collection<String> original) {
-		List<String> copy = new ArrayList<>(original);
-		Collections.sort(copy);
-		return copy;
-	}
-
-	private static final class Report implements Iterable<String> {
-
-		private final List<Analysis> analyses = new ArrayList<>();
-
-		private Analysis analysis(Path path) {
-			Analysis analysis = new Analysis(path);
-			this.analyses.add(analysis);
-			return analysis;
-		}
-
-		private boolean hasProblems() {
-			for (Analysis analysis : this.analyses) {
-				if (!analysis.problems.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public Iterator<String> iterator() {
-			List<String> lines = new ArrayList<>();
-			for (Analysis analysis : this.analyses) {
-				lines.add(analysis.source.toString());
-				lines.add("");
-				if (analysis.problems.isEmpty()) {
-					lines.add("No problems found.");
-				}
-				else {
-					lines.addAll(analysis.problems);
-				}
-				lines.add("");
-			}
-			return lines.iterator();
-		}
-
-	}
-
-	private static final class Analysis {
-
-		private final List<String> problems = new ArrayList<>();
-
-		private final Path source;
-
-		private Analysis(Path source) {
-			this.source = source;
-		}
-
 	}
 
 }

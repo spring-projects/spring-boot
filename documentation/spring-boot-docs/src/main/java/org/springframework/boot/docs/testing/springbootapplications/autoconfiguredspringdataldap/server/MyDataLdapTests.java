@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataldap.server;
 
+import org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 
 @DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
 class MyDataLdapTests {

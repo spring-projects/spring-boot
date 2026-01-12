@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -83,7 +84,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	void noFile(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
@@ -98,7 +99,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
+		this.loggingSystem.initialize(getInitializationContext(), null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(temp.listFiles(SPRING_LOG_FILTER)).isNotEmpty();
@@ -107,7 +108,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testCustomFormatter(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").contains("???? INFO [");
 	}
@@ -116,7 +117,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	void testSystemPropertyInitializesFormat(CapturedOutput output) {
 		System.setProperty(LoggingSystemProperty.PID.getEnvironmentVariableName(), "1234");
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null,
+		this.loggingSystem.initialize(getInitializationContext(),
 				"classpath:" + ClassUtils.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
@@ -130,7 +131,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 			""")
 	void testNonDefaultConfigLocation(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:logging-nondefault.properties", null);
+		this.loggingSystem.initialize(getInitializationContext(), "classpath:logging-nondefault.properties", null);
 		this.logger.info("Hello world");
 		assertThat(output).contains("INFO: Hello");
 	}
@@ -138,8 +139,8 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException()
-			.isThrownBy(() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem.initialize(getInitializationContext(),
+				"classpath:logging-nonexistent.properties", null));
 	}
 
 	@Test
@@ -151,7 +152,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void setLevel(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.fine("Hello");
@@ -161,7 +162,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void setLevelToNull(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.fine("Hello");
@@ -173,7 +174,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggerConfigurations() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
@@ -183,7 +184,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggerConfiguration() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
@@ -193,9 +194,13 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
 		this.logger.info("Hello world");
 		assertThat(output).doesNotContain("\033[");
+	}
+
+	private LoggingInitializationContext getInitializationContext() {
+		return new LoggingInitializationContext(null);
 	}
 
 }

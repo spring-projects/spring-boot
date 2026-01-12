@@ -20,6 +20,7 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionService;
@@ -103,11 +104,12 @@ class StringToPeriodConverterTests {
 		assertThat(convert(conversionService, "-10", ChronoUnit.YEARS, null)).isEqualTo(Period.ofYears(-10));
 	}
 
-	private Period convert(ConversionService conversionService, String source) {
+	private @Nullable Period convert(ConversionService conversionService, String source) {
 		return conversionService.convert(source, Period.class);
 	}
 
-	private Period convert(ConversionService conversionService, String source, ChronoUnit unit, PeriodStyle style) {
+	private @Nullable Period convert(ConversionService conversionService, String source, @Nullable ChronoUnit unit,
+			@Nullable PeriodStyle style) {
 		return (Period) conversionService.convert(source, TypeDescriptor.forObject(source),
 				MockPeriodTypeDescriptor.get(unit, style));
 	}

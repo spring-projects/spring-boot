@@ -19,16 +19,16 @@ package org.springframework.boot.security.oauth2.server.authorization.autoconfig
 import java.util.Set;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
-import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -49,9 +49,8 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-		OAuth2AuthorizationServerConfigurer authorizationServer = OAuth2AuthorizationServerConfigurer
-			.authorizationServer();
+	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
+		OAuth2AuthorizationServerConfigurer authorizationServer = new OAuth2AuthorizationServerConfigurer();
 		http.securityMatcher(authorizationServer.getEndpointsMatcher());
 		http.with(authorizationServer, withDefaults());
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated());
@@ -63,8 +62,8 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 	}
 
 	@Bean
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+	@Order(SecurityFilterProperties.BASIC_AUTH_ORDER)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).formLogin(withDefaults());
 		return http.build();
 	}

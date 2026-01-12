@@ -17,25 +17,24 @@
 package org.springframework.boot.jdbc.autoconfigure;
 
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
-import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
-import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.BeanDescription;
+import tools.jackson.databind.SerializationConfig;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.introspect.AnnotatedMethod;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ser.BeanPropertyWriter;
+import tools.jackson.databind.ser.BeanSerializerFactory;
+import tools.jackson.databind.ser.SerializerFactory;
+import tools.jackson.databind.ser.ValueSerializerModifier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
@@ -57,8 +56,7 @@ class DataSourceJsonSerializationTests {
 		DataSource dataSource = new DataSource();
 		SerializerFactory factory = BeanSerializerFactory.instance
 			.withSerializerModifier(new GenericSerializerModifier());
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializerFactory(factory);
+		JsonMapper mapper = JsonMapper.builder().serializerFactory(factory).build();
 		String value = mapper.writeValueAsString(dataSource);
 		assertThat(value).contains("\"url\":");
 	}
@@ -66,8 +64,7 @@ class DataSourceJsonSerializationTests {
 	@Test
 	void serializerWithMixin() throws Exception {
 		DataSource dataSource = new DataSource();
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.addMixIn(DataSource.class, DataSourceJson.class);
+		JsonMapper mapper = JsonMapper.builder().addMixIn(DataSource.class, DataSourceJson.class).build();
 		String value = mapper.writeValueAsString(dataSource);
 		assertThat(value).contains("\"url\":");
 		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isOne();
@@ -78,18 +75,18 @@ class DataSourceJsonSerializationTests {
 
 	}
 
-	static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
+	static class TomcatDataSourceSerializer extends ValueSerializer<DataSource> {
 
 		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public void serialize(DataSource value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		public void serialize(DataSource value, JsonGenerator jgen, SerializationContext context) {
 			jgen.writeStartObject();
 			for (PropertyDescriptor property : BeanUtils.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
 				if (reader != null && property.getWriteMethod() != null
 						&& this.conversionService.canConvert(String.class, property.getPropertyType())) {
-					jgen.writeObjectField(property.getName(), ReflectionUtils.invokeMethod(reader, value));
+					jgen.writePOJOProperty(property.getName(), ReflectionUtils.invokeMethod(reader, value));
 				}
 			}
 			jgen.writeEndObject();
@@ -97,17 +94,18 @@ class DataSourceJsonSerializationTests {
 
 	}
 
-	static class GenericSerializerModifier extends BeanSerializerModifier {
+	static class GenericSerializerModifier extends ValueSerializerModifier {
 
 		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription.Supplier beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			for (BeanPropertyWriter writer : beanProperties) {
-				AnnotatedMethod setter = beanDesc.findMethod("set" + StringUtils.capitalize(writer.getName()),
-						new Class<?>[] { writer.getType().getRawClass() });
+				AnnotatedMethod setter = beanDesc.get()
+					.findMethod("set" + StringUtils.capitalize(writer.getName()),
+							new Class<?>[] { writer.getType().getRawClass() });
 				if (setter != null && this.conversionService.canConvert(String.class, writer.getType().getRawClass())) {
 					result.add(writer);
 				}

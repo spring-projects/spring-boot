@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 
 /**
@@ -42,16 +40,12 @@ public class DiscoveredOperationMethod extends OperationMethod {
 
 	public DiscoveredOperationMethod(Method method, OperationType operationType,
 			AnnotationAttributes annotationAttributes) {
-		super(method, operationType, DiscoveredOperationMethod::isOptionalParameter);
+		super(method, operationType);
 		Assert.notNull(annotationAttributes, "'annotationAttributes' must not be null");
 		List<String> producesMediaTypes = new ArrayList<>();
 		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
 		producesMediaTypes.addAll(getProducesFromProducible(annotationAttributes));
 		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
-	}
-
-	private static boolean isOptionalParameter(Parameter parameter) {
-		return MergedAnnotations.from(parameter).isPresent(OptionalParameter.class);
 	}
 
 	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducible(

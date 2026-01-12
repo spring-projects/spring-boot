@@ -193,7 +193,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private boolean parseArgs = true;
 
-	private @Nullable LogLevel springBootLogging = null;
+	private @Nullable LogLevel springBootLogging;
 
 	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {
@@ -381,7 +381,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @since 2.2.0
 	 */
 	protected void initializeSpringBootLogging(LoggingSystem system, LogLevel springBootLogging) {
-		BiConsumer<String, LogLevel> configurer = getLogLevelConfigurer(system);
+		BiConsumer<String, @Nullable LogLevel> configurer = getLogLevelConfigurer(system);
 		SPRING_BOOT_LOGGING_LOGGERS.getOrDefault(springBootLogging, Collections.emptyList())
 			.forEach((name) -> configureLogLevel(name, springBootLogging, configurer));
 	}
@@ -393,13 +393,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @since 2.2.0
 	 */
 	protected void setLogLevels(LoggingSystem system, ConfigurableEnvironment environment) {
-		BiConsumer<String, LogLevel> customizer = getLogLevelConfigurer(system);
+		BiConsumer<String, @Nullable LogLevel> customizer = getLogLevelConfigurer(system);
 		Binder binder = Binder.get(environment);
 		Map<String, LogLevel> levels = binder.bind(LOGGING_LEVEL, STRING_LOGLEVEL_MAP).orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> configureLogLevel(name, level, customizer));
 	}
 
-	private void configureLogLevel(String name, LogLevel level, BiConsumer<String, LogLevel> configurer) {
+	private void configureLogLevel(String name, LogLevel level, BiConsumer<String, @Nullable LogLevel> configurer) {
 		if (this.loggerGroups != null) {
 			LoggerGroup group = this.loggerGroups.get(name);
 			if (group != null && group.hasMembers()) {
@@ -410,7 +410,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		configurer.accept(name, level);
 	}
 
-	private BiConsumer<String, LogLevel> getLogLevelConfigurer(LoggingSystem system) {
+	private BiConsumer<String, @Nullable LogLevel> getLogLevelConfigurer(LoggingSystem system) {
 		return (name, level) -> {
 			try {
 				name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;

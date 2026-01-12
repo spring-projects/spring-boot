@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.type.BlobReference;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchiveIndex;
@@ -101,7 +102,7 @@ class ExportedImageTar implements Closeable {
 		 * @return a new {@link TarArchive} instance or {@code null} if this entry is not
 		 * a layer.
 		 */
-		abstract TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry);
+		abstract @Nullable TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry);
 
 		/**
 		 * Create a new {@link LayerArchiveFactory} for the given tar file using either
@@ -129,8 +130,11 @@ class ExportedImageTar implements Closeable {
 				Assert.state(index != null || manifest != null,
 						() -> "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
 							.formatted(reference));
-				return (index != null) ? new IndexLayerArchiveFactory(tarFile, index)
-						: new ManifestLayerArchiveFactory(tarFile, manifest);
+				if (index != null) {
+					return new IndexLayerArchiveFactory(tarFile, index);
+				}
+				Assert.state(manifest != null, "'manifest' must not be null");
+				return new ManifestLayerArchiveFactory(manifest);
 			}
 		}
 
@@ -239,7 +243,7 @@ class ExportedImageTar implements Closeable {
 		}
 
 		@Override
-		TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry) {
+		@Nullable TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry) {
 			String mediaType = this.layerMediaTypes.get(entry.getName());
 			if (mediaType == null) {
 				return null;
@@ -264,9 +268,9 @@ class ExportedImageTar implements Closeable {
 	 */
 	private static class ManifestLayerArchiveFactory extends LayerArchiveFactory {
 
-		private Set<String> layers;
+		private final Set<String> layers;
 
-		ManifestLayerArchiveFactory(Path tarFile, ImageArchiveManifest manifest) {
+		ManifestLayerArchiveFactory(ImageArchiveManifest manifest) {
 			this.layers = manifest.getEntries()
 				.stream()
 				.flatMap((entry) -> entry.getLayers().stream())
@@ -274,7 +278,7 @@ class ExportedImageTar implements Closeable {
 		}
 
 		@Override
-		TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry) {
+		@Nullable TarArchive getLayerArchive(TarArchiveInputStream tar, TarArchiveEntry entry) {
 			if (!this.layers.contains(entry.getName())) {
 				return null;
 			}

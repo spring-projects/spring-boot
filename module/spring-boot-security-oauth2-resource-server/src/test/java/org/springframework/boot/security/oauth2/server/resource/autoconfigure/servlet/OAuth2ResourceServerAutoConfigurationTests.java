@@ -32,23 +32,24 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
 import jakarta.servlet.Filter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ThrowingConsumer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InOrder;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -66,12 +67,15 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.JoseHeaderNames;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTypeValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
@@ -106,7 +110,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
 		.withUserConfiguration(TestConfig.class);
 
-	private MockWebServer server;
+	private @Nullable MockWebServer server;
 
 	private static final String JWK_SET = "{\"keys\":[{\"kty\":\"RSA\",\"e\":\"AQAB\",\"use\":\"sig\","
 			+ "\"kid\":\"one\",\"n\":\"oXJ8OyOv_eRnce4akdanR4KYRfnC2zLV4uYNQpcFn6oHL0dj7D6kxQmsXoYgJV8ZVDn71KGm"
@@ -229,6 +233,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -254,6 +259,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -280,6 +286,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -559,6 +566,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				validate(
 						jwt().claim("iss", URI.create(issuerUri).toURL())
@@ -585,6 +593,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				assertThat(context).hasBean("customJwtClaimValidator");
 				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
@@ -634,6 +643,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 					.getField(jwtDecoder, "jwtValidator");
+				assertThat(jwtValidator).isNotNull();
 				Jwt jwt = jwt().claim("iss", new URL(issuerUri))
 					.claim("aud", Collections.singletonList("https://other-audience.com"))
 					.build();
@@ -668,7 +678,10 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
 			AbstractAuthenticationToken token = converter.convert(jwt);
 			assertThat(token).isNotNull().extracting(AbstractAuthenticationToken::getName).isEqualTo(expectedPrincipal);
-			assertThat(token.getAuthorities()).extracting(GrantedAuthority::getAuthority)
+			assertThat(token.getAuthorities()
+				.stream()
+				.filter((authority) -> !(authority instanceof FactorGrantedAuthority)))
+				.extracting(GrantedAuthority::getAuthority)
 				.containsExactlyInAnyOrder(expectedAuthorities);
 			assertThat(context).hasSingleBean(JwtDecoder.class);
 			assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -727,14 +740,67 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ManagementWebSecurityAutoConfiguration.class,
 					OAuth2ResourceServerAutoConfiguration.class, SecurityAutoConfiguration.class,
-					WebMvcAutoConfiguration.class));
+					ServletWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class));
 		contextRunner.run((context) -> assertThat(context).hasSingleBean(ManagementWebSecurityAutoConfiguration.class));
 		contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
-	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
+	@Test
+	@SuppressWarnings("unchecked")
+	void customTypeValidatorCanReplaceDefaultWhenUsingIssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		String issuerUri = "http://" + this.server.getHostName() + ":" + this.server.getPort() + "/" + path;
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=" + issuerUri)
+			.withUserConfiguration(CustomJwtTypeValidatorConfig.class)
+			.run((context) -> {
+				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
+				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+				assertThat(context).hasBean("customJwtTypeValidator");
+				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
+					.getBean("customJwtTypeValidator");
+				validate(jwt().claim("iss", URI.create(issuerUri).toURL()).header(JoseHeaderNames.TYP, "custom-type"),
+						jwtDecoder,
+						(validators) -> assertThat(validators).contains(customValidator)
+							.satisfiesOnlyOnce(
+									(validator) -> assertThat(validator).isInstanceOf(JwtTypeValidator.class)));
+			});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void customTypeValidatorCanReplaceDefaultWhenUsingJwkSetUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.withUserConfiguration(CustomJwtTypeValidatorConfig.class)
+			.run((context) -> {
+				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+				assertThat(context).hasBean("customJwtTypeValidator");
+				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
+					.getBean("customJwtTypeValidator");
+				validate(jwt().header(JoseHeaderNames.TYP, "custom-type"), jwtDecoder,
+						(validators) -> assertThat(validators).contains(customValidator)
+							.satisfiesOnlyOnce(
+									(validator) -> assertThat(validator).isInstanceOf(JwtTypeValidator.class)));
+			});
+	}
+
+	private @Nullable Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = filterChains.get(0).getFilters();
@@ -748,16 +814,18 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		return issuer;
 	}
 
-	private void setupMockResponse(String issuer) throws JsonProcessingException {
+	private void setupMockResponse(String issuer) {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
-			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
+			.setBody(new JsonMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
 		this.server.enqueue(
 				new MockResponse().setResponseCode(200).setHeader("Content-Type", "application/json").setBody(JWK_SET));
 	}
 
-	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) {
+		assertThat(this.server).isNotNull();
 		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);
@@ -800,7 +868,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			ThrowingConsumer<List<OAuth2TokenValidator<Jwt>>> validatorsConsumer) {
 		DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 			.getField(jwtDecoder, "jwtValidator");
-		assertThat(jwtValidator.validate(builder.build()).hasErrors()).isFalse();
+		assertThat(jwtValidator).isNotNull();
+		assertThat(jwtValidator.validate(builder.build()).getErrors()).isEmpty();
 		validatorsConsumer.accept(extractValidators(jwtValidator));
 	}
 
@@ -808,6 +877,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	private List<OAuth2TokenValidator<Jwt>> extractValidators(DelegatingOAuth2TokenValidator<Jwt> delegatingValidator) {
 		Collection<OAuth2TokenValidator<Jwt>> delegates = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 			.getField(delegatingValidator, "tokenValidators");
+		assertThat(delegates).isNotNull();
 		List<OAuth2TokenValidator<Jwt>> extracted = new ArrayList<>();
 		for (OAuth2TokenValidator<Jwt> delegate : delegates) {
 			if (delegate instanceof DelegatingOAuth2TokenValidator<Jwt> delegatingDelegate) {
@@ -871,7 +941,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			http.securityMatcher("/**");
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			return http.build();
@@ -885,6 +955,16 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Bean
 		JwtClaimValidator<String> customJwtClaimValidator() {
 			return new JwtClaimValidator<>("custom_claim", "custom_claim_value"::equals);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJwtTypeValidatorConfig {
+
+		@Bean
+		JwtTypeValidator customJwtTypeValidator() {
+			return new JwtTypeValidator("custom-type");
 		}
 
 	}

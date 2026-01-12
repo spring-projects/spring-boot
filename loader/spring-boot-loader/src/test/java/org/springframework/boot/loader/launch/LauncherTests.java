@@ -42,6 +42,115 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LauncherTests {
 
 	/**
+	 * Main method tests.
+	 *
+	 */
+	@Nested
+	@ExtendWith(OutputCaptureExtension.class)
+	class MainMethod {
+
+		@Test
+		void publicMainMethod(CapturedOutput output) throws Exception {
+			new MainMethodTestLauncher(PublicMainMethod.class).launch(new String[0]);
+			assertThat(output).contains("Launched public static void main(String[] args)");
+		}
+
+		@Test
+		void packagePrivateMainMethod(CapturedOutput output) throws Exception {
+			new MainMethodTestLauncher(PackagePrivateMainMethod.class).launch(new String[0]);
+			assertThat(output).contains("Launched static void main(String[] args)");
+		}
+
+		@Test
+		void publicParameterlessMainMethod(CapturedOutput output) throws Exception {
+			new MainMethodTestLauncher(PublicParameterlessMainMethod.class).launch(new String[0]);
+			assertThat(output).contains("Launched public static void main()");
+		}
+
+		@Test
+		void packagePrivateParameterlessMainMethod(CapturedOutput output) throws Exception {
+			new MainMethodTestLauncher(PackagePrivateParameterlessMainMethod.class).launch(new String[0]);
+			assertThat(output).contains("Launched static void main()");
+		}
+
+		@Test
+		void prefersSingleParameterMainMethod(CapturedOutput output) throws Exception {
+			new MainMethodTestLauncher(MultipleMainMethods.class).launch(new String[0]);
+			assertThat(output).contains("Launched static void main(String[] args)");
+		}
+
+		static class MainMethodTestLauncher extends Launcher {
+
+			private final Class<?> mainClass;
+
+			MainMethodTestLauncher(Class<?> mainClass) {
+				this.mainClass = mainClass;
+			}
+
+			@Override
+			protected Archive getArchive() {
+				return null;
+			}
+
+			@Override
+			protected String getMainClass() throws Exception {
+				return this.mainClass.getName();
+			}
+
+			@Override
+			protected Set<URL> getClassPathUrls() throws Exception {
+				return Collections.emptySet();
+			}
+
+		}
+
+		public static class PublicMainMethod {
+
+			public static void main(String[] args) {
+				System.out.println("Launched public static void main(String[] args)");
+			}
+
+		}
+
+		public static class PackagePrivateMainMethod {
+
+			public static void main(String[] args) {
+				System.out.println("Launched static void main(String[] args)");
+			}
+
+		}
+
+		public static class PublicParameterlessMainMethod {
+
+			public static void main() {
+				System.out.println("Launched public static void main()");
+			}
+
+		}
+
+		public static class PackagePrivateParameterlessMainMethod {
+
+			static void main() {
+				System.out.println("Launched static void main()");
+			}
+
+		}
+
+		public static class MultipleMainMethods {
+
+			static void main(String[] args) {
+				System.out.println("Launched static void main(String[] args)");
+			}
+
+			static void main() {
+				System.out.println("Launched static void main()");
+			}
+
+		}
+
+	}
+
+	/**
 	 * Jar Mode tests.
 	 */
 	@Nested
@@ -61,7 +170,7 @@ class LauncherTests {
 		@Test
 		void launchWhenJarModePropertyIsSetLaunchesJarMode(CapturedOutput out) throws Exception {
 			System.setProperty("jarmode", "test");
-			new TestLauncher().launch(new String[] { "boot" });
+			new JarModeTestLauncher().launch(new String[] { "boot" });
 			assertThat(out).contains("running in test jar mode [boot]");
 			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("0");
 		}
@@ -69,7 +178,7 @@ class LauncherTests {
 		@Test
 		void launchWhenJarModePropertyIsNotAcceptedThrowsException(CapturedOutput out) throws Exception {
 			System.setProperty("jarmode", "idontexist");
-			new TestLauncher().launch(new String[] { "boot" });
+			new JarModeTestLauncher().launch(new String[] { "boot" });
 			assertThat(out).contains("Unsupported jarmode 'idontexist'");
 			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
 		}
@@ -77,7 +186,7 @@ class LauncherTests {
 		@Test
 		void launchWhenJarModeRunFailsWithErrorExceptionPrintsSimpleMessage(CapturedOutput out) throws Exception {
 			System.setProperty("jarmode", "test");
-			new TestLauncher().launch(new String[] { "error" });
+			new JarModeTestLauncher().launch(new String[] { "error" });
 			assertThat(out).contains("running in test jar mode [error]");
 			assertThat(out).contains("Error: error message");
 			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
@@ -86,34 +195,34 @@ class LauncherTests {
 		@Test
 		void launchWhenJarModeRunFailsWithErrorExceptionPrintsStackTrace(CapturedOutput out) throws Exception {
 			System.setProperty("jarmode", "test");
-			new TestLauncher().launch(new String[] { "fail" });
+			new JarModeTestLauncher().launch(new String[] { "fail" });
 			assertThat(out).contains("running in test jar mode [fail]");
 			assertThat(out).contains("java.lang.IllegalStateException: bad");
 			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
 		}
 
-	}
+		private static final class JarModeTestLauncher extends Launcher {
 
-	private static final class TestLauncher extends Launcher {
+			@Override
+			protected String getMainClass() throws Exception {
+				throw new IllegalStateException("Should not be called");
+			}
 
-		@Override
-		protected String getMainClass() throws Exception {
-			throw new IllegalStateException("Should not be called");
-		}
+			@Override
+			protected Archive getArchive() {
+				return null;
+			}
 
-		@Override
-		protected Archive getArchive() {
-			return null;
-		}
+			@Override
+			protected Set<URL> getClassPathUrls() throws Exception {
+				return Collections.emptySet();
+			}
 
-		@Override
-		protected Set<URL> getClassPathUrls() throws Exception {
-			return Collections.emptySet();
-		}
+			@Override
+			protected void launch(String[] args) throws Exception {
+				super.launch(args);
+			}
 
-		@Override
-		protected void launch(String[] args) throws Exception {
-			super.launch(args);
 		}
 
 	}

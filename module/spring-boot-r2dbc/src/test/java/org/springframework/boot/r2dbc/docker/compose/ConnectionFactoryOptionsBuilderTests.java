@@ -40,9 +40,10 @@ import static org.mockito.Mockito.mock;
  */
 class ConnectionFactoryOptionsBuilderTests {
 
-	private ConnectionFactoryOptionsBuilder builder = new ConnectionFactoryOptionsBuilder("mydb", 1234);
+	private final ConnectionFactoryOptionsBuilder builder = new ConnectionFactoryOptionsBuilder("mydb", 1234);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenDriverIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConnectionFactoryOptionsBuilder(null, 123))
 			.withMessage("'driver' must not be null");
@@ -78,12 +79,14 @@ class ConnectionFactoryOptionsBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void buildWhenServiceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb", "user", "pass"))
 			.withMessage("'service' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void buildWhenDatabaseIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.build(mockService(456), null, "user", "pass"))

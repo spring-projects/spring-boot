@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.expose;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,9 +40,10 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class IncludeExcludeEndpointFilterTests {
 
-	private IncludeExcludeEndpointFilter<?> filter;
+	private @Nullable IncludeExcludeEndpointFilter<?> filter;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenEndpointTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(null, new MockEnvironment(), "foo"))
@@ -49,6 +51,7 @@ class IncludeExcludeEndpointFilterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, null, "foo"))
@@ -56,6 +59,7 @@ class IncludeExcludeEndpointFilterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPrefixIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null))
@@ -160,12 +164,14 @@ class IncludeExcludeEndpointFilterTests {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean match(EndpointId id) {
+	private boolean match(@Nullable EndpointId id) {
 		ExposableEndpoint<?> endpoint = mock(TestExposableWebEndpoint.class);
 		if (id != null) {
 			given(endpoint.getEndpointId()).willReturn(id);
 		}
-		return ((EndpointFilter) this.filter).match(endpoint);
+		EndpointFilter filter = this.filter;
+		assertThat(filter).isNotNull();
+		return filter.match(endpoint);
 	}
 
 	abstract static class TestExposableWebEndpoint implements ExposableWebEndpoint {

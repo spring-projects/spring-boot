@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,8 @@ class ConfigDataLoaderTests {
 	static class TestConfigDataLoader implements ConfigDataLoader<TestConfigDataResource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource) throws IOException {
+		public @Nullable ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource)
+				throws IOException {
 			return null;
 		}
 

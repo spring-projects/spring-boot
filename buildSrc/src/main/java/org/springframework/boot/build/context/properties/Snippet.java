@@ -71,6 +71,14 @@ class Snippet {
 		return this.title;
 	}
 
+	Set<String> getPrefixes() {
+		return this.prefixes;
+	}
+
+	Map<String, String> getOverrides() {
+		return this.overrides;
+	}
+
 	void forEachPrefix(Consumer<String> action) {
 		this.prefixes.forEach(action);
 	}

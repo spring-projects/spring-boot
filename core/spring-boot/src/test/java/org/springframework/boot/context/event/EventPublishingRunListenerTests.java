@@ -24,14 +24,15 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -45,6 +46,8 @@ import static org.mockito.Mockito.mock;
  */
 class EventPublishingRunListenerTests {
 
+	private static final String[] NO_ARGS = new String[0];
+
 	@Test
 	void shouldPublishLifecycleEvents() {
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
@@ -52,11 +55,11 @@ class EventPublishingRunListenerTests {
 		TestApplicationListener applicationListener = new TestApplicationListener();
 		SpringApplication application = mock(SpringApplication.class);
 		given(application.getListeners()).willReturn(Collections.singleton(applicationListener));
-		EventPublishingRunListener publishingListener = new EventPublishingRunListener(application, null);
+		EventPublishingRunListener publishingListener = new EventPublishingRunListener(application, NO_ARGS);
 		applicationListener.assertReceivedNoEvents();
 		publishingListener.starting(bootstrapContext);
 		applicationListener.assertReceivedEvent(ApplicationStartingEvent.class);
-		publishingListener.environmentPrepared(bootstrapContext, null);
+		publishingListener.environmentPrepared(bootstrapContext, new MockEnvironment());
 		applicationListener.assertReceivedEvent(ApplicationEnvironmentPreparedEvent.class);
 		publishingListener.contextPrepared(context);
 		applicationListener.assertReceivedEvent(ApplicationContextInitializedEvent.class);
@@ -78,7 +81,7 @@ class EventPublishingRunListenerTests {
 		ApplicationListener<ApplicationStartingEvent> listener = (event) -> event.getSpringApplication()
 			.addListeners(lateAddedApplicationListener);
 		application.addListeners(listener);
-		EventPublishingRunListener runListener = new EventPublishingRunListener(application, null);
+		EventPublishingRunListener runListener = new EventPublishingRunListener(application, NO_ARGS);
 		runListener.starting(bootstrapContext);
 		runListener.environmentPrepared(bootstrapContext, environment);
 		lateAddedApplicationListener.assertReceivedEvent(ApplicationEnvironmentPreparedEvent.class);

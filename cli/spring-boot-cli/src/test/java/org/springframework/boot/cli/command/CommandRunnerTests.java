@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,11 @@ class CommandRunnerTests {
 	private CommandRunner commandRunner;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Command regularCommand;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Command anotherCommand;
 
 	private final Set<Call> calls = EnumSet.noneOf(Call.class);
@@ -74,7 +77,7 @@ class CommandRunnerTests {
 			}
 
 			@Override
-			protected boolean errorMessage(String message) {
+			protected boolean errorMessage(@Nullable String message) {
 				CommandRunnerTests.this.calls.add(Call.ERROR_MESSAGE);
 				return super.errorMessage(message);
 			}

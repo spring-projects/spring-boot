@@ -27,6 +27,7 @@ Depending on the version that you are upgrading to, you can find some additional
 
 * *From 1.x to 2.x:* xref:upgrading.adoc#upgrading.from-1x[Upgrading from 1.x]
 * *From 2.x:* xref:upgrading.adoc#upgrading.from-2x[Upgrading from 2.x]
+* *From 3.x:* xref:upgrading.adoc#upgrading.from-3x[Upgrading from 3.x]
 * *To a new feature release:* xref:upgrading.adoc#upgrading.to-feature[Upgrading to New Feature Release]
 * *Spring Boot CLI:* xref:upgrading.adoc#upgrading.cli[Upgrading the Spring Boot CLI]
 
@@ -140,7 +141,7 @@ Spring Boot applications can be optimized for production using technologies desc
 
 * *Efficient Deployments:* xref:reference:packaging/efficient.adoc#packaging.efficient.unpacking[Unpacking the Executable JAR]
 * *GraalVM Native Images:* xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:reference:packaging/native-image/advanced-topics.adoc[Advanced Topics] | xref:how-to:native-image/developing-your-first-application.adoc[Getting Started] | xref:how-to:native-image/testing-native-applications.adoc[Testing]
-* *Class Data Sharing:* xref:reference:packaging/class-data-sharing.adoc[Overview]
+* *AOT cache:* xref:reference:packaging/aot-cache.adoc[Overview]
 * *Checkpoint and Restore* xref:reference:packaging/checkpoint-restore.adoc[Overview]
 
 

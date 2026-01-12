@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.filewatch;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link SnapshotStateRepository} that uses a single static instance.
  *
@@ -25,7 +27,7 @@ class StaticSnapshotStateRepository implements SnapshotStateRepository {
 
 	static final StaticSnapshotStateRepository INSTANCE = new StaticSnapshotStateRepository();
 
-	private volatile Object state;
+	private volatile @Nullable Object state;
 
 	@Override
 	public void save(Object state) {
@@ -33,7 +35,7 @@ class StaticSnapshotStateRepository implements SnapshotStateRepository {
 	}
 
 	@Override
-	public Object restore() {
+	public @Nullable Object restore() {
 		return this.state;
 	}
 

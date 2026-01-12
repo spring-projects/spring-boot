@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.Console;
-import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -55,7 +54,8 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * @param setter setter used to apply the property
 	 * @since 2.4.3
 	 */
-	public LogbackLoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+	public LogbackLoggingSystemProperties(Environment environment,
+			@Nullable BiConsumer<String, @Nullable String> setter) {
 		super(environment, setter);
 	}
 
@@ -68,19 +68,14 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * @since 3.2.0
 	 */
 	public LogbackLoggingSystemProperties(Environment environment,
-			Function<@Nullable String, @Nullable String> defaultValueResolver,
-			@Nullable BiConsumer<String, String> setter) {
+			@Nullable Function<@Nullable String, @Nullable String> defaultValueResolver,
+			@Nullable BiConsumer<String, @Nullable String> setter) {
 		super(environment, defaultValueResolver, setter);
 	}
 
 	@Override
 	protected @Nullable Console getConsole() {
 		return super.getConsole();
-	}
-
-	@Override
-	protected Charset getDefaultFileCharset() {
-		return Charset.defaultCharset();
 	}
 
 	@Override
@@ -111,7 +106,6 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
 			Class<T> type) {
 		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
-		value = (value != null) ? value : getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
 		if (value != null) {
 			String stringValue = String.valueOf((value instanceof DataSize dataSize) ? dataSize.toBytes() : value);
 			setSystemProperty(property.getEnvironmentVariableName(), stringValue);

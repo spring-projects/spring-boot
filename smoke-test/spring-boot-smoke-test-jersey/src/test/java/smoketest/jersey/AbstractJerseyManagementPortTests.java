@@ -23,11 +23,12 @@ import smoketest.jersey.AbstractJerseyManagementPortTests.ResourceConfigConfigur
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
+@AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.server.port=0")
 @Import(ResourceConfigConfiguration.class)
 class AbstractJerseyManagementPortTests {

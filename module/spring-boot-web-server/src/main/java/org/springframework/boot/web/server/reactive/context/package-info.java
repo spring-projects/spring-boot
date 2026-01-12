@@ -18,4 +18,7 @@
  * Reactive web server based integrations with Spring's
  * {@link org.springframework.context.ApplicationContext ApplicationContext}.
  */
+@NullMarked
 package org.springframework.boot.web.server.reactive.context;
+
+import org.jspecify.annotations.NullMarked;

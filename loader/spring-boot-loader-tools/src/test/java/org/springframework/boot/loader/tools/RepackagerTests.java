@@ -19,9 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
@@ -55,9 +54,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
-	private File destination;
+	private @Nullable File destination;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullSource() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Repackager(null));
 	}
@@ -118,6 +118,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullDestination() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
@@ -137,6 +138,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 	void overwriteDestination() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		assertThat(this.destination).isNotNull();
 		this.destination.createNewFile();
 		repackager.repackage(this.destination, NO_LIBRARIES);
 		assertThat(hasLauncherClasses(this.destination)).isTrue();
@@ -147,31 +149,9 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), false);
 		repackager.setLayoutFactory(new TestLayoutFactory());
+		assertThat(this.destination).isNotNull();
 		repackager.repackage(this.destination, NO_LIBRARIES);
 		assertThat(hasLauncherClasses(this.destination)).isTrue();
-	}
-
-	@Test
-	void addLauncherScript() throws Exception {
-		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
-		File source = this.testJarFile.getFile();
-		Repackager repackager = createRepackager(source, true);
-		LaunchScript script = new MockLauncherScript("ABC");
-		repackager.repackage(this.destination, NO_LIBRARIES, script);
-		byte[] bytes = FileCopyUtils.copyToByteArray(this.destination);
-		assertThat(new String(bytes)).startsWith("ABC");
-		assertThat(hasLauncherClasses(source)).isFalse();
-		assertThat(hasLauncherClasses(this.destination)).isTrue();
-		try (ZipFile zipFile = ZipFile.builder().setFile(this.destination).get()) {
-			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
-		}
-		try {
-			assertThat(Files.getPosixFilePermissions(this.destination.toPath()))
-				.contains(PosixFilePermission.OWNER_EXECUTE);
-		}
-		catch (UnsupportedOperationException ex) {
-			// Probably running the test on Windows
-		}
 	}
 
 	@Test
@@ -179,6 +159,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		Long timestamp = null;
+		assertThat(this.destination).isNotNull();
 		repackager.repackage(this.destination, NO_LIBRARIES);
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
 			if (entry.getName().startsWith("org/springframework/boot/loader")) {
@@ -200,7 +181,8 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
-		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		assertThat(this.destination).isNotNull();
+		repackager.repackage(this.destination, NO_LIBRARIES, FileTime.fromMillis(timestamp));
 		long offsetTimestamp = DefaultTimeZoneOffset.INSTANCE.removeFrom(timestamp);
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
 			assertThat(entry.getTime()).isEqualTo(offsetTimestamp);
@@ -214,7 +196,8 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/Some.class",
 				ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
-		repackager.repackage(this.destination, NO_LIBRARIES, null, null);
+		assertThat(this.destination).isNotNull();
+		repackager.repackage(this.destination, NO_LIBRARIES, null);
 		stopWatch.stop();
 		assertThat(stopWatch.getTotalTimeMillis()).isLessThan(5000);
 	}
@@ -261,6 +244,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
 	@Override
 	protected void execute(Repackager packager, Libraries libraries) throws IOException {
+		assertThat(this.destination).isNotNull();
 		packager.repackage(this.destination, libraries);
 	}
 
@@ -278,13 +262,14 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
 	@Override
 	protected Manifest getPackagedManifest() throws IOException {
+		assertThat(this.destination).isNotNull();
 		try (JarFile jarFile = new JarFile(this.destination)) {
 			return jarFile.getManifest();
 		}
 	}
 
 	@Override
-	protected String getPackagedEntryContent(String name) throws IOException {
+	protected @Nullable String getPackagedEntryContent(String name) throws IOException {
 		try (ZipFile zip = ZipFile.builder().setFile(this.destination).get()) {
 			ZipArchiveEntry entry = zip.getEntry(name);
 			if (entry == null) {
@@ -293,21 +278,6 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 			byte[] bytes = FileCopyUtils.copyToByteArray(zip.getInputStream(entry));
 			return new String(bytes, StandardCharsets.UTF_8);
 		}
-	}
-
-	static class MockLauncherScript implements LaunchScript {
-
-		private final byte[] bytes;
-
-		MockLauncherScript(String script) {
-			this.bytes = script.getBytes();
-		}
-
-		@Override
-		public byte[] toByteArray() {
-			return this.bytes;
-		}
-
 	}
 
 	static class TestLayoutFactory implements LayoutFactory {

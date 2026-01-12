@@ -7,6 +7,12 @@
       "defaultValue": "test"
     },
     {
+      "name": "test.replace",
+      "type": "java.lang.String",
+      "description": "Test Replace.",
+      "defaultValue": "replace"
+    },
+    {
       "name": "test.deprecate",
       "type": "java.lang.String",
       "description": "Test deprecate.",

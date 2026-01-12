@@ -25,10 +25,12 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -50,6 +52,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for DevTools-specific
@@ -116,6 +119,10 @@ public final class DevToolsDataSourceAutoConfiguration {
 
 		private enum InMemoryDatabase {
 
+			/*
+			 * @deprecated since 4.1.0 for removal in 4.3.0 as Derby is EOL.
+			 */
+			@Deprecated(since = "4.1.0", forRemoval = true)
 			DERBY(null, Set.of("org.apache.derby.jdbc.EmbeddedDriver"), (dataSource) -> {
 				String url;
 				try (Connection connection = dataSource.getConnection()) {
@@ -136,13 +143,13 @@ public final class DevToolsDataSourceAutoConfiguration {
 			HSQLDB("jdbc:hsqldb:mem:", Set.of("org.hsqldb.jdbcDriver", "org.hsqldb.jdbc.JDBCDriver",
 					"org.hsqldb.jdbc.pool.JDBCXADataSource"));
 
-			private final String urlPrefix;
+			private final @Nullable String urlPrefix;
 
 			private final ShutdownHandler shutdownHandler;
 
 			private final Set<String> driverClassNames;
 
-			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames) {
+			InMemoryDatabase(@Nullable String urlPrefix, Set<String> driverClassNames) {
 				this(urlPrefix, driverClassNames, (dataSource) -> {
 					try (Connection connection = dataSource.getConnection()) {
 						try (Statement statement = connection.createStatement()) {
@@ -152,7 +159,8 @@ public final class DevToolsDataSourceAutoConfiguration {
 				});
 			}
 
-			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames, ShutdownHandler shutdownHandler) {
+			InMemoryDatabase(@Nullable String urlPrefix, Set<String> driverClassNames,
+					ShutdownHandler shutdownHandler) {
 				this.urlPrefix = urlPrefix;
 				this.driverClassNames = driverClassNames;
 				this.shutdownHandler = shutdownHandler;
@@ -189,11 +197,13 @@ public final class DevToolsDataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools DataSource Condition");
-			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class, true, false);
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.state(beanFactory != null, "'beanFactory' must not be null");
+			String[] dataSourceBeanNames = beanFactory.getBeanNamesForType(DataSource.class, true, false);
 			if (dataSourceBeanNames.length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSource bean").atAll());
 			}
-			if (context.getBeanFactory().getBeanNamesForType(DataSourceProperties.class, true, false).length != 1) {
+			if (beanFactory.getBeanNamesForType(DataSourceProperties.class, true, false).length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSourceProperties bean").atAll());
 			}
 			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);

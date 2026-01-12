@@ -35,3 +35,7 @@ tasks.named("javadoc").configure {
 	// No public or protected classes
 	enabled = false
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

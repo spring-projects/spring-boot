@@ -16,8 +16,6 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
@@ -32,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ManifestListTests extends AbstractJsonTests {
 
 	@Test
-	void loadJsonFromDistributionManifestList() throws IOException {
+	void loadJsonFromDistributionManifestList() {
 		String content = getContentAsString("distribution-manifest-list.json");
 		ManifestList manifestList = getManifestList(content);
 		assertThat(manifestList.getSchemaVersion()).isEqualTo(2);
@@ -40,8 +38,8 @@ class ManifestListTests extends AbstractJsonTests {
 		assertThat(manifestList.getManifests()).hasSize(2);
 	}
 
-	private ManifestList getManifestList(String content) throws IOException {
-		return new ManifestList(getObjectMapper().readTree(content));
+	private ManifestList getManifestList(String content) {
+		return new ManifestList(getJsonMapper().readTree(content));
 	}
 
 }

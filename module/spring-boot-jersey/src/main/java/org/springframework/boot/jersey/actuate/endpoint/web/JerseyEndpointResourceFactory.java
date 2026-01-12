@@ -37,6 +37,7 @@ import org.glassfish.jersey.process.Inflector;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -109,8 +110,8 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	protected Resource getResource(EndpointMapping endpointMapping, WebOperation operation,
-			WebOperationRequestPredicate requestPredicate, String path, WebServerNamespace serverNamespace,
-			JerseyRemainingPathSegmentProvider remainingPathSegmentProvider) {
+			WebOperationRequestPredicate requestPredicate, String path, @Nullable WebServerNamespace serverNamespace,
+			@Nullable JerseyRemainingPathSegmentProvider remainingPathSegmentProvider) {
 		Builder resourceBuilder = Resource.builder()
 			.path(endpointMapping.getPath())
 			.path(endpointMapping.createSubPath(path));
@@ -138,10 +139,10 @@ public class JerseyEndpointResourceFactory {
 
 		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
-		private static final List<Function<Object, Object>> BODY_CONVERTERS;
+		private static final List<Function<@Nullable Object, @Nullable Object>> BODY_CONVERTERS;
 
 		static {
-			List<Function<Object, Object>> converters = new ArrayList<>();
+			List<Function<@Nullable Object, @Nullable Object>> converters = new ArrayList<>();
 			converters.add(new ResourceBodyConverter());
 			if (ClassUtils.isPresent("reactor.core.publisher.Mono", OperationInflector.class.getClassLoader())) {
 				converters.add(new FluxBodyConverter());
@@ -154,12 +155,13 @@ public class JerseyEndpointResourceFactory {
 
 		private final boolean readBody;
 
-		private final WebServerNamespace serverNamespace;
+		private final @Nullable WebServerNamespace serverNamespace;
 
-		private final JerseyRemainingPathSegmentProvider remainingPathSegmentProvider;
+		private final @Nullable JerseyRemainingPathSegmentProvider remainingPathSegmentProvider;
 
-		private OperationInflector(WebOperation operation, boolean readBody, WebServerNamespace serverNamespace,
-				JerseyRemainingPathSegmentProvider remainingPathSegments) {
+		private OperationInflector(WebOperation operation, boolean readBody,
+				@Nullable WebServerNamespace serverNamespace,
+				@Nullable JerseyRemainingPathSegmentProvider remainingPathSegments) {
 			this.operation = operation;
 			this.readBody = readBody;
 			this.serverNamespace = serverNamespace;
@@ -209,7 +211,7 @@ public class JerseyEndpointResourceFactory {
 			return pathParameters;
 		}
 
-		private String getRemainingPathSegments(ContainerRequestContext requestContext,
+		private @Nullable String getRemainingPathSegments(ContainerRequestContext requestContext,
 				Map<String, Object> pathParameters, String matchAllRemainingPathSegmentsVariable) {
 			if (this.remainingPathSegmentProvider != null) {
 				return this.remainingPathSegmentProvider.get(requestContext, matchAllRemainingPathSegmentsVariable);
@@ -217,7 +219,7 @@ public class JerseyEndpointResourceFactory {
 			return (String) pathParameters.get(matchAllRemainingPathSegmentsVariable);
 		}
 
-		private String[] tokenizePathSegments(String path) {
+		private String[] tokenizePathSegments(@Nullable String path) {
 			String[] segments = StringUtils.tokenizeToStringArray(path, PATH_SEPARATOR, false, true);
 			for (int i = 0; i < segments.length; i++) {
 				if (segments[i].contains("%")) {
@@ -241,7 +243,7 @@ public class JerseyEndpointResourceFactory {
 			return result;
 		}
 
-		private Response convertToJaxRsResponse(Object response, String httpMethod) {
+		private Response convertToJaxRsResponse(@Nullable Object response, String httpMethod) {
 			if (response == null) {
 				boolean isGet = HttpMethod.GET.equals(httpMethod);
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
@@ -256,8 +258,8 @@ public class JerseyEndpointResourceFactory {
 				.build();
 		}
 
-		private Object convertIfNecessary(Object body) {
-			for (Function<Object, Object> converter : BODY_CONVERTERS) {
+		private @Nullable Object convertIfNecessary(@Nullable Object body) {
+			for (Function<@Nullable Object, @Nullable Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}
 			return body;
@@ -289,10 +291,10 @@ public class JerseyEndpointResourceFactory {
 	/**
 	 * Body converter from {@link Mono} to {@link Mono#block()}.
 	 */
-	private static final class MonoBodyConverter implements Function<Object, Object> {
+	private static final class MonoBodyConverter implements Function<@Nullable Object, @Nullable Object> {
 
 		@Override
-		public Object apply(Object body) {
+		public @Nullable Object apply(@Nullable Object body) {
 			if (body instanceof Mono) {
 				return ((Mono<?>) body).block();
 			}
@@ -304,10 +306,10 @@ public class JerseyEndpointResourceFactory {
 	/**
 	 * Body converter from {@link Flux} to {@link Flux#collectList Mono&lt;List&gt;}.
 	 */
-	private static final class FluxBodyConverter implements Function<Object, Object> {
+	private static final class FluxBodyConverter implements Function<@Nullable Object, @Nullable Object> {
 
 		@Override
-		public Object apply(Object body) {
+		public @Nullable Object apply(@Nullable Object body) {
 			if (body instanceof Flux) {
 				return ((Flux<?>) body).collectList();
 			}

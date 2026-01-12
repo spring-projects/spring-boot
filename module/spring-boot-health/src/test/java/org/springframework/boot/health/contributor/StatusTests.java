@@ -16,8 +16,8 @@
 
 package org.springframework.boot.health.contributor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,12 +30,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class StatusTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCodeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Status(null, ""))
 			.withMessage("'code' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenDescriptionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Status("code", null))
 			.withMessage("'description' must not be null");
@@ -70,7 +72,7 @@ class StatusTests {
 	@Test
 	void serializeWithJacksonReturnsValidJson() throws Exception {
 		Status status = new Status("spring", "boot");
-		ObjectMapper mapper = new ObjectMapper();
+		JsonMapper mapper = new JsonMapper();
 		String json = mapper.writeValueAsString(status);
 		assertThat(json).isEqualTo("{\"description\":\"boot\",\"status\":\"spring\"}");
 	}

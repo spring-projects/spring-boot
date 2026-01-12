@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -96,7 +98,7 @@ record CertificateMatchingTestSource(CertificateMatchingTestSource.Algorithm alg
 	 * @param name the algorithm name
 	 * @param spec the algorithm spec or {@code null}
 	 */
-	record Algorithm(String name, AlgorithmParameterSpec spec) {
+	record Algorithm(String name, @Nullable AlgorithmParameterSpec spec) {
 
 		KeyPair generateKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 			KeyPairGenerator generator = KeyPairGenerator.getInstance(this.name);

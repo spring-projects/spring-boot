@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObjectTests.TestMappedObject.Person;
 
@@ -63,6 +63,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenInterfaceReturnsProxy() {
 		Person person = this.mapped.valueAt("/person", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFirst()).isEqualTo("spring");
 		assertThat(person.getName().getLast()).isEqualTo("boot");
 	}
@@ -70,6 +71,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenInterfaceAndMissingReturnsProxy() {
 		Person person = this.mapped.valueAt("/missing", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFirst()).isNull();
 		assertThat(person.getName().getLast()).isNull();
 	}
@@ -82,6 +84,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenDefaultMethodReturnsValue() {
 		Person person = this.mapped.valueAt("/person", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFullName()).isEqualTo("dr spring boot");
 	}
 

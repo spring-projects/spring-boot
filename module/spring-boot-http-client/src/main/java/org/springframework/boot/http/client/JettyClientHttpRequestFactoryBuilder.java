@@ -20,10 +20,13 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
@@ -47,7 +50,7 @@ public final class JettyClientHttpRequestFactoryBuilder
 		this(null, new JettyHttpClientBuilder());
 	}
 
-	private JettyClientHttpRequestFactoryBuilder(List<Consumer<JettyClientHttpRequestFactory>> customizers,
+	private JettyClientHttpRequestFactoryBuilder(@Nullable List<Consumer<JettyClientHttpRequestFactory>> customizers,
 			JettyHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -77,6 +80,20 @@ public final class JettyClientHttpRequestFactoryBuilder
 	}
 
 	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that uses the given
+	 * factory to create the {@link HttpClientTransport}.
+	 * @param httpClientTransportFactory the {@link HttpClientTransport} factory to use
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpRequestFactoryBuilder withHttpClientTransportFactory(
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory) {
+		Assert.notNull(httpClientTransportFactory, "'httpClientTransportFactory' must not be null");
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientTransportFactory(httpClientTransportFactory));
+	}
+
+	/**
 	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
 	 * customization to the underlying {@link HttpClientTransport}.
 	 * @param httpClientTransportCustomizer the customizer to apply
@@ -102,11 +119,22 @@ public final class JettyClientHttpRequestFactoryBuilder
 				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
 	}
 
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpRequestFactoryBuilder with(UnaryOperator<JettyClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
-	protected JettyClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withTimeouts(null, null)));
+	protected JettyClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withTimeouts(null, null));
 		JettyClientHttpRequestFactory requestFactory = new JettyClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
@@ -116,7 +144,7 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "org.eclipse.jetty.client.HttpClient";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
 		}
 

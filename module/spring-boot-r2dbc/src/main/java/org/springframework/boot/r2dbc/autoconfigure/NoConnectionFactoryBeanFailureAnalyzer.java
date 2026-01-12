@@ -17,6 +17,7 @@
 package org.springframework.boot.r2dbc.autoconfigure;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
@@ -45,7 +46,7 @@ class NoConnectionFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoS
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
 		if (ConnectionFactory.class.equals(cause.getBeanType())
 				&& this.classLoader.getResource("META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider") == null) {
 			return new FailureAnalysis("No R2DBC ConnectionFactory bean is available "

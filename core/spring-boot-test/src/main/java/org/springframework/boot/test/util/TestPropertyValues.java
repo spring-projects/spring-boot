@@ -56,9 +56,9 @@ public final class TestPropertyValues {
 
 	private static final TestPropertyValues EMPTY = new TestPropertyValues(Collections.emptyMap());
 
-	private final Map<String, Object> properties;
+	private final Map<String, @Nullable Object> properties;
 
-	private TestPropertyValues(Map<String, Object> properties) {
+	private TestPropertyValues(Map<String, @Nullable Object> properties) {
 		this.properties = Collections.unmodifiableMap(properties);
 	}
 
@@ -117,7 +117,7 @@ public final class TestPropertyValues {
 		if (stream == null) {
 			return this;
 		}
-		Map<String, Object> properties = new LinkedHashMap<>(this.properties);
+		Map<String, @Nullable Object> properties = new LinkedHashMap<>(this.properties);
 		stream.map(mapper).filter(Objects::nonNull).forEach((pair) -> pair.addTo(properties));
 		return new TestPropertyValues(properties);
 	}
@@ -175,7 +175,7 @@ public final class TestPropertyValues {
 	public void applyToSystemProperties(Runnable action) {
 		applyToSystemProperties(() -> {
 			action.run();
-			return null;
+			return new Object();
 		});
 	}
 
@@ -186,7 +186,7 @@ public final class TestPropertyValues {
 	 * @param call the call to make
 	 * @return the result of the call
 	 */
-	public <T> T applyToSystemProperties(Callable<T> call) {
+	public <T extends @Nullable Object> T applyToSystemProperties(Callable<T> call) {
 		try (SystemPropertiesHandler handler = new SystemPropertiesHandler()) {
 			return call.call();
 		}
@@ -332,7 +332,7 @@ public final class TestPropertyValues {
 			this.value = value;
 		}
 
-		public void addTo(Map<String, Object> properties) {
+		public void addTo(Map<String, @Nullable Object> properties) {
 			properties.put(this.name, this.value);
 		}
 

@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
 class StackIdTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> StackId.fromImage(null))
 			.withMessage("'image' must not be null");

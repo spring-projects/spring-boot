@@ -31,6 +31,7 @@ import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against the Groovy and
@@ -65,7 +66,11 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.buildOutput, this.dsl);
+			PluginClasspathGradleBuild gradleBuild = new PluginClasspathGradleBuild(this.buildOutput, this.dsl);
+			if (this.dsl == Dsl.KOTLIN) {
+				gradleBuild.kotlin();
+			}
+			gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
