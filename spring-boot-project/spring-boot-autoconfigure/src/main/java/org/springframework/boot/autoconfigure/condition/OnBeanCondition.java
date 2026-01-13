@@ -320,6 +320,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	private Map<String, BeanDefinition> collectBeanDefinitionsForType(ListableBeanFactory beanFactory,
 			boolean considerHierarchy, BeanType type, Set<BeanType> parameterizedContainers,
 			Map<String, BeanDefinition> result) {
+		if (ResolvableType.NONE.equals(type.resolvableType())) {
+			return result;
+		}
 		result = putAll(result, beanFactory.getBeanNamesForType(type.resolvableType(), true, false), beanFactory);
 		for (BeanType parameterizedContainer : parameterizedContainers) {
 			Class<?> resolved = parameterizedContainer.resolvableType().resolve();
