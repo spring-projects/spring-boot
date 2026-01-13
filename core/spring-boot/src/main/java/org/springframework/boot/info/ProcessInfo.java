@@ -110,7 +110,7 @@ public class ProcessInfo {
 			int poolSize = invokeMethod(mxbeanClass, mxbean, "getPoolSize");
 			return new VirtualThreadsInfo(mountedVirtualThreadCount, queuedVirtualThreadCount, parallelism, poolSize);
 		}
-		catch (ReflectiveOperationException ex) {
+		catch (Exception ex) {
 			return null;
 		}
 	}
