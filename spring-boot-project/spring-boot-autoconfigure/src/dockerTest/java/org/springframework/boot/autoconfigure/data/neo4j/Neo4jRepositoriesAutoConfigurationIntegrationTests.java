@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.jupiter.api.Test;
+import org.neo4j.cypherdsl.core.renderer.Dialect;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.country.CountryReposito
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -66,6 +68,11 @@ class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class })
 	static class TestConfiguration {
+
+		@Bean
+		org.neo4j.cypherdsl.core.renderer.Configuration cypherDslConfiguration() {
+			return org.neo4j.cypherdsl.core.renderer.Configuration.newConfig().withDialect(Dialect.NEO4J_4).build();
+		}
 
 	}
 
