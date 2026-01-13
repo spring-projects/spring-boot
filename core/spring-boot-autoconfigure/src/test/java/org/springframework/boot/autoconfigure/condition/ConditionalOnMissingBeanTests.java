@@ -35,6 +35,8 @@ import org.springframework.boot.autoconfigure.condition.scan.ScanBean;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -501,6 +503,14 @@ class ConditionalOnMissingBeanTests {
 					TypeArgumentsConditionWithParameterizedContainerConfiguration.class)
 			.run((context) -> assertThat(context)
 				.satisfies(beansAndContainersNamed(GenericExampleBean.class, "customGenericExampleBean")));
+	}
+
+	@Test
+	void yep() {
+		this.contextRunner.withUserConfiguration(OnMissingBeanForTypeThatDoesNotExist.class)
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> {
+			});
 	}
 
 	private Consumer<ConfigurableApplicationContext> beansAndContainersNamed(Class<?> type, String... names) {
@@ -1133,6 +1143,17 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	static class TestScope extends SimpleThreadScope {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class OnMissingBeanForTypeThatDoesNotExist {
+
+		@Bean
+		@ConditionalOnMissingBean(type = "com.example.DoesNotExist")
+		String bean() {
+			return "bean";
+		}
 
 	}
 
