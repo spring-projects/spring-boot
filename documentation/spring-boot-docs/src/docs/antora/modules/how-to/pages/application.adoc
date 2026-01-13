@@ -70,12 +70,12 @@ There is more than one way to register additional customizations:
 The javadoc:org.springframework.boot.SpringApplication[] sends some special javadoc:org.springframework.test.context.event.ApplicationEvents[] to the listeners (some even before the context is created) and then registers the listeners for events published by the javadoc:org.springframework.context.ApplicationContext[] as well.
 See xref:reference:features/spring-application.adoc#features.spring-application.application-events-and-listeners[] in the "`Spring Boot Features`" section for a complete list.
 
-It is also possible to customize the javadoc:org.springframework.core.env.Environment[] before the application context is refreshed by using javadoc:org.springframework.boot.env.EnvironmentPostProcessor[].
+It is also possible to customize the javadoc:org.springframework.core.env.Environment[] before the application context is refreshed by using javadoc:org.springframework.boot.EnvironmentPostProcessor[].
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
 
 [source]
 ----
-org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+org.springframework.boot.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
 ----
 
 The implementation can load arbitrary files and add them to the javadoc:org.springframework.core.env.Environment[].
