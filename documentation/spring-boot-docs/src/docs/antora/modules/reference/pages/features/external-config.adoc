@@ -641,9 +641,20 @@ myotherprop: "sometimes-set"
 [[features.external-config.encrypting]]
 == Encrypting Properties
 
-Spring Boot does not provide any built-in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring javadoc:org.springframework.core.env.Environment[].
-The javadoc:org.springframework.boot.env.EnvironmentPostProcessor[] interface allows you to manipulate the javadoc:org.springframework.core.env.Environment[] before the application starts.
-See xref:how-to:application.adoc#howto.application.customize-the-environment-or-application-context[] for details.
+Spring Boot does not provide any built-in support for encrypting property values.
+However, it provides extension points that allow values in the
+javadoc:org.springframework.core.env.Environment[] to be customized early
+in the application startup phase.
+
+The javadoc:org.springframework.boot.env.EnvironmentPostProcessor[] interface
+can be used to manipulate the Environment before the application starts.
+
+NOTE: EnvironmentPostProcessor implementations should be registered using the
+standard `META-INF/spring/org.springframework.boot.env.EnvironmentPostProcessor`
+resource file rather than the deprecated `META-INF/spring.factories` mechanism.
+
+See xref:how-to:application.adoc#howto.application.customize-the-environment-or-application-context[]
+for details.
 
 If you need a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
 
