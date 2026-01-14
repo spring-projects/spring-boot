@@ -40,3 +40,9 @@ dependencies {
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
 }
+
+tasks.named("checkAutoConfigurationClasses") {
+	omittedFromImports = [
+		"org.springframework.boot.gson.autoconfigure.GsonTesterTestAutoConfiguration"
+	]
+}
