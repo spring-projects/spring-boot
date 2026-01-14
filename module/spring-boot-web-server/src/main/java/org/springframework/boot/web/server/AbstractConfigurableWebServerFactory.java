@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +35,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.util.Assert;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * Abstract base class for {@link ConfigurableWebServerFactory} implementations.
@@ -215,7 +218,9 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * Return the absolute temp dir for given web server.
 	 * @param prefix server name
 	 * @return the temp dir for given server.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link TempDirs}.
 	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	protected final File createTempDir(String prefix) {
 		try {
 			File tempDir = Files.createTempDirectory(prefix + "." + getPort() + ".").toFile();
@@ -226,6 +231,56 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 			throw new WebServerException(
 					"Unable to create tempDir. java.io.tmpdir is set to " + System.getProperty("java.io.tmpdir"), ex);
 		}
+	}
+
+	/**
+	 * Manages temporary directories.
+	 *
+	 * @since 4.1.0
+	 */
+	public static class TempDirs {
+
+		private final Set<Path> dirs = new HashSet<>();
+
+		private final int port;
+
+		public TempDirs(int port) {
+			this.port = port;
+		}
+
+		/**
+		 * Creates a temporary directory and registers it for {@link #cleanup cleanup}.
+		 * @param prefix the directory prefix
+		 * @return the path to the temporary directory
+		 */
+		public Path createTempDir(String prefix) {
+			try {
+				Path directory = Files.createTempDirectory(prefix + "." + this.port + ".").toAbsolutePath();
+				this.dirs.add(directory);
+				return directory;
+			}
+			catch (IOException ex) {
+				throw new WebServerException(
+						"Unable to create tempDir. java.io.tmpdir is set to " + System.getProperty("java.io.tmpdir"),
+						ex);
+			}
+		}
+
+		/**
+		 * Deletes all created temporary directories.
+		 */
+		public void cleanup() {
+			for (Path dir : this.dirs) {
+				try {
+					FileSystemUtils.deleteRecursively(dir);
+				}
+				catch (IOException ex) {
+					// Ignore
+				}
+			}
+			this.dirs.clear();
+		}
+
 	}
 
 }

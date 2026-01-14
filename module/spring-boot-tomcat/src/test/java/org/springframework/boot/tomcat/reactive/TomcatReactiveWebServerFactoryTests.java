@@ -104,7 +104,9 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(factory.getContextLifecycleListeners()).isEmpty();
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
 		this.webServer = tomcatWebServer;
-		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners())
+			.extracting((l) -> l.getClass().getSimpleName())
+			.containsExactly("CleanTempDirsListener");
 	}
 
 	@Test
@@ -113,8 +115,8 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		factory.setUseApr(true);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
 		this.webServer = tomcatWebServer;
-		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
-			.isInstanceOf(AprLifecycleListener.class);
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).extracting(Object::getClass)
+			.contains(AprLifecycleListener.class);
 	}
 
 	@Test

@@ -41,8 +41,8 @@ class MyCloudFoundryConfiguration {
 	fun servletWebServerFactory(): TomcatServletWebServerFactory {
 		return object : TomcatServletWebServerFactory() {
 
-			override fun prepareContext(host: Host, initializers: Array<ServletContextInitializer>) {
-				super.prepareContext(host, initializers)
+			override fun prepareContext(host: Host, initializers: Array<ServletContextInitializer>, tempDirs: TempDirs) {
+				super.prepareContext(host, initializers, tempDirs)
 				val child = StandardContext()
 				child.addLifecycleListener(FixContextListener())
 				child.path = "/cloudfoundryapplication"

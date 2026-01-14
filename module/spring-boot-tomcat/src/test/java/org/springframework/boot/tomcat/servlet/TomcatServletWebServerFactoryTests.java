@@ -160,7 +160,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(factory.getContextLifecycleListeners()).isEmpty();
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		this.webServer = tomcatWebServer;
-		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners())
+			.extracting((listener) -> listener.getClass().getSimpleName())
+			.containsExactly("CleanTempDirsListener");
 	}
 
 	@Test
@@ -169,8 +171,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		factory.setUseApr(true);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		this.webServer = tomcatWebServer;
-		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
-			.isInstanceOf(AprLifecycleListener.class);
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).extracting(Object::getClass)
+			.contains(AprLifecycleListener.class);
 	}
 
 	@Test
