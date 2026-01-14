@@ -29,9 +29,8 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -63,26 +62,24 @@ class SecurityServiceTests {
 	void setup() {
 		MockServerRestTemplateCustomizer mockServerCustomizer = new MockServerRestTemplateCustomizer();
 		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
-		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, false);
+		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, false);
 		this.server = mockServerCustomizer.getServer();
 	}
 
 	@Test
 	void skipSslValidationWhenTrue() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, true);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
-		assertThat(restTemplate).isNotNull();
-		assertThat(restTemplate.getRequestFactory()).isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
+		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, true);
+		assertThat(this.securityService).extracting("restClient.clientRequestFactory")
+			.isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
 	@Test
 	void doNotSkipSslValidationWhenFalse() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, false);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
-		assertThat(restTemplate).isNotNull();
-		assertThat(restTemplate.getRequestFactory()).isNotInstanceOf(SkipSslVerificationHttpRequestFactory.class);
+		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, false);
+		assertThat(this.securityService).extracting("restClient.clientRequestFactory")
+			.isNotInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
 	@Test

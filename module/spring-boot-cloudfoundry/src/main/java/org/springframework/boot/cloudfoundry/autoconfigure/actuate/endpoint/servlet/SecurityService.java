@@ -27,14 +27,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.AccessLevel;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
  * Cloud Foundry security service to handle REST calls to the cloud controller and UAA.
@@ -43,19 +41,19 @@ import org.springframework.web.client.RestTemplate;
  */
 class SecurityService {
 
-	private final RestTemplate restTemplate;
+	private final RestClient restClient;
 
 	private final String cloudControllerUrl;
 
 	private @Nullable String uaaUrl;
 
-	SecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl, boolean skipSslValidation) {
-		Assert.notNull(restTemplateBuilder, "'restTemplateBuilder' must not be null");
+	SecurityService(RestClient.Builder restClientBuilder, String cloudControllerUrl, boolean skipSslValidation) {
+		Assert.notNull(restClientBuilder, "'restClientBuilder' must not be null");
 		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {
-			restTemplateBuilder = restTemplateBuilder.requestFactory(SkipSslVerificationHttpRequestFactory.class);
+			restClientBuilder = restClientBuilder.requestFactory(new SkipSslVerificationHttpRequestFactory());
 		}
-		this.restTemplate = restTemplateBuilder.build();
+		this.restClient = restClientBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
 	}
 
@@ -69,8 +67,11 @@ class SecurityService {
 	AccessLevel getAccessLevel(String token, String applicationId) throws CloudFoundryAuthorizationException {
 		try {
 			URI uri = getPermissionsUri(applicationId);
-			RequestEntity<?> request = RequestEntity.get(uri).header("Authorization", "bearer " + token).build();
-			Map<?, ?> body = this.restTemplate.exchange(request, Map.class).getBody();
+			Map<?, ?> body = this.restClient.get()
+				.uri(uri)
+				.header("Authorization", "bearer " + token)
+				.retrieve()
+				.body(Map.class);
 			if (body != null && Boolean.TRUE.equals(body.get("read_sensitive_data"))) {
 				return AccessLevel.FULL;
 			}
@@ -102,7 +103,7 @@ class SecurityService {
 	 */
 	Map<String, String> fetchTokenKeys() {
 		try {
-			Map<?, ?> response = this.restTemplate.getForObject(getUaaUrl() + "/token_keys", Map.class);
+			Map<?, ?> response = this.restClient.get().uri(getUaaUrl() + "/token_keys").retrieve().body(Map.class);
 			Assert.state(response != null, "'response' must not be null");
 			return extractTokenKeys(response);
 		}
@@ -129,7 +130,10 @@ class SecurityService {
 	String getUaaUrl() {
 		if (this.uaaUrl == null) {
 			try {
-				Map<?, ?> response = this.restTemplate.getForObject(this.cloudControllerUrl + "/info", Map.class);
+				Map<?, ?> response = this.restClient.get()
+					.uri(this.cloudControllerUrl + "/info")
+					.retrieve()
+					.body(Map.class);
 				Assert.state(response != null, "'response' must not be null");
 				String tokenEndpoint = (String) response.get("token_endpoint");
 				Assert.state(tokenEndpoint != null, "'tokenEndpoint' must not be null");
