@@ -20,12 +20,25 @@ import java.util.Collection;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.json.JsonbHttpMessageConverter;
 import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
+import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 
 @SuppressWarnings("deprecation")
 class DefaultServerHttpMessageConvertersCustomizer implements ServerHttpMessageConvertersCustomizer {
+
+	private static final String JACKSON2_JSON_CONVERTER =
+			"org.springframework.http.converter.json.MappingJackson2HttpMessageConverter";
+
+	private static final String JACKSON2_XML_CONVERTER =
+			"org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter";
 
 	private final @Nullable HttpMessageConverters legacyConverters;
 
@@ -46,14 +59,45 @@ class DefaultServerHttpMessageConvertersCustomizer implements ServerHttpMessageC
 		else {
 			builder.registerDefaults();
 			this.converters.forEach((converter) -> {
-				if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
+				if (converter instanceof StringHttpMessageConverter) {
+					builder.withStringConverter(converter);
+				}
+				else if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
 					builder.withKotlinSerializationJsonConverter(converter);
+				}
+				else if (isJsonConverter(converter) && supportsMediaType(converter, MediaType.APPLICATION_JSON)) {
+					builder.withJsonConverter(converter);
+				}
+				else if (isXmlConverter(converter) && supportsMediaType(converter, MediaType.APPLICATION_XML)) {
+					builder.withXmlConverter(converter);
 				}
 				else {
 					builder.addCustomConverter(converter);
 				}
 			});
 		}
+	}
+
+	private static boolean supportsMediaType(HttpMessageConverter<?> converter, MediaType mediaType) {
+		for (MediaType supportedMediaType : converter.getSupportedMediaTypes()) {
+			if (supportedMediaType.equalsTypeAndSubtype(mediaType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isJsonConverter(HttpMessageConverter<?> converter) {
+		return converter.getClass().equals(JacksonJsonHttpMessageConverter.class)
+				|| converter.getClass().getName().equals(JACKSON2_JSON_CONVERTER)
+				|| converter.getClass().equals(GsonHttpMessageConverter.class)
+				|| converter.getClass().equals(JsonbHttpMessageConverter.class);
+	}
+
+	private static boolean isXmlConverter(HttpMessageConverter<?> converter) {
+		return converter.getClass().equals(JacksonXmlHttpMessageConverter.class)
+				|| converter.getClass().getName().equals(JACKSON2_XML_CONVERTER)
+				|| converter.getClass().equals(Jaxb2RootElementHttpMessageConverter.class);
 	}
 
 }
