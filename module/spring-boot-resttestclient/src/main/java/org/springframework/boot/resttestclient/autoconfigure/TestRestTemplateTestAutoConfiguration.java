@@ -28,13 +28,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for {@link TestRestTemplate}.
+ * Test auto-configuration for {@link TestRestTemplate}.
  *
  * @author Andy Wilkinson
- * @since 4.0.0
+ * @see AutoConfigureTestRestTemplate
  */
 @AutoConfiguration
-public final class TestRestTemplateAutoConfiguration {
+final class TestRestTemplateTestAutoConfiguration {
 
 	@Bean(name = "org.springframework.boot.resttestclient.TestRestTemplate")
 	@ConditionalOnMissingBean

@@ -33,16 +33,16 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Auto-configuration for {@link RestTestClient}.
+ * Test auto-configuration for {@link RestTestClient}.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 4.0.0
+ * @see AutoConfigureRestTestClient
  */
 @AutoConfiguration
 @ConditionalOnClass({ RestClient.class, RestTestClient.class, ClientHttpMessageConvertersCustomizer.class })
-public final class RestTestClientAutoConfiguration {
+final class RestTestClientTestAutoConfiguration {
 
 	@Bean
 	SpringBootRestTestClientBuilderCustomizer springBootRestTestClientBuilderCustomizer(
