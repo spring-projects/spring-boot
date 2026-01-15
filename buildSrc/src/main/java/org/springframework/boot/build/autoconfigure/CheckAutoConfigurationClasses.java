@@ -163,13 +163,14 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
 				.add("Name of a class annotated with @AutoConfiguration should end with AutoConfiguration");
 		}
+		boolean testAutoConfiguration = autoConfigurationClass.name().endsWith("TestAutoConfiguration");
 		if (!getOmittedFromImports().getOrElse(Collections.emptySet()).contains(autoConfigurationClass.name())
-				&& !imports.contains(autoConfigurationClass.name())) {
+				&& !imports.contains(autoConfigurationClass.name()) && !testAutoConfiguration) {
 			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
 				.add("Class is not registered in AutoConfiguration.imports");
 		}
-		if (getOmittedFromImports().getOrElse(requiredClassNames).contains(autoConfigurationClass.name())
-				&& imports.contains(autoConfigurationClass.name())) {
+		if ((getOmittedFromImports().getOrElse(Collections.emptySet()).contains(autoConfigurationClass.name())
+				|| testAutoConfiguration) && imports.contains(autoConfigurationClass.name())) {
 			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
 				.add("Class should not be registered in AutoConfiguration.imports");
 		}
