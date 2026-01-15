@@ -46,6 +46,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import reactor.core.publisher.Mono;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.codec.CodecCustomizer;
@@ -59,6 +61,7 @@ import org.springframework.boot.web.context.reactive.ReactiveWebApplicationConte
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration.WebFluxValidatorRuntimeHints;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
 import org.springframework.boot.webflux.filter.OrderedHiddenHttpMethodFilter;
@@ -905,6 +908,13 @@ class WebFluxAutoConfigurationTests {
 				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
 			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
 		});
+	}
+
+	@Test
+	void registersRuntimeHintsForValidatorCreation() {
+		RuntimeHints hints = new RuntimeHints();
+		new WebFluxValidatorRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(ValidatorAdapter.class)).accepts(hints);
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
