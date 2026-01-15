@@ -2744,7 +2744,7 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Lite", "1.1.2") {
+	library("WebJars Locator Lite", "1.1.3") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-lite"
