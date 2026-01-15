@@ -636,7 +636,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			for (Cookie cookie : exchange.responseCookies()) {
 				SameSite sameSite = getSameSite(asServletCookie(cookie));
 				if (sameSite == SameSite.OMITTED) {
-					cookie.setSameSite(false);
+					cookie.setAttribute(Cookie.COOKIE_SAME_SITE_ATTR, null);
 				}
 				else if (sameSite != null) {
 					cookie.setSameSiteMode(sameSite.attributeValue());

@@ -1614,10 +1614,9 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size of the HTTP post content. When the value is -1, the default, the
-		 * size is unlimited.
+		 * Maximum size of the HTTP post content.
 		 */
-		private DataSize maxHttpPostSize = DataSize.ofBytes(-1);
+		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Size of each buffer. The default is derived from the maximum amount of memory
