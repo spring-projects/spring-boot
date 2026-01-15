@@ -47,10 +47,3 @@ dependencies {
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
 }
-
-tasks.named("checkAutoConfigurationClasses") {
-	omittedFromImports = [
-		"org.springframework.boot.resttestclient.autoconfigure.RestTestClientTestAutoConfiguration",
-		"org.springframework.boot.resttestclient.autoconfigure.TestRestTemplateTestAutoConfiguration"
-	]
-}
