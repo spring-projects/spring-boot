@@ -379,7 +379,7 @@ bom {
 			javadoc("elasticsearch-java", version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 		}
 	}
-	library("Flyway", "11.20.1") {
+	library("Flyway", "11.20.2") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-commandline",
