@@ -43,15 +43,15 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link RestTestClientAutoConfiguration}.
+ * Tests for {@link RestTestClientTestAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class RestTestClientAutoConfigurationTests {
+class RestTestClientTestAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestTestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RestTestClientTestAutoConfiguration.class));
 
 	@Test
 	void registersRestTestClient() {
@@ -78,7 +78,7 @@ class RestTestClientAutoConfigurationTests {
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
 					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
-					org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfigurationTests$TestLocalTestWebServerProvider
+					org.springframework.boot.resttestclient.autoconfigure.RestTestClientTestAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
 	void shouldDefineRestTestClientBoundToWebServer() {
 		this.contextRunner.run((context) -> {

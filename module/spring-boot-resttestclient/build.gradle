@@ -50,7 +50,7 @@ tasks.named("compileTestJava") {
 
 tasks.named("checkAutoConfigurationClasses") {
 	omittedFromImports = [
-		"org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfiguration",
-		"org.springframework.boot.resttestclient.autoconfigure.TestRestTemplateAutoConfiguration"
+		"org.springframework.boot.resttestclient.autoconfigure.RestTestClientTestAutoConfiguration",
+		"org.springframework.boot.resttestclient.autoconfigure.TestRestTemplateTestAutoConfiguration"
 	]
 }
