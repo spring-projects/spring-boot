@@ -44,9 +44,11 @@ content:
     version: unspecified
   - url: .
     branches:
+    - '4.0.x'
     - 'main'
     tags:
     - 'v4.0.*'
+    - 'v4.1.*'
     start_paths:
     - documentation/spring-boot-docs/src/docs/antora
     - documentation/spring-boot-actuator-docs/src/docs/antora
