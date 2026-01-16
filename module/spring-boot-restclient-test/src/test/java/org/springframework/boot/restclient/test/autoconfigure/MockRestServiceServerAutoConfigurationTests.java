@@ -20,38 +20,61 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
+import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestExpectationManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MockRestServiceServerAutoConfiguration}.
  *
  * @author HuitaePark
+ * @author Andy Wilkinson
  */
 class MockRestServiceServerAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withPropertyValues("spring.test.restclient.mockrestserviceserver.enabled=true")
 		.withConfiguration(AutoConfigurations.of(MockRestServiceServerAutoConfiguration.class));
 
 	@Test
-	void registersRestClientCustomizerWhenMissing() {
-		this.contextRunner.withPropertyValues("spring.test.restclient.mockrestserviceserver.enabled=true")
-			.run((context) -> assertThat(context).hasSingleBean(MockServerRestClientCustomizer.class));
+	void registersMockServerRestClientCustomizer() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MockServerRestClientCustomizer.class));
 	}
 
 	@Test
-	void backsOffWhenUserProvidesRestClientCustomizer() {
-		MockServerRestClientCustomizer customCustomizer = new MockServerRestClientCustomizer();
+	void registersMockServerRestTemplateCustomizer() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MockServerRestTemplateCustomizer.class));
+	}
 
-		this.contextRunner.withPropertyValues("spring.test.restclient.mockrestserviceserver.enabled=true")
-			.withBean("userMockServerRestClientCustomizer", MockServerRestClientCustomizer.class,
-					() -> customCustomizer)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(MockServerRestClientCustomizer.class);
-				assertThat(context.getBean(MockServerRestClientCustomizer.class))
-					.isSameAs(context.getBean("userMockServerRestClientCustomizer"));
-			});
+	@Test
+	void registersMockRestServiceServer() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MockRestServiceServer.class));
+	}
+
+	@Test
+	void backsOffWhenUserProvidesMockServerRestClientCustomizer() {
+		this.contextRunner.withBean("userMockServerRestClientCustomizer", MockServerRestClientCustomizer.class)
+			.run((context) -> assertThat(context).hasSingleBean(MockServerRestClientCustomizer.class)
+				.hasBean("userMockServerRestClientCustomizer"));
+	}
+
+	@Test
+	void backsOffWhenUserProvidesMockServerRestTemplateCustomizer() {
+		this.contextRunner.withBean("userMockServerRestTemplateCustomizer", MockServerRestTemplateCustomizer.class)
+			.run((context) -> assertThat(context).hasSingleBean(MockServerRestTemplateCustomizer.class)
+				.hasBean("userMockServerRestTemplateCustomizer"));
+	}
+
+	@Test
+	void backsOffWhenUserProvidesMockRestServiceServer() {
+		this.contextRunner
+			.withBean("userMockRestServiceServer", MockRestServiceServer.class, mock(RequestExpectationManager.class))
+			.run((context) -> assertThat(context).hasSingleBean(MockRestServiceServer.class)
+				.hasBean("userMockRestServiceServer"));
 	}
 
 }
