@@ -390,6 +390,7 @@ TIP: `PathRequest.toH2Console()` returns the correct request matcher also when t
 
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
 Both the commercial and open source editions can be used with Spring Boot.
+jOOQ requires Java 21 or later.
 
 
 

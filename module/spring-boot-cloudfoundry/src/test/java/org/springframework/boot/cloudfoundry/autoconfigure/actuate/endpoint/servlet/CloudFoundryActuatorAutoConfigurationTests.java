@@ -42,7 +42,6 @@ import org.springframework.boot.health.autoconfigure.contributor.HealthContribut
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
@@ -61,7 +60,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.CompositeFilter;
 
@@ -87,7 +85,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				ServletWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				/* RestTemplateAutoConfiguration.class, */ ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 
@@ -164,15 +162,9 @@ class CloudFoundryActuatorAutoConfigurationTests {
 					"management.cloudfoundry.skip-ssl-validation:true")
 			.run((context) -> {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
-				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-				assertThat(interceptor).isNotNull();
-				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-						"cloudFoundrySecurityService");
-				assertThat(interceptorSecurityService).isNotNull();
-				RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(interceptorSecurityService,
-						"restTemplate");
-				assertThat(restTemplate).isNotNull();
-				assertThat(restTemplate.getRequestFactory()).isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
+				assertThat(handlerMapping)
+					.extracting("securityInterceptor.cloudFoundrySecurityService.restClient.clientRequestFactory")
+					.isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 			});
 	}
 

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import smoketest.parent.SampleParentContextApplication;
@@ -63,7 +64,7 @@ class SampleIntegrationParentApplicationTests {
 			.until(() -> outputIn(outputDir), containsString(requiredContents));
 	}
 
-	private String outputIn(File outputDir) throws IOException {
+	private @Nullable String outputIn(File outputDir) throws IOException {
 		Resource[] resources = findResources(outputDir);
 		if (resources.length == 0) {
 			return null;

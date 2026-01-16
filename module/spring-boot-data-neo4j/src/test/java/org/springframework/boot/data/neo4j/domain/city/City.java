@@ -30,14 +30,19 @@ public class City implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
+	@SuppressWarnings("NullAway.Init")
 	private final String name;
 
+	@SuppressWarnings("NullAway.Init")
 	private String state;
 
+	@SuppressWarnings("NullAway.Init")
 	private final Country country;
 
+	@SuppressWarnings("NullAway.Init")
 	private String map;
 
 	public City(String name, Country country) {

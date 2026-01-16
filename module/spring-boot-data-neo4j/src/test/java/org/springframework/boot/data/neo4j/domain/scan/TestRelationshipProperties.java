@@ -25,6 +25,7 @@ public class TestRelationshipProperties {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	Long id;
 
 }

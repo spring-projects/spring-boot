@@ -31,7 +31,6 @@ import org.springframework.test.web.servlet.client.RestTestClient;
  *
  * @author Stephane Nicoll
  * @since 4.0.0
- * @see RestTestClientAutoConfiguration
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

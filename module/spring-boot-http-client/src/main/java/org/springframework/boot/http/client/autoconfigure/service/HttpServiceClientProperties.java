@@ -16,10 +16,15 @@
 
 package org.springframework.boot.http.client.autoconfigure.service;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
+import org.springframework.core.env.Environment;
 
 /**
  * Properties for HTTP Service clients.
@@ -29,7 +34,28 @@ import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.http.serviceclient")
-public class HttpServiceClientProperties extends LinkedHashMap<String, HttpClientProperties> {
+public class HttpServiceClientProperties {
+
+	private final Map<String, HttpClientProperties> properties;
+
+	HttpServiceClientProperties(Map<String, HttpClientProperties> properties) {
+		this.properties = properties;
+
+	}
+
+	/**
+	 * Return the {@link HttpClientProperties} for the given named client.
+	 * @param name the service client name
+	 * @return the properties or {@code null}
+	 */
+	public @Nullable HttpClientProperties get(String name) {
+		return this.properties.get(name);
+	}
+
+	static HttpServiceClientProperties bind(Environment environment) {
+		return new HttpServiceClientProperties(Binder.get(environment)
+			.bind("spring.http.serviceclient", Bindable.mapOf(String.class, HttpClientProperties.class))
+			.orElse(Collections.emptyMap()));
+	}
 
 }

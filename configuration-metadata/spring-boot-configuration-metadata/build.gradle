@@ -35,8 +35,6 @@ dependencies {
 	testImplementation("org.springframework:spring-core")
 }
 
-architectureCheck {
-	nullMarked {
-		enabled  = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

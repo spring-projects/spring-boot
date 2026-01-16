@@ -28,6 +28,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -435,6 +438,7 @@ public final class WebMvcAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebProperties.class)
+	@ImportRuntimeHints(MvcValidatorRuntimeHints.class)
 	static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
 		private final Resources resourceProperties;
@@ -720,6 +724,16 @@ public final class WebMvcAutoConfiguration {
 		@Order(0)
 		ProblemDetailsExceptionHandler problemDetailsExceptionHandler() {
 			return new ProblemDetailsExceptionHandler();
+		}
+
+	}
+
+	static class MvcValidatorRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
+			hints.reflection()
+				.registerType(TypeReference.of("org.springframework.boot.validation.autoconfigure.ValidatorAdapter"));
 		}
 
 	}

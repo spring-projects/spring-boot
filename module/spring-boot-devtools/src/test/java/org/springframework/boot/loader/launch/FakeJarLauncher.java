@@ -18,6 +18,8 @@ package org.springframework.boot.loader.launch;
 
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Fake launcher in the {@code org.springframework.boot.loader.launch} package used in
  * {@code MainMethodTests}.
@@ -26,13 +28,15 @@ import java.util.function.Consumer;
  */
 public final class FakeJarLauncher {
 
-	public static Consumer<String[]> action;
+	public static @Nullable Consumer<String[]> action;
 
 	private FakeJarLauncher() {
 	}
 
 	public static void main(String... args) {
-		action.accept(args);
+		if (action != null) {
+			action.accept(args);
+		}
 	}
 
 }

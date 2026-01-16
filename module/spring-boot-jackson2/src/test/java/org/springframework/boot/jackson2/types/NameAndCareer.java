@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jackson2.types;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Sample object used for tests.
  *
@@ -26,14 +28,14 @@ package org.springframework.boot.jackson2.types;
 @SuppressWarnings("removal")
 public class NameAndCareer extends Name {
 
-	private final String career;
+	private final @Nullable String career;
 
-	public NameAndCareer(String name, String career) {
+	public NameAndCareer(@Nullable String name, @Nullable String career) {
 		super(name);
 		this.career = career;
 	}
 
-	public String getCareer() {
+	public @Nullable String getCareer() {
 		return this.career;
 	}
 

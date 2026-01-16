@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(GradleMultiDslExtension.class)
 class PackagingDocumentationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate

@@ -1,1 +1,1 @@
-org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfiguration
+org.springframework.boot.resttestclient.autoconfigure.RestTestClientTestAutoConfiguration

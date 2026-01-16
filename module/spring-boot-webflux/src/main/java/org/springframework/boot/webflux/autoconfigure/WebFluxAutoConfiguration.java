@@ -25,6 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -308,6 +311,7 @@ public final class WebFluxAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
+	@ImportRuntimeHints(WebFluxValidatorRuntimeHints.class)
 	static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
@@ -448,6 +452,16 @@ public final class WebFluxAutoConfiguration {
 
 		private void setMaxIdleTime(WebSession session) {
 			session.setMaxIdleTime(this.timeout);
+		}
+
+	}
+
+	static class WebFluxValidatorRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
+			hints.reflection()
+				.registerType(TypeReference.of("org.springframework.boot.validation.autoconfigure.ValidatorAdapter"));
 		}
 
 	}

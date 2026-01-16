@@ -234,6 +234,14 @@ class SessionAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void cookieSerializerUsesLaxSameSitePolicyByDefault() {
+		this.contextRunner.run((context) -> {
+			DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Lax");
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {

@@ -16,6 +16,7 @@
 
 package smoketest.flyway;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -30,23 +31,27 @@ public class Person {
 	@GeneratedValue(generator = "person_generator")
 	private @Nullable Long id;
 
-	private @Nullable String firstName;
+	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
+	private String firstName;
 
-	private @Nullable String lastName;
+	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
+	private String lastName;
 
-	public @Nullable String getFirstName() {
+	public String getFirstName() {
 		return this.firstName;
 	}
 
-	public void setFirstName(@Nullable String firstName) {
+	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
-	public @Nullable String getLastName() {
+	public String getLastName() {
 		return this.lastName;
 	}
 
-	public void setLastName(@Nullable String lastname) {
+	public void setLastName(String lastname) {
 		this.lastName = lastname;
 	}
 

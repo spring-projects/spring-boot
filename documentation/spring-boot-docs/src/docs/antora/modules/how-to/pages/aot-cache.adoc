@@ -10,15 +10,12 @@ For an overview of Spring Boot support for AOT cache, see xref:reference:packagi
 [[howto.aot-cache.buildpacks]]
 == Packaging an Application Using AOT Cache and Buildpacks
 
-NOTE: Buildpacks don't support AOT cache yet.
-However, you can leverage CDS (the predecessor of AOT cache) with Buildpacks.
+Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing an AOT Cache-optimized application.
 
-Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing a CDS-optimized application.
+To enable the AOT Cache in a generated Docker image, you have to use Java 25 or later, and the buildpack environment variable `BP_JVM_AOTCACHE_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
+This will cause the buildpack to do a training run of the application, save the AOT Cache in the image, and use the AOT Cache when launching the application.
 
-To enable CDS optimization in a generated Docker image, the buildpack environment variable `BP_JVM_CDS_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
-This will cause the buildpack to do a training run of the application, save the CDS archive in the image, and use the CDS archive when launching the application.
-
-The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
+The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `TRAINING_RUN_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the AOT Cache training run.
 
 
 

@@ -52,7 +52,6 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
-import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 import org.springframework.boot.build.SystemRequirementsExtension.JavaSpec;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
@@ -170,7 +169,7 @@ class JavaConventions {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", this.javaSpec.getVersion().get().toString());
+				attributes.put("Build-Jdk-Spec", this.javaSpec.getVersion());
 				attributes.put("Built-By", "Spring");
 				attributes.put("Implementation-Title",
 						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
@@ -248,15 +247,9 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		JavaLanguageVersion javaVersion = this.javaSpec.getVersion().get();
-		if (!project.hasProperty("toolchainVersion")) {
-			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-			javaPluginExtension.setSourceCompatibility(javaVersion);
-			javaPluginExtension.setTargetCompatibility(javaVersion);
-		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			compile.getOptions().getRelease().set(javaVersion.asInt());
+			compile.getOptions().getRelease().set(this.javaSpec.getVersion());
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");

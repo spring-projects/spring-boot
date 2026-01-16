@@ -31,8 +31,6 @@ dependencies {
 	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

@@ -25,6 +25,7 @@ public class TestPersistent {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 }

@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.scan.ScanBean;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
@@ -501,6 +504,25 @@ class ConditionalOnMissingBeanTests {
 					TypeArgumentsConditionWithParameterizedContainerConfiguration.class)
 			.run((context) -> assertThat(context)
 				.satisfies(beansAndContainersNamed(GenericExampleBean.class, "customGenericExampleBean")));
+	}
+
+	@Test
+	void whenTypeDoesNotExistItIsStillDescribedInConditionOutcomeMessage() {
+		this.contextRunner.withUserConfiguration(OnMissingBeanForTypeThatDoesNotExist.class).run((context) -> {
+			Map<String, ConditionAndOutcomes> conditionAndOutcomesBySource = ConditionEvaluationReport
+				.get(context.getBeanFactory())
+				.getConditionAndOutcomesBySource();
+			assertThat(conditionAndOutcomesBySource)
+				.hasEntrySatisfying(OnMissingBeanForTypeThatDoesNotExist.class.getName(), (conditionAndOutcomes) -> {
+					assertThat(conditionAndOutcomes).hasSize(1)
+						.first()
+						.extracting(ConditionAndOutcome::getOutcome)
+						.satisfies((outcome) -> {
+							assertThat(outcome.isMatch()).isTrue();
+							assertThat(outcome.getMessage()).contains("com.example.DoesNotExist");
+						});
+				});
+		});
 	}
 
 	private Consumer<ConfigurableApplicationContext> beansAndContainersNamed(Class<?> type, String... names) {
@@ -1133,6 +1155,17 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	static class TestScope extends SimpleThreadScope {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(type = "com.example.DoesNotExist")
+	static class OnMissingBeanForTypeThatDoesNotExist {
+
+		@Bean
+		String bean() {
+			return "bean";
+		}
 
 	}
 

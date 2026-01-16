@@ -38,10 +38,8 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }
 
 def dependenciesOf(String version) {

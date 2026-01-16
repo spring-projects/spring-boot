@@ -31,10 +31,12 @@ public class Country implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	@Audited
 	@Column
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	public Long getId() {

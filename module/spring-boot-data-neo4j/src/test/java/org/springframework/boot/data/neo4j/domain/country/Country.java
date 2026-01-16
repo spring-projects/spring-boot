@@ -29,6 +29,7 @@ public class Country implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	private final String name;

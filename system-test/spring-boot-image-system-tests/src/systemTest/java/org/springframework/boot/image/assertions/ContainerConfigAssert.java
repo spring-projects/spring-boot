@@ -30,6 +30,7 @@ import org.assertj.core.api.AbstractMapAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.test.json.JsonContentAssert;
 import org.springframework.lang.CheckReturnValue;
@@ -81,7 +82,7 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 	 */
 	public static class LabelsAssert extends AbstractMapAssert<LabelsAssert, Map<String, String>, String, String> {
 
-		protected LabelsAssert(Map<String, String> labels) {
+		protected LabelsAssert(@Nullable Map<String, String> labels) {
 			super(labels, LabelsAssert.class);
 		}
 

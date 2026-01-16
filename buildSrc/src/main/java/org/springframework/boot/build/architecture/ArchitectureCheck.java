@@ -45,7 +45,6 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
@@ -96,13 +95,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 						getAnnotationClasses().get(), ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY))));
 		getRules().addAll(whenMainSources(() -> Collections.singletonList(
 				ArchitectureRules.allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue())));
-		getRules().addAll(and(getNullMarkedEnabled(), isMainSourceSet()).map(whenTrue(() -> Collections.singletonList(
-				ArchitectureRules.packagesShouldBeAnnotatedWithNullMarked(getNullMarkedIgnoredPackages().get())))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
-	}
-
-	private Provider<Boolean> and(Provider<Boolean> provider1, Provider<Boolean> provider2) {
-		return provider1.zip(provider2, (result1, result2) -> result1 && result2);
 	}
 
 	private Provider<List<ArchRule>> whenMainSources(Supplier<List<ArchRule>> rules) {
@@ -213,12 +206,6 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	@Input // Use descriptions as input since rules aren't serializable
 	abstract ListProperty<String> getRuleDescriptions();
-
-	@Internal
-	abstract Property<Boolean> getNullMarkedEnabled();
-
-	@Internal
-	abstract SetProperty<String> getNullMarkedIgnoredPackages();
 
 	@Internal
 	abstract MapProperty<String, String> getAnnotationClasses();

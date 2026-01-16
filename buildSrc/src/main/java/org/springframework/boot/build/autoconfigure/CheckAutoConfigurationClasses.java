@@ -37,6 +37,7 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
@@ -113,16 +114,20 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDirectory();
 
+	@Input
+	public abstract SetProperty<String> getOmittedFromImports();
+
 	@TaskAction
 	void execute() {
 		Map<String, List<String>> problems = new TreeMap<>();
 		Set<String> optionalOnlyClassNames = new HashSet<>(this.optionalDependencyClassNames.get());
 		Set<String> requiredClassNames = this.requiredDependencyClassNames.get();
 		optionalOnlyClassNames.removeAll(requiredClassNames);
+		List<String> imports = loadImports();
 		classFiles().forEach((classFile) -> {
 			AutoConfigurationClass autoConfigurationClass = AutoConfigurationClass.of(classFile);
 			if (autoConfigurationClass != null) {
-				check(autoConfigurationClass, optionalOnlyClassNames, requiredClassNames, problems);
+				check(autoConfigurationClass, optionalOnlyClassNames, requiredClassNames, imports, problems);
 			}
 		});
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
@@ -153,10 +158,21 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	}
 
 	private void check(AutoConfigurationClass autoConfigurationClass, Set<String> optionalOnlyClassNames,
-			Set<String> requiredClassNames, Map<String, List<String>> problems) {
+			Set<String> requiredClassNames, List<String> imports, Map<String, List<String>> problems) {
 		if (!autoConfigurationClass.name().endsWith("AutoConfiguration")) {
 			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
 				.add("Name of a class annotated with @AutoConfiguration should end with AutoConfiguration");
+		}
+		boolean testAutoConfiguration = autoConfigurationClass.name().endsWith("TestAutoConfiguration");
+		if (!getOmittedFromImports().getOrElse(Collections.emptySet()).contains(autoConfigurationClass.name())
+				&& !imports.contains(autoConfigurationClass.name()) && !testAutoConfiguration) {
+			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
+				.add("Class is not registered in AutoConfiguration.imports");
+		}
+		if ((getOmittedFromImports().getOrElse(Collections.emptySet()).contains(autoConfigurationClass.name())
+				|| testAutoConfiguration) && imports.contains(autoConfigurationClass.name())) {
+			problems.computeIfAbsent(autoConfigurationClass.name(), (name) -> new ArrayList<>())
+				.add("Class should not be registered in AutoConfiguration.imports");
 		}
 		autoConfigurationClass.before().forEach((before) -> {
 			if (optionalOnlyClassNames.contains(before)) {

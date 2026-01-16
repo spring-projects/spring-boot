@@ -1,5 +1,12 @@
 changelog:
   sections:
+    - title: ":warning: Noteworthy Changes"
+      labels:
+        - "status: noteworthy"
+      summary:
+        mode: "member-comment"
+        config:
+          prefix: "Noteworthy change:"
     - title: ":star: New Features"
       labels:
         - "type: enhancement"

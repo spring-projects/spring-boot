@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -32,9 +33,9 @@ import org.springframework.util.StringUtils;
  */
 public final class GradleProjectBuilder {
 
-	private File projectDir;
+	private @Nullable File projectDir;
 
-	private String name;
+	private @Nullable String name;
 
 	private GradleProjectBuilder() {
 	}

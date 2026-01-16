@@ -18,12 +18,13 @@ package org.springframework.boot.webclient.autoconfigure.service;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientPropertiesAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webclient.WebClientCustomizer;
@@ -35,17 +36,18 @@ import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 
 /**
- * AutoConfiguration for Spring reactive HTTP Service Clients backed by {@link WebClient}.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring reactive HTTP Service
+ * Clients backed by {@link WebClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class })
+@AutoConfiguration(after = { HttpServiceClientPropertiesAutoConfiguration.class,
+		ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class })
 @ConditionalOnClass(WebClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
-@EnableConfigurationProperties(HttpServiceClientProperties.class)
 public final class ReactiveHttpServiceClientAutoConfiguration {
 
 	@Bean

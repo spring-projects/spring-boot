@@ -22,6 +22,7 @@ org.springframework.boot.micrometer.metrics.autoconfigure.export.statsd.StatsdMe
 org.springframework.boot.micrometer.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.logging.log4j2.Log4J2MetricsAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration
+org.springframework.boot.micrometer.metrics.autoconfigure.ssl.SslMetricsAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.startup.StartupTimeMetricsListenerAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.system.SystemMetricsAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.task.TaskExecutorMetricsAutoConfiguration

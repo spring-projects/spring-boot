@@ -661,7 +661,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 				"src/main/java/com/example/" + this.taskName.toLowerCase(Locale.ROOT) + "/" + name);
 		output.mkdirs();
 		FileSystemUtils.copyRecursively(
-				new File("src/test/java/com/example/" + this.taskName.toLowerCase(Locale.ENGLISH) + "/" + name),
+				new File("src/test/resources/com/example/" + this.taskName.toLowerCase(Locale.ENGLISH) + "/" + name),
 				output);
 	}
 

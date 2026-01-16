@@ -61,11 +61,8 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 }
 
-architectureCheck {
-	nullMarked {
-		enabled  = true
-		ignoredPackages = ['org.springframework.boot.cli.json']
-	}
+nullability {
+	requireExplicitNullMarking = false
 }
 
 tasks.register("fullJar", Jar) {

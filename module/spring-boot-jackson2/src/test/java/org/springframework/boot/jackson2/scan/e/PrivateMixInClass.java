@@ -17,6 +17,7 @@
 package org.springframework.boot.jackson2.scan.e;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jackson2.JsonMixin;
 import org.springframework.boot.jackson2.types.Name;
@@ -28,7 +29,7 @@ import org.springframework.boot.jackson2.types.NameAndAge;
 class PrivateMixInClass {
 
 	@JsonProperty("username")
-	String getName() {
+	@Nullable String getName() {
 		return null;
 	}
 

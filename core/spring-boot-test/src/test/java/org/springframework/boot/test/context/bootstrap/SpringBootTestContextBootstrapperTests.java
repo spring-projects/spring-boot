@@ -27,6 +27,7 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -110,7 +111,10 @@ class SpringBootTestContextBootstrapperTests {
 	}
 
 	private MergedContextConfiguration getMergedContextConfiguration(TestContext context) {
-		return (MergedContextConfiguration) ReflectionTestUtils.getField(context, "mergedConfig");
+		MergedContextConfiguration mergedConfig = (MergedContextConfiguration) ReflectionTestUtils.getField(context,
+				"mergedConfig");
+		Assert.notNull(mergedConfig, context + " had no MergedContextConfiguration");
+		return mergedConfig;
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
