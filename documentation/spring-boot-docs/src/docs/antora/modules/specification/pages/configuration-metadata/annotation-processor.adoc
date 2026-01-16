@@ -160,7 +160,10 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.source]]
 === Configuration Properties Source
 
-If a type located in another module is used in a javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]-annotated type, some metadata elements cannot be discovered automatically.
+As stated above, the generation of `spring-configuration-metadata.json` handled by annotation processor. Thus, `spring-boot-configuration-processor` has access only to the module being actually compiled at the moment, it does not have access to the source code of other modules in the multi-module projects. Note, that the term "module" in this context means **the build system module**, for example Maven module or Maven 4 subproject. It does _not_ refer to Java 9 module system.  
+
+For example, because the `description` is taken from the Javadoc, it is necessary to have access to the source code. 
+As a result, if a type located in another module is used in a javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]-annotated type, some metadata elements cannot be discovered automatically.
 Reusing the example above, if `Host` is located in another module, full metadata is not available as the annotation processor does not have access to the source of `Host`.
 
 To handle this use case, add the annotation processor in the module that contains the `Host` type and annotate it with javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesSource[format=annotation]:
