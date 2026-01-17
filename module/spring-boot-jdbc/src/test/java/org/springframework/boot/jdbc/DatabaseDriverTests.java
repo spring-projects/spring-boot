@@ -63,7 +63,6 @@ class DatabaseDriverTests {
 	@Test
 	void databaseProductNameLookups() {
 		assertThat(DatabaseDriver.fromProductName("newone")).isEqualTo(DatabaseDriver.UNKNOWN);
-		assertThat(DatabaseDriver.fromProductName("Apache Derby")).isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
 		assertThat(DatabaseDriver.fromProductName("HDB")).isEqualTo(DatabaseDriver.HANA);
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine")).isEqualTo(DatabaseDriver.HSQLDB);
@@ -88,9 +87,15 @@ class DatabaseDriverTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void deprecatedDatabaseProductNameLookups() {
+		assertThat(DatabaseDriver.fromProductName("Apache Derby")).isEqualTo(DatabaseDriver.DERBY);
+	}
+
+	@Test
 	void databaseJdbcUrlLookups() {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:newone://localhost")).isEqualTo(DatabaseDriver.UNKNOWN);
-		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:derby:sample")).isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:h2:~/sample")).isEqualTo(DatabaseDriver.H2);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:hsqldb:hsql://localhost")).isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sqlite:sample.db")).isEqualTo(DatabaseDriver.SQLITE);
@@ -123,6 +128,13 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:ch://localhost:3306/sample")).isEqualTo(DatabaseDriver.CLICKHOUSE);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:aws-wrapper:postgresql://127.0.0.1:5432/sample"))
 			.isEqualTo(DatabaseDriver.AWS_WRAPPER);
+	}
+
+	@Test
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void deprecatedDatabaseJdbcUrlLookups() {
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:derby:sample")).isEqualTo(DatabaseDriver.DERBY);
 	}
 
 }

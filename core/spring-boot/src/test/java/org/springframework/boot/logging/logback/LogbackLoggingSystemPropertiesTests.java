@@ -90,22 +90,6 @@ class LogbackLoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void applySetsLogbackSystemPropertiesFromDeprecated() {
-		this.environment.setProperty("logging.pattern.rolling-file-name", "fnp");
-		this.environment.setProperty("logging.file.clean-history-on-start", "chos");
-		this.environment.setProperty("logging.file.max-size", "1KB");
-		this.environment.setProperty("logging.file.total-size-cap", "2KB");
-		this.environment.setProperty("logging.file.max-history", "mh");
-		new LogbackLoggingSystemProperties(this.environment).apply();
-		assertThat(System.getProperties())
-			.containsEntry(RollingPolicySystemProperty.FILE_NAME_PATTERN.getEnvironmentVariableName(), "fnp")
-			.containsEntry(RollingPolicySystemProperty.CLEAN_HISTORY_ON_START.getEnvironmentVariableName(), "chos")
-			.containsEntry(RollingPolicySystemProperty.MAX_FILE_SIZE.getEnvironmentVariableName(), "1024")
-			.containsEntry(RollingPolicySystemProperty.TOTAL_SIZE_CAP.getEnvironmentVariableName(), "2048")
-			.containsEntry(RollingPolicySystemProperty.MAX_HISTORY.getEnvironmentVariableName(), "mh");
-	}
-
-	@Test
 	void consoleCharsetWhenNoPropertyUsesDefault() {
 		LogbackLoggingSystemProperties logbackLoggingSystemProperties = spy(
 				new LogbackLoggingSystemProperties(new MockEnvironment(), null, null));

@@ -62,6 +62,11 @@ public class EmbeddedLdapProperties {
 	 */
 	private final Validation validation = new Validation();
 
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
 	public int getPort() {
 		return this.port;
 	}
@@ -98,6 +103,10 @@ public class EmbeddedLdapProperties {
 		return this.validation;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public static class Credential {
 
 		/**
@@ -128,6 +137,37 @@ public class EmbeddedLdapProperties {
 
 		boolean isAvailable() {
 			return StringUtils.hasText(this.username) && StringUtils.hasText(this.password);
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

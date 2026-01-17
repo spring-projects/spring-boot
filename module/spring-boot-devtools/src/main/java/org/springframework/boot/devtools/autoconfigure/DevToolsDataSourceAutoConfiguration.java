@@ -119,6 +119,10 @@ public final class DevToolsDataSourceAutoConfiguration {
 
 		private enum InMemoryDatabase {
 
+			/*
+			 * @deprecated since 4.1.0 for removal in 4.3.0 as Derby is EOL.
+			 */
+			@Deprecated(since = "4.1.0", forRemoval = true)
 			DERBY(null, Set.of("org.apache.derby.jdbc.EmbeddedDriver"), (dataSource) -> {
 				String url;
 				try (Connection connection = dataSource.getConnection()) {

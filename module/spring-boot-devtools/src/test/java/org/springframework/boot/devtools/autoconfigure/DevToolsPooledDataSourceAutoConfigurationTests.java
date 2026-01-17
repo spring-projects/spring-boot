@@ -120,6 +120,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 	}
 
 	@Test
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void derbyClientIsNotShutdown() throws Exception {
 		try (ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.ClientDriver", "jdbc:derby://localhost",
@@ -131,6 +132,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 	}
 
 	@Test
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void inMemoryDerbyIsShutdown() throws Exception {
 		try (ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:test;create=true",

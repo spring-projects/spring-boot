@@ -106,7 +106,6 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
 			Class<T> type) {
 		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
-		value = (value != null) ? value : getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
 		if (value != null) {
 			String stringValue = String.valueOf((value instanceof DataSize dataSize) ? dataSize.toBytes() : value);
 			setSystemProperty(property.getEnvironmentVariableName(), stringValue);

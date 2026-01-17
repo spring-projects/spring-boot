@@ -4,6 +4,9 @@
 Spring Boot {version-spring-boot} requires at least https://www.java.com[Java 17] and is compatible with versions up to and including Java 25.
 {url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.
 
+Support for third-party projects may have additional or higher requirements.
+Refer to the documentation for that support for further details.
+
 Explicit build support is provided for the following build tools:
 
 |===

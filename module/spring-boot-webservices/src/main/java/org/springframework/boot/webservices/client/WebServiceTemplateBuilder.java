@@ -454,7 +454,8 @@ public class WebServiceTemplateBuilder {
 	 * @see #configure(WebServiceTemplate)
 	 */
 	public WebServiceTemplate build() {
-		return configure(new WebServiceTemplate());
+		return configure(
+				(this.messageFactory != null) ? new WebServiceTemplate(this.messageFactory) : new WebServiceTemplate());
 	}
 
 	/**

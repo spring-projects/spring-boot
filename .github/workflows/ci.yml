@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - '4.0.x'
+      - 'main'
 permissions:
   contents: read
 jobs:

@@ -32,7 +32,6 @@ import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
@@ -54,6 +53,7 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
 
+import org.springframework.boot.build.SystemRequirementsExtension.JavaSpec;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
@@ -127,7 +127,11 @@ import org.springframework.util.StringUtils;
  */
 class JavaConventions {
 
-	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
+	private final JavaSpec javaSpec;
+
+	JavaConventions(JavaSpec javaSpec) {
+		this.javaSpec = javaSpec;
+	}
 
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
@@ -165,7 +169,7 @@ class JavaConventions {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
+				attributes.put("Build-Jdk-Spec", this.javaSpec.getVersion());
 				attributes.put("Built-By", "Spring");
 				attributes.put("Implementation-Title",
 						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
@@ -243,14 +247,9 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		if (!project.hasProperty("toolchainVersion")) {
-			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
-			javaPluginExtension.setTargetCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
-		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			compile.getOptions().getRelease().set(17);
+			compile.getOptions().getRelease().set(this.javaSpec.getVersion());
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");

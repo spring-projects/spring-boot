@@ -63,6 +63,7 @@ import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -75,6 +76,7 @@ import org.springframework.util.ResourceUtils;
  * @author Phillip Webb
  * @author Ngoc Nhan
  * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 final class ArchitectureRules {
 
@@ -156,6 +158,26 @@ final class ArchitectureRules {
 					+ "the method signature from being loaded. Such condition need to be placed"
 					+ " on a @Configuration class, allowing the condition to back off before the type is loaded.")
 			.allowEmptyShould(true);
+	}
+
+	static ArchRule allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areDeclaredInClassesThat()
+			.implement("org.assertj.core.api.Assert")
+			.and()
+			.arePublic()
+			.and()
+			.doNotHaveModifier(JavaModifier.BRIDGE)
+			.and(doNotReturnSelfType())
+			.should()
+			.beAnnotatedWith(CheckReturnValue.class)
+			.allowEmptyShould(true);
+	}
+
+	private static DescribedPredicate<JavaMethod> doNotReturnSelfType() {
+		return DescribedPredicate.describe("do not return self type",
+				(method) -> !method.getRawReturnType().equals(method.getOwner()));
 	}
 
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {

@@ -736,3 +736,20 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
+
+
+
+[[data.nosql.ldap.embedded.ssl]]
+==== SSL
+
+The in-memory LDAP server supports SSL (LDAPS).
+To enable SSL, configure the xref:features/ssl.adoc[SSL bundle] to use by setting the configprop:spring.ldap.embedded.ssl.bundle[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  ldap:
+    embedded:
+      ssl:
+        bundle: "example"
+----

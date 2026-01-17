@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     tags:
-      - v4.0.[0-9]+
+      - v4.1.[0-9]+
 permissions:
   contents: read
 concurrency:

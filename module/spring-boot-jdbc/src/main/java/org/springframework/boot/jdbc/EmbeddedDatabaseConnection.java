@@ -57,7 +57,9 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Derby Database Connection.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 as Derby is EOL.
 	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	DERBY("jdbc:derby:memory:%s;create=true"),
 
 	/**
@@ -83,6 +85,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the driver class name.
 	 * @return the driver class name
 	 */
+	@SuppressWarnings("removal")
 	public @Nullable String getDriverClassName() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {

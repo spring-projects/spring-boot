@@ -24,6 +24,12 @@ plugins {
 
 description = "Spring Boot jOOQ"
 
+systemRequirements {
+	java {
+		version = 21
+	}
+}
+
 dependencies {
 	api(project(":module:spring-boot-jdbc"))
 	api(project(":module:spring-boot-transaction"))
@@ -34,6 +40,7 @@ dependencies {
 	optional("jakarta.xml.bind:jakarta.xml.bind-api")
 
 	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":module:spring-boot-flyway"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

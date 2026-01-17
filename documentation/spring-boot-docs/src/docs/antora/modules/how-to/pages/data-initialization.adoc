@@ -14,7 +14,7 @@ You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's da
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether you are using an embedded database.
 An embedded database is identified by looking at the javadoc:java.sql.Connection[] type and JDBC url.
-`hsqldb`, `h2`, or `derby` are embedded databases and others are not.
+`hsqldb`, `h2`, or `derby` (deprecated) are embedded databases and others are not.
 If an embedded database is identified and no schema manager (Flyway or Liquibase) has been detected, `ddl-auto` defaults to `create-drop`.
 In all other cases, it defaults to `none`.
 

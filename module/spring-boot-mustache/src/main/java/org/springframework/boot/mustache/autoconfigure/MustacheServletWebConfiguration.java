@@ -49,7 +49,7 @@ class MustacheServletWebConfiguration {
 		resolver.setExposeSessionAttributes(mustache.getServlet().isExposeSessionAttributes());
 		resolver.setExposeSpringMacroHelpers(mustache.getServlet().isExposeSpringMacroHelpers());
 		resolver.setRequestContextAttribute(mustache.getRequestContextAttribute());
-		resolver.setCharset(mustache.getCharsetName());
+		resolver.setCharset(mustache.getCharset());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;
 	}

@@ -69,6 +69,7 @@ import org.gradle.api.tasks.VerificationException;
  * @author Phillip Webb
  * @author Dmytro Nosan
  * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -92,6 +93,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		getRules().addAll(whenMainSources(
 				() -> ArchitectureRules.configurationPropertiesDeprecation(ArchitectureCheckAnnotation.classFor(
 						getAnnotationClasses().get(), ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY))));
+		getRules().addAll(whenMainSources(() -> Collections.singletonList(
+				ArchitectureRules.allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue())));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
 	}
 

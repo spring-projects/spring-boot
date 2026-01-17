@@ -54,10 +54,10 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.jetbrains.kotlin:kotlin-stdlib")
 	testImplementation("org.slf4j:slf4j-api")
+	testImplementation("org.spockframework:spock-core")
 	testImplementation("org.springframework:spring-webmvc")
 	testImplementation("org.testng:testng")
 
-	testRuntimeOnly("org.apache.groovy:groovy")
 	testRuntimeOnly("org.aspectj:aspectjrt")
 	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.junit.vintage:junit-vintage-engine")

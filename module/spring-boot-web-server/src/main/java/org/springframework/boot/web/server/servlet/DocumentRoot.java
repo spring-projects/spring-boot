@@ -23,6 +23,7 @@ import java.net.URLConnection;
 import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.jspecify.annotations.Nullable;
@@ -35,14 +36,29 @@ import org.jspecify.annotations.Nullable;
  */
 public class DocumentRoot {
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
+	private static final String WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE = "WAR_SOURCE_DIRECTORY";
 
 	private final Log logger;
+
+	private final File rootDirectory;
+
+	private final String[] commonDocRoots;
 
 	private @Nullable File directory;
 
 	public DocumentRoot(Log logger) {
+		this(logger, new File("."), System::getenv);
+	}
+
+	DocumentRoot(Log logger, File rootDirectory, Function<String, @Nullable String> systemEnvironment) {
 		this.logger = logger;
+		this.rootDirectory = rootDirectory;
+		this.commonDocRoots = new String[] { getWarSourceDirectory(systemEnvironment), "public", "static" };
+	}
+
+	private static String getWarSourceDirectory(Function<String, @Nullable String> systemEnvironment) {
+		String name = systemEnvironment.apply(WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE);
+		return (name != null) ? name : "src/main/webapp";
 	}
 
 	@Nullable File getDirectory() {
@@ -137,8 +153,8 @@ public class DocumentRoot {
 	}
 
 	private @Nullable File getCommonDocumentRoot() {
-		for (String commonDocRoot : COMMON_DOC_ROOTS) {
-			File root = new File(commonDocRoot);
+		for (String commonDocRoot : this.commonDocRoots) {
+			File root = new File(this.rootDirectory, commonDocRoot);
 			if (root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
@@ -147,7 +163,7 @@ public class DocumentRoot {
 	}
 
 	private void logNoDocumentRoots() {
-		this.logger.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+		this.logger.debug("None of the document roots " + Arrays.asList(this.commonDocRoots)
 				+ " point to a directory and will be ignored.");
 	}
 

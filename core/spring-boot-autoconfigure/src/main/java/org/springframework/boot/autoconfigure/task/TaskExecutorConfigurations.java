@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import io.micrometer.context.ContextSnapshot;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
@@ -47,6 +49,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.support.CompositeTaskDecorator;
+import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -66,6 +69,18 @@ class TaskExecutorConfigurations {
 			return taskDecorators.get(0);
 		}
 		return (!taskDecorators.isEmpty()) ? new CompositeTaskDecorator(taskDecorators) : null;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ContextSnapshot.class)
+	static class TaskExecutorContextPropagationConfiguration {
+
+		@Bean
+		@ConditionalOnProperty(name = "spring.task.execution.propagate-context", havingValue = "true")
+		ContextPropagatingTaskDecorator contextPropagatingTaskDecorator() {
+			return new ContextPropagatingTaskDecorator();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

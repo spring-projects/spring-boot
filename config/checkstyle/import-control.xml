@@ -6,6 +6,9 @@
 	<allow pkg="io.micrometer.observation" />
 	<disallow pkg="io.micrometer" />
 
+	<!-- Improve DevEx with fluent APIs -->
+	<allow class="org.springframework.lang.CheckReturnValue" />
+
 	<!-- Use JSpecify for nullability (not Spring)  -->
 	<allow class="org.springframework.lang.Contract" />
 	<disallow pkg="org.springframework.lang" />
@@ -59,7 +62,7 @@
 	<subpackage name=".*\.metrics" regex="true">
 		<allow pkg="io.micrometer" />
 	</subpackage>
-	<subpackage name=".*\.autoconfigure" regex="true">
+	<subpackage name="(.*\.autoconfigure|autoconfigure)(\..*)?" regex="true">
 		<allow pkg="io.micrometer" />
 	</subpackage>
 	<subpackage name="docs">

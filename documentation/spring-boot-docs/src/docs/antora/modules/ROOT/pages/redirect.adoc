@@ -1901,6 +1901,8 @@
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[#boot-features-testing-spring-boot-applications-mocking-beans]
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[#features.testing.spring-boot-applications.mocking-beans]
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.observations[#features.testing.spring-boot-applications.observations]
+* xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spock[#boot-features-testing-spring-boot-applications-with-spock]
+* xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spock[#features.testing.spring-boot-applications.spock]
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-graphql-tests[#features.testing.spring-boot-applications.spring-graphql-tests]
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-mvc-tests[#boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]
 * xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-mvc-tests[#features.testing.spring-boot-applications.spring-mvc-tests]

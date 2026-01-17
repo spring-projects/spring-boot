@@ -78,7 +78,7 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 				Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 				assertThat(registriesByName).hasSize(1);
 				MeterRegistry registry = registriesByName.values().iterator().next();
-				assertThat(registry.get("logback.events").tag("level", "error").counter().count()).isOne();
+				assertThat(registry.get("logback.events").tag("level", "error").functionCounter().count()).isOne();
 			});
 	}
 
@@ -93,7 +93,8 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 				Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 				assertThat(registriesByName).hasSize(3);
 				registriesByName.forEach((name,
-						registry) -> assertThat(registry.get("logback.events").tag("level", "error").counter().count())
+						registry) -> assertThat(
+								registry.get("logback.events").tag("level", "error").functionCounter().count())
 							.isOne());
 			});
 	}

@@ -78,7 +78,7 @@ public final class MustacheAutoConfiguration {
 	MustacheResourceTemplateLoader mustacheTemplateLoader() {
 		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(this.mustache.getPrefix(),
 				this.mustache.getSuffix());
-		loader.setCharset(this.mustache.getCharsetName());
+		loader.setCharset(this.mustache.getCharset());
 		return loader;
 	}
 

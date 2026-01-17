@@ -38,6 +38,7 @@ import org.springframework.ws.client.core.FaultMessageResolver;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
@@ -316,6 +317,12 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setTransformerFactoryClass(SAXTransformerFactory.class).configure(template);
 		then(template).should().setTransformerFactoryClass(SAXTransformerFactory.class);
+	}
+
+	@Test
+	void buildShouldDetectWebServiceMessageFactory() {
+		WebServiceTemplate webServiceTemplate = this.builder.build();
+		assertThat(webServiceTemplate.getMessageFactory()).isInstanceOf(SaajSoapMessageFactory.class);
 	}
 
 	@Test

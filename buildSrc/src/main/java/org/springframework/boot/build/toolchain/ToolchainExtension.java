@@ -21,33 +21,31 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
+import org.springframework.boot.build.SystemRequirementsExtension;
+import org.springframework.boot.build.SystemRequirementsExtension.JavaSpec;
+
 /**
  * DSL extension for {@link ToolchainPlugin}.
  *
  * @author Christoph Dreis
  */
-public class ToolchainExtension {
-
-	private final Property<JavaLanguageVersion> maximumCompatibleJavaVersion;
-
-	private final ListProperty<String> testJvmArgs;
+public abstract class ToolchainExtension {
 
 	private final JavaLanguageVersion javaVersion;
 
 	public ToolchainExtension(Project project) {
-		this.maximumCompatibleJavaVersion = project.getObjects().property(JavaLanguageVersion.class);
-		this.testJvmArgs = project.getObjects().listProperty(String.class);
 		String toolchainVersion = (String) project.findProperty("toolchainVersion");
 		this.javaVersion = (toolchainVersion != null) ? JavaLanguageVersion.of(toolchainVersion) : null;
+		JavaSpec javaSpec = project.getExtensions().getByType(SystemRequirementsExtension.class).getJava();
+		getMinimumCompatibleJavaVersion()
+			.convention(project.provider(() -> JavaLanguageVersion.of(javaSpec.getVersion())));
 	}
 
-	public Property<JavaLanguageVersion> getMaximumCompatibleJavaVersion() {
-		return this.maximumCompatibleJavaVersion;
-	}
+	public abstract Property<JavaLanguageVersion> getMinimumCompatibleJavaVersion();
 
-	public ListProperty<String> getTestJvmArgs() {
-		return this.testJvmArgs;
-	}
+	public abstract Property<JavaLanguageVersion> getMaximumCompatibleJavaVersion();
+
+	public abstract ListProperty<String> getTestJvmArgs();
 
 	JavaLanguageVersion getJavaVersion() {
 		return this.javaVersion;

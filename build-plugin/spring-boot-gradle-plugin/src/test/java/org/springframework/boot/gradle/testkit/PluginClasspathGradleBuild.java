@@ -32,7 +32,6 @@ import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.cyclonedx.gradle.CyclonedxPlugin;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.gradle.fus.BuildUidService;
-import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.project.model.LanguageSettings;
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion;
@@ -86,7 +85,6 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		classpath.add(new File(pathOfJarContaining(DependencyManagementPlugin.class)));
 		if (this.kotlin) {
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")));
-			classpath.add(new File(pathOfJarContaining(KotlinProject.class)));
 			classpath.add(new File(pathOfJarContaining(KotlinToolingVersion.class)));
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.build.report.metrics.BuildTime")));
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.buildtools.api.CompilationService")));

@@ -23,6 +23,12 @@ plugins {
 
 description = "Spring Boot jOOQ Test"
 
+systemRequirements {
+	java {
+		version = 21
+	}
+}
+
 dependencies {
 	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-jdbc-test"))

@@ -53,9 +53,13 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
-		return toolchain.getMaximumCompatibleJavaVersion()
-			.map((version) -> version.canCompileOrRun(toolchainVersion))
-			.getOrElse(true);
+		JavaLanguageVersion minimumVersion = toolchain.getMinimumCompatibleJavaVersion().getOrNull();
+		if (minimumVersion == null || toolchainVersion.canCompileOrRun(minimumVersion)) {
+			return toolchain.getMaximumCompatibleJavaVersion()
+				.map((version) -> version.canCompileOrRun(toolchainVersion))
+				.getOrElse(true);
+		}
+		return false;
 	}
 
 	private void disableToolchainTasks(Project project) {

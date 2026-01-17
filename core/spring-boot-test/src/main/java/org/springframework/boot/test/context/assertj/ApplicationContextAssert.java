@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -223,6 +224,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @return array assertions for the bean names
 	 * @throws AssertionError if the application context did not start
 	 */
+	@CheckReturnValue
 	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
 		if (this.startupFailure != null) {
 			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
@@ -248,6 +250,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @throws AssertionError if the application context contains multiple beans of the
 	 * given type
 	 */
+	@CheckReturnValue
 	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type) {
 		return getBean(type, Scope.INCLUDE_ANCESTORS);
 	}
@@ -269,6 +272,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @throws AssertionError if the application context contains multiple beans of the
 	 * given type
 	 */
+	@CheckReturnValue
 	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
@@ -329,6 +333,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * is found
 	 * @throws AssertionError if the application context did not start
 	 */
+	@CheckReturnValue
 	public AbstractObjectAssert<?, Object> getBean(String name) {
 		if (this.startupFailure != null) {
 			throwAssertionError(
@@ -356,6 +361,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * name but a different type
 	 */
 	@SuppressWarnings("unchecked")
+	@CheckReturnValue
 	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
 		if (this.startupFailure != null) {
 			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
@@ -394,6 +400,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * no beans are found
 	 * @throws AssertionError if the application context did not start
 	 */
+	@CheckReturnValue
 	public <T> MapAssert<String, T> getBeans(Class<T> type) {
 		return getBeans(type, Scope.INCLUDE_ANCESTORS);
 	}
@@ -413,6 +420,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * no beans are found
 	 * @throws AssertionError if the application context did not start
 	 */
+	@CheckReturnValue
 	public <T> MapAssert<String, T> getBeans(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
@@ -433,6 +441,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @return assertions on the cause of the failure
 	 * @throws AssertionError if the application context started without a failure
 	 */
+	@CheckReturnValue
 	public AbstractThrowableAssert<?, ? extends Throwable> getFailure() {
 		hasFailed();
 		return assertThat(this.startupFailure);

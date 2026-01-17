@@ -35,7 +35,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
 @AutoConfiguration
 @EnableConfigurationProperties(TaskExecutionProperties.class)
-@Import({ TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration.class,
+@Import({ TaskExecutorConfigurations.TaskExecutorContextPropagationConfiguration.class,
+		TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration.class,
 		TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration.class,
 		TaskExecutorConfigurations.TaskExecutorConfiguration.class,
 		TaskExecutorConfigurations.BootstrapExecutorConfiguration.class })

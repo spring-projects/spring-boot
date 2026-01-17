@@ -352,6 +352,20 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
+	void customPersistenceUnitProcessorsAddedByServeralContributors() {
+		this.contextRunner.withUserConfiguration(TestConfigurationWithMultipleCustomPersistenceUnitPostProcessors.class)
+			.run((context) -> {
+				LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class);
+				PersistenceUnitInfo persistenceUnitInfo = entityManagerFactoryBean.getPersistenceUnitInfo();
+				assertThat(persistenceUnitInfo).isNotNull();
+				assertThat(persistenceUnitInfo.getManagedClassNames()).contains(
+						"customized.attribute.converter.class.name",
+						"customized.attribute.converter.class.anotherName");
+			});
+	}
+
+	@Test
 	void customManagedClassNameFilter() {
 		this.contextRunner.withBean(ManagedClassNameFilter.class, () -> (s) -> !s.endsWith("City"))
 			.withUserConfiguration(AutoConfigurePackageForCountry.class)
@@ -1164,6 +1178,24 @@ class HibernateJpaAutoConfigurationTests {
 		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
 			return (builder) -> builder.setPersistenceUnitPostProcessors(
 					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.name"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(HibernateJpaAutoConfigurationTests.class)
+	static class TestConfigurationWithMultipleCustomPersistenceUnitPostProcessors {
+
+		@Bean
+		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
+			return (builder) -> builder.addPersistenceUnitPostProcessors(
+					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.name"));
+		}
+
+		@Bean
+		EntityManagerFactoryBuilderCustomizer anotherEntityManagerFactoryBuilderCustomizer() {
+			return (builder) -> builder.addPersistenceUnitPostProcessors(
+					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.anotherName"));
 		}
 
 	}
