@@ -17,6 +17,9 @@
 package org.springframework.boot.mongodb.autoconfigure;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
@@ -28,6 +31,7 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jay Choi
  * @since 4.0.0
  */
 public interface MongoConnectionDetails extends ConnectionDetails {
@@ -43,6 +47,30 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 	 * @return the SSL bundle to use
 	 */
 	default @Nullable SslBundle getSslBundle() {
+		return null;
+	}
+
+	/**
+	 * The {@link ReadConcern} for MongoDB.
+	 * @return the read concern option
+	 */
+	default @Nullable ReadConcern getReadConcern() {
+		return null;
+	}
+
+	/**
+	 * The {@link WriteConcern} for MongoDB.
+	 * @return the write concern options
+	 */
+	default @Nullable WriteConcern getWriteConcern() {
+		return null;
+	}
+
+	/**
+	 * The {@link ReadPreference} for MongoDB.
+	 * @return the read preference options
+	 */
+	default @Nullable ReadPreference getReadPreference() {
 		return null;
 	}
 

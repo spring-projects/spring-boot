@@ -17,6 +17,9 @@
 package org.springframework.boot.mongodb.autoconfigure;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.connection.SslSettings;
 import org.bson.UuidRepresentation;
 
@@ -31,6 +34,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jay Choi
  * @since 4.0.0
  */
 public class StandardMongoClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
@@ -52,6 +56,18 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 		settingsBuilder.uuidRepresentation(this.uuidRepresentation);
 		settingsBuilder.applyConnectionString(this.connectionDetails.getConnectionString());
 		settingsBuilder.applyToSslSettings(this::configureSslIfNeeded);
+		ReadConcern readConcern = this.connectionDetails.getReadConcern();
+		if (readConcern != null) {
+			settingsBuilder.readConcern(readConcern);
+		}
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		if (writeConcern != null) {
+			settingsBuilder.writeConcern(writeConcern);
+		}
+		ReadPreference readPreference = this.connectionDetails.getReadPreference();
+		if (readPreference != null) {
+			settingsBuilder.readPreference(readPreference);
+		}
 	}
 
 	private void configureSslIfNeeded(SslSettings.Builder settings) {

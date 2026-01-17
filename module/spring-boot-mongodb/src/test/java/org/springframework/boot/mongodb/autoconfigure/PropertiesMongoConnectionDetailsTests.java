@@ -16,17 +16,26 @@
 
 package org.springframework.boot.mongodb.autoconfigure;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.TaggableReadPreference;
+import com.mongodb.WriteConcern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -35,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Christoph Dreis
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Jay Choi
  */
 class PropertiesMongoConnectionDetailsTests {
 
@@ -179,6 +189,106 @@ class PropertiesMongoConnectionDetailsTests {
 		this.properties.getSsl().setEnabled(false);
 		SslBundle sslBundle = this.connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNull();
+	}
+
+	@Test
+	void readConcernCanBeConfigured() {
+		this.properties.setReadConcern("majority");
+		ReadConcern readConcern = this.connectionDetails.getReadConcern();
+		assertThat(readConcern).isEqualTo(ReadConcern.MAJORITY);
+	}
+
+	@Test
+	void shouldReturnNullWhenReadConcernNotConfigured() {
+		ReadConcern readConcern = this.connectionDetails.getReadConcern();
+		assertThat(readConcern).isNull();
+	}
+
+	@Test
+	void writeConcernCanBeConfiguredWithWAsString() {
+		this.properties.getWriteConcern().setW("majority");
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		assertThat(writeConcern).isNotNull();
+		assertThat(writeConcern.getWString()).isEqualTo("majority");
+	}
+
+	@Test
+	void writeConcernCanBeConfiguredWithWAsNumber() {
+		this.properties.getWriteConcern().setW("2");
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		assertThat(writeConcern).isNotNull();
+		assertThat(writeConcern.getW()).isEqualTo(2);
+	}
+
+	@Test
+	void writeConcernCanBeConfiguredWithJournal() {
+		this.properties.getWriteConcern().setJournal(true);
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		assertThat(writeConcern).isNotNull();
+		assertThat(writeConcern.getJournal()).isTrue();
+	}
+
+	@Test
+	void writeConcernCanBeConfiguredWithWTimeout() {
+		this.properties.getWriteConcern().setWTimeout(Duration.ofSeconds(5));
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		assertThat(writeConcern).isNotNull();
+		assertThat(writeConcern.getWTimeout(TimeUnit.SECONDS)).isEqualTo(5);
+	}
+
+	@Test
+	void shouldReturnNullWhenWriteConcernNotConfigured() {
+		WriteConcern writeConcern = this.connectionDetails.getWriteConcern();
+		assertThat(writeConcern).isNull();
+	}
+
+	@Test
+	void readPreferenceCanBeConfiguredWithMode() {
+		this.properties.getReadPreference().setMode("secondary");
+		ReadPreference readPreference = this.connectionDetails.getReadPreference();
+		assertThat(readPreference).isEqualTo(ReadPreference.secondary());
+	}
+
+	@Test
+	void readPreferenceCanBeConfiguredWithModeAndTags() {
+		this.properties.getReadPreference().setMode("secondary");
+		this.properties.getReadPreference().setTags(List.of(Map.of("region", "east")));
+		ReadPreference readPreference = this.connectionDetails.getReadPreference();
+		assertThat(readPreference).isNotNull();
+		assertThat(readPreference).isInstanceOf(TaggableReadPreference.class);
+		assertThat(readPreference.getName()).isEqualTo("secondary");
+		assertThat(((TaggableReadPreference) readPreference).getTagSetList()).hasSize(1);
+	}
+
+	@Test
+	void readPreferenceCanBeConfiguredWithModeAndMaxStaleness() {
+		this.properties.getReadPreference().setMode("secondary");
+		this.properties.getReadPreference().setMaxStaleness(Duration.ofSeconds(90));
+		ReadPreference readPreference = this.connectionDetails.getReadPreference();
+		assertThat(readPreference).isNotNull();
+		assertThat(readPreference).isInstanceOf(TaggableReadPreference.class);
+		assertThat(readPreference.getName()).isEqualTo("secondary");
+		assertThat(((TaggableReadPreference) readPreference).getMaxStaleness(TimeUnit.SECONDS)).isEqualTo(90);
+	}
+
+	@Test
+	void shouldReturnNullWhenReadPreferenceNotConfigured() {
+		ReadPreference readPreference = this.connectionDetails.getReadPreference();
+		assertThat(readPreference).isNull();
+	}
+
+	@Test
+	void shouldThrowExceptionWhenTagsConfiguredWithoutMode() {
+		this.properties.getReadPreference().setTags(List.of(Map.of("region", "east")));
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(() -> this.connectionDetails.getReadPreference());
+	}
+
+	@Test
+	void shouldThrowExceptionWhenMaxStalenessConfiguredWithoutMode() {
+		this.properties.getReadPreference().setMaxStaleness(Duration.ofSeconds(90));
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(() -> this.connectionDetails.getReadPreference());
 	}
 
 }

@@ -16,7 +16,9 @@
 
 package org.springframework.boot.mongodb.autoconfigure;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
@@ -37,6 +39,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mark Paluch
  * @author Artsiom Yudovin
  * @author Safeer Ansari
+ * @author Jay Choi
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.mongodb")
@@ -104,9 +107,19 @@ public class MongoProperties {
 	 */
 	private @Nullable String replicaSetName;
 
+	/**
+	 * Read concern level for read operations. Supported values are 'local', 'available',
+	 * 'majority', 'linearizable', and 'snapshot'. Overrides the value in 'uri' if set.
+	 */
+	private @Nullable String readConcern;
+
 	private final Representation representation = new Representation();
 
 	private final Ssl ssl = new Ssl();
+
+	private final WriteConcern writeConcern = new WriteConcern();
+
+	private final ReadPreference readPreference = new ReadPreference();
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
@@ -199,12 +212,28 @@ public class MongoProperties {
 		this.additionalHosts = additionalHosts;
 	}
 
+	public @Nullable String getReadConcern() {
+		return this.readConcern;
+	}
+
+	public void setReadConcern(@Nullable String readConcern) {
+		this.readConcern = readConcern;
+	}
+
 	public Representation getRepresentation() {
 		return this.representation;
 	}
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public WriteConcern getWriteConcern() {
+		return this.writeConcern;
+	}
+
+	public ReadPreference getReadPreference() {
+		return this.readPreference;
 	}
 
 	public static class Representation {
@@ -251,6 +280,103 @@ public class MongoProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
+		}
+
+	}
+
+	public static class WriteConcern {
+
+		/**
+		 * The w value. Can be 'majority' or a number representing the number of nodes
+		 * that must acknowledge the write. Overrides the write concern in 'uri' if any
+		 * write-concern property is set.
+		 */
+		private @Nullable String w;
+
+		/**
+		 * Whether to block until write operations have been committed to the journal.
+		 * Overrides the write concern in 'uri' if any write-concern property is set.
+		 */
+		private @Nullable Boolean journal;
+
+		/**
+		 * Timeout for secondaries to acknowledge the write before failing. Overrides the
+		 * write concern in 'uri' if any write-concern property is set.
+		 */
+		private @Nullable Duration wTimeout;
+
+		public @Nullable String getW() {
+			return this.w;
+		}
+
+		public void setW(@Nullable String w) {
+			this.w = w;
+		}
+
+		public @Nullable Boolean getJournal() {
+			return this.journal;
+		}
+
+		public void setJournal(@Nullable Boolean journal) {
+			this.journal = journal;
+		}
+
+		public @Nullable Duration getWTimeout() {
+			return this.wTimeout;
+		}
+
+		public void setWTimeout(@Nullable Duration wTimeout) {
+			this.wTimeout = wTimeout;
+		}
+
+	}
+
+	public static class ReadPreference {
+
+		/**
+		 * Read preference mode for read operations. Supported values are 'primary',
+		 * 'primaryPreferred', 'secondary', 'secondaryPreferred', and 'nearest'. Overrides
+		 * the read preference in 'uri' if any read-preference property is set.
+		 */
+		private @Nullable String mode;
+
+		/**
+		 * List of tag sets for read preference. Each entry in the list represents a tag
+		 * set with fallback priority. An empty map represents a wildcard tag set that
+		 * matches any replica set member. Overrides the read preference in 'uri' if any
+		 * read-preference property is set.
+		 */
+		private @Nullable List<Map<String, String>> tags;
+
+		/**
+		 * Maximum staleness duration for read preference. The minimum value is 90
+		 * seconds. Overrides the read preference in 'uri' if any read-preference property
+		 * is set.
+		 */
+		private @Nullable Duration maxStaleness;
+
+		public @Nullable String getMode() {
+			return this.mode;
+		}
+
+		public void setMode(@Nullable String mode) {
+			this.mode = mode;
+		}
+
+		public @Nullable List<Map<String, String>> getTags() {
+			return this.tags;
+		}
+
+		public void setTags(@Nullable List<Map<String, String>> tags) {
+			this.tags = tags;
+		}
+
+		public @Nullable Duration getMaxStaleness() {
+			return this.maxStaleness;
+		}
+
+		public void setMaxStaleness(@Nullable Duration maxStaleness) {
+			this.maxStaleness = maxStaleness;
 		}
 
 	}

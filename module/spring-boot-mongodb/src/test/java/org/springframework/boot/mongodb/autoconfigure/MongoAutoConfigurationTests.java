@@ -21,6 +21,10 @@ import java.util.concurrent.TimeUnit;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.TaggableReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.internal.MongoClientImpl;
@@ -45,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Jay Choi
  */
 class MongoAutoConfigurationTests {
 
@@ -269,6 +274,42 @@ class MongoAutoConfigurationTests {
 		})
 			.run((context) -> assertThat(context).hasSingleBean(MongoConnectionDetails.class)
 				.doesNotHaveBean(PropertiesMongoConnectionDetails.class));
+	}
+
+	@Test
+	void configuresReadConcern() {
+		this.contextRunner.withPropertyValues("spring.mongodb.read-concern=majority")
+			.run((context) -> assertThat(getSettings(context).getReadConcern()).isEqualTo(ReadConcern.MAJORITY));
+	}
+
+	@Test
+	void configuresWriteConcern() {
+		this.contextRunner
+			.withPropertyValues("spring.mongodb.write-concern.w=majority", "spring.mongodb.write-concern.journal=true",
+					"spring.mongodb.write-concern.w-timeout=5s")
+			.run((context) -> {
+				WriteConcern writeConcern = getSettings(context).getWriteConcern();
+				assertThat(writeConcern).isNotNull();
+				assertThat(writeConcern.getWString()).isEqualTo("majority");
+				assertThat(writeConcern.getJournal()).isTrue();
+				assertThat(writeConcern.getWTimeout(TimeUnit.SECONDS)).isEqualTo(5);
+			});
+	}
+
+	@Test
+	void configuresReadPreference() {
+		this.contextRunner
+			.withPropertyValues("spring.mongodb.read-preference.mode=secondary",
+					"spring.mongodb.read-preference.tags[0].region=east",
+					"spring.mongodb.read-preference.max-staleness=90s")
+			.run((context) -> {
+				ReadPreference readPreference = getSettings(context).getReadPreference();
+				assertThat(readPreference).isNotNull();
+				assertThat(readPreference).isInstanceOf(TaggableReadPreference.class);
+				assertThat(readPreference.getName()).isEqualTo("secondary");
+				assertThat(((TaggableReadPreference) readPreference).getTagSetList()).hasSize(1);
+				assertThat(((TaggableReadPreference) readPreference).getMaxStaleness(TimeUnit.SECONDS)).isEqualTo(90);
+			});
 	}
 
 	private MongoClientSettings getSettings(AssertableApplicationContext context) {

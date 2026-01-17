@@ -18,12 +18,22 @@ package org.springframework.boot.mongodb.autoconfigure;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadConcernLevel;
+import com.mongodb.ReadPreference;
+import com.mongodb.Tag;
+import com.mongodb.TagSet;
+import com.mongodb.WriteConcern;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -37,6 +47,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jay Choi
  * @since 4.0.0
  */
 public class PropertiesMongoConnectionDetails implements MongoConnectionDetails {
@@ -113,6 +124,67 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		return SslBundle.systemDefault();
 	}
 
+	@Override
+	public @Nullable ReadConcern getReadConcern() {
+		String readConcernLevel = this.properties.getReadConcern();
+		if (readConcernLevel == null) {
+			return null;
+		}
+		return new ReadConcern(ReadConcernLevel.fromString(readConcernLevel));
+	}
+
+	@Override
+	public @Nullable WriteConcern getWriteConcern() {
+		String w = this.properties.getWriteConcern().getW();
+		Duration wTimeout = this.properties.getWriteConcern().getWTimeout();
+		Boolean journal = this.properties.getWriteConcern().getJournal();
+		WriteConcern writeConcern = null;
+		if (w != null || wTimeout != null || journal != null) {
+			if (w == null) {
+				writeConcern = WriteConcern.ACKNOWLEDGED;
+			}
+			else {
+				try {
+					writeConcern = new WriteConcern(Integer.parseInt(w));
+				}
+				catch (NumberFormatException ex) {
+					writeConcern = new WriteConcern(w);
+				}
+			}
+			if (wTimeout != null) {
+				writeConcern = writeConcern.withWTimeout(wTimeout.toMillis(), TimeUnit.MILLISECONDS);
+			}
+			if (journal != null) {
+				writeConcern = writeConcern.withJournal(journal);
+			}
+		}
+		return writeConcern;
+	}
+
+	@Override
+	public @Nullable ReadPreference getReadPreference() {
+		String mode = this.properties.getReadPreference().getMode();
+		List<Map<String, String>> tags = this.properties.getReadPreference().getTags();
+		Duration maxStaleness = this.properties.getReadPreference().getMaxStaleness();
+		List<TagSet> tagSetList = getTagSets(tags);
+		if (mode != null) {
+			if (tagSetList.isEmpty() && maxStaleness == null) {
+				return ReadPreference.valueOf(mode);
+			}
+			else if (maxStaleness == null) {
+				return ReadPreference.valueOf(mode, tagSetList);
+			}
+			else {
+				return ReadPreference.valueOf(mode, tagSetList, maxStaleness.toSeconds(), TimeUnit.SECONDS);
+			}
+		}
+		else if (!tagSetList.isEmpty() || maxStaleness != null) {
+			throw new InvalidConfigurationPropertyValueException("spring.mongodb.read-preference.mode", null,
+					"Read preference mode must be specified if tags or max-staleness is specified");
+		}
+		return null;
+	}
+
 	private List<String> getOptions() {
 		List<String> options = new ArrayList<>();
 		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
@@ -122,6 +194,23 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			options.add("authSource=" + this.properties.getAuthenticationDatabase());
 		}
 		return options;
+	}
+
+	private List<TagSet> getTagSets(@Nullable List<Map<String, String>> tags) {
+		List<TagSet> tagSetList = new ArrayList<>();
+		if (tags != null && !tags.isEmpty()) {
+			for (Map<String, String> tag : tags) {
+				if (tag == null || tag.isEmpty()) {
+					tagSetList.add(new TagSet());
+				}
+				else {
+					List<Tag> tagList = new ArrayList<>();
+					tag.forEach((key, value) -> tagList.add(new Tag(key, value)));
+					tagSetList.add(new TagSet(tagList));
+				}
+			}
+		}
+		return tagSetList;
 	}
 
 }
