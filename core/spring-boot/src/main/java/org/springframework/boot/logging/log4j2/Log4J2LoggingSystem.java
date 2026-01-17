@@ -58,8 +58,10 @@ import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.core.Conventions;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -126,6 +128,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	Log4J2LoggingSystem(ClassLoader classLoader, LoggerContext loggerContext) {
 		super(classLoader);
 		this.loggerContext = loggerContext;
+	}
+
+	@Override
+	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
+		return new Log4J2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override

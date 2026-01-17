@@ -21,7 +21,7 @@
 				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
 			</Filters>
 		</Console>
-		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
+		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN:-${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz}">
 			<Select>
 				<SystemPropertyArbiter propertyName="FILE_LOG_STRUCTURED_FORMAT">
 					<StructuredLogLayout format="${sys:FILE_LOG_STRUCTURED_FORMAT}" charset="${sys:FILE_LOG_CHARSET}"/>
@@ -34,8 +34,14 @@
 				<ThresholdFilter level="${sys:FILE_LOG_THRESHOLD:-TRACE}"/>
 			</Filters>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="10 MB"/>
+				<SizeBasedTriggeringPolicy size="${sys:LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE:-10 MB}"/>
 			</Policies>
+			<DefaultRolloverStrategy max="${sys:LOG4J2_ROLLINGPOLICY_MAX_HISTORY:-7}">
+				<Delete basePath="${sys:LOG_PATH}" maxDepth="1">
+					<IfFileName glob="*.log.gz" />
+					<IfAccumulatedFileSize exceeds="${sys:LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP:-}"/>
+				</Delete>
+			</DefaultRolloverStrategy>
 		</RollingFile>
 	</Appenders>
 	<Loggers>
