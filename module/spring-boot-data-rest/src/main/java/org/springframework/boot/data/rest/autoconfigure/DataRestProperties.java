@@ -86,6 +86,11 @@ public class DataRestProperties {
 	private @Nullable Boolean returnBodyOnUpdate;
 
 	/**
+	 * Whether to return a response body after deleting an entity.
+	 */
+	private @Nullable Boolean returnBodyOnDelete;
+
+	/**
 	 * Whether to enable enum value translation through the Spring Data REST default
 	 * resource bundle.
 	 */
@@ -171,6 +176,14 @@ public class DataRestProperties {
 		this.returnBodyOnUpdate = returnBodyOnUpdate;
 	}
 
+	public @Nullable Boolean getReturnBodyOnDelete() {
+		return this.returnBodyOnDelete;
+	}
+
+	public void setReturnBodyOnDelete(@Nullable Boolean returnBodyOnDelete) {
+		this.returnBodyOnDelete = returnBodyOnDelete;
+	}
+
 	public @Nullable Boolean getEnableEnumTranslation() {
 		return this.enableEnumTranslation;
 	}
@@ -191,6 +204,7 @@ public class DataRestProperties {
 		map.from(this::getDefaultMediaType).to(rest::setDefaultMediaType);
 		map.from(this::getReturnBodyOnCreate).to(rest::setReturnBodyOnCreate);
 		map.from(this::getReturnBodyOnUpdate).to(rest::setReturnBodyOnUpdate);
+		map.from(this::getReturnBodyOnDelete).to(rest::setReturnBodyOnDelete);
 		map.from(this::getEnableEnumTranslation).to(rest::setEnableEnumTranslation);
 	}
 

@@ -91,7 +91,7 @@ class DataRestAutoConfigurationTests {
 				"spring.data.rest.sort-param-name:_sort", "spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json",
 				"spring.data.rest.return-body-on-create:false", "spring.data.rest.return-body-on-update:false",
-				"spring.data.rest.enable-enum-translation:true");
+				"spring.data.rest.return-body-on-delete:false", "spring.data.rest.enable-enum-translation:true");
 		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = getContext().getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getDefaultPageSize()).isEqualTo(42);
@@ -108,6 +108,7 @@ class DataRestAutoConfigurationTests {
 	private void assertReturnBody(RepositoryRestConfiguration bean) {
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
 		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
+		assertThat(bean.returnBodyOnDelete(null)).isFalse();
 	}
 
 	@Test
