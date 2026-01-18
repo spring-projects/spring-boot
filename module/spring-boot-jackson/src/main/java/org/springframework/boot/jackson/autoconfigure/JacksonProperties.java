@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteFeature;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -125,6 +127,8 @@ public class JacksonProperties {
 
 	private final Json json = new Json();
 
+	private final Stream stream = new Stream();
+
 	public @Nullable String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -221,6 +225,10 @@ public class JacksonProperties {
 		return this.json;
 	}
 
+	public Stream getStream() {
+		return this.stream;
+	}
+
 	public enum ConstructorDetectorStrategy {
 
 		/**
@@ -294,6 +302,28 @@ public class JacksonProperties {
 		}
 
 		public Map<JsonWriteFeature, Boolean> getWrite() {
+			return this.write;
+		}
+
+	}
+
+	public static class Stream {
+
+		/**
+		 * Jackson on/off token reader features that are not specific to JSON.
+		 */
+		private final Map<StreamReadFeature, Boolean> read = new EnumMap<>(StreamReadFeature.class);
+
+		/**
+		 * Jackson on/off token writer features that are not specific to JSON.
+		 */
+		private final Map<StreamWriteFeature, Boolean> write = new EnumMap<>(StreamWriteFeature.class);
+
+		public Map<StreamReadFeature, Boolean> getRead() {
+			return this.read;
+		}
+
+		public Map<StreamWriteFeature, Boolean> getWrite() {
 			return this.write;
 		}
 
