@@ -278,6 +278,12 @@ bom {
 				"java-client"
 			]
 		}
+		alignWith {
+			version {
+				from "org.springframework.data:spring-data-couchbase"
+				managedBy "Spring Data Bom"
+			}
+		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
 			javadoc("https://javadoc.io/doc/com.couchbase.client/java-client/{version}", "com.couchbase.client")
