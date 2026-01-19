@@ -125,9 +125,17 @@ public class JacksonProperties {
 
 	private final Datatype datatype = new Datatype();
 
-	private final Json json = new Json();
+	/**
+	 * Jackson on/off token reader features common to multiple formats.
+	 */
+	private final Map<StreamReadFeature, Boolean> read = new EnumMap<>(StreamReadFeature.class);
 
-	private final Stream stream = new Stream();
+	/**
+	 * Jackson on/off token writer features common to multiple formats.
+	 */
+	private final Map<StreamWriteFeature, Boolean> write = new EnumMap<>(StreamWriteFeature.class);
+
+	private final Json json = new Json();
 
 	public @Nullable String getDateFormat() {
 		return this.dateFormat;
@@ -221,12 +229,16 @@ public class JacksonProperties {
 		return this.datatype;
 	}
 
-	public Json getJson() {
-		return this.json;
+	public Map<StreamReadFeature, Boolean> getRead() {
+		return this.read;
 	}
 
-	public Stream getStream() {
-		return this.stream;
+	public Map<StreamWriteFeature, Boolean> getWrite() {
+		return this.write;
+	}
+
+	public Json getJson() {
+		return this.json;
 	}
 
 	public enum ConstructorDetectorStrategy {
@@ -302,28 +314,6 @@ public class JacksonProperties {
 		}
 
 		public Map<JsonWriteFeature, Boolean> getWrite() {
-			return this.write;
-		}
-
-	}
-
-	public static class Stream {
-
-		/**
-		 * Jackson on/off token reader features that are not specific to JSON.
-		 */
-		private final Map<StreamReadFeature, Boolean> read = new EnumMap<>(StreamReadFeature.class);
-
-		/**
-		 * Jackson on/off token writer features that are not specific to JSON.
-		 */
-		private final Map<StreamWriteFeature, Boolean> write = new EnumMap<>(StreamWriteFeature.class);
-
-		public Map<StreamReadFeature, Boolean> getRead() {
-			return this.read;
-		}
-
-		public Map<StreamWriteFeature, Boolean> getWrite() {
 			return this.write;
 		}
 
