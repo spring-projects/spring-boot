@@ -81,7 +81,7 @@ final class WelcomePageRouterFunctionFactory {
 	}
 
 	@Nullable RouterFunction<ServerResponse> createRouterFunction() {
-		if (this.welcomePage != null && "/**".equals(this.staticPathPattern)) {
+		if (this.welcomePage != null) {
 			return RouterFunctions.route(GET("/").and(accept(MediaType.TEXT_HTML)),
 					(req) -> ServerResponse.ok().contentType(MediaType.TEXT_HTML).bodyValue(this.welcomePage));
 		}

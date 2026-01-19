@@ -167,6 +167,21 @@ class WelcomePageRouterFunctionFactoryTests {
 			.isEqualTo("welcome-page-static");
 	}
 
+	@Test
+	void handlesRequestForStaticPageWithCustomPathPattern() {
+		WelcomePageRouterFunctionFactory factory = factoryWithoutTemplateSupport(this.indexLocations, "/static/**");
+		RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
+		assertThat(routerFunction).isNotNull();
+		WebTestClient client = WebTestClient.bindToRouterFunction(routerFunction).build();
+		client.get()
+			.uri("/")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
+	}
 	private WebTestClient withStaticIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithoutTemplateSupport(this.indexLocations, "/**");
 		RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
