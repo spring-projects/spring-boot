@@ -27,6 +27,7 @@ description = "Spring Boot Kafka"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework.kafka:spring-kafka")
 
 	optional(project(":core:spring-boot-autoconfigure"))
