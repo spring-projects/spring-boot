@@ -45,7 +45,6 @@ import org.apache.hc.core5.util.Timeout;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -139,7 +138,6 @@ class ElasticsearchRestClientConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Sniffer.class)
 	@ConditionalOnSingleCandidate(Rest5Client.class)
 	@ConditionalOnProperty(name = "spring.elasticsearch.restclient.sniffer.enabled")
 	static class RestClientSnifferConfiguration {
