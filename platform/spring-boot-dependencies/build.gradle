@@ -1689,6 +1689,13 @@ bom {
 		group("io.opentelemetry") {
 			bom("opentelemetry-bom")
 		}
+		alignWith {
+			version {
+				of "io.opentelemetry:opentelemetry-api"
+				from "io.micrometer:micrometer-tracing-bridge-otel"
+				managedBy "Micrometer Tracing"
+			}
+		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
 			javadoc("opentelemetry-api", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
