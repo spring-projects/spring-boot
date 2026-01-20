@@ -228,7 +228,7 @@ In order of preference, the following clients are supported:
 . JDK client (`java.net.http.HttpClient`)
 . Simple JDK client (`java.net.HttpURLConnection`)
 
-If multiple clients are available on the classpath, and not global configuration is provided, the most preferred client will be used.
+If multiple clients are available on the classpath, and no global configuration is provided, the most preferred client will be used.
 
 
 
