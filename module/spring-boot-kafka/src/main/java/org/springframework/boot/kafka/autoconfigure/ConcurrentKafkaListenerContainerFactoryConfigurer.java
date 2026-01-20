@@ -37,6 +37,7 @@ import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.support.micrometer.KafkaListenerObservationConvention;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.util.Assert;
 
@@ -81,6 +82,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private @Nullable Function<MessageListenerContainer, String> threadNameSupplier;
 
 	private @Nullable SimpleAsyncTaskExecutor listenerTaskExecutor;
+
+	private @Nullable KafkaListenerObservationConvention observationConvention;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -187,6 +190,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Sets the observation convention.
+	 * @param observationConvention the observation convention
+	 */
+	void setObservationConvention(@Nullable KafkaListenerObservationConvention observationConvention) {
+		this.observationConvention = observationConvention;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -249,6 +260,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.transactionManager).to(container::setKafkaAwareTransactionManager);
 		map.from(this.rebalanceListener).to(container::setConsumerRebalanceListener);
 		map.from(this.listenerTaskExecutor).to(container::setListenerTaskExecutor);
+		map.from(this.observationConvention).to(container::setObservationConvention);
 	}
 
 }

@@ -32,6 +32,8 @@ include-code::MyBean[]
 NOTE: If the property configprop:spring.kafka.producer.transaction-id-prefix[] is defined, a javadoc:org.springframework.kafka.transaction.KafkaTransactionManager[] is automatically configured.
 Also, if a javadoc:org.springframework.kafka.support.converter.RecordMessageConverter[] bean is defined, it is automatically associated to the auto-configured javadoc:org.springframework.kafka.core.KafkaTemplate[].
 
+If there's a bean of type `KafkaTemplateObservationConvention` in the context, it is automatically registered on the `KafkaTemplate`.
+
 
 
 [[messaging.kafka.receiving]]
@@ -51,6 +53,8 @@ Depending on the listener type, a javadoc:org.springframework.kafka.support.conv
 If only a javadoc:org.springframework.kafka.support.converter.RecordMessageConverter[] bean is present for a batch listener, it is wrapped in a javadoc:org.springframework.kafka.support.converter.BatchMessageConverter[].
 
 TIP: A custom javadoc:org.springframework.kafka.transaction.ChainedKafkaTransactionManager[] must be marked javadoc:org.springframework.context.annotation.Primary[format=annotation] as it usually references the auto-configured javadoc:org.springframework.kafka.transaction.KafkaTransactionManager[] bean.
+
+If there's a bean of type `KafkaListenerObservationConvention` in the context, it is automatically registered on the container factory.
 
 
 

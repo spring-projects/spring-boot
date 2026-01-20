@@ -46,6 +46,7 @@ import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.support.micrometer.KafkaListenerObservationConvention;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
 /**
@@ -86,6 +87,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final @Nullable Function<MessageListenerContainer, String> threadNameSupplier;
 
+	private final @Nullable KafkaListenerObservationConvention observationConvention;
+
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
@@ -97,7 +100,8 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor,
 			ObjectProvider<RecordInterceptor<Object, Object>> recordInterceptor,
 			ObjectProvider<BatchInterceptor<Object, Object>> batchInterceptor,
-			ObjectProvider<Function<MessageListenerContainer, String>> threadNameSupplier) {
+			ObjectProvider<Function<MessageListenerContainer, String>> threadNameSupplier,
+			ObjectProvider<KafkaListenerObservationConvention> observationConvention) {
 		this.properties = properties;
 		this.recordMessageConverter = recordMessageConverter.getIfUnique();
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
@@ -111,6 +115,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.recordInterceptor = recordInterceptor.getIfUnique();
 		this.batchInterceptor = batchInterceptor.getIfUnique();
 		this.threadNameSupplier = threadNameSupplier.getIfUnique();
+		this.observationConvention = observationConvention.getIfUnique();
 	}
 
 	@Bean
@@ -145,6 +150,7 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setRecordInterceptor(this.recordInterceptor);
 		configurer.setBatchInterceptor(this.batchInterceptor);
 		configurer.setThreadNameSupplier(this.threadNameSupplier);
+		configurer.setObservationConvention(this.observationConvention);
 		return configurer;
 	}
 
