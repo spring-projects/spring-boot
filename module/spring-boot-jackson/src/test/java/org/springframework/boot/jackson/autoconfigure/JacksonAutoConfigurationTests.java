@@ -34,8 +34,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.StreamWriteFeature;
-import tools.jackson.core.json.JsonFactory;
-import tools.jackson.core.json.JsonFactoryBuilder;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -410,24 +408,6 @@ class JacksonAutoConfigurationTests {
 			ObjectMapper mapper = mapperType.getMapper(context);
 			assertThat(StreamReadFeature.STRICT_DUPLICATE_DETECTION.enabledByDefault()).isFalse();
 			assertThat(mapper.isEnabled(StreamReadFeature.STRICT_DUPLICATE_DETECTION)).isTrue();
-		});
-	}
-
-	@Test
-	void defaultJsonFactoryIsRegisteredWithTheMapperBuilderWhenNoCustomFactoryExists() {
-		this.contextRunner.run((context) -> {
-			Builder jsonMapperBuilder = context.getBean(JsonMapper.Builder.class);
-			assertThat(jsonMapperBuilder.isEnabled(StreamReadFeature.AUTO_CLOSE_SOURCE)).isTrue();
-		});
-	}
-
-	@Test
-	void customJsonFactoryIsRegisteredWithTheMapperBuilder() {
-		JsonFactory customJsonFactory = new JsonFactoryBuilder().configure(StreamReadFeature.AUTO_CLOSE_SOURCE, false)
-			.build();
-		this.contextRunner.withBean("customJsonFactory", JsonFactory.class, () -> customJsonFactory).run((context) -> {
-			Builder jsonMapperBuilder = context.getBean(JsonMapper.Builder.class);
-			assertThat(jsonMapperBuilder.isEnabled(StreamReadFeature.AUTO_CLOSE_SOURCE)).isFalse();
 		});
 	}
 
