@@ -38,7 +38,7 @@ pluginManagement {
 }
 
 plugins {
-	id "io.spring.develocity.conventions" version "0.0.22"
+	id "io.spring.develocity.conventions" version "0.0.25"
 	id "org.springframework.boot.cycle-detection"
 }
 
@@ -52,7 +52,6 @@ settings.gradle.projectsLoaded {
 			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
 			if (toolchainVersion != null) {
 				value('Toolchain version', toolchainVersion)
-				tag("JDK-$toolchainVersion")
 			}
 		}
 	}
