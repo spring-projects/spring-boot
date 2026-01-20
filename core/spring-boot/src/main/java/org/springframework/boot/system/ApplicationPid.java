@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 
@@ -106,31 +107,26 @@ public class ApplicationPid {
 	 */
 	public void write(File file) throws IOException {
 		Assert.state(this.pid != null, "No PID available");
-		createParentDirectory(file);
-		if (file.exists()) {
-			assertCanOverwrite(file);
-		}
-		try (FileWriter writer = new FileWriter(file)) {
-			writer.append(String.valueOf(this.pid));
-		}
-	}
-
-	private void createParentDirectory(File file) {
-		File parent = file.getParentFile();
+		Path path = file.toPath();
+		Path parent = path.getParent();
 		if (parent != null) {
-			parent.mkdirs();
+			Files.createDirectories(parent);
+		}
+		if (Files.exists(path)) {
+			assertCanOverwrite(path);
+		}
+		Files.writeString(path, String.valueOf(this.pid));
+	}
+
+	private void assertCanOverwrite(Path path) throws IOException {
+		if (!Files.isWritable(path) || !canWritePosixFile(path)) {
+			throw new FileNotFoundException(path + " (permission denied)");
 		}
 	}
 
-	private void assertCanOverwrite(File file) throws IOException {
-		if (!file.canWrite() || !canWritePosixFile(file)) {
-			throw new FileNotFoundException(file + " (permission denied)");
-		}
-	}
-
-	private boolean canWritePosixFile(File file) throws IOException {
+	private boolean canWritePosixFile(Path path) throws IOException {
 		try {
-			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(file.toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);
 			for (PosixFilePermission permission : WRITE_PERMISSIONS) {
 				if (permissions.contains(permission)) {
 					return true;
