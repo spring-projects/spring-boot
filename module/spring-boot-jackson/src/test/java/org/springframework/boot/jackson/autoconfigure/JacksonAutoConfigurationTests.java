@@ -393,6 +393,26 @@ class JacksonAutoConfigurationTests {
 			});
 	}
 
+	@EnumSource
+	@ParameterizedTest
+	void enableWriteFeature(MapperType mapperType) {
+		this.contextRunner.withPropertyValues("spring.jackson.write.write-bigdecimal-as-plain:true").run((context) -> {
+			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN)).isTrue();
+		});
+	}
+
+	@EnumSource
+	@ParameterizedTest
+	void enableReadFeature(MapperType mapperType) {
+		this.contextRunner.withPropertyValues("spring.jackson.read.strict-duplicate-detection:true").run((context) -> {
+			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(StreamReadFeature.STRICT_DUPLICATE_DETECTION.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamReadFeature.STRICT_DUPLICATE_DETECTION)).isTrue();
+		});
+	}
+
 	@Test
 	void defaultJsonFactoryIsRegisteredWithTheMapperBuilderWhenNoCustomFactoryExists() {
 		this.contextRunner.run((context) -> {
