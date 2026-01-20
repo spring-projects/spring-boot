@@ -158,8 +158,6 @@ public final class JacksonAutoConfiguration {
 			@Override
 			public void customize(JsonMapper.Builder builder) {
 				super.customize(builder);
-				configureFeatures(builder, properties().getRead(), builder::configure);
-				configureFeatures(builder, properties().getWrite(), builder::configure);
 				configureFeatures(builder, properties().getJson().getRead(), builder::configure);
 				configureFeatures(builder, properties().getJson().getWrite(), builder::configure);
 			}
@@ -391,6 +389,8 @@ public final class JacksonAutoConfiguration {
 			configureFeatures(builder, this.jacksonProperties.getDatatype().getDatetime(), builder::configure);
 			configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum(), builder::configure);
 			configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getRead(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getWrite(), builder::configure);
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
 			configureModules(builder);
