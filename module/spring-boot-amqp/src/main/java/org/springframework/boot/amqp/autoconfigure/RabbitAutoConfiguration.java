@@ -29,6 +29,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservationConvention;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -143,10 +144,12 @@ public final class RabbitAutoConfiguration {
 		@ConditionalOnMissingBean
 		RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers) {
+				ObjectProvider<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers,
+				ObjectProvider<RabbitTemplateObservationConvention> observationConvention) {
 			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
 			configurer.setRetrySettingsCustomizers(retrySettingsCustomizers.orderedStream().toList());
+			configurer.setObservationConvention(observationConvention.getIfUnique());
 			return configurer;
 		}
 

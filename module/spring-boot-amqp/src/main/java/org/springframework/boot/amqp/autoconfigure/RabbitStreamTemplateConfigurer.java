@@ -19,6 +19,7 @@ package org.springframework.boot.amqp.autoconfigure;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservationConvention;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
@@ -40,6 +41,8 @@ public class RabbitStreamTemplateConfigurer {
 	private @Nullable StreamMessageConverter streamMessageConverter;
 
 	private @Nullable ProducerCustomizer producerCustomizer;
+
+	private @Nullable RabbitStreamTemplateObservationConvention observationConvention;
 
 	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
@@ -68,6 +71,15 @@ public class RabbitStreamTemplateConfigurer {
 	}
 
 	/**
+	 * Set the observation convention to use.
+	 * @param observationConvention the observation convention to use
+	 * @since 4.1.0
+	 */
+	public void setObservationConvention(@Nullable RabbitStreamTemplateObservationConvention observationConvention) {
+		this.observationConvention = observationConvention;
+	}
+
+	/**
 	 * Configure the specified {@link RabbitStreamTemplate}. The template can be further
 	 * tuned and default settings can be overridden.
 	 * @param template the {@link RabbitStreamTemplate} instance to configure
@@ -81,6 +93,9 @@ public class RabbitStreamTemplateConfigurer {
 		}
 		if (this.producerCustomizer != null) {
 			template.setProducerCustomizer(this.producerCustomizer);
+		}
+		if (this.observationConvention != null) {
+			template.setObservationConvention(this.observationConvention);
 		}
 	}
 

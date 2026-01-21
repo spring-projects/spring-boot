@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamListenerObservationConvention;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservationConvention;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamOperations;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
@@ -53,12 +55,14 @@ class RabbitStreamConfiguration {
 	@ConditionalOnProperty(name = "spring.rabbitmq.listener.type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
-			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
+			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer,
+			ObjectProvider<RabbitStreamListenerObservationConvention> observationConvention) {
 		StreamRabbitListenerContainerFactory factory = new StreamRabbitListenerContainerFactory(
 				rabbitStreamEnvironment);
 		StreamContainer stream = properties.getListener().getStream();
 		factory.setObservationEnabled(stream.isObservationEnabled());
 		factory.setNativeListener(stream.isNativeListener());
+		observationConvention.ifUnique(factory::setStreamListenerObservationConvention);
 		consumerCustomizer.ifUnique(factory::setConsumerCustomizer);
 		containerCustomizer.ifUnique(factory::setContainerCustomizer);
 		return factory;
@@ -78,11 +82,13 @@ class RabbitStreamConfiguration {
 	RabbitStreamTemplateConfigurer rabbitStreamTemplateConfigurer(RabbitProperties properties,
 			ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<StreamMessageConverter> streamMessageConverter,
-			ObjectProvider<ProducerCustomizer> producerCustomizer) {
+			ObjectProvider<ProducerCustomizer> producerCustomizer,
+			ObjectProvider<RabbitStreamTemplateObservationConvention> observationConvention) {
 		RabbitStreamTemplateConfigurer configurer = new RabbitStreamTemplateConfigurer();
 		configurer.setMessageConverter(messageConverter.getIfUnique());
 		configurer.setStreamMessageConverter(streamMessageConverter.getIfUnique());
 		configurer.setProducerCustomizer(producerCustomizer.getIfUnique());
+		configurer.setObservationConvention(observationConvention.getIfUnique());
 		return configurer;
 	}
 

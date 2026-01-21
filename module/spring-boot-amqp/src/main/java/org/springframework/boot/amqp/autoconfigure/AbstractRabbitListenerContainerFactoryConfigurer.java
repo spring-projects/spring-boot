@@ -26,6 +26,7 @@ import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitListenerObservationConvention;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.ListenerRetry;
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Retry;
@@ -53,6 +54,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	private final RabbitProperties rabbitProperties;
 
 	private @Nullable Executor taskExecutor;
+
+	private @Nullable RabbitListenerObservationConvention observationConvention;
 
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
@@ -94,6 +97,15 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	public void setTaskExecutor(@Nullable Executor taskExecutor) {
 		this.taskExecutor = taskExecutor;
+	}
+
+	/**
+	 * Sets the observation convention to use.
+	 * @param observationConvention the observation convention to use
+	 * @since 4.1.0
+	 */
+	protected void setObservationConvention(@Nullable RabbitListenerObservationConvention observationConvention) {
+		this.observationConvention = observationConvention;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {
@@ -147,6 +159,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 					: new RejectAndDontRequeueRecoverer();
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
+		}
+		if (this.observationConvention != null) {
+			factory.setObservationConvention(this.observationConvention);
 		}
 	}
 

@@ -41,6 +41,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamListenerObservation.DefaultRabbitStreamListenerObservationConvention;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamListenerObservationConvention;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservation.DefaultRabbitStreamTemplateObservationConvention;
+import org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservationConvention;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
@@ -98,6 +102,19 @@ class RabbitStreamConfigurationTests {
 			.run((context) -> assertThat(context.getBean(StreamRabbitListenerContainerFactory.class))
 				.extracting("observationEnabled", InstanceOfAssertFactories.BOOLEAN)
 				.isTrue());
+	}
+
+	@Test
+	void shouldConfigureRabbitStreamListenerObservationConvention() {
+		RabbitStreamListenerObservationConvention convention = new DefaultRabbitStreamListenerObservationConvention();
+		this.contextRunner.withBean(RabbitStreamListenerObservationConvention.class, () -> convention)
+			.withPropertyValues("spring.rabbitmq.listener.type:stream")
+			.run((context) -> {
+				StreamRabbitListenerContainerFactory containerFactory = context
+					.getBean(StreamRabbitListenerContainerFactory.class);
+				assertThat(containerFactory).hasFieldOrPropertyWithValue("streamListenerObservationConvention",
+						convention);
+			});
 	}
 
 	@Test
@@ -255,6 +272,17 @@ class RabbitStreamConfigurationTests {
 				assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 				assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("producerCustomizer")
 					.isSameAs(context.getBean("myProducerCustomizer"));
+			});
+	}
+
+	@Test
+	void shouldConfigureRabbitStreamTemplateObservationConvention() {
+		RabbitStreamTemplateObservationConvention convention = new DefaultRabbitStreamTemplateObservationConvention();
+		this.contextRunner.withBean(RabbitStreamTemplateObservationConvention.class, () -> convention)
+			.withPropertyValues("spring.rabbitmq.stream.name:stream-test")
+			.run((context) -> {
+				RabbitStreamTemplate rabbitStreamTemplate = context.getBean(RabbitStreamTemplate.class);
+				assertThat(rabbitStreamTemplate).hasFieldOrPropertyWithValue("observationConvention", convention);
 			});
 	}
 

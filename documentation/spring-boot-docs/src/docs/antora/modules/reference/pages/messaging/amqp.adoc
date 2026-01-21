@@ -78,6 +78,8 @@ You can also customize the javadoc:org.springframework.core.retry.RetryTemplate[
 
 If you need to create more javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] with the same settings as the factories used by the auto-configuration.
 
+If there's a bean of type javadoc:org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservationConvention[] in the context, it will automatically be configured on the javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[].
+
 
 
 [[messaging.amqp.sending-stream]]
@@ -93,7 +95,7 @@ spring:
       name: "my-stream"
 ----
 
-If a javadoc:org.springframework.amqp.support.converter.MessageConverter[], javadoc:org.springframework.rabbit.stream.support.converter.StreamMessageConverter[], or javadoc:org.springframework.rabbit.stream.producer.ProducerCustomizer[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[].
+If a javadoc:org.springframework.amqp.support.converter.MessageConverter[], javadoc:org.springframework.rabbit.stream.support.converter.StreamMessageConverter[], javadoc:org.springframework.rabbit.stream.producer.ProducerCustomizer[] or javadoc:org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservationConvention[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[].
 
 If you need to create more javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] with the same settings as the factories used by the auto-configuration.
 
@@ -104,7 +106,7 @@ If you need to create more javadoc:org.springframework.rabbit.stream.producer.Ra
 
 When the Rabbit infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
 If no javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] has been defined, a default javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] is automatically configured and you can switch to a direct container using the configprop:spring.rabbitmq.listener.type[] property.
-If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] or a javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] bean is defined, it is automatically associated with the default factory.
+If a javadoc:org.springframework.amqp.support.converter.MessageConverter[], a javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] or a javadoc:org.springframework.amqp.rabbit.support.micrometer.RabbitListenerObservationConvention[] bean is defined, it is automatically associated with the default factory.
 
 The following sample component creates a listener endpoint on the `someQueue` queue:
 
