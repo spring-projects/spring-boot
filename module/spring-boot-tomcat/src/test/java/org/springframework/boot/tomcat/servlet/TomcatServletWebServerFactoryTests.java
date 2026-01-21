@@ -171,8 +171,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		factory.setUseApr(true);
 		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
 		this.webServer = tomcatWebServer;
-		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).extracting(Object::getClass)
-			.contains(AprLifecycleListener.class);
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners())
+			.anyMatch(AprLifecycleListener.class::isInstance);
 	}
 
 	@Test
