@@ -16,40 +16,23 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
-	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-slice"
 }
 
-description = "Spring Boot Reactor Netty"
+description = "Spring Boot Web Server Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-web-server"))
-	api("io.projectreactor.netty:reactor-netty-http")
-	api("org.springframework:spring-web")
-
-	compileOnly("com.google.code.findbugs:jsr305")
-
-	implementation(project(":module:spring-boot-netty"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-actuator-autoconfigure"))
-	optional(project(":module:spring-boot-web-server-test"))
+	optional("org.junit.jupiter:junit-jupiter-api")
 
-	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
-	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
-	testImplementation("io.projectreactor:reactor-test")
-	testImplementation("org.springframework:spring-webflux")
-
-	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("org.eclipse.jetty:jetty-client")
-	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client")
-	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
 }
 
 tasks.named("compileTestJava") {

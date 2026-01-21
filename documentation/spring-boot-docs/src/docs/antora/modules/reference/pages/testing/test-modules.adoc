@@ -64,6 +64,9 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |`spring-boot-security-test`
 |Testing applications that use Spring Security.
 
+|`spring-boot-webserver-test`
+|Testing applications that use `WebServer` implementations. Provides the `@AutoconfigureWebServer` annotation.
+
 |`spring-boot-webclient-test`
 |Testing applications that use `WebClient`. Provides the `@WebClientTest` test slice.
 

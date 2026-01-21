@@ -197,6 +197,8 @@ include-code::MyRandomPortWebTestClientTests[]
 
 TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also be used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation] from `spring-boot-webflux-test`.
 
+NOTE: For certain xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[sliced tests] you may need to use the javadoc:org.springframework.boot.web.server.test.AutoConfigureWebServer[format=annotation] annotation to auto-configure an embedded web server.
+
 The `spring-boot-resttestclient` module also provides a javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] facility:
 
 include-code::MyRandomPortTestRestTemplateTests[]

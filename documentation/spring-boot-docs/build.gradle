@@ -133,6 +133,7 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-resttestclient"))
 	implementation(project(path: ":module:spring-boot-security"))
 	implementation(project(path: ":module:spring-boot-tomcat"))
+	implementation(project(path: ":module:spring-boot-web-server-test"))
 	implementation(project(path: ":module:spring-boot-webclient"))
 	implementation(project(path: ":module:spring-boot-webclient-test"))
 	implementation(project(path: ":module:spring-boot-webflux"))

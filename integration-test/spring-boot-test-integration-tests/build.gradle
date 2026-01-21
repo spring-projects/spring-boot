@@ -33,6 +33,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":module:spring-boot-webtestclient"))
 	testImplementation(project(":module:spring-boot-web-server"))
+	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("org.springframework:spring-webmvc")
 	testImplementation("org.springframework:spring-webflux")

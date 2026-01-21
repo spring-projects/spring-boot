@@ -91,6 +91,9 @@ dependencies {
 	api(project(":module:spring-boot-security-test")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-web-server-test")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-webflux-test")) {
 		transitive = false
 	}

@@ -2278,6 +2278,7 @@ bom {
 				"spring-boot-transaction",
 				"spring-boot-validation",
 				"spring-boot-web-server",
+				"spring-boot-web-server-test",
 				"spring-boot-webclient",
 				"spring-boot-webclient-test",
 				"spring-boot-webflux",
