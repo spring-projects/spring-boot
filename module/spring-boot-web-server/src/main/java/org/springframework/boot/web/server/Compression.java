@@ -44,6 +44,11 @@ public class Compression {
 			"application/javascript", "application/json", "application/xml" };
 
 	/**
+	 * Comma-separated list of additional MIME types that should be compressed.
+	 */
+	private String[] additionalMimeTypes = new String[0];
+
+	/**
 	 * Comma-separated list of user agents for which responses should not be compressed.
 	 */
 	private String @Nullable [] excludedUserAgents;
@@ -70,11 +75,25 @@ public class Compression {
 	 * @return the MIME types that should be compressed
 	 */
 	public String[] getMimeTypes() {
-		return this.mimeTypes;
+		if (this.additionalMimeTypes.length == 0) {
+			return this.mimeTypes;
+		}
+		String[] combined = new String[this.mimeTypes.length + this.additionalMimeTypes.length];
+		System.arraycopy(this.mimeTypes, 0, combined, 0, this.mimeTypes.length);
+		System.arraycopy(this.additionalMimeTypes, 0, combined, this.mimeTypes.length, this.additionalMimeTypes.length);
+		return combined;
 	}
 
 	public void setMimeTypes(String[] mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	public String[] getAdditionalMimeTypes() {
+		return this.additionalMimeTypes;
+	}
+
+	public void setAdditionalMimeTypes(String[] additionalMimeTypes) {
+		this.additionalMimeTypes = additionalMimeTypes;
 	}
 
 	public String @Nullable [] getExcludedUserAgents() {
