@@ -60,9 +60,9 @@ class MyMockMvcTests {
 	}
 
 	@Test
-	void testWithRestTestClient(@Autowired RestTestClient webClient) {
+	void testWithRestTestClient(@Autowired RestTestClient restClient) {
 		// @formatter:off
-		webClient
+		restClient
 				.get().uri("/")
 				.exchange()
 				.expectStatus().isOk()
@@ -71,9 +71,9 @@ class MyMockMvcTests {
 	}
 
 	@Test // If you prefer AssertJ, dedicated assertions are available
-	void testWithRestTestClientAssertJ(@Autowired RestTestClient webClient) {
+	void testWithRestTestClientAssertJ(@Autowired RestTestClient restClient) {
 		// @formatter:off
-		ResponseSpec spec = webClient.get().uri("/").exchange();
+		ResponseSpec spec = restClient.get().uri("/").exchange();
 		RestTestClientResponse response = RestTestClientResponse.from(spec);
 		assertThat(response).hasStatusOk()
 				.bodyText().isEqualTo("Hello World");
