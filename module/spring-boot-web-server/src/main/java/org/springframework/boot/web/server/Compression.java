@@ -19,6 +19,7 @@ package org.springframework.boot.web.server;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -42,6 +43,11 @@ public class Compression {
 	 */
 	private String[] mimeTypes = new String[] { "text/html", "text/xml", "text/plain", "text/css", "text/javascript",
 			"application/javascript", "application/json", "application/xml" };
+
+	/**
+	 * Comma-separated list of additional MIME types that should be compressed.
+	 */
+	private String[] additionalMimeTypes = new String[0];
 
 	/**
 	 * Comma-separated list of user agents for which responses should not be compressed.
@@ -75,6 +81,23 @@ public class Compression {
 
 	public void setMimeTypes(String[] mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	/**
+	 * Return the MIME types that should be compressed, including any additional types.
+	 * @return the MIME types that should be compressed
+	 */
+	public String[] getAllMimeTypes() {
+		String[] combined = StringUtils.concatenateStringArrays(this.mimeTypes, this.additionalMimeTypes);
+		return (combined != null) ? combined : this.mimeTypes;
+	}
+
+	public String[] getAdditionalMimeTypes() {
+		return this.additionalMimeTypes;
+	}
+
+	public void setAdditionalMimeTypes(String[] additionalMimeTypes) {
+		this.additionalMimeTypes = additionalMimeTypes;
 	}
 
 	public String @Nullable [] getExcludedUserAgents() {
