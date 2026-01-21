@@ -29,9 +29,9 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 class MyRandomPortRestTestClientTests {
 
 	@Test
-	void exampleTest(@Autowired RestTestClient webClient) {
+	void exampleTest(@Autowired RestTestClient restClient) {
 		// @formatter:off
-		webClient
+		restClient
 			.get().uri("/")
 			.exchange()
 			.expectStatus().isOk()
