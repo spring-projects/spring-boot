@@ -124,6 +124,8 @@ Because this shutdown processing happens in parallel (and due to the nature of d
 
 You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
+The delay should be at least as long as the longest time it takes to process an in-flight request.
+You should not rely on the Spring Boot graceful shutdown period alone, as the platform will not be getting any liveness data in the period that the app is shutting down.
 
 If you're using Kubernetes 1.32 or up, the preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
 
