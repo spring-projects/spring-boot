@@ -18,7 +18,6 @@ package org.springframework.boot.http.client.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.context.properties.bind.Name;
 
 /**
@@ -27,7 +26,6 @@ import org.springframework.boot.context.properties.bind.Name;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@ConfigurationPropertiesSource
 public class ApiversionProperties {
 
 	/**
@@ -53,7 +51,6 @@ public class ApiversionProperties {
 		return this.insert;
 	}
 
-	@ConfigurationPropertiesSource
 	public static class Insert {
 
 		/**

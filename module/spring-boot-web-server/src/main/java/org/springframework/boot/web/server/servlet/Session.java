@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Cookie;
@@ -34,7 +33,6 @@ import org.springframework.boot.web.server.Cookie;
  * @author Andy Wilkinson
  * @since 4.0.0
  */
-@ConfigurationPropertiesSource
 public class Session {
 
 	/**
