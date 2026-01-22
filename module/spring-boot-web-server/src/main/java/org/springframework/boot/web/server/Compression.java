@@ -88,7 +88,8 @@ public class Compression {
 	 * @return the MIME types that should be compressed
 	 */
 	public String[] getAllMimeTypes() {
-		return StringUtils.concatenateStringArrays(this.mimeTypes, this.additionalMimeTypes);
+		String[] combined = StringUtils.concatenateStringArrays(this.mimeTypes, this.additionalMimeTypes);
+		return (combined != null) ? combined : this.mimeTypes;
 	}
 
 	public String[] getAdditionalMimeTypes() {
