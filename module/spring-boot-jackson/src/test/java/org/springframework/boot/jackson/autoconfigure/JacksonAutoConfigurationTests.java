@@ -26,6 +26,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -1155,5 +1157,34 @@ class JacksonAutoConfigurationTests {
 		}
 
 	}
+
+	@Test
+	void jsonMapperIsCreatedEvenWhenAnObjectMapperSubclassIsDefined() {
+		// Simulate a user-defined ObjectMapper subclass.
+		// This represents cases such as CsvMapper, XmlMapper, etc.
+		this.contextRunner.withUserConfiguration(CustomObjectMapperSubclassConfiguration.class)
+				.run((context) -> {
+					// The presence of an ObjectMapper subclass should not prevent
+					// the default JsonMapper from being autoconfigured.
+					assertThat(context).hasSingleBean(JsonMapper.class);
+
+					// The user-defined ObjectMapper subclass should still be present.
+					assertThat(context).hasSingleBean(ObjectMapper.class);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomObjectMapperSubclassConfiguration {
+
+		@Bean
+		ObjectMapper customObjectMapper() {
+			// Use an anonymous subclass to avoid introducing additional
+			// Jackson dataformat dependencies into the test.
+			return new ObjectMapper() {
+			};
+		}
+
+	}
+
 
 }

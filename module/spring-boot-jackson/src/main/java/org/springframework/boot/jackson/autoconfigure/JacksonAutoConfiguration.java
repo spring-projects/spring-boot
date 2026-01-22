@@ -108,10 +108,20 @@ public final class JacksonAutoConfiguration {
 			customizer.customize(builder);
 		}
 	}
+	/**
+	 * Default JSON Mapper autoconfiguration.
+	 *
+	 * Reason for change: Previously, @ConditionalOnMissingBean checked for ObjectMapper.
+	 * If a user-defined CsvMapper (a subclass of ObjectMapper) existed, the default
+	 * JsonMapper would not be created. Changing it to check only for JsonMapper ensures
+	 * that the default JSON functionality is always available.
+	 *
+	 * @Primary ensures that this Bean is preferred when injecting JSON Mappers.
+	 */
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(JsonMapper.class)
 	JsonMapper jacksonJsonMapper(JsonMapper.Builder builder) {
 		return builder.build();
 	}
