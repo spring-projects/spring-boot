@@ -18,6 +18,7 @@ package org.springframework.boot.cache.autoconfigure.metrics;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -25,8 +26,11 @@ import io.micrometer.core.instrument.Tag;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.cache.metrics.CacheAccessListener;
 import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 import org.springframework.boot.cache.metrics.CacheMetricsRegistrar;
+import org.springframework.boot.cache.metrics.LazyCacheMetricsRegistrar;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -52,17 +56,45 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final Map<String, CacheManager> cacheManagers;
 
+	private final Map<String, String> cacheManagerNames = new ConcurrentHashMap<>();
+
 	CacheMetricsRegistrarConfiguration(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders,
 			ConfigurableListableBeanFactory beanFactory) {
 		this.registry = registry;
 		this.cacheManagers = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, CacheManager.class);
-		this.cacheMetricsRegistrar = new CacheMetricsRegistrar(this.registry, binderProviders);
-		bindCachesToRegistry();
+		
+		// Initialize cache manager names mapping
+		this.cacheManagers.forEach((beanName, cacheManager) -> {
+			this.cacheManagerNames.put(System.identityHashCode(cacheManager) + "", getCacheManagerName(beanName));
+		});
+		
+		this.cacheMetricsRegistrar = createCacheMetricsRegistrar(registry, binderProviders);
+	}
+
+	private CacheMetricsRegistrar createCacheMetricsRegistrar(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders) {
+		// Use lazy registration by default for better startup performance
+		LazyCacheMetricsRegistrar lazyCacheMetricsRegistrar = new LazyCacheMetricsRegistrar(registry, binderProviders);
+		
+		// Register cache access listener for lazy metrics registration
+		CacheAccessListener accessListener = (cache, cacheManagerName) -> {
+			Tag cacheManagerTag = Tag.of("cache.manager", cacheManagerName);
+			lazyCacheMetricsRegistrar.bindCacheToRegistry(cache, cacheManagerTag);
+		};
+		
+		return lazyCacheMetricsRegistrar;
 	}
 
 	@Bean
 	CacheMetricsRegistrar cacheMetricsRegistrar() {
 		return this.cacheMetricsRegistrar;
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "management.metrics.cache.lazy-registration", havingValue = "false", matchIfMissing = false)
+	CacheAccessListener eagerCacheRegistrationListener() {
+		// For backward compatibility, provide eager registration when explicitly disabled
+		bindCachesToRegistry();
+		return (cache, cacheManagerName) -> {}; // No-op listener for eager mode
 	}
 
 	private void bindCachesToRegistry() {
@@ -80,6 +112,25 @@ class CacheMetricsRegistrarConfiguration {
 	private void bindCacheToRegistry(String beanName, Cache cache) {
 		Tag cacheManagerTag = Tag.of("cache.manager", getCacheManagerName(beanName));
 		this.cacheMetricsRegistrar.bindCacheToRegistry(cache, cacheManagerTag);
+	}
+
+	/**
+	 * Get the cache manager name for a given cache instance.
+	 * @param cache the cache instance
+	 * @return the cache manager name
+	 */
+	public String getCacheManagerNameForCache(Cache cache) {
+		// Find the cache manager that owns this cache
+		for (Map.Entry<String, CacheManager> entry : this.cacheManagers.entrySet()) {
+			CacheManager cacheManager = entry.getValue();
+			if (cacheManager.getCacheNames().contains(cache.getName())) {
+				Cache managerCache = cacheManager.getCache(cache.getName());
+				if (managerCache == cache || (managerCache != null && managerCache.equals(cache))) {
+					return getCacheManagerName(entry.getKey());
+				}
+			}
+		}
+		return "unknown";
 	}
 
 	/**
