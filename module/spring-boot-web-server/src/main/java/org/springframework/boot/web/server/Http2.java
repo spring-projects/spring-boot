@@ -16,15 +16,12 @@
 
 package org.springframework.boot.web.server;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
-
 /**
  * Simple server-independent abstraction for HTTP/2 configuration.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
-@ConfigurationPropertiesSource
 public class Http2 {
 
 	/**

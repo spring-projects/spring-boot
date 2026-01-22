@@ -18,7 +18,6 @@ package org.springframework.boot.web.server;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -29,7 +28,6 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationPropertiesSource
 public class Compression {
 
 	/**
