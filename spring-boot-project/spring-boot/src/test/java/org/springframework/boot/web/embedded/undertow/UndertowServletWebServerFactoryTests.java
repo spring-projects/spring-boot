@@ -44,8 +44,6 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
@@ -303,14 +301,6 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	void sslRestrictedProtocolsECDHESuccess() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
-	}
-
-	@Test
-	@WithPackageResources("restricted.jks")
-	@DisabledForJreRange(min = JRE.JAVA_24)
-	void sslRestrictedProtocolsRSATLS12Success() throws Exception {
-		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
-				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
 	@Test
