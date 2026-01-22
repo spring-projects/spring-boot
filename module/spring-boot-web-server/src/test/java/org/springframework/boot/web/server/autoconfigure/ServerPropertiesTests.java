@@ -152,8 +152,8 @@ class ServerPropertiesTests {
 	@Test
 	void additionalCompressionMimeTypesAreAddedToDefaults() {
 		bind("server.compression.additional-mime-types", "application/zip");
-		assertThat(this.properties.getCompression().getMimeTypes()).contains(new Compression().getMimeTypes());
-		assertThat(this.properties.getCompression().getMimeTypes()).contains("application/zip");
+		assertThat(this.properties.getCompression().getAllMimeTypes()).contains(new Compression().getMimeTypes());
+		assertThat(this.properties.getCompression().getAllMimeTypes()).contains("application/zip");
 	}
 
 	private void bind(String name, String value) {

@@ -19,6 +19,7 @@ package org.springframework.boot.web.server;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -75,17 +76,19 @@ public class Compression {
 	 * @return the MIME types that should be compressed
 	 */
 	public String[] getMimeTypes() {
-		if (this.additionalMimeTypes.length == 0) {
-			return this.mimeTypes;
-		}
-		String[] combined = new String[this.mimeTypes.length + this.additionalMimeTypes.length];
-		System.arraycopy(this.mimeTypes, 0, combined, 0, this.mimeTypes.length);
-		System.arraycopy(this.additionalMimeTypes, 0, combined, this.mimeTypes.length, this.additionalMimeTypes.length);
-		return combined;
+		return this.mimeTypes;
 	}
 
 	public void setMimeTypes(String[] mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	/**
+	 * Return the MIME types that should be compressed, including any additional types.
+	 * @return the MIME types that should be compressed
+	 */
+	public String[] getAllMimeTypes() {
+		return StringUtils.concatenateStringArrays(this.mimeTypes, this.additionalMimeTypes);
 	}
 
 	public String[] getAdditionalMimeTypes() {
