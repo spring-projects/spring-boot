@@ -31,8 +31,6 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
  */
 public class SystemRequirementsExtension {
 
-	static final int DEFAULT_JAVA_VERSION = 17;
-
 	private final JavaSpec javaSpec;
 
 	@Inject
@@ -52,7 +50,7 @@ public class SystemRequirementsExtension {
 
 		private final Project project;
 
-		private int version = DEFAULT_JAVA_VERSION;
+		private int version = 17;
 
 		@Inject
 		public JavaSpec(Project project) {
@@ -64,11 +62,11 @@ public class SystemRequirementsExtension {
 		}
 
 		public void setVersion(int version) {
-			this.version = version;
 			JavaLanguageVersion javaVersion = JavaLanguageVersion.of(version);
 			JavaPluginExtension javaPluginExtension = this.project.getExtensions().getByType(JavaPluginExtension.class);
 			javaPluginExtension.setSourceCompatibility(javaVersion);
 			javaPluginExtension.setTargetCompatibility(javaVersion);
+			this.version = version;
 		}
 
 	}

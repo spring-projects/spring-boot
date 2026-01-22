@@ -32,7 +32,6 @@ import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
@@ -248,15 +247,9 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		if (!project.hasProperty("toolchainVersion")) {
-			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-			JavaVersion javaVersion = JavaVersion.toVersion(SystemRequirementsExtension.DEFAULT_JAVA_VERSION);
-			javaPluginExtension.setSourceCompatibility(javaVersion);
-			javaPluginExtension.setTargetCompatibility(javaVersion);
-		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			compile.getOptions().getRelease().set(project.provider(() -> this.javaSpec.getVersion()));
+			compile.getOptions().getRelease().set(this.javaSpec.getVersion());
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
