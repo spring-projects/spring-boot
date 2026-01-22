@@ -230,13 +230,11 @@ public final class Jackson2AutoConfiguration {
 			private void configureFeatures(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder,
 					Map<?, Boolean> features) {
 				features.forEach((feature, value) -> {
-					if (value != null) {
-						if (value) {
-							builder.featuresToEnable(feature);
-						}
-						else {
-							builder.featuresToDisable(feature);
-						}
+					if (value) {
+						builder.featuresToEnable(feature);
+					}
+					else {
+						builder.featuresToDisable(feature);
 					}
 				});
 			}
@@ -301,7 +299,6 @@ public final class Jackson2AutoConfiguration {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
 				Field field = findPropertyNamingStrategyField(fieldName);
-				Assert.state(field != null, () -> "Constant named '" + fieldName + "' not found");
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}

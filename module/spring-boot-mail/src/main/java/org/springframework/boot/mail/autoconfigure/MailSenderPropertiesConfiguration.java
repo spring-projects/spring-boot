@@ -63,9 +63,7 @@ class MailSenderPropertiesConfiguration {
 		sender.setUsername(properties.getUsername());
 		sender.setPassword(properties.getPassword());
 		sender.setProtocol(properties.getProtocol());
-		if (properties.getDefaultEncoding() != null) {
-			sender.setDefaultEncoding(properties.getDefaultEncoding().name());
-		}
+		sender.setDefaultEncoding(properties.getDefaultEncoding().name());
 		Properties javaMailProperties = asProperties(properties.getProperties());
 		String protocol = properties.getProtocol();
 		protocol = (!StringUtils.hasLength(protocol)) ? "smtp" : protocol;

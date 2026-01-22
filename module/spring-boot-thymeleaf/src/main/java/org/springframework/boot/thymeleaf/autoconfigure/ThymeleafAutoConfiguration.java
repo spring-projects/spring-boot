@@ -111,9 +111,7 @@ public final class ThymeleafAutoConfiguration {
 			resolver.setPrefix(this.properties.getPrefix());
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setTemplateMode(this.properties.getMode());
-			if (this.properties.getEncoding() != null) {
-				resolver.setCharacterEncoding(this.properties.getEncoding().name());
-			}
+			resolver.setCharacterEncoding(this.properties.getEncoding().name());
 			resolver.setCacheable(this.properties.isCache());
 			Integer order = this.properties.getTemplateResolverOrder();
 			if (order != null) {

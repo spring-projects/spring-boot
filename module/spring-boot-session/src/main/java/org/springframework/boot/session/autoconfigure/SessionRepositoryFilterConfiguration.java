@@ -55,9 +55,6 @@ class SessionRepositoryFilterConfiguration {
 
 	private @Nullable EnumSet<DispatcherType> getDispatcherTypes(SessionProperties sessionProperties) {
 		SessionProperties.Servlet servletProperties = sessionProperties.getServlet();
-		if (servletProperties.getFilterDispatcherTypes() == null) {
-			return null;
-		}
 		return servletProperties.getFilterDispatcherTypes()
 			.stream()
 			.map((type) -> DispatcherType.valueOf(type.name()))

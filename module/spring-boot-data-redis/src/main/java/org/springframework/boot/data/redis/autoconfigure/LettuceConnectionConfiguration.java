@@ -173,15 +173,13 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (getProperties().getTimeout() != null) {
 			builder.commandTimeout(getProperties().getTimeout());
 		}
-		if (getProperties().getLettuce() != null) {
-			DataRedisProperties.Lettuce lettuce = getProperties().getLettuce();
-			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
-				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
-			}
-			String readFrom = lettuce.getReadFrom();
-			if (readFrom != null) {
-				builder.readFrom(getReadFrom(readFrom));
-			}
+		DataRedisProperties.Lettuce lettuce = getProperties().getLettuce();
+		if (!lettuce.getShutdownTimeout().isZero()) {
+			builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
+		}
+		String readFrom = lettuce.getReadFrom();
+		if (readFrom != null) {
+			builder.readFrom(getReadFrom(readFrom));
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
@@ -274,9 +272,7 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 			if (properties.getTimeBetweenEvictionRuns() != null) {
 				config.setTimeBetweenEvictionRuns(properties.getTimeBetweenEvictionRuns());
 			}
-			if (properties.getMaxWait() != null) {
-				config.setMaxWait(properties.getMaxWait());
-			}
+			config.setMaxWait(properties.getMaxWait());
 			return config;
 		}
 

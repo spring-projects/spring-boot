@@ -398,11 +398,7 @@ public final class JacksonAutoConfiguration {
 		}
 
 		protected <T> void configureFeatures(B builder, Map<T, Boolean> features, BiConsumer<T, Boolean> configure) {
-			features.forEach((feature, value) -> {
-				if (value != null) {
-					configure.accept(feature, value);
-				}
-			});
+			features.forEach(configure);
 		}
 
 		private void configureVisibility(MapperBuilder<?, ?> builder,

@@ -48,13 +48,9 @@ class ActiveMQConnectionFactoryConfigurer {
 	}
 
 	void configure(ActiveMQConnectionFactory factory) {
-		if (this.properties.getCloseTimeout() != null) {
-			factory.setCloseTimeout((int) this.properties.getCloseTimeout().toMillis());
-		}
+		factory.setCloseTimeout((int) this.properties.getCloseTimeout().toMillis());
 		factory.setNonBlockingRedelivery(this.properties.isNonBlockingRedelivery());
-		if (this.properties.getSendTimeout() != null) {
-			factory.setSendTimeout((int) this.properties.getSendTimeout().toMillis());
-		}
+		factory.setSendTimeout((int) this.properties.getSendTimeout().toMillis());
 		Packages packages = this.properties.getPackages();
 		if (packages.getTrustAll() != null) {
 			factory.setTrustAllPackages(packages.getTrustAll());

@@ -66,9 +66,6 @@ public final class SecurityFilterAutoConfiguration {
 	}
 
 	private @Nullable EnumSet<DispatcherType> getDispatcherTypes(SecurityFilterProperties securityFilterProperties) {
-		if (securityFilterProperties.getDispatcherTypes() == null) {
-			return null;
-		}
 		return securityFilterProperties.getDispatcherTypes()
 			.stream()
 			.map((type) -> DispatcherType.valueOf(type.name()))

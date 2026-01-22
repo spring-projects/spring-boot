@@ -162,12 +162,8 @@ public final class KafkaAutoConfiguration {
 	KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
 		KafkaJaasLoginModuleInitializer jaas = new KafkaJaasLoginModuleInitializer();
 		Jaas jaasProperties = this.properties.getJaas();
-		if (jaasProperties.getControlFlag() != null) {
-			jaas.setControlFlag(jaasProperties.getControlFlag());
-		}
-		if (jaasProperties.getLoginModule() != null) {
-			jaas.setLoginModule(jaasProperties.getLoginModule());
-		}
+		jaas.setControlFlag(jaasProperties.getControlFlag());
+		jaas.setLoginModule(jaasProperties.getLoginModule());
 		jaas.setOptions(jaasProperties.getOptions());
 		return jaas;
 	}

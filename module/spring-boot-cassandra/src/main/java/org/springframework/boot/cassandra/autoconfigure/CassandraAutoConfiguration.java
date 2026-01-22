@@ -332,7 +332,7 @@ public final class CassandraAutoConfiguration {
 		@Override
 		public @Nullable SslBundle getSslBundle() {
 			Ssl ssl = this.properties.getSsl();
-			if (ssl == null || !ssl.isEnabled()) {
+			if (!ssl.isEnabled()) {
 				return null;
 			}
 			if (StringUtils.hasLength(ssl.getBundle())) {

@@ -49,9 +49,7 @@ class TomcatServletWebServerFactoryCustomizer
 		if (!ObjectUtils.isEmpty(this.tomcatProperties.getAdditionalTldSkipPatterns())) {
 			factory.getTldSkipPatterns().addAll(this.tomcatProperties.getAdditionalTldSkipPatterns());
 		}
-		if (this.tomcatProperties.getRedirectContextRoot() != null) {
-			customizeRedirectContextRoot(factory, this.tomcatProperties.getRedirectContextRoot());
-		}
+		customizeRedirectContextRoot(factory, this.tomcatProperties.getRedirectContextRoot());
 		customizeUseRelativeRedirects(factory, this.tomcatProperties.isUseRelativeRedirects());
 	}
 

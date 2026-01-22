@@ -80,9 +80,7 @@ public final class MessageSourceAutoConfiguration {
 		if (!CollectionUtils.isEmpty(properties.getBasename())) {
 			messageSource.setBasenames(properties.getBasename().toArray(new String[0]));
 		}
-		if (properties.getEncoding() != null) {
-			messageSource.setDefaultEncoding(properties.getEncoding().name());
-		}
+		messageSource.setDefaultEncoding(properties.getEncoding().name());
 		messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
 		Duration cacheDuration = properties.getCacheDuration();
 		if (cacheDuration != null) {
