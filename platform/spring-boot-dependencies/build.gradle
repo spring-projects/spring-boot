@@ -1231,7 +1231,7 @@ bom {
 			releaseNotes("https://github.com/Kotlin/kotlinx.coroutines/releases/tag/{version}")
 		}
 	}
-	library("Kotlin Serialization", "1.9.0") {
+	library("Kotlin Serialization", "1.10.0") {
 		group("org.jetbrains.kotlinx") {
 			bom("kotlinx-serialization-bom")
 		}
