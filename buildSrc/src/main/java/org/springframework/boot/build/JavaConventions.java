@@ -16,8 +16,10 @@
 
 package org.springframework.boot.build;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +34,7 @@ import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -53,6 +56,9 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
+import org.gradle.jvm.toolchain.JavaCompiler;
+import org.gradle.jvm.toolchain.JavaInstallationMetadata;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
@@ -127,7 +133,9 @@ import org.springframework.util.StringUtils;
  */
 class JavaConventions {
 
-	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
+	public static final int BUILD_JAVA_VERSION = 25;
+
+	public static final int RUNTIME_JAVA_VERSION = 17;
 
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
@@ -165,7 +173,8 @@ class JavaConventions {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
+				// Build-Jdk-Spec is used by buildpacks to pick the JRE to install
+				attributes.put("Build-Jdk-Spec", RUNTIME_JAVA_VERSION);
 				attributes.put("Built-By", "Spring");
 				attributes.put("Implementation-Title",
 						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
@@ -243,21 +252,29 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		if (!project.hasProperty("toolchainVersion")) {
-			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
-			javaPluginExtension.setTargetCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
-		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			compile.doFirst((task) -> assertCompatible(compile));
 			compile.getOptions().setEncoding("UTF-8");
-			compile.getOptions().getRelease().set(17);
-			List<String> args = compile.getOptions().getCompilerArgs();
-			if (!args.contains("-parameters")) {
-				args.add("-parameters");
-			}
-			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+			compile.getOptions().getRelease().set(RUNTIME_JAVA_VERSION);
+			Set<String> args = new LinkedHashSet<>(compile.getOptions().getCompilerArgs());
+			args.addAll(List.of("-parameters", "-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 					"-Xlint:varargs"));
+			compile.getOptions().setCompilerArgs(new ArrayList<>(args));
 		});
+	}
+
+	private void assertCompatible(JavaCompile compile) {
+		JavaVersion requiredVersion = JavaVersion.toVersion(BUILD_JAVA_VERSION);
+		JavaVersion actualVersion = compile.getJavaCompiler()
+			.map(JavaCompiler::getMetadata)
+			.map(JavaInstallationMetadata::getLanguageVersion)
+			.map(JavaLanguageVersion::asInt)
+			.map(JavaVersion::toVersion)
+			.orElse(JavaVersion.current())
+			.get();
+		if (!actualVersion.isCompatibleWith(requiredVersion)) {
+			throw new GradleException("This project should be built with Java %s or above".formatted(requiredVersion));
+		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
