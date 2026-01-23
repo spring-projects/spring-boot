@@ -18,8 +18,6 @@ package org.springframework.boot.micrometer.metrics.autoconfigure.export.propert
 
 import java.time.Duration;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
-
 /**
  * Base class for properties that configure a metrics registry that pushes aggregated
  * metrics on a regular interval.
@@ -29,7 +27,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesSource
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-@ConfigurationPropertiesSource
 public abstract class PushRegistryProperties {
 
 	/**

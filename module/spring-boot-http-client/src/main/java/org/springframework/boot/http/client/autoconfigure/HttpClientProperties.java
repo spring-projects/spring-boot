@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -34,7 +33,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@ConfigurationPropertiesSource
 public class HttpClientProperties extends HttpClientSettingsProperties {
 
 	/**

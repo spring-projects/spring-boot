@@ -19,8 +19,6 @@ package org.springframework.boot.web.server.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
-
 /**
  * Configuration for the server's JSP servlet.
  *
@@ -28,7 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesSource
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-@ConfigurationPropertiesSource
 public class Jsp {
 
 	/**
