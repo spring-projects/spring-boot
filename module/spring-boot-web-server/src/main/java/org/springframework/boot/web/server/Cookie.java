@@ -21,7 +21,6 @@ import java.time.temporal.ChronoUnit;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -33,7 +32,6 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Weix Sun
  * @since 2.6.0
  */
-@ConfigurationPropertiesSource
 public class Cookie {
 
 	/**

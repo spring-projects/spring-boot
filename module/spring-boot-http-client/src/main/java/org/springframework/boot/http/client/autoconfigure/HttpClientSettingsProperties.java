@@ -20,7 +20,6 @@ import java.time.Duration;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 
@@ -31,7 +30,6 @@ import org.springframework.boot.http.client.HttpRedirects;
  * @since 4.0.0
  * @see HttpClientSettings
  */
-@ConfigurationPropertiesSource
 public abstract class HttpClientSettingsProperties {
 
 	/**
@@ -85,7 +83,6 @@ public abstract class HttpClientSettingsProperties {
 	/**
 	 * SSL configuration.
 	 */
-	@ConfigurationPropertiesSource
 	public static class Ssl {
 
 		/**
