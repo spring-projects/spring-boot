@@ -69,7 +69,7 @@ class SystemEnvironmentConfigDataLoaderTests {
 
 	private SystemEnvironmentConfigDataResource createResource(String variableName) {
 		return new SystemEnvironmentConfigDataResource(variableName, new PropertiesPropertySourceLoader(),
-				this.environment::get);
+				this.environment::get, null);
 	}
 
 }

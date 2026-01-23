@@ -294,7 +294,18 @@ This will trigger the import of a `dev.properties` file in current directory (if
 Values from the imported `dev.properties` will take precedence over the file that triggered the import.
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
 
-An import will only be imported once no matter how many times it is declared.
+NOTE: An import will only be imported once no matter how many times it is declared.
+
+By default, properties files are imported using the ISO-8859-1 charset. To change that, you can use the encoding attribute:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "classpath:import.properties[encoding=utf-8]"
+----
+
+The `import.properties` file will now be read in UTF-8 encoding.
 
 
 
@@ -392,6 +403,31 @@ You can import it from your `application.properties` using the following:
 spring:
   config:
     import: "file:/etc/config/myconfig[.yaml]"
+----
+
+This is the shorthand for:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "file:/etc/config/myconfig[extension=.yaml]"
+----
+
+
+
+[[features.external-config.files.attributes]]
+=== File attributes
+
+The configprop:spring.config.import[] configuration property supports file attributes, as shown when specifying the xref:features/external-config.adoc#features.external-config.files.importing[encoding] or the xref:features/external-config.adoc#features.external-config.files.importing-extensionless[extension].
+
+If you need to specify multiple attributes, you can use this syntax:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "file:/etc/config/myconfig[extension=.yaml][encoding=utf-8]"
 ----
 
 

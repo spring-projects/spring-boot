@@ -51,7 +51,7 @@ class StandardConfigDataLoaderTests {
 		ClassPathResource resource = new ClassPathResource("application.yml");
 		StandardConfigDataReference reference = new StandardConfigDataReference(
 				ConfigDataLocation.of("classpath:application.yml"), null, "classpath:application", null, "yml",
-				new YamlPropertySourceLoader());
+				new YamlPropertySourceLoader(), null);
 		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources()).hasSize(2);
@@ -71,7 +71,7 @@ class StandardConfigDataLoaderTests {
 		ClassPathResource resource = new ClassPathResource("empty.properties");
 		StandardConfigDataReference reference = new StandardConfigDataReference(
 				ConfigDataLocation.of("empty.properties"), null, "empty", null, "properties",
-				new PropertiesPropertySourceLoader());
+				new PropertiesPropertySourceLoader(), null);
 		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources()).isEmpty();

@@ -51,7 +51,8 @@ public class StandardConfigDataLoader implements ConfigDataLoader<StandardConfig
 				Origin.from(reference.getConfigDataLocation()));
 		String name = String.format("Config resource '%s' via location '%s'", resource,
 				reference.getConfigDataLocation());
-		List<PropertySource<?>> propertySources = reference.getPropertySourceLoader().load(name, originTrackedResource);
+		List<PropertySource<?>> propertySources = reference.getPropertySourceLoader()
+			.load(name, originTrackedResource, reference.getEncoding());
 		PropertySourceOptions options = (resource.getProfile() != null) ? PROFILE_SPECIFIC : NON_PROFILE_SPECIFIC;
 		return new ConfigData(propertySources, options);
 	}
