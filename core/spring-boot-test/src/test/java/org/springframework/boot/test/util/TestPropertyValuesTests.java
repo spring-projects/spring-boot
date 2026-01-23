@@ -32,6 +32,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -211,6 +212,16 @@ class TestPropertyValuesTests {
 		assertThat(pair).isNotNull();
 		pair.addTo(map);
 		assertThat(map).containsOnly(entry("spring", "boot"));
+	}
+
+	@Test
+	void pairFromMapEntryWithEmptyKey() {
+		assertThatIllegalArgumentException().isThrownBy(() -> Pair.fromMapEntry(entry("", "empty-key")));
+	}
+
+	@Test
+	void pairFromMapEntryWithNullKey() {
+		assertThatIllegalArgumentException().isThrownBy(() -> Pair.fromMapEntry(entry(null, "null-key")));
 	}
 
 }

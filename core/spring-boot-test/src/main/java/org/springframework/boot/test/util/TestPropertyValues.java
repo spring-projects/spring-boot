@@ -359,11 +359,15 @@ public final class TestPropertyValues {
 		 * Factory method to create a {@link Pair} from a {@code Map.Entry}.
 		 * @param entry the map entry
 		 * @return the {@link Pair} instance or {@code null}
+		 * @throws IllegalArgumentException if the entry key is null or empty
 		 * @since 2.4.0
 		 */
 		@Contract("!null -> !null")
 		public static @Nullable Pair fromMapEntry(Map.@Nullable Entry<String, String> entry) {
-			return (entry != null) ? of(entry.getKey(), entry.getValue()) : null;
+			if (entry != null) {
+				return new Pair(entry.getKey(), entry.getValue());
+			}
+			return null;
 		}
 
 		/**
