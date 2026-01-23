@@ -205,7 +205,8 @@ By default, responses are compressed only if their content type is one of the fo
 * `application/json`
 * `application/xml`
 
-You can configure this behavior by setting the configprop:server.compression.mime-types[] property.
+To configure the mime types that will be compressed, replacing the defaults, set the configprop:server.compression.mime-types[] property.
+To keep the defaults and configure additional mime types, set the configprop:server.compression.additional-mime-types[] property instead.
 
 
 
