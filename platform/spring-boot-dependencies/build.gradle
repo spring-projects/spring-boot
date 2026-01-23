@@ -75,6 +75,21 @@ bom {
 			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-{version}")
 		}
 	}
+	library("ASM", "9.9") {
+		group("org.ow2.asm") {
+			modules = [
+				"asm",
+				"asm-analysis",
+				"asm-commons",
+				"asm-tree",
+				"asm-util"
+			]
+		}
+		links {
+			site("https://asm.ow2.io")
+			releaseNotes("https://gitlab.ow2.org/asm/asm/-/releases/{version}")
+		}
+	}
 	library("AspectJ", "1.9.25.1") {
 		group("org.aspectj") {
 			modules = [
