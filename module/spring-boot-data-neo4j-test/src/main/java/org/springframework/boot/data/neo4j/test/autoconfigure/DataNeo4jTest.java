@@ -48,9 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
  * usual test-related semantics (i.e. rollback by default). This feature is not supported
  * with reactive access so this should be disabled by annotating the test class with
  * {@code @Transactional(propagation = Propagation.NOT_SUPPORTED)}.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll

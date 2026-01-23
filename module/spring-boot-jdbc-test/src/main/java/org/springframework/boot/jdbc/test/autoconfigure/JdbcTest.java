@@ -54,9 +54,6 @@ import org.springframework.transaction.annotation.Transactional;
  * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
  * annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin

@@ -9,8 +9,7 @@ Spring Boot provides a javadoc:org.springframework.boot.test.context.SpringBootT
 The annotation works by xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.detecting-configuration[creating the javadoc:org.springframework.context.ApplicationContext[] used in your tests through javadoc:org.springframework.boot.SpringApplication[]].
 In addition to javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] a number of other annotations are also provided for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[testing more specific slices] of an application.
 
-TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 6, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
+TIP: There is no need to add `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
 
 By default, javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] will not start a server.
 You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] to further refine how your tests run:

@@ -42,9 +42,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Using this annotation only enables auto-configuration that is relevant to Data Casandra
  * tests. Similarly, component scanning is limited to Cassandra repositories and entities
  * ({@code @Table}).
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Artsiom Yudovin
  * @author Stephane Nicoll

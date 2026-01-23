@@ -50,9 +50,6 @@ import org.springframework.web.client.RestClient.Builder;
  * <ul>
  * <li>{@code JacksonModule}, if Jackson is available</li>
  * </ul>
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
