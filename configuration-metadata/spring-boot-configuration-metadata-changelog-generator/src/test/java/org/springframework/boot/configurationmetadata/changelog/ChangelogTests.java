@@ -39,7 +39,7 @@ class ChangelogTests {
 		assertThat(differences).isNotNull();
 		assertThat(differences.oldVersionNumber()).isEqualTo("1.0");
 		assertThat(differences.newVersionNumber()).isEqualTo("2.0");
-		assertThat(differences.differences()).hasSize(7);
+		assertThat(differences.differences()).hasSize(9);
 		List<Difference> added = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.ADDED)
@@ -65,6 +65,13 @@ class ChangelogTests {
 		assertThat(deprecated).hasSize(1);
 		assertProperty(deprecated.get(0).oldProperty(), "test.deprecate", String.class, "wrong");
 		assertProperty(deprecated.get(0).newProperty(), "test.deprecate", String.class, "wrong");
+		List<Difference> defaultValueChanged = differences.differences()
+			.stream()
+			.filter((difference) -> difference.type() == DifferenceType.DEFAULT_VALUE_CHANGED)
+			.toList();
+		assertThat(defaultValueChanged).hasSize(2)
+			.anySatisfy((entry) -> assertProperty(entry.newProperty(), "test.default.change", String.class, "new"))
+			.anySatisfy((entry) -> assertThat(entry.newProperty().getId()).isEqualTo("test.array.change"));
 	}
 
 	private void assertProperty(ConfigurationMetadataProperty property, String id, Class<?> type, Object defaultValue) {

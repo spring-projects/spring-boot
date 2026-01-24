@@ -68,6 +68,8 @@ class ChangelogWriter implements AutoCloseable {
 		String newVersionNumber = changelog.newVersionNumber();
 		Map<DifferenceType, List<Difference>> differencesByType = collateByType(changelog);
 		write("Configuration property changes between `%s` and `%s`%n", oldVersionNumber, newVersionNumber);
+		write("%n%n%n== Default Value Changed in %s%n%n", newVersionNumber);
+		writeDefaultValueChanged(differencesByType.get(DifferenceType.DEFAULT_VALUE_CHANGED));
 		write("%n%n%n== Deprecated in %s%n%n", newVersionNumber);
 		writeDeprecated(differencesByType.get(DifferenceType.DEPRECATED));
 		write("%n%n%n== Added in %s%n%n", newVersionNumber);
@@ -96,6 +98,17 @@ class ChangelogWriter implements AutoCloseable {
 
 	private void writeDeprecated(Difference difference) {
 		writeDeprecatedPropertyRow(difference.newProperty());
+	}
+
+	private void writeDefaultValueChanged(List<Difference> differences) {
+		List<Difference> rows = sortProperties(differences, Difference::newProperty);
+		writeTable("| Key | Old Default | New Default", rows, this::writeDefaultValueChanged);
+	}
+
+	private void writeDefaultValueChanged(Difference difference) {
+		writeCell(monospace(difference.newProperty().getId()));
+		writeCell(monospace(asString(difference.oldProperty().getDefaultValue())));
+		writeCell(monospace(asString(difference.newProperty().getDefaultValue())));
 	}
 
 	private void writeAdded(List<Difference> differences) {
