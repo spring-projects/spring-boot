@@ -44,6 +44,12 @@ class ProcessInfoTests {
 		assertThat(processInfo.getPid()).isEqualTo(ProcessHandle.current().pid());
 		assertThat(processInfo.getParentPid())
 			.isEqualTo(ProcessHandle.current().parent().map(ProcessHandle::pid).orElse(null));
+		assertThat(processInfo.getUptime()).isPositive();
+		assertThat(processInfo.getStartTime()).isInThePast();
+		assertThat(processInfo.getCurrentTime()).isAfter(processInfo.getStartTime());
+		assertThat(processInfo.getTimezone()).isNotNull();
+		assertThat(processInfo.getLocale()).isNotNull();
+		assertThat(processInfo.getWorkingDirectory()).isNotBlank();
 	}
 
 	@Test

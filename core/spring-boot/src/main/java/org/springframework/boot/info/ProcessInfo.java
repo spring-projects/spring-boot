@@ -22,7 +22,12 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.PlatformManagedObject;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
 
@@ -50,11 +55,23 @@ public class ProcessInfo {
 
 	private final @Nullable String owner;
 
+	private final @Nullable Instant startTime;
+
+	private final ZoneId timezone;
+
+	private final Locale locale;
+
+	private final String workingDirectory;
+
 	public ProcessInfo() {
 		ProcessHandle process = ProcessHandle.current();
 		this.pid = process.pid();
 		this.parentPid = process.parent().map(ProcessHandle::pid).orElse(-1L);
 		this.owner = process.info().user().orElse(null);
+		this.startTime = process.info().startInstant().orElse(null);
+		this.timezone = ZoneId.systemDefault();
+		this.locale = Locale.getDefault();
+		this.workingDirectory = Path.of(".").toAbsolutePath().normalize().toString();
 	}
 
 	/**
@@ -131,6 +148,57 @@ public class ProcessInfo {
 
 	public @Nullable String getOwner() {
 		return this.owner;
+	}
+
+	/**
+	 * The uptime of the process can be useful to see how long the process has been
+	 * running and to check how long ago the last deployment or restart happened.
+	 * @return duration since the process started if available, null otherwise
+	 */
+	public @Nullable Duration getUptime() {
+		return (this.startTime != null) ? Duration.between(this.startTime, Instant.now()) : null;
+	}
+
+	/**
+	 * The start time of the process can be useful to see when the process was started and
+	 * to check when the last deployment or restart happened.
+	 * @return the time when the process started if available, null otherwise
+	 */
+	public @Nullable Instant getStartTime() {
+		return this.startTime;
+	}
+
+	/**
+	 * The current time can be useful to check if there is any clock-skew issue and if the
+	 * current time that the process knows is accurate enough.
+	 * @return the current time of the process
+	 */
+	public Instant getCurrentTime() {
+		return Instant.now();
+	}
+
+	/**
+	 * The timezone can help to detect time and timezone related issues.
+	 * @return the timezone of the process, e.g.: America/Los_Angeles
+	 */
+	public ZoneId getTimezone() {
+		return this.timezone;
+	}
+
+	/**
+	 * The locale can help to detect issues connected to language and country settings.
+	 * @return the locale of the process, e.g.: en_US
+	 */
+	public Locale getLocale() {
+		return this.locale;
+	}
+
+	/**
+	 * The working directory can help to locate files that the process uses.
+	 * @return the absolute path of the working directory of the process
+	 */
+	public String getWorkingDirectory() {
+		return this.workingDirectory;
 	}
 
 	/**
