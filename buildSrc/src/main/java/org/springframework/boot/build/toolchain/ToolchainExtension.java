@@ -22,7 +22,6 @@ import org.gradle.api.provider.Property;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 import org.springframework.boot.build.SystemRequirementsExtension;
-import org.springframework.boot.build.SystemRequirementsExtension.JavaSpec;
 
 /**
  * DSL extension for {@link ToolchainPlugin}.
@@ -36,9 +35,10 @@ public abstract class ToolchainExtension {
 	public ToolchainExtension(Project project) {
 		String toolchainVersion = (String) project.findProperty("toolchainVersion");
 		this.javaVersion = (toolchainVersion != null) ? JavaLanguageVersion.of(toolchainVersion) : null;
-		JavaSpec javaSpec = project.getExtensions().getByType(SystemRequirementsExtension.class).getJava();
+		SystemRequirementsExtension systemRequirements = project.getExtensions()
+			.getByType(SystemRequirementsExtension.class);
 		getMinimumCompatibleJavaVersion()
-			.convention(project.provider(() -> JavaLanguageVersion.of(javaSpec.getVersion())));
+			.convention(project.provider(() -> JavaLanguageVersion.of(systemRequirements.getJava().getVersion())));
 	}
 
 	public abstract Property<JavaLanguageVersion> getMinimumCompatibleJavaVersion();

@@ -19,10 +19,7 @@ package org.springframework.boot.build;
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
-import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.plugins.JavaPluginExtension;
-import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 /**
  * DSL extension for configuring a project's system requirements.
@@ -34,8 +31,8 @@ public class SystemRequirementsExtension {
 	private final JavaSpec javaSpec;
 
 	@Inject
-	public SystemRequirementsExtension(Project project, ObjectFactory objects) {
-		this.javaSpec = objects.newInstance(JavaSpec.class, project);
+	public SystemRequirementsExtension(ObjectFactory objects) {
+		this.javaSpec = objects.newInstance(JavaSpec.class);
 	}
 
 	public void java(Action<JavaSpec> action) {
@@ -48,24 +45,13 @@ public class SystemRequirementsExtension {
 
 	public abstract static class JavaSpec {
 
-		private final Project project;
-
 		private int version = 17;
-
-		@Inject
-		public JavaSpec(Project project) {
-			this.project = project;
-		}
 
 		public int getVersion() {
 			return this.version;
 		}
 
 		public void setVersion(int version) {
-			JavaLanguageVersion javaVersion = JavaLanguageVersion.of(version);
-			JavaPluginExtension javaPluginExtension = this.project.getExtensions().getByType(JavaPluginExtension.class);
-			javaPluginExtension.setSourceCompatibility(javaVersion);
-			javaPluginExtension.setTargetCompatibility(javaVersion);
 			this.version = version;
 		}
 

@@ -46,7 +46,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		SystemRequirementsExtension systemRequirements = project.getExtensions()
 			.create("systemRequirements", SystemRequirementsExtension.class);
 		new NoHttpConventions().apply(project);
-		new JavaConventions(systemRequirements.getJava()).apply(project);
+		new JavaConventions(systemRequirements).apply(project);
 		new MavenPublishingConventions().apply(project);
 		new AntoraConventions().apply(project);
 		new KotlinConventions().apply(project);
