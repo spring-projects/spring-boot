@@ -49,6 +49,7 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ObjectUtils;
 
 /**
  * A container object which Binds objects from one or more
@@ -435,14 +436,16 @@ public class Binder {
 			}
 			catch (ConverterNotFoundException ex) {
 				// We might still be able to bind it using the recursive binders
-				Object instance = bindDataObject(name, target, handler, context, allowRecursiveBinding);
+				boolean fallbackToDefaultValue = ObjectUtils.isEmpty(property.getValue());
+				Object instance = bindDataObject(name, target, handler, context, allowRecursiveBinding,
+						fallbackToDefaultValue);
 				if (instance != null) {
 					return instance;
 				}
 				throw ex;
 			}
 		}
-		return bindDataObject(name, target, handler, context, allowRecursiveBinding);
+		return bindDataObject(name, target, handler, context, allowRecursiveBinding, false);
 	}
 
 	private @Nullable AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
@@ -493,7 +496,7 @@ public class Binder {
 	}
 
 	private @Nullable Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
-			Context context, boolean allowRecursiveBinding) {
+			Context context, boolean allowRecursiveBinding, boolean fallbackToDefaultValue) {
 		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
@@ -505,7 +508,8 @@ public class Binder {
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
 		Supplier<@Nullable Object> supplier = () -> fromDataObjectBinders(bindMethod,
-				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder));
+				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder,
+						fallbackToDefaultValue));
 		return context.withDataObject(type, supplier);
 	}
 

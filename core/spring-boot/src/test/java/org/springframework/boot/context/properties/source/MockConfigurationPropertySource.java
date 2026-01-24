@@ -52,15 +52,15 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 		configs.forEach(this::put);
 	}
 
-	public void put(String name, String value) {
+	public void put(String name, @Nullable String value) {
 		put(ConfigurationPropertyName.of(name), value);
 	}
 
-	public void put(ConfigurationPropertyName name, String value) {
+	public void put(ConfigurationPropertyName name, @Nullable String value) {
 		put(name, OriginTrackedValue.of(value));
 	}
 
-	private void put(ConfigurationPropertyName name, OriginTrackedValue value) {
+	private void put(ConfigurationPropertyName name, @Nullable OriginTrackedValue value) {
 		this.map.put(name, value);
 	}
 

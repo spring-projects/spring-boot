@@ -40,10 +40,12 @@ interface DataObjectBinder {
 	 * @param target the bindable to bind
 	 * @param context the bind context
 	 * @param propertyBinder property binder
+	 * @param fallbackToDefaultValue if an attempt should be made to return a new default
+	 * value when no values are bound
 	 * @return a bound instance or {@code null}
 	 */
 	<T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
-			DataObjectPropertyBinder propertyBinder);
+			DataObjectPropertyBinder propertyBinder, boolean fallbackToDefaultValue);
 
 	/**
 	 * Return a newly created instance or {@code null} if the {@link DataObjectBinder}

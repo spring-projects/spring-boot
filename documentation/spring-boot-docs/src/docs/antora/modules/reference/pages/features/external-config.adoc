@@ -866,14 +866,6 @@ Unless your record has multiple constructors, there is no need to use javadoc:or
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
 
-Default values can be specified using javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] on constructor parameters and record components.
-The conversion service will be applied to coerce the annotation's javadoc:java.lang.String[] value to the target type of a missing property.
-
-Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
-To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
-
-include-code::nonnull/MyProperties[tag=*]
-
 NOTE: To use constructor binding the class must be enabled using javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example javadoc:org.springframework.stereotype.Component[format=annotation] beans, beans created by using javadoc:org.springframework.context.annotation.Bean[format=annotation] methods or beans loaded by using javadoc:org.springframework.context.annotation.Import[format=annotation])
 
@@ -885,6 +877,74 @@ As such, it is not well-suited to configuration property injection.
 For consistency with properties of other types, if you do declare an javadoc:java.util.Optional[] property and it has no value, `null` rather than an empty javadoc:java.util.Optional[] will be bound.
 
 TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the javadoc:org.springframework.boot.context.properties.bind.Name[format=annotation] annotation on the constructor parameter.
+
+
+
+[[features.external-config.typesafe-configuration-properties.constructor-binding.default-values]]
+==== Default Values
+
+Default values can be specified using javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] on constructor parameters and record components.
+The conversion service will be applied to coerce the annotation's javadoc:java.lang.String[] value to the target type of a missing property.
+
+In the `MyProperties` example above, you can see the nested `Security` class uses `@DefaultValue("USER")` for the `roles` parameter.
+This means that if `security` properties are defined, but `roles` is not, the default of `"USER"` will be bound.
+
+For example, the following properties:
+
+[configprops%novalidate,yaml]
+----
+my:
+  service:
+    enabled: true
+    security:
+      username: admin
+----
+
+Will be bound as `new MyProperties(true, null, new Security("admin", null, List.of("USER")))`
+
+If the `security` property is not present at all, then the `Security` instance will be `null`.
+
+For example, the following properties:
+
+[configprops%novalidate,yaml]
+----
+my:
+  service:
+    enabled: true
+----
+
+Will be bound as `new MyProperties(true, null, null)`
+
+[NOTE]
+====
+You can define an empty `security` property if you want to trigger binding with fully default `Security` instance.
+
+For YAML, you can use the following syntax:
+
+[,yaml]
+----
+my:
+  service:
+    enabled: true
+    security: {}
+----
+
+With `Properties` you can use:
+
+[,properties]
+----
+my.service.enabled=true
+my.service.security=
+----
+
+Will be bound as `new MyProperties(true, null, new Security(null, null, List.of("USER")))`
+====
+
+If you want to always bind a a non-null instance of `Security`, even when properties are missing, you can use use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
+
+include-code::nonnull/MyProperties[tag=*]
+
+TIP: When using Kotlin, you will need to declare the `username` and `password` parameters as nullable since they do not have default values
 
 
 

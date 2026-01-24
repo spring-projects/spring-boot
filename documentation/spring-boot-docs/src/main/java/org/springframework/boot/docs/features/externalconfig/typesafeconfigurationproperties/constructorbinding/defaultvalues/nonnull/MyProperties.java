@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.constructorbinding.nonnull;
+package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.constructorbinding.defaultvalues.nonnull;
 
 import java.net.InetAddress;
 import java.util.List;

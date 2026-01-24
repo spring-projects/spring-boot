@@ -75,7 +75,7 @@ class ValueObjectBinder implements DataObjectBinder {
 
 	@Override
 	public <T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
-			DataObjectPropertyBinder propertyBinder) {
+			DataObjectPropertyBinder propertyBinder, boolean fallbackToDefaultValue) {
 		ValueObject<T> valueObject = ValueObject.get(target, context, this.constructorProvider, Discoverer.LENIENT);
 		if (valueObject == null) {
 			return null;
@@ -94,7 +94,13 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 		context.clearConfigurationProperty();
 		context.popConstructorBoundTypes();
-		return bound ? valueObject.instantiate(args) : null;
+		if (bound) {
+			return valueObject.instantiate(args);
+		}
+		if (fallbackToDefaultValue) {
+			return getNewDefaultValueInstanceIfPossible(context, target.getType());
+		}
+		return null;
 	}
 
 	@Override
