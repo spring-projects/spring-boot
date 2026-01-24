@@ -47,6 +47,12 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "test.array.change",
+      "type": "java.lang.String[]",
+      "description": "Test array default value change.",
+      "defaultValue": ["a", "b"]
     }
   ]
 }

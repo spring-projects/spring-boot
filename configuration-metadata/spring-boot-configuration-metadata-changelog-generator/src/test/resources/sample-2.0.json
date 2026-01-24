@@ -66,6 +66,12 @@
         "replacement": "test.new.property",
         "reason": "removed in third-party library without deprecation"
       }
+    },
+    {
+      "name": "test.array.change",
+      "type": "java.lang.String[]",
+      "description": "Test array default value change.",
+      "defaultValue": ["a", "b", "c"]
     }
   ]
 }
