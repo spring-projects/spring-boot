@@ -40,6 +40,7 @@ subprojects {
 			}
 		}
 		spring.mavenRepositories()
+		maven { url = 'https://repo.spring.io/snapshot' }
 	}
 
 	configurations.all {
