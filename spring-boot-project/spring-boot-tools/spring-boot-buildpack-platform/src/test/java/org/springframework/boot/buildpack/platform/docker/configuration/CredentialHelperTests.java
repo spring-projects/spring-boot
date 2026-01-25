@@ -38,10 +38,20 @@ class CredentialHelperTests {
 
 	@BeforeAll
 	static void setUp() throws Exception {
-		String executableName = "docker-credential-test" + ((Platform.isWindows()) ? ".bat" : ".sh");
-		String executable = new ClassPathResource(executableName, CredentialHelperTests.class).getFile()
-			.getAbsolutePath();
-		helper = new CredentialHelper(executable);
+		helper = new CredentialHelper(getExecutableName());
+	}
+
+	private static String getExecutableName() throws Exception {
+		if (Platform.isWindows()) {
+			String executablePath = geExecutableAbsolutePath("docker-credential-test.bat");
+			// cmd /c must resolve automatically .bat suffix
+			return executablePath.substring(0, executablePath.lastIndexOf(".bat"));
+		}
+		return geExecutableAbsolutePath("docker-credential-test.sh");
+	}
+
+	private static String geExecutableAbsolutePath(String executableName) throws Exception {
+		return new ClassPathResource(executableName, CredentialHelperTests.class).getFile().getAbsolutePath();
 	}
 
 	@Test
