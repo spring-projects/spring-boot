@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
  *
  * @author Dmytro Nosan
  * @author Phillip Webb
+ * @author Khyojae
  */
 class CredentialHelper {
 
@@ -49,7 +51,9 @@ class CredentialHelper {
 		this.executable = executable;
 	}
 
-	@Nullable Credential get(String serverUrl) throws IOException {
+
+	@Nullable
+	Credential get(String serverUrl) throws IOException {
 		ProcessBuilder processBuilder = processBuilder("get");
 		Process process = start(processBuilder);
 		try (OutputStream request = process.getOutputStream()) {
@@ -79,7 +83,7 @@ class CredentialHelper {
 		if (Platform.isWindows()) {
 			processBuilder.command("cmd", "/c");
 		}
-		processBuilder.command(this.executable, action);
+		processBuilder.command().addAll(Arrays.asList(this.executable, action));
 		return processBuilder;
 	}
 
@@ -97,7 +101,6 @@ class CredentialHelper {
 				return processBuilder.command(command).start();
 			}
 			catch (Exception suppressed) {
-				// Suppresses the exception and rethrows the original exception
 				ex.addSuppressed(suppressed);
 				throw ex;
 			}
