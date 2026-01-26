@@ -46,10 +46,10 @@ class EclipseConventions {
 
 	void apply(Project project) {
 		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> configure(project, eclipse));
-		project.afterEvaluate(this::dunno);
+		project.afterEvaluate(this::setJavaRuntimeName);
 	}
 
-	private void dunno(Project project) {
+	private void setJavaRuntimeName(Project project) {
 		EclipseModel model = project.getExtensions().findByType(EclipseModel.class);
 		EclipseJdt jdt = (model != null) ? model.getJdt() : null;
 		if (jdt != null) {
