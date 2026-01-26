@@ -104,9 +104,12 @@ public class SslInfo {
 
 		private final List<CertificateChainInfo> certificateChains;
 
+		private final List<CertificateChainInfo> trustStoreCertificateChains;
+
 		private BundleInfo(String name, SslBundle sslBundle) {
 			this.name = name;
 			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
+			this.trustStoreCertificateChains = extractCertificateChains(sslBundle.getStores().getTrustStore());
 		}
 
 		private List<CertificateChainInfo> extractCertificateChains(@Nullable KeyStore keyStore) {
@@ -130,6 +133,10 @@ public class SslInfo {
 
 		public List<CertificateChainInfo> getCertificateChains() {
 			return this.certificateChains;
+		}
+
+		public List<CertificateChainInfo> getTrustStoreCertificateChains() {
+			return this.trustStoreCertificateChains;
 		}
 
 	}

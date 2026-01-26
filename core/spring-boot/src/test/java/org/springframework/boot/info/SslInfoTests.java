@@ -85,6 +85,7 @@ class SslInfoTests {
 		assertThat(cert2.getValidity()).isNotNull();
 		assertThat(cert2.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert2.getValidity().getMessage()).isNull();
+		assertThat(bundle.getTrustStoreCertificateChains()).isEmpty();
 	}
 
 	@Test
@@ -188,6 +189,40 @@ class SslInfoTests {
 		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
+		assertThat(sslInfo.getBundles().get(0).getTrustStoreCertificateChains()).isEmpty();
+	}
+
+	@Test
+	@WithPackageResources("test.p12")
+	void trustStoreCertificatesShouldProvideSslInfo() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		JksSslStoreDetails trustStoreDetails = JksSslStoreDetails.forLocation("classpath:test.p12")
+			.withPassword("secret");
+		SslStoreBundle sslStoreBundle = new JksSslStoreBundle(null, trustStoreDetails);
+		sslBundleRegistry.registerBundle("test-trust", SslBundle.of(sslStoreBundle));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
+		assertThat(sslInfo.getBundles()).hasSize(1);
+		BundleInfo bundle = sslInfo.getBundles().get(0);
+		assertThat(bundle.getName()).isEqualTo("test-trust");
+		assertThat(bundle.getCertificateChains()).isEmpty();
+		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificateChains().get(0).getAlias()).isEqualTo("spring-boot");
+		assertThat(bundle.getTrustStoreCertificateChains().get(1).getAlias()).isEqualTo("test-alias");
+	}
+
+	@Test
+	@WithPackageResources("test.p12")
+	void bothKeyStoreAndTrustStoreCertificatesShouldProvideSslInfo() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.p12").withPassword("secret");
+		SslStoreBundle sslStoreBundle = new JksSslStoreBundle(storeDetails, storeDetails);
+		sslBundleRegistry.registerBundle("test-both", SslBundle.of(sslStoreBundle));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
+		assertThat(sslInfo.getBundles()).hasSize(1);
+		BundleInfo bundle = sslInfo.getBundles().get(0);
+		assertThat(bundle.getName()).isEqualTo("test-both");
+		assertThat(bundle.getCertificateChains()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
 	}
 
 	private SslInfo createSslInfo(String... locations) {
