@@ -21,8 +21,6 @@ import java.util.Properties;
 import org.gradle.api.Task;
 import org.gradle.api.internal.PropertiesTransformer;
 import org.gradle.plugins.ide.api.PropertiesGeneratorTask;
-import org.gradle.plugins.ide.eclipse.model.EclipseJdt;
-import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.plugins.ide.internal.generator.PropertiesPersistableConfigurationObject;
 
 import org.springframework.boot.build.EclipseSynchronizeJdtSettings.Configuration;
@@ -41,10 +39,6 @@ public abstract class EclipseSynchronizeJdtSettings extends PropertiesGeneratorT
 
 	@Override
 	protected void configure(Configuration configuration) {
-		getProject().getExtensions().getByType(EclipseModel.class).jdt(this::setJavaRuntimeName);
-	}
-
-	private void setJavaRuntimeName(EclipseJdt jdt) {
 	}
 
 	static class Configuration extends PropertiesPersistableConfigurationObject {
