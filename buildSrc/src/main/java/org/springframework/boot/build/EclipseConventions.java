@@ -67,7 +67,7 @@ class EclipseConventions {
 	private void configureJdt(EclipseJdt jdt) {
 		jdt.setSourceCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
 		jdt.setTargetCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
-		jdt.setJavaRuntimeName("JavaSE-" + JavaConventions.BUILD_JAVA_VERSION);
+		jdt.setJavaRuntimeName("JavaSE-" + JavaConventions.RUNTIME_JAVA_VERSION);
 	}
 
 	private void configureClasspath(EclipseClasspath classpath) {
