@@ -38,8 +38,23 @@ import org.gradle.plugins.ide.eclipse.model.Library;
  */
 class EclipseConventions {
 
+	private final SystemRequirementsExtension systemRequirements;
+
+	EclipseConventions(SystemRequirementsExtension systemRequirements) {
+		this.systemRequirements = systemRequirements;
+	}
+
 	void apply(Project project) {
 		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> configure(project, eclipse));
+		project.afterEvaluate(this::dunno);
+	}
+
+	private void dunno(Project project) {
+		EclipseModel model = project.getExtensions().findByType(EclipseModel.class);
+		EclipseJdt jdt = (model != null) ? model.getJdt() : null;
+		if (jdt != null) {
+			model.getJdt().setJavaRuntimeName("JavaSE-" + this.systemRequirements.getJava().getVersion());
+		}
 	}
 
 	private DomainObjectCollection<JavaBasePlugin> configure(Project project, EclipsePlugin eclipsePlugin) {
@@ -67,7 +82,6 @@ class EclipseConventions {
 	private void configureJdt(EclipseJdt jdt) {
 		jdt.setSourceCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
 		jdt.setTargetCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
-		jdt.setJavaRuntimeName("JavaSE-" + JavaConventions.BUILD_JAVA_VERSION);
 	}
 
 	private void configureClasspath(EclipseClasspath classpath) {
