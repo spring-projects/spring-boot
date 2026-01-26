@@ -28,7 +28,7 @@ import org.gradle.plugins.ide.internal.generator.PropertiesPersistableConfigurat
 import org.springframework.boot.build.EclipseSynchronizeJdtSettings.Configuration;
 
 /**
- * {@link Task} to do something.
+ * {@link Task} to synchronize Eclipse JDT settings.
  *
  * @author Phillip Webb
  */
