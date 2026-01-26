@@ -18,6 +18,7 @@ package org.springframework.boot.build;
 
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.plugins.ide.api.XmlFileContentMerger;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.Classpath;
@@ -35,12 +36,27 @@ import org.gradle.plugins.ide.eclipse.model.Library;
 class EclipseConventions {
 
 	void apply(Project project) {
-		project.getPlugins()
-			.withType(EclipsePlugin.class,
-					(eclipse) -> project.getPlugins().withType(JavaBasePlugin.class, (javaBase) -> {
-						EclipseModel eclipseModel = project.getExtensions().getByType(EclipseModel.class);
-						eclipseModel.classpath(this::configureClasspath);
-					}));
+		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> configure(project, eclipse));
+	}
+
+	private void configure(Project project, EclipsePlugin eclipse) {
+		TaskProvider<?> synchronizeResourceSettings = registerEclipseSynchronizeResourceSettings(project);
+		project.getPlugins().withType(JavaBasePlugin.class, (javaBase) -> {
+			EclipseModel model = project.getExtensions().getByType(EclipseModel.class);
+			model.synchronizationTasks(synchronizeResourceSettings);
+			model.classpath(this::configureClasspath);
+		});
+	}
+
+	private TaskProvider<?> registerEclipseSynchronizeResourceSettings(Project project) {
+		TaskProvider<EclipseSynchronizeResourceSettings> eclipseSynchronizateResource = project.getTasks()
+			.register("eclipseSynchronizateResourceSettings", EclipseSynchronizeResourceSettings.class);
+		eclipseSynchronizateResource.configure((task) -> {
+			task.setDescription("Synchronizate the Eclipse resource settings file from Buildship.");
+			task.setOutputFile(project.file(".settings/org.eclipse.core.resources.prefs"));
+			task.setInputFile(project.file(".settings/org.eclipse.core.resources.prefs"));
+		});
+		return eclipseSynchronizateResource;
 	}
 
 	private void configureClasspath(EclipseClasspath classpath) {
