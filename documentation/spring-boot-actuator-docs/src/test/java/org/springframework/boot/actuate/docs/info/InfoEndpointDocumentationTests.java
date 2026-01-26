@@ -209,6 +209,40 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 					.type(JsonFieldType.STRING),
 				fieldWithPath("bundles[].certificateChains[].certificates[].signatureAlgorithmName")
 					.description("Signature algorithm name.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates").description("Certificate chains in the trust store.")
+					.type(JsonFieldType.ARRAY),
+				fieldWithPath("bundles[].trustStoreCertificates[].alias").description("Alias of the certificate chain.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates")
+					.description("Certificates in the chain.")
+					.type(JsonFieldType.ARRAY),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].subject")
+					.description("Subject of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].version")
+					.description("Version of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].issuer")
+					.description("Issuer of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validityStarts")
+					.description("Certificate validity start date.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].serialNumber")
+					.description("Serial number of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validityEnds")
+					.description("Certificate validity end date.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validity")
+					.description("Certificate validity information.")
+					.type(JsonFieldType.OBJECT),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validity.status")
+					.description("Certificate validity status.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].signatureAlgorithmName")
+					.description("Signature algorithm name.")
 					.type(JsonFieldType.STRING));
 	}
 
@@ -259,9 +293,9 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		SslInfo sslInfo() {
 			DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
-			JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("classpath:test.p12")
+			JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.p12")
 				.withPassword("secret");
-			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(storeDetails, storeDetails);
 			sslBundleRegistry.registerBundle("test-0", SslBundle.of(sslStoreBundle));
 			return new SslInfo(sslBundleRegistry);
 		}
