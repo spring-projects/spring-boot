@@ -31,6 +31,7 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.converter.JsonJobParametersConverter;
@@ -515,6 +516,19 @@ class BatchJdbcAutoConfigurationTests {
 	}
 
 	@Test
+	void whenTheUserDefinesAJobRegistry() {
+		this.contextRunner.withUserConfiguration(JobRegistryConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(BatchJdbcAutoConfiguration.class).hasBean("jobRegistry");
+				JobRegistry jobRegistry = context.getBean("jobRegistry", JobRegistry.class);
+				assertThat(context.getBean(SpringBootBatchJdbcConfiguration.class).getJobRegistry())
+					.isEqualTo(jobRegistry);
+				JobOperator jobOperator = AopTestUtils.getTargetObject(context.getBean(JobOperator.class));
+				assertThat(jobOperator).hasFieldOrPropertyWithValue("jobRegistry", jobRegistry);
+			});
+	}
+
+	@Test
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	void customJobParametersConverterIsUsed() {
@@ -819,6 +833,16 @@ class BatchJdbcAutoConfigurationTests {
 		@Order(2)
 		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
 			return mock(BatchConversionServiceCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JobRegistryConfiguration {
+
+		@Bean
+		JobRegistry jobRegistry() {
+			return new MapJobRegistry();
 		}
 
 	}

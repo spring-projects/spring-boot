@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
@@ -93,6 +94,8 @@ public final class BatchJdbcAutoConfiguration {
 
 		private final @Nullable JobParametersConverter jobParametersConverter;
 
+		private final @Nullable JobRegistry jobRegistry;
+
 		SpringBootBatchJdbcConfiguration(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
@@ -100,7 +103,8 @@ public final class BatchJdbcAutoConfiguration {
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor, BatchJdbcProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
 				ObjectProvider<ExecutionContextSerializer> executionContextSerializer,
-				ObjectProvider<JobParametersConverter> jobParametersConverter) {
+				ObjectProvider<JobParametersConverter> jobParametersConverter,
+				ObjectProvider<JobRegistry> jobRegistry) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
@@ -108,6 +112,7 @@ public final class BatchJdbcAutoConfiguration {
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
 			this.jobParametersConverter = jobParametersConverter.getIfAvailable();
+			this.jobRegistry = jobRegistry.getIfAvailable();
 		}
 
 		@Override
@@ -163,6 +168,11 @@ public final class BatchJdbcAutoConfiguration {
 		@Override
 		protected TaskExecutor getTaskExecutor() {
 			return (this.taskExecutor != null) ? this.taskExecutor : super.getTaskExecutor();
+		}
+
+		@Override
+		protected JobRegistry getJobRegistry() {
+			return (this.jobRegistry != null) ? this.jobRegistry : super.getJobRegistry();
 		}
 
 		@Configuration(proxyBeanMethods = false)

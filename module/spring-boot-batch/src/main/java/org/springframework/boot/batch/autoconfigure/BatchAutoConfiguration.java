@@ -18,6 +18,7 @@ package org.springframework.boot.batch.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.converter.JobParametersConverter;
@@ -51,10 +52,14 @@ public final class BatchAutoConfiguration {
 
 		private final @Nullable JobParametersConverter jobParametersConverter;
 
+		private final @Nullable JobRegistry jobRegistry;
+
 		SpringBootBatchDefaultConfiguration(@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
-				ObjectProvider<JobParametersConverter> jobParametersConverter) {
+				ObjectProvider<JobParametersConverter> jobParametersConverter,
+				ObjectProvider<JobRegistry> jobRegistry) {
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.jobParametersConverter = jobParametersConverter.getIfAvailable();
+			this.jobRegistry = jobRegistry.getIfAvailable();
 		}
 
 		@Override
@@ -68,6 +73,11 @@ public final class BatchAutoConfiguration {
 		@Override
 		protected TaskExecutor getTaskExecutor() {
 			return (this.taskExecutor != null) ? this.taskExecutor : super.getTaskExecutor();
+		}
+
+		@Override
+		protected JobRegistry getJobRegistry() {
+			return (this.jobRegistry != null) ? this.jobRegistry : super.getJobRegistry();
 		}
 
 	}
