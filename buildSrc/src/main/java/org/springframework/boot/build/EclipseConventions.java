@@ -40,22 +40,22 @@ class EclipseConventions {
 
 	void apply(Project project) {
 		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> configure(project, eclipse));
+		project.afterEvaluate(this::setJavaRuntimeName);
 	}
 
 	private DomainObjectCollection<JavaBasePlugin> configure(Project project, EclipsePlugin eclipsePlugin) {
-		TaskProvider<EclipseSynchronizeJdtSettings> eclipseSynchronizeJdtSettings = registerEclipseSynchronizeJdtSettingsTask(
-				project);
+		TaskProvider<?> synchronizeJdtSettings = registerEclipseSynchronizeJdtSettings(project);
 		return project.getPlugins().withType(JavaBasePlugin.class, (javaBase) -> {
 			EclipseModel model = project.getExtensions().getByType(EclipseModel.class);
-			model.synchronizationTasks(eclipseSynchronizeJdtSettings);
+			model.synchronizationTasks(synchronizeJdtSettings);
 			model.jdt(this::configureJdt);
 			model.classpath(this::configureClasspath);
 		});
 	}
 
-	private TaskProvider<EclipseSynchronizeJdtSettings> registerEclipseSynchronizeJdtSettingsTask(Project project) {
+	private TaskProvider<EclipseSynchronizeJdtSettings> registerEclipseSynchronizeJdtSettings(Project project) {
 		TaskProvider<EclipseSynchronizeJdtSettings> taskProvider = project.getTasks()
-			.register("eclipseSynchronizateJdt", EclipseSynchronizeJdtSettings.class);
+			.register("eclipseSynchronizeJdtSettings", EclipseSynchronizeJdtSettings.class);
 		taskProvider.configure((task) -> {
 			task.setDescription("Synchronizate the Eclipse JDT settings file from Buildship.");
 			task.setOutputFile(project.file(".settings/org.eclipse.jdt.core.prefs"));
@@ -80,6 +80,14 @@ class EclipseConventions {
 				classpath.getEntries().removeIf(this::isKotlinPluginContributedBuildDirectory);
 			}
 		});
+	}
+
+	private void setJavaRuntimeName(Project project) {
+		EclipseModel model = project.getExtensions().findByType(EclipseModel.class);
+		EclipseJdt jdt = (model != null) ? model.getJdt() : null;
+		if (jdt != null) {
+			model.getJdt().setJavaRuntimeName("JavaSE-" + JavaConventions.RUNTIME_JAVA_VERSION);
+		}
 	}
 
 	private boolean isKotlinPluginContributedBuildDirectory(ClasspathEntry entry) {
