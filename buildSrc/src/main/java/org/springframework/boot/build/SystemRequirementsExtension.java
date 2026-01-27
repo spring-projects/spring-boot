@@ -52,7 +52,6 @@ public class SystemRequirementsExtension {
 		}
 
 		public void setVersion(int version) {
-			System.err.println(">>>> SET " + version);
 			this.version = version;
 		}
 
