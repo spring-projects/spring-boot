@@ -38,24 +38,42 @@ import org.gradle.plugins.ide.eclipse.model.Library;
  */
 class EclipseConventions {
 
+	private final SystemRequirementsExtension systemRequirements;
+
+	EclipseConventions(SystemRequirementsExtension systemRequirements) {
+		this.systemRequirements = systemRequirements;
+	}
+
 	void apply(Project project) {
 		project.getPlugins().withType(EclipsePlugin.class, (eclipse) -> configure(project, eclipse));
+		project.afterEvaluate(this::setJavaRuntimeName);
 	}
 
 	private DomainObjectCollection<JavaBasePlugin> configure(Project project, EclipsePlugin eclipsePlugin) {
-		TaskProvider<EclipseSynchronizeJdtSettings> eclipseSynchronizeJdtSettings = registerEclipseSynchronizeJdtSettingsTask(
-				project);
+		TaskProvider<?> synchronizeResourceSettings = registerEclipseSynchronizeResourceSettings(project);
+		TaskProvider<?> synchronizeJdtSettings = registerEclipseSynchronizeJdtSettings(project);
 		return project.getPlugins().withType(JavaBasePlugin.class, (javaBase) -> {
 			EclipseModel model = project.getExtensions().getByType(EclipseModel.class);
-			model.synchronizationTasks(eclipseSynchronizeJdtSettings);
+			model.synchronizationTasks(synchronizeResourceSettings, synchronizeJdtSettings);
 			model.jdt(this::configureJdt);
 			model.classpath(this::configureClasspath);
 		});
 	}
 
-	private TaskProvider<EclipseSynchronizeJdtSettings> registerEclipseSynchronizeJdtSettingsTask(Project project) {
+	private TaskProvider<?> registerEclipseSynchronizeResourceSettings(Project project) {
+		TaskProvider<EclipseSynchronizeResourceSettings> eclipseSynchronizateResource = project.getTasks()
+			.register("eclipseSynchronizateResourceSettings", EclipseSynchronizeResourceSettings.class);
+		eclipseSynchronizateResource.configure((task) -> {
+			task.setDescription("Synchronizate the Eclipse resource settings file from Buildship.");
+			task.setOutputFile(project.file(".settings/org.eclipse.core.resources.prefs"));
+			task.setInputFile(project.file(".settings/org.eclipse.core.resources.prefs"));
+		});
+		return eclipseSynchronizateResource;
+	}
+
+	private TaskProvider<EclipseSynchronizeJdtSettings> registerEclipseSynchronizeJdtSettings(Project project) {
 		TaskProvider<EclipseSynchronizeJdtSettings> taskProvider = project.getTasks()
-			.register("eclipseSynchronizateJdt", EclipseSynchronizeJdtSettings.class);
+			.register("eclipseSynchronizeJdtSettings", EclipseSynchronizeJdtSettings.class);
 		taskProvider.configure((task) -> {
 			task.setDescription("Synchronizate the Eclipse JDT settings file from Buildship.");
 			task.setOutputFile(project.file(".settings/org.eclipse.jdt.core.prefs"));
@@ -67,7 +85,6 @@ class EclipseConventions {
 	private void configureJdt(EclipseJdt jdt) {
 		jdt.setSourceCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
 		jdt.setTargetCompatibility(JavaVersion.toVersion(JavaConventions.RUNTIME_JAVA_VERSION));
-		jdt.setJavaRuntimeName("JavaSE-" + JavaConventions.BUILD_JAVA_VERSION);
 	}
 
 	private void configureClasspath(EclipseClasspath classpath) {
@@ -80,6 +97,14 @@ class EclipseConventions {
 				classpath.getEntries().removeIf(this::isKotlinPluginContributedBuildDirectory);
 			}
 		});
+	}
+
+	private void setJavaRuntimeName(Project project) {
+		EclipseModel model = project.getExtensions().findByType(EclipseModel.class);
+		EclipseJdt jdt = (model != null) ? model.getJdt() : null;
+		if (jdt != null) {
+			model.getJdt().setJavaRuntimeName("JavaSE-" + this.systemRequirements.getJava().getVersion());
+		}
 	}
 
 	private boolean isKotlinPluginContributedBuildDirectory(ClasspathEntry entry) {

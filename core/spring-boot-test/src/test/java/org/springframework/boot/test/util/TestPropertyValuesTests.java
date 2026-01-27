@@ -200,8 +200,8 @@ class TestPropertyValuesTests {
 	}
 
 	@Test
-	void pairOfWhenNameAndValueAreEmptyReturnsNull() {
-		assertThat(Pair.of("", "")).isNull();
+	void pairOfWhenNameAndValueAreEmptyReturnsPair() {
+		assertThat(Pair.of("", "")).isNotNull();
 	}
 
 	@Test
@@ -211,6 +211,15 @@ class TestPropertyValuesTests {
 		assertThat(pair).isNotNull();
 		pair.addTo(map);
 		assertThat(map).containsOnly(entry("spring", "boot"));
+	}
+
+	@Test
+	void pairFromMapEntryWithEmptyKeyCreatesPair() {
+		Map<String, @Nullable Object> map = new LinkedHashMap<>();
+		Pair pair = Pair.fromMapEntry(entry("", "empty-key"));
+		assertThat(pair).isNotNull();
+		pair.addTo(map);
+		assertThat(map).containsOnly(entry("", "empty-key"));
 	}
 
 }

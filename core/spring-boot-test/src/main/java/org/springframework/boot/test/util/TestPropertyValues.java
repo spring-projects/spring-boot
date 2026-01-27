@@ -39,7 +39,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
-import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -327,7 +326,6 @@ public final class TestPropertyValues {
 		private final @Nullable String value;
 
 		private Pair(String name, @Nullable String value) {
-			Assert.hasLength(name, "'name' must not be empty");
 			this.name = name;
 			this.value = value;
 		}
@@ -336,7 +334,7 @@ public final class TestPropertyValues {
 			properties.put(this.name, this.value);
 		}
 
-		public static @Nullable Pair parse(String pair) {
+		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
 			String name = (index > 0) ? pair.substring(0, index) : pair;
 			String value = (index > 0) ? pair.substring(index + 1) : "";
@@ -361,23 +359,19 @@ public final class TestPropertyValues {
 		 * @return the {@link Pair} instance or {@code null}
 		 * @since 2.4.0
 		 */
-		@Contract("!null -> !null")
-		public static @Nullable Pair fromMapEntry(Map.@Nullable Entry<String, String> entry) {
-			return (entry != null) ? of(entry.getKey(), entry.getValue()) : null;
+		public static Pair fromMapEntry(Map.Entry<String, @Nullable String> entry) {
+			return of(entry.getKey(), entry.getValue());
 		}
 
 		/**
 		 * Factory method to create a {@link Pair} from a name and value.
 		 * @param name the name
 		 * @param value the value
-		 * @return the {@link Pair} instance or {@code null}
+		 * @return the {@link Pair}
 		 * @since 2.4.0
 		 */
-		public static @Nullable Pair of(@Nullable String name, @Nullable String value) {
-			if (StringUtils.hasLength(name)) {
-				return new Pair(name, value);
-			}
-			return null;
+		public static Pair of(String name, @Nullable String value) {
+			return new Pair(name, value);
 		}
 
 	}
@@ -387,14 +381,14 @@ public final class TestPropertyValues {
 	 */
 	private class SystemPropertiesHandler implements Closeable {
 
-		private final Map<String, String> previous;
+		private final Map<String, @Nullable String> previous;
 
 		SystemPropertiesHandler() {
 			this.previous = apply(TestPropertyValues.this.properties);
 		}
 
-		private Map<String, String> apply(Map<String, ?> properties) {
-			Map<String, String> previous = new LinkedHashMap<>();
+		private Map<String, @Nullable String> apply(Map<String, @Nullable Object> properties) {
+			Map<String, @Nullable String> previous = new LinkedHashMap<>();
 			properties.forEach((name, value) -> previous.put(name, setOrClear(name, (String) value)));
 			return previous;
 		}
@@ -404,7 +398,7 @@ public final class TestPropertyValues {
 			this.previous.forEach(this::setOrClear);
 		}
 
-		private String setOrClear(String name, String value) {
+		private @Nullable String setOrClear(String name, @Nullable String value) {
 			Assert.notNull(name, "'name' must not be null");
 			if (!StringUtils.hasLength(value)) {
 				return (String) System.getProperties().remove(name);

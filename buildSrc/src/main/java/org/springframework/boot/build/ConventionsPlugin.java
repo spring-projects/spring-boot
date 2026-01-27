@@ -51,7 +51,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new AntoraConventions().apply(project);
 		new KotlinConventions().apply(project);
 		new WarConventions().apply(project);
-		new EclipseConventions().apply(project);
+		new EclipseConventions(systemRequirements).apply(project);
 		new TestFixturesConventions().apply(project);
 		RepositoryTransformersExtension.apply(project);
 	}

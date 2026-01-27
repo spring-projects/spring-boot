@@ -436,7 +436,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * becoming the object under test.
 	 * <p>
 	 * Example: <pre class="code">
-	 * assertThat(context).getFailure().containsMessage("missing bean");
+	 * assertThat(context).getFailure().hasMessageContaining("missing bean");
 	 * </pre>
 	 * @return assertions on the cause of the failure
 	 * @throws AssertionError if the application context started without a failure
