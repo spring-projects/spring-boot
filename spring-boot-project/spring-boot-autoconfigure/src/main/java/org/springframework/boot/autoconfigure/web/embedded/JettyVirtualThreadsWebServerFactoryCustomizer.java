@@ -20,6 +20,7 @@ import org.eclipse.jetty.util.VirtualThreads;
 import org.eclipse.jetty.util.thread.VirtualThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Threads;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
@@ -35,18 +36,24 @@ import org.springframework.util.Assert;
 public class JettyVirtualThreadsWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
-	public JettyVirtualThreadsWebServerFactoryCustomizer() {
+	private final ServerProperties serverProperties;
 
+	/**
+	 * Create a new JettyVirtualThreadsWebServerFactoryCustomizer.
+	 * @deprecated since 3.5.11 for removal in 4.2.0 in favor of
+	 * {@link #JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties)}
+	 */
+	@Deprecated(since = "3.5.11", forRemoval = true)
+	public JettyVirtualThreadsWebServerFactoryCustomizer() {
+		this(null);
 	}
 
 	/**
 	 * Create a new JettyVirtualThreadsWebServerFactoryCustomizer.
-	 * @param serverProperties server properties
-	 * @deprecated since 3.4.12 for removal in 4.0.0 in favor of
-	 * {@link JettyVirtualThreadsWebServerFactoryCustomizer}.
+	 * @param serverProperties the server properties
 	 */
-	@Deprecated(since = "3.4.12", forRemoval = true)
 	public JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties serverProperties) {
+		this.serverProperties = serverProperties;
 	}
 
 	@Override
@@ -54,6 +61,11 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
 		VirtualThreadPool virtualThreadPool = new VirtualThreadPool();
 		virtualThreadPool.setName("jetty-");
+		if (this.serverProperties != null) {
+			Threads properties = this.serverProperties.getJetty().getThreads();
+			int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
+			virtualThreadPool.setMaxThreads(maxThreadCount);
+		}
 		factory.setThreadPool(virtualThreadPool);
 	}
 

@@ -83,16 +83,21 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	@ConditionalOnClass({ Server.class, Loader.class, WebAppContext.class })
 	public static class JettyWebServerFactoryCustomizerConfiguration {
 
+		private final ServerProperties serverProperties;
+
+		JettyWebServerFactoryCustomizerConfiguration(ServerProperties serverProperties) {
+			this.serverProperties = serverProperties;
+		}
+
 		@Bean
-		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
-				ServerProperties serverProperties) {
-			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
+		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment) {
+			return new JettyWebServerFactoryCustomizer(environment, this.serverProperties);
 		}
 
 		@Bean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer() {
-			return new JettyVirtualThreadsWebServerFactoryCustomizer();
+			return new JettyVirtualThreadsWebServerFactoryCustomizer(this.serverProperties);
 		}
 
 	}
