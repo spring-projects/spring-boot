@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
@@ -86,12 +85,9 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return DistributionStatisticConfig.builder()
 			.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
 			.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
-			.serviceLevelObjectives(
-					convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
-			.minimumExpectedValue(
-					convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
-			.maximumExpectedValue(
-					convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
+			.serviceLevelObjectives(convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id)))
+			.minimumExpectedValue(convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id)))
+			.maximumExpectedValue(convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id)))
 			.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
 			.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null))
 			.build()
@@ -114,21 +110,22 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 
-	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
+	private <T> T lookup(Map<String, T> values, Id id) {
 		if (values.isEmpty()) {
-			return defaultValue;
+			return null;
 		}
-		return doLookup(values, id, () -> defaultValue);
+		return doLookup(values, id);
 	}
 
 	private <T> T lookupWithFallbackToAll(Map<String, T> values, Id id, T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
-		return doLookup(values, id, () -> values.getOrDefault("all", defaultValue));
+		T result = doLookup(values, id);
+		return (result != null) ? result : values.getOrDefault("all", defaultValue);
 	}
 
-	private <T> T doLookup(Map<String, T> values, Id id, Supplier<T> defaultValue) {
+	private <T> T doLookup(Map<String, T> values, Id id) {
 		String name = id.getName();
 		while (StringUtils.hasLength(name)) {
 			T result = values.get(name);
@@ -139,7 +136,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 			name = (lastDot != -1) ? name.substring(0, lastDot) : "";
 		}
 
-		return defaultValue.get();
+		return null;
 	}
 
 }
