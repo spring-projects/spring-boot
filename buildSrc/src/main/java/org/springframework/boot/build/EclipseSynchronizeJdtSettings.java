@@ -21,7 +21,6 @@ import java.util.Properties;
 import org.gradle.api.Task;
 import org.gradle.api.internal.PropertiesTransformer;
 import org.gradle.plugins.ide.api.PropertiesGeneratorTask;
-import org.gradle.plugins.ide.internal.generator.PropertiesPersistableConfigurationObject;
 
 import org.springframework.boot.build.EclipseSynchronizeJdtSettings.Configuration;
 
@@ -41,19 +40,10 @@ public abstract class EclipseSynchronizeJdtSettings extends PropertiesGeneratorT
 	protected void configure(Configuration configuration) {
 	}
 
-	static class Configuration extends PropertiesPersistableConfigurationObject {
+	static class Configuration extends EmptyPropertiesPersistableConfigurationObject {
 
 		Configuration(PropertiesTransformer transformer) {
 			super(transformer);
-		}
-
-		@Override
-		protected String getDefaultResourceName() {
-			return null;
-		}
-
-		@Override
-		protected void load(Properties properties) {
 		}
 
 		@Override
