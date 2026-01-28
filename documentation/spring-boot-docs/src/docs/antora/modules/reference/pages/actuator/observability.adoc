@@ -162,6 +162,10 @@ include-code::AutoConfiguredOpenTelemetrySdkConfiguration[]
 The javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration[] configures OpenTelemetry's javadoc:io.opentelemetry.sdk.logs.SdkLoggerProvider[].
 Exporting logs via OTLP is supported through the javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration[], which enables OTLP log exporting over HTTP or gRPC.
 
+NOTE: If you need to apply advanced customizations to OTLP log record exporters, consider registering javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpHttpLogRecordExporterBuilderCustomizer[] or javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpGrpcLogRecordExporterBuilderCustomizer[] beans.
+These will be invoked before the creation of the javadoc:io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter[] or javadoc:io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter[].
+The customizers take precedence over anything applied by the auto-configuration.
+
 However, while there is a `SdkLoggerProvider` bean, Spring Boot doesn't support bridging logs to this bean out of the box.
 This can be done with 3rd-party log bridges, as described in the xref:reference:actuator/loggers.adoc#actuator.loggers.opentelemetry[Logging with OpenTelemetry] section.
 
