@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,17 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
 		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
 		assertThat(createAdapter().aggregationTemporality()).isSameAs(AggregationTemporality.DELTA);
+	}
+
+	@Test
+	void whenPropertiesCompressionModeIsNotSetAdapterCompressionModeReturnsNone() {
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.NONE);
+	}
+
+	@Test
+	void whenPropertiesCompressionModeIsSetAdapterCompressionModeReturnsIt() {
+		this.properties.setCompressionMode(CompressionMode.GZIP);
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.GZIP);
 	}
 
 	@Test
