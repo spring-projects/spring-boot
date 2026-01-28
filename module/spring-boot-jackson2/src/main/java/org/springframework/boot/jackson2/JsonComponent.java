@@ -58,7 +58,7 @@ import org.springframework.stereotype.Component;
  * @since 4.0.0
  * @author Phillip Webb
  * @author Paul Aly
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3 and
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3 and
  * {@link org.springframework.boot.jackson.JacksonComponent}.
  */
 @Target(ElementType.TYPE)

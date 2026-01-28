@@ -29,7 +29,7 @@ import org.jspecify.annotations.Nullable;
  * @author Stephane Nicoll
  * @since 4.0.0
  * @see JsonMixin
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3 and
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3 and
  * {@link org.springframework.boot.jackson.JacksonMixinModule}
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
