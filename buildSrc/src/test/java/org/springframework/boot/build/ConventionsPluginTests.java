@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Year;
 import java.util.Collections;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -177,6 +178,8 @@ class ConventionsPluginTests {
 		String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(notice)));
 		// Test that variables were replaced
 		assertThat(noticeContent).doesNotContain("${");
+		assertThat(noticeContent).contains("Spring Boot 1.2.3")
+			.contains("Copyright (c) 2012-%s VMware, Inc.".formatted(Year.now()));
 	}
 
 	@Test

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build;
 
+import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -150,6 +151,7 @@ class JavaConventions {
 				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 				task.getProperties().put("version", project.getVersion().toString());
+				task.getProperties().put("currentYear", String.valueOf(Year.now().getValue()));
 			});
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		Set<String> sourceJarTaskNames = sourceSets.stream()
