@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link JsonMixinModule}.
  *
  * @author Guirong Hu
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 @SuppressWarnings("removal")
