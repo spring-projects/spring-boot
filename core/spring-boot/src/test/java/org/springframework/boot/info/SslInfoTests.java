@@ -60,9 +60,9 @@ class SslInfoTests {
 		assertThat(bundle.getCertificateChains().get(1).getAlias()).isEqualTo("test-alias");
 		assertThat(bundle.getCertificateChains().get(1).getCertificates()).hasSize(1);
 		assertThat(bundle.getCertificateChains().get(2).getAlias()).isEqualTo("spring-boot-cert");
-		assertThat(bundle.getCertificateChains().get(2).getCertificates()).isEmpty();
+		assertThat(bundle.getCertificateChains().get(2).getCertificates()).hasSize(1);
 		assertThat(bundle.getCertificateChains().get(3).getAlias()).isEqualTo("test-alias-cert");
-		assertThat(bundle.getCertificateChains().get(3).getCertificates()).isEmpty();
+		assertThat(bundle.getCertificateChains().get(3).getCertificates()).hasSize(1);
 		CertificateInfo cert1 = bundle.getCertificateChains().get(0).getCertificates().get(0);
 		assertThat(cert1.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert1.getIssuer()).isEqualTo(cert1.getSubject());
@@ -85,7 +85,7 @@ class SslInfoTests {
 		assertThat(cert2.getValidity()).isNotNull();
 		assertThat(cert2.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert2.getValidity().getMessage()).isNull();
-		assertThat(bundle.getTrustStoreCertificateChains()).isEmpty();
+		assertThat(bundle.getTrustStoreCertificates()).isEmpty();
 	}
 
 	@Test
@@ -150,7 +150,7 @@ class SslInfoTests {
 			.flatMap((bundle) -> bundle.getCertificateChains().stream())
 			.flatMap((certificateChain) -> certificateChain.getCertificates().stream())
 			.toList();
-		assertThat(certs).hasSize(5);
+		assertThat(certs).hasSize(7);
 		assertThat(certs).allSatisfy((cert) -> {
 			assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 			assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
@@ -189,7 +189,7 @@ class SslInfoTests {
 		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
-		assertThat(sslInfo.getBundles().get(0).getTrustStoreCertificateChains()).isEmpty();
+		assertThat(sslInfo.getBundles().get(0).getTrustStoreCertificates()).isEmpty();
 	}
 
 	@Test
@@ -205,9 +205,9 @@ class SslInfoTests {
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-trust");
 		assertThat(bundle.getCertificateChains()).isEmpty();
-		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
-		assertThat(bundle.getTrustStoreCertificateChains().get(0).getAlias()).isEqualTo("spring-boot");
-		assertThat(bundle.getTrustStoreCertificateChains().get(1).getAlias()).isEqualTo("test-alias");
+		assertThat(bundle.getTrustStoreCertificates()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificates().get(0).getAlias()).isEqualTo("spring-boot");
+		assertThat(bundle.getTrustStoreCertificates().get(1).getAlias()).isEqualTo("test-alias");
 	}
 
 	@Test
@@ -222,7 +222,35 @@ class SslInfoTests {
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-both");
 		assertThat(bundle.getCertificateChains()).hasSize(4);
-		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificates()).hasSize(4);
+	}
+
+	@Test
+	@WithPackageResources({ "keystore.jks", "truststore.jks" })
+	void separateKeyStoreAndTrustStoreShouldProvideSslInfo() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("classpath:keystore.jks")
+			.withPassword("secret");
+		JksSslStoreDetails trustStoreDetails = JksSslStoreDetails.forLocation("classpath:truststore.jks")
+			.withPassword("secret");
+		SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		sslBundleRegistry.registerBundle("test-separate", SslBundle.of(sslStoreBundle));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
+		assertThat(sslInfo.getBundles()).hasSize(1);
+		BundleInfo bundle = sslInfo.getBundles().get(0);
+		assertThat(bundle.getName()).isEqualTo("test-separate");
+		// Keystore has 2 PrivateKeyEntry entries
+		assertThat(bundle.getCertificateChains()).hasSize(2);
+		assertThat(bundle.getCertificateChains()).allSatisfy((chain) -> {
+			assertThat(chain.getCertificates()).hasSize(1);
+			assertThat(chain.getCertificates().get(0).getSubject()).startsWith("CN=localhost");
+		});
+		// Truststore has 3 trustedCertEntry entries
+		assertThat(bundle.getTrustStoreCertificates()).hasSize(3);
+		assertThat(bundle.getTrustStoreCertificates()).allSatisfy((chain) -> {
+			assertThat(chain.getCertificates()).hasSize(1);
+			assertThat(chain.getCertificates().get(0).getSubject()).startsWith("CN=localhost");
+		});
 	}
 
 	private SslInfo createSslInfo(String... locations) {
