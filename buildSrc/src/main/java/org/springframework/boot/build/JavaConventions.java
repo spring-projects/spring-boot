@@ -42,6 +42,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -50,6 +51,7 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
@@ -298,6 +300,17 @@ class JavaConventions {
 			.add(project.getDependencies().create("com.puppycrawl.tools:checkstyle:" + checkstyle.getToolVersion()));
 		checkstyleDependencies
 			.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+		project.getTasks().withType(CheckFormat.class, this::excludeGeneratedSources);
+		project.getTasks().withType(Checkstyle.class, this::excludeGeneratedSources);
+	}
+
+	private SourceTask excludeGeneratedSources(SourceTask task) {
+		return task.exclude(this::isGeneratedSource);
+	}
+
+	private boolean isGeneratedSource(FileTreeElement candidate) {
+		String path = candidate.getFile().getPath();
+		return path.contains("/generated/sources/") || path.contains("/generated-source/");
 	}
 
 	private void configureDependencyManagement(Project project) {
