@@ -33,6 +33,9 @@ import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,8 +53,11 @@ import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link RabbitStreamConfiguration}.
@@ -60,11 +66,12 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Moritz Halbritter
+ * @author Jay Choi
  */
 class RabbitStreamConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	@SuppressWarnings("unchecked")
@@ -146,7 +153,7 @@ class RabbitStreamConfigurationTests {
 		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
 		RabbitProperties properties = new RabbitProperties();
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
 		then(builder).should().port(5552);
 		then(builder).should().host("localhost");
 		then(builder).should().virtualHost("vhost");
@@ -162,7 +169,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setPort(5553);
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
 		then(builder).should().port(5553);
 	}
 
@@ -172,7 +179,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setHost("stream.rabbit.example.com");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
 		then(builder).should().host("stream.rabbit.example.com");
 	}
 
@@ -182,7 +189,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setVirtualHost("stream-virtual-host");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
 		then(builder).should().virtualHost("stream-virtual-host");
 	}
 
@@ -192,7 +199,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.setVirtualHost("properties-virtual-host");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "default-virtual-host"));
+				new TestRabbitConnectionDetails("guest", "guest", "default-virtual-host"), null);
 		then(builder).should().virtualHost("default-virtual-host");
 	}
 
@@ -203,7 +210,7 @@ class RabbitStreamConfigurationTests {
 		properties.setUsername("alice");
 		properties.setPassword("secret");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("bob", "password", "vhost"));
+				new TestRabbitConnectionDetails("bob", "password", "vhost"), null);
 		then(builder).should().username("bob");
 		then(builder).should().password("password");
 	}
@@ -217,7 +224,7 @@ class RabbitStreamConfigurationTests {
 		properties.getStream().setUsername("bob");
 		properties.getStream().setPassword("confidential");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("charlotte", "hidden", "vhost"));
+				new TestRabbitConnectionDetails("charlotte", "hidden", "vhost"), null);
 		then(builder).should().username("bob");
 		then(builder).should().password("confidential");
 	}
@@ -295,6 +302,71 @@ class RabbitStreamConfigurationTests {
 			assertThat(environment).extracting("recoveryBackOffDelayPolicy")
 				.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).recoveryBackOffDelayPolicy);
 		});
+	}
+
+	@Test
+	void whenStreamSslIsNotConfiguredThenTlsIsNotUsed() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		RabbitStreamConfiguration.configure(builder, properties,
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
+		then(builder).should(never()).tls();
+	}
+
+	@Test
+	void whenStreamSslIsEnabledThenTlsIsUsed() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		properties.getStream().getSsl().setEnabled(true);
+		RabbitStreamConfiguration.configure(builder, properties,
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
+		then(builder).should().tls();
+	}
+
+	@Test
+	void whenStreamSslBundleIsConfiguredThenTlsIsUsed() {
+		this.contextRunner.withPropertyValues("spring.rabbitmq.stream.ssl.bundle=test-bundle",
+				"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:org/springframework/boot/amqp/autoconfigure/test.jks",
+				"spring.ssl.bundle.jks.test-bundle.keystore.password=secret")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(Environment.class);
+			});
+	}
+
+	@Test
+	void whenStreamSslIsDisabledThenTlsIsNotUsed() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		properties.getStream().getSsl().setEnabled(false);
+		RabbitStreamConfiguration.configure(builder, properties,
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
+		then(builder).should(never()).tls();
+	}
+
+	@Test
+	void whenStreamSslIsDisabledWithBundleThenTlsIsNotUsed() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		RabbitProperties properties = new RabbitProperties();
+		properties.getStream().getSsl().setEnabled(false);
+		properties.getStream().getSsl().setBundle("some-bundle");
+		RabbitStreamConfiguration.configure(builder, properties,
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"), null);
+		then(builder).should(never()).tls();
+	}
+
+	@Test
+	void whenStreamSslBundleIsInvalidThenFails() {
+		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("invalid-bundle")).willThrow(
+				new NoSuchSslBundleException("invalid-bundle", "SSL bundle name 'invalid-bundle' cannot be found"));
+		RabbitProperties properties = new RabbitProperties();
+		properties.getStream().getSsl().setBundle("invalid-bundle");
+		assertThatExceptionOfType(NoSuchSslBundleException.class)
+			.isThrownBy(() -> RabbitStreamConfiguration.configure(builder, properties,
+					new TestRabbitConnectionDetails("guest", "guest", "vhost"), sslBundles))
+			.withMessageContaining("invalid-bundle");
 	}
 
 	@Configuration(proxyBeanMethods = false)
