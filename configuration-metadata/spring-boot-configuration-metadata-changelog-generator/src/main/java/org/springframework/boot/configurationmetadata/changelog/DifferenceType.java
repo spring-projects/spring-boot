@@ -37,6 +37,11 @@ enum DifferenceType {
 	/**
 	 * The entry has been deleted.
 	 */
-	DELETED
+	DELETED,
+
+	/**
+	 * The entry's default value has been changed.
+	 */
+	DEFAULT_VALUE_CHANGED
 
 }

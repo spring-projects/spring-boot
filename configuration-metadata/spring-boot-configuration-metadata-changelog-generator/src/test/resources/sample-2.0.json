@@ -7,6 +7,12 @@
       "defaultValue": "new"
     },
     {
+      "name": "test.default.change",
+      "type": "java.lang.String",
+      "description": "Test default value change.",
+      "defaultValue": "new"
+    },
+    {
       "name": "test.replace",
       "type": "java.lang.String",
       "deprecation": {
@@ -60,6 +66,12 @@
         "replacement": "test.new.property",
         "reason": "removed in third-party library without deprecation"
       }
+    },
+    {
+      "name": "test.array.change",
+      "type": "java.lang.String[]",
+      "description": "Test array default value change.",
+      "defaultValue": ["a", "b", "c"]
     }
   ]
 }
