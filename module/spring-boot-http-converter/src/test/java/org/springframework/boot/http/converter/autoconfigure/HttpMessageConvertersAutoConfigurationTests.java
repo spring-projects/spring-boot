@@ -187,7 +187,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	@SuppressWarnings("removal")
-	void jackson2ServerAndClientConvertersShouldBeDifferent() {
+	void jackson2ServerAndClientJsonConvertersShouldBeDifferent() {
 		this.contextRunner.withUserConfiguration(Jackson2ObjectMapperConfig.class)
 			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
@@ -197,6 +197,23 @@ class HttpMessageConvertersAutoConfigurationTests {
 						org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class);
 				HttpMessageConverter<?> clientConverter = findConverter(getClientConverters(context),
 						org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class);
+				assertThat(serverConverter).isNotEqualTo(clientConverter);
+			});
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void jackson2ServerAndClientXmlConvertersShouldBeDifferent() {
+		this.contextRunner.withUserConfiguration(Jackson2ObjectMapperConfig.class)
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(
+						Jackson2HttpMessageConvertersConfiguration.Jackson2XmlMessageConvertersCustomizer.class);
+				HttpMessageConverter<?> serverConverter = findConverter(getServerConverters(context),
+						org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter.class);
+				HttpMessageConverter<?> clientConverter = findConverter(getClientConverters(context),
+						org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter.class);
 				assertThat(serverConverter).isNotEqualTo(clientConverter);
 			});
 	}
@@ -579,7 +596,13 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("removal")
 	static class Jackson2ObjectMapperConfig {
+
+		@Bean
+		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder() {
+			return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
+		}
 
 		@Bean
 		ObjectMapper objectMapper() {

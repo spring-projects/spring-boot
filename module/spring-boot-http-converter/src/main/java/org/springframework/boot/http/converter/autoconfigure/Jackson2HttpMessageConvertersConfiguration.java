@@ -17,7 +17,7 @@
 package org.springframework.boot.http.converter.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tools.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
