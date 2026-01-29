@@ -249,6 +249,9 @@ At the same time, others can rely only on the `autoconfigure` module and craft t
 
 If the auto-configuration is relatively straightforward and does not have optional features, merging the two modules in the starter is definitely an option.
 
+When testing "acme" features, you may need test-specific auto-configurations.
+For example, you could offer a way to replace external dependencies with in-memory alternatives.
+A separate test-scoped starter can be created for this purpose, following the same principles.
 
 
 [[features.developing-auto-configuration.custom-starter.naming]]
@@ -262,6 +265,7 @@ As a rule of thumb, you should name a combined module after the starter.
 For example, assume that you are creating a starter for "acme" and that you name the auto-configure module `acme-spring-boot` and the starter `acme-spring-boot-starter`.
 If you only have one module that combines the two, name it `acme-spring-boot-starter`.
 
+If "acme" also has a test-scoped starter, name it `acme-spring-boot-starter-test`.
 
 
 [[features.developing-auto-configuration.custom-starter.configuration-keys]]
