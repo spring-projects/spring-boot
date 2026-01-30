@@ -77,7 +77,6 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.DefaultPropertiesPropertySource;
-import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -756,11 +755,29 @@ class SpringApplicationTests {
 			application.setWebApplicationType(WebApplicationType.NONE);
 			assertThatExceptionOfType(NativeImageRequirementsException.class).isThrownBy(application::run)
 				.withMessage("Native Image requirements not met. "
-						+ "Native Image must support at least Java 25 but Java %s was detected"
-							.formatted(JavaVersion.getJavaVersion()));
+						+ "Native Image must support at least Java 25 but Java %d was detected"
+							.formatted(Runtime.version().feature()));
 		}
 		finally {
 			System.clearProperty("org.graalvm.nativeimage.imagecode");
+		}
+	}
+
+	@Test
+	@ForkedClassPath
+	@EnabledForJreRange(max = JRE.JAVA_24)
+	void missingAotInitializerTakesPrecedenceOverNativeImageRequirementsCheck() {
+		System.setProperty("spring.aot.enabled", "true");
+		System.setProperty("org.graalvm.nativeimage.imagecode", "true");
+		try {
+			SpringApplication application = new SpringApplication();
+			application.setWebApplicationType(WebApplicationType.NONE);
+			assertThatExceptionOfType(AotInitializerNotFoundException.class).isThrownBy(application::run)
+				.withMessageStartingWith("Startup with AOT mode enabled failed");
+		}
+		finally {
+			System.clearProperty("org.graalvm.nativeimage.imagecode");
+			System.clearProperty("spring.aot.enabled");
 		}
 	}
 
