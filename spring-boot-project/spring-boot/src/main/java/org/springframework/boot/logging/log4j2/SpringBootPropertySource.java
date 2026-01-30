@@ -39,7 +39,7 @@ public class SpringBootPropertySource implements PropertySource {
 
 	@Override
 	public void forEach(BiConsumer<String, String> action) {
-		this.properties.forEach(action::accept);
+		this.properties.forEach(action);
 	}
 
 	@Override
