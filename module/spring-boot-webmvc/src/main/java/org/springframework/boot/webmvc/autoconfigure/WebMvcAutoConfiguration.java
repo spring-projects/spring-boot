@@ -420,8 +420,7 @@ public final class WebMvcAutoConfiguration {
 			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
 			map.from(use::getQueryParameter).whenHasText().to(configurer::useQueryParam);
 			map.from(use::getPathSegment).to(configurer::usePathSegment);
-			use.getMediaTypeParameter()
-				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
+			use.getMediaTypeParameter().forEach(configurer::useMediaTypeParameter);
 		}
 
 		@Bean
