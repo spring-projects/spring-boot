@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -162,9 +164,12 @@ class ConventionsPluginTests {
 		}
 	}
 
-	private void assertThatLicenseIsPresent(JarFile jar) {
+	private void assertThatLicenseIsPresent(JarFile jar) throws IOException {
 		JarEntry license = jar.getJarEntry("META-INF/LICENSE.txt");
 		assertThat(license).isNotNull();
+		String licenseContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(license)));
+		assertThat(licenseContent).isEqualTo(Files.readString(Path.of("src", "main", "resources", "org",
+				"springframework", "boot", "build", "legal", "LICENSE.txt")));
 	}
 
 	private void assertThatNoticeIsPresent(JarFile jar) throws IOException {
@@ -185,7 +190,7 @@ class ConventionsPluginTests {
 			out.println("description 'Test'");
 			out.println("task retryConfig {");
 			out.println("    doLast {");
-			out.println("        test.retry {");
+			out.println("        test.develocity.testRetry {");
 			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
 			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
 			out.println("        }");
@@ -207,7 +212,7 @@ class ConventionsPluginTests {
 			out.println("description 'Test'");
 			out.println("task retryConfig {");
 			out.println("    doLast {");
-			out.println("        test.retry {");
+			out.println("        test.develocity.testRetry {");
 			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
 			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
 			out.println("        }");

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AutoConfigureJson} with Jackson 2.
  *
  * @author Moritz Halbritter
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
  */
 @AutoConfigureJson
 @ExtendWith(SpringExtension.class)

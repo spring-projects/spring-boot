@@ -43,7 +43,7 @@ import org.springframework.javapoet.CodeBlock;
  * by an hard-coded equivalent. This has the effect of disabling scanning at runtime.
  *
  * @author Stephane Nicoll
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 @SuppressWarnings("removal")

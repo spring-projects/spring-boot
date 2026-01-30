@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Grzegorz Poznachowski
  * @since 4.0.0
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
 @FunctionalInterface
 @Deprecated(since = "4.0.0", forRemoval = true)

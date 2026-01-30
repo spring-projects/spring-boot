@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Scope;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link GsonTester}.
  *
  * @author Phjllip Webb
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 @AutoConfiguration(after = Jackson2AutoConfiguration.class)

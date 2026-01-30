@@ -163,6 +163,7 @@ class JavaConventions {
 	private void configureJarManifestConventions(Project project) {
 		TaskProvider<ExtractResources> extractLegalResources = project.getTasks()
 			.register("extractLegalResources", ExtractResources.class, (task) -> {
+				task.getPackageName().set("org.springframework.boot.build.legal");
 				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 				task.getProperties().put("version", project.getVersion().toString());

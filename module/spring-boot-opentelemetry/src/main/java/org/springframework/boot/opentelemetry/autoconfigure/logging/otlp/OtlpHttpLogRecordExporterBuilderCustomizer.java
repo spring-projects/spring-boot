@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson2.types;
+package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
-import org.jspecify.annotations.Nullable;
+import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder;
 
 /**
- * Sample object used for tests.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link OtlpHttpLogRecordExporterBuilder} whilst retaining default auto-configuration.
  *
- * @author Paul Aly
- * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
+ * @author Joaquin Santana
+ * @since 4.1.0
  */
-@Deprecated(since = "4.0.0", forRemoval = true)
-@SuppressWarnings("removal")
-public class NameAndCareer extends Name {
+@FunctionalInterface
+public interface OtlpHttpLogRecordExporterBuilderCustomizer {
 
-	private final @Nullable String career;
-
-	public NameAndCareer(@Nullable String name, @Nullable String career) {
-		super(name);
-		this.career = career;
-	}
-
-	public @Nullable String getCareer() {
-		return this.career;
-	}
+	/**
+	 * Customize the {@link OtlpHttpLogRecordExporterBuilder}.
+	 * @param builder the builder to customize
+	 */
+	void customize(OtlpHttpLogRecordExporterBuilder builder);
 
 }

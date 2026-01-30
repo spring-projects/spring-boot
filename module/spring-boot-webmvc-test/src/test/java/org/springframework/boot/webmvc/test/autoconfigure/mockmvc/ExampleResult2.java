@@ -21,7 +21,7 @@ package org.springframework.boot.webmvc.test.autoconfigure.mockmvc;
  *
  * @param id sample data
  * @author Stephane Nicoll
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 public record ExampleResult2(String id) {

@@ -111,7 +111,7 @@ class SpringBootTestRandomPortContextCustomizer implements ContextCustomizer {
 		private static final Integer ZERO = Integer.valueOf(0);
 
 		boolean isFixed(MapPropertySource source, Port port) {
-			return !ZERO.equals(get(source, port, null));
+			return !ZERO.equals(get(source, port));
 		}
 
 		boolean isConfigured(PropertySource<?> source, Port port) {
@@ -121,14 +121,13 @@ class SpringBootTestRandomPortContextCustomizer implements ContextCustomizer {
 		@Contract("_, _, !null -> !null")
 		@Nullable Integer get(PropertySources sources, Port port, @Nullable Integer defaultValue) {
 			return sources.stream()
-				.map((source) -> get(source, port, defaultValue))
+				.map((source) -> get(source, port))
 				.filter(Objects::nonNull)
 				.findFirst()
 				.orElse(defaultValue);
 		}
 
-		@Contract("_, _, !null -> !null")
-		@Nullable Integer get(PropertySource<?> source, Port port, @Nullable Integer defaultValue) {
+		@Nullable Integer get(PropertySource<?> source, Port port) {
 			Object value = source.getProperty(port.property());
 			if (value == null || ClassUtils.isAssignableValue(Integer.class, value)) {
 				return (Integer) value;

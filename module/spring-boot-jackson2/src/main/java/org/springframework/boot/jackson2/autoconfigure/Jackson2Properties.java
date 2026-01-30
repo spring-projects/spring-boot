@@ -44,7 +44,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Johannes Edmeier
  * @author Eddú Meléndez
  * @since 4.0.0
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 @ConfigurationProperties("spring.jackson2")

@@ -107,10 +107,10 @@ public class ManagementServerProperties {
 
 	@Contract("!null -> !null")
 	private @Nullable String cleanBasePath(@Nullable String basePath) {
-		String candidate = null;
-		if (StringUtils.hasLength(basePath)) {
-			candidate = basePath.strip();
+		if (basePath == null) {
+			return null;
 		}
+		String candidate = basePath.strip();
 		if (StringUtils.hasText(candidate)) {
 			if (!candidate.startsWith("/")) {
 				candidate = "/" + candidate;

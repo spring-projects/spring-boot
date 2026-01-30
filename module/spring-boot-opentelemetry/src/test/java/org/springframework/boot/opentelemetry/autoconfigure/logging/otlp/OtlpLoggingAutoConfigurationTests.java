@@ -16,6 +16,7 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -221,6 +222,47 @@ class OtlpLoggingAutoConfigurationTests {
 					.extracting("delegate.meterProviderSupplier", InstanceOfAssertFactories.type(Supplier.class))
 					.satisfies((meterProviderSupplier) -> assertThat(meterProviderSupplier.get())
 						.isSameAs(MeterProviderConfiguration.meterProvider));
+			});
+	}
+
+	@Test
+	void shouldCustomizeHttpTransportWithOtlpHttpLogRecordExporterBuilderCustomizer() {
+		Duration connectTimeout = Duration.ofMinutes(20);
+		Duration timeout = Duration.ofMinutes(10);
+		this.contextRunner
+			.withBean("httpCustomizer1", OtlpHttpLogRecordExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setConnectTimeout(connectTimeout))
+			.withBean("httpCustomizer2", OtlpHttpLogRecordExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setTimeout(timeout))
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
+					.hasSingleBean(LogRecordExporter.class);
+				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", (int) connectTimeout.toMillis())
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", (int) timeout.toMillis());
+			});
+	}
+
+	@Test
+	void shouldCustomizeGrpcTransportWhenEnabledWithOtlpGrpcLogRecordExporterBuilderCustomizer() {
+		Duration timeout = Duration.ofMinutes(10);
+		Duration connectTimeout = Duration.ofMinutes(20);
+		this.contextRunner
+			.withBean("grpcCustomizer1", OtlpGrpcLogRecordExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setConnectTimeout(connectTimeout))
+			.withBean("grpcCustomizer2", OtlpGrpcLogRecordExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setTimeout(timeout))
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs",
+					"management.opentelemetry.logging.export.otlp.transport=grpc")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpGrpcLogRecordExporter.class)
+					.hasSingleBean(LogRecordExporter.class);
+				OtlpGrpcLogRecordExporter exporter = context.getBean(OtlpGrpcLogRecordExporter.class);
+				assertThat(exporter).extracting("delegate.grpcSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", (int) connectTimeout.toMillis())
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", (int) timeout.toMillis());
 			});
 	}
 
