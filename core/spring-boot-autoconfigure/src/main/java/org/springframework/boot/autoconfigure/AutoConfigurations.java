@@ -58,7 +58,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	private static UnaryOperator<Collection<Class<?>>> sorter(UnaryOperator<String> replacementMapper) {
 		AutoConfigurationSorter sorter = new AutoConfigurationSorter(metadataReaderFactory, null, replacementMapper);
 		return (classes) -> {
-			List<String> names = classes.stream().map(Class::getName).map(replacementMapper::apply).toList();
+			List<String> names = classes.stream().map(Class::getName).map(replacementMapper).toList();
 			List<String> sorted = sorter.getInPriorityOrder(names);
 			return sorted.stream()
 				.map((className) -> ClassUtils.resolveClassName(className, null))

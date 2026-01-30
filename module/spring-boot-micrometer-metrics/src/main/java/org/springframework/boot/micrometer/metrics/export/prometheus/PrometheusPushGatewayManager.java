@@ -160,7 +160,7 @@ public class PrometheusPushGatewayManager {
 
 		@Override
 		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
-			return Executors.newSingleThreadScheduledExecutor(this::newThread);
+			return Executors.newSingleThreadScheduledExecutor(this);
 		}
 
 	}
