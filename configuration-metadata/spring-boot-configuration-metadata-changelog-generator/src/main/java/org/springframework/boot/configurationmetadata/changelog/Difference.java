@@ -52,7 +52,7 @@ record Difference(DifferenceType type, ConfigurationMetadataProperty oldProperty
 			return new Difference(DifferenceType.DELETED, oldProperty, newProperty);
 		}
 		if (!Objects.equals(oldProperty.getDefaultValue(), newProperty.getDefaultValue())) {
-			return new Difference(DifferenceType.DEFAULT_VALUE_CHANGED, oldProperty, newProperty);
+			return new Difference(DifferenceType.DEFAULT_CHANGED, oldProperty, newProperty);
 		}
 		return null;
 	}

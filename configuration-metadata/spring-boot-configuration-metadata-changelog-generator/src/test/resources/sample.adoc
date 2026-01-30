@@ -2,14 +2,14 @@ Configuration property changes between `1.0` and `2.0`
 
 
 
-== Default Value Changed in 2.0
+== Default Changed in 2.0
 
 |======================
 | Key | Old Default | New Default
 
-| `test.array.change`
+| `test.default.array.change`
 | `a, b`
-| `a, b, c`
+| `b, a`
 
 | `test.default.change`
 | `old`
