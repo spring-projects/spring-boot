@@ -16,6 +16,7 @@
 
 package org.springframework.boot.amqp.testcontainers;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.amqp.autoconfigure.EnvironmentBuilderCustomizer;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
@@ -51,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with a single container
- * that's only used for streams.
+ * used for both streams and standard messaging.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
@@ -60,12 +64,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(
 		properties = { "spring.rabbitmq.stream.name=stream.queue1", "spring.rabbitmq.listener.type=stream" })
 @Testcontainers(disabledWithoutDocker = true)
-class RabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
+class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
 
 	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
 	@Container
-	@ServiceConnection(type = RabbitStreamConnectionDetails.class)
+	@ServiceConnection(type = { RabbitConnectionDetails.class, RabbitStreamConnectionDetails.class })
 	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
 
 	private static RabbitMQContainer getRabbitMqStreamContainer() {
@@ -86,20 +90,44 @@ class RabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
 	private RabbitStreamTemplate rabbitStreamTemplate;
 
 	@Autowired
-	private TestListener listener;
+	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private StreamTestListener streamListener;
+
+	@Test
+	void rabbitConnectionDetailsAreSourcedFromContainer() {
+		assertThat(this.connectionDetails).isInstanceOf(RabbitMqContainerConnectionDetails.class);
+	}
+
+	@Test
+	void rabbitStreamConnectionDetailsAreSourcedFromContainer() {
+		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
+	}
 
 	@Test
 	void connectionCanBeMadeToRabbitContainer() {
-		assertThat(this.connectionDetails).isNotInstanceOf(RabbitMqContainerConnectionDetails.class);
-		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
+		this.rabbitTemplate.convertAndSend("test", "message");
+		Awaitility.waitAtMost(Duration.ofMinutes(4))
+			.untilAsserted(() -> assertThat(this.rabbitTemplate.receive("test"))
+				.extracting((message) -> new String(message.getBody(), StandardCharsets.UTF_8))
+				.isEqualTo("message"));
+	}
+
+	@Test
+	void streamConnectionCanBeMadeToRabbitContainer() {
 		this.rabbitStreamTemplate.convertAndSend("message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
-			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
+			.untilAsserted(() -> assertThat(this.streamListener.messages).containsExactly("message"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(RabbitAutoConfiguration.class)
 	static class TestConfiguration {
+
+		TestConfiguration(AmqpAdmin amqpAdmin) {
+			amqpAdmin.declareQueue(new Queue("test"));
+		}
 
 		@Bean
 		StreamAdmin streamAdmin(Environment env) {
@@ -113,13 +141,13 @@ class RabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
 		}
 
 		@Bean
-		TestListener testListener() {
-			return new TestListener();
+		StreamTestListener streamTestListener() {
+			return new StreamTestListener();
 		}
 
 	}
 
-	static class TestListener {
+	static class StreamTestListener {
 
 		private final List<String> messages = new ArrayList<>();
 

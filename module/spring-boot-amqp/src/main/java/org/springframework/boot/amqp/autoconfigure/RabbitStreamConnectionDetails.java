@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -27,30 +29,30 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface RabbitStreamConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Rabbit server host.
-	 * @return the rabbit server host
+	 * Rabbit Stream server host.
+	 * @return the Rabbit Stream server host
 	 */
 	String getHost();
 
 	/**
 	 * Rabbit Stream server port.
-	 * @return the rabbit stream server port
+	 * @return the Rabbit Stream server port
 	 */
 	int getPort();
 
 	/**
-	 * Login user to authenticate to the broker.
-	 * @return the login user to authenticate to the broker or {@code null}
+	 * Username for authentication.
+	 * @return the username for authentication or {@code null}
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
 	/**
-	 * Login to authenticate against the broker.
-	 * @return the login to authenticate against the broker or {@code null}
+	 * Password for authentication.
+	 * @return the password for authentication or {@code null}
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 
@@ -58,7 +60,7 @@ public interface RabbitStreamConnectionDetails extends ConnectionDetails {
 	 * Virtual host to use when connecting to the broker.
 	 * @return the virtual host to use when connecting to the broker or {@code null}
 	 */
-	default String getVirtualHost() {
+	default @Nullable String getVirtualHost() {
 		return null;
 	}
 

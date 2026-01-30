@@ -71,7 +71,6 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 		this.rabbitTemplate.convertAndSend("test", "message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

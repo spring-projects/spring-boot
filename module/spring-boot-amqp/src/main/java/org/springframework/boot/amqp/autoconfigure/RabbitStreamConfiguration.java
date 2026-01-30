@@ -18,6 +18,7 @@ package org.springframework.boot.amqp.autoconfigure;
 
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -52,7 +53,7 @@ import org.springframework.util.Assert;
 class RabbitStreamConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(RabbitStreamConnectionDetails.class)
+	@ConditionalOnMissingBean
 	RabbitStreamConnectionDetails rabbitStreamConnectionDetails(RabbitProperties rabbitProperties) {
 		return new PropertiesRabbitStreamConnectionDetails(rabbitProperties.getStream());
 	}
@@ -152,17 +153,17 @@ class RabbitStreamConfiguration {
 		}
 
 		@Override
-		public String getVirtualHost() {
+		public @Nullable String getVirtualHost() {
 			return this.streamProperties.getVirtualHost();
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.streamProperties.getUsername();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.streamProperties.getPassword();
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.amqp.testcontainers;
 
-import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -38,6 +38,13 @@ class RabbitStreamContainerConnectionDetailsFactory
 	}
 
 	@Override
+	protected boolean sourceAccepts(ContainerConnectionSource<RabbitMQContainer> source, Class<?> requiredContainerType,
+			Class<?> requiredConnectionDetailsType) {
+		return source.getConnectionDetailsTypes().contains(requiredConnectionDetailsType)
+				&& super.sourceAccepts(source, requiredContainerType, requiredConnectionDetailsType);
+	}
+
+	@Override
 	protected RabbitStreamConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<RabbitMQContainer> source) {
 		return new RabbitMqStreamContainerConnectionDetails(source);
@@ -47,8 +54,8 @@ class RabbitStreamContainerConnectionDetailsFactory
 	 * {@link RabbitStreamConnectionDetails} backed by a
 	 * {@link ContainerConnectionSource}.
 	 */
-	private static final class RabbitMqStreamContainerConnectionDetails
-			extends ContainerConnectionDetails<RabbitMQContainer> implements RabbitStreamConnectionDetails {
+	static final class RabbitMqStreamContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
+			implements RabbitStreamConnectionDetails {
 
 		private RabbitMqStreamContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
