@@ -35,6 +35,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.CronTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.TimeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.TriggeringPolicy;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
@@ -116,6 +122,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.getConfiguration().stop();
 		this.loggingSystem.cleanUp();
 		PluginRegistry.getInstance().clear();
+		clearRollingPolicySystemProperties();
 	}
 
 	@Test
@@ -128,6 +135,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
+	}
+
+	private void clearRollingPolicySystemProperties() {
+		for (Log4j2RollingPolicySystemProperty property : Log4j2RollingPolicySystemProperty.values()) {
+			System.clearProperty(property.getEnvironmentVariableName());
+		}
 	}
 
 	@Test
@@ -764,40 +777,95 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		return defaultPath;
 	}
 
-	/**
-	 * Used for testing that loggers in nested classes are returned by
-	 * {@link Log4J2LoggingSystem#getLoggerConfigurations()} .
-	 */
-	static class Nested {
-
-		@SuppressWarnings("unused")
-		private static final Log logger = LogFactory.getLog(Nested.class);
-
+	@Test
+	void rollingPolicySystemPropertiesAreApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern",
+				"${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
+		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
+		String fileNamePattern = System.getProperty("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN");
+		assertThat(maxFileSize).isEqualTo(String.valueOf(50 * 1024 * 1024));
+		assertThat(maxHistory).isEqualTo("30");
+		assertThat(fileNamePattern).isEqualTo("${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
 	}
 
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@WithResource(name = "nondefault.xml",
-			content = """
-					<Configuration status="WARN" monitorInterval="30">
-						<Properties>
-							<Property name="PID">????</Property>
-							<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
-						</Properties>
-						<Appenders>
-							<Console name="Console" target="SYSTEM_OUT" follow="true">
-								<PatternLayout pattern="${LOG_PATTERN}"/>
-							</Console>
-						</Appenders>
-						<Loggers>
-							<Root level="info">
-								<AppenderRef ref="Console"/>
-							</Root>
-						</Loggers>
-					</Configuration>
-					""")
-	private @interface WithNonDefaultXmlResource {
+	@Test
+	void rollingPolicyDeprecatedPropertiesAreApplied() {
+		this.environment.setProperty("logging.file.max-size", "20MB");
+		this.environment.setProperty("logging.file.max-history", "15");
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
+		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
+		assertThat(maxFileSize).isEqualTo(String.valueOf(20 * 1024 * 1024));
+		assertThat(maxHistory).isEqualTo("15");
+	}
 
+	@Test
+	void rollingPolicyTimeStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		TimeBasedTriggeringPolicy timePolicy = findPolicy(policy, TimeBasedTriggeringPolicy.class);
+		assertThat(timePolicy).isNotNull();
+		assertThat(timePolicy.getInterval()).isEqualTo(2);
+	}
+
+	@Test
+	void rollingPolicySizeAndTimeStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "size-and-time");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "5MB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "3");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		assertThat(findPolicy(policy, TimeBasedTriggeringPolicy.class)).isNotNull();
+		assertThat(findPolicy(policy, SizeBasedTriggeringPolicy.class)).isNotNull();
+	}
+
+	@Test
+	void rollingPolicyCronStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "cron");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		CronTriggeringPolicy cronPolicy = findPolicy(policy, CronTriggeringPolicy.class);
+		assertThat(cronPolicy).isNotNull();
+		assertThat(cronPolicy.getCronExpression().getCronExpression()).isEqualTo("0 0 0 * * ?");
+	}
+
+	private TriggeringPolicy getTriggeringPolicy() {
+		File file = new File(tmpDir(), "target-file.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
+		Configuration configuration = loggerContext.getConfiguration();
+		RollingFileAppender appender = (RollingFileAppender) configuration.getAppenders().get("File");
+		assertThat(appender).isNotNull();
+		return appender.getManager().getTriggeringPolicy();
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends TriggeringPolicy> @Nullable T findPolicy(TriggeringPolicy policy, Class<T> type) {
+		if (type.isInstance(policy)) {
+			return (T) policy;
+		}
+		if (policy instanceof CompositeTriggeringPolicy composite) {
+			for (TriggeringPolicy child : composite.getTriggeringPolicies()) {
+				T found = findPolicy(child, type);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Target(ElementType.METHOD)
@@ -836,6 +904,42 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 					</Configuration>
 					""")
 	private @interface WithSpringXmlResource {
+
+	}
+
+	/**
+	 * Used for testing that loggers in nested classes are returned by
+	 * {@link Log4J2LoggingSystem#getLoggerConfigurations()} .
+	 */
+	static class Nested {
+
+		@SuppressWarnings("unused")
+		private static final Log logger = LogFactory.getLog(Nested.class);
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nondefault.xml",
+			content = """
+					<Configuration status="WARN" monitorInterval="30">
+						<Properties>
+							<Property name="PID">????</Property>
+							<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+						</Properties>
+						<Appenders>
+							<Console name="Console" target="SYSTEM_OUT" follow="true">
+								<PatternLayout pattern="${LOG_PATTERN}"/>
+							</Console>
+						</Appenders>
+						<Loggers>
+							<Root level="info">
+								<AppenderRef ref="Console"/>
+							</Root>
+						</Loggers>
+					</Configuration>
+					""")
+	private @interface WithNonDefaultXmlResource {
 
 	}
 
