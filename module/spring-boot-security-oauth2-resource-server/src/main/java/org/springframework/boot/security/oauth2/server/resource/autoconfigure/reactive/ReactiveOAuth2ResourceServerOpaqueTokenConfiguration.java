@@ -16,6 +16,7 @@
 
 package org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,16 +46,18 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
-		SpringReactiveOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
+		SpringReactiveOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties,
+				ObjectProvider<SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer> customizers) {
 			OAuth2ResourceServerProperties.Opaquetoken opaquetoken = properties.getOpaquetoken();
 			String clientId = opaquetoken.getClientId();
 			Assert.state(clientId != null, "'clientId' must not be null");
 			String clientSecret = opaquetoken.getClientSecret();
 			Assert.state(clientSecret != null, "'clientSecret' must not be null");
-			return SpringReactiveOpaqueTokenIntrospector.withIntrospectionUri(opaquetoken.getIntrospectionUri())
-				.clientId(clientId)
-				.clientSecret(clientSecret)
-				.build();
+			SpringReactiveOpaqueTokenIntrospector.Builder builder = SpringReactiveOpaqueTokenIntrospector.withIntrospectionUri(opaquetoken.getIntrospectionUri())
+					.clientId(clientId)
+					.clientSecret(clientSecret);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			return builder.build();
 		}
 
 	}
