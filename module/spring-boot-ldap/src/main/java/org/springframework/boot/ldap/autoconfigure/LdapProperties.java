@@ -78,6 +78,8 @@ public class LdapProperties {
 
 	private final Template template = new Template();
 
+	private final Ssl ssl = new Ssl();
+
 	public String @Nullable [] getUrls() {
 		return this.urls;
 	}
@@ -132,6 +134,10 @@ public class LdapProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	public String[] determineUrls(Environment environment) {
@@ -195,6 +201,68 @@ public class LdapProperties {
 
 		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
 			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		/**
+		 * Whether to use StartTLS instead of LDAPS. When not set, automatically
+		 * determined based on URL scheme (ldaps:// uses LDAPS, ldap:// uses StartTLS).
+		 */
+		private @Nullable Boolean startTls;
+
+		/**
+		 * Whether to verify the LDAP server's hostname matches the certificate. Defaults
+		 * to true. Set to false for testing with self-signed certificates.
+		 */
+		private boolean verifyHostname = true;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(@Nullable Boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
+		}
+
+		public @Nullable Boolean getStartTls() {
+			return this.startTls;
+		}
+
+		public void setStartTls(@Nullable Boolean startTls) {
+			this.startTls = startTls;
+		}
+
+		public boolean isVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}
