@@ -428,7 +428,21 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 					"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
 					"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
-			.run((context) -> assertThat(context).hasSingleBean(OpaqueTokenIntrospector.class));
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OpaqueTokenIntrospector.class);
+				assertSpringOpaqueTokenIntrospectorBuilderCustomization(context);
+			});
+	}
+
+	private void assertSpringOpaqueTokenIntrospectorBuilderCustomization(AssertableWebApplicationContext context) {
+		SpringOpaqueTokenIntrospectorBuilderCustomizer customizer = context
+			.getBean("opaqueTokenIntrospectorBuilderCustomizer", SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
+		SpringOpaqueTokenIntrospectorBuilderCustomizer anotherCustomizer = context.getBean(
+				"anotherOpaqueTokenIntrospectorBuilderCustomizer",
+				SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
+		InOrder inOrder = inOrder(customizer, anotherCustomizer);
+		inOrder.verify(customizer).customize(any());
+		inOrder.verify(anotherCustomizer).customize(any());
 	}
 
 	@Test
@@ -852,6 +866,18 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Order(2)
 		JwkSetUriJwtDecoderBuilderCustomizer anotherDecoderBuilderCustomizer() {
 			return mock(JwkSetUriJwtDecoderBuilderCustomizer.class);
+		}
+
+		@Bean
+		@Order(1)
+		SpringOpaqueTokenIntrospectorBuilderCustomizer opaqueTokenIntrospectorBuilderCustomizer() {
+			return mock(SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
+		}
+
+		@Bean
+		@Order(2)
+		SpringOpaqueTokenIntrospectorBuilderCustomizer anotherOpaqueTokenIntrospectorBuilderCustomizer() {
+			return mock(SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
 		}
 
 	}
