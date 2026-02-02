@@ -199,7 +199,7 @@ class BomResolver {
 
 	private static final class Node {
 
-		protected final XPath xpath;
+		private final XPath xpath;
 
 		private final org.w3c.dom.Node delegate;
 

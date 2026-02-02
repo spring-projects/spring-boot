@@ -110,7 +110,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 	}
 
-	protected void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
+	private void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
 		toAppendTo.append(AnsiOutput.toString(element, in));
 	}
 
