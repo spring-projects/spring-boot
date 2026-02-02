@@ -210,11 +210,9 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("bundles[].certificateChains[].certificates[].signatureAlgorithmName")
 					.description("Signature algorithm name.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates")
-					.description("Certificate chains in the trust store.")
+				fieldWithPath("bundles[].trustStoreCertificates").description("Certificate chains in the trust store.")
 					.type(JsonFieldType.ARRAY),
-				fieldWithPath("bundles[].trustStoreCertificates[].alias")
-					.description("Alias of the certificate chain.")
+				fieldWithPath("bundles[].trustStoreCertificates[].alias").description("Alias of the certificate chain.")
 					.type(JsonFieldType.STRING),
 				fieldWithPath("bundles[].trustStoreCertificates[].certificates")
 					.description("Certificates in the chain.")
