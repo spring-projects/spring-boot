@@ -58,7 +58,8 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 	void check() throws IOException {
 		ConfigurationPropertiesAnalyzer analyzer = new ConfigurationPropertiesAnalyzer(getSource().getFiles());
 		Report report = new Report(this.projectDir);
-		analyzer.analyzeSort(report);
+		analyzer.analyzeOrder(report);
+		analyzer.analyzeDuplicates(report);
 		analyzer.analyzeDeprecationSince(report);
 		File reportFile = getReportLocation().get().getAsFile();
 		report.write(reportFile);
