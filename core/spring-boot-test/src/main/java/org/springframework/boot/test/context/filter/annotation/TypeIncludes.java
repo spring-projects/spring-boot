@@ -27,10 +27,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.core.io.UrlResource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -48,6 +51,8 @@ final class TypeIncludes implements Iterable<Class<?>> {
 	private static final String LOCATION = "META-INF/spring/%s.includes";
 
 	private static final String COMMENT_START = "#";
+
+	private static final Log logger = LogFactory.getLog(TypeIncludes.class);
 
 	private final Set<Class<?>> includes;
 
@@ -111,7 +116,8 @@ final class TypeIncludes implements Iterable<Class<?>> {
 				includes.add(ClassUtils.forName(includeName, classLoader));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException("Failed to load include '" + includeName + "' declared in " + url);
+				logger.debug(LogMessage.format("Include '%s' declared in '%s' could not be loaded and has been ignored",
+						includeName, url), ex);
 			}
 		}
 		return includes;
