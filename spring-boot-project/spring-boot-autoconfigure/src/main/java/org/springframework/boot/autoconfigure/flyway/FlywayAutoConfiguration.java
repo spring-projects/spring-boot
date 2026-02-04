@@ -208,7 +208,6 @@ public class FlywayAutoConfiguration {
 		 * @param configuration the configuration
 		 * @param properties the properties
 		 */
-		@SuppressWarnings("removal")
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			// NOTE: Using method references in the mapper methods can break
 			// back-compatibility (see gh-38164)
@@ -263,8 +262,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isBaselineOnMigrate())
 				.to((baselineOnMigrate) -> configuration.baselineOnMigrate(baselineOnMigrate));
 			map.from(properties.isCleanDisabled()).to((cleanDisabled) -> configuration.cleanDisabled(cleanDisabled));
-			map.from(properties.isCleanOnValidationError())
-				.to((cleanOnValidationError) -> configuration.cleanOnValidationError(cleanOnValidationError));
+			configureCleanOnValidationError(configuration, properties);
 			map.from(properties.isGroup()).to((group) -> configuration.group(group));
 			map.from(properties.isMixed()).to((mixed) -> configuration.mixed(mixed));
 			map.from(properties.isOutOfOrder()).to((outOfOrder) -> configuration.outOfOrder(outOfOrder));
@@ -307,6 +305,16 @@ public class FlywayAutoConfiguration {
 					.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			map.from(properties.getDetectEncoding())
 				.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
+		}
+
+		@SuppressWarnings("removal")
+		private void configureCleanOnValidationError(FluentConfiguration configuration, FlywayProperties properties) {
+			try {
+				configuration.cleanOnValidationError(properties.isCleanOnValidationError());
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway >= 12.0
+			}
 		}
 
 		private void configureExecuteInTransaction(FluentConfiguration configuration, FlywayProperties properties,
