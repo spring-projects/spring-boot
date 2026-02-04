@@ -16,17 +16,13 @@
 
 package org.springframework.boot.build.architecture;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.lang.EvaluationResult;
-
-import org.springframework.util.ReflectionUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Finds all configurations from auto-configurations (either nested configurations or
@@ -43,7 +39,7 @@ class AutoConfigurationChecker {
 		.and(ArchitectureRules.areNotKotlinClasses());
 
 	EvaluationResult check(JavaClasses javaClasses) {
-		AutoConfigurations autoConfigurations = new AutoConfigurations();
+		AutoConfigurations autoConfigurations = new AutoConfigurations(javaClasses);
 		for (JavaClass javaClass : javaClasses) {
 			if (isAutoConfigurationOrEnclosedInAutoConfiguration(javaClass)) {
 				autoConfigurations.add(javaClass);
@@ -74,7 +70,13 @@ class AutoConfigurationChecker {
 
 		private static final String CONFIGURATION = "org.springframework.context.annotation.Configuration";
 
+		private final JavaClasses allClasses;
+
 		private final Map<String, JavaClass> classes = new HashMap<>();
+
+		AutoConfigurations(JavaClasses allClasses) {
+			this.allClasses = allClasses;
+		}
 
 		void add(JavaClass autoConfiguration) {
 			if (!autoConfiguration.isMetaAnnotatedWith(CONFIGURATION)) {
@@ -87,10 +89,11 @@ class AutoConfigurationChecker {
 		}
 
 		JavaClasses getConfigurations() {
-			// TODO: Find a way without reflection
-			Method method = ReflectionUtils.findMethod(JavaClasses.class, "of", Iterable.class);
-			ReflectionUtils.makeAccessible(method);
-			return (JavaClasses) ReflectionUtils.invokeMethod(method, null, this.classes.values());
+			// Return a filtered view of the original JavaClasses containing only the
+			// configuration classes
+			DescribedPredicate<JavaClass> inConfigurations = DescribedPredicate
+					.describe("is in configurations", c -> this.classes.containsKey(c.getName()));
+			return this.allClasses.that(inConfigurations);
 		}
 
 		private void processImports(JavaClass javaClass, Map<String, JavaClass> result) {
