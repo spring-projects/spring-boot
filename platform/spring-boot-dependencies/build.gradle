@@ -1716,7 +1716,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.2.9.Final") {
+	library("Netty", "4.2.10.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
