@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.Tracer.SpanInScope;
@@ -58,7 +59,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
@@ -76,7 +76,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -308,11 +307,15 @@ class OpenTelemetryTracingAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	void defaultSpanProcessorShouldUseMeterProviderIfAvailable() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class).run((context) -> {
 			MeterProvider meterProvider = context.getBean(MeterProvider.class);
-			assertThat(Mockito.mockingDetails(meterProvider).isMock()).isTrue();
-			then(meterProvider).should().meterBuilder(anyString());
+			SpanProcessor spanProcessor = context.getBean(SpanProcessor.class);
+			assertThat(spanProcessor).extracting("worker.spanProcessorInstrumentation.meterProvider")
+				.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+				.extracting(Supplier::get)
+				.isEqualTo(meterProvider);
 		});
 	}
 
