@@ -102,7 +102,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValues()).run((context) -> {
 			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
 			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-
+			assertThat(registration).isNotNull();
 			assertThat(registration.getAssertingPartyMetadata().getSingleSignOnServiceLocation())
 				.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php");
 			assertThat(registration.getAssertingPartyMetadata().getEntityId())
@@ -175,6 +175,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 					RelyingPartyRegistrationRepository repository = context
 						.getBean(RelyingPartyRegistrationRepository.class);
 					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration).isNotNull();
 					assertThat(registration.getAssertingPartyMetadata().getSingleSignOnServiceBinding())
 						.isEqualTo(Saml2MessageBinding.POST);
 				});
@@ -195,6 +196,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 					RelyingPartyRegistrationRepository repository = context
 						.getBean(RelyingPartyRegistrationRepository.class);
 					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration).isNotNull();
 					assertThat(registration.getAssertingPartyMetadata().getSingleSignOnServiceBinding())
 						.isEqualTo(Saml2MessageBinding.REDIRECT);
 				});
@@ -207,6 +209,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValuesWithoutSsoBinding()).run((context) -> {
 			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
 			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+			assertThat(registration).isNotNull();
 			assertThat(registration.getAssertingPartyMetadata().getSingleSignOnServiceBinding())
 				.isEqualTo(Saml2MessageBinding.REDIRECT);
 		});
@@ -292,6 +295,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 					RelyingPartyRegistrationRepository repository = context
 						.getBean(RelyingPartyRegistrationRepository.class);
 					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration).isNotNull();
 					assertThat(registration.getAssertingPartyMetadata().getWantAuthnRequestsSigned()).isTrue();
 				});
 		}
@@ -364,6 +368,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				RelyingPartyRegistrationRepository repository = context
 					.getBean(RelyingPartyRegistrationRepository.class);
 				RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+				assertThat(registration).isNotNull();
 				assertThat(registration.getAssertingPartyMetadata().getEntityId()).isEqualTo(expected);
 			});
 		}
