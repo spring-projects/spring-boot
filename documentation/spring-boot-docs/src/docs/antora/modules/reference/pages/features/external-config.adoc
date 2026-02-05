@@ -581,7 +581,7 @@ You should always refer to property names in the placeholder using their canonic
 This will allow Spring Boot to use the same logic as it does when xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding] javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
 
 For example, `${demo.item-price}` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
-If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+If you use `${demo.itemPrice}` instead, it will pick up the `demo.itemPrice` form from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment, but `demo.item-price` would not be considered.
 ====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
@@ -1380,7 +1380,7 @@ If you do want to use javadoc:org.springframework.beans.factory.annotation.Value
 This will allow Spring Boot to use the same logic as it does when xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding] javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
 
 For example, `@Value("${demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
-If you used `@Value("${demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+If you use `@Value("${demo.itemPrice}")` instead, it will pickup the `demo.itemPrice` form from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment, but `demo.item-price` would not be considered.
 ====
 
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
