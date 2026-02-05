@@ -37,6 +37,14 @@ public class DescriptionProperties {
 	 */
 	private String multiLine;
 
+	// @formatter:off
+	/**
+	 * This is an example of a description
+	 *with unusual whitespace after a new line.
+	 */
+	private String multiLineWhitespace;
+	// @formatter:on
+
 	public String getSimple() {
 		return this.simple;
 	}
@@ -51,6 +59,14 @@ public class DescriptionProperties {
 
 	public void setMultiLine(String multiLine) {
 		this.multiLine = multiLine;
+	}
+
+	public String getMultiLineWhitespace() {
+		return this.multiLineWhitespace;
+	}
+
+	public void setMultiLineWhitespace(String multiLineWhitespace) {
+		this.multiLineWhitespace = multiLineWhitespace;
 	}
 
 }
