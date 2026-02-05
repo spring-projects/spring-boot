@@ -272,10 +272,8 @@ class TypeUtils {
 		char lastChar = '.';
 		for (int i = 0; i < javadoc.length(); i++) {
 			char ch = javadoc.charAt(i);
-			if (ch == '\r' || ch == '\n') {
-				ch = ' ';
-			}
-			boolean repeatedSpace = ch == ' ' && lastChar == ' ';
+			ch = (ch == '\r' || ch == '\n') ? ' ' : ch;
+			boolean repeatedSpace = (ch == ' ' && lastChar == ' ');
 			if (!repeatedSpace) {
 				result.append(ch);
 				lastChar = ch;
