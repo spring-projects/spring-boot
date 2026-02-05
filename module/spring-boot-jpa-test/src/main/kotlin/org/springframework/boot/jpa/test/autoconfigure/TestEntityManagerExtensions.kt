@@ -17,10 +17,10 @@
 package org.springframework.boot.jpa.test.autoconfigure
 
 /**
- * Extension for [TestEntityManager.find] providing a `find<Foo>(...)`
+ * Extension for [TestEntityManager.find] providing a `find<MyEntity>(...)`
  * variant leveraging Kotlin reified type parameters.
  *
- * @param primaryKey the entity primary key
+ * @param primaryKey the primary key of the entity
  * @author Beom Su
  * @since 4.1.0
  */
@@ -39,7 +39,7 @@ inline fun <reified T : Any> TestEntityManager.persistAndGetId(entity: Any): T? 
 		persistAndGetId(entity, T::class.java)
 
 /**
- * Extension for [TestEntityManager.getId] providing a `getId<Long>(...)`
+ * Extension for [TestEntityManager.getId] providing a `getId<MyEntity>(...)`
  * variant leveraging Kotlin reified type parameters.
  *
  * @param entity the source entity
