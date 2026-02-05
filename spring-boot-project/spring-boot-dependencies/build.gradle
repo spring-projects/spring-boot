@@ -1089,7 +1089,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.19.29") {
+	library("jOOQ", "3.19.30") {
 		prohibit {
 			versionRange "[3.20.0,)"
 			because "it requires Java 21"
