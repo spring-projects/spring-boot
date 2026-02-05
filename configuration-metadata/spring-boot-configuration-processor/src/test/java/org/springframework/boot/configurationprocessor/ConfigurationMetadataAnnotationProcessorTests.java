@@ -234,6 +234,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.fromSource(DescriptionProperties.class)
 			.withDescription(
 					"This is a lengthy description that spans across multiple lines to showcase that the line separators are cleaned automatically."));
+		assertThat(metadata).has(Metadata.withProperty("description.multi-line-whitespace", String.class)
+			.fromSource(DescriptionProperties.class)
+			.withDescription("This is an example of a description with unusual whitespace after a new line."));
 	}
 
 	@Test
