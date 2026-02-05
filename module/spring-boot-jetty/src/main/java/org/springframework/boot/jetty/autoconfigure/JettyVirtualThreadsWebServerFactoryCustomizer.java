@@ -21,7 +21,6 @@ import org.eclipse.jetty.util.thread.VirtualThreadPool;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
-import org.springframework.boot.jetty.autoconfigure.JettyServerProperties.Threads;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
@@ -62,14 +61,19 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
-		VirtualThreadPool virtualThreadPool = new VirtualThreadPool();
+		Integer maxTasks = getMaxTasks();
+		VirtualThreadPool virtualThreadPool = (maxTasks != null) ? new VirtualThreadPool(maxTasks)
+				: new VirtualThreadPool();
 		virtualThreadPool.setName("jetty-");
-		if (this.serverProperties != null) {
-			Threads properties = this.serverProperties.getThreads();
-			int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
-			virtualThreadPool.setMaxThreads(maxThreadCount);
-		}
 		factory.setThreadPool(virtualThreadPool);
+	}
+
+	private @Nullable Integer getMaxTasks() {
+		if (this.serverProperties == null) {
+			return null;
+		}
+		Integer maxThreads = this.serverProperties.getThreads().getMax();
+		return (maxThreads > 0) ? maxThreads : null;
 	}
 
 	@Override
