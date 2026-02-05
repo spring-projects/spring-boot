@@ -65,9 +65,49 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/angus-mail/releases/tag/{version}")
 		}
 	}
-	library("Artemis", "2.44.0") {
-		group("org.apache.activemq") {
-			bom("artemis-bom")
+	library("Artemis", "2.50.0") {
+		group("org.apache.artemis") {
+			bom("artemis-bom") {
+				permit("org.apache.activemq:artemis-amqp-protocol")
+				permit("org.apache.activemq:artemis-boot")
+				permit("org.apache.activemq:artemis-cdi-client")
+				permit("org.apache.activemq:artemis-cli")
+				permit("org.apache.activemq:artemis-commons")
+				permit("org.apache.activemq:artemis-console")
+				permit("org.apache.activemq:artemis-core-client-all")
+				permit("org.apache.activemq:artemis-core-client-osgi")
+				permit("org.apache.activemq:artemis-core-client")
+				permit("org.apache.activemq:artemis-dto")
+				permit("org.apache.activemq:artemis-features:2.50.0:f")
+				permit("org.apache.activemq:artemis-hornetq-protocol")
+				permit("org.apache.activemq:artemis-hqclient-protocol")
+				permit("org.apache.activemq:artemis-jakarta-cdi-client")
+				permit("org.apache.activemq:artemis-jakarta-client-all")
+				permit("org.apache.activemq:artemis-jakarta-client-osgi")
+				permit("org.apache.activemq:artemis-jakarta-client")
+				permit("org.apache.activemq:artemis-jakarta-openwire-protocol")
+				permit("org.apache.activemq:artemis-jakarta-ra")
+				permit("org.apache.activemq:artemis-jakarta-server")
+				permit("org.apache.activemq:artemis-jakarta-service-extensions")
+				permit("org.apache.activemq:artemis-jdbc-store")
+				permit("org.apache.activemq:artemis-jms-client-all")
+				permit("org.apache.activemq:artemis-jms-client-osgi")
+				permit("org.apache.activemq:artemis-jms-client")
+				permit("org.apache.activemq:artemis-jms-server")
+				permit("org.apache.activemq:artemis-journal")
+				permit("org.apache.activemq:artemis-lockmanager-api")
+				permit("org.apache.activemq:artemis-lockmanager-ri")
+				permit("org.apache.activemq:artemis-mqtt-protocol")
+				permit("org.apache.activemq:artemis-openwire-protocol")
+				permit("org.apache.activemq:artemis-ra")
+				permit("org.apache.activemq:artemis-selector")
+				permit("org.apache.activemq:artemis-server-osgi")
+				permit("org.apache.activemq:artemis-server")
+				permit("org.apache.activemq:artemis-service-extensions")
+				permit("org.apache.activemq:artemis-stomp-protocol")
+				permit("org.apache.activemq:artemis-web")
+				permit("org.apache.activemq:artemis-website")
+			}
 		}
 		links {
 			site("https://activemq.apache.org/components/artemis")
