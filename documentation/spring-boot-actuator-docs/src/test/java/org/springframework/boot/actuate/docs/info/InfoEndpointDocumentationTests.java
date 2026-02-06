@@ -210,38 +210,40 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("bundles[].certificateChains[].certificates[].signatureAlgorithmName")
 					.description("Signature algorithm name.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates").description("Certificate chains in the trust store.")
+				fieldWithPath("bundles[].trustStoreCertificateChains")
+					.description("Certificate chains in the trust store.")
 					.type(JsonFieldType.ARRAY),
-				fieldWithPath("bundles[].trustStoreCertificates[].alias").description("Alias of the certificate chain.")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].alias")
+					.description("Alias of the certificate chain.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates")
 					.description("Certificates in the chain.")
 					.type(JsonFieldType.ARRAY),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].subject")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].subject")
 					.description("Subject of the certificate.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].version")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].version")
 					.description("Version of the certificate.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].issuer")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].issuer")
 					.description("Issuer of the certificate.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validityStarts")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].validityStarts")
 					.description("Certificate validity start date.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].serialNumber")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].serialNumber")
 					.description("Serial number of the certificate.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validityEnds")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].validityEnds")
 					.description("Certificate validity end date.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validity")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].validity")
 					.description("Certificate validity information.")
 					.type(JsonFieldType.OBJECT),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].validity.status")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].validity.status")
 					.description("Certificate validity status.")
 					.type(JsonFieldType.STRING),
-				fieldWithPath("bundles[].trustStoreCertificates[].certificates[].signatureAlgorithmName")
+				fieldWithPath("bundles[].trustStoreCertificateChains[].certificates[].signatureAlgorithmName")
 					.description("Signature algorithm name.")
 					.type(JsonFieldType.STRING));
 	}

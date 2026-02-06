@@ -104,12 +104,12 @@ public class SslInfo {
 
 		private final List<CertificateChainInfo> certificateChains;
 
-		private final List<CertificateChainInfo> trustStoreCertificates;
+		private final List<CertificateChainInfo> trustStoreCertificateChains;
 
 		private BundleInfo(String name, SslBundle sslBundle) {
 			this.name = name;
 			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
-			this.trustStoreCertificates = extractCertificateChains(sslBundle.getStores().getTrustStore());
+			this.trustStoreCertificateChains = extractCertificateChains(sslBundle.getStores().getTrustStore());
 		}
 
 		private List<CertificateChainInfo> extractCertificateChains(@Nullable KeyStore keyStore) {
@@ -135,8 +135,8 @@ public class SslInfo {
 			return this.certificateChains;
 		}
 
-		public List<CertificateChainInfo> getTrustStoreCertificates() {
-			return this.trustStoreCertificates;
+		public List<CertificateChainInfo> getTrustStoreCertificateChains() {
+			return this.trustStoreCertificateChains;
 		}
 
 	}
@@ -157,21 +157,32 @@ public class SslInfo {
 
 		private List<CertificateInfo> extractCertificates(KeyStore keyStore, String alias) {
 			try {
-				// First try to get the certificate chain (works for PrivateKeyEntry)
-				Certificate[] certificates = keyStore.getCertificateChain(alias);
-				if (!ObjectUtils.isEmpty(certificates)) {
-					return Arrays.stream(certificates).map(CertificateInfo::new).toList();
+				List<CertificateInfo> certificates = readCertificateChain(keyStore, alias);
+				if (certificates != null) {
+					return certificates;
 				}
-				// Fall back to single certificate (works for trustedCertEntry)
-				Certificate certificate = keyStore.getCertificate(alias);
+				List<CertificateInfo> certificate = readCertificate(keyStore, alias);
 				if (certificate != null) {
-					return List.of(new CertificateInfo(certificate));
+					return certificate;
 				}
 				return Collections.emptyList();
 			}
 			catch (KeyStoreException ex) {
 				return Collections.emptyList();
 			}
+		}
+
+		private @Nullable List<CertificateInfo> readCertificate(KeyStore keyStore, String alias)
+				throws KeyStoreException {
+			Certificate certificate = keyStore.getCertificate(alias);
+			return (certificate != null) ? List.of(new CertificateInfo(certificate)) : null;
+		}
+
+		private @Nullable List<CertificateInfo> readCertificateChain(KeyStore keyStore, String alias)
+				throws KeyStoreException {
+			Certificate[] certificates = keyStore.getCertificateChain(alias);
+			return ObjectUtils.isEmpty(certificates) ? null
+					: Arrays.stream(certificates).map(CertificateInfo::new).toList();
 		}
 
 		public String getAlias() {

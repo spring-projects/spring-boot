@@ -85,7 +85,7 @@ class SslInfoTests {
 		assertThat(cert2.getValidity()).isNotNull();
 		assertThat(cert2.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert2.getValidity().getMessage()).isNull();
-		assertThat(bundle.getTrustStoreCertificates()).isEmpty();
+		assertThat(bundle.getTrustStoreCertificateChains()).isEmpty();
 	}
 
 	@Test
@@ -189,7 +189,7 @@ class SslInfoTests {
 		SslInfo sslInfo = new SslInfo(sslBundleRegistry, CLOCK);
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
-		assertThat(sslInfo.getBundles().get(0).getTrustStoreCertificates()).isEmpty();
+		assertThat(sslInfo.getBundles().get(0).getTrustStoreCertificateChains()).isEmpty();
 	}
 
 	@Test
@@ -205,9 +205,9 @@ class SslInfoTests {
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-trust");
 		assertThat(bundle.getCertificateChains()).isEmpty();
-		assertThat(bundle.getTrustStoreCertificates()).hasSize(4);
-		assertThat(bundle.getTrustStoreCertificates().get(0).getAlias()).isEqualTo("spring-boot");
-		assertThat(bundle.getTrustStoreCertificates().get(1).getAlias()).isEqualTo("test-alias");
+		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificateChains().get(0).getAlias()).isEqualTo("spring-boot");
+		assertThat(bundle.getTrustStoreCertificateChains().get(1).getAlias()).isEqualTo("test-alias");
 	}
 
 	@Test
@@ -222,7 +222,7 @@ class SslInfoTests {
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-both");
 		assertThat(bundle.getCertificateChains()).hasSize(4);
-		assertThat(bundle.getTrustStoreCertificates()).hasSize(4);
+		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(4);
 	}
 
 	@Test
@@ -246,8 +246,8 @@ class SslInfoTests {
 			assertThat(chain.getCertificates().get(0).getSubject()).startsWith("CN=localhost");
 		});
 		// Truststore has 3 trustedCertEntry entries
-		assertThat(bundle.getTrustStoreCertificates()).hasSize(3);
-		assertThat(bundle.getTrustStoreCertificates()).allSatisfy((chain) -> {
+		assertThat(bundle.getTrustStoreCertificateChains()).hasSize(3);
+		assertThat(bundle.getTrustStoreCertificateChains()).allSatisfy((chain) -> {
 			assertThat(chain.getCertificates()).hasSize(1);
 			assertThat(chain.getCertificates().get(0).getSubject()).startsWith("CN=localhost");
 		});
