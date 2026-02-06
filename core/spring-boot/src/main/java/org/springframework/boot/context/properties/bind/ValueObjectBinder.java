@@ -132,7 +132,12 @@ class ValueObjectBinder implements DataObjectBinder {
 				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
 			}
 		}
-		return null;
+		return convertNullValue(context, type);
+	}
+
+	private <T> @Nullable T convertNullValue(Binder.Context context, ResolvableType type, Annotation... annotations) {
+		BindConverter converter = context.getConverter();
+		return converter.convertNullValue(type, annotations);
 	}
 
 	private <T> @Nullable T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
