@@ -88,7 +88,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		for (ConstructorParameter parameter : parameters) {
 			Object arg = parameter.bind(propertyBinder);
 			bound = bound || arg != null;
-			arg = (arg != null) ? arg : getDefaultValue(context, parameter);
+			arg = (arg != null) ? arg : wrapNullIfOptional(getDefaultValue(context, parameter), parameter);
 			args.add(arg);
 		}
 		context.clearConfigurationProperty();
@@ -105,9 +105,19 @@ class ValueObjectBinder implements DataObjectBinder {
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<@Nullable Object> args = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
-			args.add(getDefaultValue(context, parameter));
+			args.add(wrapNullIfOptional(getDefaultValue(context, parameter), parameter));
 		}
 		return valueObject.instantiate(args);
+	}
+
+	private @Nullable Object wrapNullIfOptional(@Nullable Object value, ConstructorParameter parameter) {
+		if (value != null) {
+			return value;
+		}
+		if (Optional.class == parameter.getType().resolve()) {
+			return Optional.empty();
+		}
+		return null;
 	}
 
 	@Override
