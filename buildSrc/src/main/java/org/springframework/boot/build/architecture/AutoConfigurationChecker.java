@@ -16,13 +16,14 @@
 
 package org.springframework.boot.build.architecture;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.lang.EvaluationResult;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Finds all configurations from auto-configurations (either nested configurations or
@@ -70,30 +71,28 @@ class AutoConfigurationChecker {
 
 		private static final String CONFIGURATION = "org.springframework.context.annotation.Configuration";
 
-		private final JavaClasses allClasses;
+		private final JavaClasses classes;
 
-		private final Map<String, JavaClass> classes = new HashMap<>();
+		private final Map<String, JavaClass> autoConfigurationClasses = new HashMap<>();
 
-		AutoConfigurations(JavaClasses allClasses) {
-			this.allClasses = allClasses;
+		AutoConfigurations(JavaClasses classes) {
+			this.classes = classes;
 		}
 
 		void add(JavaClass autoConfiguration) {
 			if (!autoConfiguration.isMetaAnnotatedWith(CONFIGURATION)) {
 				return;
 			}
-			if (this.classes.putIfAbsent(autoConfiguration.getName(), autoConfiguration) != null) {
+			if (this.autoConfigurationClasses.putIfAbsent(autoConfiguration.getName(), autoConfiguration) != null) {
 				return;
 			}
-			processImports(autoConfiguration, this.classes);
+			processImports(autoConfiguration, this.autoConfigurationClasses);
 		}
 
 		JavaClasses getConfigurations() {
-			// Return a filtered view of the original JavaClasses containing only the
-			// configuration classes
-			DescribedPredicate<JavaClass> inConfigurations = DescribedPredicate
-					.describe("is in configurations", c -> this.classes.containsKey(c.getName()));
-			return this.allClasses.that(inConfigurations);
+			DescribedPredicate<JavaClass> isAutoConfiguration = DescribedPredicate.describe("is an auto-configuration",
+					(c) -> this.autoConfigurationClasses.containsKey(c.getName()));
+			return this.classes.that(isAutoConfiguration);
 		}
 
 		private void processImports(JavaClass javaClass, Map<String, JavaClass> result) {
