@@ -193,22 +193,47 @@ public class ContextPairs {
 			LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 			this.addedPairs.forEach((addedPair) -> {
 				addedPair.accept(item, joining((name, value) -> {
-					List<String> nameParts = List.of(name.split("\\."));
 					Map<String, Object> destination = result;
-					for (int i = 0; i < nameParts.size() - 1; i++) {
-						Object existing = destination.computeIfAbsent(nameParts.get(i), (key) -> new LinkedHashMap<>());
+
+					int end = trimTrailingDelimiters(name);
+					if (end == 0) {
+						return;
+					}
+
+					int start = 0;
+					while (true) {
+						int dot = name.indexOf('.', start);
+						if (dot == -1 || dot >= end) {
+							break;
+						}
+
+						String part = name.substring(start, dot);
+
+						Object existing = destination.computeIfAbsent(part, (key) -> new LinkedHashMap<>());
 						if (!(existing instanceof Map)) {
-							String common = String.join(".", nameParts.subList(0, i + 1));
+							String common = name.substring(0, dot);
 							throw new IllegalStateException(
 									"Duplicate nested pairs added under '%s'".formatted(common));
 						}
+
 						destination = (Map<String, Object>) existing;
+						start = dot + 1;
 					}
-					Object previous = destination.put(nameParts.get(nameParts.size() - 1), value);
+
+					String leaf = name.substring(start, end);
+					Object previous = destination.put(leaf, value);
 					Assert.state(previous == null, () -> "Duplicate nested pairs added under '%s'".formatted(name));
 				}));
 			});
 			result.forEach(pairs);
+		}
+
+		private int trimTrailingDelimiters(String name) {
+			int end = name.length();
+			while (end > 0 && name.charAt(end - 1) == '.') {
+				end--;
+			}
+			return end;
 		}
 
 		private <V> BiConsumer<String, V> joining(BiConsumer<String, V> pairs) {
