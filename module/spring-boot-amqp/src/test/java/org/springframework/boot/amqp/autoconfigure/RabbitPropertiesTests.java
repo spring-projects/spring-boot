@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  * @author Rafael Carvalho
  * @author Scott Frederick
+ * @author Jay Choi
  */
 class RabbitPropertiesTests {
 
@@ -379,6 +380,36 @@ class RabbitPropertiesTests {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(this.properties::determineAddresses)
 			.withMessageContaining("spring.rabbitmq.host");
+	}
+
+	@Test
+	void streamSslIsDisabledByDefault() {
+		assertThat(this.properties.getStream().getSsl().isEnabled()).isFalse();
+	}
+
+	@Test
+	void streamSslIsEnabledWhenEnabledIsTrue() {
+		this.properties.getStream().getSsl().setEnabled(true);
+		assertThat(this.properties.getStream().getSsl().isEnabled()).isTrue();
+	}
+
+	@Test
+	void streamSslIsDisabledWhenEnabledIsFalse() {
+		this.properties.getStream().getSsl().setEnabled(false);
+		assertThat(this.properties.getStream().getSsl().isEnabled()).isFalse();
+	}
+
+	@Test
+	void streamSslIsEnabledWhenBundleIsSet() {
+		this.properties.getStream().getSsl().setBundle("test-bundle");
+		assertThat(this.properties.getStream().getSsl().isEnabled()).isTrue();
+	}
+
+	@Test
+	void streamSslIsDisabledWhenBundleIsSetButEnabledIsFalse() {
+		this.properties.getStream().getSsl().setBundle("test-bundle");
+		this.properties.getStream().getSsl().setEnabled(false);
+		assertThat(this.properties.getStream().getSsl().isEnabled()).isFalse();
 	}
 
 }

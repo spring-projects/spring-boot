@@ -16,8 +16,13 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
+import javax.net.ssl.SSLException;
+
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -27,6 +32,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
@@ -39,12 +48,14 @@ import org.springframework.rabbit.stream.producer.RabbitStreamOperations;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration for Spring RabbitMQ Stream plugin support.
  *
  * @author Gary Russell
  * @author Eddú Meléndez
+ * @author Jay Choi
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
@@ -71,8 +82,8 @@ class RabbitStreamConfiguration {
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
 	Environment rabbitStreamEnvironment(RabbitProperties properties, RabbitConnectionDetails connectionDetails,
-			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
-		EnvironmentBuilder builder = configure(Environment.builder(), properties, connectionDetails);
+			ObjectProvider<EnvironmentBuilderCustomizer> customizers, @Nullable SslBundles sslBundles) {
+		EnvironmentBuilder builder = configure(Environment.builder(), properties, connectionDetails, sslBundles);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -105,12 +116,12 @@ class RabbitStreamConfiguration {
 	}
 
 	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties,
-			RabbitConnectionDetails connectionDetails) {
-		return configure(builder, properties.getStream(), connectionDetails);
+			RabbitConnectionDetails connectionDetails, @Nullable SslBundles sslBundles) {
+		return configure(builder, properties.getStream(), connectionDetails, sslBundles);
 	}
 
 	private static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties.Stream stream,
-			RabbitConnectionDetails connectionDetails) {
+			RabbitConnectionDetails connectionDetails, @Nullable SslBundles sslBundles) {
 		builder.lazyInitialization(true);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(stream.getHost()).to(builder::host);
@@ -118,7 +129,33 @@ class RabbitStreamConfiguration {
 		map.from(stream.getVirtualHost()).orFrom(connectionDetails::getVirtualHost).to(builder::virtualHost);
 		map.from(stream.getUsername()).orFrom(connectionDetails::getUsername).to(builder::username);
 		map.from(stream.getPassword()).orFrom(connectionDetails::getPassword).to(builder::password);
+		RabbitProperties.Stream.StreamSsl ssl = stream.getSsl();
+		if (ssl.isEnabled()) {
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				builder.tls().sslContext(createSslContext(sslBundles.getBundle(ssl.getBundle())));
+			}
+			else {
+				builder.tls();
+			}
+		}
 		return builder;
+	}
+
+	private static SslContext createSslContext(SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
+		SslManagerBundle managers = sslBundle.getManagers();
+		try {
+			return SslContextBuilder.forClient()
+				.keyManager(managers.getKeyManagerFactory())
+				.trustManager(managers.getTrustManagerFactory())
+				.ciphers(SslOptions.asSet(options.getCiphers()))
+				.protocols(options.getEnabledProtocols())
+				.build();
+		}
+		catch (SSLException ex) {
+			throw new IllegalStateException("Failed to create SSL context for RabbitMQ Stream", ex);
+		}
 	}
 
 }
