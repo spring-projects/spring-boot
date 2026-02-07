@@ -327,6 +327,25 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
+	void bindWhenOptionalParameterWithNoValueForPrimitiveShouldReturnEmptyInstance() {
+		RecordPropertiesWithOptional bound = this.binder.bindOrCreate("foo",
+				Bindable.of(RecordPropertiesWithOptional.class));
+		assertThat(bound.property1()).isEmpty();
+	}
+
+	@Test
+	void bindWhenOptionalParameterInNestedWithNoValueForPrimitiveShouldReturnEmptyInstance() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.nested.property2", "str");
+		this.sources.add(source);
+		RecordPropertiesWithOptionalInNestedRecord bound = this.binder.bindOrCreate("foo",
+				Bindable.of(RecordPropertiesWithOptionalInNestedRecord.class));
+		assertThat(bound.nested()).isNotNull();
+		assertThat(bound.nested().property1()).isNotNull().isEmpty();
+		assertThat(bound.nested().property2()).isEqualTo("str");
+	}
+
+	@Test
 	void bindWhenEnumParameterWithEmptyDefaultValueShouldThrowException() {
 		assertThatExceptionOfType(BindException.class)
 			.isThrownBy(() -> this.binder.bindOrCreate("foo",
@@ -900,6 +919,14 @@ class ValueObjectBinderTests {
 
 	record RecordProperties(@DefaultValue("default-value-1") String property1,
 			@DefaultValue("default-value-2") String property2) {
+	}
+
+	record RecordPropertiesWithOptional(Optional<String> property1) {
+	}
+
+	record RecordPropertiesWithOptionalInNestedRecord(NestedRecord nested) {
+		record NestedRecord(Optional<String> property1, String property2) {
+		}
 	}
 
 	static class NonExtractableParameterName {

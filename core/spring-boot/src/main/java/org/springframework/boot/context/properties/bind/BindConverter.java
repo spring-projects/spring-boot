@@ -105,7 +105,13 @@ final class BindConverter {
 				new ResolvableTypeDescriptor(targetType, targetAnnotations));
 	}
 
-	private @Nullable Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	<T> @Nullable T convertNullValue(ResolvableType targetType, Annotation... targetAnnotations) {
+		return (T) convert(null, null, new ResolvableTypeDescriptor(targetType, targetAnnotations));
+	}
+
+	private @Nullable Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
 		ConversionException failure = null;
 		for (ConversionService delegate : this.delegates) {
 			try {
