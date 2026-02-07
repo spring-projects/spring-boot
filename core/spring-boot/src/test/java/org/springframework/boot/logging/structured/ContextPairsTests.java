@@ -121,6 +121,19 @@ class ContextPairsTests {
 	}
 
 	@Test
+	void nestedWhenNameEndsWithDelimiterDropsTrailingDelimiter() {
+		ContextPairs contextPairs = new ContextPairs(true, null);
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put("a1.b1.", "A1B1");
+		Map<String, Object> actual = apply(contextPairs.nested((pairs) -> pairs.addMapEntries((item) -> map)));
+		Map<String, Object> expected = new LinkedHashMap<>();
+		Map<String, Object> a1 = new LinkedHashMap<>();
+		expected.put("a1", a1);
+		a1.put("b1", "A1B1");
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
 	void nestedWhenDuplicateInParentThrowsException() {
 		ContextPairs contextPairs = new ContextPairs(true, null);
 		Map<String, String> map = new LinkedHashMap<>();
