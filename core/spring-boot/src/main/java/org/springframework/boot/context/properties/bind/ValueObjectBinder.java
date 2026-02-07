@@ -88,7 +88,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		for (ConstructorParameter parameter : parameters) {
 			Object arg = parameter.bind(propertyBinder);
 			bound = bound || arg != null;
-			arg = (arg != null) ? arg : wrapNullIfOptional(getDefaultValue(context, parameter), parameter);
+			arg = (arg != null) ? arg : getDefaultValue(context, parameter);
 			args.add(arg);
 		}
 		context.clearConfigurationProperty();
@@ -105,19 +105,9 @@ class ValueObjectBinder implements DataObjectBinder {
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<@Nullable Object> args = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
-			args.add(wrapNullIfOptional(getDefaultValue(context, parameter), parameter));
+			args.add(getDefaultValue(context, parameter));
 		}
 		return valueObject.instantiate(args);
-	}
-
-	private @Nullable Object wrapNullIfOptional(@Nullable Object value, ConstructorParameter parameter) {
-		if (value != null) {
-			return value;
-		}
-		if (Optional.class == parameter.getType().resolve()) {
-			return Optional.empty();
-		}
-		return null;
 	}
 
 	@Override
@@ -142,7 +132,12 @@ class ValueObjectBinder implements DataObjectBinder {
 				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
 			}
 		}
-		return null;
+		return convertNullValue(context, type);
+	}
+
+	private <T> @Nullable T convertNullValue(Binder.Context context, ResolvableType type, Annotation... annotations) {
+		BindConverter converter = context.getConverter();
+		return converter.convertNullValue(type, annotations);
 	}
 
 	private <T> @Nullable T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
