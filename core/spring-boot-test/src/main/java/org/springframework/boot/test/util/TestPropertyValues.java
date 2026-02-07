@@ -310,7 +310,7 @@ public final class TestPropertyValues {
 			return this.sourceClass;
 		}
 
-		protected String applySuffix(String name) {
+		private String applySuffix(String name) {
 			return (this.suffix != null) ? name + "-" + this.suffix : name;
 		}
 
