@@ -28,7 +28,6 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.graphql:spring-graphql")
 
-
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-http-converter"))
 	optional(project(":module:spring-boot-jackson"))
