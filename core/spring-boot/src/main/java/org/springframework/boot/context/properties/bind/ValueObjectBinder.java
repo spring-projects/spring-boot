@@ -61,6 +61,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Ondřej Světlík
  */
 class ValueObjectBinder implements DataObjectBinder {
 
@@ -132,7 +133,7 @@ class ValueObjectBinder implements DataObjectBinder {
 				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
 			}
 		}
-		return null;
+		return context.getConverter().convert(null, type);
 	}
 
 	private <T> @Nullable T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
