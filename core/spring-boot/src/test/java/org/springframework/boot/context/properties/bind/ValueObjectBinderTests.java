@@ -50,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Pavel Anisimov
  * @author Yanming Zhou
+ * @author Ondřej Světlík
  */
 class ValueObjectBinderTests {
 
