@@ -193,22 +193,35 @@ public class ContextPairs {
 			LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 			this.addedPairs.forEach((addedPair) -> {
 				addedPair.accept(item, joining((name, value) -> {
-					List<String> nameParts = List.of(name.split("\\."));
+					StringBuilder part = new StringBuilder(name.length());
+					int length = (!name.endsWith(".")) ? name.length() : name.length() - 1;
 					Map<String, Object> destination = result;
-					for (int i = 0; i < nameParts.size() - 1; i++) {
-						Object existing = destination.computeIfAbsent(nameParts.get(i), (key) -> new LinkedHashMap<>());
-						if (!(existing instanceof Map)) {
-							String common = String.join(".", nameParts.subList(0, i + 1));
-							throw new IllegalStateException(
-									"Duplicate nested pairs added under '%s'".formatted(common));
+					for (int i = 0; i < length; i++) {
+						char ch = name.charAt(i);
+						if (i == length - 1) {
+							part.append(ch);
+							Object previous = destination.put(part.toString(), value);
+							assertNotDuplicateNestedPairs(previous == null, name, length);
 						}
-						destination = (Map<String, Object>) existing;
+						else if (ch == '.') {
+							Object current = destination.computeIfAbsent(part.toString(),
+									(key) -> new LinkedHashMap<>());
+							assertNotDuplicateNestedPairs(current instanceof Map, name, i);
+							destination = (Map<String, Object>) current;
+							part.setLength(0);
+						}
+						else {
+							part.append(ch);
+						}
 					}
-					Object previous = destination.put(nameParts.get(nameParts.size() - 1), value);
-					Assert.state(previous == null, () -> "Duplicate nested pairs added under '%s'".formatted(name));
 				}));
 			});
 			result.forEach(pairs);
+		}
+
+		private void assertNotDuplicateNestedPairs(boolean expression, String name, int index) {
+			Assert.state(expression,
+					() -> "Duplicate nested pairs added under '%s'".formatted(name.substring(0, index)));
 		}
 
 		private <V> BiConsumer<String, V> joining(BiConsumer<String, V> pairs) {
