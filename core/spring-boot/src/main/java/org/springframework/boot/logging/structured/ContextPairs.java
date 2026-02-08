@@ -193,47 +193,35 @@ public class ContextPairs {
 			LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 			this.addedPairs.forEach((addedPair) -> {
 				addedPair.accept(item, joining((name, value) -> {
+					StringBuilder part = new StringBuilder(name.length());
+					int length = (!name.endsWith(".")) ? name.length() : name.length() - 1;
 					Map<String, Object> destination = result;
-
-					int end = trimTrailingDelimiters(name);
-					if (end == 0) {
-						return;
-					}
-
-					int start = 0;
-					while (true) {
-						int dot = name.indexOf('.', start);
-						if (dot == -1 || dot >= end) {
-							break;
+					for (int i = 0; i < length; i++) {
+						char ch = name.charAt(i);
+						if (i == length - 1) {
+							part.append(ch);
+							Object previous = destination.put(part.toString(), value);
+							assertNotDuplicateNestedPairs(previous == null, name, length);
 						}
-
-						String part = name.substring(start, dot);
-
-						Object existing = destination.computeIfAbsent(part, (key) -> new LinkedHashMap<>());
-						if (!(existing instanceof Map)) {
-							String common = name.substring(0, dot);
-							throw new IllegalStateException(
-									"Duplicate nested pairs added under '%s'".formatted(common));
+						else if (ch == '.') {
+							Object current = destination.computeIfAbsent(part.toString(),
+									(key) -> new LinkedHashMap<>());
+							assertNotDuplicateNestedPairs(current instanceof Map, name, i);
+							destination = (Map<String, Object>) current;
+							part.setLength(0);
 						}
-
-						destination = (Map<String, Object>) existing;
-						start = dot + 1;
+						else {
+							part.append(ch);
+						}
 					}
-
-					String leaf = name.substring(start, end);
-					Object previous = destination.put(leaf, value);
-					Assert.state(previous == null, () -> "Duplicate nested pairs added under '%s'".formatted(name));
 				}));
 			});
 			result.forEach(pairs);
 		}
 
-		private int trimTrailingDelimiters(String name) {
-			int end = name.length();
-			while (end > 0 && name.charAt(end - 1) == '.') {
-				end--;
-			}
-			return end;
+		private void assertNotDuplicateNestedPairs(boolean expression, String name, int index) {
+			Assert.state(expression,
+					() -> "Duplicate nested pairs added under '%s'".formatted(name.substring(0, index)));
 		}
 
 		private <V> BiConsumer<String, V> joining(BiConsumer<String, V> pairs) {
