@@ -16,8 +16,6 @@
 
 package org.springframework.boot.amqp.docker.compose;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
@@ -27,25 +25,28 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link RabbitStreamConnectionDetails} for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
+ * for a {@code rabbitmq} service.
  *
+ * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Scott Frederick
  */
-class RabbitDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
+class RabbitStreamDockerComposeConnectionDetailsFactory
+		extends DockerComposeConnectionDetailsFactory<RabbitStreamConnectionDetails> {
 
-	private static final int RABBITMQ_PORT = 5672;
+	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
-	protected RabbitDockerComposeConnectionDetailsFactory() {
+	protected RabbitStreamDockerComposeConnectionDetailsFactory() {
 		super("rabbitmq");
 	}
 
 	@Override
-	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
+	protected @Nullable RabbitStreamConnectionDetails getDockerComposeConnectionDetails(
 			DockerComposeConnectionSource source) {
 		try {
-			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+			return new RabbitStreamDockerComposeConnectionDetails(source.getRunningService());
 		}
 		catch (IllegalStateException ex) {
 			return null;
@@ -53,20 +54,23 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link RabbitConnectionDetails} backed by a {@code rabbitmq}
+	 * {@link RabbitStreamConnectionDetails} backed by a {@code rabbitmq}
 	 * {@link RunningService}.
 	 */
-	static class RabbitDockerComposeConnectionDetails extends DockerComposeConnectionDetails
-			implements RabbitConnectionDetails {
+	static class RabbitStreamDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+			implements RabbitStreamConnectionDetails {
 
 		private final RabbitEnvironment environment;
 
-		private final List<Address> addresses;
+		private final String host;
 
-		protected RabbitDockerComposeConnectionDetails(RunningService service) {
+		private final int port;
+
+		protected RabbitStreamDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
-			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
+			this.host = service.host();
+			this.port = service.ports().get(RABBITMQ_STREAMS_PORT);
 		}
 
 		@Override
@@ -85,8 +89,13 @@ class RabbitDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public List<Address> getAddresses() {
-			return this.addresses;
+		public String getHost() {
+			return this.host;
+		}
+
+		@Override
+		public int getPort() {
+			return this.port;
 		}
 
 	}
