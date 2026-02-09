@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -100,7 +99,6 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
-	@Disabled
 	void runWhenContextIsBeingClosedInAnotherThreadWaitsUntilContextIsInactive() throws InterruptedException {
 		// This situation occurs in the Spring Tools IDE. It triggers a context close via
 		// JMX and then stops the JVM. The two actions happen almost simultaneously
@@ -120,7 +118,7 @@ class SpringApplicationShutdownHookTests {
 		Thread shutdownThread = new Thread(shutdownHook);
 		shutdownThread.start();
 		// Shutdown thread should start waiting for context to become inactive
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(shutdownThread::getState, State.WAITING::equals);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(shutdownThread::getState, State.TIMED_WAITING::equals);
 		// Allow context thread to proceed, unblocking shutdown thread
 		proceedWithClose.countDown();
 		contextThread.join();
