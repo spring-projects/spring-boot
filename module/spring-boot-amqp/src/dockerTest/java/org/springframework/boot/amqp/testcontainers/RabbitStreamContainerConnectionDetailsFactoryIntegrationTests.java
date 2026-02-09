@@ -20,55 +20,79 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rabbitmq.stream.Address;
+import com.rabbitmq.stream.Environment;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 
-import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.amqp.autoconfigure.EnvironmentBuilderCustomizer;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.amqp.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
+import org.springframework.boot.amqp.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
+import org.springframework.rabbit.stream.support.StreamAdmin;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitContainerConnectionDetailsFactory}.
+ * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with a single container
+ * that's only used for streams.
  *
- * @author Moritz Halbritter
+ * @author Eddú Meléndez
  * @author Andy Wilkinson
- * @author Phillip Webb
  */
 @SpringJUnitConfig
+@TestPropertySource(
+		properties = { "spring.rabbitmq.stream.name=stream.queue1", "spring.rabbitmq.listener.type=stream" })
 @Testcontainers(disabledWithoutDocker = true)
-class RabbitContainerConnectionDetailsFactoryIntegrationTests {
+class RabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
+
+	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
 	@Container
-	@ServiceConnection
-	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
+	@ServiceConnection(type = RabbitStreamConnectionDetails.class)
+	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
+
+	private static RabbitMQContainer getRabbitMqStreamContainer() {
+		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
+		container.addExposedPorts(RABBITMQ_STREAMS_PORT);
+		String enabledPlugins = "[rabbitmq_stream,rabbitmq_prometheus].";
+		container.withCopyToContainer(Transferable.of(enabledPlugins), "/etc/rabbitmq/enabled_plugins");
+		return container;
+	}
 
 	@Autowired(required = false)
 	private RabbitConnectionDetails connectionDetails;
 
+	@Autowired(required = false)
+	private RabbitStreamConnectionDetails streamConnectionDetails;
+
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitStreamTemplate rabbitStreamTemplate;
 
 	@Autowired
 	private TestListener listener;
 
 	@Test
 	void connectionCanBeMadeToRabbitContainer() {
-		assertThat(this.connectionDetails).isNotNull();
-		this.rabbitTemplate.convertAndSend("test", "message");
+		assertThat(this.connectionDetails).isNotInstanceOf(RabbitMqContainerConnectionDetails.class);
+		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
+		this.rabbitStreamTemplate.convertAndSend("message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
 	}
@@ -76,6 +100,17 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(RabbitAutoConfiguration.class)
 	static class TestConfiguration {
+
+		@Bean
+		StreamAdmin streamAdmin(Environment env) {
+			return new StreamAdmin(env, (sc) -> sc.stream("stream.queue1").create());
+		}
+
+		@Bean
+		EnvironmentBuilderCustomizer environmentBuilderCustomizer() {
+			return (env) -> env.addressResolver(
+					(address) -> new Address(rabbit.getHost(), rabbit.getMappedPort(RABBITMQ_STREAMS_PORT)));
+		}
 
 		@Bean
 		TestListener testListener() {
@@ -88,7 +123,7 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 
 		private final List<String> messages = new ArrayList<>();
 
-		@RabbitListener(queuesToDeclare = @Queue("test"))
+		@RabbitListener(queues = "stream.queue1")
 		void processMessage(String message) {
 			this.messages.add(message);
 		}
