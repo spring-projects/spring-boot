@@ -342,7 +342,7 @@ class ValueObjectBinderTests {
 		RecordPropertiesWithOptionalInNestedRecord bound = this.binder.bindOrCreate("foo",
 				Bindable.of(RecordPropertiesWithOptionalInNestedRecord.class));
 		assertThat(bound.nested()).isNotNull();
-		assertThat(bound.nested().property1()).isNotNull().isEmpty();
+		assertThat(bound.nested().property1()).isEmpty();
 		assertThat(bound.nested().property2()).isEqualTo("str");
 	}
 
