@@ -128,7 +128,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
 				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory",
 				"cachedDataSources", "cachedResolvedEnvironments", "currentEnvironmentName", "allEnvironments",
-				"environmentProvisionMode", "provisionMode", "cleanOnValidationError");
+				"environmentProvisionMode", "provisionMode");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"callbackLocationsAsStrings", "targetAsString");

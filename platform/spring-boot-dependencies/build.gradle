@@ -425,9 +425,10 @@ bom {
 			javadoc("elasticsearch-java", version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 		}
 	}
-	library("Flyway", "11.20.3") {
+	library("Flyway", "12.0.0") {
 		group("org.flywaydb") {
 			modules = [
+				"flyway-command-test-connection",
 				"flyway-commandline",
 				"flyway-core",
 				"flyway-database-cassandra",
@@ -436,6 +437,8 @@ bom {
 				"flyway-database-hsqldb",
 				"flyway-database-informix",
 				"flyway-database-mongodb",
+				"flyway-database-nc-couchbase",
+				"flyway-database-nc-mongodb",
 				"flyway-database-oracle",
 				"flyway-database-postgresql",
 				"flyway-database-redshift",
