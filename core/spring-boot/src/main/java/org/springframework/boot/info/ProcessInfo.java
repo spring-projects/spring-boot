@@ -16,6 +16,7 @@
 
 package org.springframework.boot.info;
 
+import java.lang.ProcessHandle.Info;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -151,51 +152,62 @@ public class ProcessInfo {
 	}
 
 	/**
-	 * The uptime of the process can be useful to see how long the process has been
-	 * running and to check how long ago the last deployment or restart happened.
-	 * @return duration since the process started if available, null otherwise
+	 * Uptime of the process. Can be useful to see how long the process has been running
+	 * and to check how long ago the last deployment or restart happened.
+	 * @return duration since the process started, if available, otherwise {@code null}
+	 * @since 4.1.0
 	 */
 	public @Nullable Duration getUptime() {
 		return (this.startTime != null) ? Duration.between(this.startTime, Instant.now()) : null;
 	}
 
 	/**
-	 * The start time of the process can be useful to see when the process was started and
-	 * to check when the last deployment or restart happened.
-	 * @return the time when the process started if available, null otherwise
+	 * Time at which the process started. Can be useful to see when the process was
+	 * started and to check when the last deployment or restart happened.
+	 * @return the time when the process started, if available, otherwise {@code null}
+	 * @since 4.1.0
+	 * @see Info#startInstant()
 	 */
 	public @Nullable Instant getStartTime() {
 		return this.startTime;
 	}
 
 	/**
-	 * The current time can be useful to check if there is any clock-skew issue and if the
-	 * current time that the process knows is accurate enough.
+	 * Current time of the process. Can be useful to check if there is any clock-skew
+	 * issue and if the current time that the process knows is accurate enough.
 	 * @return the current time of the process
+	 * @since 4.1.0
+	 * @see Instant#now
 	 */
 	public Instant getCurrentTime() {
 		return Instant.now();
 	}
 
 	/**
-	 * The timezone can help to detect time and timezone related issues.
-	 * @return the timezone of the process, e.g.: America/Los_Angeles
+	 * Timezone of the process. Can help to detect time and timezone related issues.
+	 * @return the timezone of the process
+	 * @since 4.1.0
+	 * @see ZoneId#systemDefault()
 	 */
 	public ZoneId getTimezone() {
 		return this.timezone;
 	}
 
 	/**
-	 * The locale can help to detect issues connected to language and country settings.
-	 * @return the locale of the process, e.g.: en_US
+	 * Locale of the process. Can help to detect issues connected to language and country
+	 * settings.
+	 * @return the locale of the process
+	 * @since 4.1.0
+	 * @see Locale#getDefault()
 	 */
 	public Locale getLocale() {
 		return this.locale;
 	}
 
 	/**
-	 * The working directory can help to locate files that the process uses.
+	 * Working directory of the process. Can help to locate files that the process uses.
 	 * @return the absolute path of the working directory of the process
+	 * @since 4.1.0
 	 */
 	public String getWorkingDirectory() {
 		return this.workingDirectory;

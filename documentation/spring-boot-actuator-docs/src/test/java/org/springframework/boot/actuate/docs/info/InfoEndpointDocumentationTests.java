@@ -103,8 +103,12 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("pid").description("Process ID.").type(JsonFieldType.NUMBER),
 				fieldWithPath("parentPid").description("Parent Process ID (or -1).").type(JsonFieldType.NUMBER),
 				fieldWithPath("owner").description("Process owner.").type(JsonFieldType.STRING),
-				fieldWithPath("uptime").description("Process uptime.").type(JsonFieldType.STRING),
-				fieldWithPath("startTime").description("Process start time.").type(JsonFieldType.STRING),
+				fieldWithPath("uptime").description("Process uptime, if available.")
+					.optional()
+					.type(JsonFieldType.STRING),
+				fieldWithPath("startTime").description("Process start time, if availabe.")
+					.optional()
+					.type(JsonFieldType.STRING),
 				fieldWithPath("currentTime").description("Current time known by the process.")
 					.type(JsonFieldType.STRING),
 				fieldWithPath("timezone").description("Process timezone.").type(JsonFieldType.STRING),
