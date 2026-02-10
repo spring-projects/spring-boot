@@ -51,7 +51,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private AggregationTemporality aggregationTemporality = AggregationTemporality.CUMULATIVE;
 
 	/**
-	 * Compression mode for metric data sender.
+	 * Compression mode to use when exporting metrics.
 	 */
 	private CompressionMode compressionMode = CompressionMode.NONE;
 
