@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.jspecify.annotations.Nullable;
 
@@ -48,6 +49,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 * This setting depends on the backend you use, some only support one temporality.
 	 */
 	private AggregationTemporality aggregationTemporality = AggregationTemporality.CUMULATIVE;
+
+	/**
+	 * Compression mode to use when exporting metrics.
+	 */
+	private CompressionMode compressionMode = CompressionMode.NONE;
 
 	/**
 	 * Headers for the exported metrics.
@@ -94,6 +100,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public void setAggregationTemporality(AggregationTemporality aggregationTemporality) {
 		this.aggregationTemporality = aggregationTemporality;
+	}
+
+	public CompressionMode getCompressionMode() {
+		return this.compressionMode;
+	}
+
+	public void setCompressionMode(CompressionMode compressionMode) {
+		this.compressionMode = compressionMode;
 	}
 
 	public @Nullable Map<String, String> getHeaders() {
