@@ -41,6 +41,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.boot.web.error.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -66,6 +67,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Jay Choi
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootServletInitializerTests {
@@ -132,6 +134,21 @@ class SpringBootServletInitializerTests {
 			assertThat(context).isNotNull();
 			Map<String, ErrorPageFilter> errorPageFilterBeans = context.getBeansOfType(ErrorPageFilter.class);
 			assertThat(errorPageFilterBeans).isEmpty();
+		}
+	}
+
+	@Test
+	void errorPageRegistrarBeanPostProcessorIsRegistered() {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
+		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+			.createRootApplicationContext(servletContext)) {
+			assertThat(context).isNotNull();
+			Map<String, ErrorPageRegistrarBeanPostProcessor> beans = context
+				.getBeansOfType(ErrorPageRegistrarBeanPostProcessor.class);
+			assertThat(beans).hasSize(1);
 		}
 	}
 
