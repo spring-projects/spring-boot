@@ -152,6 +152,24 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toLinksShouldMatchWhenBasePathIsSlash() {
+		RequestMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.matches("/");
+		assertMatcher.doesNotMatch("/foo");
+		assertMatcher.doesNotMatch("/bar");
+	}
+
+	@Test
+	void toAnyEndpointWhenBasePathIsSlashShouldMatchLinks() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.matches("/");
+		assertMatcher.matches("/foo");
+		assertMatcher.matches("/bar");
+	}
+
+	@Test
 	void excludeByClassShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding(FooEndpoint.class, BazServletEndpoint.class);
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();

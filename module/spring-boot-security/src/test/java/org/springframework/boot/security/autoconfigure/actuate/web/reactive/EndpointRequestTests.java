@@ -146,6 +146,24 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toLinksShouldMatchWhenBasePathIsSlash() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.matches("/");
+		assertMatcher.doesNotMatch("/foo");
+		assertMatcher.doesNotMatch("/bar");
+	}
+
+	@Test
+	void toAnyEndpointWhenBasePathIsSlashShouldMatchLinks() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.matches("/");
+		assertMatcher.matches("/foo");
+		assertMatcher.matches("/bar");
+	}
+
+	@Test
 	void excludeByClassShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
 			.excluding(FooEndpoint.class, BazServletEndpoint.class);
@@ -260,7 +278,7 @@ class EndpointRequestTests {
 	@Test
 	void toAnyEndpointWhenEndpointPathMappedToRootIsExcludedShouldNotMatchRoot() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("root");
-		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("/", () -> List
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("", () -> List
 			.of(mockEndpoint(EndpointId.of("root"), "/"), mockEndpoint(EndpointId.of("alpha"), "alpha"))));
 		assertMatcher.doesNotMatch("/");
 		assertMatcher.matches("/alpha");
@@ -271,7 +289,7 @@ class EndpointRequestTests {
 	void toEndpointWhenEndpointPathMappedToRootShouldMatchRoot() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.to("root");
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher,
-				new PathMappedEndpoints("/", () -> List.of(mockEndpoint(EndpointId.of("root"), "/"))));
+				new PathMappedEndpoints("", () -> List.of(mockEndpoint(EndpointId.of("root"), "/"))));
 		assertMatcher.matches("/");
 	}
 
