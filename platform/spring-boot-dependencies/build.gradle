@@ -1984,7 +1984,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
-	library("Rabbit Stream Client", "1.4.0") {
+	library("Rabbit Stream Client", "1.5.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
