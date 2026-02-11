@@ -94,7 +94,13 @@ public enum JavaVersion {
 	 * Java 25.
 	 * @since 3.5.7
 	 */
-	TWENTY_FIVE("25", Reader.class, "readAllLines");
+	TWENTY_FIVE("25", Reader.class, "readAllLines"),
+
+	/**
+	 * Java 26.
+	 * @since 4.0.3
+	 */
+	TWENTY_SIX("26", String.class, "equalsFoldCase", String.class);
 
 	private final String name;
 
