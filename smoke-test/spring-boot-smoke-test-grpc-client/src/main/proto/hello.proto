@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "smoketest.grpcclient.proto";
+option java_multiple_files = true;
+
+service HelloWorld {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    rpc StreamHello(HelloRequest) returns (stream HelloReply) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloReply {
+    string message = 1;
+}

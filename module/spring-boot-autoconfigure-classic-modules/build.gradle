@@ -97,6 +97,9 @@ dependencies {
 	api(project(":module:spring-boot-graphql")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-grpc-client")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-grpc-server")) {
 		transitive = false
 	}
