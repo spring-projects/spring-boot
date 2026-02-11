@@ -236,6 +236,13 @@ public final class EndpointRequest {
 			return (applicationContext != null) ? applicationContext.getParent() : null;
 		}
 
+		protected final @Nullable String getLinksPath(String basePath) {
+			if (StringUtils.hasText(basePath)) {
+				return basePath;
+			}
+			return (this.managementPortType == ManagementPortType.DIFFERENT) ? "/" : null;
+		}
+
 		protected final String toString(List<Object> endpoints, String emptyValue) {
 			return (!endpoints.isEmpty()) ? endpoints.stream()
 				.map(this::getEndpointId)
@@ -334,7 +341,8 @@ public final class EndpointRequest {
 			streamPaths(this.includes, endpoints).forEach(paths::add);
 			streamPaths(this.excludes, endpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths, this.httpMethod);
-			if (this.includeLinks && StringUtils.hasText(endpoints.getBasePath())) {
+			String linksPath = getLinksPath(endpoints.getBasePath());
+			if (this.includeLinks && linksPath != null) {
 				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
 			if (delegateMatchers.isEmpty()) {
@@ -370,10 +378,17 @@ public final class EndpointRequest {
 
 		@Override
 		protected ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
-			if (StringUtils.hasText(properties.getBasePath())) {
-				return new OrServerWebExchangeMatcher(
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
+			String linksPath = getLinksPath(properties.getBasePath());
+			if (linksPath != null) {
+				List<ServerWebExchangeMatcher> linksMatchers = new ArrayList<>();
+				linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath));
+				if ("/".equals(linksPath)) {
+					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(""));
+				}
+				else {
+					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath + "/"));
+				}
+				return new OrServerWebExchangeMatcher(linksMatchers);
 			}
 			return EMPTY_MATCHER;
 		}
