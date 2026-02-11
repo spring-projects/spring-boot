@@ -15,6 +15,7 @@
  */
 
 plugins {
+	id "org.jetbrains.kotlin.jvm"
 	id "java-library"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
@@ -29,6 +30,7 @@ dependencies {
 	api(project(":module:spring-boot-jpa"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional("org.jetbrains.kotlin:kotlin-stdlib")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 

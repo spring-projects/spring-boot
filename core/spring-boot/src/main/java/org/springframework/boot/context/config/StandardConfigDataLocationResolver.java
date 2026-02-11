@@ -203,7 +203,7 @@ public class StandardConfigDataLocationResolver
 		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
 			for (String extension : propertySourceLoader.getFileExtensions()) {
 				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, directory,
-						directory + name, profile, extension, propertySourceLoader);
+						directory + name, profile, extension, propertySourceLoader, null);
 				if (!references.contains(reference)) {
 					references.addFirst(reference);
 				}
@@ -214,16 +214,19 @@ public class StandardConfigDataLocationResolver
 
 	private Set<StandardConfigDataReference> getReferencesForFile(ConfigDataLocation configDataLocation, String file,
 			@Nullable String profile) {
-		FileExtensionHint fileExtensionHint = FileExtensionHint.from(file);
-		if (fileExtensionHint.isPresent()) {
-			file = FileExtensionHint.removeFrom(file) + fileExtensionHint;
+		FileHint fileHint = FileHint.from(file);
+		file = FileHint.removeFrom(file);
+		boolean hasFileHintExtension = fileHint.getExtension() != null;
+		if (hasFileHintExtension) {
+			file = file + fileHint.getExtension();
 		}
 		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
 			String fileExtension = getLoadableFileExtension(propertySourceLoader, file);
 			if (fileExtension != null) {
 				String root = file.substring(0, file.length() - fileExtension.length() - 1);
 				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, null, root,
-						profile, (!fileExtensionHint.isPresent()) ? fileExtension : null, propertySourceLoader);
+						profile, (!hasFileHintExtension) ? fileExtension : null, propertySourceLoader,
+						fileHint.getEncodingAsCharset());
 				return Collections.singleton(reference);
 			}
 		}

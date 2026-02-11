@@ -27,13 +27,13 @@ description = "Spring Boot Artemis"
 
 dependencies {
 	api(project(":module:spring-boot-jms"))
-	api("org.apache.activemq:artemis-jakarta-client")
+	api("org.apache.artemis:artemis-jakarta-client")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-transaction"))
-	optional("org.apache.activemq:artemis-jakarta-server")
+	optional("org.apache.artemis:artemis-jakarta-server")
 	optional("org.messaginghub:pooled-jms") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
 	}

@@ -244,9 +244,11 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 				EmbeddedLdapProperties embeddedProperties) {
 			LdapContextSource source = new LdapContextSource();
 			source.setBase(properties.getBase());
-			if (embeddedProperties.getCredential().isAvailable()) {
-				source.setUserDn(embeddedProperties.getCredential().getUsername());
-				source.setPassword(embeddedProperties.getCredential().getPassword());
+			String username = embeddedProperties.getCredential().getUsername();
+			String password = embeddedProperties.getCredential().getPassword();
+			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+				source.setUserDn(username);
+				source.setPassword(password);
 			}
 			source.setUrls(properties.determineUrls(environment));
 			return source;

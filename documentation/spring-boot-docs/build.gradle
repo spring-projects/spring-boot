@@ -285,7 +285,7 @@ dependencies {
 	javadocMacros("jakarta.json.bind:jakarta.json.bind-api")
 	javadocMacros("jakarta.mail:jakarta.mail-api")
 	javadocMacros("jakarta.websocket:jakarta.websocket-api")
-	javadocMacros("org.apache.activemq:artemis-jakarta-server")
+	javadocMacros("org.apache.artemis:artemis-jakarta-server")
 	javadocMacros("org.apache.logging.log4j:log4j-core")
 	javadocMacros("org.eclipse.jetty:jetty-client")
 	javadocMacros("org.infinispan:infinispan-core")

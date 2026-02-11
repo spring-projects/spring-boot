@@ -176,6 +176,9 @@ javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javad
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[]
 
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[] when the `@ServiceConnection` `type` attribute includes javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
 | Containers of type javadoc:com.redis.testcontainers.RedisContainer[] or javadoc:com.redis.testcontainers.RedisStackContainer[], or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
 
@@ -185,10 +188,13 @@ javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javad
 
 [TIP]
 ====
-By default all applicable connection details beans will be created for a given javadoc:org.testcontainers.containers.Container[].
+By default, with the exception of javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[], all applicable connection details beans will be created for a given javadoc:org.testcontainers.containers.Container[].
 For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.postgresql.PostgreSQLContainer[] will create both javadoc:org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails[] and javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[].
 
 If you want to create only a subset of the applicable types, you can use the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
+
+To create a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[] bean from a javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[], you must opt in using the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
+The container must also expose port 5552, the RabbitMQ streams port.
 ====
 
 By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.
@@ -229,7 +235,7 @@ The SSL annotations are supported for the following service connections:
 * Elasticsearch
 * Kafka
 * MongoDB
-* RabbitMQ
+* RabbitMQ (excluding streams)
 * Redis
 
 The `ElasticsearchContainer` additionally supports automatic detection of server side SSL.

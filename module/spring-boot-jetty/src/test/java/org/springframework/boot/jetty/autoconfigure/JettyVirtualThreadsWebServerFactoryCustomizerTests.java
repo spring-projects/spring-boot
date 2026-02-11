@@ -48,7 +48,7 @@ class JettyVirtualThreadsWebServerFactoryCustomizerTests {
 			assertThat(threadPool).isInstanceOf(VirtualThreadPool.class);
 			VirtualThreadPool virtualThreadPool = (VirtualThreadPool) threadPool;
 			assertThat(virtualThreadPool.getName()).isEqualTo("jetty-");
-			assertThat(virtualThreadPool.getMaxThreads()).isEqualTo(100);
+			assertThat(virtualThreadPool.getMaxConcurrentTasks()).isEqualTo(100);
 		}));
 	}
 

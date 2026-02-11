@@ -167,7 +167,12 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.containerSupplier;
 	}
 
-	Set<Class<?>> getConnectionDetailsTypes() {
+	/**
+	 * Returns the requested connection details types.
+	 * @return the requested connection details types.
+	 * @since 4.1.0
+	 */
+	public Set<Class<?>> getConnectionDetailsTypes() {
 		return this.connectionDetailsTypes;
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
@@ -43,11 +44,14 @@ class SystemEnvironmentConfigDataResource extends ConfigDataResource {
 
 	private final Function<String, @Nullable String> environment;
 
+	private final @Nullable Charset encoding;
+
 	SystemEnvironmentConfigDataResource(String variableName, PropertySourceLoader loader,
-			Function<String, @Nullable String> environment) {
+			Function<String, @Nullable String> environment, @Nullable Charset encoding) {
 		this.variableName = variableName;
 		this.loader = loader;
 		this.environment = environment;
+		this.encoding = encoding;
 	}
 
 	String getVariableName() {
@@ -60,7 +64,8 @@ class SystemEnvironmentConfigDataResource extends ConfigDataResource {
 
 	@Nullable List<PropertySource<?>> load() throws IOException {
 		String content = this.environment.apply(this.variableName);
-		return (content != null) ? this.loader.load(StringUtils.capitalize(toString()), asResource(content)) : null;
+		return (content != null)
+				? this.loader.load(StringUtils.capitalize(toString()), asResource(content), this.encoding) : null;
 	}
 
 	private ByteArrayResource asResource(String content) {

@@ -174,9 +174,13 @@ management:
 
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {url-micrometer-docs-implementations}/dynatrace[Micrometer].
 You can find the Dynatrace documentation on Micrometer metrics ingest {url-dynatrace-docs-shortlink}/micrometer-metrics-ingest[here].
+
 Configuration properties in the `v1` namespace apply only when exporting to the {url-dynatrace-docs-shortlink}/api-metrics[Timeseries v1 API].
+Support for the V1 API is deprecated.
+
 Configuration properties in the `v2` namespace apply only when exporting to the {url-dynatrace-docs-shortlink}/api-metrics-v2-post-datapoints[Metrics v2 API].
-Note that this integration can export only to either the `v1` or `v2` version of the API at a time, with `v2` being preferred.
+
+Note that this integration can export only to either the `v1` or `v2` version of the API at a time, with `v2` being strongly recommended due to the deprecation of the v1 API.
 If the `device-id` (required for v1 but not used in v2) is set in the `v1` namespace, metrics are exported to the `v1` endpoint.
 Otherwise, `v2` is assumed.
 
@@ -264,13 +268,13 @@ management:
 
 
 [[actuator.metrics.export.dynatrace.v1-api]]
-==== v1 API (Legacy)
+==== v1 API (Deprecated)
 
 The Dynatrace v1 API metrics registry pushes metrics to the configured URI periodically by using the {url-dynatrace-docs-shortlink}/api-metrics[Timeseries v1 API].
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics are exported to the Timeseries v1 endpoint.
 To export metrics to {url-micrometer-docs-implementations}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 management:
   dynatrace:

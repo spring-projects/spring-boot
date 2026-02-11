@@ -294,7 +294,18 @@ This will trigger the import of a `dev.properties` file in current directory (if
 Values from the imported `dev.properties` will take precedence over the file that triggered the import.
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
 
-An import will only be imported once no matter how many times it is declared.
+NOTE: An import will only be imported once no matter how many times it is declared.
+
+By default, properties files are imported using the ISO-8859-1 charset. To change that, you can use the encoding attribute:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "classpath:import.properties[encoding=utf-8]"
+----
+
+The `import.properties` file will now be read in UTF-8 encoding.
 
 
 
@@ -392,6 +403,31 @@ You can import it from your `application.properties` using the following:
 spring:
   config:
     import: "file:/etc/config/myconfig[.yaml]"
+----
+
+This is the shorthand for:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "file:/etc/config/myconfig[extension=.yaml]"
+----
+
+
+
+[[features.external-config.files.attributes]]
+=== File attributes
+
+The configprop:spring.config.import[] configuration property supports file attributes, as shown when specifying the xref:features/external-config.adoc#features.external-config.files.importing[encoding] or the xref:features/external-config.adoc#features.external-config.files.importing-extensionless[extension].
+
+If you need to specify multiple attributes, you can use this syntax:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "file:/etc/config/myconfig[extension=.yaml][encoding=utf-8]"
 ----
 
 
@@ -545,7 +581,7 @@ You should always refer to property names in the placeholder using their canonic
 This will allow Spring Boot to use the same logic as it does when xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding] javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
 
 For example, `${demo.item-price}` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
-If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+If you use `${demo.itemPrice}` instead, it will pick up the `demo.itemPrice` form from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment, but `demo.item-price` would not be considered.
 ====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
@@ -1344,7 +1380,7 @@ If you do want to use javadoc:org.springframework.beans.factory.annotation.Value
 This will allow Spring Boot to use the same logic as it does when xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding] javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
 
 For example, `@Value("${demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
-If you used `@Value("${demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+If you use `@Value("${demo.itemPrice}")` instead, it will pickup the `demo.itemPrice` form from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment, but `demo.item-price` would not be considered.
 ====
 
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].

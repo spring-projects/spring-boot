@@ -126,7 +126,10 @@ The following service connections are currently supported:
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
-| Containers named "rabbitmq"
+| Containers named "rabbitmq" with container port 5672 mapped
+
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+| Containers named "rabbitmq" with container port 5552 mapped
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
 | Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
@@ -151,7 +154,7 @@ SSL is supported for the following service connections:
 * Elasticsearch
 * Kafka
 * MongoDB
-* RabbitMQ
+* RabbitMQ (excluding streams)
 * Redis
 
 To enable SSL support for a service, you can use https://docs.docker.com/reference/compose-file/services/#labels[service labels].

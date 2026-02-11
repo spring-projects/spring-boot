@@ -98,14 +98,12 @@ final class BindConverter {
 
 	@SuppressWarnings("unchecked")
 	<T> @Nullable T convert(@Nullable Object source, ResolvableType targetType, Annotation... targetAnnotations) {
-		if (source == null) {
-			return null;
-		}
-		return (T) convert(source, TypeDescriptor.forObject(source),
-				new ResolvableTypeDescriptor(targetType, targetAnnotations));
+		TypeDescriptor sourceType = (source != null) ? TypeDescriptor.forObject(source) : null;
+		return (T) convert(source, sourceType, new ResolvableTypeDescriptor(targetType, targetAnnotations));
 	}
 
-	private @Nullable Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	private @Nullable Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
 		ConversionException failure = null;
 		for (ConversionService delegate : this.delegates) {
 			try {
@@ -118,6 +116,9 @@ final class BindConverter {
 					failure = ex;
 				}
 			}
+		}
+		if (source == null) {
+			return null;
 		}
 		throw (failure != null) ? failure : new ConverterNotFoundException(sourceType, targetType);
 	}

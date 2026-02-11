@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import io.micrometer.registry.otlp.OtlpConfig;
 
@@ -70,6 +71,11 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	@Override
 	public AggregationTemporality aggregationTemporality() {
 		return obtain(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
+	}
+
+	@Override
+	public CompressionMode compressionMode() {
+		return obtain(OtlpMetricsProperties::getCompressionMode, OtlpConfig.super::compressionMode);
 	}
 
 	@Override

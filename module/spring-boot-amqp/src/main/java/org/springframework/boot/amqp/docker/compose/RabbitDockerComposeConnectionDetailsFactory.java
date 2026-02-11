@@ -21,18 +21,16 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
- * for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create
+ * {@link RabbitStreamConnectionDetails} for a {@code rabbitmq} service.
  *
- * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Phillip Webb
- * @author Scott Frederick
  */
 class RabbitDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
@@ -44,8 +42,14 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	@Override
-	protected RabbitConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
+			DockerComposeConnectionSource source) {
+		try {
+			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
 	}
 
 	/**

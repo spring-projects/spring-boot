@@ -63,11 +63,12 @@ class SystemEnvironmentConfigDataLocationResolver
 			ConfigDataLocation location)
 			throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
 		String value = location.getNonPrefixedValue(PREFIX);
-		FileExtensionHint fileExtensionHint = FileExtensionHint.from(value);
-		String variableName = FileExtensionHint.removeFrom(value);
-		PropertySourceLoader loader = getLoader(fileExtensionHint.orElse(DEFAULT_EXTENSION));
+		FileHint fileHint = FileHint.from(value);
+		String variableName = FileHint.removeFrom(value);
+		PropertySourceLoader loader = getLoader(fileHint.getExtensionOrElse(DEFAULT_EXTENSION));
 		if (hasEnvVariable(variableName)) {
-			return List.of(new SystemEnvironmentConfigDataResource(variableName, loader, this.environment));
+			return List.of(new SystemEnvironmentConfigDataResource(variableName, loader, this.environment,
+					fileHint.getEncodingAsCharset()));
 		}
 		if (location.isOptional()) {
 			return Collections.emptyList();

@@ -47,6 +47,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
+import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -106,7 +107,10 @@ class Saml2RelyingPartyRegistrationConfiguration {
 					.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
-		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
+		@Nullable Saml2MessageBinding binding = properties.getSinglelogout().getBinding();
+		if (binding != null) {
+			builder.singleLogoutServiceBinding(binding);
+		}
 		builder.entityId(properties.getEntityId());
 		builder.nameIdFormat(properties.getNameIdFormat());
 		RelyingPartyRegistration registration = builder.build();
@@ -117,11 +121,13 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private RelyingPartyRegistration.Builder createBuilderUsingMetadata(AssertingParty properties) {
 		String requiredEntityId = properties.getEntityId();
-		Collection<Builder> candidates = RelyingPartyRegistrations
-			.collectionFromMetadataLocation(properties.getMetadataUri());
-		for (RelyingPartyRegistration.Builder candidate : candidates) {
-			if (requiredEntityId == null || requiredEntityId.equals(getEntityId(candidate))) {
-				return candidate;
+		String metadataUri = properties.getMetadataUri();
+		if (metadataUri != null) {
+			Collection<Builder> candidates = RelyingPartyRegistrations.collectionFromMetadataLocation(metadataUri);
+			for (RelyingPartyRegistration.Builder candidate : candidates) {
+				if (requiredEntityId == null || requiredEntityId.equals(getEntityId(candidate))) {
+					return candidate;
+				}
 			}
 		}
 		throw new IllegalStateException("No relying party with Entity ID '" + requiredEntityId + "' found");

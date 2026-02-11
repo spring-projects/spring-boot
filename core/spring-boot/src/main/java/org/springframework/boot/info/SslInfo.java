@@ -104,9 +104,12 @@ public class SslInfo {
 
 		private final List<CertificateChainInfo> certificateChains;
 
+		private final List<CertificateChainInfo> trustStoreCertificateChains;
+
 		private BundleInfo(String name, SslBundle sslBundle) {
 			this.name = name;
 			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
+			this.trustStoreCertificateChains = extractCertificateChains(sslBundle.getStores().getTrustStore());
 		}
 
 		private List<CertificateChainInfo> extractCertificateChains(@Nullable KeyStore keyStore) {
@@ -132,6 +135,10 @@ public class SslInfo {
 			return this.certificateChains;
 		}
 
+		public List<CertificateChainInfo> getTrustStoreCertificateChains() {
+			return this.trustStoreCertificateChains;
+		}
+
 	}
 
 	/**
@@ -150,13 +157,32 @@ public class SslInfo {
 
 		private List<CertificateInfo> extractCertificates(KeyStore keyStore, String alias) {
 			try {
-				Certificate[] certificates = keyStore.getCertificateChain(alias);
-				return (!ObjectUtils.isEmpty(certificates))
-						? Arrays.stream(certificates).map(CertificateInfo::new).toList() : Collections.emptyList();
+				List<CertificateInfo> certificates = readCertificateChain(keyStore, alias);
+				if (certificates != null) {
+					return certificates;
+				}
+				List<CertificateInfo> certificate = readCertificate(keyStore, alias);
+				if (certificate != null) {
+					return certificate;
+				}
+				return Collections.emptyList();
 			}
 			catch (KeyStoreException ex) {
 				return Collections.emptyList();
 			}
+		}
+
+		private @Nullable List<CertificateInfo> readCertificate(KeyStore keyStore, String alias)
+				throws KeyStoreException {
+			Certificate certificate = keyStore.getCertificate(alias);
+			return (certificate != null) ? List.of(new CertificateInfo(certificate)) : null;
+		}
+
+		private @Nullable List<CertificateInfo> readCertificateChain(KeyStore keyStore, String alias)
+				throws KeyStoreException {
+			Certificate[] certificates = keyStore.getCertificateChain(alias);
+			return ObjectUtils.isEmpty(certificates) ? null
+					: Arrays.stream(certificates).map(CertificateInfo::new).toList();
 		}
 
 		public String getAlias() {
