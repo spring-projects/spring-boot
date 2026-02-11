@@ -19,6 +19,7 @@ package org.springframework.boot.build.bom;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -428,6 +430,13 @@ public class Library {
 
 		Set<String> resolve();
 
+		default Configuration alignmentConfiguration(Project project, Collection<Dependency> dependencies) {
+			Configuration alignmentConfiguration = project.getConfigurations()
+				.detachedConfiguration(dependencies.toArray(new Dependency[0]));
+			alignmentConfiguration.getResolutionStrategy().cacheChangingModulesFor(0, TimeUnit.SECONDS);
+			return alignmentConfiguration;
+		}
+
 	}
 
 	/**
@@ -492,8 +501,7 @@ public class Library {
 
 		private Map<String, String> resolveAligningDependencies() {
 			List<Dependency> dependencies = getAligningDependencies();
-			Configuration alignmentConfiguration = this.project.getConfigurations()
-				.detachedConfiguration(dependencies.toArray(new Dependency[0]));
+			Configuration alignmentConfiguration = alignmentConfiguration(this.project, dependencies);
 			Map<String, String> versions = new HashMap<>();
 			ResolutionResult resolutionResult = alignmentConfiguration.getIncoming().getResolutionResult();
 			for (DependencyResult dependency : resolutionResult.getAllDependencies()) {
@@ -605,8 +613,7 @@ public class Library {
 			if (this.alignedVersions != null) {
 				return this.alignedVersions;
 			}
-			Configuration alignmentConfiguration = this.project.getConfigurations()
-				.detachedConfiguration(getAligningDependencies().toArray(new Dependency[0]));
+			Configuration alignmentConfiguration = alignmentConfiguration(this.project, getAligningDependencies());
 			Set<File> files = alignmentConfiguration.resolve();
 			if (files.size() != 1) {
 				throw new IllegalStateException(
