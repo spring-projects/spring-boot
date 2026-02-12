@@ -16,9 +16,11 @@
 
 package org.springframework.boot.amqp.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -29,6 +31,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * {@link ServiceConnection @ServiceConnection}-annotated {@link RabbitMQContainer}.
  *
  * @author Eddú Meléndez
+ * @author Jay Choi
  */
 class RabbitStreamContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitStreamConnectionDetails> {
@@ -79,6 +82,11 @@ class RabbitStreamContainerConnectionDetailsFactory
 		@Override
 		public String getPassword() {
 			return getContainer().getAdminPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

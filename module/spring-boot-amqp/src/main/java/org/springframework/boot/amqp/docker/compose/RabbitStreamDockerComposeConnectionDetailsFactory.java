@@ -23,6 +23,7 @@ import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
@@ -32,6 +33,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jay Choi
  */
 class RabbitStreamDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitStreamConnectionDetails> {
@@ -66,11 +68,14 @@ class RabbitStreamDockerComposeConnectionDetailsFactory
 
 		private final int port;
 
+		private final @Nullable SslBundle sslBundle;
+
 		protected RabbitStreamDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
 			this.host = service.host();
 			this.port = service.ports().get(RABBITMQ_STREAMS_PORT);
+			this.sslBundle = getSslBundle(service);
 		}
 
 		@Override
@@ -96,6 +101,11 @@ class RabbitStreamDockerComposeConnectionDetailsFactory
 		@Override
 		public int getPort() {
 			return this.port;
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 	}
