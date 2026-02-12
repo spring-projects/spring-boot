@@ -923,7 +923,14 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.ws.rs")
 		}
 	}
-	library("Jakarta XML Bind", "4.0.5") {
+	library("Jakarta XML Bind", "4.0.4") {
+		alignWith {
+			version {
+				of "jakarta.xml.bind:jakarta.xml.bind-api"
+				from "org.glassfish.jaxb:jaxb-core"
+				managedBy "Glassfish JAXB"
+			}
+		}
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
