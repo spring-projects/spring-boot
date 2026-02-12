@@ -53,9 +53,10 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 			Assert.state(clientId != null, "'clientId' must not be null");
 			String clientSecret = opaquetoken.getClientSecret();
 			Assert.state(clientSecret != null, "'clientSecret' must not be null");
-			SpringReactiveOpaqueTokenIntrospector.Builder builder = SpringReactiveOpaqueTokenIntrospector.withIntrospectionUri(opaquetoken.getIntrospectionUri())
-					.clientId(clientId)
-					.clientSecret(clientSecret);
+			SpringReactiveOpaqueTokenIntrospector.Builder builder = SpringReactiveOpaqueTokenIntrospector
+				.withIntrospectionUri(opaquetoken.getIntrospectionUri())
+				.clientId(clientId)
+				.clientSecret(clientSecret);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}

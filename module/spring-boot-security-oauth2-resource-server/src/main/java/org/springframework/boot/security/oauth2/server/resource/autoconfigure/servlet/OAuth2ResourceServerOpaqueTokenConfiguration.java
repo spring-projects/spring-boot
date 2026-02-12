@@ -57,9 +57,10 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 			Assert.state(clientId != null, "'clientId' must not be null");
 			String clientSecret = opaquetoken.getClientSecret();
 			Assert.state(clientSecret != null, "'clientSecret' must not be null");
-			SpringOpaqueTokenIntrospector.Builder builder = SpringOpaqueTokenIntrospector.withIntrospectionUri(introspectionUri)
-					.clientId(clientId)
-					.clientSecret(clientSecret);
+			SpringOpaqueTokenIntrospector.Builder builder = SpringOpaqueTokenIntrospector
+				.withIntrospectionUri(introspectionUri)
+				.clientId(clientId)
+				.clientSecret(clientSecret);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}

@@ -470,8 +470,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	private void assertSpringOpaqueTokenIntrospectorBuilderCustomization(AssertableWebApplicationContext context) {
-		SpringOpaqueTokenIntrospectorBuilderCustomizer customizer = context.getBean(
-				"opaqueTokenIntrospectorBuilderCustomizer", SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
+		SpringOpaqueTokenIntrospectorBuilderCustomizer customizer = context
+			.getBean("opaqueTokenIntrospectorBuilderCustomizer", SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
 		SpringOpaqueTokenIntrospectorBuilderCustomizer anotherCustomizer = context.getBean(
 				"anotherOpaqueTokenIntrospectorBuilderCustomizer",
 				SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
@@ -923,13 +923,13 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		JwkSetUriJwtDecoderBuilderCustomizer anotherDecoderBuilderCustomizer() {
 			return mock(JwkSetUriJwtDecoderBuilderCustomizer.class);
 		}
-	
+
 		@Bean
 		@Order(1)
 		SpringOpaqueTokenIntrospectorBuilderCustomizer opaqueTokenIntrospectorBuilderCustomizer() {
 			return mock(SpringOpaqueTokenIntrospectorBuilderCustomizer.class);
 		}
-	
+
 		@Bean
 		@Order(2)
 		SpringOpaqueTokenIntrospectorBuilderCustomizer anotherOpaqueTokenIntrospectorBuilderCustomizer() {
