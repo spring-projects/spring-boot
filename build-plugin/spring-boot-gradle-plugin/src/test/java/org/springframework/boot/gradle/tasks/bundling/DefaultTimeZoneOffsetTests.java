@@ -33,10 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DefaultTimeZoneOffsetTests {
 
-	// gh-21005
-
+	/**
+	 * gh-21005: 验证不同时区下调用 DefaultTimeZoneOffset.removeFrom(long) 方法返回值转换为 DOS 时间后结果一致。
+	 * 核心目的：确保跨时区场景下时间偏移计算的一致性，避免因时区差异导致 DOS 时间计算错误。
+	 */
 	@Test
-	void removeFromWithLongInDifferentTimeZonesReturnsSameValue() {
+	void removeFrom_shouldReturnSameDosTimeAcrossDifferentTimeZones() {
 		long time = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
 		TimeZone timeZone1 = TimeZone.getTimeZone("GMT");
 		TimeZone timeZone2 = TimeZone.getTimeZone("GMT+8");
@@ -50,8 +52,12 @@ class DefaultTimeZoneOffsetTests {
 		assertThat(dosTime1).isEqualTo(dosTime2).isEqualTo(dosTime3);
 	}
 
+	/**
+	 * 验证调用 DefaultTimeZoneOffset.removeFrom(long) 方法在指定时区下返回正确的偏移后时间。
+	 * 测试场景：使用 GMT+8 时区，验证移除时区偏移后的结果不等于原始时间，且等于预期值。
+	 */
 	@Test
-	void removeFromWithFileTimeReturnsFileTime() {
+	void removeFrom_withFileTime_shouldReturnCorrectValueInTimeZone() {
 		long time = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
 		long result = new DefaultTimeZoneOffset(TimeZone.getTimeZone("GMT+8")).removeFrom(time);
 		assertThat(result).isNotEqualTo(time).isEqualTo(946656000000L);
