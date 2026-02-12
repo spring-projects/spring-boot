@@ -58,6 +58,7 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.webflux.actuate.endpoint.web.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
 import org.springframework.boot.webflux.actuate.endpoint.web.WebFluxEndpointHandlerMapping;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.codec.Encoder;
 import org.springframework.core.env.Environment;
@@ -114,21 +115,6 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
-	@ConditionalOnBean(HealthEndpoint.class)
-	public AdditionalHealthEndpointPathsWebFluxHandlerMapping managementHealthEndpointWebFluxHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
-			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-			.findFirst()
-			.orElse(null);
-		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), healthEndpoint,
-				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
 	@Deprecated(since = "3.3.5", forRemoval = true)
@@ -159,6 +145,27 @@ public class WebFluxEndpointManagementContextConfiguration {
 			ObjectProvider<org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper> endpointJsonMapper) {
 		return new ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor(
 				SingletonSupplier.of(endpointJsonMapper::getObject));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HealthEndpoint.class)
+	static class HealthConfiguration {
+
+		@Bean
+		@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+		@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
+		@ConditionalOnBean(HealthEndpoint.class)
+		AdditionalHealthEndpointPathsWebFluxHandlerMapping managementHealthEndpointWebFluxHandlerMapping(
+				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
+			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+			ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
+				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+				.findFirst()
+				.orElse(null);
+			return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), healthEndpoint,
+					groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
+		}
+
 	}
 
 	/**
