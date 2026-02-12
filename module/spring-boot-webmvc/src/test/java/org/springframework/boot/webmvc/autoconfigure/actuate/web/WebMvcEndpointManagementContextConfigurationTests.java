@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
@@ -64,6 +65,12 @@ class WebMvcEndpointManagementContextConfigurationTests {
 	void contextWhenNotServletBasedShouldNotContainServletEndpointRegistrar() {
 		new ApplicationContextRunner().withUserConfiguration(TestConfig.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointRegistrar.class));
+	}
+
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
+	void refreshSucceedsWithoutHealth() {
+		this.contextRunner.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Configuration(proxyBeanMethods = false)

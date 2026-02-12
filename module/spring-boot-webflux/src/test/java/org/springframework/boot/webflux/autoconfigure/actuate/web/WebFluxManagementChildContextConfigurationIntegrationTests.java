@@ -41,6 +41,8 @@ import org.springframework.boot.env.ConfigTreePropertySource;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
@@ -64,6 +66,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DirtiesUrlFactories
 class WebFluxManagementChildContextConfigurationIntegrationTests {
 
 	private final List<WebServer> webServers = new ArrayList<>();
@@ -122,6 +125,12 @@ class WebFluxManagementChildContextConfigurationIntegrationTests {
 			assertThat(accessLogValve).isNotNull();
 			assertThat(accessLogValve.getPrefix()).isEqualTo("management_access_log");
 		});
+	}
+
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
+	void refreshSucceedsWithoutHealth() {
+		this.runner.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	private @Nullable AccessLogValve findAccessLogValve() {

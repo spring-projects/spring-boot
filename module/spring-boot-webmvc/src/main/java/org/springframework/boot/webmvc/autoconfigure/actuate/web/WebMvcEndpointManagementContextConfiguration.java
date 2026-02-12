@@ -44,6 +44,7 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -54,6 +55,7 @@ import org.springframework.boot.webmvc.actuate.endpoint.web.AdditionalHealthEndp
 import org.springframework.boot.webmvc.actuate.endpoint.web.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -109,25 +111,6 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
-	AdditionalHealthEndpointPathsWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
-			.filter(this::isHealthEndpoint)
-			.findFirst()
-			.orElse(null);
-		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(healthEndpoint,
-				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
-	}
-
-	private boolean isHealthEndpoint(ExposableWebEndpoint endpoint) {
-		return endpoint.getEndpointId().equals(HealthEndpoint.ID);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
 	@Deprecated(since = "3.3.5", forRemoval = true)
@@ -167,6 +150,31 @@ public class WebMvcEndpointManagementContextConfiguration {
 	static EndpointJackson2ObjectMapperWebMvcConfigurer endpointJackson2ObjectMapperWebMvcConfigurer(
 			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJsonMapper) {
 		return new EndpointJackson2ObjectMapperWebMvcConfigurer(endpointJsonMapper);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HealthEndpoint.class)
+	static class HealthConfiguration {
+
+		@Bean
+		@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+		@ConditionalOnBean(HealthEndpoint.class)
+		@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
+		AdditionalHealthEndpointPathsWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
+				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
+			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+			ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
+				.filter(this::isHealthEndpoint)
+				.findFirst()
+				.orElse(null);
+			return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(healthEndpoint,
+					groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
+		}
+
+		private boolean isHealthEndpoint(ExposableWebEndpoint endpoint) {
+			return endpoint.getEndpointId().equals(HealthEndpoint.ID);
+		}
+
 	}
 
 	/**
