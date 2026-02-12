@@ -490,7 +490,7 @@ bom {
 			dependencyManagementDeclaredIn("org.glassfish.jaxb:jaxb-bom") {
 				excluding { candidate -> candidate.classifier().equals("sources") }
 				excluding { candidate ->
-					def permittedGroups = Set.of("org.glassfix.jaxb", "com.sun.xml.bind")
+					def permittedGroups = Set.of("org.glassfish.jaxb", "com.sun.xml.bind")
 					return !permittedGroups.contains(candidate.groupId())
 				}
 			}
@@ -951,9 +951,7 @@ bom {
 	library("Jakarta XML Bind", "4.0.4") {
 		alignWith {
 			version {
-				of "jakarta.xml.bind:jakarta.xml.bind-api"
 				from "org.glassfish.jaxb:jaxb-core"
-				managedBy "Glassfish JAXB"
 			}
 		}
 		group("jakarta.xml.bind") {
