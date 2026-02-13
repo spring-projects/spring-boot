@@ -31,6 +31,7 @@ import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
+import io.micrometer.tracing.propagation.Propagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
@@ -164,7 +165,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(Propagator.class)
 	OtelPropagator otelPropagator(ContextPropagators contextPropagators, Tracer tracer) {
 		return new OtelPropagator(contextPropagators, tracer);
 	}
