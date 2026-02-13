@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.OpenTelemetryServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -105,6 +106,12 @@ class WebFluxObservationAutoConfigurationTests {
 					.getBean(DefaultServerRequestObservationConvention.class);
 				assertThat(bean.getName()).isEqualTo("some-other-name");
 			});
+	}
+
+	@Test
+	void openTelemetryConventionConfiguredViaProperties() {
+		this.contextRunner.withPropertyValues("management.observations.conventions=opentelemetry")
+			.run((context) -> assertThat(context).hasSingleBean(OpenTelemetryServerRequestObservationConvention.class));
 	}
 
 	@Test

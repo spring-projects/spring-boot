@@ -21,7 +21,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuLoadMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuTimeMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmCpuLoadMeterConvention;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -74,12 +79,47 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void allowsCustomJvmCpuMeterConventionsToBeUsed() {
-		JvmCpuMeterConventions jvmCpuMeterConventions = mock(JvmCpuMeterConventions.class);
-		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> jvmCpuMeterConventions)
+	void autoConfiguresProcessorMetricsWithDefaultConventions() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+			.getBean(ProcessorMetrics.class)
+			.extracting("cpuCountConvention")
+			.isInstanceOf(MicrometerJvmCpuCountMeterConvention.class));
+	}
+
+	@Test
+	void autoConfiguresProcessorMetricsWithOpenTelemetryConventions() {
+		this.contextRunner.withPropertyValues("management.observations.conventions=opentelemetry")
 			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 				.getBean(ProcessorMetrics.class)
-				.hasFieldOrPropertyWithValue("conventions", jvmCpuMeterConventions));
+				.extracting("cpuCountConvention")
+				.isInstanceOf(OpenTelemetryJvmCpuCountMeterConvention.class));
+	}
+
+	@Test
+	void allowsCustomJvmCpuMeterConventionsToBeUsed() {
+		JvmCpuCountMeterConvention countConvention = mock(JvmCpuCountMeterConvention.class);
+		JvmCpuLoadMeterConvention loadConvention = mock(JvmCpuLoadMeterConvention.class);
+		JvmCpuTimeMeterConvention timeConvention = mock(JvmCpuTimeMeterConvention.class);
+		this.contextRunner.withBean(JvmCpuCountMeterConvention.class, () -> countConvention)
+			.withBean(JvmCpuLoadMeterConvention.class, () -> loadConvention)
+			.withBean(JvmCpuTimeMeterConvention.class, () -> timeConvention)
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.getBean(ProcessorMetrics.class)
+				.hasFieldOrPropertyWithValue("cpuCountConvention", countConvention)
+				.hasFieldOrPropertyWithValue("cpuLoadConvention", loadConvention)
+				.hasFieldOrPropertyWithValue("cpuTimeConvention", timeConvention));
+	}
+
+	@Test
+	void allowsIndividualConventionToBeOverriddenWithOpenTelemetryConventions() {
+		JvmCpuCountMeterConvention customCount = mock(JvmCpuCountMeterConvention.class);
+		this.contextRunner.withPropertyValues("management.observations.conventions=opentelemetry")
+			.withBean(JvmCpuCountMeterConvention.class, () -> customCount)
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.getBean(ProcessorMetrics.class)
+				.hasFieldOrPropertyWithValue("cpuCountConvention", customCount)
+				.extracting("cpuLoadConvention")
+				.isInstanceOf(OpenTelemetryJvmCpuLoadMeterConvention.class));
 	}
 
 	@Test

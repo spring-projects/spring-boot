@@ -17,12 +17,13 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.system;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuLoadMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuTimeMeterConvention;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -38,6 +39,8 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterR
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.system.DiskSpaceMetricsBinder;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties.ConventionsVariant;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -50,7 +53,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-@EnableConfigurationProperties(MetricsProperties.class)
+@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public final class SystemMetricsAutoConfiguration {
 
 	@Bean
@@ -61,10 +64,18 @@ public final class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ProcessorMetrics processorMetrics(ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions) {
-		JvmCpuMeterConventions conventions = jvmCpuMeterConventions.getIfAvailable();
-		return (conventions != null) ? new ProcessorMetrics(Collections.emptyList(), conventions)
-				: new ProcessorMetrics();
+	ProcessorMetrics processorMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmCpuCountMeterConvention> jvmCpuCountMeterConvention,
+			ObjectProvider<JvmCpuLoadMeterConvention> jvmCpuLoadMeterConvention,
+			ObjectProvider<JvmCpuTimeMeterConvention> jvmCpuTimeMeterConvention) {
+		ProcessorMetrics.Builder builder = ProcessorMetrics.builder();
+		if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			builder.openTelemetryConventions();
+		}
+		jvmCpuCountMeterConvention.ifAvailable(builder::cpuCountConvention);
+		jvmCpuLoadMeterConvention.ifAvailable(builder::cpuLoadConvention);
+		jvmCpuTimeMeterConvention.ifAvailable(builder::cpuTimeConvention);
+		return builder.build();
 	}
 
 	@Bean

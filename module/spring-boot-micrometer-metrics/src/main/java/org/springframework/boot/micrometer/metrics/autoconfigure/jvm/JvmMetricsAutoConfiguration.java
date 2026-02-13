@@ -27,9 +27,13 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadingMeterConventions;
-import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
-import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassUnloadedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryCommittedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMaxMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadCountMeterConvention;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -42,8 +46,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties.ConventionsVariant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -59,6 +66,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
+@EnableConfigurationProperties(ObservationProperties.class)
 public final class JvmMetricsAutoConfiguration {
 
 	private static final String VIRTUAL_THREAD_METRICS_CLASS = "io.micrometer.java21.instrument.binder.jdk.VirtualThreadMetrics";
@@ -77,26 +85,46 @@ public final class JvmMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmMemoryMetrics jvmMemoryMetrics(ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions) {
-		JvmMemoryMeterConventions conventions = jvmMemoryMeterConventions.getIfAvailable();
-		return (conventions != null) ? new JvmMemoryMetrics(Collections.emptyList(), conventions)
-				: new JvmMemoryMetrics();
+	JvmMemoryMetrics jvmMemoryMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmMemoryUsedMeterConvention> jvmMemoryUsedMeterConvention,
+			ObjectProvider<JvmMemoryCommittedMeterConvention> jvmMemoryCommittedMeterConvention,
+			ObjectProvider<JvmMemoryMaxMeterConvention> jvmMemoryMaxMeterConvention) {
+		JvmMemoryMetrics.Builder builder = JvmMemoryMetrics.builder();
+		if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			builder.openTelemetryConventions();
+		}
+		jvmMemoryUsedMeterConvention.ifAvailable(builder::memoryUsedConvention);
+		jvmMemoryCommittedMeterConvention.ifAvailable(builder::memoryCommittedConvention);
+		jvmMemoryMaxMeterConvention.ifAvailable(builder::memoryMaxConvention);
+		return builder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmThreadMetrics jvmThreadMetrics(ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions) {
-		JvmThreadMeterConventions conventions = jvmThreadMeterConventions.getIfAvailable();
-		return (conventions != null) ? new JvmThreadMetrics(Collections.emptyList(), conventions)
-				: new JvmThreadMetrics();
+	JvmThreadMetrics jvmThreadMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmThreadCountMeterConvention> jvmThreadCountMeterConvention) {
+		JvmThreadMetrics.Builder builder = JvmThreadMetrics.builder();
+		if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			builder.openTelemetryConventions();
+		}
+		jvmThreadCountMeterConvention.ifAvailable(builder::threadCountConvention);
+		return builder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClassLoaderMetrics classLoaderMetrics(
-			ObjectProvider<JvmClassLoadingMeterConventions> jvmClassLoadingMeterConventions) {
-		JvmClassLoadingMeterConventions conventions = jvmClassLoadingMeterConventions.getIfAvailable();
-		return (conventions != null) ? new ClassLoaderMetrics(conventions) : new ClassLoaderMetrics();
+	ClassLoaderMetrics classLoaderMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmClassCountMeterConvention> jvmClassCountMeterConvention,
+			ObjectProvider<JvmClassLoadedMeterConvention> jvmClassLoadedMeterConvention,
+			ObjectProvider<JvmClassUnloadedMeterConvention> jvmClassUnloadedMeterConvention) {
+		ClassLoaderMetrics.Builder builder = ClassLoaderMetrics.builder();
+		if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			builder.openTelemetryConventions();
+		}
+		jvmClassCountMeterConvention.ifAvailable(builder::classCountConvention);
+		jvmClassLoadedMeterConvention.ifAvailable(builder::classLoadedConvention);
+		jvmClassUnloadedMeterConvention.ifAvailable(builder::classUnloadedConvention);
+		return builder.build();
 	}
 
 	@Bean

@@ -45,6 +45,11 @@ public class ObservationProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
+	/**
+	 * Conventions variant to use when configuring observations and metrics.
+	 */
+	private ConventionsVariant conventions = ConventionsVariant.MICROMETER;
+
 	public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
@@ -63,6 +68,20 @@ public class ObservationProperties {
 
 	public void setKeyValues(Map<String, String> keyValues) {
 		this.keyValues = keyValues;
+	}
+
+	public ConventionsVariant getConventions() {
+		return this.conventions;
+	}
+
+	public void setConventions(ConventionsVariant conventions) {
+		this.conventions = conventions;
+	}
+
+	public enum ConventionsVariant {
+
+		OPENTELEMETRY, MICROMETER,
+
 	}
 
 	public static class Http {
