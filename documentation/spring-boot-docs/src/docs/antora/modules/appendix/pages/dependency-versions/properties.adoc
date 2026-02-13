@@ -2,6 +2,8 @@
 = Version Properties
 
 The following table provides all properties that can be used to override the versions managed by Spring Boot.
+See xref:appendix:dependency-versions/coordinates.adoc[Managed Dependency Coordinates] for the dependencies that each
+property can influence.
 Browse the {code-spring-boot}/platform/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] for a complete list of dependencies.
 You can learn how to customize these versions in your application in the xref:build-tool-plugin:index.adoc[] documentation.
 

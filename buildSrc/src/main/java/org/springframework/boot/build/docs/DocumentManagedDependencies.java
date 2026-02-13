@@ -20,8 +20,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
@@ -65,48 +69,72 @@ public abstract class DocumentManagedDependencies extends DefaultTask {
 		outputFile.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(outputFile))) {
 			writer.println("|===");
-			writer.println("| Group ID | Artifact ID | Version");
-			Set<Id> managedCoordinates = new TreeSet<>((id1, id2) -> {
-				int result = id1.groupId().compareTo(id2.groupId());
-				if (result != 0) {
-					return result;
+			writer.println("| Group ID | Artifact ID | Version | Version Property");
+			Map<Id, Set<String>> managedCoordinates = new TreeMap<>((id1, id2) -> {
+				int groupComparison = id1.groupId().compareTo(id2.groupId());
+				if (groupComparison != 0) {
+					return groupComparison;
 				}
-				return id1.artifactId().compareTo(id2.artifactId());
+				int artifactComparison = id1.artifactId().compareTo(id2.artifactId());
+				if (artifactComparison != 0) {
+					return artifactComparison;
+				}
+				return id1.version().compareTo(id2.version());
 			});
 			for (File file : getResolvedBoms().getFiles()) {
-				managedCoordinates.addAll(process(ResolvedBom.readFrom(file)));
+				process(ResolvedBom.readFrom(file), managedCoordinates);
 			}
-			for (Id id : managedCoordinates) {
+			for (Map.Entry<Id, Set<String>> entry : managedCoordinates.entrySet()) {
+				Id id = entry.getKey();
 				writer.println();
 				writer.printf("| `%s`%n", id.groupId());
 				writer.printf("| `%s`%n", id.artifactId());
 				writer.printf("| `%s`%n", id.version());
+				writer.println(formatVersionProperties(entry.getValue()));
 			}
 			writer.println("|===");
 		}
 	}
 
-	private Set<Id> process(ResolvedBom resolvedBom) {
-		TreeSet<Id> managedCoordinates = new TreeSet<>();
+	private void process(ResolvedBom resolvedBom, Map<Id, Set<String>> managedCoordinates) {
 		for (ResolvedLibrary library : resolvedBom.libraries()) {
-			for (Id managedDependency : library.managedDependencies()) {
-				managedCoordinates.add(managedDependency);
-			}
+			String versionProperty = library.versionProperty();
+			addManagedDependencies(managedCoordinates, versionProperty, library.managedDependencies());
 			for (Bom importedBom : library.importedBoms()) {
-				managedCoordinates.addAll(process(importedBom));
+				process(importedBom, managedCoordinates, versionProperty);
 			}
 		}
-		return managedCoordinates;
 	}
 
-	private Set<Id> process(Bom bom) {
-		TreeSet<Id> managedCoordinates = new TreeSet<>();
-		bom.managedDependencies().stream().forEach(managedCoordinates::add);
+	private void process(Bom bom, Map<Id, Set<String>> managedCoordinates, String versionProperty) {
+		addManagedDependencies(managedCoordinates, versionProperty, bom.managedDependencies());
+		for (Bom importedBom : bom.importedBoms()) {
+			process(importedBom, managedCoordinates, versionProperty);
+		}
 		Bom parent = bom.parent();
 		if (parent != null) {
-			managedCoordinates.addAll(process(parent));
+			process(parent, managedCoordinates, versionProperty);
 		}
-		return managedCoordinates;
+	}
+
+	private void addManagedDependencies(Map<Id, Set<String>> managedCoordinates, String versionProperty,
+			Collection<Id> managedDependencies) {
+		for (Id managedDependency : managedDependencies) {
+			Set<String> properties = managedCoordinates.computeIfAbsent(managedDependency, (id) -> new TreeSet<>());
+			if (versionProperty != null && !versionProperty.isBlank()) {
+				properties.add(versionProperty);
+			}
+		}
+	}
+
+	private String formatVersionProperties(Set<String> versionProperties) {
+		if (versionProperties.isEmpty()) {
+			return "|";
+		}
+		String formattedProperties = versionProperties.stream()
+			.map((property) -> "`%s`".formatted(property))
+			.collect(Collectors.joining(", "));
+		return "| " + formattedProperties;
 	}
 
 }
