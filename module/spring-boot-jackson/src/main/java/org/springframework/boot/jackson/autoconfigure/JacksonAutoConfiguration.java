@@ -32,6 +32,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.StreamWriteConstraints;
+import tools.jackson.core.base.DecorableTSFactory.DecorableTSFBuilder;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.json.JsonFactoryBuilder;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
@@ -40,7 +45,11 @@ import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.cbor.CBORFactory;
+import tools.jackson.dataformat.cbor.CBORFactoryBuilder;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.xml.XmlFactory;
+import tools.jackson.dataformat.xml.XmlFactoryBuilder;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
@@ -55,10 +64,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jackson.JacksonComponentModule;
 import org.springframework.boot.jackson.JacksonMixinModule;
 import org.springframework.boot.jackson.JacksonMixinModuleEntries;
 import org.springframework.boot.jackson.autoconfigure.JacksonProperties.ConstructorDetectorStrategy;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Factory.Constraints;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Factory.Constraints.Read;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Factory.Constraints.Write;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,10 +108,20 @@ public final class JacksonAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	JsonFactory jsonFactory(List<JsonFactoryBuilderCustomizer> customizers) {
+		JsonFactoryBuilder builder = JsonFactory.builder();
+		for (JsonFactoryBuilderCustomizer customizer : customizers) {
+			customizer.customize(builder);
+		}
+		return builder.build();
+	}
+
+	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	JsonMapper.Builder jsonMapperBuilder(List<JsonMapperBuilderCustomizer> customizers) {
-		JsonMapper.Builder builder = JsonMapper.builder();
+	JsonMapper.Builder jsonMapperBuilder(List<JsonMapperBuilderCustomizer> customizers, JsonFactory jsonFactory) {
+		JsonMapper.Builder builder = JsonMapper.builder(jsonFactory);
 		customize(builder, customizers);
 		return builder;
 	}
@@ -137,12 +160,36 @@ public final class JacksonAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(JacksonProperties.class)
-	static class JacksonJsonMapperBuilderCustomizerConfiguration {
+	static class JacksonJsonCustomizerConfiguration {
+
+		private final JacksonProperties jacksonProperties;
+
+		JacksonJsonCustomizerConfiguration(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
 
 		@Bean
-		StandardJsonMapperBuilderCustomizer standardJsonMapperBuilderCustomizer(JacksonProperties jacksonProperties,
-				ObjectProvider<JacksonModule> modules) {
-			return new StandardJsonMapperBuilderCustomizer(jacksonProperties, modules.stream().toList());
+		StandardJsonFactoryBuilderCustomizer standardJsonFactoryBuilderCustomizer() {
+			return new StandardJsonFactoryBuilderCustomizer(this.jacksonProperties);
+		}
+
+		@Bean
+		StandardJsonMapperBuilderCustomizer standardJsonMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules) {
+			return new StandardJsonMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList());
+		}
+
+		static final class StandardJsonFactoryBuilderCustomizer
+				extends AbstractFactoryBuilderCustomizer<JsonFactoryBuilder> implements JsonFactoryBuilderCustomizer {
+
+			StandardJsonFactoryBuilderCustomizer(JacksonProperties jacksonProperties) {
+				super(jacksonProperties);
+			}
+
+			@Override
+			public void customize(JsonFactoryBuilder jsonFactoryBuilder) {
+				super.customize(jsonFactoryBuilder);
+			}
+
 		}
 
 		static final class StandardJsonMapperBuilderCustomizer
@@ -189,17 +236,27 @@ public final class JacksonAutoConfiguration {
 	@EnableConfigurationProperties(JacksonCborProperties.class)
 	static class CborConfiguration {
 
+		private final JacksonProperties jacksonProperties;
+
+		CborConfiguration(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		CBORMapper cborMapper(CBORMapper.Builder builder) {
+		CBORFactory cborFactory(List<CborFactoryBuilderCustomizer> customizers) {
+			CBORFactoryBuilder builder = CBORFactory.builder();
+			for (CborFactoryBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
 			return builder.build();
 		}
 
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		CBORMapper.Builder cborMapperBuilder(List<CborMapperBuilderCustomizer> customizers) {
-			CBORMapper.Builder builder = CBORMapper.builder();
+		CBORMapper.Builder cborMapperBuilder(CBORFactory factory, List<CborMapperBuilderCustomizer> customizers) {
+			CBORMapper.Builder builder = CBORMapper.builder(factory);
 			customize(builder, customizers);
 			return builder;
 		}
@@ -211,10 +268,35 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
-		StandardCborMapperBuilderCustomizer standardCborMapperBuilderCustomizer(JacksonProperties jacksonProperties,
-				ObjectProvider<JacksonModule> modules, JacksonCborProperties cborProperties) {
-			return new StandardCborMapperBuilderCustomizer(jacksonProperties, modules.stream().toList(),
+		@ConditionalOnMissingBean
+		CBORMapper cborMapper(CBORMapper.Builder builder) {
+			return builder.build();
+		}
+
+		@Bean
+		StandardCborFactoryBuilderCustomizer standardCborFactoryBuilderCustomizer() {
+			return new StandardCborFactoryBuilderCustomizer(this.jacksonProperties);
+		}
+
+		@Bean
+		StandardCborMapperBuilderCustomizer standardCborMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
+				JacksonCborProperties cborProperties) {
+			return new StandardCborMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
 					cborProperties);
+		}
+
+		static final class StandardCborFactoryBuilderCustomizer
+				extends AbstractFactoryBuilderCustomizer<CBORFactoryBuilder> implements CborFactoryBuilderCustomizer {
+
+			StandardCborFactoryBuilderCustomizer(JacksonProperties jacksonProperties) {
+				super(jacksonProperties);
+			}
+
+			@Override
+			public void customize(CBORFactoryBuilder cborFactoryBuilder) {
+				super.customize(cborFactoryBuilder);
+			}
+
 		}
 
 		static class StandardCborMapperBuilderCustomizer extends AbstractMapperBuilderCustomizer<CBORMapper.Builder>
@@ -244,17 +326,27 @@ public final class JacksonAutoConfiguration {
 	@EnableConfigurationProperties(JacksonXmlProperties.class)
 	static class XmlConfiguration {
 
+		private final JacksonProperties jacksonProperties;
+
+		XmlConfiguration(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		XmlMapper xmlMapper(XmlMapper.Builder builder) {
+		XmlFactory xmlFactory(List<XmlFactoryBuilderCustomizer> customizers) {
+			XmlFactoryBuilder builder = XmlFactory.builder();
+			for (XmlFactoryBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
 			return builder.build();
 		}
 
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		XmlMapper.Builder xmlMapperBuilder(List<XmlMapperBuilderCustomizer> customizers) {
-			XmlMapper.Builder builder = XmlMapper.builder();
+		XmlMapper.Builder xmlMapperBuilder(XmlFactory xmlFactory, List<XmlMapperBuilderCustomizer> customizers) {
+			XmlMapper.Builder builder = XmlMapper.builder(xmlFactory);
 			customize(builder, customizers);
 			return builder;
 		}
@@ -266,9 +358,21 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
-		StandardXmlMapperBuilderCustomizer standardXmlMapperBuilderCustomizer(JacksonProperties jacksonProperties,
-				ObjectProvider<JacksonModule> modules, JacksonXmlProperties xmlProperties) {
-			return new StandardXmlMapperBuilderCustomizer(jacksonProperties, modules.stream().toList(), xmlProperties);
+		@ConditionalOnMissingBean
+		XmlMapper xmlMapper(XmlMapper.Builder builder) {
+			return builder.build();
+		}
+
+		@Bean
+		StandardXmlFactoryBuilderCustomizer standardXmlFactoryBuilderCustomizer() {
+			return new StandardXmlFactoryBuilderCustomizer(this.jacksonProperties);
+		}
+
+		@Bean
+		StandardXmlMapperBuilderCustomizer standardXmlMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
+				JacksonXmlProperties xmlProperties) {
+			return new StandardXmlMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
+					xmlProperties);
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -287,6 +391,20 @@ public final class JacksonAutoConfiguration {
 					builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonXmlMixin.class);
 				}
 
+			}
+
+		}
+
+		static final class StandardXmlFactoryBuilderCustomizer
+				extends AbstractFactoryBuilderCustomizer<XmlFactoryBuilder> implements XmlFactoryBuilderCustomizer {
+
+			StandardXmlFactoryBuilderCustomizer(JacksonProperties jacksonProperties) {
+				super(jacksonProperties);
+			}
+
+			@Override
+			public void customize(XmlFactoryBuilder xmlFactoryBuilder) {
+				super.customize(xmlFactoryBuilder);
 			}
 
 		}
@@ -340,6 +458,46 @@ public final class JacksonAutoConfiguration {
 		private boolean isPropertyNamingStrategyField(Field candidate) {
 			return ReflectionUtils.isPublicStaticFinal(candidate)
 					&& candidate.getType().isAssignableFrom(PropertyNamingStrategy.class);
+		}
+
+	}
+
+	abstract static class AbstractFactoryBuilderCustomizer<B extends DecorableTSFBuilder<?, ?>> implements Ordered {
+
+		private final JacksonProperties jacksonProperties;
+
+		AbstractFactoryBuilderCustomizer(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
+		protected void customize(B builder) {
+			Constraints constraints = this.jacksonProperties.getFactory().getConstraints();
+			builder.streamReadConstraints(readConstraintsFrom(constraints.getRead()));
+			builder.streamWriteConstraints(writeConstraintsFrom(constraints.getWrite()));
+		}
+
+		private StreamReadConstraints readConstraintsFrom(Read read) {
+			PropertyMapper map = PropertyMapper.get();
+			StreamReadConstraints.Builder constraintsBuilder = StreamReadConstraints.builder();
+			map.from(read::getMaxDocumentLength).to(constraintsBuilder::maxDocumentLength);
+			map.from(read::getMaxNameLength).to(constraintsBuilder::maxNameLength);
+			map.from(read::getMaxNestingDepth).to(constraintsBuilder::maxNestingDepth);
+			map.from(read::getMaxNumberLength).to(constraintsBuilder::maxNumberLength);
+			map.from(read::getMaxStringLength).to(constraintsBuilder::maxStringLength);
+			map.from(read::getMaxTokenCount).to(constraintsBuilder::maxTokenCount);
+			return constraintsBuilder.build();
+		}
+
+		private StreamWriteConstraints writeConstraintsFrom(Write write) {
+			PropertyMapper map = PropertyMapper.get();
+			StreamWriteConstraints.Builder constraintsBuilder = StreamWriteConstraints.builder();
+			map.from(write::getMaxNestingDepth).to(constraintsBuilder::maxNestingDepth);
+			return constraintsBuilder.build();
 		}
 
 	}
