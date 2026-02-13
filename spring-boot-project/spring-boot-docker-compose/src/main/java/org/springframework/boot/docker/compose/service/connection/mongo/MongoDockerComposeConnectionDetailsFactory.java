@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link MongoConnectionDetails}
@@ -56,8 +57,11 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private final ConnectionString connectionString;
 
+		private final SslBundle sslBundle;
+
 		MongoDockerComposeConnectionDetails(RunningService service) {
 			super(service);
+			this.sslBundle = getSslBundle(service);
 			this.connectionString = buildConnectionString(service);
 
 		}
@@ -80,6 +84,11 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 				builder.append("?authSource=admin");
 			}
 			return new ConnectionString(builder.toString());
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 		@Override

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 
@@ -39,6 +40,15 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "mongo-compose.yaml", image = TestImage.MONGODB)
 	void runCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
 		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
+
+	@DockerComposeTest(composeFile = "mongo-ssl-compose.yaml", image = TestImage.MONGODB,
+			additionalResources = { "ca.crt", "client.crt", "client.key", "mongo.pem" })
+	void runWithSslCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
+		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		assertThat(sslBundle).isNotNull();
 	}
 
 	@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64", disabledReason = "The image has no ARM support")
