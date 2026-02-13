@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,6 +35,7 @@ import org.springframework.boot.micrometer.observation.autoconfigure.Observation
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.OpenTelemetryServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 
 /**
@@ -71,9 +73,18 @@ public final class WebFluxObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
-	DefaultServerRequestObservationConvention defaultServerRequestObservationConvention() {
+	@ConditionalOnProperty(name = "management.observations.conventions", havingValue = "micrometer",
+			matchIfMissing = true)
+	DefaultServerRequestObservationConvention micrometerServerRequestObservationConvention() {
 		return new DefaultServerRequestObservationConvention(
 				this.observationProperties.getHttp().getServer().getRequests().getName());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	@ConditionalOnProperty(name = "management.observations.conventions", havingValue = "opentelemetry")
+	OpenTelemetryServerRequestObservationConvention openTelemetryServerRequestObservationConvention() {
+		return new OpenTelemetryServerRequestObservationConvention();
 	}
 
 }

@@ -33,12 +33,22 @@ import io.micrometer.core.instrument.binder.jvm.convention.JvmClassUnloadedMeter
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryCommittedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMaxMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedAfterLastGcMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmClassCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmClassLoadingMeterConventions;
 import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmMemoryUsedAfterLastGcMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmMemoryUsedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmThreadMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmClassCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmMemoryCommittedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmMemoryUsedAfterLastGcMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmMemoryUsedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.otel.OpenTelemetryJvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -78,6 +88,62 @@ class JvmMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguresJvmMetrics() {
 		this.contextRunner.run(assertMetricsBeans());
+	}
+
+	@Test
+	void autoConfiguresJvmMetricsWithDefaultConventions() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+				.getBean(JvmMemoryMetrics.class)
+				.extracting("memoryUsedConvention")
+				.isInstanceOf(MicrometerJvmMemoryUsedMeterConvention.class);
+			assertThat(context.getBean(JvmMemoryMetrics.class)).extracting("memoryUsedAfterLastGcConvention")
+				.isInstanceOf(MicrometerJvmMemoryUsedAfterLastGcMeterConvention.class);
+			assertThat(context).hasSingleBean(JvmThreadMetrics.class)
+				.getBean(JvmThreadMetrics.class)
+				.extracting("threadCountConvention")
+				.isInstanceOf(MicrometerJvmThreadCountMeterConvention.class);
+			assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
+				.getBean(ClassLoaderMetrics.class)
+				.extracting("classCountConvention")
+				.isInstanceOf(MicrometerJvmClassCountMeterConvention.class);
+		});
+	}
+
+	@Test
+	void autoConfiguresJvmMetricsWithOpenTelemetryConventions() {
+		this.contextRunner.withPropertyValues("management.observations.conventions=opentelemetry").run((context) -> {
+			assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+				.getBean(JvmMemoryMetrics.class)
+				.extracting("memoryUsedConvention")
+				.isInstanceOf(OpenTelemetryJvmMemoryUsedMeterConvention.class);
+			assertThat(context.getBean(JvmMemoryMetrics.class)).extracting("memoryUsedAfterLastGcConvention")
+				.isInstanceOf(OpenTelemetryJvmMemoryUsedAfterLastGcMeterConvention.class);
+			assertThat(context).hasSingleBean(JvmThreadMetrics.class)
+				.getBean(JvmThreadMetrics.class)
+				.extracting("threadCountConvention")
+				.isInstanceOf(OpenTelemetryJvmThreadCountMeterConvention.class);
+			assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
+				.getBean(ClassLoaderMetrics.class)
+				.extracting("classCountConvention")
+				.isInstanceOf(OpenTelemetryJvmClassCountMeterConvention.class);
+		});
+	}
+
+	@Test
+	void allowsIndividualConventionToBeOverriddenWithOpenTelemetryConventions() {
+		JvmMemoryUsedMeterConvention customUsed = mock(JvmMemoryUsedMeterConvention.class);
+		this.contextRunner.withPropertyValues("management.observations.conventions=opentelemetry")
+			.withBean(JvmMemoryUsedMeterConvention.class, () -> customUsed)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+					.getBean(JvmMemoryMetrics.class)
+					.hasFieldOrPropertyWithValue("memoryUsedConvention", customUsed);
+				assertThat(context.getBean(JvmMemoryMetrics.class)).extracting("memoryCommittedConvention")
+					.isInstanceOf(OpenTelemetryJvmMemoryCommittedMeterConvention.class);
+				assertThat(context.getBean(JvmMemoryMetrics.class)).extracting("memoryUsedAfterLastGcConvention")
+					.isInstanceOf(OpenTelemetryJvmMemoryUsedAfterLastGcMeterConvention.class);
+			});
 	}
 
 	@Test
@@ -169,6 +235,17 @@ class JvmMetricsAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
 				.getBean(JvmMemoryMetrics.class)
 				.hasFieldOrPropertyWithValue("memoryMaxConvention", memoryMaxConvention));
+	}
+
+	@Test
+	void allowCustomJvmMemoryUsedAfterLastGcMeterConventionToBeUsed() {
+		JvmMemoryUsedAfterLastGcMeterConvention memoryUsedAfterLastGcConvention = mock(
+				JvmMemoryUsedAfterLastGcMeterConvention.class);
+		this.contextRunner
+			.withBean(JvmMemoryUsedAfterLastGcMeterConvention.class, () -> memoryUsedAfterLastGcConvention)
+			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+				.getBean(JvmMemoryMetrics.class)
+				.hasFieldOrPropertyWithValue("memoryUsedAfterLastGcConvention", memoryUsedAfterLastGcConvention));
 	}
 
 	@Test
