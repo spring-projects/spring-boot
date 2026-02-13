@@ -150,9 +150,7 @@ Please note that you still have to enable SSL on the service which is running in
 SSL is supported for the following service connections:
 
 * Cassandra
-* Couchbase
 * Elasticsearch
-* Kafka
 * MongoDB
 * RabbitMQ (excluding streams)
 * Redis
