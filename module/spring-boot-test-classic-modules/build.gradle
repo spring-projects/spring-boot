@@ -67,6 +67,9 @@ dependencies {
 	api(project(":module:spring-boot-graphql-test")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-grpc-test")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-jdbc-test")) {
 		transitive = false
 	}
