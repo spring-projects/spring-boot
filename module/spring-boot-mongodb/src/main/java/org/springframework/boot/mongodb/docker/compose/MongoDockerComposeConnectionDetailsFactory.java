@@ -16,9 +16,8 @@
 
 package org.springframework.boot.mongodb.docker.compose;
 
-import org.jspecify.annotations.Nullable;
-
 import com.mongodb.ConnectionString;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
