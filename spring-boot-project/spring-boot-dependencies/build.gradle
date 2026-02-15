@@ -2302,7 +2302,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "1.4.5-SNAPSHOT") {
+	library("Spring GraphQL", "1.4.5") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
