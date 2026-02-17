@@ -25,6 +25,7 @@ import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -63,9 +64,12 @@ class RabbitDockerComposeConnectionDetailsFactory
 
 		private final List<Address> addresses;
 
+		private final @Nullable SslBundle sslBundle;
+
 		protected RabbitDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
+			this.sslBundle = getSslBundle(service);
 			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
 		}
 
@@ -77,6 +81,11 @@ class RabbitDockerComposeConnectionDetailsFactory
 		@Override
 		public @Nullable String getPassword() {
 			return this.environment.getPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 		@Override
