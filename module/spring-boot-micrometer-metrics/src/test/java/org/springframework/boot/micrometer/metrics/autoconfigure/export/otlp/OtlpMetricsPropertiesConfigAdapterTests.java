@@ -219,6 +219,24 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.namespace");
 	}
 
+	@Test
+	void useDefaultPublishMaxGaugeForHistogramsWhenNotSet() {
+		assertThat(this.properties.getPublishMaxGaugeForHistograms()).isNull();
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isTrue();
+	}
+
+	@Test
+	void whenDefaultPublishMaxGaugeForHistogramsIsSetAdapterUsesIt() {
+		this.properties.setPublishMaxGaugeForHistograms(false);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
+	}
+
+	@Test
+	void whenAggregationTemporalityIsSetToDeltaThenPublishMaxGaugeForHistogramsDefaultChanges() {
+		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
+	}
+
 	private OtlpMetricsPropertiesConfigAdapter createAdapter() {
 		return new OtlpMetricsPropertiesConfigAdapter(this.properties, this.openTelemetryProperties,
 				this.connectionDetails, this.environment);

@@ -121,6 +121,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 		return obtain(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}
 
+	@Override
+	public boolean publishMaxGaugeForHistograms() {
+		return obtain(OtlpMetricsProperties::getPublishMaxGaugeForHistograms,
+				OtlpConfig.super::publishMaxGaugeForHistograms);
+	}
+
 	private <V> Getter<OtlpMetricsProperties, Map<String, V>> perMeter(Getter<Meter, V> getter) {
 		return (properties) -> {
 			if (CollectionUtils.isEmpty(properties.getMeter())) {

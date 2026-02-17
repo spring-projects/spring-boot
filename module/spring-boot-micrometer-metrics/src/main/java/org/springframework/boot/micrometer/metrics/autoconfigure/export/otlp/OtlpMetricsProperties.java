@@ -86,6 +86,12 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 */
 	private final Map<String, Meter> meter = new LinkedHashMap<>();
 
+	/**
+	 * Whether to publish a separate gauge for the max value of histogram-based meters. A
+	 * null value defers to Micrometer's default.
+	 */
+	private @Nullable Boolean publishMaxGaugeForHistograms;
+
 	public @Nullable String getUrl() {
 		return this.url;
 	}
@@ -152,6 +158,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public Map<String, Meter> getMeter() {
 		return this.meter;
+	}
+
+	public @Nullable Boolean getPublishMaxGaugeForHistograms() {
+		return this.publishMaxGaugeForHistograms;
+	}
+
+	public void setPublishMaxGaugeForHistograms(@Nullable Boolean publishMaxGaugeForHistograms) {
+		this.publishMaxGaugeForHistograms = publishMaxGaugeForHistograms;
 	}
 
 	/**
