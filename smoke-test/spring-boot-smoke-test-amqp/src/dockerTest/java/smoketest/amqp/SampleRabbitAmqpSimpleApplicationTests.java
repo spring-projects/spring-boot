@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +41,7 @@ class SampleRabbitAmqpSimpleApplicationTests {
 
 	@Container
 	@ServiceConnection
-	static final RabbitMQContainer rabbit = new RabbitMQContainer("rabbitmq:4.0-management-alpine");
+	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
 
 	@Autowired
 	private Sender sender;

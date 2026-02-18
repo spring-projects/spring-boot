@@ -40,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitAmqpTemplate}.
@@ -50,6 +51,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass({ RabbitAmqpTemplate.class, Connection.class })
 @EnableConfigurationProperties(RabbitProperties.class)
+@Import(RabbitAnnotationDrivenConfiguration.class)
 public final class RabbitAmqpAutoConfiguration {
 
 	private final RabbitProperties properties;
