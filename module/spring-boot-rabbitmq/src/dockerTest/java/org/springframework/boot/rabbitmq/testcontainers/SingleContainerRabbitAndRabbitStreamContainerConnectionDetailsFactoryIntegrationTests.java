@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.amqp.testcontainers;
+package org.springframework.boot.rabbitmq.testcontainers;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -35,12 +35,12 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.amqp.autoconfigure.EnvironmentBuilderCustomizer;
-import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
-import org.springframework.boot.amqp.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
-import org.springframework.boot.amqp.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.EnvironmentBuilderCustomizer;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -54,8 +54,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with two containers,
- * one for streams and one for standard messaging.
+ * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with a single container
+ * used for both streams and standard messaging.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
@@ -64,17 +64,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(
 		properties = { "spring.rabbitmq.stream.name=stream.queue1", "spring.rabbitmq.listener.type=stream" })
 @Testcontainers(disabledWithoutDocker = true)
-class SeparateContainersRabbitAndRabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
+class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
 
 	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
 	@Container
-	@ServiceConnection
-	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
-
-	@Container
-	@ServiceConnection(type = RabbitStreamConnectionDetails.class)
-	static final RabbitMQContainer rabbitStream = getRabbitMqStreamContainer();
+	@ServiceConnection(type = { RabbitConnectionDetails.class, RabbitStreamConnectionDetails.class })
+	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
 
 	private static RabbitMQContainer getRabbitMqStreamContainer() {
 		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
@@ -91,10 +87,10 @@ class SeparateContainersRabbitAndRabbitStreamContainerConnectionDetailsFactoryIn
 	private RabbitStreamConnectionDetails streamConnectionDetails;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitStreamTemplate rabbitStreamTemplate;
 
 	@Autowired
-	private RabbitStreamTemplate rabbitStreamTemplate;
+	private RabbitTemplate rabbitTemplate;
 
 	@Autowired
 	private StreamTestListener streamListener;
@@ -102,13 +98,11 @@ class SeparateContainersRabbitAndRabbitStreamContainerConnectionDetailsFactoryIn
 	@Test
 	void rabbitConnectionDetailsAreSourcedFromContainer() {
 		assertThat(this.connectionDetails).isInstanceOf(RabbitMqContainerConnectionDetails.class);
-		assertThat(this.connectionDetails.getFirstAddress().port()).isEqualTo(rabbit.getAmqpPort());
 	}
 
 	@Test
 	void rabbitStreamConnectionDetailsAreSourcedFromContainer() {
 		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
-		assertThat(this.streamConnectionDetails.getPort()).isEqualTo(rabbitStream.getMappedPort(RABBITMQ_STREAMS_PORT));
 	}
 
 	@Test
@@ -142,8 +136,8 @@ class SeparateContainersRabbitAndRabbitStreamContainerConnectionDetailsFactoryIn
 
 		@Bean
 		EnvironmentBuilderCustomizer environmentBuilderCustomizer() {
-			return (env) -> env.addressResolver((address) -> new Address(rabbitStream.getHost(),
-					rabbitStream.getMappedPort(RABBITMQ_STREAMS_PORT)));
+			return (env) -> env.addressResolver(
+					(address) -> new Address(rabbit.getHost(), rabbit.getMappedPort(RABBITMQ_STREAMS_PORT)));
 		}
 
 		@Bean

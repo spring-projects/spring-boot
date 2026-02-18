@@ -49,7 +49,7 @@ class RabbitContainerConnectionDetailsFactory
 	/**
 	 * {@link RabbitConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
+	static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
 			implements RabbitConnectionDetails {
 
 		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {

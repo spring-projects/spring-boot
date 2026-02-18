@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.amqp.docker.compose;
+package org.springframework.boot.rabbitmq.docker.compose;
 
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
-import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails.Address;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
@@ -26,22 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link RabbitDockerComposeConnectionDetailsFactory} and
- * {@link RabbitStreamDockerComposeConnectionDetailsFactory} when used in combination.
+ * {@link RabbitStreamDockerComposeConnectionDetailsFactory} when using a single service
+ * for standard and stream-based messaging.
  *
  * @author Andy Wilkinson
  */
-class RabbitAndRabbitStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
-
-	@DockerComposeTest(composeFile = "rabbit-and-rabbit-stream-separate-services-compose.yaml",
-			image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetailsFromSeparateServices(RabbitConnectionDetails connectionDetails,
-			RabbitStreamConnectionDetails streamConnectionDetails) {
-		assertConnectionDetails(connectionDetails);
-		assertConnectionDetails(streamConnectionDetails);
-	}
+class SingleServiceRabbitAndRabbitStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbit-and-rabbit-stream-single-service-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetailsFromSingleService(RabbitConnectionDetails connectionDetails,
+	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails,
 			RabbitStreamConnectionDetails streamConnectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		assertConnectionDetails(streamConnectionDetails);

@@ -127,8 +127,8 @@ class RabbitStreamConfiguration {
 		map.from(streamConnectionDetails.getHost()).to(builder::host);
 		map.from(streamConnectionDetails.getPort()).to(builder::port);
 		map.from(streamConnectionDetails.getVirtualHost())
-				.orFrom(connectionDetails::getVirtualHost)
-				.to(builder::virtualHost);
+			.orFrom(connectionDetails::getVirtualHost)
+			.to(builder::virtualHost);
 		map.from(streamConnectionDetails.getUsername()).orFrom(connectionDetails::getUsername).to(builder::username);
 		map.from(streamConnectionDetails.getPassword()).orFrom(connectionDetails::getPassword).to(builder::password);
 		return builder;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.amqp.docker.compose;
+package org.springframework.boot.rabbitmq.docker.compose;
 
-import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 

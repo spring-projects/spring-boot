@@ -32,8 +32,6 @@ import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContain
 import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.boot.amqp.autoconfigure.RabbitAmqpAutoConfiguration;
-import org.springframework.boot.amqp.autoconfigure.RabbitAmqpTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

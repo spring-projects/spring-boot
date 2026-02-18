@@ -18,10 +18,10 @@ package org.springframework.boot.rabbitmq.autoconfigure.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
-import org.springframework.boot.rabbitmq.health.RabbitHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.rabbitmq.health.RabbitHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;

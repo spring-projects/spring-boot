@@ -28,11 +28,10 @@ import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.amqp.autoconfigure.RabbitAmqpAutoConfiguration;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.amqp.testcontainers.RabbitContainerConnectionDetailsFactory;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -61,7 +60,7 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 	private RabbitConnectionDetails connectionDetails;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitAmqpTemplate rabbitAmqpTemplate;
 
 	@Autowired
 	private TestListener listener;
@@ -69,13 +68,13 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 	@Test
 	void connectionCanBeMadeToRabbitContainer() {
 		assertThat(this.connectionDetails).isNotNull();
-		this.rabbitTemplate.convertAndSend("test", "message");
+		this.rabbitAmqpTemplate.convertAndSend("test", "message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(RabbitAutoConfiguration.class)
+	@ImportAutoConfiguration(RabbitAmqpAutoConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
