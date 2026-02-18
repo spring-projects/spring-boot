@@ -312,17 +312,11 @@ bom {
 			site("https://commons.apache.org/proper/commons-pool")
 		}
 	}
-	library("Couchbase Client", "3.11.0") {
+	library("Couchbase Client", "3.11.1") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
 			]
-		}
-		alignWith {
-			version {
-				from "org.springframework.data:spring-data-couchbase"
-				managedBy "Spring Data Bom"
-			}
 		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
