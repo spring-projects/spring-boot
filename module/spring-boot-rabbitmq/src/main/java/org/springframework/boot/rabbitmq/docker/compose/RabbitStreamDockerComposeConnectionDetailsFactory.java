@@ -18,11 +18,11 @@ package org.springframework.boot.rabbitmq.docker.compose;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}

@@ -23,8 +23,8 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.ResourceLoader;

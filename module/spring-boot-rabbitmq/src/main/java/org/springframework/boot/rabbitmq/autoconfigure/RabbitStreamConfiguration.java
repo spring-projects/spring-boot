@@ -23,13 +23,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
-
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitProperties.Stream;
-import org.springframework.boot.rabbitmq.autoconfigure.RabbitProperties.StreamContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitProperties.Stream;
+import org.springframework.boot.rabbitmq.autoconfigure.RabbitProperties.StreamContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
@@ -128,8 +127,8 @@ class RabbitStreamConfiguration {
 		map.from(streamConnectionDetails.getHost()).to(builder::host);
 		map.from(streamConnectionDetails.getPort()).to(builder::port);
 		map.from(streamConnectionDetails.getVirtualHost())
-			.orFrom(connectionDetails::getVirtualHost)
-			.to(builder::virtualHost);
+				.orFrom(connectionDetails::getVirtualHost)
+				.to(builder::virtualHost);
 		map.from(streamConnectionDetails.getUsername()).orFrom(connectionDetails::getUsername).to(builder::username);
 		map.from(streamConnectionDetails.getPassword()).orFrom(connectionDetails::getPassword).to(builder::password);
 		return builder;

@@ -26,8 +26,8 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link RabbitConnectionDetails} for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
+ * for a {@code rabbitmq} service.
  *
  * @author Andy Wilkinson
  */
