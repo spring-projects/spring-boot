@@ -16,9 +16,9 @@
 
 package org.springframework.boot.rabbitmq.docker.compose;
 
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails.Address;
-import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;

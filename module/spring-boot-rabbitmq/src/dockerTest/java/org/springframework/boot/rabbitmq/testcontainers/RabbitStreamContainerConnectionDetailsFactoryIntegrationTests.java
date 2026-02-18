@@ -31,13 +31,13 @@ import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.rabbitmq.autoconfigure.EnvironmentBuilderCustomizer;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
 import org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
 import org.springframework.boot.rabbitmq.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
