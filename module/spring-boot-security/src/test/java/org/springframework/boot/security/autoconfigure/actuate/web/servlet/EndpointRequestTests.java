@@ -152,6 +152,14 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toLinksWhenBasePathIsRootShouldMatch() {
+		RequestMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.matches("/");
+		assertMatcher.doesNotMatch("/foo");
+	}
+
+	@Test
 	void excludeByClassShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding(FooEndpoint.class, BazServletEndpoint.class);
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();

@@ -227,7 +227,9 @@ public final class EndpointRequest {
 				RequestMatcherProvider matcherProvider, String basePath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
 			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath));
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath, "/"));
+			if (!basePath.endsWith("/")) {
+				linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath, "/"));
+			}
 			return linksMatchers;
 		}
 

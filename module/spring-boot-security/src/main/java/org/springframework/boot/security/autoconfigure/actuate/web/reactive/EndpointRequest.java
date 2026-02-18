@@ -371,9 +371,13 @@ public final class EndpointRequest {
 		@Override
 		protected ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
+				String basePath = properties.getBasePath();
+				if (basePath.endsWith("/")) {
+					return new PathPatternParserServerWebExchangeMatcher(basePath);
+				}
 				return new OrServerWebExchangeMatcher(
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
+						new PathPatternParserServerWebExchangeMatcher(basePath),
+						new PathPatternParserServerWebExchangeMatcher(basePath + "/"));
 			}
 			return EMPTY_MATCHER;
 		}
