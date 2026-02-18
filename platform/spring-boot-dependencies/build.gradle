@@ -1213,7 +1213,7 @@ bom {
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
 		}
 	}
-	library("Kafka", "4.1.1") {
+	library("Kafka", "4.2.0") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
