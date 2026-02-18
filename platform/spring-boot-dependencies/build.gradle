@@ -425,7 +425,7 @@ bom {
 			javadoc("elasticsearch-java", version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 		}
 	}
-	library("Flyway", "12.0.0") {
+	library("Flyway", "12.0.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-command-test-connection",
