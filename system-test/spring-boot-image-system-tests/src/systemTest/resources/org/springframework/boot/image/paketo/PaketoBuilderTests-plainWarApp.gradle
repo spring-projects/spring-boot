@@ -48,6 +48,7 @@ war {
 bootBuildImage {
 	archiveFile = war.archiveFile
 	runImage = "paketobuildpacks/ubuntu-noble-run:latest"
+	imagePlatform = "linux/amd64"
 	environment = [
 		'BP_JVM_VERSION': java.targetCompatibility.getMajorVersion(),
 		'BP_TOMCAT_VERSION': '11.*',
