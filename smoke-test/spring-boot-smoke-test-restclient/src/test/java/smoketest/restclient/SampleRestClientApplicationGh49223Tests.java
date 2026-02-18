@@ -17,6 +17,7 @@
 package smoketest.restclient;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
@@ -38,7 +39,8 @@ class SampleRestClientApplicationGh49223Tests {
 	@Test
 	void applicationStarts() {
 		RestClient restClient = this.restClientBuilder.build();
-		List<?> messageConverters = (List<?>) ReflectionTestUtils.getField(restClient, "messageConverters");
+		List<?> messageConverters = (List<?>) Objects
+			.requireNonNull(ReflectionTestUtils.getField(restClient, "messageConverters"));
 		JacksonJsonHttpMessageConverter jacksonConverter = (JacksonJsonHttpMessageConverter) messageConverters.stream()
 			.filter((converter) -> converter instanceof JacksonJsonHttpMessageConverter)
 			.findFirst()
