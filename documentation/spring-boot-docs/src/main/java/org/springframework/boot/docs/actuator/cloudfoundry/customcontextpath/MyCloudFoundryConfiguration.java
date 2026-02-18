@@ -43,8 +43,8 @@ public class MyCloudFoundryConfiguration {
 		return new TomcatServletWebServerFactory() {
 
 			@Override
-			protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
-				super.prepareContext(host, initializers);
+			protected void prepareContext(Host host, ServletContextInitializer[] initializers, TempDirs tempDirs) {
+				super.prepareContext(host, initializers, tempDirs);
 				StandardContext child = new StandardContext();
 				child.addLifecycleListener(new Tomcat.FixContextListener());
 				child.setPath("/cloudfoundryapplication");

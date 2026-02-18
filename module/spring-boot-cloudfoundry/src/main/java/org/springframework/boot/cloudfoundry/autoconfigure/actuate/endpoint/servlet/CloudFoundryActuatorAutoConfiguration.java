@@ -51,7 +51,6 @@ import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.Clou
 import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointWebExtension;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +66,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -115,15 +115,15 @@ public final class CloudFoundryActuatorAutoConfiguration {
 	@SuppressWarnings("removal")
 	CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-			RestTemplateBuilder restTemplateBuilder,
+			ObjectProvider<RestClient.Builder> restClientBuilder,
 			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
 			ApplicationContext applicationContext) {
 		CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
 				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList(),
 				Collections.emptyList());
-		SecurityInterceptor securityInterceptor = getSecurityInterceptor(restTemplateBuilder,
-				applicationContext.getEnvironment());
+		SecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				restClientBuilder.getIfAvailable(RestClient::builder), applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = discoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpoints);
@@ -133,22 +133,21 @@ public final class CloudFoundryActuatorAutoConfiguration {
 				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
-	private SecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
-			Environment environment) {
-		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder, environment);
+	private SecurityInterceptor getSecurityInterceptor(RestClient.Builder restClientBuilder, Environment environment) {
+		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restClientBuilder, environment);
 		TokenValidator tokenValidator = (cloudfoundrySecurityService != null)
 				? new TokenValidator(cloudfoundrySecurityService) : null;
 		return new SecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private @Nullable SecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+	private @Nullable SecurityService getCloudFoundrySecurityService(RestClient.Builder restClientBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",
 				Boolean.class, false);
 		return (cloudControllerUrl != null)
-				? new SecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
+				? new SecurityService(restClientBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

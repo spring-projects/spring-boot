@@ -125,8 +125,14 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[]
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
-| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq"
+
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
+| Containers named "rabbitmq" with container port 5672 mapped
+
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+| Containers named "rabbitmq" with container port 5552 mapped
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
 | Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
@@ -147,11 +153,9 @@ Please note that you still have to enable SSL on the service which is running in
 SSL is supported for the following service connections:
 
 * Cassandra
-* Couchbase
 * Elasticsearch
-* Kafka
 * MongoDB
-* RabbitMQ
+* RabbitMQ (excluding streams)
 * Redis
 
 To enable SSL support for a service, you can use https://docs.docker.com/reference/compose-file/services/#labels[service labels].
@@ -343,6 +347,10 @@ The following values are supported:
 In addition you can use the configprop:spring.docker.compose.start.command[] property to change whether `docker compose up` or `docker compose start` is used.
 The configprop:spring.docker.compose.stop.command[] allows you to configure if `docker compose down` or `docker compose stop` is used.
 
+You can also pass additional arguments to Docker Compose commands.
+The configprop:spring.docker.compose.arguments[] property allows you to specify arguments that are passed to all Docker Compose commands.
+The configprop:spring.docker.compose.start.arguments[] property allows you to specify arguments that are passed only to the up (or start) command, while the configprop:spring.docker.compose.stop.arguments[] property allows you to specify arguments that are passed only to the down (or stop) command.
+
 The following example shows how lifecycle management can be configured:
 
 [configprops,yaml]
@@ -351,11 +359,20 @@ spring:
   docker:
     compose:
       lifecycle-management: start-and-stop
+      arguments:
+        - "--project-name=myapp"
+        - "--progress=auto"
       start:
-        command: start
+        command: up
+        arguments:
+          - "--build"
+          - "--force-recreate"
       stop:
         command: down
         timeout: 1m
+        arguments:
+          - "--volumes"
+          - "--remove-orphans"
 ----
 
 

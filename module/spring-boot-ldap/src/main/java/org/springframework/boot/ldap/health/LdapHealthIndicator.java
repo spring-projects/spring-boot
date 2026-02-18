@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class LdapHealthIndicator extends AbstractHealthIndicator {
 
-	private static final ContextExecutor<String> versionContextExecutor = new VersionContextExecutor();
+	private static final ContextExecutor<@Nullable String> versionContextExecutor = new VersionContextExecutor();
 
 	private final LdapOperations ldapOperations;
 
@@ -50,10 +50,12 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		String version = this.ldapOperations.executeReadOnly(versionContextExecutor);
-		builder.up().withDetail("version", version);
+		if (version != null) {
+			builder.up().withDetail("version", version);
+		}
 	}
 
-	private static final class VersionContextExecutor implements ContextExecutor<String> {
+	private static final class VersionContextExecutor implements ContextExecutor<@Nullable String> {
 
 		@Override
 		public @Nullable String executeWithContext(DirContext ctx) throws NamingException {

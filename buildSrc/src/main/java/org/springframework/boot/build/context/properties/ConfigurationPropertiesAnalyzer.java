@@ -25,9 +25,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import tools.jackson.core.StreamReadFeature;
@@ -40,14 +42,17 @@ import org.springframework.util.function.SingletonSupplier;
 /**
  * Check configuration metadata for inconsistencies. The available checks are:
  * <ul>
- * <li>Metadata element should be sorted alphabetically: {@link #analyzeSort(Report)}</li>
- * <li>Property must have a description:
- * {@link #analyzePropertyDescription(Report, List)}</li>
+ * <li>Metadata elements {@link #analyzeOrder(Report) must be sorted alphabetically}</li>
+ * <li>Metadata elements {@link #analyzeDuplicates(Report) must not be duplicates}</li>
+ * <li>Properties {@link #analyzePropertyDescription(Report, List) must have a
+ * description}</li>
  * </ul>
  *
  * @author Stephane Nicoll
  */
 class ConfigurationPropertiesAnalyzer {
+
+	private static final List<String> ELEMENT_TYPES = List.of("groups", "properties", "hints");
 
 	private final Collection<File> sources;
 
@@ -62,23 +67,23 @@ class ConfigurationPropertiesAnalyzer {
 			.of(() -> JsonMapper.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build());
 	}
 
-	void analyzeSort(Report report) {
+	void analyzeOrder(Report report) {
 		for (File source : this.sources) {
-			report.registerAnalysis(source, analyzeSort(source));
+			report.registerAnalysis(source, analyzeOrder(source));
 		}
 	}
 
-	private Analysis analyzeSort(File source) {
+	private Analysis analyzeOrder(File source) {
 		Map<String, Object> json = readJsonContent(source);
 		Analysis analysis = new Analysis("Metadata element order:");
-		analyzeMetadataElementsSort("groups", json, analysis);
-		analyzeMetadataElementsSort("properties", json, analysis);
-		analyzeMetadataElementsSort("hints", json, analysis);
+		for (String elementType : ELEMENT_TYPES) {
+			analyzeMetadataElementOrder(elementType, json, analysis);
+		}
 		return analysis;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void analyzeMetadataElementsSort(String key, Map<String, Object> json, Analysis analysis) {
+	private void analyzeMetadataElementOrder(String key, Map<String, Object> json, Analysis analysis) {
 		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.getOrDefault(key, Collections.emptyList());
 		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
 		List<String> sortedNames = names.stream().sorted().toList();
@@ -88,6 +93,35 @@ class ConfigurationPropertiesAnalyzer {
 			if (!actual.equals(expected)) {
 				analysis.addItem("Wrong order at $." + key + "[" + i + "].name - expected '" + expected
 						+ "' but found '" + actual + "'");
+			}
+		}
+	}
+
+	void analyzeDuplicates(Report report) {
+		for (File source : this.sources) {
+			report.registerAnalysis(source, analyzeDuplicates(source));
+		}
+	}
+
+	private Analysis analyzeDuplicates(File source) {
+		Map<String, Object> json = readJsonContent(source);
+		Analysis analysis = new Analysis("Metadata element duplicates:");
+		for (String elementType : ELEMENT_TYPES) {
+			analyzeMetadataElementDuplicates(elementType, json, analysis);
+		}
+		return analysis;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void analyzeMetadataElementDuplicates(String key, Map<String, Object> json, Analysis analysis) {
+		List<Map<String, Object>> elements = (List<Map<String, Object>>) json.getOrDefault(key,
+				Collections.emptyList());
+		List<String> names = elements.stream().map((group) -> (String) group.get("name")).toList();
+		Set<String> uniqueNames = new HashSet<>();
+		for (int i = 0; i < names.size(); i++) {
+			String name = names.get(i);
+			if (!uniqueNames.add(name)) {
+				analysis.addItem("Duplicate name '" + name + "' at $." + key + "[" + i + "]");
 			}
 		}
 	}

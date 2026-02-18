@@ -39,6 +39,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-web-server-test"))
 	optional("io.micrometer:micrometer-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket") {

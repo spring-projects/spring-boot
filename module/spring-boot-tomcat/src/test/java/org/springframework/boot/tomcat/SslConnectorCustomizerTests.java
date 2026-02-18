@@ -23,6 +23,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.tomcat.util.net.openssl.ciphers.Cipher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class SslConnectorCustomizerTests {
 
 	@Test
 	@WithPackageResources("test.jks")
-	void sslCiphersConfiguration() throws Exception {
+	void tls12CiphersConfiguration() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -84,6 +85,42 @@ class SslConnectorCustomizerTests {
 		this.tomcat.start();
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler().findSslHostConfigs();
 		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
+		assertThat(sslHostConfigs[0].getCipherSuites()).isEmpty();
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void tls13CiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setCiphers(new String[] { Cipher.TLS_AES_128_CCM_SHA256.getOpenSSLAlias(),
+				Cipher.TLS_AES_256_GCM_SHA384.getOpenSSLAlias() });
+		Connector connector = this.tomcat.getConnector();
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
+		customizer.customize(WebServerSslBundle.get(ssl), Collections.emptyMap());
+		this.tomcat.start();
+		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler().findSslHostConfigs();
+		assertThat(sslHostConfigs[0].getCiphers()).isEmpty();
+		assertThat(sslHostConfigs[0].getCipherSuites()).isEqualTo("TLS_AES_128_CCM_SHA256:TLS_AES_256_GCM_SHA384");
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void mixedTls12AndTls13CiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setCiphers(new String[] { Cipher.TLS_AES_128_CCM_SHA256.getOpenSSLAlias(),
+				Cipher.TLS_DH_DSS_WITH_AES_128_CBC_SHA256.getOpenSSLAlias(),
+				Cipher.TLS_AES_256_GCM_SHA384.getOpenSSLAlias() });
+		Connector connector = this.tomcat.getConnector();
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
+		customizer.customize(WebServerSslBundle.get(ssl), Collections.emptyMap());
+		this.tomcat.start();
+		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler().findSslHostConfigs();
+		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("DH-DSS-AES128-SHA256");
+		assertThat(sslHostConfigs[0].getCipherSuites()).isEqualTo("TLS_AES_128_CCM_SHA256:TLS_AES_256_GCM_SHA384");
 	}
 
 	@Test

@@ -33,9 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyRandomPortRestTestClientAssertJTests {
 
 	@Test
-	void exampleTest(@Autowired RestTestClient webClient) {
+	void exampleTest(@Autowired RestTestClient restClient) {
 		// @formatter:off
-		ResponseSpec spec = webClient.get().uri("/").exchange();
+		ResponseSpec spec = restClient.get().uri("/").exchange();
 		RestTestClientResponse response = RestTestClientResponse.from(spec);
 		assertThat(response).hasStatusOk().bodyText().isEqualTo("Hello World");
 		// @formatter:on

@@ -470,6 +470,20 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void buildsImageWithMultipleCommandLineEnvironments() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--environment", "BP_LIVE_RELOAD_ENABLED=true",
+				"--environment", "MY_CUSTOM_VAR=hello_world");
+		BuildTask task = result.task(":bootBuildImage");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("BP_LIVE_RELOAD_ENABLED=true");
+		assertThat(result.getOutput()).contains("MY_CUSTOM_VAR=hello_world");
+		removeImages(this.gradleBuild.getProjectDir().getName());
+	}
+
+	@TestTemplate
 	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "amd64",
 			disabledReason = "The expected failure condition will not fail on ARM architectures")
 	void failsWhenBuildingOnLinuxAmdWithImagePlatformLinuxArm() throws IOException {

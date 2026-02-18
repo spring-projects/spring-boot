@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.util.unit.DataSize;
@@ -146,6 +147,13 @@ class ServerPropertiesTests {
 	void defaultMaxHttpRequestHeaderSizeMatchesTomcatsDefault() {
 		assertThat(this.properties.getMaxHttpRequestHeaderSize().toBytes())
 			.isEqualTo(new Http11Nio2Protocol().getMaxHttpRequestHeaderSize());
+	}
+
+	@Test
+	void additionalCompressionMimeTypesAreAddedToDefaults() {
+		bind("server.compression.additional-mime-types", "application/zip");
+		assertThat(this.properties.getCompression().getAllMimeTypes()).contains(new Compression().getMimeTypes());
+		assertThat(this.properties.getCompression().getAllMimeTypes()).contains("application/zip");
 	}
 
 	private void bind(String name, String value) {

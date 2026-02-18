@@ -39,6 +39,7 @@ import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
 import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
+import io.micrometer.tracing.propagation.Propagator;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -166,7 +167,7 @@ public final class BraveAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(Propagator.class)
 	BravePropagator bravePropagator(Tracing tracing) {
 		return new BravePropagator(tracing);
 	}

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import io.micrometer.registry.otlp.OtlpConfig;
 
@@ -73,6 +74,11 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	@Override
+	public CompressionMode compressionMode() {
+		return obtain(OtlpMetricsProperties::getCompressionMode, OtlpConfig.super::compressionMode);
+	}
+
+	@Override
 	public Map<String, String> resourceAttributes() {
 		Map<String, String> resourceAttributes = new LinkedHashMap<>();
 		new OpenTelemetryResourceAttributes(this.environment, this.openTelemetryProperties.getResourceAttributes())
@@ -98,6 +104,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	@Override
 	public Map<String, Integer> maxBucketsPerMeter() {
 		return obtain(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
+	}
+
+	@Override
+	public boolean publishMaxGaugeForHistograms() {
+		return obtain(OtlpMetricsProperties::getPublishMaxGaugeForHistograms,
+				OtlpConfig.super::publishMaxGaugeForHistograms);
 	}
 
 	@Override

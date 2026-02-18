@@ -1,5 +1,7 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.rabbitmq.docker.compose.RabbitDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.rabbitmq.docker.compose.RabbitStreamDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.rabbitmq.testcontainers.DeprecatedRabbitContainerConnectionDetailsFactory,\
-org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory
+org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory,\
+org.springframework.boot.rabbitmq.testcontainers.RabbitStreamContainerConnectionDetailsFactory

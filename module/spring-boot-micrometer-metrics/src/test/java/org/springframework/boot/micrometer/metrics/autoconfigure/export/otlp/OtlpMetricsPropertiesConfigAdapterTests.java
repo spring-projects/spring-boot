@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,6 +90,17 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesCompressionModeIsNotSetAdapterCompressionModeReturnsNone() {
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.NONE);
+	}
+
+	@Test
+	void whenPropertiesCompressionModeIsSetAdapterCompressionModeReturnsIt() {
+		this.properties.setCompressionMode(CompressionMode.GZIP);
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.GZIP);
+	}
+
+	@Test
 	void whenOpenTelemetryPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
 		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "boot-service"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
@@ -123,6 +135,24 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		this.properties.getMeter().put("my.histograms", meterProperties);
 		assertThat(createAdapter().histogramFlavorPerMeter()).containsEntry("my.histograms",
 				HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+	}
+
+	@Test
+	void useDefaultPublishMaxGaugeForHistogramsWhenNotSet() {
+		assertThat(this.properties.getPublishMaxGaugeForHistograms()).isNull();
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isTrue();
+	}
+
+	@Test
+	void whenDefaultPublishMaxGaugeForHistogramsIsSetAdapterUsesIt() {
+		this.properties.setPublishMaxGaugeForHistograms(false);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
+	}
+
+	@Test
+	void whenAggregationTemporalityIsSetToDeltaThenPublishMaxGaugeForHistogramsDefaultChanges() {
+		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
 	}
 
 	@Test

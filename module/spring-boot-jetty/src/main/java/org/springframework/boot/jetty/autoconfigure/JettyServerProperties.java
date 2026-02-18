@@ -286,8 +286,7 @@ public class JettyServerProperties {
 		private Integer selectors = -1;
 
 		/**
-		 * Maximum number of threads. Doesn't have an effect if virtual threads are
-		 * enabled.
+		 * Maximum number of threads.
 		 */
 		private Integer max = 200;
 

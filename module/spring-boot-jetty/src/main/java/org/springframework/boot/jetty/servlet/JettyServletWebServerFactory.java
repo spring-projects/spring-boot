@@ -63,6 +63,7 @@ import org.eclipse.jetty.session.DefaultSessionCache;
 import org.eclipse.jetty.session.FileSessionDataStore;
 import org.eclipse.jetty.session.SessionConfig;
 import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.resource.URLResourceFactory;
@@ -161,7 +162,9 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		context.setServer(server);
-		configureWebAppContext(context, initializers);
+		TempDirs tempDirs = new TempDirs(port);
+		server.addEventListener(new CleanTempDirsListener(tempDirs));
+		configureWebAppContext(context, tempDirs, initializers);
 		server.setHandler(addHandlerWrappers(context));
 		logger.info("Server initialized with port: " + port);
 		if (this.getMaxConnections() > -1) {
@@ -214,8 +217,23 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 	 * Configure the given Jetty {@link WebAppContext} for use.
 	 * @param context the context to configure
 	 * @param initializers the set of initializers to apply
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #configureWebAppContext(WebAppContext, TempDirs, ServletContextInitializer...)}
 	 */
+	@Deprecated(forRemoval = true, since = "4.1.0")
 	protected final void configureWebAppContext(WebAppContext context, ServletContextInitializer... initializers) {
+		configureWebAppContext(context, new TempDirs(getPort()), initializers);
+	}
+
+	/**
+	 * Configure the given Jetty {@link WebAppContext} for use.
+	 * @param context the context to configure
+	 * @param tempDirs to manage temporary directories
+	 * @param initializers the set of initializers to apply
+	 * @since 4.1.0
+	 */
+	protected final void configureWebAppContext(WebAppContext context, TempDirs tempDirs,
+			ServletContextInitializer... initializers) {
 		Assert.notNull(context, "'context' must not be null");
 		context.clearAliasChecks();
 		if (this.resourceLoader != null) {
@@ -224,7 +242,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		String contextPath = getSettings().getContextPath().toString();
 		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
 		context.setDisplayName(getSettings().getDisplayName());
-		configureDocumentRoot(context);
+		configureDocumentRoot(context, tempDirs);
 		if (getSettings().isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
@@ -289,11 +307,11 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		}
 	}
 
-	private void configureDocumentRoot(WebAppContext handler) {
+	private void configureDocumentRoot(WebAppContext handler, TempDirs tempDirs) {
 		DocumentRoot documentRoot = new DocumentRoot(logger);
 		documentRoot.setDirectory(this.settings.getDocumentRoot());
 		File root = documentRoot.getValidDirectory();
-		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
+		File docBase = (root != null) ? root : tempDirs.createTempDir("jetty-docbase").toFile();
 		try {
 			ResourceFactory resourceFactory = handler.getResourceFactory();
 			List<Resource> resources = new ArrayList<>();
@@ -612,6 +630,21 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 				return servletCookie;
 			}
 
+		}
+
+	}
+
+	private static class CleanTempDirsListener implements LifeCycle.Listener {
+
+		private final TempDirs tempDirs;
+
+		CleanTempDirsListener(TempDirs tempDirs) {
+			this.tempDirs = tempDirs;
+		}
+
+		@Override
+		public void lifeCycleStopped(LifeCycle event) {
+			this.tempDirs.cleanup();
 		}
 
 	}

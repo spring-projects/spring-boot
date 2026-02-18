@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.config;
 
+import java.nio.charset.Charset;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.env.PropertySourceLoader;
@@ -26,6 +28,7 @@ import org.springframework.util.StringUtils;
  * be resolved to one or more {@link StandardConfigDataResource resources}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class StandardConfigDataReference {
 
@@ -39,6 +42,8 @@ class StandardConfigDataReference {
 
 	private final PropertySourceLoader propertySourceLoader;
 
+	private final @Nullable Charset encoding;
+
 	/**
 	 * Create a new {@link StandardConfigDataReference} instance.
 	 * @param configDataLocation the original location passed to the resolver
@@ -49,15 +54,18 @@ class StandardConfigDataReference {
 	 * @param extension the file extension for the resource
 	 * @param propertySourceLoader the property source loader that should be used for this
 	 * reference
+	 * @param encoding the encoding of the resource
 	 */
 	StandardConfigDataReference(ConfigDataLocation configDataLocation, @Nullable String directory, String root,
-			@Nullable String profile, @Nullable String extension, PropertySourceLoader propertySourceLoader) {
+			@Nullable String profile, @Nullable String extension, PropertySourceLoader propertySourceLoader,
+			@Nullable Charset encoding) {
 		this.configDataLocation = configDataLocation;
 		String profileSuffix = (StringUtils.hasText(profile)) ? "-" + profile : "";
 		this.resourceLocation = root + profileSuffix + ((extension != null) ? "." + extension : "");
 		this.directory = directory;
 		this.profile = profile;
 		this.propertySourceLoader = propertySourceLoader;
+		this.encoding = encoding;
 	}
 
 	ConfigDataLocation getConfigDataLocation() {
@@ -78,6 +86,10 @@ class StandardConfigDataReference {
 
 	@Nullable String getProfile() {
 		return this.profile;
+	}
+
+	@Nullable Charset getEncoding() {
+		return this.encoding;
 	}
 
 	boolean isSkippable() {

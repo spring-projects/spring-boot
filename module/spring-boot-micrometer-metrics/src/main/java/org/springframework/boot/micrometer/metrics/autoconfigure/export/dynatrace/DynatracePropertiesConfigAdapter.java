@@ -22,7 +22,6 @@ import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.micrometer.metrics.autoconfigure.export.dynatrace.DynatraceProperties.V1;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.dynatrace.DynatraceProperties.V2;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -45,18 +44,23 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public String apiToken() {
 		return obtain(DynatraceProperties::getApiToken, DynatraceConfig.super::apiToken);
 	}
 
 	@Override
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	public String deviceId() {
-		return obtain(v1(V1::getDeviceId), DynatraceConfig.super::deviceId);
+		return obtain(v1(DynatraceProperties.V1::getDeviceId), DynatraceConfig.super::deviceId);
 	}
 
 	@Override
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	public String technologyType() {
-		return obtain(v1(V1::getTechnologyType), DynatraceConfig.super::technologyType);
+		return obtain(v1(DynatraceProperties.V1::getTechnologyType), DynatraceConfig.super::technologyType);
 	}
 
 	@Override
@@ -65,11 +69,14 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	}
 
 	@Override
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	public @Nullable String group() {
-		return get(v1(V1::getGroup), DynatraceConfig.super::group);
+		return get(v1(DynatraceProperties.V1::getGroup), DynatraceConfig.super::group);
 	}
 
 	@Override
+	@SuppressWarnings({ "deprecation", "removal" })
 	public DynatraceApiVersion apiVersion() {
 		return obtain((properties) -> (properties.getV1().getDeviceId() != null) ? DynatraceApiVersion.V1
 				: DynatraceApiVersion.V2, DynatraceConfig.super::apiVersion);
@@ -100,7 +107,9 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 		return obtain(v2(V2::isExportMeterMetadata), DynatraceConfig.super::exportMeterMetadata);
 	}
 
-	private <V> Getter<DynatraceProperties, V> v1(Getter<V1, V> getter) {
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	private <V> Getter<DynatraceProperties, V> v1(Getter<DynatraceProperties.V1, V> getter) {
 		return (properties) -> getter.get(properties.getV1());
 	}
 

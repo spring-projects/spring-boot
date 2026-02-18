@@ -17,7 +17,7 @@
 package org.springframework.boot.http.converter.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tools.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -38,7 +38,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  *
  * @author Andy Wilkinson
  * @author Brian Clozel
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
 @Configuration(proxyBeanMethods = false)
 @Deprecated(since = "4.0.0", forRemoval = true)

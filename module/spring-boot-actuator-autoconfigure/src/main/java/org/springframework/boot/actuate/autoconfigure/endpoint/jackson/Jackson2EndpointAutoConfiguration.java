@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Phillip Webb
  * @since 3.0.0
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+ * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
 @AutoConfiguration
 @ConditionalOnClass({ ObjectMapper.class, org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.class })

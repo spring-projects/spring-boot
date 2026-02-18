@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ClassPathExclusions({ "flyway-core-*.jar", "flyway-sqlserver-*.jar" })
-@ClassPathOverrides({ "org.flywaydb:flyway-core:10.0.0", "com.h2database:h2:2.1.210" })
-class Flyway100AutoConfigurationTests {
+@ClassPathOverrides({ "org.flywaydb:flyway-core:11.0.0" })
+class Flyway110AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))

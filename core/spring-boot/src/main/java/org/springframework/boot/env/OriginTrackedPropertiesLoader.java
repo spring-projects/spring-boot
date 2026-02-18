@@ -20,12 +20,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -43,6 +46,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Thiago Hirata
  * @author Guirong Hu
+ * @author Moritz Halbritter
  */
 class OriginTrackedPropertiesLoader {
 
@@ -59,25 +63,27 @@ class OriginTrackedPropertiesLoader {
 
 	/**
 	 * Load {@code .properties} data and return a list of documents.
+	 * @param encoding the resource encoding. Uses ISO-8859-1 if {@code null}
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	List<Document> load() throws IOException {
-		return load(true);
+	List<Document> load(@Nullable Charset encoding) throws IOException {
+		return load(encoding, true);
 	}
 
 	/**
 	 * Load {@code .properties} data and return a map of {@code String} ->
 	 * {@link OriginTrackedValue}.
+	 * @param encoding the resource encoding. Uses ISO-8859-1 if {@code null}
 	 * @param expandLists if list {@code name[]=a,b,c} shortcuts should be expanded
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	List<Document> load(boolean expandLists) throws IOException {
+	List<Document> load(@Nullable Charset encoding, boolean expandLists) throws IOException {
 		List<Document> documents = new ArrayList<>();
 		Document document = new Document();
 		StringBuilder buffer = new StringBuilder();
-		try (CharacterReader reader = new CharacterReader(this.resource)) {
+		try (CharacterReader reader = new CharacterReader(this.resource, encoding)) {
 			while (reader.read()) {
 				if (reader.isCommentPrefixCharacter()) {
 					char commentPrefixCharacter = reader.getCharacter();
@@ -200,9 +206,9 @@ class OriginTrackedPropertiesLoader {
 
 		private int lastLineCommentPrefixCharacter;
 
-		CharacterReader(Resource resource) throws IOException {
-			this.reader = new LineNumberReader(
-					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
+		CharacterReader(Resource resource, @Nullable Charset encoding) throws IOException {
+			this.reader = new LineNumberReader(new InputStreamReader(resource.getInputStream(),
+					(encoding != null) ? encoding : StandardCharsets.ISO_8859_1));
 		}
 
 		@Override

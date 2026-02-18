@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Executor;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
@@ -367,16 +369,34 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 		this.useApr = useApr;
 	}
 
+	/**
+	 * Creates the {@link Tomcat} web server.
+	 * @return the web server.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #createTomcat(TempDirs)}
+	 */
+	@Deprecated(forRemoval = true, since = "4.1.0")
 	protected Tomcat createTomcat() {
+		return createTomcat(new TempDirs(getPort()));
+	}
+
+	/**
+	 * Creates the {@link Tomcat} web server.
+	 * @param tempDirs to manage temporary directories
+	 * @return the web server
+	 * @since 4.1.0
+	 */
+	protected Tomcat createTomcat(TempDirs tempDirs) {
 		if (this.isDisableMBeanRegistry()) {
 			Registry.disableRegistry();
 		}
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (getBaseDirectory() != null) ? getBaseDirectory() : createTempDir("tomcat");
+		File baseDir = (getBaseDirectory() != null) ? getBaseDirectory() : tempDirs.createTempDir("tomcat").toFile();
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		for (LifecycleListener listener : getDefaultServerLifecycleListeners()) {
 			tomcat.getServer().addLifecycleListener(listener);
 		}
+		tomcat.getServer().addLifecycleListener(new CleanTempDirsListener(tempDirs));
 		Connector connector = new Connector(getProtocol());
 		connector.setThrowOnFailure(true);
 		tomcat.getService().addConnector(connector);
@@ -461,6 +481,23 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 		for (Valve valve : getEngineValves()) {
 			engine.getPipeline().addValve(valve);
 		}
+	}
+
+	private static class CleanTempDirsListener implements LifecycleListener {
+
+		private final TempDirs tempDirs;
+
+		CleanTempDirsListener(TempDirs tempDirs) {
+			this.tempDirs = tempDirs;
+		}
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.AFTER_DESTROY_EVENT)) {
+				this.tempDirs.cleanup();
+			}
+		}
+
 	}
 
 }

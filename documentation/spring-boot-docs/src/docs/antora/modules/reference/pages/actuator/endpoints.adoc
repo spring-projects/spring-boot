@@ -1089,6 +1089,7 @@ When a Spring Boot application shuts down:
 |`REFUSING_TRAFFIC`
 |New requests are rejected
 |If enabled, xref:web/graceful-shutdown.adoc[graceful shutdown processes in-flight requests].
+HTTP probes also stop accepting traffic, so the availability states are not readily available externally.
 
 |Shutdown complete
 |N/A
@@ -1098,6 +1099,7 @@ When a Spring Boot application shuts down:
 |===
 
 TIP: See xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes.container-lifecycle[] for more information about Kubernetes deployment.
+In particular, it describes how to use the `preStop` hook to give your application time to shut down gracefully before Kubernetes kills it.
 
 
 

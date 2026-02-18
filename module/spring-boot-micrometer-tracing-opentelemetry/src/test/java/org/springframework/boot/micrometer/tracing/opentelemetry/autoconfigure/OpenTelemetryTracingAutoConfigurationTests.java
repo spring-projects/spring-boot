@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.Tracer.SpanInScope;
+import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
+import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micrometer.tracing.otel.bridge.EventListener;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
@@ -36,6 +39,7 @@ import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
+import io.micrometer.tracing.propagation.Propagator;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.MeterProvider;
@@ -58,11 +62,12 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
+import org.springframework.boot.micrometer.tracing.brave.autoconfigure.BraveAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
@@ -76,7 +81,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -89,8 +93,7 @@ import static org.mockito.Mockito.mock;
 class OpenTelemetryTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(
-				org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
 				OpenTelemetryTracingAutoConfiguration.class));
 
 	@Test
@@ -177,6 +180,29 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			assertThat(context).hasBean("customBatchSpanProcessor");
 			assertThat(context).hasSingleBean(BatchSpanProcessor.class);
 		});
+	}
+
+	@Test
+	void shouldNotSupplyOtelPropagatorWhenPropagatorBeanIsPresent() {
+		this.contextRunner.withUserConfiguration(PropagatorConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Propagator.class);
+			assertThat(context).hasBean("customPropagator");
+			assertThat(context).doesNotHaveBean(OtelPropagator.class);
+		});
+	}
+
+	@Test
+	void shouldWorkWithBraveAutoConfigurationWhenBothConfigurationsAreOnClasspath() {
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
+					OpenTelemetryTracingAutoConfiguration.class, BraveAutoConfiguration.class,
+					ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(io.micrometer.tracing.Tracer.class);
+				assertThat(context).hasSingleBean(Propagator.class);
+				assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
+				assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
+			});
 	}
 
 	@Test
@@ -308,11 +334,15 @@ class OpenTelemetryTracingAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	void defaultSpanProcessorShouldUseMeterProviderIfAvailable() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class).run((context) -> {
 			MeterProvider meterProvider = context.getBean(MeterProvider.class);
-			assertThat(Mockito.mockingDetails(meterProvider).isMock()).isTrue();
-			then(meterProvider).should().meterBuilder(anyString());
+			SpanProcessor spanProcessor = context.getBean(SpanProcessor.class);
+			assertThat(spanProcessor).extracting("worker.spanProcessorInstrumentation.meterProvider")
+				.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+				.extracting(Supplier::get)
+				.isEqualTo(meterProvider);
 		});
 	}
 
@@ -514,6 +544,16 @@ class OpenTelemetryTracingAutoConfigurationTests {
 		@Bean
 		SpanCustomizer customSpanCustomizer() {
 			return mock(SpanCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PropagatorConfiguration {
+
+		@Bean
+		Propagator customPropagator() {
+			return mock(Propagator.class);
 		}
 
 	}

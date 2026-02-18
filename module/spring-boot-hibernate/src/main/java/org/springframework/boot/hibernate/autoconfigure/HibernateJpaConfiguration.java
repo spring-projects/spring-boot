@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -30,17 +29,13 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.EmbeddedTable;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
-import org.hibernate.boot.models.annotations.internal.EmbeddedTableAnnotation;
 import org.hibernate.cfg.ManagedBeanSettings;
-import org.hibernate.event.spi.PreFlushEventListener;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
-import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
@@ -52,7 +47,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.hibernate.SpringJtaPlatform;
-import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.Hibernate72RuntimeHints;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
@@ -83,7 +77,7 @@ import org.springframework.util.ClassUtils;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
-@ImportRuntimeHints({ HibernateRuntimeHints.class, Hibernate72RuntimeHints.class })
+@ImportRuntimeHints(HibernateRuntimeHints.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
@@ -278,69 +272,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			}
 			hints.reflection().registerType(SpringImplicitNamingStrategy.class, INVOKE_DECLARED_CONSTRUCTORS);
 			hints.reflection().registerType(PhysicalNamingStrategySnakeCaseImpl.class, INVOKE_DECLARED_CONSTRUCTORS);
-		}
-
-	}
-
-	static class Hibernate72RuntimeHints implements RuntimeHintsRegistrar {
-
-		@Override
-		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
-			registerLoggerHints(hints.reflection());
-			registerEventHints(hints.reflection());
-			registerAnnotationHints(hints.reflection());
-		}
-
-		private void registerLoggerHints(ReflectionHints reflection) {
-			reflection.registerTypes(Set.of(TypeReference.of("org.hibernate.action.internal.ActionLogging_$logger"),
-					TypeReference.of("org.hibernate.boot.BootLogging_$logger"),
-					TypeReference.of("org.hibernate.boot.beanvalidation.BeanValidationLogger_$logger"),
-					TypeReference
-						.of("org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger"),
-					TypeReference.of("org.hibernate.collection.internal.CollectionLogger_$logger"),
-					TypeReference.of("org.hibernate.context.internal.CurrentSessionLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.internal.NaturalIdLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.internal.PersistenceContextLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.internal.SessionMetricsLogger_$logger"),
-					TypeReference.of("org.hibernate.engine.jdbc.JdbcLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.jdbc.batch.JdbcBatchLogging_$logger"),
-					TypeReference
-						.of("org.hibernate.engine.jdbc.connections.internal.ConnectionProviderLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.jdbc.env.internal.LobCreationLogging_$logger"),
-					TypeReference.of("org.hibernate.engine.jdbc.spi.SQLExceptionLogging_$logger"),
-					TypeReference.of("org.hibernate.event.internal.EntityCopyLogging_$logger"),
-					TypeReference.of("org.hibernate.event.internal.EventListenerLogging_$logger"),
-					TypeReference.of("org.hibernate.id.UUIDLogger_$logger"),
-					TypeReference.of("org.hibernate.id.enhanced.OptimizerLogger_$logger"),
-					TypeReference.of("org.hibernate.internal.SessionFactoryLogging_$logger"),
-					TypeReference.of("org.hibernate.internal.SessionLogging_$logger"),
-					TypeReference.of("org.hibernate.internal.log.StatisticsLogger_$logger"),
-					TypeReference.of("org.hibernate.jpa.internal.JpaLogger_$logger"),
-					TypeReference.of("org.hibernate.loader.ast.internal.MultiKeyLoadLogging_$logger"),
-					TypeReference.of("org.hibernate.metamodel.mapping.MappingModelCreationLogging_$logger"),
-					TypeReference.of("org.hibernate.query.QueryLogging_$logger"),
-					TypeReference.of("org.hibernate.query.hql.HqlLogging_$logger"),
-					TypeReference.of("org.hibernate.resource.jdbc.internal.LogicalConnectionLogging_$logger"),
-					TypeReference.of("org.hibernate.resource.transaction.backend.jta.internal.JtaLogging_$logger"),
-					TypeReference.of("org.hibernate.resource.transaction.internal.SynchronizationLogging_$logger"),
-					TypeReference.of("org.hibernate.service.internal.ServiceLogger_$logger"),
-					TypeReference.of("org.hibernate.sql.model.ModelMutationLogging_$logger"),
-					TypeReference.of("org.hibernate.sql.results.graph.embeddable.EmbeddableLoadingLogger_$logger")),
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-							MemberCategory.INVOKE_PUBLIC_METHODS));
-		}
-
-		private void registerEventHints(ReflectionHints reflection) {
-			reflection.registerType(PreFlushEventListener.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
-			reflection.registerType(PreFlushEventListener[].class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
-		}
-
-		private void registerAnnotationHints(ReflectionHints reflection) {
-			reflection.registerType(EmbeddedTable.class, MemberCategory.INVOKE_PUBLIC_METHODS);
-			reflection.registerType(EmbeddedTableAnnotation.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
 		}
 
 	}

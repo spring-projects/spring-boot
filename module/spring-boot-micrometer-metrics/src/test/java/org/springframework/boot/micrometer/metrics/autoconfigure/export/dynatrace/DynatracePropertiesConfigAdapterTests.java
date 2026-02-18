@@ -53,6 +53,8 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void whenPropertiesV1DeviceIdIsSetAdapterDeviceIdReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setDeviceId("dev-1");
@@ -60,6 +62,8 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void whenPropertiesV1TechnologyTypeIsSetAdapterTechnologyTypeReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setTechnologyType("tech-1");
@@ -67,6 +71,8 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void whenPropertiesV1GroupIsSetAdapterGroupReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setGroup("group-1");
@@ -74,6 +80,8 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	void whenV1DeviceIdIsSetThenAdapterApiVersionIsV1() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setDeviceId("dev-1");
@@ -123,13 +131,20 @@ class DynatracePropertiesConfigAdapterTests
 		DynatraceProperties properties = new DynatraceProperties();
 		assertThat(properties.getApiToken()).isNull();
 		assertThat(properties.getUri()).isNull();
-		assertThat(properties.getV1().getDeviceId()).isNull();
-		assertThat(properties.getV1().getTechnologyType()).isEqualTo("java");
-		assertThat(properties.getV1().getGroup()).isNull();
 		assertThat(properties.getV2().getMetricKeyPrefix()).isNull();
 		assertThat(properties.getV2().isEnrichWithDynatraceMetadata()).isTrue();
 		assertThat(properties.getV2().getDefaultDimensions()).isNull();
 		assertThat(properties.getV2().isUseDynatraceSummaryInstruments()).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(forRemoval = true, since = "4.1.0")
+	void v1DefaultValues() {
+		DynatraceProperties properties = new DynatraceProperties();
+		assertThat(properties.getV1().getDeviceId()).isNull();
+		assertThat(properties.getV1().getTechnologyType()).isEqualTo("java");
+		assertThat(properties.getV1().getGroup()).isNull();
 	}
 
 }

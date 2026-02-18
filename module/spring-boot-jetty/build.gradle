@@ -34,6 +34,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-web-server-test"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
 	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jakarta-server")

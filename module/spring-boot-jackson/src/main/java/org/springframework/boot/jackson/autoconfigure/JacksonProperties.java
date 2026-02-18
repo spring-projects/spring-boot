@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteFeature;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -123,7 +125,19 @@ public class JacksonProperties {
 
 	private final Datatype datatype = new Datatype();
 
+	/**
+	 * Jackson on/off token reader features common to multiple formats.
+	 */
+	private final Map<StreamReadFeature, Boolean> read = new EnumMap<>(StreamReadFeature.class);
+
+	/**
+	 * Jackson on/off token writer features common to multiple formats.
+	 */
+	private final Map<StreamWriteFeature, Boolean> write = new EnumMap<>(StreamWriteFeature.class);
+
 	private final Json json = new Json();
+
+	private final Factory factory = new Factory();
 
 	public @Nullable String getDateFormat() {
 		return this.dateFormat;
@@ -217,8 +231,20 @@ public class JacksonProperties {
 		return this.datatype;
 	}
 
+	public Map<StreamReadFeature, Boolean> getRead() {
+		return this.read;
+	}
+
+	public Map<StreamWriteFeature, Boolean> getWrite() {
+		return this.write;
+	}
+
 	public Json getJson() {
 		return this.json;
+	}
+
+	public Factory getFactory() {
+		return this.factory;
 	}
 
 	public enum ConstructorDetectorStrategy {
@@ -295,6 +321,135 @@ public class JacksonProperties {
 
 		public Map<JsonWriteFeature, Boolean> getWrite() {
 			return this.write;
+		}
+
+	}
+
+	public static class Factory {
+
+		private final Constraints constraints = new Constraints();
+
+		public Constraints getConstraints() {
+			return this.constraints;
+		}
+
+		public static class Constraints {
+
+			private final Read read = new Read();
+
+			private final Write write = new Write();
+
+			public Read getRead() {
+				return this.read;
+			}
+
+			public Write getWrite() {
+				return this.write;
+			}
+
+			public static class Read {
+
+				/**
+				 * Maximum nesting depth. The depth is a count of objects and arrays that
+				 * have not been closed.
+				 */
+				private int maxNestingDepth = 500;
+
+				/**
+				 * Maximum allowed document length. A value less than or equal to zero
+				 * indicates that any length is acceptable.
+				 */
+				private long maxDocumentLength = -1L;
+
+				/**
+				 * Maximum allowed token count. A value less than or equal to zero
+				 * indicates that any count is acceptable.
+				 */
+				private long maxTokenCount = -1L;
+
+				/**
+				 * Maximum number length.
+				 */
+				private int maxNumberLength = 1_000;
+
+				/**
+				 * Maximum string length.
+				 */
+				private int maxStringLength = 20_000_000;
+
+				/**
+				 * Maximum name length.
+				 */
+				private int maxNameLength = 50_000;
+
+				public int getMaxNestingDepth() {
+					return this.maxNestingDepth;
+				}
+
+				public void setMaxNestingDepth(int maxNestingDepth) {
+					this.maxNestingDepth = maxNestingDepth;
+				}
+
+				public long getMaxDocumentLength() {
+					return this.maxDocumentLength;
+				}
+
+				public void setMaxDocumentLength(long maxDocumentLength) {
+					this.maxDocumentLength = maxDocumentLength;
+				}
+
+				public long getMaxTokenCount() {
+					return this.maxTokenCount;
+				}
+
+				public void setMaxTokenCount(long maxTokenCount) {
+					this.maxTokenCount = maxTokenCount;
+				}
+
+				public int getMaxNumberLength() {
+					return this.maxNumberLength;
+				}
+
+				public void setMaxNumberLength(int maxNumberLength) {
+					this.maxNumberLength = maxNumberLength;
+				}
+
+				public int getMaxStringLength() {
+					return this.maxStringLength;
+				}
+
+				public void setMaxStringLength(int maxStringLength) {
+					this.maxStringLength = maxStringLength;
+				}
+
+				public int getMaxNameLength() {
+					return this.maxNameLength;
+				}
+
+				public void setMaxNameLength(int maxNameLength) {
+					this.maxNameLength = maxNameLength;
+				}
+
+			}
+
+			public static class Write {
+
+				/**
+				 * Maximum nesting depth. The depth is a count of objects and arrays that
+				 * have not been closed.
+				 */
+				private int maxNestingDepth = 500;
+
+				public int getMaxNestingDepth() {
+					return this.maxNestingDepth;
+				}
+
+				public void setMaxNestingDepth(int maxNestingDepth) {
+					this.maxNestingDepth = maxNestingDepth;
+				}
+
+			}
+
 		}
 
 	}

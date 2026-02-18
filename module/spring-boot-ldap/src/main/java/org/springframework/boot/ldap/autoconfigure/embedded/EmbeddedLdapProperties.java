@@ -24,7 +24,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Embedded LDAP.
@@ -133,10 +132,6 @@ public class EmbeddedLdapProperties {
 
 		public void setPassword(@Nullable String password) {
 			this.password = password;
-		}
-
-		boolean isAvailable() {
-			return StringUtils.hasText(this.username) && StringUtils.hasText(this.password);
 		}
 
 	}

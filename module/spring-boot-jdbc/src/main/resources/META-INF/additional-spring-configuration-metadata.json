@@ -161,17 +161,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "spring.datasource.xa.data-source-class-name",
-      "providers": [
-        {
-          "name": "class-reference",
-          "parameters": {
-            "target": "javax.sql.XADataSource"
-          }
-        }
-      ]
     }
   ],
   "ignored": {

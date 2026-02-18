@@ -63,7 +63,7 @@ public class CompressionConnectorCustomizer implements TomcatConnectorCustomizer
 	}
 
 	private String getMimeTypes(Compression compression) {
-		return StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes());
+		return StringUtils.arrayToCommaDelimitedString(compression.getAllMimeTypes());
 	}
 
 	private String getExcludedUserAgents(Compression compression) {

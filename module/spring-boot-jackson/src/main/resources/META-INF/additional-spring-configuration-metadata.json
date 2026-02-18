@@ -32,28 +32,6 @@
         "reason": "Partially replaced by 'spring.jackson.json.read'.",
         "since": "4.0.0"
       }
-    },
-    {
-      "name": "spring.jackson.read",
-      "type": "java.util.Map<tools.jackson.core.json.JsonReadFeature,java.lang.Boolean>",
-      "description": "Jackson on/off token reader features that are specific to JSON.",
-      "sourceType": "org.springframework.boot.jackson.autoconfigure.JacksonProperties",
-      "deprecation": {
-        "level": "error",
-        "replacement": "spring.jackson.json.read",
-        "since": "4.0.0"
-      }
-    },
-    {
-      "name": "spring.jackson.write",
-      "type": "java.util.Map<tools.jackson.core.json.JsonWriteFeature,java.lang.Boolean>",
-      "description": "Jackson on/off token writer features that are specific to JSON.",
-      "sourceType": "org.springframework.boot.jackson.autoconfigure.JacksonProperties",
-      "deprecation": {
-        "level": "error",
-        "replacement": "spring.jackson.json.write",
-        "since": "4.0.0"
-      }
     }
   ]
 }

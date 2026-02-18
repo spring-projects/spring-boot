@@ -16,6 +16,8 @@
 
 package org.springframework.boot.configurationmetadata.changelog;
 
+import java.util.Objects;
+
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.Deprecation.Level;
 
@@ -48,6 +50,9 @@ record Difference(DifferenceType type, ConfigurationMetadataProperty oldProperty
 		if (oldProperty.isDeprecated() && oldProperty.getDeprecation().getLevel() == Level.WARNING
 				&& newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
 			return new Difference(DifferenceType.DELETED, oldProperty, newProperty);
+		}
+		if (!Objects.equals(oldProperty.getDefaultValue(), newProperty.getDefaultValue())) {
+			return new Difference(DifferenceType.DEFAULT_CHANGED, oldProperty, newProperty);
 		}
 		return null;
 	}

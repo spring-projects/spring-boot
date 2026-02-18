@@ -145,6 +145,25 @@ class BootBuildImageTests {
 	}
 
 	@Test
+	void whenEnvironmentVariablesAreSetOnTheCommandLineTheyAreIncludedInTheRequest() {
+		this.buildImage.getEnvironmentFromCommandLine().add("ALPHA=a");
+		this.buildImage.getEnvironmentFromCommandLine().add("BRAVO=b");
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+			.containsEntry("BRAVO", "b")
+			.hasSize(2);
+	}
+
+	@Test
+	void environmentVariablesFromTheCommandLineOverrideThoseInTheBuildScript() {
+		this.buildImage.getEnvironment().put("ALPHA", "a");
+		this.buildImage.getEnvironmentFromCommandLine().add("ALPHA=apple");
+		this.buildImage.getEnvironmentFromCommandLine().add("BRAVO=banana");
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "apple")
+			.containsEntry("BRAVO", "banana")
+			.hasSize(2);
+	}
+
+	@Test
 	void whenUsingDefaultConfigurationThenRequestHasVerboseLoggingDisabled() {
 		assertThat(this.buildImage.createRequest().isVerboseLogging()).isFalse();
 	}

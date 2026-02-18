@@ -26,6 +26,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.kafka.support.micrometer.KafkaListenerObservation.DefaultKafkaListenerObservationConvention;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -87,6 +88,14 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.configurer.configure(this.factory, this.consumerFactory);
 		assertThat(this.factory.getContainerProperties().getAuthExceptionRetryInterval())
 			.isEqualTo(Duration.ofSeconds(10));
+	}
+
+	@Test
+	void shouldApplyObservationConvention() {
+		DefaultKafkaListenerObservationConvention convention = new DefaultKafkaListenerObservationConvention();
+		this.configurer.setObservationConvention(convention);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		assertThat(this.factory.getContainerProperties().getObservationConvention()).isSameAs(convention);
 	}
 
 }

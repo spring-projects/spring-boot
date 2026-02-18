@@ -16,6 +16,8 @@
 
 package org.springframework.boot.tomcat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.connector.Connector;
@@ -25,6 +27,7 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
+import org.apache.tomcat.util.net.openssl.ciphers.OpenSSLCipherConfigurationParser;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -113,12 +116,22 @@ public class SslConnectorCustomizer {
 			certificate.setCertificateKeyAlias(key.getAlias());
 		}
 		sslHostConfig.addCertificate(certificate);
-		if (options.getCiphers() != null) {
-			String ciphers = StringUtils.arrayToCommaDelimitedString(options.getCiphers());
-			sslHostConfig.setCiphers(ciphers);
-		}
+		configureCiphers(options, sslHostConfig);
 		configureSslStores(sslHostConfig, certificate, stores);
 		configureEnabledProtocols(sslHostConfig, options);
+	}
+
+	private void configureCiphers(SslOptions options, SSLHostConfig sslHostConfig) {
+		CipherConfiguration cipherConfiguration = CipherConfiguration.from(options);
+		if (cipherConfiguration != null) {
+			sslHostConfig.setCiphers(cipherConfiguration.tls12Ciphers);
+			try {
+				sslHostConfig.setCipherSuites(cipherConfiguration.tls13Ciphers);
+			}
+			catch (Exception ex) {
+				// Tomcat version without setCipherSuites method. Continue.
+			}
+		}
 	}
 
 	private void configureEnabledProtocols(SSLHostConfig sslHostConfig, SslOptions options) {
@@ -145,6 +158,49 @@ public class SslConnectorCustomizer {
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store: " + ex.getMessage(), ex);
 		}
+	}
+
+	private static class CipherConfiguration {
+
+		private final String tls12Ciphers;
+
+		private final String tls13Ciphers;
+
+		CipherConfiguration(String tls12Ciphers, String tls13Ciphers) {
+			this.tls12Ciphers = tls12Ciphers;
+			this.tls13Ciphers = tls13Ciphers;
+		}
+
+		static @Nullable CipherConfiguration from(SslOptions options) {
+			List<String> tls12Ciphers = new ArrayList<>();
+			List<String> tls13Ciphers = new ArrayList<>();
+			String[] ciphers = options.getCiphers();
+			if (ciphers == null || ciphers.length == 0) {
+				return null;
+			}
+			for (String cipher : ciphers) {
+				if (isTls13(cipher)) {
+					tls13Ciphers.add(cipher);
+				}
+				else {
+					tls12Ciphers.add(cipher);
+				}
+			}
+			return new CipherConfiguration(StringUtils.collectionToCommaDelimitedString(tls12Ciphers),
+					StringUtils.collectionToCommaDelimitedString(tls13Ciphers));
+		}
+
+		private static boolean isTls13(String cipher) {
+			try {
+				return OpenSSLCipherConfigurationParser.isTls13Cipher(cipher);
+			}
+			catch (Exception ex) {
+				// Tomcat version without isTls13Cipher method. Continue, treating all
+				// ciphers as TLSv1.2
+				return false;
+			}
+		}
+
 	}
 
 }

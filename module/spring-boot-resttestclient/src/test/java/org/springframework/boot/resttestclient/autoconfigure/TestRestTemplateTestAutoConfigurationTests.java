@@ -31,14 +31,14 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TestRestTemplateAutoConfiguration}.
+ * Tests for {@link TestRestTemplateTestAutoConfiguration}.
  *
  * @author Stephane Nicoll
  */
-class TestRestTemplateAutoConfigurationTests {
+class TestRestTemplateTestAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(TestRestTemplateAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(TestRestTemplateTestAutoConfiguration.class));
 
 	@Test
 	void shouldFailTotRegisterTestRestTemplateWithoutWebServer() {
@@ -51,7 +51,7 @@ class TestRestTemplateAutoConfigurationTests {
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
 					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
-					org.springframework.boot.resttestclient.autoconfigure.TestRestTemplateAutoConfigurationTests$TestLocalTestWebServerProvider
+					org.springframework.boot.resttestclient.autoconfigure.TestRestTemplateTestAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
 	void shouldDefineTestRestTemplateBoundToWebServer() {
 		this.contextRunner.run((context) -> {

@@ -2,6 +2,22 @@ Configuration property changes between `1.0` and `2.0`
 
 
 
+== Default Changed in 2.0
+
+|======================
+| Key | Old Default | New Default
+
+| `test.default.array.change`
+| `a, b`
+| `b, a`
+
+| `test.default.change`
+| `old`
+| `new`
+|======================
+
+
+
 == Deprecated in 2.0
 
 |======================

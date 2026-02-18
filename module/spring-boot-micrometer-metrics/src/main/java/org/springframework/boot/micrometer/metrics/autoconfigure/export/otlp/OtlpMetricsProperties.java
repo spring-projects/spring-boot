@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.CompressionMode;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.jspecify.annotations.Nullable;
 
@@ -50,6 +51,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private AggregationTemporality aggregationTemporality = AggregationTemporality.CUMULATIVE;
 
 	/**
+	 * Compression mode to use when exporting metrics.
+	 */
+	private CompressionMode compressionMode = CompressionMode.NONE;
+
+	/**
 	 * Headers for the exported metrics.
 	 */
 	private @Nullable Map<String, String> headers;
@@ -58,6 +64,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 * Default histogram type when histogram publishing is enabled.
 	 */
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
+
+	/**
+	 * Whether to publish a separate gauge for the max value of histogram-based meters.
+	 */
+	private @Nullable Boolean publishMaxGaugeForHistograms;
 
 	/**
 	 * Max scale to use for exponential histograms, if configured.
@@ -96,6 +107,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
+	public CompressionMode getCompressionMode() {
+		return this.compressionMode;
+	}
+
+	public void setCompressionMode(CompressionMode compressionMode) {
+		this.compressionMode = compressionMode;
+	}
+
 	public @Nullable Map<String, String> getHeaders() {
 		return this.headers;
 	}
@@ -110,6 +129,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
+	}
+
+	public @Nullable Boolean getPublishMaxGaugeForHistograms() {
+		return this.publishMaxGaugeForHistograms;
+	}
+
+	public void setPublishMaxGaugeForHistograms(@Nullable Boolean publishMaxGaugeForHistograms) {
+		this.publishMaxGaugeForHistograms = publishMaxGaugeForHistograms;
 	}
 
 	public int getMaxScale() {

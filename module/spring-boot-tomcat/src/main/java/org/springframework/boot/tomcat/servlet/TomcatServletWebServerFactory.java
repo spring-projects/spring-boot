@@ -161,12 +161,32 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		Tomcat tomcat = createTomcat();
-		prepareContext(tomcat.getHost(), initializers);
+		TempDirs tempDirs = new TempDirs(getPort());
+		Tomcat tomcat = createTomcat(tempDirs);
+		prepareContext(tomcat.getHost(), initializers, tempDirs);
 		return getTomcatWebServer(tomcat);
 	}
 
+	/**
+	 * Prepares the context.
+	 * @param host the host
+	 * @param initializers the servlet context initializers
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #prepareContext(Host, ServletContextInitializer[], TempDirs)}
+	 */
+	@Deprecated(forRemoval = true, since = "4.1.0")
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
+		prepareContext(host, initializers, new TempDirs(getPort()));
+	}
+
+	/**
+	 * Prepares the context.
+	 * @param host the host
+	 * @param initializers the servlet context initializers
+	 * @param tempDirs to manage temporary directories
+	 * @since 4.1.0
+	 */
+	protected void prepareContext(Host host, ServletContextInitializer[] initializers, TempDirs tempDirs) {
 		DocumentRoot documentRoot = new DocumentRoot(logger);
 		documentRoot.setDirectory(this.settings.getDocumentRoot());
 		File documentRootFile = documentRoot.getValidDirectory();
@@ -179,7 +199,8 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 		context.setName(contextPath);
 		context.setDisplayName(this.settings.getDisplayName());
 		context.setPath(contextPath);
-		File docBase = (documentRootFile != null) ? documentRootFile : createTempDir("tomcat-docbase");
+		File docBase = (documentRootFile != null) ? documentRootFile
+				: tempDirs.createTempDir("tomcat-docbase").toFile();
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
 		ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()

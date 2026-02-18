@@ -21,6 +21,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
 /**
@@ -34,6 +35,7 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.properti
 @ConfigurationProperties("management.dynatrace.metrics.export")
 public class DynatraceProperties extends StepRegistryProperties {
 
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	private final V1 v1 = new V1();
 
 	private final V2 v2 = new V2();
@@ -65,6 +67,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.uri = uri;
 	}
 
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	public V1 getV1() {
 		return this.v1;
 	}
@@ -73,6 +76,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 		return this.v2;
 	}
 
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	public static class V1 {
 
 		/**
@@ -92,6 +96,8 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private String technologyType = "java";
 
+		@DeprecatedConfigurationProperty(reason = "Dynatrace V1 API is deprecated, use the V2 API instead.",
+				since = "4.1.0")
 		public @Nullable String getDeviceId() {
 			return this.deviceId;
 		}
@@ -100,6 +106,8 @@ public class DynatraceProperties extends StepRegistryProperties {
 			this.deviceId = deviceId;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Dynatrace V1 API is deprecated, use the V2 API instead.",
+				since = "4.1.0")
 		public @Nullable String getGroup() {
 			return this.group;
 		}
@@ -108,6 +116,8 @@ public class DynatraceProperties extends StepRegistryProperties {
 			this.group = group;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Dynatrace V1 API is deprecated, use the V2 API instead.",
+				since = "4.1.0")
 		public String getTechnologyType() {
 			return this.technologyType;
 		}

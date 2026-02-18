@@ -19,8 +19,8 @@ package org.springframework.boot.data.redis.autoconfigure;
 import javax.net.ssl.SSLParameters;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPoolConfig;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -151,11 +151,11 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 
 	private void applyPooling(DataRedisProperties.Pool pool,
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		builder.usePooling().poolConfig(jedisPoolConfig(pool));
+		builder.usePooling().poolConfig(poolConfig(pool));
 	}
 
-	private JedisPoolConfig jedisPoolConfig(DataRedisProperties.Pool pool) {
-		JedisPoolConfig config = new JedisPoolConfig();
+	private ConnectionPoolConfig poolConfig(DataRedisProperties.Pool pool) {
+		ConnectionPoolConfig config = new ConnectionPoolConfig();
 		config.setMaxTotal(pool.getMaxActive());
 		config.setMaxIdle(pool.getMaxIdle());
 		config.setMinIdle(pool.getMinIdle());

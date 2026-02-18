@@ -17,6 +17,8 @@
 package org.springframework.boot.context.config;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -205,8 +207,8 @@ class StandardConfigDataLocationResolverTests {
 				this.resourceLoader);
 		StandardConfigDataReference parentReference = new StandardConfigDataReference(
 				ConfigDataLocation.of("classpath:configdata/properties/application.properties"), null,
-				"classpath:configdata/properties/application", null, "properties",
-				new PropertiesPropertySourceLoader());
+				"classpath:configdata/properties/application", null, "properties", new PropertiesPropertySourceLoader(),
+				null);
 		ClassPathResource parentResource = new ClassPathResource("configdata/properties/application.properties");
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
@@ -226,7 +228,7 @@ class StandardConfigDataLocationResolverTests {
 				this.resourceLoader);
 		StandardConfigDataReference parentReference = new StandardConfigDataReference(
 				ConfigDataLocation.of("optional:classpath:configdata/"), null, "classpath:config/specific", null,
-				"properties", new PropertiesPropertySourceLoader());
+				"properties", new PropertiesPropertySourceLoader(), null);
 		ClassPathResource parentResource = new ClassPathResource("config/specific.properties");
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
@@ -241,7 +243,7 @@ class StandardConfigDataLocationResolverTests {
 		ConfigDataLocation location = ConfigDataLocation.of("application.other");
 		StandardConfigDataReference parentReference = new StandardConfigDataReference(
 				ConfigDataLocation.of("classpath:configdata/properties/application.properties"), null,
-				"configdata/properties/application", null, "properties", new PropertiesPropertySourceLoader());
+				"configdata/properties/application", null, "properties", new PropertiesPropertySourceLoader(), null);
 		ClassPathResource parentResource = new ClassPathResource("configdata/properties/application.properties");
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
@@ -261,6 +263,33 @@ class StandardConfigDataLocationResolverTests {
 		ConfigData loaded = new StandardConfigDataLoader().load(mock(ConfigDataLoaderContext.class), resolved);
 		PropertySource<?> propertySource = loaded.getPropertySources().get(0);
 		assertThat(propertySource.getProperty("withnoextension")).isEqualTo("test");
+	}
+
+	@Test
+	@WithResource(name = "application-props-no-extension", content = "withnoextension=test")
+	void resolveWhenLocationUsesOptionalExplicitExtensionSyntaxResolves() throws Exception {
+		ConfigDataLocation location = ConfigDataLocation
+			.of("classpath:/application-props-no-extension[extension=.properties]");
+		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
+		assertThat(locations).hasSize(1);
+		StandardConfigDataResource resolved = locations.get(0);
+		assertThat(resolved.getResource().getFilename()).endsWith("application-props-no-extension");
+		ConfigData loaded = new StandardConfigDataLoader().load(mock(ConfigDataLoaderContext.class), resolved);
+		PropertySource<?> propertySource = loaded.getPropertySources().get(0);
+		assertThat(propertySource.getProperty("withnoextension")).isEqualTo("test");
+	}
+
+	@Test
+	@WithResource(name = "utf-8.properties", content = "smiley=😃")
+	void resolveWhenLocationUsesEncodingSyntaxResolves() throws IOException {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:utf-8.properties[encoding=utf-8]");
+		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
+		assertThat(locations).hasSize(1);
+		StandardConfigDataResource resolved = locations.get(0);
+		assertThat(resolved.getReference().getEncoding()).isEqualTo(StandardCharsets.UTF_8);
+		ConfigData loaded = new StandardConfigDataLoader().load(mock(ConfigDataLoaderContext.class), resolved);
+		PropertySource<?> propertySource = loaded.getPropertySources().get(0);
+		assertThat(propertySource.getProperty("smiley")).isEqualTo("😃");
 	}
 
 	@Test

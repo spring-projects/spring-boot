@@ -32,10 +32,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.StreamReadConstraints;
 import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteConstraints;
 import tools.jackson.core.StreamWriteFeature;
+import tools.jackson.core.TokenStreamFactory;
 import tools.jackson.core.json.JsonFactory;
-import tools.jackson.core.json.JsonFactoryBuilder;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -58,7 +60,9 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.json.JsonMapper.Builder;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.util.StdDateFormat;
+import tools.jackson.dataformat.cbor.CBORFactory;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.xml.XmlFactory;
 import tools.jackson.dataformat.xml.XmlMapper;
 import tools.jackson.module.kotlin.KotlinModule;
 
@@ -72,9 +76,12 @@ import org.springframework.boot.jackson.JacksonMixin;
 import org.springframework.boot.jackson.JacksonMixinModule;
 import org.springframework.boot.jackson.JacksonMixinModuleEntries;
 import org.springframework.boot.jackson.ObjectValueSerializer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.CborConfiguration.StandardCborFactoryBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.CborConfiguration.StandardCborMapperBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonJsonMapperBuilderCustomizerConfiguration.StandardJsonMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonJsonCustomizerConfiguration.StandardJsonFactoryBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonJsonCustomizerConfiguration.StandardJsonMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.XmlConfiguration.StandardXmlFactoryBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.XmlConfiguration.StandardXmlMapperBuilderCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -110,6 +117,12 @@ class JacksonAutoConfigurationTests {
 
 	@EnumSource
 	@ParameterizedTest
+	void definesFactory(MapperType mapperType) {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(mapperType.factoryClass));
+	}
+
+	@EnumSource
+	@ParameterizedTest
 	void definesMapper(MapperType mapperType) {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(mapperType.mapperClass));
 	}
@@ -118,6 +131,15 @@ class JacksonAutoConfigurationTests {
 	@ParameterizedTest
 	void definesMapperBuilder(MapperType mapperType) {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(mapperType.builderClass));
+	}
+
+	@EnumSource
+	@ParameterizedTest
+	void factoryBacksOffWhenCustomFactoryIsDefined(MapperType mapperType) {
+		this.contextRunner.withBean("customFactory", mapperType.factoryClass).run((context) -> {
+			assertThat(context).hasSingleBean(mapperType.factoryClass);
+			assertThat(context).hasBean("customFactory");
+		});
 	}
 
 	@EnumSource
@@ -161,6 +183,24 @@ class JacksonAutoConfigurationTests {
 	void standardXmlMapperBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
 		this.contextRunner.withBean(XmlMapperBuilderCustomizer.class, () -> mock(XmlMapperBuilderCustomizer.class))
 			.run((context) -> assertThat(context).hasSingleBean(StandardXmlMapperBuilderCustomizer.class));
+	}
+
+	@Test
+	void standardJsonFactoryBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
+		this.contextRunner.withBean(JsonFactoryBuilderCustomizer.class, () -> mock(JsonFactoryBuilderCustomizer.class))
+			.run((context) -> assertThat(context).hasSingleBean(StandardJsonFactoryBuilderCustomizer.class));
+	}
+
+	@Test
+	void standardCborFactoryBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
+		this.contextRunner.withBean(CborFactoryBuilderCustomizer.class, () -> mock(CborFactoryBuilderCustomizer.class))
+			.run((context) -> assertThat(context).hasSingleBean(StandardCborFactoryBuilderCustomizer.class));
+	}
+
+	@Test
+	void standardXmlFactoryBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
+		this.contextRunner.withBean(XmlFactoryBuilderCustomizer.class, () -> mock(XmlFactoryBuilderCustomizer.class))
+			.run((context) -> assertThat(context).hasSingleBean(StandardXmlFactoryBuilderCustomizer.class));
 	}
 
 	@Test
@@ -393,21 +433,23 @@ class JacksonAutoConfigurationTests {
 			});
 	}
 
-	@Test
-	void defaultJsonFactoryIsRegisteredWithTheMapperBuilderWhenNoCustomFactoryExists() {
-		this.contextRunner.run((context) -> {
-			Builder jsonMapperBuilder = context.getBean(JsonMapper.Builder.class);
-			assertThat(jsonMapperBuilder.isEnabled(StreamReadFeature.AUTO_CLOSE_SOURCE)).isTrue();
+	@EnumSource
+	@ParameterizedTest
+	void enableWriteFeature(MapperType mapperType) {
+		this.contextRunner.withPropertyValues("spring.jackson.write.write-bigdecimal-as-plain:true").run((context) -> {
+			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN)).isTrue();
 		});
 	}
 
-	@Test
-	void customJsonFactoryIsRegisteredWithTheMapperBuilder() {
-		JsonFactory customJsonFactory = new JsonFactoryBuilder().configure(StreamReadFeature.AUTO_CLOSE_SOURCE, false)
-			.build();
-		this.contextRunner.withBean("customJsonFactory", JsonFactory.class, () -> customJsonFactory).run((context) -> {
-			Builder jsonMapperBuilder = context.getBean(JsonMapper.Builder.class);
-			assertThat(jsonMapperBuilder.isEnabled(StreamReadFeature.AUTO_CLOSE_SOURCE)).isFalse();
+	@EnumSource
+	@ParameterizedTest
+	void enableReadFeature(MapperType mapperType) {
+		this.contextRunner.withPropertyValues("spring.jackson.read.strict-duplicate-detection:true").run((context) -> {
+			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(StreamReadFeature.STRICT_DUPLICATE_DETECTION.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamReadFeature.STRICT_DUPLICATE_DETECTION)).isTrue();
 		});
 	}
 
@@ -814,6 +856,63 @@ class JacksonAutoConfigurationTests {
 				.doesNotHaveAnyElementsOfTypes(KotlinModule.class));
 	}
 
+	@EnumSource
+	@ParameterizedTest
+	void defaultStreamReadConstraintsMatchJacksonDefaults(MapperType mapperType) {
+		this.contextRunner.run((context) -> {
+			StreamReadConstraints streamReadConstraints = mapperType.getFactory(context).streamReadConstraints();
+			assertThat(streamReadConstraints.getMaxDocumentLength())
+				.isEqualTo(StreamReadConstraints.DEFAULT_MAX_DOC_LEN);
+			assertThat(streamReadConstraints.getMaxNameLength()).isEqualTo(StreamReadConstraints.DEFAULT_MAX_NAME_LEN);
+			assertThat(streamReadConstraints.getMaxNestingDepth()).isEqualTo(StreamReadConstraints.DEFAULT_MAX_DEPTH);
+			assertThat(streamReadConstraints.getMaxNumberLength()).isEqualTo(StreamReadConstraints.DEFAULT_MAX_NUM_LEN);
+			assertThat(streamReadConstraints.getMaxStringLength())
+				.isEqualTo(StreamReadConstraints.DEFAULT_MAX_STRING_LEN);
+			assertThat(streamReadConstraints.getMaxTokenCount())
+				.isEqualTo(StreamReadConstraints.DEFAULT_MAX_TOKEN_COUNT);
+		});
+	}
+
+	@EnumSource
+	@ParameterizedTest
+	void customStreamReadConstraintsAreAppliedToAutoConfiguredFactory(MapperType mapperType) {
+		this.contextRunner
+			.withPropertyValues("spring.jackson.factory.constraints.read.max-document-length=1000",
+					"spring.jackson.factory.constraints.read.max-name-length=1001",
+					"spring.jackson.factory.constraints.read.max-nesting-depth=1002",
+					"spring.jackson.factory.constraints.read.max-number-length=1003",
+					"spring.jackson.factory.constraints.read.max-string-length=1004",
+					"spring.jackson.factory.constraints.read.max-token-count=1005")
+			.run((context) -> {
+				StreamReadConstraints streamReadConstraints = mapperType.getFactory(context).streamReadConstraints();
+				assertThat(streamReadConstraints.getMaxDocumentLength()).isEqualTo(1000);
+				assertThat(streamReadConstraints.getMaxNameLength()).isEqualTo(1001);
+				assertThat(streamReadConstraints.getMaxNestingDepth()).isEqualTo(1002);
+				assertThat(streamReadConstraints.getMaxNumberLength()).isEqualTo(1003);
+				assertThat(streamReadConstraints.getMaxStringLength()).isEqualTo(1004);
+				assertThat(streamReadConstraints.getMaxTokenCount()).isEqualTo(1005);
+			});
+	}
+
+	@EnumSource
+	@ParameterizedTest
+	void customStreamWriteConstraintsAreAppliedToAutoConfiguredFactory(MapperType mapperType) {
+		this.contextRunner.withPropertyValues("spring.jackson.factory.constraints.write.max-nesting-depth=1000")
+			.run((context) -> {
+				StreamWriteConstraints streamWriteConstraints = mapperType.getFactory(context).streamWriteConstraints();
+				assertThat(streamWriteConstraints.getMaxNestingDepth()).isEqualTo(1000);
+			});
+	}
+
+	@EnumSource
+	@ParameterizedTest
+	void defaultStreamWriteConstraintsMatchJacksonDefaults(MapperType mapperType) {
+		this.contextRunner.run((context) -> {
+			StreamWriteConstraints streamWriteConstraints = mapperType.getFactory(context).streamWriteConstraints();
+			assertThat(streamWriteConstraints.getMaxNestingDepth()).isEqualTo(StreamReadConstraints.DEFAULT_MAX_DEPTH);
+		});
+	}
+
 	static class MyDateFormat extends SimpleDateFormat {
 
 		MyDateFormat() {
@@ -1137,21 +1236,29 @@ class JacksonAutoConfigurationTests {
 
 	enum MapperType {
 
-		CBOR(CBORMapper.class, CBORMapper.Builder.class), JSON(JsonMapper.class, JsonMapper.Builder.class),
-		XML(XmlMapper.class, XmlMapper.Builder.class);
+		CBOR(CBORFactory.class, CBORMapper.class, CBORMapper.Builder.class),
+		JSON(JsonFactory.class, JsonMapper.class, JsonMapper.Builder.class),
+		XML(XmlFactory.class, XmlMapper.class, XmlMapper.Builder.class);
+
+		private final Class<? extends TokenStreamFactory> factoryClass;
 
 		private final Class<? extends ObjectMapper> mapperClass;
 
 		private final Class<? extends MapperBuilder<?, ?>> builderClass;
 
-		<M extends ObjectMapper, B extends MapperBuilder<M, B>> MapperType(Class<M> mapperClass,
-				Class<B> builderClass) {
+		<F extends TokenStreamFactory, M extends ObjectMapper, B extends MapperBuilder<M, B>> MapperType(
+				Class<F> factoryClass, Class<M> mapperClass, Class<B> builderClass) {
+			this.factoryClass = factoryClass;
 			this.mapperClass = mapperClass;
 			this.builderClass = builderClass;
 		}
 
 		ObjectMapper getMapper(ApplicationContext context) {
 			return context.getBean(this.mapperClass);
+		}
+
+		TokenStreamFactory getFactory(ApplicationContext context) {
+			return context.getBean(this.mapperClass).tokenStreamFactory();
 		}
 
 	}

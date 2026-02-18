@@ -25,6 +25,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitListenerObservationConvention;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -55,13 +56,16 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final RabbitProperties properties;
 
+	private final ObjectProvider<RabbitListenerObservationConvention> observationConvention;
+
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
 			ObjectProvider<RabbitListenerRetrySettingsCustomizer> retrySettingsCustomizers,
-			RabbitProperties properties) {
+			ObjectProvider<RabbitListenerObservationConvention> observationConvention, RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
 		this.retrySettingsCustomizers = retrySettingsCustomizers;
+		this.observationConvention = observationConvention;
 		this.properties = properties;
 	}
 
@@ -126,6 +130,7 @@ class RabbitAnnotationDrivenConfiguration {
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setObservationConvention(this.observationConvention.getIfUnique());
 		configurer.setRetrySettingsCustomizers(this.retrySettingsCustomizers.orderedStream().toList());
 		return configurer;
 	}
@@ -135,6 +140,7 @@ class RabbitAnnotationDrivenConfiguration {
 				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setObservationConvention(this.observationConvention.getIfUnique());
 		configurer.setRetrySettingsCustomizers(this.retrySettingsCustomizers.orderedStream().toList());
 		return configurer;
 	}

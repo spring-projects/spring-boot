@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservationConvention;
 import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -52,6 +53,8 @@ public class RabbitTemplateConfigurer {
 
 	private @Nullable List<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers;
 
+	private @Nullable RabbitTemplateObservationConvention observationConvention;
+
 	private final RabbitProperties rabbitProperties;
 
 	/**
@@ -79,6 +82,15 @@ public class RabbitTemplateConfigurer {
 	public void setRetrySettingsCustomizers(
 			@Nullable List<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers) {
 		this.retrySettingsCustomizers = retrySettingsCustomizers;
+	}
+
+	/**
+	 * Sets the observation convention to use.
+	 * @param observationConvention the observation convention to use
+	 * @since 4.1.0
+	 */
+	public void setObservationConvention(@Nullable RabbitTemplateObservationConvention observationConvention) {
+		this.observationConvention = observationConvention;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {
@@ -111,6 +123,9 @@ public class RabbitTemplateConfigurer {
 		map.from(templateProperties::getAllowedListPatterns)
 			.whenNot(CollectionUtils::isEmpty)
 			.to((allowedListPatterns) -> setAllowedListPatterns(template.getMessageConverter(), allowedListPatterns));
+		if (this.observationConvention != null) {
+			template.setObservationConvention(this.observationConvention);
+		}
 	}
 
 	protected RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {

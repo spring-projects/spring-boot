@@ -16,8 +16,10 @@
 
 package org.springframework.boot.build;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,12 +34,15 @@ import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
+import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -46,14 +51,17 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
+import org.gradle.jvm.toolchain.JavaCompiler;
+import org.gradle.jvm.toolchain.JavaInstallationMetadata;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
-import org.springframework.boot.build.SystemRequirementsExtension.JavaSpec;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
@@ -127,10 +135,14 @@ import org.springframework.util.StringUtils;
  */
 class JavaConventions {
 
-	private final JavaSpec javaSpec;
+	public static final int BUILD_JAVA_VERSION = 25;
 
-	JavaConventions(JavaSpec javaSpec) {
-		this.javaSpec = javaSpec;
+	public static final int RUNTIME_JAVA_VERSION = 17;
+
+	private final SystemRequirementsExtension systemRequirements;
+
+	JavaConventions(SystemRequirementsExtension systemRequirements) {
+		this.systemRequirements = systemRequirements;
 	}
 
 	void apply(Project project) {
@@ -153,6 +165,7 @@ class JavaConventions {
 	private void configureJarManifestConventions(Project project) {
 		TaskProvider<ExtractResources> extractLegalResources = project.getTasks()
 			.register("extractLegalResources", ExtractResources.class, (task) -> {
+				task.getPackageName().set("org.springframework.boot.build.legal");
 				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 				task.getProperties().put("version", project.getVersion().toString());
@@ -169,7 +182,8 @@ class JavaConventions {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", this.javaSpec.getVersion());
+				// Build-Jdk-Spec is used by buildpacks to pick the JRE to install
+				attributes.put("Build-Jdk-Spec", this.systemRequirements.getJava().getVersion());
 				attributes.put("Built-By", "Spring");
 				attributes.put("Implementation-Title",
 						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
@@ -248,15 +262,28 @@ class JavaConventions {
 
 	private void configureJavaConventions(Project project) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			compile.doFirst((task) -> assertCompatible(compile));
 			compile.getOptions().setEncoding("UTF-8");
-			compile.getOptions().getRelease().set(this.javaSpec.getVersion());
-			List<String> args = compile.getOptions().getCompilerArgs();
-			if (!args.contains("-parameters")) {
-				args.add("-parameters");
-			}
-			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+			compile.getOptions().getRelease().set(RUNTIME_JAVA_VERSION);
+			Set<String> args = new LinkedHashSet<>(compile.getOptions().getCompilerArgs());
+			args.addAll(List.of("-parameters", "-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 					"-Xlint:varargs"));
+			compile.getOptions().setCompilerArgs(new ArrayList<>(args));
 		});
+	}
+
+	private void assertCompatible(JavaCompile compile) {
+		JavaVersion requiredVersion = JavaVersion.toVersion(BUILD_JAVA_VERSION);
+		JavaVersion actualVersion = compile.getJavaCompiler()
+			.map(JavaCompiler::getMetadata)
+			.map(JavaInstallationMetadata::getLanguageVersion)
+			.map(JavaLanguageVersion::asInt)
+			.map(JavaVersion::toVersion)
+			.orElse(JavaVersion.current())
+			.get();
+		if (!actualVersion.isCompatibleWith(requiredVersion)) {
+			throw new GradleException("This project should be built with Java %s or above".formatted(requiredVersion));
+		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
@@ -273,6 +300,17 @@ class JavaConventions {
 			.add(project.getDependencies().create("com.puppycrawl.tools:checkstyle:" + checkstyle.getToolVersion()));
 		checkstyleDependencies
 			.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+		project.getTasks().withType(CheckFormat.class, this::excludeGeneratedSources);
+		project.getTasks().withType(Checkstyle.class, this::excludeGeneratedSources);
+	}
+
+	private SourceTask excludeGeneratedSources(SourceTask task) {
+		return task.exclude(this::isGeneratedSource);
+	}
+
+	private boolean isGeneratedSource(FileTreeElement candidate) {
+		String path = candidate.getFile().getPath();
+		return path.contains("/generated/sources/") || path.contains("/generated-source/");
 	}
 
 	private void configureDependencyManagement(Project project) {

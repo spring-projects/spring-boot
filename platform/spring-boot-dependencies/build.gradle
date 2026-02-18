@@ -65,9 +65,49 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/angus-mail/releases/tag/{version}")
 		}
 	}
-	library("Artemis", "2.44.0") {
-		group("org.apache.activemq") {
-			bom("artemis-bom")
+	library("Artemis", "2.51.0") {
+		group("org.apache.artemis") {
+			bom("artemis-bom") {
+				permit("org.apache.activemq:artemis-amqp-protocol")
+				permit("org.apache.activemq:artemis-boot")
+				permit("org.apache.activemq:artemis-cdi-client")
+				permit("org.apache.activemq:artemis-cli")
+				permit("org.apache.activemq:artemis-commons")
+				permit("org.apache.activemq:artemis-console")
+				permit("org.apache.activemq:artemis-core-client-all")
+				permit("org.apache.activemq:artemis-core-client-osgi")
+				permit("org.apache.activemq:artemis-core-client")
+				permit("org.apache.activemq:artemis-dto")
+				permit("org.apache.activemq:artemis-features:2.50.0:f")
+				permit("org.apache.activemq:artemis-hornetq-protocol")
+				permit("org.apache.activemq:artemis-hqclient-protocol")
+				permit("org.apache.activemq:artemis-jakarta-cdi-client")
+				permit("org.apache.activemq:artemis-jakarta-client-all")
+				permit("org.apache.activemq:artemis-jakarta-client-osgi")
+				permit("org.apache.activemq:artemis-jakarta-client")
+				permit("org.apache.activemq:artemis-jakarta-openwire-protocol")
+				permit("org.apache.activemq:artemis-jakarta-ra")
+				permit("org.apache.activemq:artemis-jakarta-server")
+				permit("org.apache.activemq:artemis-jakarta-service-extensions")
+				permit("org.apache.activemq:artemis-jdbc-store")
+				permit("org.apache.activemq:artemis-jms-client-all")
+				permit("org.apache.activemq:artemis-jms-client-osgi")
+				permit("org.apache.activemq:artemis-jms-client")
+				permit("org.apache.activemq:artemis-jms-server")
+				permit("org.apache.activemq:artemis-journal")
+				permit("org.apache.activemq:artemis-lockmanager-api")
+				permit("org.apache.activemq:artemis-lockmanager-ri")
+				permit("org.apache.activemq:artemis-mqtt-protocol")
+				permit("org.apache.activemq:artemis-openwire-protocol")
+				permit("org.apache.activemq:artemis-ra")
+				permit("org.apache.activemq:artemis-selector")
+				permit("org.apache.activemq:artemis-server-osgi")
+				permit("org.apache.activemq:artemis-server")
+				permit("org.apache.activemq:artemis-service-extensions")
+				permit("org.apache.activemq:artemis-stomp-protocol")
+				permit("org.apache.activemq:artemis-web")
+				permit("org.apache.activemq:artemis-website")
+			}
 		}
 		links {
 			site("https://activemq.apache.org/components/artemis")
@@ -146,7 +186,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/build-helper-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("Byte Buddy", "1.18.3") {
+	library("Byte Buddy", "1.18.5") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -201,7 +241,7 @@ bom {
 			]
 		}
 	}
-	library("Classmate", "1.7.1") {
+	library("Classmate", "1.7.3") {
 		group("com.fasterxml") {
 			modules = [
 				"classmate"
@@ -272,11 +312,17 @@ bom {
 			site("https://commons.apache.org/proper/commons-pool")
 		}
 	}
-	library("Couchbase Client", "3.10.0") {
+	library("Couchbase Client", "3.11.0") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
 			]
+		}
+		alignWith {
+			version {
+				from "org.springframework.data:spring-data-couchbase"
+				managedBy "Spring Data Bom"
+			}
 		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
@@ -355,7 +401,7 @@ bom {
 			releaseNotes("https://github.com/ehcache/ehcache3/releases/tag/v{version}")
 		}
 	}
-	library("Elasticsearch Client", "9.2.3") {
+	library("Elasticsearch Client", "9.2.5") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
@@ -379,9 +425,10 @@ bom {
 			javadoc("elasticsearch-java", version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 		}
 	}
-	library("Flyway", "11.20.1") {
+	library("Flyway", "12.0.0") {
 		group("org.flywaydb") {
 			modules = [
+				"flyway-command-test-connection",
 				"flyway-commandline",
 				"flyway-core",
 				"flyway-database-cassandra",
@@ -390,6 +437,8 @@ bom {
 				"flyway-database-hsqldb",
 				"flyway-database-informix",
 				"flyway-database-mongodb",
+				"flyway-database-nc-couchbase",
+				"flyway-database-nc-mongodb",
 				"flyway-database-oracle",
 				"flyway-database-postgresql",
 				"flyway-database-redshift",
@@ -441,7 +490,7 @@ bom {
 			dependencyManagementDeclaredIn("org.glassfish.jaxb:jaxb-bom") {
 				excluding { candidate -> candidate.classifier().equals("sources") }
 				excluding { candidate ->
-					def permittedGroups = Set.of("org.glassfix.jaxb", "com.sun.xml.bind")
+					def permittedGroups = Set.of("org.glassfish.jaxb", "com.sun.xml.bind")
 					return !permittedGroups.contains(candidate.groupId())
 				}
 			}
@@ -498,7 +547,7 @@ bom {
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
-	library("Groovy", "5.0.3") {
+	library("Groovy", "5.0.4") {
 		prohibit {
 			contains "-alpha-"
 			because "we don't want alpha dependencies"
@@ -563,7 +612,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "7.2.0.Final") {
+	library("Hibernate", "7.2.4.Final") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
@@ -672,7 +721,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore5", "5.4") {
+	library("HttpCore5", "5.4.1") {
 		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
@@ -900,6 +949,11 @@ bom {
 		}
 	}
 	library("Jakarta XML Bind", "4.0.4") {
+		alignWith {
+			version {
+				from "org.glassfish.jaxb:jaxb-core"
+			}
+		}
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
@@ -967,7 +1021,7 @@ bom {
 			releaseNotes("https://github.com/jaxen-xpath/jaxen/releases/tag/v{version}")
 		}
 	}
-	library("Jaybird", "6.0.3") {
+	library("Jaybird", "6.0.4") {
 		prohibit {
 			endsWith ".java8"
 			because "we use the .java11 version"
@@ -982,7 +1036,7 @@ bom {
 				.formatted(version.toString().replace(".java11", "")))
 		}
 	}
-	library("JBoss Logging", "3.6.1.Final") {
+	library("JBoss Logging", "3.6.2.Final") {
 		group("org.jboss.logging") {
 			modules = [
 				"jboss-logging"
@@ -1002,7 +1056,7 @@ bom {
 			releaseNotes("https://github.com/hunterhacker/jdom/releases/tag/JDOM-{version}")
 		}
 	}
-	library("Jedis", "7.0.0") {
+	library("Jedis", "7.2.1") {
 		alignWith {
 			property {
 				name "jedis"
@@ -1020,7 +1074,7 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jersey", "4.0.0") {
+	library("Jersey", "4.0.2") {
 		group("org.glassfish.jersey") {
 			bom("jersey-bom")
 		}
@@ -1037,7 +1091,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "12.1.5") {
+	library("Jetty", "12.1.6") {
 		prohibit {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
@@ -1061,7 +1115,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.20.10") {
+	library("jOOQ", "3.20.11") {
 		group("org.jooq") {
 			bom("jooq-bom")
 			plugins = [
@@ -1225,7 +1279,7 @@ bom {
 			releaseNotes("https://github.com/Kotlin/kotlinx.coroutines/releases/tag/{version}")
 		}
 	}
-	library("Kotlin Serialization", "1.9.0") {
+	library("Kotlin Serialization", "1.10.0") {
 		group("org.jetbrains.kotlinx") {
 			bom("kotlinx-serialization-bom")
 		}
@@ -1234,7 +1288,7 @@ bom {
 			releaseNotes("https://github.com/Kotlin/kotlinx.serialization/releases/tag/v{version}")
 		}
 	}
-	library("Lettuce", "6.8.1.RELEASE") {
+	library("Lettuce", "7.2.1.RELEASE") {
 		prohibit {
 			contains ".BETA"
 			because "we don't want betas"
@@ -1291,7 +1345,7 @@ bom {
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
 	}
-	library("Logback", "1.5.22") {
+	library("Logback", "1.5.32") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
@@ -1360,7 +1414,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-clean-plugin/releases/tag/maven-clean-plugin-{version}")
 		}
 	}
-	library("Maven Compiler Plugin", "3.14.1") {
+	library("Maven Compiler Plugin", "3.15.0") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
@@ -1374,7 +1428,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-compiler-plugin/releases/tag/maven-compiler-plugin-{version}")
 		}
 	}
-	library("Maven Dependency Plugin", "3.9.0") {
+	library("Maven Dependency Plugin", "3.10.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-dependency-plugin"
@@ -1531,7 +1585,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.17.0-SNAPSHOT") {
+	library("Micrometer", "1.17.0-M2") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1554,7 +1608,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.7.0-SNAPSHOT") {
+	library("Micrometer Tracing", "1.7.0-M3") {
 		considerSnapshots()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
@@ -1576,7 +1630,7 @@ bom {
 			releaseNotes("https://github.com/mockito/mockito/releases/tag/v{version}")
 		}
 	}
-	library("MongoDB", "5.6.2") {
+	library("MongoDB", "5.6.3") {
 		alignWith {
 			version {
 				of "org.mongodb:mongodb-driver-core"
@@ -1615,7 +1669,7 @@ bom {
 				.formatted(version.toString().replace(".jre11", "")))
 		}
 	}
-	library("MySQL", "9.5.0") {
+	library("MySQL", "9.6.0") {
 		upgradePolicy = "same-major-version"
 		group("com.mysql") {
 			modules = [
@@ -1670,7 +1724,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.2.9.Final") {
+	library("Netty", "4.2.10.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
@@ -1685,9 +1739,16 @@ bom {
 			javadoc(version -> "https://netty.io/%s.%s/api".formatted(version.major(), version.minor()), "io.netty")
 		}
 	}
-	library("OpenTelemetry", "1.57.0") {
+	library("OpenTelemetry", "1.58.0") {
 		group("io.opentelemetry") {
 			bom("opentelemetry-bom")
+		}
+		alignWith {
+			version {
+				of "io.opentelemetry:opentelemetry-api"
+				from "io.micrometer:micrometer-tracing-bridge-otel"
+				managedBy "Micrometer Tracing"
+			}
 		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
@@ -1697,10 +1758,11 @@ bom {
 			javadoc("opentelemetry-sdk-logs", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
 			javadoc("opentelemetry-sdk-metrics", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
 			javadoc("opentelemetry-sdk-trace", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
+			javadoc("opentelemetry-exporter-otlp", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-exporter-otlp/%s".formatted(version), "io.opentelemetry.exporter.otlp")
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 		}
 	}
-	library("Oracle Database", "23.26.0.0.0") {
+	library("Oracle Database", "23.26.1.0.0") {
 		alignWith {
 			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
 		}
@@ -1751,7 +1813,7 @@ bom {
 			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
 		}
 	}
-	library("Pooled JMS", "3.2.1") {
+	library("Pooled JMS", "3.2.2") {
 		group("org.messaginghub") {
 			modules = [
 				"pooled-jms"
@@ -1761,7 +1823,7 @@ bom {
 			javadoc("https://javadoc.io/doc/org.messaginghub/pooled-jms/{version}", "org.messaginghub.pooled.jms")
 		}
 	}
-	library("Postgresql", "42.7.8") {
+	library("Postgresql", "42.7.10") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1848,7 +1910,7 @@ bom {
 			releaseNotes("https://github.com/mariadb-corporation/mariadb-connector-r2dbc/releases/tag/{version}")
 		}
 	}
-	library("R2DBC MSSQL", "1.0.3.RELEASE") {
+	library("R2DBC MSSQL", "1.0.4.RELEASE") {
 		group ("io.r2dbc") {
 			modules = [
 				"r2dbc-mssql"
@@ -1927,7 +1989,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
-	library("Rabbit Stream Client", "1.4.0") {
+	library("Rabbit Stream Client", "1.5.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
@@ -1945,7 +2007,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2025.0.2-SNAPSHOT") {
+	library("Reactor Bom", "2025.0.3") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
@@ -2265,6 +2327,7 @@ bom {
 				"spring-boot-transaction",
 				"spring-boot-validation",
 				"spring-boot-web-server",
+				"spring-boot-web-server-test",
 				"spring-boot-webclient",
 				"spring-boot-webclient-test",
 				"spring-boot-webflux",
@@ -2299,7 +2362,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.39.0") {
+	library("Selenium", "4.40.0") {
 		group("org.seleniumhq.selenium") {
 			bom("selenium-bom")
 		}
@@ -2309,7 +2372,7 @@ bom {
 			releaseNotes("https://github.com/SeleniumHQ/selenium/releases/tag/selenium-{version}")
 		}
 	}
-	library("Selenium HtmlUnit", "4.39.0") {
+	library("Selenium HtmlUnit", "4.40.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit3-driver"
@@ -2363,7 +2426,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.0.1") {
+	library("Spring AMQP", "4.1.0-M2") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
@@ -2378,7 +2441,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Batch", "6.0.2-SNAPSHOT") {
+	library("Spring Batch", "6.0.2") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			bom("spring-batch-bom")
@@ -2393,7 +2456,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2025.1.2-SNAPSHOT") {
+	library("Spring Data Bom", "2026.0.0-M1") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
@@ -2423,7 +2486,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "2.0.2-SNAPSHOT") {
+	library("Spring GraphQL", "2.0.2") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
@@ -2441,7 +2504,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "3.0.1") {
+	library("Spring HATEOAS", "3.0.2") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -2458,7 +2521,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "7.0.1") {
+	library("Spring Integration", "7.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
@@ -2473,7 +2536,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "4.0.2-SNAPSHOT") {
+	library("Spring Kafka", "4.1.0-M1") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
@@ -2491,7 +2554,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "4.0.1") {
+	library("Spring LDAP", "4.1.0-M1") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
@@ -2511,7 +2574,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "2.0.2-SNAPSHOT") {
+	library("Spring Pulsar", "2.0.3") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
@@ -2541,7 +2604,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "7.0.2") {
+	library("Spring Security", "7.1.0-M2") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
@@ -2549,14 +2612,14 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-security")
 			github("https://github.com/spring-projects/spring-security")
-			javadoc(version -> "https://docs.spring.io/spring-security/site/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.security")
+			javadoc(version -> "https://docs.spring.io/spring-security/reference/%s/api/java"
+				.formatted(version.forAntora()), "org.springframework.security")
 			docs(version -> "https://docs.spring.io/spring-security/reference/%s"
 				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "4.0.1") {
+	library("Spring Session", "4.1.0-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -2594,7 +2657,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
 		}
 	}
-	library("SQLite JDBC", "3.51.1.0") {
+	library("SQLite JDBC", "3.51.2.0") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
@@ -2719,7 +2782,7 @@ bom {
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
-	library("Versions Maven Plugin", "2.20.1") {
+	library("Versions Maven Plugin", "2.21.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"versions-maven-plugin"
@@ -2744,7 +2807,7 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Lite", "1.1.2") {
+	library("WebJars Locator Lite", "1.1.3") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-lite"
@@ -2758,7 +2821,7 @@ bom {
 			]
 		}
 	}
-	library("XML Maven Plugin", "1.2.0") {
+	library("XML Maven Plugin", "1.2.1") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"xml-maven-plugin"

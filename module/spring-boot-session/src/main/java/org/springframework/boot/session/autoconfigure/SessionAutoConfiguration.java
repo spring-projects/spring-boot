@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie;
-import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -116,7 +115,7 @@ public final class SessionAutoConfiguration {
 				map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 				map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 				map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-				map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(cookieSerializer::setSameSite);
+				map.from(cookie::getSameSite).to((sameSite) -> cookieSerializer.setSameSite(sameSite.attributeValue()));
 				map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
 				cookieSerializerCustomizers.orderedStream()
 					.forEach((customizer) -> customizer.customize(cookieSerializer));

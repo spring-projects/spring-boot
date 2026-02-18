@@ -64,6 +64,10 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitListenerObservation.DefaultRabbitListenerObservationConvention;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitListenerObservationConvention;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservation.DefaultRabbitTemplateObservationConvention;
+import org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservationConvention;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.amqp.support.converter.SerializerMessageConverter;
@@ -319,6 +323,15 @@ class RabbitAutoConfigurationTests {
 			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 			assertThat(rabbitTemplate.getMessageConverter()).isSameAs(context.getBean("myMessageConverter"));
 			assertThat(rabbitTemplate).hasFieldOrPropertyWithValue("retryTemplate", null);
+		});
+	}
+
+	@Test
+	void shouldConfigureRabbitTemplateObservationConvention() {
+		RabbitTemplateObservationConvention convention = new DefaultRabbitTemplateObservationConvention();
+		this.contextRunner.withBean(RabbitTemplateObservationConvention.class, () -> convention).run((context) -> {
+			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+			assertThat(rabbitTemplate).hasFieldOrPropertyWithValue("observationConvention", convention);
 		});
 	}
 
@@ -595,6 +608,16 @@ class RabbitAutoConfigurationTests {
 			assertThat(virtualThread).isNotNull();
 			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
 			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
+		});
+	}
+
+	@Test
+	void shouldConfigureRabbitListenerObservationConvention() {
+		RabbitListenerObservationConvention convention = new DefaultRabbitListenerObservationConvention();
+		this.contextRunner.withBean(RabbitListenerObservationConvention.class, () -> convention).run((context) -> {
+			SimpleRabbitListenerContainerFactory listenerFactory = context.getBean("rabbitListenerContainerFactory",
+					SimpleRabbitListenerContainerFactory.class);
+			assertThat(listenerFactory).hasFieldOrPropertyWithValue("observationConvention", convention);
 		});
 	}
 

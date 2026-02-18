@@ -26,13 +26,10 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
- * for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create
+ * {@link RabbitConnectionDetails} for a {@code rabbitmq} service.
  *
- * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Phillip Webb
- * @author Scott Frederick
  */
 class RabbitDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
@@ -44,8 +41,14 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	@Override
-	protected RabbitConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
+			DockerComposeConnectionSource source) {
+		try {
+			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
 	}
 
 	/**

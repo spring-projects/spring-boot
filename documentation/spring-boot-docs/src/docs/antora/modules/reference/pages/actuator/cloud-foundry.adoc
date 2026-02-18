@@ -1,7 +1,7 @@
 [[actuator.cloud-foundry]]
 = Cloud Foundry Support
 
-Spring Boot's actuator module includes additional support that is activated when you deploy to a compatible Cloud Foundry instance.
+Spring Boot's `spring-boot-cloudfoundry` module (part of `spring-boot-starter-cloudfoundry`) includes additional support that is activated when you deploy to a compatible Cloud Foundry instance.
 The `/cloudfoundryapplication` path provides an alternative secured route to all javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation] beans.
 
 The extended support lets Cloud Foundry management UIs (such as the web application that you can use to view deployed applications) be augmented with Spring Boot actuator information.

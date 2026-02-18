@@ -16,7 +16,7 @@
 
 package org.springframework.boot.tomcat.reactive;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
@@ -68,20 +68,40 @@ public class TomcatReactiveWebServerFactory extends TomcatWebServerFactory
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
-		Tomcat tomcat = createTomcat();
+		TempDirs tempDirs = new TempDirs(getPort());
+		Tomcat tomcat = createTomcat(tempDirs);
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
-		prepareContext(tomcat.getHost(), servlet);
+		prepareContext(tomcat.getHost(), servlet, tempDirs);
 		return getTomcatWebServer(tomcat);
 	}
 
+	/**
+	 * Prepares the context.
+	 * @param host the host
+	 * @param servlet the servlet adapter
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #prepareContext(Host, TomcatHttpHandlerAdapter, TempDirs)}
+	 */
+	@Deprecated(forRemoval = true, since = "4.1.0")
 	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
-		File docBase = createTempDir("tomcat-docbase");
+		prepareContext(host, servlet, new TempDirs(getPort()));
+	}
+
+	/**
+	 * Prepares the context.
+	 * @param host the host
+	 * @param servlet the servlet adapter
+	 * @param tempDirs to manage temporary directories
+	 * @since 4.1.0
+	 */
+	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet, TempDirs tempDirs) {
+		Path docBase = tempDirs.createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		WebResourceRoot resourceRoot = new StandardRoot(context);
 		ignoringNoSuchMethodError(() -> resourceRoot.setReadOnly(true));
 		context.setResources(resourceRoot);
 		context.setPath("");
-		context.setDocBase(docBase.getAbsolutePath());
+		context.setDocBase(docBase.toAbsolutePath().toString());
 		context.addLifecycleListener(new Tomcat.FixContextListener());
 		ClassLoader parentClassLoader = ClassUtils.getDefaultClassLoader();
 		context.setParentClassLoader(parentClassLoader);

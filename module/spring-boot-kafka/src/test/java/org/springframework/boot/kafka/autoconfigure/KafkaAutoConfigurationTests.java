@@ -94,6 +94,8 @@ import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.support.micrometer.KafkaTemplateObservation.DefaultKafkaTemplateObservationConvention;
+import org.springframework.kafka.support.micrometer.KafkaTemplateObservationConvention;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -1013,6 +1015,15 @@ class KafkaAutoConfigurationTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(SslBundleSslEngineFactory.class)
 			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)).accepts(runtimeHints);
+	}
+
+	@Test
+	void shouldConfigureObservationConvention() {
+		KafkaTemplateObservationConvention convention = new DefaultKafkaTemplateObservationConvention();
+		this.contextRunner.withBean(KafkaTemplateObservationConvention.class, () -> convention).run((context) -> {
+			KafkaTemplate<?, ?> template = context.getBean(KafkaTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("observationConvention", convention);
+		});
 	}
 
 	private KafkaConnectionDetails kafkaConnectionDetails() {

@@ -8,6 +8,15 @@
       "defaultValue": true
     },
     {
+      "name": "spring.data.redis.lettuce.cluster.refresh.adaptive",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "reason": "All adaptive triggers are enabled by default.",
+        "level": "error",
+        "since": "4.1.0"
+      }
+    },
+    {
       "name": "spring.data.redis.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Redis repositories.",
