@@ -30,6 +30,10 @@ jobs:
         id: run-system-tests
         shell: bash
         run: ./gradlew systemTest
+      - name: Show docker info
+        if: always()
+        shell: bash
+        run: docker version ; docker info
       - name: List docker images
         if: always()
         shell: bash
