@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.amqp.docker.compose.RabbitEnvironment;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

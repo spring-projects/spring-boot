@@ -23,7 +23,6 @@ import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder.EnvironmentConnectionSettings;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
-import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbitmq.client.AmqpConnectionFactory;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
@@ -46,9 +45,9 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitAmqpTemplate}.
  *
  * @author Eddú Meléndez
- * @since 4.0.0
+ * @since 4.1.0
  */
-@AutoConfiguration(before = RabbitAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnClass({ RabbitAmqpTemplate.class, Connection.class })
 @EnableConfigurationProperties(RabbitProperties.class)
 public final class RabbitAmqpAutoConfiguration {
@@ -68,9 +67,7 @@ public final class RabbitAmqpAutoConfiguration {
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(AmqpConnectionFactory connectionFactory,
-			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer,
-			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
-			ObjectProvider<MessageRecoverer> messageRecoverer) {
+			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer) {
 		RabbitAmqpListenerContainerFactory factory = new RabbitAmqpListenerContainerFactory(connectionFactory);
 		amqpContainerCustomizer.ifUnique(factory::setContainerCustomizer);
 
@@ -87,14 +84,12 @@ public final class RabbitAmqpAutoConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		EnvironmentConnectionSettings environmentConnectionSettings = new AmqpEnvironmentBuilder().connectionSettings();
 		Address address = connectionDetails.getFirstAddress();
-		map.from(address::host).whenNonNull().to(environmentConnectionSettings::host);
+		map.from(address::host).to(environmentConnectionSettings::host);
 		map.from(address::port).to(environmentConnectionSettings::port);
-		map.from(connectionDetails::getUsername).whenNonNull().to(environmentConnectionSettings::username);
-		map.from(connectionDetails::getPassword).whenNonNull().to(environmentConnectionSettings::password);
-		map.from(connectionDetails::getVirtualHost).whenNonNull().to(environmentConnectionSettings::virtualHost);
-		map.from(credentialsProvider::getIfAvailable)
-			.whenNonNull()
-			.to(environmentConnectionSettings::credentialsProvider);
+		map.from(connectionDetails::getUsername).to(environmentConnectionSettings::username);
+		map.from(connectionDetails::getPassword).to(environmentConnectionSettings::password);
+		map.from(connectionDetails::getVirtualHost).to(environmentConnectionSettings::virtualHost);
+		map.from(credentialsProvider::getIfAvailable).to(environmentConnectionSettings::credentialsProvider);
 
 		AmqpEnvironmentBuilder builder = environmentConnectionSettings.environmentBuilder();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -119,8 +114,8 @@ public final class RabbitAmqpAutoConfiguration {
 		RabbitProperties.Template templateProperties = this.properties.getTemplate();
 
 		PropertyMapper map = PropertyMapper.get();
-		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(rabbitAmqpTemplate::setReceiveQueue);
-		map.from(templateProperties::getExchange).whenNonNull().to(rabbitAmqpTemplate::setExchange);
+		map.from(templateProperties::getDefaultReceiveQueue).to(rabbitAmqpTemplate::setReceiveQueue);
+		map.from(templateProperties::getExchange).to(rabbitAmqpTemplate::setExchange);
 		map.from(templateProperties::getRoutingKey).to(rabbitAmqpTemplate::setRoutingKey);
 
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(rabbitAmqpTemplate));

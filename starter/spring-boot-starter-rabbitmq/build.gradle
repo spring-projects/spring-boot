@@ -23,7 +23,7 @@ description = "Starter for using Spring AMQP with Rabbit MQ over AMQP 0.9.1 prot
 dependencies {
 	api(project(":starter:spring-boot-starter"))
 
-	api(project(":module:spring-boot-amqp")) {
+	api(project(":module:spring-boot-rabbitmq")) {
 		exclude group: "org.springframework.amqp", module: "spring-rabbitmq-client"
 	}
 	api("org.springframework.amqp:spring-rabbit")

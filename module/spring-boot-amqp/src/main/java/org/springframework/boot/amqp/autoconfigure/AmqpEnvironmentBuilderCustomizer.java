@@ -25,7 +25,7 @@ import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
  * {@link AmqpEnvironmentBuilder}.
  *
  * @author Eddú Meléndez
- * @since 4.0.0
+ * @since 4.1.0
  */
 @FunctionalInterface
 public interface AmqpEnvironmentBuilderCustomizer {

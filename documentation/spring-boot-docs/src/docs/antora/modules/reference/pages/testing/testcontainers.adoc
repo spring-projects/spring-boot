@@ -173,7 +173,7 @@ javadoc:org.testcontainers.clickhouse.ClickHouseContainer[],
 javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.mariadb.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.mssqlserver.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.mysql.MySQLContainer[],
 javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.containers.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.postgresql.PostgreSQLContainer[]
 
-| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[]
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]

@@ -16,16 +16,16 @@
 
 package smoketest.amqp;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class Sender {
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitAmqpTemplate rabbitAmqpTemplate;
 
 	public void send(String message) {
-		this.rabbitTemplate.convertAndSend("foo", message);
+		this.rabbitAmqpTemplate.convertAndSend("foo", message);
 	}
 
 }

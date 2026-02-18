@@ -32,6 +32,8 @@ import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContain
 import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.amqp.autoconfigure.RabbitAmqpAutoConfiguration;
+import org.springframework.boot.amqp.autoconfigure.RabbitAmqpTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -39,9 +41,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.policy.NeverRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,22 +127,6 @@ class RabbitAmqpAutoConfigurationTests {
 		@Order(0)
 		RabbitAmqpTemplateCustomizer firstCustomizer() {
 			return mock(RabbitAmqpTemplateCustomizer.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class RabbitRetryTemplateCustomizerConfiguration {
-
-		private final RetryPolicy retryPolicy = new NeverRetryPolicy();
-
-		@Bean
-		RabbitRetryTemplateCustomizer rabbitListenerRetryTemplateCustomizer() {
-			return (target, template) -> {
-				if (target.equals(RabbitRetryTemplateCustomizer.Target.LISTENER)) {
-					template.setRetryPolicy(this.retryPolicy);
-				}
-			};
 		}
 
 	}
