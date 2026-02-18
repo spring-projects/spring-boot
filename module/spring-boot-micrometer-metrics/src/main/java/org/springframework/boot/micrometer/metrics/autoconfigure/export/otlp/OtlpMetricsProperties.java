@@ -66,6 +66,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
 
 	/**
+	 * Whether to publish a separate gauge for the max value of histogram-based meters.
+	 */
+	private @Nullable Boolean publishMaxGaugeForHistograms;
+
+	/**
 	 * Max scale to use for exponential histograms, if configured.
 	 */
 	private int maxScale = 20;
@@ -124,6 +129,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
+	}
+
+	public @Nullable Boolean getPublishMaxGaugeForHistograms() {
+		return this.publishMaxGaugeForHistograms;
+	}
+
+	public void setPublishMaxGaugeForHistograms(@Nullable Boolean publishMaxGaugeForHistograms) {
+		this.publishMaxGaugeForHistograms = publishMaxGaugeForHistograms;
 	}
 
 	public int getMaxScale() {

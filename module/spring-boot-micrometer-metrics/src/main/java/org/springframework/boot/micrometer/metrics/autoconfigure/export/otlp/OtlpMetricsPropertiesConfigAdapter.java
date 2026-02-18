@@ -107,6 +107,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	@Override
+	public boolean publishMaxGaugeForHistograms() {
+		return obtain(OtlpMetricsProperties::getPublishMaxGaugeForHistograms,
+				OtlpConfig.super::publishMaxGaugeForHistograms);
+	}
+
+	@Override
 	public int maxScale() {
 		return obtain(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
