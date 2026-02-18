@@ -30,6 +30,10 @@ jobs:
         id: run-system-tests
         shell: bash
         run: ./gradlew systemTest
+      - name: List docker images
+        if: always()
+        shell: bash
+        run: docker image ls --digests
       - name: Send Notification
         if: always()
         uses: ./.github/actions/send-notification
