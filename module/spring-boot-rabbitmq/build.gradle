@@ -28,7 +28,7 @@ description = "Spring Boot RabbiqMQ"
 dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework:spring-messaging")
-	api("org.springframework.amqp:spring-rabbitmq-client")
+	api("org.springframework.amqp:spring-rabbit")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 

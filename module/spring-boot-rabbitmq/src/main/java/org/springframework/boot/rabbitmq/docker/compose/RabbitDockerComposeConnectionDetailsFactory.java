@@ -44,8 +44,14 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	@Override
-	protected RabbitConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
+			DockerComposeConnectionSource source) {
+		try {
+			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
 	}
 
 	/**
