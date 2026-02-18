@@ -138,6 +138,24 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void useDefaultPublishMaxGaugeForHistogramsWhenNotSet() {
+		assertThat(this.properties.getPublishMaxGaugeForHistograms()).isNull();
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isTrue();
+	}
+
+	@Test
+	void whenDefaultPublishMaxGaugeForHistogramsIsSetAdapterUsesIt() {
+		this.properties.setPublishMaxGaugeForHistograms(false);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
+	}
+
+	@Test
+	void whenAggregationTemporalityIsSetToDeltaThenPublishMaxGaugeForHistogramsDefaultChanges() {
+		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
+	}
+
+	@Test
 	void whenPropertiesMaxScaleIsNotSetAdapterMaxScaleReturns20() {
 		assertThat(createAdapter().maxScale()).isEqualTo(20);
 	}
@@ -217,24 +235,6 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	@Test
 	void shouldUseDefaultApplicationGroupIfApplicationGroupIsNotSet() {
 		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.namespace");
-	}
-
-	@Test
-	void useDefaultPublishMaxGaugeForHistogramsWhenNotSet() {
-		assertThat(this.properties.getPublishMaxGaugeForHistograms()).isNull();
-		assertThat(createAdapter().publishMaxGaugeForHistograms()).isTrue();
-	}
-
-	@Test
-	void whenDefaultPublishMaxGaugeForHistogramsIsSetAdapterUsesIt() {
-		this.properties.setPublishMaxGaugeForHistograms(false);
-		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
-	}
-
-	@Test
-	void whenAggregationTemporalityIsSetToDeltaThenPublishMaxGaugeForHistogramsDefaultChanges() {
-		this.properties.setAggregationTemporality(AggregationTemporality.DELTA);
-		assertThat(createAdapter().publishMaxGaugeForHistograms()).isFalse();
 	}
 
 	private OtlpMetricsPropertiesConfigAdapter createAdapter() {

@@ -66,6 +66,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
 
 	/**
+	 * Whether to publish a separate gauge for the max value of histogram-based meters.
+	 */
+	private @Nullable Boolean publishMaxGaugeForHistograms;
+
+	/**
 	 * Max scale to use for exponential histograms, if configured.
 	 */
 	private int maxScale = 20;
@@ -85,12 +90,6 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 * Per-meter properties that can be used to override defaults.
 	 */
 	private final Map<String, Meter> meter = new LinkedHashMap<>();
-
-	/**
-	 * Whether to publish a separate gauge for the max value of histogram-based meters. A
-	 * null value defers to Micrometer's default.
-	 */
-	private @Nullable Boolean publishMaxGaugeForHistograms;
 
 	public @Nullable String getUrl() {
 		return this.url;
@@ -132,6 +131,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.histogramFlavor = histogramFlavor;
 	}
 
+	public @Nullable Boolean getPublishMaxGaugeForHistograms() {
+		return this.publishMaxGaugeForHistograms;
+	}
+
+	public void setPublishMaxGaugeForHistograms(@Nullable Boolean publishMaxGaugeForHistograms) {
+		this.publishMaxGaugeForHistograms = publishMaxGaugeForHistograms;
+	}
+
 	public int getMaxScale() {
 		return this.maxScale;
 	}
@@ -158,14 +165,6 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public Map<String, Meter> getMeter() {
 		return this.meter;
-	}
-
-	public @Nullable Boolean getPublishMaxGaugeForHistograms() {
-		return this.publishMaxGaugeForHistograms;
-	}
-
-	public void setPublishMaxGaugeForHistograms(@Nullable Boolean publishMaxGaugeForHistograms) {
-		this.publishMaxGaugeForHistograms = publishMaxGaugeForHistograms;
 	}
 
 	/**
