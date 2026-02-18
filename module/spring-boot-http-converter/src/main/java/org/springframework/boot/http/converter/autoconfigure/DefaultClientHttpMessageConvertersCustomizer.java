@@ -33,7 +33,6 @@ class DefaultClientHttpMessageConvertersCustomizer implements ClientHttpMessageC
 
 	DefaultClientHttpMessageConvertersCustomizer(@Nullable HttpMessageConverters legacyConverters,
 			Collection<HttpMessageConverter<?>> converters) {
-
 		this.legacyConverters = legacyConverters;
 		this.converters = converters;
 	}
