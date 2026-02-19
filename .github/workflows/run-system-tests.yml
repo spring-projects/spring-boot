@@ -18,6 +18,11 @@ jobs:
           - version: 21
             toolchain: true
     steps:
+      - name: Switch Docker to Overlay2
+        shell: bash
+        run: |
+          echo '{"storage-driver":"overlay2"}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       - name: Check Out Code
         uses: actions/checkout@v6
       - name: Prepare Gradle Build
