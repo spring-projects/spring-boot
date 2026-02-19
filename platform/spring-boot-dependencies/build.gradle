@@ -430,7 +430,6 @@ bom {
 				"flyway-database-derby",
 				"flyway-database-hsqldb",
 				"flyway-database-informix",
-				"flyway-database-mongodb",
 				"flyway-database-nc-couchbase",
 				"flyway-database-nc-mongodb",
 				"flyway-database-oracle",
