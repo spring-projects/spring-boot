@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookies;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
@@ -140,9 +141,24 @@ class TestRestTemplateTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void options() {
 		RequestConfig config = getRequestConfig(new TestRestTemplate(HttpClientOption.ENABLE_COOKIES));
 		assertThat(config.getCookieSpec()).isEqualTo("strict");
+	}
+
+	@Test
+	void defaultCookieSpecMatchesRestTemplate() {
+		RequestConfig config = getRequestConfig(new TestRestTemplate());
+		assertThat(config.getCookieSpec()).isNull();
+	}
+
+	@Test
+	void withCookies() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRequestConfig(template).getCookieSpec()).isNull();
+		assertThat(getRequestConfig(template.withCookies(HttpCookies.ENABLE)).getCookieSpec()).isEqualTo("strict");
+		assertThat(getRequestConfig(template.withCookies(HttpCookies.DISABLE)).getCookieSpec()).isEqualTo("ignoreCookies");
 	}
 
 	@Test

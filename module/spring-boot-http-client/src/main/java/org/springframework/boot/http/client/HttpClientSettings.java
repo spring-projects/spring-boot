@@ -25,6 +25,8 @@ import org.springframework.boot.ssl.SslBundle;
 /**
  * Settings that can be applied when creating an imperative or reactive HTTP client.
  *
+ * @param cookies the cookie handling strategy to use or null to use the underlying
+ * library's default
  * @param redirects the follow redirect strategy to use or null to redirect whenever the
  * underlying library allows it
  * @param connectTimeout the connect timeout
@@ -33,10 +35,21 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Phillip Webb
  * @since 3.5.0
  */
-public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
-		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRedirects redirects,
+		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
-	private static final HttpClientSettings defaults = new HttpClientSettings(null, null, null, null);
+	private static final HttpClientSettings defaults = new HttpClientSettings(null, null, null, null, null);
+
+	/**
+	 * Return a new {@link HttpClientSettings} instance with an updated cookie handling
+	 * setting.
+	 * @param cookies the new cookie handling setting
+	 * @return a new {@link HttpClientSettings} instance
+	 * @since 4.1.0
+	 */
+	public HttpClientSettings withCookies(@Nullable HttpCookies cookies) {
+		return new HttpClientSettings(cookies, this.redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+	}
 
 	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated connect timeout
@@ -46,7 +59,7 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withConnectTimeout(@Nullable Duration connectTimeout) {
-		return new HttpClientSettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookies, this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -57,7 +70,7 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withReadTimeout(@Nullable Duration readTimeout) {
-		return new HttpClientSettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookies, this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -69,7 +82,7 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
-		return new HttpClientSettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookies, this.redirects, connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -80,7 +93,7 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withSslBundle(@Nullable SslBundle sslBundle) {
-		return new HttpClientSettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
+		return new HttpClientSettings(this.cookies, this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
 	}
 
 	/**
@@ -90,7 +103,7 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withRedirects(@Nullable HttpRedirects redirects) {
-		return new HttpClientSettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookies, redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -104,11 +117,12 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 		if (other == null) {
 			return this;
 		}
+		HttpCookies cookies = (cookies() != null) ? cookies() : other.cookies();
 		HttpRedirects redirects = (redirects() != null) ? redirects() : other.redirects();
 		Duration connectTimeout = (connectTimeout() != null) ? connectTimeout() : other.connectTimeout();
 		Duration readTimeout = (readTimeout() != null) ? readTimeout() : other.readTimeout();
 		SslBundle sslBundle = (sslBundle() != null) ? sslBundle() : other.sslBundle();
-		return new HttpClientSettings(redirects, connectTimeout, readTimeout, sslBundle);
+		return new HttpClientSettings(cookies, redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
 	/**
