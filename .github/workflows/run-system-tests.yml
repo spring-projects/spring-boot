@@ -18,10 +18,6 @@ jobs:
           - version: 21
             toolchain: true
     steps:
-      - name: Setup Docker and Disable containerd-snapshotter)
-        uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4.7.0
-        with:
-          daemon-config: '{"features":{"containerd-snapshotter":false}}'		
       - name: Check Out Code
         uses: actions/checkout@v6
       - name: Prepare Gradle Build
