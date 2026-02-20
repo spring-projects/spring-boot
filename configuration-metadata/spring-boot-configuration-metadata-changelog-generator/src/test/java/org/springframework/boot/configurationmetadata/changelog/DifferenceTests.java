@@ -30,6 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DifferenceTests {
 
+	private static ConfigurationMetadataProperty createProperty(String id, Object defaultValue) {
+		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
+		property.setId(id);
+		property.setDefaultValue(defaultValue);
+		return property;
+	}
+
 	@Nested
 	class DefaultChangedTests {
 
@@ -86,13 +93,6 @@ class DifferenceTests {
 			assertThat(difference.type()).isEqualTo(DifferenceType.DEFAULT_CHANGED);
 		}
 
-	}
-
-	private static ConfigurationMetadataProperty createProperty(String id, Object defaultValue) {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId(id);
-		property.setDefaultValue(defaultValue);
-		return property;
 	}
 
 }
