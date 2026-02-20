@@ -43,8 +43,7 @@ nullability {
 }
 
 def dependenciesOf(String version) {
-	if (version.startsWith("4.0")) {
-		return [
+	def springBoot40Modules = [
 			"spring-boot",
 			"spring-boot-activemq",
 			"spring-boot-actuator",
@@ -148,17 +147,23 @@ def dependenciesOf(String version) {
 			"spring-boot-webservices",
 			"spring-boot-webservices-test",
 			"spring-boot-zipkin"
-		]
+	]
+	if (version.startsWith("4.0")) {
+		return springBoot40Modules
+	}
+	else if (version.startsWith("4.1")) {
+		// Alter Spring Boot 4.0 modules if necessary
+		return springBoot40Modules
 	}
 	return [
-		"spring-boot",
-		"spring-boot-actuator",
-		"spring-boot-actuator-autoconfigure",
-		"spring-boot-autoconfigure",
-		"spring-boot-devtools",
-		"spring-boot-docker-compose",
-		"spring-boot-test-autoconfigure",
-		"spring-boot-testcontainers"
+			"spring-boot",
+			"spring-boot-actuator",
+			"spring-boot-actuator-autoconfigure",
+			"spring-boot-autoconfigure",
+			"spring-boot-devtools",
+			"spring-boot-docker-compose",
+			"spring-boot-test-autoconfigure",
+			"spring-boot-testcontainers"
 	]
 }
 
