@@ -1,0 +1,26 @@
+services:
+  rabbitmq:
+    image: '{imageName}'
+    ports:
+      - '5672'
+      - '5671'
+    secrets:
+      - ssl-ca
+      - ssl-key
+      - ssl-cert
+    environment:
+      RABBITMQ_DEFAULT_USER: myuser
+      RABBITMQ_DEFAULT_PASS: secret
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+secrets:
+  ssl-ca:
+    file: 'ca.crt'
+  ssl-key:
+    file: 'server.key'
+  ssl-cert:
+    file: 'server.crt'
