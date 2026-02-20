@@ -1,0 +1,32 @@
+services:
+  elasticsearch:
+    image: '{imageName}'
+    environment:
+      - 'ELASTIC_PASSWORD=secret'
+      - 'ES_JAVA_OPTS=-Xmx512m'
+      - 'xpack.security.enabled=true'
+      - 'xpack.security.http.ssl.enabled=true'
+      - 'xpack.security.http.ssl.key=/usr/share/elasticsearch/config/ssl/server.key'
+      - 'xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/ssl/server.crt'
+      - 'xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/ssl/ca.crt'
+      - 'xpack.security.http.ssl.client_authentication=required'
+      - 'discovery.type=single-node'
+    ports:
+      - '9200'
+      - '9300'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fk --cert /usr/share/elasticsearch/config/ssl/client.crt \
+      --key /usr/share/elasticsearch/config/ssl/client.key \
+      -u elastic:secret https://localhost:9200/_cluster/health || exit 1"]
+      interval: 5s
+      retries: 5
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+    volumes:
+      - ./server.key:/usr/share/elasticsearch/config/ssl/server.key
+      - ./server.crt:/usr/share/elasticsearch/config/ssl/server.crt
+      - ./ca.crt:/usr/share/elasticsearch/config/ssl/ca.crt
+      - ./client.key:/usr/share/elasticsearch/config/ssl/client.key
+      - ./client.crt:/usr/share/elasticsearch/config/ssl/client.crt
