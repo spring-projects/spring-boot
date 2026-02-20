@@ -16,8 +16,6 @@
 
 package org.springframework.boot.amqp.docker.compose;
 
-import javax.net.ssl.SSLContext;
-
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;

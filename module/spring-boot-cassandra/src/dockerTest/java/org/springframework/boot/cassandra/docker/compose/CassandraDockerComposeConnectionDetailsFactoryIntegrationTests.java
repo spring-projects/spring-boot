@@ -18,8 +18,6 @@ package org.springframework.boot.cassandra.docker.compose;
 
 import java.util.List;
 
-import javax.net.ssl.SSLContext;
-
 import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails;
 import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails.Node;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -41,8 +39,8 @@ class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getSslBundle()).isNull();
 	}
 
-	@DockerComposeTest(composeFile = "cassandra-ssl-compose.yaml", image = TestImage.CASSANDRA,
-			additionalResources = { "server-keystore.p12", "server-truststore.p12", "client-keystore.p12", "client-truststore.p12"})
+	@DockerComposeTest(composeFile = "cassandra-ssl-compose.yaml", image = TestImage.CASSANDRA, additionalResources = {
+			"server-keystore.p12", "server-truststore.p12", "client-keystore.p12", "client-truststore.p12" })
 	void runWithSslCreatesConnectionDetails(CassandraConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		SslBundle sslBundle = connectionDetails.getSslBundle();

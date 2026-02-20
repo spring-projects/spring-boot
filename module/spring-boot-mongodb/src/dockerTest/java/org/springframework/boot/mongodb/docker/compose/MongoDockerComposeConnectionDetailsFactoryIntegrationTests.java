@@ -16,8 +16,6 @@
 
 package org.springframework.boot.mongodb.docker.compose;
 
-import javax.net.ssl.SSLContext;
-
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
 

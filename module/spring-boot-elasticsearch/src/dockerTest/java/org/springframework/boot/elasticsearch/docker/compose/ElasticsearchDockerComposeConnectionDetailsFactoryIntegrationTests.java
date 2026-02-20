@@ -16,8 +16,6 @@
 
 package org.springframework.boot.elasticsearch.docker.compose;
 
-import javax.net.ssl.SSLContext;
-
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node;
@@ -37,16 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	 @DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image =
-	 TestImage.ELASTICSEARCH_9)
-	 void runCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails)
-	 {
-	    assertConnectionDetails(connectionDetails, Protocol.HTTP);
-	    assertThat(connectionDetails.getSslBundle()).isNull();
-	 }
+	@DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image = TestImage.ELASTICSEARCH_9)
+	void runCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails, Protocol.HTTP);
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
 
 	@DockerComposeTest(composeFile = "elasticsearch-ssl-compose.yaml", image = TestImage.ELASTICSEARCH_9,
-			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key"})
+			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key" })
 	void runWithSslCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails, Protocol.HTTPS);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
