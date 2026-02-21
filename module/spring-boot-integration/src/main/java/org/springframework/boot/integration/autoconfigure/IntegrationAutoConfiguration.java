@@ -33,19 +33,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxProperties;
+import org.springframework.boot.autoconfigure.task.DefaultTaskSchedulerConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
-import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
-import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
-import org.springframework.boot.thread.Threading;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -69,8 +66,6 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.util.StringUtils;
@@ -93,6 +88,7 @@ import org.springframework.util.StringUtils;
 		afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
+@Import(DefaultTaskSchedulerConfiguration.class)
 public final class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
@@ -170,34 +166,6 @@ public final class IntegrationAutoConfiguration {
 			}
 			trigger.setFixedRate(fixedRate);
 			return trigger;
-		}
-
-	}
-
-	/**
-	 * Expose a standard {@link org.springframework.scheduling.TaskScheduler
-	 * TaskScheduler} if the user has not enabled task scheduling explicitly. A
-	 * {@link SimpleAsyncTaskScheduler} is exposed if the user enables virtual threads via
-	 * {@code spring.threads.virtual.enabled=true}, otherwise
-	 * {@link ThreadPoolTaskScheduler}.
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-	protected static class IntegrationTaskSchedulerConfiguration {
-
-		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-		@ConditionalOnBean(ThreadPoolTaskSchedulerBuilder.class)
-		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskScheduler taskScheduler(ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder) {
-			return threadPoolTaskSchedulerBuilder.build();
-		}
-
-		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-		@ConditionalOnBean(SimpleAsyncTaskSchedulerBuilder.class)
-		@ConditionalOnThreading(Threading.VIRTUAL)
-		SimpleAsyncTaskScheduler taskSchedulerVirtualThreads(
-				SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder) {
-			return simpleAsyncTaskSchedulerBuilder.build();
 		}
 
 	}

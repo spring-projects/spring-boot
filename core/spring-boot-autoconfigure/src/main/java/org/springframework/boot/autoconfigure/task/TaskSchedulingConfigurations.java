@@ -32,11 +32,10 @@ import org.springframework.boot.task.ThreadPoolTaskSchedulerCustomizer;
 import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 
 /**
@@ -58,19 +57,8 @@ class TaskSchedulingConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
 	@ConditionalOnMissingBean({ TaskScheduler.class, ScheduledExecutorService.class })
+	@Import(DefaultTaskSchedulerConfiguration.class)
 	static class TaskSchedulerConfiguration {
-
-		@Bean(name = "taskScheduler")
-		@ConditionalOnThreading(Threading.VIRTUAL)
-		SimpleAsyncTaskScheduler taskSchedulerVirtualThreads(SimpleAsyncTaskSchedulerBuilder builder) {
-			return builder.build();
-		}
-
-		@Bean
-		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskScheduler taskScheduler(ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder) {
-			return threadPoolTaskSchedulerBuilder.build();
-		}
 
 	}
 
