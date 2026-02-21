@@ -126,6 +126,9 @@ The following service connections are currently supported:
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
+| Containers named "rabbitmq"
+
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq" with container port 5672 mapped
 
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
