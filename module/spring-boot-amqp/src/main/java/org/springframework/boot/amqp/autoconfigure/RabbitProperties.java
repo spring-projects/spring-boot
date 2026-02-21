@@ -52,6 +52,7 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @author Lasse Wulff
  * @author Yanming Zhou
+ * @author Jay Choi
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.rabbitmq")
@@ -1311,6 +1312,11 @@ public class RabbitProperties {
 		 */
 		private @Nullable String name;
 
+		/**
+		 * SSL configuration for RabbitMQ instance with the Stream plugin enabled.
+		 */
+		private final StreamSsl ssl = new StreamSsl();
+
 		public String getHost() {
 			return this.host;
 		}
@@ -1357,6 +1363,45 @@ public class RabbitProperties {
 
 		public void setName(@Nullable String name) {
 			this.name = name;
+		}
+
+		public StreamSsl getSsl() {
+			return this.ssl;
+		}
+
+		public static class StreamSsl {
+
+			/**
+			 * Whether to enable SSL support. Enabled automatically if "bundle" is
+			 * provided.
+			 */
+			private @Nullable Boolean enabled;
+
+			/**
+			 * SSL bundle name.
+			 */
+			private @Nullable String bundle;
+
+			public @Nullable Boolean getEnabled() {
+				return this.enabled;
+			}
+
+			public boolean determineEnabled() {
+				return Boolean.TRUE.equals(getEnabled()) || this.bundle != null;
+			}
+
+			public void setEnabled(@Nullable Boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public @Nullable String getBundle() {
+				return this.bundle;
+			}
+
+			public void setBundle(@Nullable String bundle) {
+				this.bundle = bundle;
+			}
+
 		}
 
 	}
