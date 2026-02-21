@@ -197,11 +197,12 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	private Document getDocumentIfAvailable(File xmlFile) throws Exception {
-		InputSource inputSource = new InputSource(new FileInputStream(xmlFile));
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		return builder.parse(inputSource);
+		try (InputStream inputStream = new FileInputStream(xmlFile)) {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			return builder.parse(inputStream);
+		}
 	}
 
 	/**
