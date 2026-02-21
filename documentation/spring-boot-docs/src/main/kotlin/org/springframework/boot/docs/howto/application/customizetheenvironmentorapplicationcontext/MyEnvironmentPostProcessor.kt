@@ -37,7 +37,7 @@ class MyEnvironmentPostProcessor : EnvironmentPostProcessor {
 	}
 
 	private fun loadYaml(path: Resource): PropertySource<*> {
-		Assert.isTrue(path.exists()) { "Resource $path does not exist" }
+		Assert.isTrue(path.exists()) { "'path' [$path] must exist" }
 		return try {
 			loader.load("custom-resource", path)[0]
 		} catch (ex: IOException) {
