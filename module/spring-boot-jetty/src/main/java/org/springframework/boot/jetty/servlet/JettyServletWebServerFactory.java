@@ -58,6 +58,7 @@ import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.session.DefaultSessionCache;
 import org.eclipse.jetty.session.FileSessionDataStore;
@@ -123,6 +124,8 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 
 	private static final Log logger = LogFactory.getLog(JettyServletWebServerFactory.class);
 
+	private static final long GRACEFUL_SHUTDOWN_IDLE_TIMEOUT_MILLIS = 10000;
+
 	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 
 	@SuppressWarnings("NullAway.Init")
@@ -180,6 +183,11 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 			new ForwardHeadersCustomizer().customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
+			for (Connector connector : server.getConnectors()) {
+				if (connector instanceof ServerConnector serverConnector) {
+					serverConnector.setShutdownIdleTimeout(GRACEFUL_SHUTDOWN_IDLE_TIMEOUT_MILLIS);
+				}
+			}
 			StatisticsHandler statisticsHandler = new StatisticsHandler();
 			statisticsHandler.setHandler(server.getHandler());
 			server.setHandler(statisticsHandler);
