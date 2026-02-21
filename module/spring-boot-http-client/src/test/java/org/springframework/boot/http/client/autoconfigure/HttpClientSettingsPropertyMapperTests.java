@@ -93,7 +93,7 @@ class HttpClientSettingsPropertyMapperTests {
 
 	@Test
 	void mapUsesBaseSettingsForMissingProperties() {
-		HttpClientSettings baseSettings = new HttpClientSettings(HttpRedirects.FOLLOW_WHEN_POSSIBLE,
+		HttpClientSettings baseSettings = new HttpClientSettings(null, HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				Duration.ofSeconds(15), Duration.ofSeconds(25), null);
 		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, baseSettings);
 		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
