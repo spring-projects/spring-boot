@@ -1,2 +1,4 @@
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerServicesAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthSchedulerAutoConfiguration

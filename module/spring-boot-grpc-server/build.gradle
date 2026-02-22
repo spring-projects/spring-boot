@@ -29,6 +29,9 @@ dependencies {
 	api("org.springframework.grpc:spring-grpc-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-health"))
+	optional("com.fasterxml.jackson.core:jackson-annotations")
+	optional("io.projectreactor:reactor-core")
 	optional("io.grpc:grpc-servlet-jakarta")
 	optional("io.grpc:grpc-services")
 	optional("io.grpc:grpc-netty")
