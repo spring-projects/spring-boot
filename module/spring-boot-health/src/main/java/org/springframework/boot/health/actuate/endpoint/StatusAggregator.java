@@ -18,30 +18,24 @@ package org.springframework.boot.health.actuate.endpoint;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Strategy used to aggregate {@link Status} instances.
  * <p>
  * This is required in order to combine subsystem states expressed through
- * {@link Health#getStatus()} into one state for the entire system.
+ * {@link Health#getStatus()} into one state for the health endpoint.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
 @FunctionalInterface
 public interface StatusAggregator {
-
-	/**
-	 * Return {@link StatusAggregator} instance using default ordering rules.
-	 * @return a {@code StatusAggregator} with default ordering rules.
-	 */
-	static StatusAggregator getDefault() {
-		return SimpleStatusAggregator.INSTANCE;
-	}
 
 	/**
 	 * Return the aggregate status for the given set of statuses.
@@ -58,5 +52,51 @@ public interface StatusAggregator {
 	 * @return the aggregate status
 	 */
 	Status getAggregateStatus(Set<Status> statuses);
+
+	/**
+	 * Return a {@link StatusAggregator} backed by the given ordered status list.
+	 * @param order the status order
+	 * @return a {@link StatusAggregator} instance or {@link #getDefault()} if no order is
+	 * provided
+	 * @since 4.1.0
+	 */
+	@SuppressWarnings("removal")
+	static StatusAggregator of(Status... order) {
+		return (!ObjectUtils.isEmpty(order)) ? new SimpleStatusAggregator(Arrays.stream(order).map(Status::getCode))
+				: getDefault();
+	}
+
+	/**
+	 * Return a {@link StatusAggregator} backed by the given ordered status list.
+	 * @param order the status order
+	 * @return a {@link StatusAggregator} instance or {@link #getDefault()} if no order is
+	 * provided
+	 * @since 4.1.0
+	 */
+	@SuppressWarnings("removal")
+	static StatusAggregator of(String... order) {
+		return (!ObjectUtils.isEmpty(order)) ? new SimpleStatusAggregator(Arrays.stream(order)) : getDefault();
+	}
+
+	/**
+	 * Return a {@link StatusAggregator} backed by the given ordered status list.
+	 * @param order the status order
+	 * @return a {@link StatusAggregator} instance or {@link #getDefault()} if no order is
+	 * provided
+	 * @since 4.1.0
+	 */
+	@SuppressWarnings("removal")
+	static StatusAggregator of(List<String> order) {
+		return (!ObjectUtils.isEmpty(order)) ? new SimpleStatusAggregator(order.stream()) : getDefault();
+	}
+
+	/**
+	 * Return {@link StatusAggregator} instance using default ordering rules.
+	 * @return a {@code StatusAggregator} with default ordering rules.
+	 */
+	@SuppressWarnings("removal")
+	static StatusAggregator getDefault() {
+		return SimpleStatusAggregator.DEFAULT_ORDER;
+	}
 
 }

@@ -34,8 +34,6 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.application.DiskSpaceHealthIndicator;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorNameGenerator;
@@ -136,9 +134,9 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final class TestHealthEndpointGroup implements HealthEndpointGroup {
 
-		private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
+		private final StatusAggregator statusAggregator = StatusAggregator.getDefault();
 
-		private final HttpCodeStatusMapper httpCodeStatusMapper = new SimpleHttpCodeStatusMapper();
+		private final HttpCodeStatusMapper httpCodeStatusMapper = HttpCodeStatusMapper.getDefault();
 
 		@Override
 		public boolean isMember(String name) {

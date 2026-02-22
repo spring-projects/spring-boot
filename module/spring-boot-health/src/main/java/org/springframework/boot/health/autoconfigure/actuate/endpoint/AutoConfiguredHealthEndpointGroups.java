@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -43,11 +42,10 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointProperties.Group;
 import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthProperties.Status;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorMembership;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.CollectionUtils;
@@ -60,8 +58,6 @@ import org.springframework.util.ObjectUtils;
  * @author Madhura Bhave
  */
 class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, AdditionalPathsMapper {
-
-	private static final Predicate<String> ALL = (name) -> true;
 
 	private final HealthEndpointGroup primaryGroup;
 
@@ -78,22 +74,18 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 		Show showComponents = properties.getShowComponents();
 		Show showDetails = properties.getShowDetails();
 		Set<String> roles = properties.getRoles();
-		StatusAggregator statusAggregator = getNonQualifiedBean(beanFactory, StatusAggregator.class);
-		if (statusAggregator == null) {
-			statusAggregator = new SimpleStatusAggregator(properties.getStatus().getOrder());
-		}
-		HttpCodeStatusMapper httpCodeStatusMapper = getNonQualifiedBean(beanFactory, HttpCodeStatusMapper.class);
-		if (httpCodeStatusMapper == null) {
-			httpCodeStatusMapper = new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping());
-		}
-		this.primaryGroup = new AutoConfiguredHealthEndpointGroup(ALL, statusAggregator, httpCodeStatusMapper,
-				showComponents, showDetails, roles, null);
-		this.groups = createGroups(properties.getGroup(), beanFactory, statusAggregator, httpCodeStatusMapper,
-				showComponents, showDetails, roles);
+		StatusAggregator statusAggregator = getNonQualifiedBean(beanFactory, StatusAggregator.class,
+				() -> StatusAggregator.of(properties.getStatus().getOrder()));
+		HttpCodeStatusMapper statusMapper = getNonQualifiedBean(beanFactory, HttpCodeStatusMapper.class,
+				() -> HttpCodeStatusMapper.of(properties.getStatus().getHttpMapping()));
+		this.primaryGroup = new AutoConfiguredHealthEndpointGroup(HealthContributorMembership.always(),
+				statusAggregator, statusMapper, showComponents, showDetails, roles, null);
+		this.groups = createGroups(properties.getGroup(), beanFactory, statusAggregator, statusMapper, showComponents,
+				showDetails, roles);
 	}
 
 	private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory,
-			StatusAggregator defaultStatusAggregator, HttpCodeStatusMapper defaultHttpCodeStatusMapper,
+			StatusAggregator defaultStatusAggregator, HttpCodeStatusMapper defaultStatusMapper,
 			@Nullable Show defaultShowComponents, Show defaultShowDetails, Set<String> defaultRoles) {
 		Map<String, HealthEndpointGroup> groups = new TreeMap<>();
 		groupProperties.forEach((groupName, group) -> {
@@ -102,29 +94,30 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 					: defaultShowComponents;
 			Show showDetails = (group.getShowDetails() != null) ? group.getShowDetails() : defaultShowDetails;
 			Set<String> roles = !CollectionUtils.isEmpty(group.getRoles()) ? group.getRoles() : defaultRoles;
-			StatusAggregator statusAggregator = getQualifiedBean(beanFactory, StatusAggregator.class, groupName, () -> {
-				if (!CollectionUtils.isEmpty(status.getOrder())) {
-					return new SimpleStatusAggregator(status.getOrder());
-				}
-				return defaultStatusAggregator;
-			});
-			HttpCodeStatusMapper httpCodeStatusMapper = getQualifiedBean(beanFactory, HttpCodeStatusMapper.class,
-					groupName, () -> {
-						if (!CollectionUtils.isEmpty(status.getHttpMapping())) {
-							return new SimpleHttpCodeStatusMapper(status.getHttpMapping());
-						}
-						return defaultHttpCodeStatusMapper;
-					});
-			Predicate<String> members = new IncludeExcludeGroupMemberPredicate(group.getInclude(), group.getExclude());
+			StatusAggregator statusAggregator = getQualifiedBean(beanFactory, StatusAggregator.class, groupName,
+					() -> createStatusAggregator(status.getOrder(), defaultStatusAggregator));
+			HttpCodeStatusMapper statusMapper = getQualifiedBean(beanFactory, HttpCodeStatusMapper.class, groupName,
+					() -> createStatusMapper(status.getHttpMapping(), defaultStatusMapper));
+			HealthContributorMembership membership = HealthContributorMembership.byIncludeExclude(group.getInclude(),
+					group.getExclude());
 			AdditionalHealthEndpointPath additionalPath = (group.getAdditionalPath() != null)
 					? AdditionalHealthEndpointPath.from(group.getAdditionalPath()) : null;
-			groups.put(groupName, new AutoConfiguredHealthEndpointGroup(members, statusAggregator, httpCodeStatusMapper,
+			groups.put(groupName, new AutoConfiguredHealthEndpointGroup(membership, statusAggregator, statusMapper,
 					showComponents, showDetails, roles, additionalPath));
 		});
 		return Collections.unmodifiableMap(groups);
 	}
 
-	private <T> @Nullable T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
+	private StatusAggregator createStatusAggregator(List<String> order, StatusAggregator defaultStatusAggregator) {
+		return (!CollectionUtils.isEmpty(order)) ? StatusAggregator.of(order) : defaultStatusAggregator;
+	}
+
+	private HttpCodeStatusMapper createStatusMapper(Map<String, Integer> mapping,
+			HttpCodeStatusMapper defaultStatusMapper) {
+		return (!CollectionUtils.isEmpty(mapping)) ? HttpCodeStatusMapper.of(mapping) : defaultStatusMapper;
+	}
+
+	private <T> T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type, Supplier<T> fallback) {
 		List<String> candidates = new ArrayList<>();
 		for (String beanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, type)) {
 			String[] aliases = beanFactory.getAliases(beanName);
@@ -135,7 +128,7 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 			}
 		}
 		if (candidates.isEmpty()) {
-			return null;
+			return fallback.get();
 		}
 		if (candidates.size() == 1) {
 			return beanFactory.getBean(candidates.get(0), type);

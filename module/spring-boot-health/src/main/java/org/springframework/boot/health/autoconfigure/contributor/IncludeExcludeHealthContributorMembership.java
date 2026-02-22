@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.health.autoconfigure.actuate.endpoint;
+package org.springframework.boot.health.autoconfigure.contributor;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
@@ -32,19 +31,19 @@ import org.springframework.lang.Contract;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
+class IncludeExcludeHealthContributorMembership implements HealthContributorMembership {
 
 	private final Set<String> include;
 
 	private final Set<String> exclude;
 
-	IncludeExcludeGroupMemberPredicate(@Nullable Set<String> include, @Nullable Set<String> exclude) {
+	IncludeExcludeHealthContributorMembership(@Nullable Set<String> include, @Nullable Set<String> exclude) {
 		this.include = clean(include);
 		this.exclude = clean(exclude);
 	}
 
 	@Override
-	public boolean test(String name) {
+	public boolean isMember(String name) {
 		name = clean(name);
 		return isIncluded(name) && !isExcluded(name);
 	}

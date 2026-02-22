@@ -31,8 +31,6 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -394,7 +392,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 		@Bean
 		@Primary
 		StatusAggregator statusAggregator() {
-			return new SimpleStatusAggregator(Status.UNKNOWN, Status.UP, Status.DOWN);
+			return StatusAggregator.of(Status.UNKNOWN, Status.UP, Status.DOWN);
 		}
 
 	}
@@ -405,7 +403,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 		@Bean
 		@Qualifier("a")
 		StatusAggregator statusAggregator() {
-			return new SimpleStatusAggregator(Status.UNKNOWN, Status.UP, Status.DOWN);
+			return StatusAggregator.of(Status.UNKNOWN, Status.UP, Status.DOWN);
 		}
 
 	}
@@ -416,7 +414,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 		@Bean
 		@Primary
 		HttpCodeStatusMapper httpCodeStatusMapper() {
-			return new SimpleHttpCodeStatusMapper(Collections.singletonMap(Status.DOWN.getCode(), 200));
+			return HttpCodeStatusMapper.of(Collections.singletonMap(Status.DOWN.getCode(), 200));
 		}
 
 	}
@@ -427,7 +425,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 		@Bean
 		@Qualifier("a")
 		HttpCodeStatusMapper httpCodeStatusMapper() {
-			return new SimpleHttpCodeStatusMapper(Collections.singletonMap(Status.DOWN.getCode(), 200));
+			return HttpCodeStatusMapper.of(Collections.singletonMap(Status.DOWN.getCode(), 200));
 		}
 
 	}

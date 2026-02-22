@@ -61,7 +61,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 	private Principal principal;
 
 	@Test
-	void isMemberWhenMemberPredicateMatchesAcceptsTrue() {
+	void isMemberWhenMembershipMatchesAcceptsTrue() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> name.startsWith("a"),
 				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet(), null);
 		assertThat(group.isMember("albert")).isTrue();
@@ -69,7 +69,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 	}
 
 	@Test
-	void isMemberWhenMemberPredicateRejectsReturnsTrue() {
+	void isMemberWhenMembershipRejectsReturnsTrue() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> name.startsWith("a"),
 				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet(), null);
 		assertThat(group.isMember("bert")).isFalse();

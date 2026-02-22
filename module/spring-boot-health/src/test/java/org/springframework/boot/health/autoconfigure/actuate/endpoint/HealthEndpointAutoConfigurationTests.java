@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.diagnostics.FailureAnalyzedException;
 import org.springframework.boot.health.actuate.endpoint.CompositeHealthDescriptor;
 import org.springframework.boot.health.actuate.endpoint.HealthDescriptor;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
@@ -40,7 +41,6 @@ import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
 import org.springframework.boot.health.actuate.endpoint.IndicatedHealthDescriptor;
 import org.springframework.boot.health.actuate.endpoint.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
-import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
@@ -166,8 +166,9 @@ class HealthEndpointAutoConfigurationTests {
 			.withPropertyValues("management.endpoint.health.group.ready.include=composite/b/c,nope")
 			.run((context) -> {
 				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
-					.hasMessage("Included health contributor 'nope' in group 'ready' does not exist");
+				assertThat(context.getStartupFailure()).isInstanceOf(FailureAnalyzedException.class)
+					.hasMessage("Health contributor 'nope' defined in "
+							+ "'management.endpoint.health.group.ready.include' does not exist");
 			});
 	}
 
@@ -178,8 +179,9 @@ class HealthEndpointAutoConfigurationTests {
 					"management.endpoint.health.group.ready.include=*")
 			.run((context) -> {
 				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
-					.hasMessage("Excluded health contributor 'composite/b/d' in group 'ready' does not exist");
+				assertThat(context.getStartupFailure()).isInstanceOf(FailureAnalyzedException.class)
+					.hasMessage("Health contributor 'composite/b/d' defined in "
+							+ "'management.endpoint.health.group.ready.exclude' does not exist");
 			});
 	}
 

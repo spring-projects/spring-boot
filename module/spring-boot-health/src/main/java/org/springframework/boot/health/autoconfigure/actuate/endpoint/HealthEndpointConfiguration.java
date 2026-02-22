@@ -16,14 +16,8 @@
 
 package org.springframework.boot.health.autoconfigure.actuate.endpoint;
 
-import java.util.Set;
-import java.util.function.BiFunction;
-
-import org.jspecify.annotations.Nullable;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,17 +25,13 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
-import org.springframework.boot.health.contributor.HealthContributors;
-import org.springframework.boot.health.contributor.ReactiveHealthContributors;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorMembershipValidator;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration for {@link HealthEndpoint} infrastructure beans.
@@ -52,16 +42,18 @@ import org.springframework.util.CollectionUtils;
 @Configuration(proxyBeanMethods = false)
 class HealthEndpointConfiguration {
 
+	private static final String VALIDATE_MEMBERSHIP_PROPERTY = "management.endpoint.health.validate-group-membership";
+
 	@Bean
 	@ConditionalOnMissingBean
 	StatusAggregator healthStatusAggregator(HealthEndpointProperties properties) {
-		return new SimpleStatusAggregator(properties.getStatus().getOrder());
+		return StatusAggregator.of(properties.getStatus().getOrder());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	HttpCodeStatusMapper healthHttpCodeStatusMapper(HealthEndpointProperties properties) {
-		return new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping());
+		return HttpCodeStatusMapper.of(properties.getStatus().getHttpMapping());
 	}
 
 	@Bean
@@ -78,12 +70,17 @@ class HealthEndpointConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBooleanProperty(name = "management.endpoint.health.validate-group-membership", matchIfMissing = true)
-	HealthEndpointGroupMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
+	@ConditionalOnBooleanProperty(name = VALIDATE_MEMBERSHIP_PROPERTY, matchIfMissing = true)
+	HealthContributorMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
 			HealthContributorRegistry healthContributorRegistry,
 			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry) {
-		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry,
-				reactiveHealthContributorRegistry.getIfAvailable());
+		return new HealthContributorMembershipValidator(healthContributorRegistry,
+				reactiveHealthContributorRegistry.getIfAvailable(), VALIDATE_MEMBERSHIP_PROPERTY,
+				(members) -> properties.getGroup().forEach((groupName, group) -> {
+					String property = "management.endpoint.health.group." + groupName;
+					members.member(property + ".include".formatted(groupName), group.getInclude());
+					members.member(property + ".exclude".formatted(groupName), group.getExclude());
+				}));
 	}
 
 	@Bean
@@ -127,95 +124,6 @@ class HealthEndpointConfiguration {
 				bean = postProcessor.postProcessHealthEndpointGroups(bean);
 			}
 			return bean;
-		}
-
-	}
-
-	/**
-	 * {@link SmartInitializingSingleton} that validates health endpoint group membership,
-	 * throwing a {@link NoSuchHealthContributorException} if an included or excluded
-	 * contributor does not exist.
-	 */
-	static class HealthEndpointGroupMembershipValidator implements SmartInitializingSingleton {
-
-		private final HealthEndpointProperties properties;
-
-		private final HealthContributorRegistry registry;
-
-		@Nullable ReactiveHealthContributorRegistry fallbackRegistry;
-
-		HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties, HealthContributorRegistry registry,
-				@Nullable ReactiveHealthContributorRegistry fallbackRegistry) {
-			this.properties = properties;
-			this.registry = registry;
-			this.fallbackRegistry = fallbackRegistry;
-		}
-
-		@Override
-		public void afterSingletonsInstantiated() {
-			validateGroups();
-		}
-
-		private void validateGroups() {
-			this.properties.getGroup().forEach((name, group) -> {
-				validate(group.getInclude(), "Included", name);
-				validate(group.getExclude(), "Excluded", name);
-			});
-		}
-
-		private void validate(@Nullable Set<String> names, String type, String group) {
-			if (CollectionUtils.isEmpty(names)) {
-				return;
-			}
-			for (String name : names) {
-				if ("*".equals(name)) {
-					return;
-				}
-				String[] path = name.split("/");
-				if (!contributorExists(path)) {
-					throw new NoSuchHealthContributorException(type, name, group);
-				}
-			}
-		}
-
-		private boolean contributorExists(String[] path) {
-			return contributorExistsInMainRegistry(path) || contributorExistsInFallbackRegistry(path);
-		}
-
-		private boolean contributorExistsInMainRegistry(String[] path) {
-			return contributorExists(path, this.registry, HealthContributors.class, HealthContributors::getContributor);
-		}
-
-		private boolean contributorExistsInFallbackRegistry(String[] path) {
-			return contributorExists(path, this.fallbackRegistry, ReactiveHealthContributors.class,
-					ReactiveHealthContributors::getContributor);
-		}
-
-		@SuppressWarnings("unchecked")
-		private <C> boolean contributorExists(String[] path, @Nullable Object registry, Class<C> collectionType,
-				BiFunction<C, String, Object> getFromCollection) {
-			int pathOffset = 0;
-			Object contributor = registry;
-			while (pathOffset < path.length) {
-				if (contributor == null || !collectionType.isInstance(contributor)) {
-					return false;
-				}
-				contributor = getFromCollection.apply((C) contributor, path[pathOffset]);
-				pathOffset++;
-			}
-			return (contributor != null);
-		}
-
-		/**
-		 * Thrown when a contributor that does not exist is included in or excluded from a
-		 * group.
-		 */
-		static class NoSuchHealthContributorException extends RuntimeException {
-
-			NoSuchHealthContributorException(String type, String name, String group) {
-				super(type + " health contributor '" + name + "' in group '" + group + "' does not exist");
-			}
-
 		}
 
 	}

@@ -17,7 +17,6 @@
 package org.springframework.boot.health.autoconfigure.actuate.endpoint;
 
 import java.util.Collection;
-import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
@@ -27,9 +26,10 @@ import org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpoint
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorMembership;
 
 /**
- * Auto-configured {@link HealthEndpointGroup} backed by {@link HealthProperties}.
+ * Auto-configured {@link HealthEndpointGroup}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -37,7 +37,7 @@ import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
  */
 class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
-	private final Predicate<String> members;
+	private final HealthContributorMembership membership;
 
 	private final StatusAggregator statusAggregator;
 
@@ -53,7 +53,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	/**
 	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
-	 * @param members a predicate used to test for group membership
+	 * @param membership used to test for group membership
 	 * @param statusAggregator the status aggregator to use
 	 * @param httpCodeStatusMapper the HTTP code status mapper to use
 	 * @param showComponents the show components setting
@@ -61,10 +61,10 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param roles the roles to match
 	 * @param additionalPath the additional path to use for this group
 	 */
-	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
+	AutoConfiguredHealthEndpointGroup(HealthContributorMembership membership, StatusAggregator statusAggregator,
 			HttpCodeStatusMapper httpCodeStatusMapper, @Nullable Show showComponents, Show showDetails,
 			Collection<String> roles, @Nullable AdditionalHealthEndpointPath additionalPath) {
-		this.members = members;
+		this.membership = membership;
 		this.statusAggregator = statusAggregator;
 		this.httpCodeStatusMapper = httpCodeStatusMapper;
 		this.showComponents = showComponents;
@@ -75,7 +75,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	@Override
 	public boolean isMember(String name) {
-		return this.members.test(name);
+		return this.membership.isMember(name);
 	}
 
 	@Override
