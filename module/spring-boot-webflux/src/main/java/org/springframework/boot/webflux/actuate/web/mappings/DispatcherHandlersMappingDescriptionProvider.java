@@ -16,9 +16,11 @@
 
 package org.springframework.boot.webflux.actuate.web.mappings;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,20 +175,28 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 
 		private final List<DispatcherHandlerMappingDescription> descriptions = new ArrayList<>();
 
+		private Deque<RequestPredicate> predicates = new ArrayDeque<>();
+
 		@Override
 		public void startNested(RequestPredicate predicate) {
+			this.predicates.addLast(predicate);
 		}
 
 		@Override
 		public void endNested(RequestPredicate predicate) {
+			this.predicates.removeLast();
 		}
 
 		@Override
 		public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
 			DispatcherHandlerMappingDetails details = new DispatcherHandlerMappingDetails();
 			details.setHandlerFunction(new HandlerFunctionDescription(handlerFunction));
-			this.descriptions.add(
-					new DispatcherHandlerMappingDescription(predicate.toString(), handlerFunction.toString(), details));
+			RequestPredicate reduced = this.predicates.stream()
+				.reduce(RequestPredicate::and)
+				.map((all) -> all.and(predicate))
+				.orElse(predicate);
+			this.descriptions
+				.add(new DispatcherHandlerMappingDescription(reduced.toString(), handlerFunction.toString(), details));
 		}
 
 		@Override
