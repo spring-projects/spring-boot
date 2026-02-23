@@ -16,8 +16,10 @@
 
 package org.springframework.boot.webmvc.actuate.web.mappings;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -236,20 +238,28 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 		private final List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
 
+		private Deque<RequestPredicate> predicates = new ArrayDeque<>();
+
 		@Override
 		public void startNested(RequestPredicate predicate) {
+			this.predicates.addLast(predicate);
 		}
 
 		@Override
 		public void endNested(RequestPredicate predicate) {
+			this.predicates.removeLast();
 		}
 
 		@Override
 		public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
 			DispatcherServletMappingDetails details = new DispatcherServletMappingDetails();
 			details.setHandlerFunction(new HandlerFunctionDescription(handlerFunction));
-			this.descriptions.add(
-					new DispatcherServletMappingDescription(predicate.toString(), handlerFunction.toString(), details));
+			RequestPredicate reduced = this.predicates.stream()
+				.reduce(RequestPredicate::and)
+				.map((all) -> all.and(predicate))
+				.orElse(predicate);
+			this.descriptions
+				.add(new DispatcherServletMappingDescription(reduced.toString(), handlerFunction.toString(), details));
 		}
 
 		@Override
