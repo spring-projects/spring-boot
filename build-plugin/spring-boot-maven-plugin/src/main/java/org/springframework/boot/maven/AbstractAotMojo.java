@@ -170,6 +170,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 					args.add(target);
 				}
 			}
+			args.add("-parameters");
 			args.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();
