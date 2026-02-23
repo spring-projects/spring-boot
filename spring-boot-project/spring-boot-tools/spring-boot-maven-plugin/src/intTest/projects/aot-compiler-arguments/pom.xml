@@ -22,7 +22,7 @@
 							<goal>process-aot</goal>
 						</goals>
 						<configuration>
-							<compilerArguments>-verbose --invalid-compiler-arg</compilerArguments>
+							<compilerArguments>-parameters --invalid-compiler-arg</compilerArguments>
 						</configuration>
 					</execution>
 				</executions>
