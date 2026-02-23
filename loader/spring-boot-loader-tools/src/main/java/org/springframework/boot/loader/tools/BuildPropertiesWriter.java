@@ -73,7 +73,7 @@ public final class BuildPropertiesWriter {
 		}
 	}
 
-	protected Properties createBuildInfo(ProjectDetails project) {
+	private Properties createBuildInfo(ProjectDetails project) {
 		Properties properties = CollectionFactory.createSortedProperties(true);
 		addIfHasValue(properties, "build.group", project.getGroup());
 		addIfHasValue(properties, "build.artifact", project.getArtifact());

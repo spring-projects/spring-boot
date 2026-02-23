@@ -75,7 +75,7 @@ public final class ProjectInfoAutoConfiguration {
 				loadFrom(this.properties.getBuild().getLocation(), "build", this.properties.getBuild().getEncoding()));
 	}
 
-	protected Properties loadFrom(Resource location, String prefix, Charset encoding) throws IOException {
+	private Properties loadFrom(Resource location, String prefix, Charset encoding) throws IOException {
 		prefix = prefix.endsWith(".") ? prefix : prefix + ".";
 		Properties source = loadSource(location, encoding);
 		Properties target = new Properties();
