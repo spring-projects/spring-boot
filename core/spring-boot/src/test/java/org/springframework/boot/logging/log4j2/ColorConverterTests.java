@@ -174,10 +174,87 @@ class ColorConverterTests {
 	}
 
 	@Test
+	void bold() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bold").format(this.event, output);
+		assertThat(output).hasToString("\033[1min\033[0;39m");
+	}
+
+	@Test
+	void italic() {
+		StringBuilder output = new StringBuilder();
+		newConverter("italic").format(this.event, output);
+		assertThat(output).hasToString("\033[3min\033[0;39m");
+	}
+
+	@Test
+	void underline() {
+		StringBuilder output = new StringBuilder();
+		newConverter("underline").format(this.event, output);
+		assertThat(output).hasToString("\033[4min\033[0;39m");
+	}
+
+	@Test
+	void reverse() {
+		StringBuilder output = new StringBuilder();
+		newConverter("reverse").format(this.event, output);
+		assertThat(output).hasToString("\033[7min\033[0;39m");
+	}
+
+	@Test
+	void bgRed() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_red").format(this.event, output);
+		assertThat(output).hasToString("\033[41min\033[0;39m");
+	}
+
+	@Test
+	void bgGreen() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_green").format(this.event, output);
+		assertThat(output).hasToString("\033[42min\033[0;39m");
+	}
+
+	@Test
+	void bgYellow() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_yellow").format(this.event, output);
+		assertThat(output).hasToString("\033[43min\033[0;39m");
+	}
+
+	@Test
+	void bgBlue() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_blue").format(this.event, output);
+		assertThat(output).hasToString("\033[44min\033[0;39m");
+	}
+
+	@Test
+	void bgBrightRed() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_bright_red").format(this.event, output);
+		assertThat(output).hasToString("\033[101min\033[0;39m");
+	}
+
+	@Test
+	void multipleStylesCommaSeparated() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bold, red").format(this.event, output);
+		assertThat(output).hasToString("\033[1;31min\033[0;39m");
+	}
+
+	@Test
+	void multipleStylesMultipleOptions() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bold", "red").format(this.event, output);
+		assertThat(output).hasToString("\033[1;31min\033[0;39m");
+	}
+
+	@Test
 	void highlightFatal() {
 		this.event.setLevel(Level.FATAL);
 		StringBuilder output = new StringBuilder();
-		newConverter(null).format(this.event, output);
+		newConverter((String) null).format(this.event, output);
 		assertThat(output).hasToString("\033[31min\033[0;39m");
 	}
 
@@ -185,7 +262,7 @@ class ColorConverterTests {
 	void highlightError() {
 		this.event.setLevel(Level.ERROR);
 		StringBuilder output = new StringBuilder();
-		newConverter(null).format(this.event, output);
+		newConverter((String) null).format(this.event, output);
 		assertThat(output).hasToString("\033[31min\033[0;39m");
 	}
 
@@ -193,7 +270,7 @@ class ColorConverterTests {
 	void highlightWarn() {
 		this.event.setLevel(Level.WARN);
 		StringBuilder output = new StringBuilder();
-		newConverter(null).format(this.event, output);
+		newConverter((String) null).format(this.event, output);
 		assertThat(output).hasToString("\033[33min\033[0;39m");
 	}
 
@@ -201,7 +278,7 @@ class ColorConverterTests {
 	void highlightDebug() {
 		this.event.setLevel(Level.DEBUG);
 		StringBuilder output = new StringBuilder();
-		newConverter(null).format(this.event, output);
+		newConverter((String) null).format(this.event, output);
 		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
@@ -209,12 +286,18 @@ class ColorConverterTests {
 	void highlightTrace() {
 		this.event.setLevel(Level.TRACE);
 		StringBuilder output = new StringBuilder();
-		newConverter(null).format(this.event, output);
+		newConverter((String) null).format(this.event, output);
 		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
-	private ColorConverter newConverter(@Nullable String styling) {
-		ColorConverter converter = ColorConverter.newInstance(null, new String[] { this.in, styling });
+	private ColorConverter newConverter(@Nullable String... stylings) {
+		if (stylings == null) {
+			stylings = new String[] { null };
+		}
+		String[] options = new String[1 + stylings.length];
+		options[0] = this.in;
+		System.arraycopy(stylings, 0, options, 1, stylings.length);
+		ColorConverter converter = ColorConverter.newInstance(null, options);
 		assertThat(converter).isNotNull();
 		return converter;
 	}

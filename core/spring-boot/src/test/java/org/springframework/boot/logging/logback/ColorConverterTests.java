@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import ch.qos.logback.classic.Level;
@@ -168,6 +169,83 @@ class ColorConverterTests {
 		this.converter.setOptionList(Collections.singletonList("bright_cyan"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[96min\033[0;39m");
+	}
+
+	@Test
+	void bold() {
+		this.converter.setOptionList(Collections.singletonList("bold"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[1min\033[0;39m");
+	}
+
+	@Test
+	void italic() {
+		this.converter.setOptionList(Collections.singletonList("italic"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[3min\033[0;39m");
+	}
+
+	@Test
+	void underline() {
+		this.converter.setOptionList(Collections.singletonList("underline"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[4min\033[0;39m");
+	}
+
+	@Test
+	void reverse() {
+		this.converter.setOptionList(Collections.singletonList("reverse"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[7min\033[0;39m");
+	}
+
+	@Test
+	void bgRed() {
+		this.converter.setOptionList(Collections.singletonList("bg_red"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[41min\033[0;39m");
+	}
+
+	@Test
+	void bgGreen() {
+		this.converter.setOptionList(Collections.singletonList("bg_green"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[42min\033[0;39m");
+	}
+
+	@Test
+	void bgYellow() {
+		this.converter.setOptionList(Collections.singletonList("bg_yellow"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[43min\033[0;39m");
+	}
+
+	@Test
+	void bgBlue() {
+		this.converter.setOptionList(Collections.singletonList("bg_blue"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[44min\033[0;39m");
+	}
+
+	@Test
+	void bgBrightRed() {
+		this.converter.setOptionList(Collections.singletonList("bg_bright_red"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[101min\033[0;39m");
+	}
+
+	@Test
+	void multipleStylesCommaSeparated() {
+		this.converter.setOptionList(Collections.singletonList("bold, red"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[1;31min\033[0;39m");
+	}
+
+	@Test
+	void multipleStyles() {
+		this.converter.setOptionList(Arrays.asList("bold", "red"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[1;31min\033[0;39m");
 	}
 
 	@Test
