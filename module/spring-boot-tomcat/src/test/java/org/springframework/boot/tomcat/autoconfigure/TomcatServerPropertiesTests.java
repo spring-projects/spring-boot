@@ -195,6 +195,17 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
+	void tomcatMaxPartCountMatchesConnectorDefault() {
+		assertThat(this.properties.getMaxPartCount()).isEqualTo(getDefaultConnector().getMaxPartCount());
+	}
+
+	@Test
+	void tomcatMaxPartHeaderSizeMatchesConnectorDefault() {
+		assertThat(this.properties.getMaxPartHeaderSize().toBytes())
+			.isEqualTo(getDefaultConnector().getMaxPartHeaderSize());
+	}
+
+	@Test
 	void tomcatUriEncodingMatchesConnectorDefault() {
 		assertThat(this.properties.getUriEncoding().name()).isEqualTo(getDefaultConnector().getURIEncoding());
 	}
