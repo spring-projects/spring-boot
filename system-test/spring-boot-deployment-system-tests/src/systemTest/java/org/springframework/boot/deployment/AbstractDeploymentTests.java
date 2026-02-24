@@ -97,7 +97,7 @@ abstract class AbstractDeploymentTests {
 
 		private void test(Consumer<TestRestTemplate> consumer) {
 			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-				.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
+				.baseUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
 						+ "/spring-boot")
 				.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))

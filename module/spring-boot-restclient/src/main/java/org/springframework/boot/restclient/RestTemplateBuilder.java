@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -139,6 +140,24 @@ public class RestTemplateBuilder {
 	}
 
 	/**
+	 * Set a base URL template that should be applied to each request that starts with
+	 * {@code '/'}. The base URL will only apply when {@code String} variants of the
+	 * {@link RestTemplate} methods are used for specifying the request URL.
+	 * <p>
+	 * This is a specialization of {@link #uriTemplateHandler(UriTemplateHandler)} and
+	 * will override any previously configured uri template handler.
+	 * @param baseUri the base URI
+	 * @return a new builder instance
+	 * @since 4.1.0
+	 */
+	public RestTemplateBuilder baseUri(String baseUri) {
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
+				this.messageConverters, this.interceptors, this.requestFactoryBuilder,
+				new DefaultUriBuilderFactory(baseUri), this.errorHandler, this.basicAuthentication, this.defaultHeaders,
+				this.customizers, this.requestCustomizers);
+	}
+
+	/**
 	 * Set if the {@link ClientHttpRequestFactory} should be detected based on the
 	 * classpath. Default if {@code true}.
 	 * @param detectRequestFactory if the {@link ClientHttpRequestFactory} should be
@@ -157,7 +176,9 @@ public class RestTemplateBuilder {
 	 * {@link RestTemplate} methods are used for specifying the request URL.
 	 * @param rootUri the root URI or {@code null}
 	 * @return a new builder instance
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link #baseUri(String)}
 	 */
+	@Deprecated(forRemoval = true, since = "4.1.0")
 	public RestTemplateBuilder rootUri(@Nullable String rootUri) {
 		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, rootUri, this.messageConverters,
 				this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler,
@@ -339,6 +360,8 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link UriTemplateHandler} that should be used with the
 	 * {@link RestTemplate}.
+	 * <p>
+	 * This method will override any {@link #baseUri(String)} previously set.
 	 * @param uriTemplateHandler the URI template handler to use
 	 * @return a new builder instance
 	 */
@@ -635,6 +658,7 @@ public class RestTemplateBuilder {
 	 * @see RestTemplateBuilder#build()
 	 * @see RestTemplateBuilder#build(Class)
 	 */
+	@SuppressWarnings("removal")
 	public <T extends RestTemplate> T configure(T restTemplate) {
 		ClientHttpRequestFactory requestFactory = buildRequestFactory();
 		if (requestFactory != null) {

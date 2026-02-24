@@ -18,6 +18,7 @@ package org.springframework.boot.restclient;
 
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,7 +29,11 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Scott Frederick
  * @since 4.0.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+ * {@link DefaultUriBuilderFactory}.
  */
+@Deprecated(forRemoval = true, since = "4.1.0")
+@SuppressWarnings("removal")
 public class RootUriBuilderFactory extends RootUriTemplateHandler implements UriBuilderFactory {
 
 	/**

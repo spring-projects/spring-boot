@@ -68,7 +68,7 @@ class AutoConfigureMockRestServiceServerWithRestTemplateRootUriIntegrationTests 
 
 		@Bean
 		RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-			return restTemplateBuilder.rootUri("/rest").build();
+			return restTemplateBuilder.baseUri("/rest").build();
 		}
 
 	}

@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 
-import org.springframework.boot.restclient.RootUriTemplateHandler;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
@@ -36,13 +35,14 @@ import org.springframework.test.web.client.ResponseActions;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
  * {@link RequestExpectationManager} that strips the specified root URI from the request
  * before verification. Can be used to simply test declarations when all REST calls start
  * the same way. For example: <pre class="code">
- * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://example.com").build();
+ * RestTemplate restTemplate = new RestTemplateBuilder().baseUri("https://example.com").build();
  * MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
  * server.expect(requestTo("/hello")).andRespond(withSuccess());
  * restTemplate.getForEntity("/hello", String.class);
@@ -148,18 +148,24 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	/**
 	 * Return {@link RequestExpectationManager} to be used for binding with the specified
 	 * {@link RestTemplate}. If the {@link RestTemplate} is using a
-	 * {@link RootUriTemplateHandler} then a {@link RootUriRequestExpectationManager} is
-	 * returned, otherwise the source manager is returned unchanged.
+	 * {@link org.springframework.boot.restclient.RootUriTemplateHandler} then a
+	 * {@link RootUriRequestExpectationManager} is returned, otherwise the source manager
+	 * is returned unchanged.
 	 * @param restTemplate the source REST template
 	 * @param expectationManager the source {@link RequestExpectationManager}
 	 * @return a {@link RequestExpectationManager} to be bound to the template
 	 */
+	@SuppressWarnings("removal")
 	public static RequestExpectationManager forRestTemplate(RestTemplate restTemplate,
 			RequestExpectationManager expectationManager) {
 		Assert.notNull(restTemplate, "'restTemplate' must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
-		if (templateHandler instanceof RootUriTemplateHandler rootHandler && rootHandler.getRootUri() != null) {
+		if (templateHandler instanceof org.springframework.boot.restclient.RootUriTemplateHandler rootHandler
+				&& rootHandler.getRootUri() != null) {
 			return new RootUriRequestExpectationManager(rootHandler.getRootUri(), expectationManager);
+		}
+		else if (templateHandler instanceof DefaultUriBuilderFactory defaultHandler && defaultHandler.hasBaseUri()) {
+			return new RootUriRequestExpectationManager(defaultHandler.expand("").toString(), expectationManager);
 		}
 		return expectationManager;
 	}

@@ -33,7 +33,7 @@ public class AnotherExampleRestTemplateService {
 	private final RestTemplate restTemplate;
 
 	public AnotherExampleRestTemplateService(RestTemplateBuilder builder) {
-		this.restTemplate = builder.rootUri("https://example.com").build();
+		this.restTemplate = builder.baseUri("https://example.com").build();
 	}
 
 	protected RestTemplate getRestTemplate() {

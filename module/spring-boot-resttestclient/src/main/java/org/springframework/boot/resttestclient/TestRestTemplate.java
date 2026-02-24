@@ -43,7 +43,6 @@ import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFacto
 import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.restclient.RootUriTemplateHandler;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.core.ParameterizedTypeReference;
@@ -184,13 +183,14 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Returns the root URI applied by {@link RestTemplateBuilder#rootUri(String)} or
+	 * Returns the root URI applied by {@link RestTemplateBuilder#baseUri(String)} or
 	 * {@code ""} if the root URI has not been applied.
 	 * @return the root URI
 	 */
+	@SuppressWarnings("removal")
 	public @Nullable String getRootUri() {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if (uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) {
+		if (uriTemplateHandler instanceof org.springframework.boot.restclient.RootUriTemplateHandler rootHandler) {
 			return rootHandler.getRootUri();
 		}
 		return uriTemplateHandler.expand("").toString();

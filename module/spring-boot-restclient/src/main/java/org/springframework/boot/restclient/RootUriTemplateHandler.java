@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -31,7 +32,10 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  * @author Scott Frederick
  * @since 4.0.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+ * {@link DefaultUriBuilderFactory}.
  */
+@Deprecated(forRemoval = true, since = "4.1.0")
 public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	private final @Nullable String rootUri;

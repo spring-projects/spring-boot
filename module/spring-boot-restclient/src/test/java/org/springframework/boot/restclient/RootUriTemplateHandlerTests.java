@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("removal")
 class RootUriTemplateHandlerTests {
 
 	private URI uri;

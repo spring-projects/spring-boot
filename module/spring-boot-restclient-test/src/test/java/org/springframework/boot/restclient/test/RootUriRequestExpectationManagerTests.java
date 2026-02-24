@@ -141,8 +141,18 @@ class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void forRestTemplateWhenUsingRootUriTemplateHandlerShouldReturnRootUriRequestExpectationManager() {
 		RestTemplate restTemplate = new RestTemplateBuilder().rootUri(this.uri).build();
+		RequestExpectationManager actual = RootUriRequestExpectationManager.forRestTemplate(restTemplate,
+				this.delegate);
+		assertThat(actual).isInstanceOf(RootUriRequestExpectationManager.class);
+		assertThat(actual).extracting("rootUri").isEqualTo(this.uri);
+	}
+
+	@Test
+	void forRestTemplateWhenUsingBaseUriTemplateHandlerShouldReturnRootUriRequestExpectationManager() {
+		RestTemplate restTemplate = new RestTemplateBuilder().baseUri(this.uri).build();
 		RequestExpectationManager actual = RootUriRequestExpectationManager.forRestTemplate(restTemplate,
 				this.delegate);
 		assertThat(actual).isInstanceOf(RootUriRequestExpectationManager.class);
@@ -158,8 +168,8 @@ class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	void boundRestTemplateShouldPrefixRootUri() {
-		RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://example.com").build();
+	void boundRestTemplateShouldPrefixBaseUri() {
+		RestTemplate restTemplate = new RestTemplateBuilder().baseUri("https://example.com").build();
 		MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
 		restTemplate.getForEntity("/hello", String.class);
@@ -167,7 +177,7 @@ class RootUriRequestExpectationManagerTests {
 
 	@Test
 	void boundRestTemplateWhenUrlIncludesDomainShouldNotPrefixRootUri() {
-		RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://example.com").build();
+		RestTemplate restTemplate = new RestTemplateBuilder().baseUri("https://example.com").build();
 		MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
 		assertThatExceptionOfType(AssertionError.class)
