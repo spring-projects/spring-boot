@@ -98,16 +98,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 
 	@Override
 	protected JettyServletWebServerFactory getFactory() {
-		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
-		factory.addServerCustomizers((server) -> {
-			for (Connector connector : server.getConnectors()) {
-				if (connector instanceof ServerConnector serverConnector) {
-					// TODO Set the shutdown idle timeout in main code?
-					serverConnector.setShutdownIdleTimeout(10000);
-				}
-			}
-		});
-		return factory;
+		return new JettyServletWebServerFactory(0);
 	}
 
 	@Override
