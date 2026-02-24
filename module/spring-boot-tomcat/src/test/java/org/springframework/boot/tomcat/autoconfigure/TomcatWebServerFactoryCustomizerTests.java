@@ -190,7 +190,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	void defaultMaxPartCount() {
 		customizeAndRunServer(
-				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartCount()).isEqualTo(10));
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartCount()).isEqualTo(50));
 	}
 
 	@Test
