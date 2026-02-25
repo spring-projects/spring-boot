@@ -117,8 +117,10 @@ class TaskExecutorConfigurations {
 			builder = builder.corePoolSize(pool.getCoreSize());
 			builder = builder.maxPoolSize(pool.getMaxSize());
 			builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
+			builder = builder.prestartAllCoreThreads(pool.isPrestartAllCoreThreads());
 			builder = builder.keepAlive(pool.getKeepAlive());
 			builder = builder.acceptTasksAfterContextClose(pool.getShutdown().isAcceptTasksAfterContextClose());
+			builder = builder.strictEarlyShutdown(pool.getShutdown().isStrictEarlyShutdown());
 			TaskExecutionProperties.Shutdown shutdown = properties.getShutdown();
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());

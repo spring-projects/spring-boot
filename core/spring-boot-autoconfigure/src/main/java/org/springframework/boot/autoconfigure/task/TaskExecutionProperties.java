@@ -163,6 +163,11 @@ public class TaskExecutionProperties {
 		private boolean allowCoreThreadTimeout = true;
 
 		/**
+		 * Whether to start all core threads, causing them to idly wait for work.
+		 */
+		private boolean prestartAllCoreThreads;
+
+		/**
 		 * Time limit for which threads may remain idle before being terminated. Doesn't
 		 * have an effect if virtual threads are enabled.
 		 */
@@ -202,6 +207,14 @@ public class TaskExecutionProperties {
 			this.allowCoreThreadTimeout = allowCoreThreadTimeout;
 		}
 
+		public boolean isPrestartAllCoreThreads() {
+			return this.prestartAllCoreThreads;
+		}
+
+		public void setPrestartAllCoreThreads(boolean prestartAllCoreThreads) {
+			this.prestartAllCoreThreads = prestartAllCoreThreads;
+		}
+
 		public Duration getKeepAlive() {
 			return this.keepAlive;
 		}
@@ -222,12 +235,26 @@ public class TaskExecutionProperties {
 			 */
 			private boolean acceptTasksAfterContextClose;
 
+			/**
+			 * Set whether to initiate an early shutdown signal on context close,
+			 * disposing all idle threads and rejecting further task submissions.
+			 */
+			private boolean strictEarlyShutdown;
+
 			public boolean isAcceptTasksAfterContextClose() {
 				return this.acceptTasksAfterContextClose;
 			}
 
 			public void setAcceptTasksAfterContextClose(boolean acceptTasksAfterContextClose) {
 				this.acceptTasksAfterContextClose = acceptTasksAfterContextClose;
+			}
+
+			public boolean isStrictEarlyShutdown() {
+				return this.strictEarlyShutdown;
+			}
+
+			public void setStrictEarlyShutdown(boolean strictEarlyShutdown) {
+				this.strictEarlyShutdown = strictEarlyShutdown;
 			}
 
 		}

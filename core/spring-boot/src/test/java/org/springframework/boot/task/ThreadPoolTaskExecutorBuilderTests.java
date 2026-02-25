@@ -48,12 +48,14 @@ class ThreadPoolTaskExecutorBuilderTests {
 			.corePoolSize(4)
 			.maxPoolSize(8)
 			.allowCoreThreadTimeOut(true)
+			.prestartAllCoreThreads(true)
 			.keepAlive(Duration.ofMinutes(1))
 			.build();
 		assertThat(executor).hasFieldOrPropertyWithValue("queueCapacity", 10);
 		assertThat(executor.getCorePoolSize()).isEqualTo(4);
 		assertThat(executor.getMaxPoolSize()).isEqualTo(8);
 		assertThat(executor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
+		assertThat(executor).hasFieldOrPropertyWithValue("prestartAllCoreThreads", true);
 		assertThat(executor.getKeepAliveSeconds()).isEqualTo(60);
 	}
 
@@ -61,6 +63,12 @@ class ThreadPoolTaskExecutorBuilderTests {
 	void acceptTasksAfterContextCloseShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.acceptTasksAfterContextClose(true).build();
 		assertThat(executor).hasFieldOrPropertyWithValue("acceptTasksAfterContextClose", true);
+	}
+
+	@Test
+	void strictEarlyShutdownShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder.strictEarlyShutdown(true).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("strictEarlyShutdown", true);
 	}
 
 	@Test
