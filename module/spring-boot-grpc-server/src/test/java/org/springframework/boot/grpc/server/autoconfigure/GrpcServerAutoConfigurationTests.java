@@ -374,7 +374,8 @@ class GrpcServerAutoConfigurationTests {
 
 		private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(autoConfigurations)
-			.with(GrpcServerAutoConfigurationTests.this::serviceBean);
+			.with(GrpcServerAutoConfigurationTests.this::serviceBean)
+			.withPropertyValues("server.http2.enabled=true");
 
 		@Test
 		void whenGrpcNotOnClasspathAutoConfigurationIsSkipped() {
@@ -437,6 +438,33 @@ class GrpcServerAutoConfigurationTests {
 			ServerBuilderCustomizer<ServletServerBuilder> customizer = applied::set;
 			this.contextRunner.withBean(ServerBuilderCustomizer.class, () -> customizer)
 				.run((context) -> assertThat(applied.get()).isInstanceOf(ServletServerBuilder.class));
+		}
+
+		@Test
+		void whenHttp2EnabledPropertyMissing() {
+			new WebApplicationContextRunner().withConfiguration(autoConfigurations)
+				.with(GrpcServerAutoConfigurationTests.this::serviceBean)
+				.run((context) -> assertThat(context).getFailure()
+					.hasMessageContaining(
+							"Configuration property 'server.http2.enabled' should be set to true for gRPC support"));
+		}
+
+		@Test
+		void whenHttp2EnabledPropertyFalse() {
+			new WebApplicationContextRunner().withConfiguration(autoConfigurations)
+				.with(GrpcServerAutoConfigurationTests.this::serviceBean)
+				.withPropertyValues("server.http2.enabled=false")
+				.run((context) -> assertThat(context).getFailure()
+					.hasMessageContaining(
+							"Configuration property 'server.http2.enabled' should be set to true for gRPC support"));
+		}
+
+		@Test
+		void whenHttp2EnabledPropertyMissingAndValidationDisabled() {
+			new WebApplicationContextRunner().withConfiguration(autoConfigurations)
+				.with(GrpcServerAutoConfigurationTests.this::serviceBean)
+				.withPropertyValues("spring.grpc.server.servlet.validate-http2=false")
+				.run((context) -> assertThat(context).hasNotFailed());
 		}
 
 	}

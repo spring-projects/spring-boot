@@ -61,6 +61,8 @@ public class GrpcServerProperties {
 
 	private final Netty netty = new Netty();
 
+	private final Servlet servlet = new Servlet();
+
 	public @Nullable Integer getPort() {
 		return this.port;
 	}
@@ -99,6 +101,10 @@ public class GrpcServerProperties {
 
 	public Netty getNetty() {
 		return this.netty;
+	}
+
+	public Servlet getServlet() {
+		return this.servlet;
 	}
 
 	/**
@@ -445,6 +451,43 @@ public class GrpcServerProperties {
 			 */
 			DOMAIN_SOCKET
 
+		}
+
+	}
+
+	/**
+	 * Servlet properties.
+	 */
+	public static class Servlet {
+
+		/**
+		 * Whether to use a servlet server in a servlet-based web application. When the
+		 * value is false, a native gRPC server will be created as long as one is
+		 * available, and it will listen on its own port. Should only be needed if the
+		 * GrpcServlet is on the classpath.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Whether to validate that HTTP/2 is enabled. Validation may need to be skipped
+		 * if your servlet container is not configured using properties.
+		 */
+		private boolean validateHttp2 = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isValidateHttp2() {
+			return this.validateHttp2;
+		}
+
+		public void setValidateHttp2(boolean validateHttp2) {
+			this.validateHttp2 = validateHttp2;
 		}
 
 	}

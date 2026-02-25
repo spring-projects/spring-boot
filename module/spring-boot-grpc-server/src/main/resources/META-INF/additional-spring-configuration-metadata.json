@@ -18,12 +18,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Reflection on the gRPC server.",
       "defaultValue": true
-    },
-    {
-      "name": "spring.grpc.server.servlet.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to use a servlet server in a servlet-based web application. When the value is false, a native gRPC server will be created as long as one is available, and it will listen on its own port. Should only be needed if the GrpcServlet is on the classpath",
-      "defaultValue": true
     }
   ]
 }
