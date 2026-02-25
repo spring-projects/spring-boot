@@ -41,6 +41,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
+import org.springframework.boot.http.client.HttpCookies;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
@@ -69,8 +70,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * status code}.
  * <p>
  * A {@code TestRestTemplate} can optionally carry Basic authentication headers. If Apache
- * Http Client 4.3.2 or better is available (recommended) it will be used as the client,
- * and by default configured to ignore cookies.
+ * Http Client 4.3.2 or better is available (recommended) it will be used as the client.
  * <p>
  * Note: To prevent injection problems this class intentionally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
@@ -160,10 +160,13 @@ public class TestRestTemplate {
 		return builder;
 	}
 
+	@SuppressWarnings("deprecation")
 	private static HttpComponentsClientHttpRequestFactoryBuilder applyHttpClientOptions(
 			HttpComponentsClientHttpRequestFactoryBuilder builder, HttpClientOption[] httpClientOptions) {
-		builder = builder.withDefaultRequestConfigCustomizer(
-				new CookieSpecCustomizer(HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions)));
+		if (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions)) {
+			builder = builder.withDefaultRequestConfigCustomizer(
+					new CookieSpecCustomizer(true));
+		}
 		if (HttpClientOption.SSL.isPresent(httpClientOptions)) {
 			builder = builder.withTlsSocketStrategyFactory(new SelfSignedTlsSocketStrategyFactory());
 		}
@@ -976,6 +979,19 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will apply the given {@link HttpCookies}. The request factory used is
+	 * a new instance of the underlying {@link RestTemplate}'s request factory type (when
+	 * possible).
+	 * @param cookies the new cookie settings
+	 * @return the new template
+	 * @since 4.1.0
+	 */
+	public TestRestTemplate withCookies(HttpCookies cookies) {
+		return withClientSettings((settings) -> settings.withCookies(cookies));
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
 	 * except that it will apply the given {@link HttpClientSettings}. The request factory
 	 * used is a new instance of the underlying {@link RestTemplate}'s request factory
 	 * type (when possible).
@@ -1036,7 +1052,10 @@ public class TestRestTemplate {
 
 		/**
 		 * Enable cookies.
+		 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+		 * {@link TestRestTemplate#withCookies(HttpCookies)}
 		 */
+		@Deprecated(since = "4.1.0", forRemoval = true)
 		ENABLE_COOKIES,
 
 		/**
