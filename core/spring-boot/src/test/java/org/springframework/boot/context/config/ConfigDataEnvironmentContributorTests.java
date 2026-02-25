@@ -47,6 +47,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Nan Chiu
  */
 class ConfigDataEnvironmentContributorTests {
 
@@ -301,6 +302,21 @@ class ConfigDataEnvironmentContributorTests {
 		assertThat(contributor.getPropertySource()).isNull();
 		assertThat(contributor.getConfigurationPropertySource()).isNull();
 		assertThat(contributor.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION)).isEmpty();
+	}
+
+	@Test
+	void ofInitialImportPropertyCreatedInitialImportPropertyContributor() {
+		ConfigDataEnvironmentContributor innerContributor = ConfigDataEnvironmentContributor.ofInitialImport(TEST_LOCATION,
+				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImportProperty(
+				Collections.singletonList(innerContributor), this.conversionService, Arrays.asList(TEST_LOCATION));
+		assertThat(contributor.getKind()).isEqualTo(Kind.INITIAL_IMPORT_PROPERTY);
+		assertThat(contributor.getResource()).isNull();
+		assertThat(contributor.getImports()).containsExactly(TEST_LOCATION);
+		assertThat(contributor.isActive(this.activationContext)).isTrue();
+		assertThat(contributor.getPropertySource()).isNull();
+		assertThat(contributor.getConfigurationPropertySource()).isNull();
+		assertThat(contributor.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION)).containsExactly(innerContributor);
 	}
 
 	@Test

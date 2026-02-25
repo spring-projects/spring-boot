@@ -79,6 +79,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Nan Chiu
  */
 class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
@@ -330,6 +331,25 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.getActiveProfiles()).containsExactly("myprofile");
 		String property = environment.getProperty("my.property");
 		assertThat(property).isEqualTo("frommyprofilepropertiesfile");
+	}
+
+	@Test
+	@WithResource(name = "testproperties-1.properties", content = """
+			my.property=fromtestproperties-1.properties
+			""")
+	@WithResource(name = "testproperties-1-myprofile.properties", content = """
+			my.property=fromtestproperties-1-myprofile.properties
+			""")
+	@WithResource(name = "testproperties-2.properties", content = """
+			my.property=fromtestproperties-2.properties
+			""")
+	void runWhenHasImportPropertyWithProfileSpecificFileTakesPrecedence() {
+		ConfigurableApplicationContext context = this.application.run(
+				"--spring.config.import=classpath:testproperties-1.properties,classpath:testproperties-2.properties",
+				"--spring.profiles.active=myprofile");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		String property = environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromtestproperties-1-myprofile.properties");
 	}
 
 	@Test
