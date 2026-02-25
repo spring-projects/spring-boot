@@ -52,14 +52,14 @@ class HttpClientAutoConfigurationTests {
 			.withPropertyValues("spring.http.clients.redirects=dont-follow", "spring.http.clients.connect-timeout=1s",
 					"spring.http.clients.read-timeout=2s")
 			.run((context) -> assertThat(context.getBean(HttpClientSettings.class)).isEqualTo(new HttpClientSettings(
-					HttpRedirects.DONT_FOLLOW, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
+					null, HttpRedirects.DONT_FOLLOW, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
 	}
 
 	@Test
 	void doesNotReplaceUserProvidedHttpClientSettings() {
 		this.contextRunner.withUserConfiguration(TestHttpClientConfiguration.class)
 			.run((context) -> assertThat(context.getBean(HttpClientSettings.class))
-				.isEqualTo(new HttpClientSettings(null, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
+				.isEqualTo(new HttpClientSettings(null, null, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
 	}
 
 	@Configuration(proxyBeanMethods = false)
