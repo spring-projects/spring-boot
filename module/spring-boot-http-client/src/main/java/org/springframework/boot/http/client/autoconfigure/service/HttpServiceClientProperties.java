@@ -21,9 +21,14 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties.HttpServiceClientPropertiesRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.Environment;
 
 /**
@@ -34,6 +39,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 4.0.0
  */
+@ImportRuntimeHints(HttpServiceClientPropertiesRuntimeHints.class)
 public class HttpServiceClientProperties {
 
 	private final Map<String, HttpClientProperties> properties;
@@ -56,6 +62,15 @@ public class HttpServiceClientProperties {
 		return new HttpServiceClientProperties(Binder.get(environment)
 			.bind("spring.http.serviceclient", Bindable.mapOf(String.class, HttpClientProperties.class))
 			.orElse(Collections.emptyMap()));
+	}
+
+	static class HttpServiceClientPropertiesRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
+			BindableRuntimeHintsRegistrar.forTypes(HttpClientProperties.class).registerHints(hints, classLoader);
+		}
+
 	}
 
 }

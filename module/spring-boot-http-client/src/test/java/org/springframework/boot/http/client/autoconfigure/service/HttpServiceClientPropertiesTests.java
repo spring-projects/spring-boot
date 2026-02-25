@@ -22,9 +22,13 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties.HttpServiceClientPropertiesRuntimeHints;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -66,6 +70,16 @@ class HttpServiceClientPropertiesTests {
 		assertThat(c3).isNotNull();
 		assertThat(c3.getBaseUrl()).isEqualTo("https://example.com/phil");
 		assertThat(properties.get("c4")).isNull();
+
+	}
+
+	@Test
+	void registersHintsForBindingOfHttpClientProperties() {
+		RuntimeHints hints = new RuntimeHints();
+		new HttpServiceClientPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(HttpClientProperties.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(ApiversionProperties.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(ApiversionProperties.Insert.class)).accepts(hints);
 	}
 
 	@Configuration
