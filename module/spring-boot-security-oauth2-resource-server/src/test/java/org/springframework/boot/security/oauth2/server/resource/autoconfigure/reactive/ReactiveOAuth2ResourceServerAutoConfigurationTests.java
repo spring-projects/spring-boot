@@ -414,7 +414,21 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
 				assertFilterConfiguredWithOpaqueTokenAuthenticationManager(context);
+				assertSpringReactiveOpaqueTokenIntrospectorBuilderCustomization(context);
 			});
+	}
+
+	private void assertSpringReactiveOpaqueTokenIntrospectorBuilderCustomization(
+			AssertableReactiveWebApplicationContext context) {
+		SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer customizer = context.getBean(
+				"reactiveOpaqueTokenIntrospectorBuilderCustomizer",
+				SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer.class);
+		SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer anotherCustomizer = context.getBean(
+				"anotherReactiveOpaqueTokenIntrospectorBuilderCustomizer",
+				SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer.class);
+		InOrder inOrder = inOrder(customizer, anotherCustomizer);
+		inOrder.verify(customizer).customize(any());
+		inOrder.verify(anotherCustomizer).customize(any());
 	}
 
 	@Test
@@ -927,6 +941,18 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		@Order(2)
 		JwkSetUriReactiveJwtDecoderBuilderCustomizer anotherDecoderBuilderCustomizer() {
 			return mock(JwkSetUriReactiveJwtDecoderBuilderCustomizer.class);
+		}
+
+		@Bean
+		@Order(1)
+		SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer reactiveOpaqueTokenIntrospectorBuilderCustomizer() {
+			return mock(SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer.class);
+		}
+
+		@Bean
+		@Order(2)
+		SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer anotherReactiveOpaqueTokenIntrospectorBuilderCustomizer() {
+			return mock(SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer.class);
 		}
 
 	}
