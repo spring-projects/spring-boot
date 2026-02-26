@@ -375,7 +375,7 @@ public class JacksonProperties {
 				/**
 				 * Maximum string length.
 				 */
-				private int maxStringLength = 20_000_000;
+				private int maxStringLength = 100_000_000;
 
 				/**
 				 * Maximum name length.
