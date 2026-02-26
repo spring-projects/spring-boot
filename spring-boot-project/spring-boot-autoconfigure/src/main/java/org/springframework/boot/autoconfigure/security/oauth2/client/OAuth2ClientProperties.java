@@ -76,9 +76,11 @@ public class OAuth2ClientProperties implements InitializingBean {
 	public static class Registration {
 
 		/**
-		 * Reference to the OAuth 2.0 provider to use. May reference an element from the
-		 * 'provider' property or used one of the commonly used providers (google, github,
-		 * facebook, okta).
+		 * Reference to the OAuth 2.0 provider to use. May reference one of the common
+		 * providers (google, github, facebook, okta) or the ID of a custom provider
+		 * configured using 'spring.security.oauth2.client.provider.&lt;id&gt;.*'
+		 * properties. When not set, the ID of this registration is used to identify the
+		 * provider.
 		 */
 		private String provider;
 
