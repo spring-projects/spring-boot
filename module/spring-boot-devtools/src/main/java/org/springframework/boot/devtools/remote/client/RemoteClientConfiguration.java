@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
-import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties.Proxy;
 import org.springframework.boot.devtools.autoconfigure.TriggerFileFilter;
@@ -46,7 +45,6 @@ import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
-import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
@@ -71,6 +69,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DevToolsProperties.class)
+@SuppressWarnings("removal")
 public class RemoteClientConfiguration implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(RemoteClientConfiguration.class);
@@ -152,14 +151,14 @@ public class RemoteClientConfiguration implements InitializingBean {
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		LiveReloadServer liveReloadServer() {
-			return new LiveReloadServer(this.properties.getLivereload().getPort(),
-					Restarter.getInstance().getThreadFactory());
+		org.springframework.boot.devtools.livereload.LiveReloadServer liveReloadServer() {
+			return new org.springframework.boot.devtools.livereload.LiveReloadServer(
+					this.properties.getLivereload().getPort(), Restarter.getInstance().getThreadFactory());
 		}
 
 		@Bean
 		ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
-				OptionalLiveReloadServer optionalLiveReloadServer) {
+				org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer optionalLiveReloadServer) {
 			return (event) -> {
 				String url = this.remoteUrl + this.properties.getRemote().getContextPath();
 				this.executor.execute(
@@ -168,8 +167,10 @@ public class RemoteClientConfiguration implements InitializingBean {
 		}
 
 		@Bean
-		OptionalLiveReloadServer optionalLiveReloadServer(ObjectProvider<LiveReloadServer> liveReloadServer) {
-			return new OptionalLiveReloadServer(liveReloadServer.getIfAvailable());
+		org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer optionalLiveReloadServer(
+				ObjectProvider<org.springframework.boot.devtools.livereload.LiveReloadServer> liveReloadServer) {
+			return new org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer(
+					liveReloadServer.getIfAvailable());
 		}
 
 		final ExecutorService getExecutor() {

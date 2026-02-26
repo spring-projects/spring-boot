@@ -24,6 +24,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
@@ -200,6 +201,7 @@ public class DevToolsProperties {
 		 */
 		private int port = 35729;
 
+		@DeprecatedConfigurationProperty(reason = "Deprecated with no replacement", since = "4.1.0")
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -208,6 +210,7 @@ public class DevToolsProperties {
 			this.enabled = enabled;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Deprecated with no replacement", since = "4.1.0")
 		public int getPort() {
 			return this.port;
 		}

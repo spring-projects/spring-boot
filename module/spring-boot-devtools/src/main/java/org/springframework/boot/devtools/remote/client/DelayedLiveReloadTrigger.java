@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class DelayedLiveReloadTrigger implements Runnable {
 
 	private static final long SHUTDOWN_TIME = 1000;

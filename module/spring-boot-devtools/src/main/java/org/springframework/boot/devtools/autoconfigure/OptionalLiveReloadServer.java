@@ -30,7 +30,10 @@ import org.springframework.core.log.LogMessage;
  *
  * @author Phillip Webb
  * @since 1.3.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 with no replacement.
  */
+@Deprecated(since = "4.1.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class OptionalLiveReloadServer implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(OptionalLiveReloadServer.class);

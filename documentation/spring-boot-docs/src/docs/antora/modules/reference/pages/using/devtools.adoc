@@ -108,10 +108,8 @@ The way in which you cause the classpath to be updated depends on the tool that 
 NOTE: If you are restarting with Maven or Gradle using the build plugin you must leave the `forking` set to `enabled`.
 If you disable forking, the isolated application classloader used by devtools will not be created and restarts will not operate properly.
 
-TIP: Automatic restart works very well when used with LiveReload.
-See the xref:using/devtools.adoc#using.devtools.livereload[] section for details.
-If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
-Other devtools features (such as LiveReload and property overrides) can still be used.
+TIP: If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
+Other devtools features (such as property overrides) can still be used.
 
 NOTE: DevTools relies on the application context's shutdown hook to close it during a restart.
 It does not work correctly if you have disabled the shutdown hook (`SpringApplication.setRegisterShutdownHook(false)`).
@@ -287,11 +285,13 @@ If you find such a problem, you need to request a fix with the original authors.
 [[using.devtools.livereload]]
 == LiveReload
 
+WARNING: Given its decrease in popularity and support, the LiveReload feature is deprecated as of Spring Boot 4.1.0 with no replacement.
+
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used to trigger a browser refresh when a resource is changed.
 LiveReload browser extensions are freely available for Chrome, Firefox and Safari.
 You can find these extensions by searching 'LiveReload' in the marketplace or store of your chosen browser.
 
-If you want to start the LiveReload server when your application runs, you can set the configprop:spring.devtools.livereload.enabled[] property to `true`.
+If you want to start the LiveReload server when your application runs, you can set the `spring.devtools.livereload.enabled` property to `true`.
 
 NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.

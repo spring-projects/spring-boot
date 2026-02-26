@@ -37,7 +37,6 @@ import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrate
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.boot.devtools.filewatch.SnapshotStateRepository;
-import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
@@ -71,18 +70,20 @@ public final class LocalDevToolsAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled")
+	@SuppressWarnings("removal")
 	static class LiveReloadConfiguration {
 
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		LiveReloadServer liveReloadServer(DevToolsProperties properties) {
-			return new LiveReloadServer(properties.getLivereload().getPort(),
-					Restarter.getInstance().getThreadFactory());
+		org.springframework.boot.devtools.livereload.LiveReloadServer liveReloadServer(DevToolsProperties properties) {
+			return new org.springframework.boot.devtools.livereload.LiveReloadServer(
+					properties.getLivereload().getPort(), Restarter.getInstance().getThreadFactory());
 		}
 
 		@Bean
-		OptionalLiveReloadServer optionalLiveReloadServer(LiveReloadServer liveReloadServer) {
+		OptionalLiveReloadServer optionalLiveReloadServer(
+				org.springframework.boot.devtools.livereload.LiveReloadServer liveReloadServer) {
 			return new OptionalLiveReloadServer(liveReloadServer);
 		}
 
@@ -160,6 +161,7 @@ public final class LocalDevToolsAutoConfiguration {
 
 	}
 
+	@SuppressWarnings("removal")
 	static class LiveReloadServerEventListener implements GenericApplicationListener {
 
 		private final OptionalLiveReloadServer liveReloadServer;

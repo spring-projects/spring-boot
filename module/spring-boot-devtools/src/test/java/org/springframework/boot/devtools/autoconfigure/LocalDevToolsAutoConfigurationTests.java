@@ -73,6 +73,7 @@ import static org.mockito.Mockito.reset;
  * @author Vladimir Tsanev
  */
 @ExtendWith(MockRestarter.class)
+@SuppressWarnings("removal")
 class LocalDevToolsAutoConfigurationTests {
 
 	private @Nullable ConfigurableApplicationContext context;
