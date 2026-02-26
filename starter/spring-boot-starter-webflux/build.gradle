@@ -25,5 +25,6 @@ dependencies {
 	api(project(":starter:spring-boot-starter-jackson"))
 	api(project(":starter:spring-boot-starter-reactor-netty"))
 
+	api(project(":module:spring-boot-reactor"))
 	api(project(":module:spring-boot-webflux"))
 }
