@@ -40,6 +40,7 @@ dependencies {
 	optional("io.grpc:grpc-xds") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}
+	optional("io.micrometer:micrometer-core")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

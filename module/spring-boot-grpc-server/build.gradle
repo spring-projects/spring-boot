@@ -30,6 +30,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("com.fasterxml.jackson.core:jackson-annotations")
 	optional("io.projectreactor:reactor-core")
 	optional("io.grpc:grpc-servlet-jakarta")
@@ -40,6 +41,8 @@ dependencies {
 	optional("io.grpc:grpc-kotlin-stub") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}
+	optional("io.micrometer:micrometer-core")
+	optional("io.micrometer:context-propagation")
 	optional("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":core:spring-boot-test"))
