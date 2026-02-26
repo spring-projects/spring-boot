@@ -101,6 +101,33 @@ If you have `spring-security-oauth2-client` on your classpath, you can take adva
 This configuration makes use of the properties under javadoc:org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties[].
 The same properties are applicable to both servlet and reactive applications.
 
+Each registration must specify an OAuth 2 provider.
+When set, the value of the `spring.security.oauth2.client.registration.<registration-id>.provider` property is used to specify the registration's provider.
+If the `provider` property is not set, the registration's ID is used instead.
+Both approaches are shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client:
+            client-id: "abcd"
+            client-secret: "password"
+            provider: "example"
+          example:
+            client-id: "abcd"
+            client-secret: "password"
+----
+
+The registrations `my-client` and `example` will both use the provider with ID `example`.
+The former will do so due to the value of the `spring.security.oauth2.client.registration.my-client.provider` property.
+The latter will do so due to its ID being `example` and there being no `provider` property configured for the registration.
+
+The specified provider can either be a reference to a provider configured using `spring.security.oauth2.client.provider.<provider-id>.*` properties or one of the xref:web/spring-security.adoc#web.security.oauth2.client.common-providers[known common providers].
+
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
 
 [configprops,yaml]
@@ -150,6 +177,10 @@ spring:
             user-name-attribute: "name"
 ----
 
+In this example, there are three registrations.
+In order of declaration, their IDs are `my-login-client`, `my-client-1`, and `my-client-2`.
+There is also a single provider with ID `my-oauth-provider`.
+
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
 The provider needs to be configured with an `issuer-uri` which is the URI that it asserts as its Issuer Identifier.
 For example, if the `issuer-uri` provided is "https://example.com", then an "OpenID Provider Configuration Request" will be made to "https://example.com/.well-known/openid-configuration".
@@ -182,12 +213,12 @@ For production environments, consider using a javadoc:org.springframework.securi
 [[web.security.oauth2.client.common-providers]]
 ==== OAuth2 Client Registration for Common Providers
 
-For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta, we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`, respectively).
+For common OAuth2 and OpenID providers (Google, Github, Facebook, and Okta), we provide a set of provider defaults.
+The IDs of these common provides are `google`, `github`, `facebook`, and `okta`, respectively.
 
-If you do not need to customize these providers, you can set the `provider` attribute to the one for which you need to infer defaults.
-Also, if the key for the client registration matches a default supported provider, Spring Boot infers that as well.
-
-In other words, the two configurations in the following example use the Google provider:
+If you do not need to customize these providers, set the registration's `provider` property to the ID of one of the common providers.
+Alternatively, you can xref:web/spring-security.adoc#web.security.oauth2.client[use a registration ID that matches the ID of the provider].
+The two configurations in the following example use the common `google` provider:
 
 [configprops,yaml]
 ----
