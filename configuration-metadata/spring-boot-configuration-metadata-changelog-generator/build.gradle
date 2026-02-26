@@ -1,3 +1,5 @@
+import groovy.xml.XmlSlurper
+
 /*
  * Copyright 2012-present the original author or authors.
  *
@@ -20,15 +22,6 @@ plugins {
 
 description = "Spring Boot Configuration Metadata Changelog Generator"
 
-configurations {
-	oldMetadata {
-		transitive = false
-	}
-	newMetadata {
-		transitive = false
-	}
-}
-
 dependencies {
 	implementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	implementation(project(":configuration-metadata:spring-boot-configuration-metadata"))
@@ -42,162 +35,40 @@ nullability {
 	requireExplicitNullMarking = false
 }
 
-def dependenciesOf(String version) {
-	def springBoot40Modules = [
-			"spring-boot",
-			"spring-boot-activemq",
-			"spring-boot-actuator",
-			"spring-boot-actuator-autoconfigure",
-			"spring-boot-amqp",
-			"spring-boot-artemis",
-			"spring-boot-autoconfigure",
-			"spring-boot-batch",
-			"spring-boot-batch-jdbc",
-			"spring-boot-cache",
-			"spring-boot-cassandra",
-			"spring-boot-couchbase",
-			"spring-boot-data-cassandra",
-			"spring-boot-data-commons",
-			"spring-boot-data-couchbase",
-			"spring-boot-data-elasticsearch",
-			"spring-boot-data-jdbc",
-			"spring-boot-data-jpa",
-			"spring-boot-data-ldap",
-			"spring-boot-data-mongodb",
-			"spring-boot-data-neo4j",
-			"spring-boot-data-r2dbc",
-			"spring-boot-data-redis",
-			"spring-boot-data-rest",
-			"spring-boot-devtools",
-			"spring-boot-docker-compose",
-			"spring-boot-elasticsearch",
-			"spring-boot-flyway",
-			"spring-boot-freemarker",
-			"spring-boot-graphql",
-			"spring-boot-groovy-templates",
-			"spring-boot-gson",
-			"spring-boot-h2console",
-			"spring-boot-hateoas",
-			"spring-boot-hazelcast",
-			"spring-boot-health",
-			"spring-boot-hibernate",
-			"spring-boot-http-client",
-			"spring-boot-http-codec",
-			"spring-boot-http-converter",
-			"spring-boot-integration",
-			"spring-boot-jackson",
-			"spring-boot-jackson2",
-			"spring-boot-jdbc",
-			"spring-boot-jdbc-test",
-			"spring-boot-jersey",
-			"spring-boot-jetty",
-			"spring-boot-jms",
-			"spring-boot-jooq",
-			"spring-boot-jpa",
-			"spring-boot-kafka",
-			"spring-boot-ldap",
-			"spring-boot-liquibase",
-			"spring-boot-mail",
-			"spring-boot-micrometer-metrics",
-			"spring-boot-micrometer-metrics-test",
-			"spring-boot-micrometer-observation",
-			"spring-boot-micrometer-tracing",
-			"spring-boot-micrometer-tracing-brave",
-			"spring-boot-micrometer-tracing-opentelemetry",
-			"spring-boot-micrometer-tracing-test",
-			"spring-boot-mongodb",
-			"spring-boot-mustache",
-			"spring-boot-neo4j",
-			"spring-boot-netty",
-			"spring-boot-opentelemetry",
-			"spring-boot-persistence",
-			"spring-boot-pulsar",
-			"spring-boot-quartz",
-			"spring-boot-r2dbc",
-			"spring-boot-reactor",
-			"spring-boot-reactor-netty",
-			"spring-boot-restclient",
-			"spring-boot-restclient-test",
-			"spring-boot-restdocs",
-			"spring-boot-rsocket",
-			"spring-boot-security",
-			"spring-boot-security-oauth2-authorization-server",
-			"spring-boot-security-oauth2-client",
-			"spring-boot-security-oauth2-resource-server",
-			"spring-boot-security-saml2",
-			"spring-boot-sendgrid",
-			"spring-boot-servlet",
-			"spring-boot-session",
-			"spring-boot-session-data-redis",
-			"spring-boot-session-jdbc",
-			"spring-boot-sql",
-			"spring-boot-test-autoconfigure",
-			"spring-boot-testcontainers",
-			"spring-boot-thymeleaf",
-			"spring-boot-tomcat",
-			"spring-boot-transaction",
-			"spring-boot-validation",
-			"spring-boot-web-server",
-			"spring-boot-web-server-test",
-			"spring-boot-webclient",
-			"spring-boot-webflux",
-			"spring-boot-webflux-test",
-			"spring-boot-webmvc",
-			"spring-boot-webmvc-test",
-			"spring-boot-webservices",
-			"spring-boot-webservices-test",
-			"spring-boot-zipkin"
-	]
-	if (version.startsWith("4.0")) {
-		return springBoot40Modules
-	}
-	else if (version.startsWith("4.1")) {
-		// Alter Spring Boot 4.0 modules if necessary
-		return springBoot40Modules
-	}
-	return [
-			"spring-boot",
-			"spring-boot-actuator",
-			"spring-boot-actuator-autoconfigure",
-			"spring-boot-autoconfigure",
-			"spring-boot-devtools",
-			"spring-boot-docker-compose",
-			"spring-boot-test-autoconfigure",
-			"spring-boot-testcontainers"
-	]
-}
-
 if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
-	dependencies {
-		dependenciesOf(oldVersion).each {
-			oldMetadata("org.springframework.boot:$it:$oldVersion")
+	configurations {
+		oldMetadata {
+			transitive = false
 		}
-		dependenciesOf(newVersion).each {
-			newMetadata("org.springframework.boot:$it:$newVersion")
+		newMetadata {
+			transitive = false
 		}
 	}
-
+	configurations.oldMetadata.dependencies.addAllLater(bootArtifactsFromBom(oldVersion))
+	configurations.newMetadata.dependencies.addAllLater(bootArtifactsFromBom(newVersion))
 	def prepareOldMetadata = tasks.register("prepareOldMetadata", Sync) {
 		from(configurations.oldMetadata)
-		if (project.hasProperty("oldVersion")) {
-			destinationDir = project.file("build/configuration-metadata-diff/$oldVersion")
-		}
+		destinationDir = project.file("build/configuration-metadata-diff/$oldVersion")
 	}
-
 	def prepareNewMetadata = tasks.register("prepareNewMetadata", Sync) {
 		from(configurations.newMetadata)
-		if (project.hasProperty("newVersion")) {
-			destinationDir = project.file("build/configuration-metadata-diff/$newVersion")
-		}
+		destinationDir = project.file("build/configuration-metadata-diff/$newVersion")
 	}
-
 	tasks.register("generate", JavaExec) {
 		inputs.files(prepareOldMetadata, prepareNewMetadata)
 		outputs.file(project.file("build/configuration-metadata-changelog.adoc"))
 		classpath = sourceSets.main.runtimeClasspath
 		mainClass = 'org.springframework.boot.configurationmetadata.changelog.ChangelogGenerator'
-		if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
-			args = [project.file("build/configuration-metadata-diff/$oldVersion"), project.file("build/configuration-metadata-diff/$newVersion"), project.file("build/configuration-metadata-changelog.adoc")]
-		}
+		args = [project.file("build/configuration-metadata-diff/$oldVersion"), project.file("build/configuration-metadata-diff/$newVersion"), project.file("build/configuration-metadata-changelog.adoc")]
 	}
+}
+
+def bootArtifactsFromBom(def version) {
+	project.provider {
+		def bomDependency = project.dependencies.create("org.springframework.boot:spring-boot-dependencies:$version@pom")
+		def bom = new XmlSlurper().parse(configurations.detachedConfiguration(bomDependency).singleFile)
+		return bom.dependencyManagement.dependencies.dependency
+				.findAll { it.groupId == "org.springframework.boot" }
+				.collect { project.dependencies.create("org.springframework.boot:${it.artifactId}:$version") }
+	}			
 }
