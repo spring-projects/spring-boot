@@ -17,11 +17,13 @@
 package org.springframework.boot.data.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,7 +43,8 @@ import org.springframework.util.function.SingletonSupplier;
 @AutoConfiguration(afterName = {
 		"org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
 		"org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration",
-		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration" })
+		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
+		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnClass(org.springframework.data.repository.Repository.class)
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(DataMetricsProperties.class)
@@ -73,6 +76,15 @@ public final class DataRepositoryMetricsAutoConfiguration {
 			ObjectProvider<MetricsRepositoryMethodInvocationListener> metricsRepositoryMethodInvocationListener) {
 		return new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
 				SingletonSupplier.of(metricsRepositoryMethodInvocationListener::getObject));
+	}
+
+	@Bean
+	@ConditionalOnBean(ObservationRegistry.class)
+	@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
+	static ObservedRepositoryMethodInterceptorBeanPostProcessor observedRepositoryMethodInterceptorBeanPostProcessor(
+			ObjectProvider<ObservationRegistry> observationRegistry) {
+		return new ObservedRepositoryMethodInterceptorBeanPostProcessor(
+				SingletonSupplier.of(observationRegistry::getObject));
 	}
 
 }
