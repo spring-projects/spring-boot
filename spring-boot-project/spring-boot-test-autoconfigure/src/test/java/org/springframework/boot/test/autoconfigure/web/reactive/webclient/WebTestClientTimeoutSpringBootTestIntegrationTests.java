@@ -1,5 +1,5 @@
 /*
- * Copyright 2026-present the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@ package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
 import java.time.Duration;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.config.EnableWebFlux;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,19 +35,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  * binding.
  *
  * @author Jay Choi
+ * @author Andy Wilkinson
  */
-@SpringBootTest(properties = { "spring.main.web-application-type=reactive", "spring.test.webtestclient.timeout=30s" },
-		classes = ExampleWebFluxApplication.class)
-@AutoConfigureWebTestClient
-@EnableWebFlux
+@SpringBootTest(properties = { "spring.main.web-application-type=reactive" }, classes = ExampleWebFluxApplication.class)
 class WebTestClientTimeoutSpringBootTestIntegrationTests {
 
-	@Autowired
-	private WebTestClient webClient;
+	@Nested
+	@AutoConfigureWebTestClient
+	@TestPropertySource(properties = "spring.test.webtestclient.timeout=30s")
+	class TimeoutFromProperty {
 
-	@Test
-	void timeoutFromPropertyShouldBeApplied() {
-		assertThat(this.webClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofSeconds(30));
+		@Autowired
+		private WebTestClient webClient;
+
+		@Test
+		void timeoutIsApplied() {
+			assertThat(this.webClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofSeconds(30));
+		}
+
+	}
+
+	@Nested
+	@AutoConfigureWebTestClient(timeout = "25s")
+	class TimeoutFromAnnotation {
+
+		@Autowired
+		private WebTestClient webClient;
+
+		@Test
+		void timeoutIsApplied() {
+			assertThat(this.webClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofSeconds(25));
+		}
+
+	}
+
+	@Nested
+	@AutoConfigureWebTestClient
+	class DefaultTimeout {
+
+		@Autowired
+		private WebTestClient webClient;
+
+		@Test
+		void timeoutIsApplied() {
+			assertThat(this.webClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofSeconds(5));
+		}
+
 	}
 
 }
