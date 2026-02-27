@@ -3307,14 +3307,7 @@ class ConfigurationPropertiesTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
-			return new Converter<>() {
-
-				@Override
-				public CustomList<?> convert(ArrayList<?> source) {
-					return new CustomList<>(source);
-				}
-
-			};
+			return CustomList::new;
 
 		}
 
@@ -3341,14 +3334,7 @@ class ConfigurationPropertiesTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		static Converter<ArrayList<?>, CustomList<?>> arrayListToCustomList() {
-			return new Converter<>() {
-
-				@Override
-				public CustomList<?> convert(ArrayList<?> source) {
-					return new CustomList<>(source);
-				}
-
-			};
+			return CustomList::new;
 
 		}
 

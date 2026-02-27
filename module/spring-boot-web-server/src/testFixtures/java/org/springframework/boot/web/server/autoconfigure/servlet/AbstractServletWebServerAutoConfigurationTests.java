@@ -257,15 +257,9 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 
 		@Bean
 		FilterRegistrationBean<Filter> unauthorizedFilter() {
-			FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(new Filter() {
-
-				@Override
-				public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-						throws IOException, ServletException {
-					((HttpServletResponse) response).sendError(HttpStatus.UNAUTHORIZED.value());
-				}
-
-			});
+			FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(
+					(request, response, chain) ->
+							((HttpServletResponse) response).sendError(HttpStatus.UNAUTHORIZED.value()));
 			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			registration.addUrlPatterns("/*");
 			registration.setDispatcherTypes(DispatcherType.REQUEST);
