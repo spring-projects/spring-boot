@@ -428,15 +428,8 @@ class R2dbcAutoConfigurationTests {
 
 		@Bean
 		R2dbcConnectionDetails r2dbcConnectionDetails() {
-			return new R2dbcConnectionDetails() {
-
-				@Override
-				public ConnectionFactoryOptions getConnectionFactoryOptions() {
-					return ConnectionFactoryOptions
-						.parse("r2dbc:postgresql://user-1:password-1@postgres.example.com:12345/database-1");
-				}
-
-			};
+			return () -> ConnectionFactoryOptions
+				.parse("r2dbc:postgresql://user-1:password-1@postgres.example.com:12345/database-1");
 		}
 
 	}

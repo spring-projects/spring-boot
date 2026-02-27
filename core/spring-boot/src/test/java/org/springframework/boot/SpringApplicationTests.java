@@ -2106,16 +2106,11 @@ class SpringApplicationTests {
 		static void main(String[] args) {
 			SpringApplication application = new SpringApplication(ExampleConfig.class);
 			application.setWebApplicationType(WebApplicationType.NONE);
-			application.addListeners(new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
-
-				@Override
-				public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-					SpringApplicationBuilder builder = new SpringApplicationBuilder(
-							InnerApplicationConfiguration.class);
-					builder.web(WebApplicationType.NONE);
-					builder.run().close();
-				}
-
+			application.addListeners((ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
+				SpringApplicationBuilder builder = new SpringApplicationBuilder(
+						InnerApplicationConfiguration.class);
+				builder.web(WebApplicationType.NONE);
+				builder.run().close();
 			});
 			application.run(args);
 		}
