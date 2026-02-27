@@ -180,7 +180,7 @@ public final class HttpComponentsHttpClientBuilder {
 			.useSystemProperties()
 			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
 			.setConnectionManager(createConnectionManager(settings))
-			.setDefaultRequestConfig(createDefaultRequestConfig());
+			.setDefaultRequestConfig(createDefaultRequestConfig(settings));
 		this.customizer.accept(builder);
 		return builder.build();
 	}
@@ -218,8 +218,12 @@ public final class HttpComponentsHttpClientBuilder {
 		return builder.build();
 	}
 
-	private RequestConfig createDefaultRequestConfig() {
+	private RequestConfig createDefaultRequestConfig(HttpClientSettings settings) {
 		RequestConfig.Builder builder = RequestConfig.custom();
+		String cookieSpec = HttpComponentsCookieSpec.get(settings.cookies());
+		if (cookieSpec != null) {
+			builder.setCookieSpec(cookieSpec);
+		}
 		this.defaultRequestConfigCustomizer.accept(builder);
 		return builder.build();
 	}

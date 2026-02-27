@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jspecify.annotations.Nullable;
@@ -140,6 +141,7 @@ public final class JettyHttpClientBuilder {
 		HttpClient httpClient = createHttpClient(settings.readTimeout(), transport);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).as(Duration::toMillis).to(httpClient::setConnectTimeout);
+		map.from(settings::cookies).as(this::asCookieStore).to(httpClient::setHttpCookieStore);
 		map.from(settings::redirects).always().as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
 		return httpClient;
@@ -180,6 +182,13 @@ public final class JettyHttpClientBuilder {
 			factory.setExcludeProtocols();
 		}
 		return factory;
+	}
+
+	private @Nullable HttpCookieStore asCookieStore(HttpCookies cookies) {
+		return switch (cookies) {
+			case ENABLE_WHEN_POSSIBLE, ENABLE -> null;
+			case DISABLE -> new HttpCookieStore.Empty();
+		};
 	}
 
 	private boolean followRedirects(@Nullable HttpRedirects redirects) {
