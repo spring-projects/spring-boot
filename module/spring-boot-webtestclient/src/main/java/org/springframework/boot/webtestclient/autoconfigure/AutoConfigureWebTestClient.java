@@ -26,12 +26,14 @@ import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping.Skip;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * Annotation that can be applied to a test class to enable a {@link WebTestClient}.
  *
  * @author Stephane Nicoll
+ * @author Jay Choi
  * @since 4.0.0
  * @see WebTestClientAutoConfiguration
  */
@@ -48,6 +50,7 @@ public @interface AutoConfigureWebTestClient {
 	 * {@link Duration#parse(CharSequence)}).
 	 * @return the web client timeout
 	 */
+	@PropertyMapping(skip = Skip.ON_DEFAULT_VALUE)
 	String timeout() default "";
 
 }

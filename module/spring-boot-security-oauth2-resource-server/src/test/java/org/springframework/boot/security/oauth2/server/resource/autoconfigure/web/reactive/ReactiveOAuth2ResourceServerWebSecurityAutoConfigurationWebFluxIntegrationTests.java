@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive;
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure.web.reactive;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.context.ApplicationContext;
 
@@ -33,7 +34,7 @@ import static org.springframework.boot.autoconfigure.AutoConfigurationImportedCo
  * @author Andy Wilkinson
  */
 @WebFluxTest
-class ReactiveOAuth2ResourceServerWebFluxTestIntegrationTests {
+class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationWebFluxIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;

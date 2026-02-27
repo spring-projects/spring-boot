@@ -15,9 +15,9 @@
  */
 
 /**
- * Support for Spring Security's OAuth2 resource server.
+ * Auto-configuration for OAuth2 resource server web security.
  */
 @NullMarked
-package org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet;
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure.web;
 
 import org.jspecify.annotations.NullMarked;

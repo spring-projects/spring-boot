@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet;
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure;
 
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder;
@@ -25,13 +25,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDeco
  * configured directly or obtained through an issuer URI.
  *
  * @author Andy Wilkinson
- * @since 4.0.0
- * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
- * {@link org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwkSetUriJwtDecoderBuilderCustomizer}
+ * @since 4.1.0
  */
 @FunctionalInterface
-@Deprecated(since = "4.1.0", forRemoval = true)
-public interface JwkSetUriJwtDecoderBuilderCustomizer extends
-		org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwkSetUriJwtDecoderBuilderCustomizer {
+public interface JwkSetUriJwtDecoderBuilderCustomizer {
+
+	/**
+	 * Customize the given {@code builder}.
+	 * @param builder the {@code builder} to customize
+	 */
+	void customize(JwkSetUriJwtDecoderBuilder builder);
 
 }
