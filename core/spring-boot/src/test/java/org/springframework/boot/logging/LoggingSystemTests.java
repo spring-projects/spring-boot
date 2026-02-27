@@ -67,13 +67,14 @@ class LoggingSystemTests {
 	}
 
 	@Test
-	void log4J2CanBeForced(){
+	void log4J2CanBeForced() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, Log4J2LoggingSystem.class.getName());
-		final var loggingSystem = new Object(){
-			@Nullable
-			LoggingSystem value;
+		final var loggingSystem = new Object() {
+			@Nullable LoggingSystem value;
+
 		};
-		assertThatCode(() -> loggingSystem.value = LoggingSystem.get(getClass().getClassLoader())).doesNotThrowAnyException();
+		assertThatCode(() -> loggingSystem.value = LoggingSystem.get(getClass().getClassLoader()))
+			.doesNotThrowAnyException();
 		assertThat(loggingSystem.value).isInstanceOf(Log4J2LoggingSystem.class);
 	}
 

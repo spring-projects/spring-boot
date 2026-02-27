@@ -129,18 +129,19 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	/**
-	 * Create a new {@link Log4J2LoggingSystem} instance.
-	 * The loggerContext is instantiated internally in the class in the same way as the LoggingSystemFactory
+	 * Create a new {@link Log4J2LoggingSystem} instance. The loggerContext is
+	 * instantiated internally in the class in the same way as the LoggingSystemFactory
 	 * <br/>
-	 * This constructor is only for use by <code>LoggingSystem.get(ClassLoader, String)</code> with
-	 * the help of reflexion. So it is private.
-	 *  @param classLoader the class loader to use.
+	 * This constructor is intended to be used by
+	 * <code>LoggingSystem.get(ClassLoader, String)</code> with reflexion.
+	 * @param classLoader the class loader to use.
 	 */
 	private Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 		org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = initLoggerContext(classLoader);
-		if ( ! (spiLoggerContext instanceof LoggerContext)) {
-			throw new IllegalStateException("Log4j2LoggingSystem requires LoggerContext to be of type org.apache.logging.log4j.core.LoggerContext");
+		if (!(spiLoggerContext instanceof LoggerContext)) {
+			throw new IllegalStateException(
+					"Log4j2LoggingSystem requires LoggerContext to be of type org.apache.logging.log4j.core.LoggerContext");
 		}
 		this.loggerContext = (LoggerContext) spiLoggerContext;
 	}
@@ -551,7 +552,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
-				org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = Log4J2LoggingSystem.initLoggerContext(classLoader);
+				org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = Log4J2LoggingSystem
+					.initLoggerContext(classLoader);
 				if (spiLoggerContext instanceof LoggerContext coreLoggerContext) {
 					return new Log4J2LoggingSystem(classLoader, coreLoggerContext);
 				}
