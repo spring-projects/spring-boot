@@ -26,6 +26,7 @@ import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -35,6 +36,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * mock requests and responses. At the moment, only WebFlux applications are supported.
  *
  * @author Stephane Nicoll
+ * @author Jay Choi
  * @since 2.0.0
  * @see WebTestClientAutoConfiguration
  * @see WebTestClient#bindToApplicationContext(ApplicationContext)
@@ -52,6 +54,7 @@ public @interface AutoConfigureWebTestClient {
 	 * {@link Duration#parse(CharSequence)}).
 	 * @return the web client timeout
 	 */
+	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 	String timeout() default "";
 
 }
