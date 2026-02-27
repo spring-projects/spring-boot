@@ -29,6 +29,7 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.scaffold.InstrumentedType;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.bytecode.ByteCodeAppender;
+import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Opcodes;
 import org.jspecify.annotations.Nullable;
@@ -258,15 +259,9 @@ class MainClassFinderTests {
 
 		@Override
 		public ByteCodeAppender appender(Target implementationTarget) {
-			return new ByteCodeAppender() {
-
-				@Override
-				public Size apply(MethodVisitor methodVisitor, Context implementationContext,
-						MethodDescription instrumentedMethod) {
-					methodVisitor.visitInsn(Opcodes.RETURN);
-					return Size.ZERO;
-				}
-
+			return (methodVisitor, implementationContext, instrumentedMethod) -> {
+				methodVisitor.visitInsn(Opcodes.RETURN);
+				return Size.ZERO;
 			};
 		}
 

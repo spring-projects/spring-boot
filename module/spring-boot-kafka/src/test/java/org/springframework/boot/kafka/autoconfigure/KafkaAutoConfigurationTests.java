@@ -1027,14 +1027,7 @@ class KafkaAutoConfigurationTests {
 	}
 
 	private KafkaConnectionDetails kafkaConnectionDetails() {
-		return new KafkaConnectionDetails() {
-
-			@Override
-			public List<String> getBootstrapServers() {
-				return List.of("kafka.example.com:12345");
-			}
-
-		};
+		return () -> List.of("kafka.example.com:12345");
 	}
 
 	@Configuration(proxyBeanMethods = false)

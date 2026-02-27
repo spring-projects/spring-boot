@@ -937,14 +937,7 @@ class DataRedisAutoConfigurationTests {
 
 				@Override
 				public Cluster getCluster() {
-					return new Cluster() {
-
-						@Override
-						public List<Node> getNodes() {
-							return List.of(new Node("node-1", 12345), new Node("node-2", 23456));
-						}
-
-					};
+					return () -> List.of(new Node("node-1", 12345), new Node("node-2", 23456));
 				}
 
 			};
@@ -971,14 +964,7 @@ class DataRedisAutoConfigurationTests {
 
 				@Override
 				public MasterReplica getMasterReplica() {
-					return new MasterReplica() {
-
-						@Override
-						public List<Node> getNodes() {
-							return List.of(new Node("node-1", 12345), new Node("node-2", 23456));
-						}
-
-					};
+					return () -> List.of(new Node("node-1", 12345), new Node("node-2", 23456));
 				}
 
 			};

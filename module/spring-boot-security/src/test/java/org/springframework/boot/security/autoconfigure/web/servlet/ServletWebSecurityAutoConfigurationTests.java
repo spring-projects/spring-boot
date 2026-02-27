@@ -219,14 +219,7 @@ class ServletWebSecurityAutoConfigurationTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		static Converter<String, TargetType> targetTypeConverter() {
-			return new Converter<>() {
-
-				@Override
-				public TargetType convert(String input) {
-					return new TargetType();
-				}
-
-			};
+			return input -> new TargetType();
 		}
 
 	}
