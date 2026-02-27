@@ -38,7 +38,6 @@ dependencies {
 	optional(project(":module:spring-boot-jackson")) {
 		exclude(group: "tools.jackson.core", module: "jackson-databind")
 	}
-	optional("org.springframework:spring-web")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
