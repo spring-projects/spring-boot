@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -59,6 +60,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nan Chiu
  */
 class ConfigDataEnvironment {
 
@@ -199,7 +201,8 @@ class ConfigDataEnvironment {
 
 	private List<ConfigDataEnvironmentContributor> getInitialImportContributors(Binder binder) {
 		List<ConfigDataEnvironmentContributor> initialContributors = new ArrayList<>();
-		addInitialImportContributors(initialContributors, bindLocations(binder, IMPORT_PROPERTY, EMPTY_LOCATIONS));
+		addInitialImportPropertyContributors(initialContributors,
+				bindLocations(binder, IMPORT_PROPERTY, EMPTY_LOCATIONS));
 		addInitialImportContributors(initialContributors,
 				bindLocations(binder, ADDITIONAL_LOCATION_PROPERTY, EMPTY_LOCATIONS));
 		addInitialImportContributors(initialContributors,
@@ -209,6 +212,15 @@ class ConfigDataEnvironment {
 
 	private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
 		return binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(other);
+	}
+
+	private void addInitialImportPropertyContributors(List<ConfigDataEnvironmentContributor> initialContributors,
+			ConfigDataLocation[] locations) {
+		List<ConfigDataEnvironmentContributor> initialPropertiesContributors = new ArrayList<>();
+		addInitialImportContributors(initialPropertiesContributors, locations);
+		initialContributors.add(ConfigDataEnvironmentContributor.ofInitialImportProperty(
+			initialPropertiesContributors, this.environment.getConversionService(), Arrays.asList(locations))
+		);
 	}
 
 	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,

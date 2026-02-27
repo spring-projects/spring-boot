@@ -56,6 +56,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nan Chiu
  */
 class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironmentContributor> {
 
@@ -414,6 +415,27 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	}
 
 	/**
+	 * Factory method to create a {@link Kind#INITIAL_IMPORT_PROPERTY initial import property}
+	 * contributor. This contributor is a container that wraps initial imports from
+	 * {@code spring.config.import} property, allowing profile-specific imports to take
+	 * precedence over the imported locations.
+	 * @param contributors the contributors created from the import locations
+	 * @param conversionService the conversion service to use
+	 * @param locations the original import locations from the property
+	 * @return a new {@link ConfigDataEnvironmentContributor} instance
+	 */
+	static ConfigDataEnvironmentContributor ofInitialImportProperty(
+			List<ConfigDataEnvironmentContributor> contributors,
+			ConversionService conversionService,
+			List<ConfigDataLocation> locations) {
+		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children = new LinkedHashMap<>();
+		ConfigDataProperties properties = new ConfigDataProperties(locations, null);
+		children.put(ImportPhase.BEFORE_PROFILE_ACTIVATION, Collections.unmodifiableList(contributors));
+		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT_PROPERTY, null, null, false, null, null, properties, null, children,
+				conversionService);
+	}
+
+	/**
 	 * Factory method to create a contributor that wraps an {@link Kind#EXISTING existing}
 	 * property source. The contributor provides access to existing properties, but
 	 * doesn't actively import any additional contributors.
@@ -487,6 +509,11 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		 * An initial import that needs to be processed.
 		 */
 		INITIAL_IMPORT,
+
+		/**
+		 * A container contributor that wraps initial imports from spring.config.import property.
+		 */
+		INITIAL_IMPORT_PROPERTY,
 
 		/**
 		 * An existing property source that contributes properties but no imports.
