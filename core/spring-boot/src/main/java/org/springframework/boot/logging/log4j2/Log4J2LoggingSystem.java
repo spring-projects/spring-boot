@@ -119,16 +119,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private final LoggerContext loggerContext;
 
 	/**
-	 * Create a new {@link Log4J2LoggingSystem} instance.
-	 * @param classLoader the class loader to use.
-	 * @param loggerContext the {@link LoggerContext} to use.
-	 */
-	Log4J2LoggingSystem(ClassLoader classLoader, LoggerContext loggerContext) {
-		super(classLoader);
-		this.loggerContext = loggerContext;
-	}
-
-	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance. The loggerContext is
 	 * instantiated internally in the class from
 	 * {@link LogManager#getContext(ClassLoader, boolean)} <br/>
@@ -549,8 +539,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				try {
 					return new Log4J2LoggingSystem(classLoader);
 				}
-				catch (IllegalStateException ignored) {
-					return null;
+				catch (IllegalStateException ex) {
+					// Continue
 				}
 			}
 			return null;
