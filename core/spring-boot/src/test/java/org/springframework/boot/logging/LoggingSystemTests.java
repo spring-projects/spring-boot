@@ -27,7 +27,6 @@ import org.springframework.boot.logging.logback.LogbackLoggingSystem;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
@@ -67,15 +66,15 @@ class LoggingSystemTests {
 	}
 
 	@Test
-	void log4J2CanBeForced() {
+	void log4j2CanBeForcedUsingSystemProperty() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, Log4J2LoggingSystem.class.getName());
-		final var loggingSystem = new Object() {
-			@Nullable LoggingSystem value;
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(Log4J2LoggingSystem.class);
+	}
 
-		};
-		assertThatCode(() -> loggingSystem.value = LoggingSystem.get(getClass().getClassLoader()))
-			.doesNotThrowAnyException();
-		assertThat(loggingSystem.value).isInstanceOf(Log4J2LoggingSystem.class);
+	@Test
+	void julj2CanBeForcedUsingSystemProperty() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, JavaLoggingSystem.class.getName());
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(JavaLoggingSystem.class);
 	}
 
 	@Test
