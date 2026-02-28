@@ -139,7 +139,8 @@ class DataRepositoryMetricsAutoConfigurationTests {
 	@Test
 	void definesObservedBeanPostProcessorWhenObservationsAnnotationsEnabled() {
 		this.contextRunner.withBean(ObservationRegistry.class, ObservationRegistry::create)
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
 			.withPropertyValues("management.observations.annotations.enabled=true")
 			.run((context) -> assertThat(context)
 				.hasSingleBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
@@ -148,14 +149,17 @@ class DataRepositoryMetricsAutoConfigurationTests {
 	@Test
 	void doesNotDefineObservedBeanPostProcessorWhenObservationsAnnotationsDisabled() {
 		this.contextRunner.withBean(ObservationRegistry.class, ObservationRegistry::create)
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
 			.run((context) -> assertThat(context)
 				.doesNotHaveBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
 	}
 
 	@Test
 	void doesNotDefineObservedBeanPostProcessorWhenObservationRegistryMissing() {
-		this.contextRunner.withPropertyValues("management.observations.annotations.enabled=true")
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(DataRepositoryObservationAutoConfiguration.class))
+			.withPropertyValues("management.observations.annotations.enabled=true")
 			.run((context) -> assertThat(context)
 				.doesNotHaveBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
 	}

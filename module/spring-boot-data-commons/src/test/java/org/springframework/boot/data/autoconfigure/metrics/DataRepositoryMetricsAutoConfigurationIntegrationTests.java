@@ -84,7 +84,8 @@ class DataRepositoryMetricsAutoConfigurationIntegrationTests {
 	@Test
 	void observedRepositoryMethodCallCreatesObservation() {
 		this.contextRunner
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
 			.withPropertyValues("management.observations.annotations.enabled=true")
 			.run((context) -> {
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
