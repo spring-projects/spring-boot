@@ -138,7 +138,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * @throws IllegalArgumentException if the loggerContext instantiated internally is
 	 * not of type org.apache.logging.log4j.core.LoggerContext
 	 */
-	private Log4J2LoggingSystem(ClassLoader classLoader) {
+	Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 		org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = LogManager.getContext(classLoader, false);
 		Assert.isInstanceOf(LoggerContext.class, spiLoggerContext,
