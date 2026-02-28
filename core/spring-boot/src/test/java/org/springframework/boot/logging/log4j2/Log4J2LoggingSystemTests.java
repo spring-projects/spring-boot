@@ -116,6 +116,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.getConfiguration().stop();
 		this.loggingSystem.cleanUp();
 		PluginRegistry.getInstance().clear();
+		LogManager.getFactory().removeContext(this.loggingSystem.getLoggerContext());
 	}
 
 	@Test
@@ -127,7 +128,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
-		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
+		assertThat(configuration.getConfigurationSource().getLocation()).contains("log4j2-test.xml");
 	}
 
 	@Test
