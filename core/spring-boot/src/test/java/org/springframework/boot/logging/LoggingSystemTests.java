@@ -66,6 +66,18 @@ class LoggingSystemTests {
 	}
 
 	@Test
+	void log4j2CanBeForcedUsingSystemProperty() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, Log4J2LoggingSystem.class.getName());
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(Log4J2LoggingSystem.class);
+	}
+
+	@Test
+	void julj2CanBeForcedUsingSystemProperty() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, JavaLoggingSystem.class.getName());
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(JavaLoggingSystem.class);
+	}
+
+	@Test
 	void getLoggerConfigurationIsUnsupported() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));

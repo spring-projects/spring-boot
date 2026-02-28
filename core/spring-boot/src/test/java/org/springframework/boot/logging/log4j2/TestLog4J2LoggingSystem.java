@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.jspecify.annotations.Nullable;
 
@@ -26,7 +25,8 @@ class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 	TestLog4J2LoggingSystem(String contextName) {
 		// Tests add resources to the thread context classloader
-		super(Thread.currentThread().getContextClassLoader(), new LoggerContext(contextName));
+		super(Thread.currentThread().getContextClassLoader());
+		getLoggerContext().setName(contextName);
 		getLoggerContext().start();
 	}
 
