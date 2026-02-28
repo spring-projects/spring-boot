@@ -1,0 +1,34 @@
+services:
+  cassandra:
+    image: cassandra:3.11.10
+    ports:
+      - 9042:9042
+    environment:
+      - 'CASSANDRA_SNITCH=GossipingPropertyFileSnitch'
+      - 'JVM_OPTS=-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0'
+      - 'HEAP_NEWSIZE=128M'
+      - 'MAX_HEAP_SIZE=1024M'
+      - 'CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch'
+      - 'CASSANDRA_DC=testdc1'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_ENABLED: true'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_REQUIRE_CLIENT_AUTH: true'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_KEYSTORE: /run/secrets/ssl/server-keystore.p12'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_KEYSTORE_PASSWORD: password'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_TRUSTSTORE: /run/secrets/server-truststore.p12'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_TRUSTSTORE_PASSWORD: password'
+      - 'CASSANDRA_CLIENT_ENCRYPTION_OPTIONS_STORE_TYPE: PKCS12'
+    labels:
+      - 'org.springframework.boot.sslbundle.jks.keystore.type:PKCS12'
+      - 'org.springframework.boot.sslbundle.jks.keystore.location=client-keystore.p12'
+      - 'org.springframework.boot.sslbundle.jks.keystore.password=password'
+      - 'org.springframework.boot.sslbundle.jks.truststore.type=PKCS12'
+      - 'org.springframework.boot.sslbundle.jks.truststore.location=client-truststore.p12'
+      - 'org.springframework.boot.sslbundle.jks.truststore.password=password'
+    secrets:
+      - server-keystore
+      - server-truststore
+secrets:
+  server-keystore:
+    file: ./server-keystore.p12
+  server-truststore:
+    file: ./server-truststore.p12

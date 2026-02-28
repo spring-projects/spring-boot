@@ -19,6 +19,7 @@ package org.springframework.boot.amqp.docker.compose;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,15 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "rabbit-compose.yaml", image = TestImage.RABBITMQ)
 	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
+
+	@DockerComposeTest(composeFile = "rabbit-ssl-compose.yaml", image = TestImage.RABBITMQ,
+			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key", "rabbitmq.conf" })
+	void runWithSslCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		assertThat(sslBundle).isNotNull();
 	}
 
 	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) {

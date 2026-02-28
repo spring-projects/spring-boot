@@ -21,6 +21,7 @@ import com.mongodb.MongoCredential;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,15 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "mongo-compose.yaml", image = TestImage.MONGODB)
 	void runCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
 		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
+
+	@DockerComposeTest(composeFile = "mongo-ssl-compose.yaml", image = TestImage.MONGODB,
+			additionalResources = { "ca.crt", "client.crt", "client.key", "mongo.pem" })
+	void runWithSslCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
+		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		assertThat(sslBundle).isNotNull();
 	}
 
 	private void assertConnectionDetailsWithDatabase(MongoConnectionDetails connectionDetails, String database) {
