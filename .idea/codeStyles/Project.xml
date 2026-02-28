@@ -8,19 +8,6 @@
     </option>
     <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
     <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
-    <option name="IMPORT_LAYOUT_TABLE">
-      <value>
-        <package name="java" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="javax" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="org.springframework" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="" withSubpackages="true" static="true" />
-      </value>
-    </option>
     <option name="RIGHT_MARGIN" value="90" />
     <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
     <GroovyCodeStyleSettings>
