@@ -28,6 +28,7 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.ObjectFactory;
@@ -37,6 +38,7 @@ import org.springframework.boot.data.metrics.DefaultRepositoryTagsProvider;
 import org.springframework.boot.data.metrics.MetricsRepositoryMethodInvocationListener;
 import org.springframework.boot.data.metrics.RepositoryTagsProvider;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -132,6 +134,34 @@ class DataRepositoryMetricsAutoConfigurationTests {
 				Meter meter = meters.iterator().next();
 				assertThat(meter.getId().getTag("method")).isEqualTo("count");
 			});
+	}
+
+	@Test
+	void definesObservedBeanPostProcessorWhenObservationsAnnotationsEnabled() {
+		this.contextRunner.withBean(ObservationRegistry.class, ObservationRegistry::create)
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
+			.withPropertyValues("management.observations.annotations.enabled=true")
+			.run((context) -> assertThat(context)
+				.hasSingleBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
+	}
+
+	@Test
+	void doesNotDefineObservedBeanPostProcessorWhenObservationsAnnotationsDisabled() {
+		this.contextRunner.withBean(ObservationRegistry.class, ObservationRegistry::create)
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
+	}
+
+	@Test
+	void doesNotDefineObservedBeanPostProcessorWhenObservationRegistryMissing() {
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(DataRepositoryObservationAutoConfiguration.class))
+			.withPropertyValues("management.observations.annotations.enabled=true")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ObservedRepositoryMethodInterceptorBeanPostProcessor.class));
 	}
 
 	@Test

@@ -31,6 +31,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional(project(":module:spring-boot-webmvc"))
 
 	testImplementation(project(":core:spring-boot-test-autoconfigure"))

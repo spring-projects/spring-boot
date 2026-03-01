@@ -16,20 +16,28 @@
 
 package org.springframework.boot.data.autoconfigure.metrics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationHandler;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.data.domain.city.City;
 import org.springframework.boot.data.domain.city.CityRepository;
+import org.springframework.boot.data.domain.city.ObservedCityRepository;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
@@ -71,6 +79,34 @@ class DataRepositoryMetricsAutoConfigurationIntegrationTests {
 				.timer()
 				.count()).isOne();
 		});
+	}
+
+	@Test
+	void observedRepositoryMethodCallCreatesObservation() {
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					DataRepositoryObservationAutoConfiguration.class))
+			.withPropertyValues("management.observations.annotations.enabled=true")
+			.run((context) -> {
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				List<String> observationNames = new ArrayList<>();
+				observationRegistry.observationConfig()
+					.observationHandler(new ObservationHandler<Observation.Context>() {
+
+						@Override
+						public void onStart(Observation.Context context) {
+							observationNames.add(context.getName());
+						}
+
+						@Override
+						public boolean supportsContext(Observation.Context context) {
+							return true;
+						}
+
+					});
+				context.getBean(ObservedCityRepository.class).count();
+				assertThat(observationNames).contains("city.repository");
+			});
 	}
 
 	@Test
