@@ -1841,6 +1841,17 @@ bom {
 			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
 		}
 	}
+	library("Protobuf Maven Plugin", "5.0.1") {
+		group("io.github.ascopes") {
+			plugins = [
+				"protobuf-maven-plugin"
+			]
+		}
+		links {
+			site("https://github.com/ascopes/protobuf-maven-plugin")
+			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/tag/v{version}")
+		}
+	}
 	library("Pooled JMS", "3.2.2") {
 		group("org.messaginghub") {
 			modules = [
