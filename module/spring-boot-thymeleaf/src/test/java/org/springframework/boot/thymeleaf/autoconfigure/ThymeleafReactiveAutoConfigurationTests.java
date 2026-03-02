@@ -261,7 +261,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 
 		@Bean
 		LayoutDialect layoutDialect() {
-			return new LayoutDialect(new GroupingStrategy());
+			return new LayoutDialect().withSortingStrategy(new GroupingStrategy());
 		}
 
 	}
