@@ -255,11 +255,8 @@ Here is an example where some local class files are excluded and some extra libr
 
 [source,properties]
 ----
-restart:
-  exclude:
-    companycommonlibs: "/mycorp-common-[\\w\\d-\\.]/(build|bin|out|target)/"
-  include:
-    projectcommon: "/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
+restart.exclude.companycommonlibs="/mycorp-common-[\\w\\d-\\.]/(build|bin|out|target)/"
+include.projectcommon="/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
 ----
 
 NOTE: All property keys must be unique.
