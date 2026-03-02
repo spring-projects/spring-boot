@@ -178,10 +178,10 @@ As a result, specific configuration keys (such as `logback.configurationFile` fo
 [[features.logging.file-rotation]]
 == File Rotation
 
-If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
-For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4j2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
+If you are using Logback of Log4J2, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
+For all other logging system, you will need to configure rotation settings directly yourself.
 
-The following rotation policy properties are supported:
+The following rotation policy properties are supported for Logback:
 
 |===
 | Name | Description
@@ -202,6 +202,33 @@ The following rotation policy properties are supported:
 | The maximum number of archive log files to keep (defaults to 7).
 |===
 
+If you are using Log4j2, the following rotation policy properties are available:
+
+|===
+| Name | Description
+
+| configprop:logging.log4j2.rollingpolicy.file-name-pattern[]
+| The filename pattern used to create log archives.
+
+| configprop:logging.log4j2.rollingpolicy.max-file-size[]
+| The maximum size of log file before it is archived (defaults to 10MB).
+
+| configprop:logging.log4j2.rollingpolicy.max-history[]
+| The maximum number of archive log files to keep (defaults to 7).
+
+| configprop:logging.log4j2.rollingpolicy.strategy[]
+| Rolling policy strategy (defaults to 'size').
+
+| configprop:logging.log4j2.rollingpolicy.cron[]
+| Cron expression used when the strategy is 'cron' (default to every day at midnight).
+
+| configprop:logging.log4j2.rollingpolicy.time-interval[]
+| Time based triggering interval when the strategy is 'time' or 'size-and-time' (default to 1).
+
+| configprop:logging.log4j2.rollingpolicy.time-modulate[]
+| Whether to align the next rollover time to occur at the top of the interval when the strategy is time based (defaults to `false`).
+
+|===
 
 
 [[features.logging.log-levels]]
