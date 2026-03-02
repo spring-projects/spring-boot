@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/print-jvm-thread-dumps
       - name: Upload Build Reports
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build-reports
           path: '**/build/reports/'
