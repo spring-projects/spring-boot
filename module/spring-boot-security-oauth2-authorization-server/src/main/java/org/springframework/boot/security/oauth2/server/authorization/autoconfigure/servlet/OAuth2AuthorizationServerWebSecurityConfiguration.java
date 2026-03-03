@@ -27,7 +27,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
@@ -50,11 +49,11 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
-		OAuth2AuthorizationServerConfigurer authorizationServer = new OAuth2AuthorizationServerConfigurer();
-		http.securityMatcher(authorizationServer.getEndpointsMatcher());
-		http.with(authorizationServer, withDefaults());
+		http.oauth2AuthorizationServer((authorizationServer) -> {
+			http.securityMatcher(authorizationServer.getEndpointsMatcher());
+			authorizationServer.oidc(withDefaults());
+		});
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated());
-		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(withDefaults());
 		http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(withDefaults()));
 		http.exceptionHandling((exceptions) -> exceptions.defaultAuthenticationEntryPointFor(
 				new LoginUrlAuthenticationEntryPoint("/login"), createRequestMatcher()));
