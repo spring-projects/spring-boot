@@ -121,14 +121,13 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance.
 	 * @param classLoader the class loader to use.
-	 * @throws IllegalArgumentException if the loggerContext instantiated internally is
-	 * not of type org.apache.logging.log4j.core.LoggerContext
+	 * @throws IllegalArgumentException if the logger context is not a
+	 * {@link LoggerContext}.
 	 */
 	Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 		org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = LogManager.getContext(classLoader, false);
-		Assert.isInstanceOf(LoggerContext.class, spiLoggerContext,
-				"Log4j2LoggingSystem requires LoggerContext to be of type org.apache.logging.log4j.core.LoggerContext");
+		Assert.isInstanceOf(LoggerContext.class, spiLoggerContext);
 		this.loggerContext = (LoggerContext) spiLoggerContext;
 	}
 

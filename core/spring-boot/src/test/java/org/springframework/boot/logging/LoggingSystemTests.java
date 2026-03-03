@@ -72,7 +72,7 @@ class LoggingSystemTests {
 	}
 
 	@Test
-	void julj2CanBeForcedUsingSystemProperty() {
+	void julCanBeForcedUsingSystemProperty() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, JavaLoggingSystem.class.getName());
 		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(JavaLoggingSystem.class);
 	}
