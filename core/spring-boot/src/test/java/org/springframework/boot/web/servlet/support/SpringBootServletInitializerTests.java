@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
+import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -132,8 +133,8 @@ class SpringBootServletInitializerTests {
 		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 			.createRootApplicationContext(this.servletContext)) {
 			assertThat(context).isNotNull();
-			Map<String, ErrorPageFilter> errorPageFilterBeans = context.getBeansOfType(ErrorPageFilter.class);
-			assertThat(errorPageFilterBeans).isEmpty();
+			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
+			assertThat(context.getBeansOfType(ErrorPageRegistrarBeanPostProcessor.class)).isEmpty();
 		}
 	}
 
@@ -143,12 +144,10 @@ class SpringBootServletInitializerTests {
 		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
-		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new DefaultSpringBootServletInitializer()
 			.createRootApplicationContext(servletContext)) {
 			assertThat(context).isNotNull();
-			Map<String, ErrorPageRegistrarBeanPostProcessor> beans = context
-				.getBeansOfType(ErrorPageRegistrarBeanPostProcessor.class);
-			assertThat(beans).hasSize(1);
+			assertThat(context.getBeansOfType(ErrorPageRegistrarBeanPostProcessor.class)).hasSize(1);
 		}
 	}
 
@@ -159,7 +158,7 @@ class SpringBootServletInitializerTests {
 		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
-		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new DefaultSpringBootServletInitializer()
 			.createRootApplicationContext(servletContext)) {
 			assertThat(context).isNotNull();
 			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
@@ -177,7 +176,7 @@ class SpringBootServletInitializerTests {
 		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
-		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new DefaultSpringBootServletInitializer()
 			.createRootApplicationContext(servletContext)) {
 			assertThat(context).isNotNull();
 			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
@@ -190,7 +189,7 @@ class SpringBootServletInitializerTests {
 
 	@Test
 	void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
-		try (ConfigurableApplicationContext context = new SpringApplication(ExecutableWar.class).run()) {
+		try (ConfigurableApplicationContext context = new SpringApplication(DefaultApplicationArguments.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 		}
 	}
@@ -340,21 +339,16 @@ class SpringBootServletInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class DefaultSpringBootServletInitializer extends SpringBootServletInitializer {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
 
 		WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class WithErrorPageFilter extends SpringBootServletInitializer {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ExecutableWar extends SpringBootServletInitializer {
 
 	}
 
