@@ -116,6 +116,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.getConfiguration().stop();
 		this.loggingSystem.cleanUp();
 		PluginRegistry.getInstance().clear();
+		LogManager.getFactory().removeContext(this.loggingSystem.getLoggerContext());
 	}
 
 	@Test
