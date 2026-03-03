@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -189,7 +188,8 @@ class SpringBootServletInitializerTests {
 
 	@Test
 	void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
-		try (ConfigurableApplicationContext context = new SpringApplication(DefaultApplicationArguments.class).run()) {
+		try (ConfigurableApplicationContext context = new SpringApplication(DefaultSpringBootServletInitializer.class)
+			.run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 		}
 	}
