@@ -64,8 +64,8 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyHttpClientBuilder} that applies additional
-	 * customization to the underlying {@link HttpClient}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link HttpClient}.
 	 * @param customizer the customizer to apply
 	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
@@ -76,8 +76,8 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyHttpClientBuilder} that applies additional
-	 * customization to the underlying {@link HttpClientTransport}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link HttpClientTransport}.
 	 * @param httpClientTransportCustomizer the customizer to apply
 	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
@@ -90,8 +90,8 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyHttpClientBuilder} that applies additional
-	 * customization to the underlying {@link ClientConnector}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link ClientConnector}.
 	 * @param clientConnectorCustomizerCustomizer the customizer to apply
 	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
