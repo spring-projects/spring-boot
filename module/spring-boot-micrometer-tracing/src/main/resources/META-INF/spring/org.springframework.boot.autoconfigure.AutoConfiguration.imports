@@ -1,3 +1,4 @@
 org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration
 org.springframework.boot.micrometer.tracing.autoconfigure.NoopTracerAutoConfiguration
+org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpExemplarsAutoConfiguration
 org.springframework.boot.micrometer.tracing.autoconfigure.prometheus.PrometheusExemplarsAutoConfiguration

@@ -17,6 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.registry.otlp.ExemplarContextProvider;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
@@ -80,23 +81,29 @@ public final class OtlpMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
 	OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender) {
-		return builder(otlpConfig, clock, metricsSender).build();
+			ObjectProvider<OtlpMetricsSender> metricsSender,
+			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
+		return builder(otlpConfig, clock, metricsSender, exemplarContextProvider).build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender) {
+			ObjectProvider<OtlpMetricsSender> metricsSender,
+			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
 		VirtualThreadTaskExecutor executor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
-		return builder(otlpConfig, clock, metricsSender).threadFactory(executor.getVirtualThreadFactory()).build();
+		return builder(otlpConfig, clock, metricsSender, exemplarContextProvider)
+			.threadFactory(executor.getVirtualThreadFactory())
+			.build();
 	}
 
 	private OtlpMeterRegistry.Builder builder(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender) {
+			ObjectProvider<OtlpMetricsSender> metricsSender,
+			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
 		OtlpMeterRegistry.Builder builder = OtlpMeterRegistry.builder(otlpConfig).clock(clock);
 		metricsSender.ifAvailable(builder::metricsSender);
+		exemplarContextProvider.ifAvailable(builder::exemplarContextProvider);
 		return builder;
 	}
 
