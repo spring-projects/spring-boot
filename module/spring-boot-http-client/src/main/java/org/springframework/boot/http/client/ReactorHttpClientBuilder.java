@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.function.ThrowingConsumer;
 
 /**
- * Builder that can be used to create a Rector Netty {@link HttpClient}.
+ * Builder that can be used to create a Reactor Netty {@link HttpClient}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
