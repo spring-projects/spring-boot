@@ -64,10 +64,10 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
-	 * customization to the underlying {@link HttpClient}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link HttpClient}.
 	 * @param customizer the customizer to apply
-	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
 	public JettyHttpClientBuilder withCustomizer(Consumer<HttpClient> customizer) {
 		Assert.notNull(customizer, "'customizer' must not be null");
@@ -76,10 +76,10 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
-	 * customization to the underlying {@link HttpClientTransport}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link HttpClientTransport}.
 	 * @param httpClientTransportCustomizer the customizer to apply
-	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
 	public JettyHttpClientBuilder withHttpClientTransportCustomizer(
 			Consumer<HttpClientTransport> httpClientTransportCustomizer) {
@@ -90,10 +90,10 @@ public final class JettyHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
-	 * customization to the underlying {@link ClientConnector}.
+	 * Return a new {@link JettyHttpClientBuilder} that applies additional customization
+	 * to the underlying {@link ClientConnector}.
 	 * @param clientConnectorCustomizerCustomizer the customizer to apply
-	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @return a new {@link JettyHttpClientBuilder} instance
 	 */
 	public JettyHttpClientBuilder withClientConnectorCustomizerCustomizer(
 			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
