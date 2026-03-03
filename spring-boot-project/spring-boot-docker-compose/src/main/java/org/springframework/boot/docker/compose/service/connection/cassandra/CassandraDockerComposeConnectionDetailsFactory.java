@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetai
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -57,11 +58,19 @@ class CassandraDockerComposeConnectionDetailsFactory
 
 		private final String datacenter;
 
+		private final SslBundle sslBundle;
+
 		CassandraDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			CassandraEnvironment cassandraEnvironment = new CassandraEnvironment(service.env());
 			this.contactPoints = List.of(new Node(service.host(), service.ports().get(CASSANDRA_PORT)));
 			this.datacenter = cassandraEnvironment.getDatacenter();
+			this.sslBundle = getSslBundle(service);
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 		@Override
