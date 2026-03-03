@@ -180,11 +180,17 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		builder.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		builder.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
 		builder.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
-		builder.serializationInclusion(Include.NON_NULL);
+		configureInclusion(builder);
 		applyConfigurationPropertiesFilter(builder);
 		applySerializationModifier(builder);
 		builder.addModule(new JavaTimeModule());
 		builder.addModule(new ConfigurationPropertiesModule());
+	}
+
+	@SuppressWarnings("deprecation")
+	private void configureInclusion(JsonMapper.Builder builder) {
+		// Avoid using defaultPropertyInclusion to retain compatibility with Jackson 2.19.
+		builder.serializationInclusion(Include.NON_NULL);
 	}
 
 	private void applyConfigurationPropertiesFilter(JsonMapper.Builder builder) {
