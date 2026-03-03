@@ -57,6 +57,14 @@ abstract class AbstractDeploymentTests {
 	}
 
 	@Test
+	void errorPage() {
+		getDeployedApplication().test((rest) -> {
+			ResponseEntity<String> response = rest.getForEntity("/does-not-exist", String.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		});
+	}
+
+	@Test
 	void health() {
 		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
