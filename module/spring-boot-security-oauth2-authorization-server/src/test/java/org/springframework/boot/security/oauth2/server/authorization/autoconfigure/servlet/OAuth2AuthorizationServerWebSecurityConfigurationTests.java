@@ -32,7 +32,6 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -95,6 +94,19 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 				assertThat(findFilter(context, DefaultLoginPageGeneratingFilter.class, 1)).isNotNull();
 				assertThat(findFilter(context, UsernamePasswordAuthenticationFilter.class, 1)).isNotNull();
 			});
+	}
+
+	@Test
+	void httpSecurityCustomizerCanRefineAuthorizationServerConfiguration() {
+		this.contextRunner.withUserConfiguration(TestOAuth2AuthorizationServerConfiguration.class)
+			.withPropertyValues(CLIENT_PREFIX + ".foo.registration.client-id=abcd",
+					CLIENT_PREFIX + ".foo.registration.client-secret=secret",
+					CLIENT_PREFIX + ".foo.registration.client-authentication-methods=client_secret_basic",
+					CLIENT_PREFIX + ".foo.registration.authorization-grant-types=client_credentials",
+					CLIENT_PREFIX + ".foo.registration.scopes=test")
+			.withUserConfiguration(OAuth2AuthorizationServerCustomizationConfiguration.class)
+			.run((context) -> assertThat(findFilter(context, OAuth2AuthorizationEndpointFilter.class, 0))
+				.hasFieldOrPropertyWithValue("consentPage", "https://example.com/custom-consent-page"));
 	}
 
 	@Test
@@ -165,9 +177,8 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 		@Bean
 		@Order(1)
 		SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) {
-			OAuth2AuthorizationServerConfigurer authorizationServer = new OAuth2AuthorizationServerConfigurer();
-			http.securityMatcher(authorizationServer.getEndpointsMatcher())
-				.with(authorizationServer, Customizer.withDefaults());
+			http.oauth2AuthorizationServer(
+					(authorizationServer) -> http.securityMatcher(authorizationServer.getEndpointsMatcher()));
 			http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated());
 			return http.build();
 		}
@@ -176,6 +187,18 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 		@Order(2)
 		SecurityFilterChain securityFilterChain(HttpSecurity http) {
 			return http.httpBasic(withDefaults()).build();
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class OAuth2AuthorizationServerCustomizationConfiguration {
+
+		@Bean
+		Customizer<HttpSecurity> oauth2AuthorizationServiceCustomizer() {
+			return (http) -> http.oauth2AuthorizationServer((authorizationServer) -> authorizationServer
+				.authorizationEndpoint((endpoint) -> endpoint.consentPage("https://example.com/custom-consent-page")));
 		}
 
 	}
