@@ -25,6 +25,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -60,11 +61,20 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 
 		private final List<Node> nodes;
 
+		private final @Nullable SslBundle sslBundle;
+
 		ElasticsearchDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ElasticsearchEnvironment(service.env());
-			this.nodes = List.of(new Node(service.host(), service.ports().get(ELASTICSEARCH_PORT), Protocol.HTTP,
+			this.sslBundle = getSslBundle(service);
+			Protocol protocol = (this.sslBundle != null) ? Protocol.HTTPS : Protocol.HTTP;
+			this.nodes = List.of(new Node(service.host(), service.ports().get(ELASTICSEARCH_PORT), protocol,
 					getUsername(), getPassword()));
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 		@Override
