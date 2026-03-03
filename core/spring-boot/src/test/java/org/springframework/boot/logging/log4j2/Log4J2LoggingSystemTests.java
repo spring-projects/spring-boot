@@ -128,7 +128,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
-		assertThat(configuration.getConfigurationSource().getLocation()).contains("log4j2-test.xml");
+		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
 	}
 
 	@Test

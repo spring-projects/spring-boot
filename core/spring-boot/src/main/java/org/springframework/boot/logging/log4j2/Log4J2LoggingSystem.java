@@ -119,11 +119,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private final LoggerContext loggerContext;
 
 	/**
-	 * Create a new {@link Log4J2LoggingSystem} instance. The loggerContext is
-	 * instantiated internally in the class from
-	 * {@link LogManager#getContext(ClassLoader, boolean)} <br/>
-	 * This constructor is also intended to be used by
-	 * <code>LoggingSystem.get(ClassLoader, String)</code> with reflection.
+	 * Create a new {@link Log4J2LoggingSystem} instance.
 	 * @param classLoader the class loader to use.
 	 * @throws IllegalArgumentException if the loggerContext instantiated internally is
 	 * not of type org.apache.logging.log4j.core.LoggerContext
