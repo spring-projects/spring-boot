@@ -26,13 +26,6 @@ jobs:
           - version: 26
             toolchain: true
             early-access: true
-        exclude:
-          - os:
-              name: Linux
-            java:
-              version: 25
-          - os:
-              name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
       - name: Prepare Windows runner
         if: ${{ runner.os == 'Windows' }}
