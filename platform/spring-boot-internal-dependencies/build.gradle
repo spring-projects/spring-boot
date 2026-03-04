@@ -219,6 +219,13 @@ bom {
 			]
 		}
 	}
+	library("Protobuf Gradle Plugin", "${protobufGradlePluginVersion}") {
+		group("com.google.protobuf") {
+			modules = [
+				"protobuf-gradle-plugin"
+			]
+		}
+	}
 	library("Simple JNDI", "0.25.0") {
 		group("com.github.h-thurow") {
 			modules = [
