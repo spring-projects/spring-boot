@@ -16,6 +16,8 @@
 
 package org.springframework.boot.elasticsearch.docker.compose;
 
+import org.junit.jupiter.api.RepeatedTest;
+
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node;
@@ -41,6 +43,7 @@ class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getSslBundle()).isNull();
 	}
 
+	@RepeatedTest(10)
 	@DockerComposeTest(composeFile = "elasticsearch-ssl-compose.yaml", image = TestImage.ELASTICSEARCH_9,
 			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key" })
 	void runWithSslCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
