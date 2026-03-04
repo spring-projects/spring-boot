@@ -50,10 +50,12 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
@@ -432,6 +434,46 @@ class DockerComposeLifecycleManagerTests {
 		this.properties.getStart().setSkip(Skip.NEVER);
 		this.lifecycleManager.start();
 		then(this.dockerCompose).should().up(any(), any());
+	}
+
+	@Test
+	void whenStartFailsLogsAreRetrieved(CapturedOutput output) {
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		given(this.dockerCompose.logs()).willReturn("""
+				multi
+				line
+				logs""");
+		willThrow(RuntimeException.class).given(this.dockerCompose).up(any(), any());
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(this.lifecycleManager::start);
+		assertThat(output).contains("docker compose up failed with the following logs:").contains("""
+				multi
+				line
+				logs""");
+	}
+
+	@Test
+	void whenStartUsesStartAndItFailsLogsAreRetrieved(CapturedOutput output) {
+		this.properties.getStart().setCommand(StartCommand.START);
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		given(this.dockerCompose.logs()).willReturn("""
+				multi
+				line
+				logs""");
+		willThrow(RuntimeException.class).given(this.dockerCompose).start(any(), any());
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(this.lifecycleManager::start);
+		assertThat(output).contains("docker compose start failed with the following logs:").contains("""
+				multi
+				line
+				logs""");
+	}
+
+	@Test
+	void whenLogsAreUnavailableFailureIsHandled(CapturedOutput output) {
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		given(this.dockerCompose.logs()).willThrow(RuntimeException.class);
+		willThrow(RuntimeException.class).given(this.dockerCompose).up(any(), any());
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(this.lifecycleManager::start);
+		assertThat(output).contains("docker compose up failed and its logs were unavailable");
 	}
 
 	private void setUpRunningServices() {

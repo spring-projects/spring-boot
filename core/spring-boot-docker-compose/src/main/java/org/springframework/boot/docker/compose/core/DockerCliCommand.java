@@ -77,12 +77,15 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	@SuppressWarnings("unchecked")
-	R deserialize(String json) {
+	R convert(String response) {
 		if (this.responseType == None.class) {
 			return (R) None.INSTANCE;
 		}
-		return (R) ((!this.listResponse) ? DockerJson.deserialize(json, this.responseType)
-				: DockerJson.deserializeToList(json, this.responseType));
+		if (this.responseType == String.class) {
+			return (R) response;
+		}
+		return (R) ((!this.listResponse) ? DockerJson.deserialize(response, this.responseType)
+				: DockerJson.deserializeToList(response, this.responseType));
 	}
 
 	@Override
@@ -247,6 +250,17 @@ abstract sealed class DockerCliCommand<R> {
 			command.add(Long.toString(timeout.toSeconds()));
 			command.addAll(arguments);
 			return command.toArray(String[]::new);
+		}
+
+	}
+
+	/**
+	 * The {@code docker compose logs} command.
+	 */
+	static final class ComposeLogs extends DockerCliCommand<String> {
+
+		ComposeLogs() {
+			super(Type.DOCKER_COMPOSE, String.class, false, "logs");
 		}
 
 	}

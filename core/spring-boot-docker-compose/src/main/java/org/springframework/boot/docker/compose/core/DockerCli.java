@@ -79,8 +79,8 @@ class DockerCli {
 		List<String> command = createCommand(dockerCommand.getType());
 		command.addAll(dockerCommand.getCommand(this.composeVersion));
 		Consumer<String> outputConsumer = createOutputConsumer(dockerCommand.getLogLevel());
-		String json = this.processRunner.run(outputConsumer, command.toArray(new String[0]));
-		return dockerCommand.deserialize(json);
+		String response = this.processRunner.run(outputConsumer, command.toArray(new String[0]));
+		return dockerCommand.convert(response);
 	}
 
 	private @Nullable Consumer<String> createOutputConsumer(@Nullable LogLevel logLevel) {
