@@ -68,7 +68,7 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew build
+      run: ./gradlew module:spring-boot-elasticsearch:dockerTest --no-build-cache
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
