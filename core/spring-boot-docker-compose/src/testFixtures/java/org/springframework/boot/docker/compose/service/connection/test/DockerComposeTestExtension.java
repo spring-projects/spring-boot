@@ -121,6 +121,8 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		properties.put("spring.docker.compose.skip.in-tests", "false");
 		properties.put("spring.docker.compose.file", composeFile);
 		properties.put("spring.docker.compose.stop.command", "down");
+		properties.put("spring.docker.compose.start.arguments[0]", "--wait-timeout");
+		properties.put("spring.docker.compose.start.arguments[1]", "120");
 		application.setDefaultProperties(properties);
 		return application;
 	}
