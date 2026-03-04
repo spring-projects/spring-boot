@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - 'temp/diagnose-elasticsearch-docker-compose-problem'
 permissions:
   contents: read
 jobs:

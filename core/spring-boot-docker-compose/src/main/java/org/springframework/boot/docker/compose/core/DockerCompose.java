@@ -105,6 +105,8 @@ public interface DockerCompose {
 	 */
 	void stop(Duration timeout, List<String> arguments);
 
+	String logs();
+
 	/**
 	 * Return if services have been defined in the {@link DockerComposeFile} for the
 	 * active profiles.

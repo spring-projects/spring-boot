@@ -128,7 +128,13 @@ class DockerComposeLifecycleManager {
 				logger.info(skip.getLogMessage());
 			}
 			else {
-				start.getCommand().applyTo(dockerCompose, start.getLogLevel(), start.getArguments());
+				try {
+					start.getCommand().applyTo(dockerCompose, start.getLogLevel(), start.getArguments());
+				}
+				catch (RuntimeException ex) {
+					System.out.println(dockerCompose.logs());
+					throw ex;
+				}
 				runningServices = dockerCompose.getRunningServices();
 				if (wait == Wait.ONLY_IF_STARTED) {
 					wait = Wait.ALWAYS;

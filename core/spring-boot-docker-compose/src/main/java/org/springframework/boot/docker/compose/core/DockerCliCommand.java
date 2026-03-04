@@ -81,6 +81,9 @@ abstract sealed class DockerCliCommand<R> {
 		if (this.responseType == None.class) {
 			return (R) None.INSTANCE;
 		}
+		if (this.responseType == String.class) {
+			return (R) json;
+		}
 		return (R) ((!this.listResponse) ? DockerJson.deserialize(json, this.responseType)
 				: DockerJson.deserializeToList(json, this.responseType));
 	}
@@ -247,6 +250,14 @@ abstract sealed class DockerCliCommand<R> {
 			command.add(Long.toString(timeout.toSeconds()));
 			command.addAll(arguments);
 			return command.toArray(String[]::new);
+		}
+
+	}
+
+	static final class ComposeLogs extends DockerCliCommand<String> {
+
+		ComposeLogs() {
+			super(Type.DOCKER_COMPOSE, String.class, false, "logs");
 		}
 
 	}
