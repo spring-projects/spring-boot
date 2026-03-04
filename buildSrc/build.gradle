@@ -186,5 +186,3 @@ eclipse {
 		}
 	}
 }
-
-jar.dependsOn check
