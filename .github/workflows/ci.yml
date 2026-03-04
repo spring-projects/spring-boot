@@ -16,8 +16,6 @@ jobs:
         os:
           - id: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
             name: Linux
-          - id: windows-latest
-            name: Windows
         java:
           - version: 17
             toolchain: true
