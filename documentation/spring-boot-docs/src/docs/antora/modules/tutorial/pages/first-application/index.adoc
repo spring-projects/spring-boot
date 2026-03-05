@@ -24,9 +24,9 @@ Before we begin, open a terminal and run the following commands to ensure that y
 [source,shell]
 ----
 $ java -version
-openjdk version "17.0.16" 2025-07-15 LTS
-OpenJDK Runtime Environment (build 17.0.16+12-LTS)
-OpenJDK 64-Bit Server VM (build 17.0.16+12-LTS, mixed mode, sharing)
+openjdk version "17.0.18" 2026-01-20 LTS
+OpenJDK Runtime Environment (build 17.0.18+10-LTS)
+OpenJDK 64-Bit Server VM (build 17.0.18+10-LTS, mixed mode, sharing)
 ----
 
 NOTE: This sample needs to be created in its own directory.
@@ -42,9 +42,9 @@ If you want to use Maven, ensure that you have Maven installed:
 [source,shell]
 ----
 $ mvn -v
-Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)
+Apache Maven 3.9.12 (848fbb4bf2d427b72bdb2471c22fced7ebd9a7a1)
 Maven home: /Users/developer/.sdkman/candidates/maven/current
-Java version: 17.0.16, vendor: BellSoft, runtime: /Users/developer/.sdkman/candidates/java/17.0.16-librca
+Java version: 17.0.18, vendor: BellSoft, runtime: /Users/developer/.sdkman/candidates/java/17.0.18-librca
 ----
 
 
@@ -59,18 +59,18 @@ If you want to use Gradle, ensure that you have Gradle installed:
 $ gradle --version
 
 ------------------------------------------------------------
-Gradle 8.14.3
+Gradle 8.14.4
 ------------------------------------------------------------
 
-Build time:    2025-07-04 13:15:44 UTC
-Revision:      e5ee1df3d88b8ca3a8074787a94f373e3090e1db
+Build time:    2026-01-23 16:30:23 UTC
+Revision:      ad5ff774b4b0e9a8a0cf1a14ca70d7230003c3ad
 
 Kotlin:        2.0.21
-Groovy:        3.0.24
+Groovy:        3.0.25
 Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
-Launcher JVM:  17.0.16 (BellSoft 17.0.16+12-LTS)
-Daemon JVM:    /Users/developer/.sdkman/candidates/java/17.0.16-librca (no JDK specified, using current Java home)
-OS:            Mac OS X 15.7.1 aarch64
+Launcher JVM:  17.0.18 (BellSoft 17.0.18+10-LTS)
+Daemon JVM:    /Users/developer/.sdkman/candidates/java/17.0.18-librca (no JDK specified, using current Java home)
+OS:            Mac OS X 26.3 aarch64
 ----
 
 
@@ -88,42 +88,37 @@ Open your favorite text editor and add the following:
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>com.example</groupId>
-	<artifactId>myproject</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-	<parent>
+    <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>{version-spring-boot}</version>
 	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<!-- Additional lines to be added here... -->
 
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
-		<!-- (you don't need this if you are using a release version) -->
-		<repositories>
-			<repository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-				<snapshots><enabled>true</enabled></snapshots>
-			</repository>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-			</pluginRepository>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
+    <!-- you don't need this if you are using a release version -->
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 endif::[]
 </project>
 ----
@@ -160,20 +155,22 @@ Open your favorite text editor and add the following:
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version-spring-boot}'
+    id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
 }
-
-apply plugin: 'io.spring.dependency-management'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 repositories {
 	mavenCentral()
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+    // you don't need this if you are using a release version
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }
@@ -205,7 +202,7 @@ Most Spring Boot applications use the `spring-boot-starter-parent` in the `paren
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
 It also provides a xref:reference:using/build-systems.adoc#using.build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
 
-Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
+Since we are developing a web application, we add a `spring-boot-starter-webmvc` dependency.
 Before that, we can look at what we currently have by running the following command:
 
 [source,shell]
@@ -217,14 +214,14 @@ $ mvn dependency:tree
 
 The `mvn dependency:tree` command prints a tree representation of your project dependencies.
 You can see that `spring-boot-starter-parent` provides no dependencies by itself.
-To add the necessary dependencies, edit your `pom.xml` and add the `spring-boot-starter-web` dependency immediately below the `parent` section:
+To add the necessary dependencies, edit your `pom.xml` and add the `spring-boot-starter-webmvc` dependency immediately below the `parent` section:
 
 [source,xml]
 ----
 <dependencies>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
+		<artifactId>spring-boot-starter-webmvc</artifactId>
 	</dependency>
 </dependencies>
 ----
@@ -240,7 +237,7 @@ Most Spring Boot applications use the `org.springframework.boot` Gradle plugin.
 This plugin provides useful defaults and Gradle tasks.
 The `io.spring.dependency-management` Gradle plugin provides xref:reference:using/build-systems.adoc#using.build-systems.dependency-management[dependency management] so that you can omit `version` tags for "`blessed`" dependencies.
 
-Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
+Since we are developing a web application, we add a `spring-boot-starter-webmvc` dependency.
 Before that, we can look at what we currently have by running the following command:
 
 [source,shell]
@@ -256,12 +253,12 @@ Root project 'myproject'
 
 The `gradle dependencies` command prints a tree representation of your project dependencies.
 Right now, the project has no dependencies.
-To add the necessary dependencies, edit your `build.gradle` and add the `spring-boot-starter-web` dependency in the `dependencies` section:
+To add the necessary dependencies, edit your `build.gradle` and add the `spring-boot-starter-webmvc` dependency in the `dependencies` section:
 
 [source,gradle]
 ----
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 }
 ----
 
@@ -308,7 +305,7 @@ This annotation is known as a _meta-annotation_, it combines javadoc:org.springf
 
 Of those, the annotation we're most interested in here is javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation].
 javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
-Since `spring-boot-starter-web` added Tomcat and Spring MVC, the auto-configuration assumes that you are developing a web application and sets up Spring accordingly.
+Since `spring-boot-starter-webmvc` added Tomcat and Spring MVC, the auto-configuration assumes that you are developing a web application and sets up Spring accordingly.
 
 .Starters and Auto-configuration
 ****
@@ -500,7 +497,7 @@ $ java -jar target/myproject-0.0.1-SNAPSHOT.jar
 ....... . . .
 ....... . . . (log output here)
 ....... . . .
-........ Started MyApplication in 0.999 seconds (process running for 1.253)
+........ Started MyApplication in 0.497 seconds (process running for 0.651)
 ----
 
 As before, to exit the application, press `ctrl-c`.
@@ -545,7 +542,7 @@ $ java -jar build/libs/myproject-0.0.1-SNAPSHOT.jar
 ....... . . .
 ....... . . . (log output here)
 ....... . . .
-........ Started MyApplication in 0.999 seconds (process running for 1.253)
+........ Started MyApplication in 0.484 seconds (process running for 0.642)
 ----
 
 As before, to exit the application, press `ctrl-c`.
