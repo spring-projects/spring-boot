@@ -37,6 +37,7 @@ import org.springframework.batch.core.converter.JsonJobParametersConverter;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.JobInstance;
 import org.springframework.batch.core.job.parameters.JobParameters;
 import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobOperator;
@@ -45,6 +46,8 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
 import org.springframework.batch.core.repository.dao.JacksonExecutionContextStringSerializer;
 import org.springframework.batch.core.step.Step;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -293,6 +296,31 @@ class BatchJdbcAutoConfigurationTests {
 				JobRepository jobRepository = context.getBean(JobRepository.class);
 				assertThat(jobRepository.findRunningJobExecutions("test")).isEmpty();
 				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
+			});
+	}
+
+	@Test
+	@WithPackageResources("custom-incrementer-names-schema.sql")
+	void testRenameIncrementerNames() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.datasource.generate-unique-name=true",
+					"spring.batch.jdbc.schema:classpath:custom-incrementer-names-schema.sql",
+					"spring.batch.jdbc.job-instance-incrementer-name:JB_SEQ",
+					"spring.batch.jdbc.job-execution-incrementer-name:JE_SEQ",
+					"spring.batch.jdbc.step-execution-incrementer-name:SE_SEQ")
+			.run((context) -> {
+				JobRepository jobRepository = context.getBean(JobRepository.class);
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(DataSource.class));
+				JobInstance jobInstance = jobRepository.createJobInstance("test", new JobParameters());
+				JobExecution jobExecution = jobRepository.createJobExecution(jobInstance, new JobParameters(),
+						new ExecutionContext());
+				StepExecution stepExecution = jobRepository.createStepExecution("step", jobExecution);
+				assertThat(jdbcTemplate.queryForObject("select next value for BATCH_JB_SEQ", Long.class))
+					.isEqualTo(jobInstance.getId() + 1);
+				assertThat(jdbcTemplate.queryForObject("select next value for BATCH_JE_SEQ", Long.class))
+					.isEqualTo(jobExecution.getId() + 1);
+				assertThat(jdbcTemplate.queryForObject("select next value for BATCH_SE_SEQ", Long.class))
+					.isEqualTo(stepExecution.getId() + 1);
 			});
 	}
 

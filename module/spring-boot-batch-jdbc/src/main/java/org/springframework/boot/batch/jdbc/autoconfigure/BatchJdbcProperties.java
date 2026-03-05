@@ -50,6 +50,21 @@ public class BatchJdbcProperties extends DatabaseInitializationProperties {
 	 */
 	private @Nullable String tablePrefix;
 
+	/**
+	 * The job instance incrementer name.
+	 */
+	private @Nullable String jobInstanceIncrementerName;
+
+	/**
+	 * The job execution incrementer name.
+	 */
+	private @Nullable String jobExecutionIncrementerName;
+
+	/**
+	 * The step execution incrementer name.
+	 */
+	private @Nullable String stepExecutionIncrementerName;
+
 	public boolean isValidateTransactionState() {
 		return this.validateTransactionState;
 	}
@@ -72,6 +87,30 @@ public class BatchJdbcProperties extends DatabaseInitializationProperties {
 
 	public void setTablePrefix(@Nullable String tablePrefix) {
 		this.tablePrefix = tablePrefix;
+	}
+
+	public @Nullable String getJobInstanceIncrementerName() {
+		return this.jobInstanceIncrementerName;
+	}
+
+	public void setJobInstanceIncrementerName(@Nullable String jobInstanceIncrementerName) {
+		this.jobInstanceIncrementerName = jobInstanceIncrementerName;
+	}
+
+	public @Nullable String getJobExecutionIncrementerName() {
+		return this.jobExecutionIncrementerName;
+	}
+
+	public void setJobExecutionIncrementerName(@Nullable String jobExecutionIncrementerName) {
+		this.jobExecutionIncrementerName = jobExecutionIncrementerName;
+	}
+
+	public @Nullable String getStepExecutionIncrementerName() {
+		return this.stepExecutionIncrementerName;
+	}
+
+	public void setStepExecutionIncrementerName(@Nullable String stepExecutionIncrementerName) {
+		this.stepExecutionIncrementerName = stepExecutionIncrementerName;
 	}
 
 	@Override

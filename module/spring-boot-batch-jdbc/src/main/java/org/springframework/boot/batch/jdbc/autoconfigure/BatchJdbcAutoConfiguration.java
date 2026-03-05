@@ -127,6 +127,27 @@ public final class BatchJdbcAutoConfiguration {
 		}
 
 		@Override
+		protected String getJobInstanceIncrementerName() {
+			String jobInstanceIncrementerName = this.properties.getJobInstanceIncrementerName();
+			return (jobInstanceIncrementerName != null) ? jobInstanceIncrementerName
+					: super.getJobInstanceIncrementerName();
+		}
+
+		@Override
+		protected String getJobExecutionIncrementerName() {
+			String jobExecutionIncrementerName = this.properties.getJobExecutionIncrementerName();
+			return (jobExecutionIncrementerName != null) ? jobExecutionIncrementerName
+					: super.getJobExecutionIncrementerName();
+		}
+
+		@Override
+		protected String getStepExecutionIncrementerName() {
+			String stepExecutionIncrementerName = this.properties.getStepExecutionIncrementerName();
+			return (stepExecutionIncrementerName != null) ? stepExecutionIncrementerName
+					: super.getStepExecutionIncrementerName();
+		}
+
+		@Override
 		protected boolean getValidateTransactionState() {
 			return this.properties.isValidateTransactionState();
 		}
