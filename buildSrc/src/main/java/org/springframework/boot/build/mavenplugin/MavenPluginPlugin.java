@@ -162,22 +162,25 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void addPopulateIntTestMavenRepositoryTask(Project project) {
-		Configuration runtimeClasspathWithMetadata = project.getConfigurations().create("runtimeClasspathWithMetadata");
-		runtimeClasspathWithMetadata
-			.extendsFrom(project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
-		runtimeClasspathWithMetadata.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
-				project.getObjects().named(DocsType.class, "maven-repository")));
-		TaskProvider<RuntimeClasspathMavenRepository> runtimeClasspathMavenRepository = project.getTasks()
-			.register("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class,
-					(task) -> task.getOutputDir()
-						.set(project.getLayout().getBuildDirectory().dir("runtime-classpath-repository")));
+		Configuration repositoryContents = project.getConfigurations().create("repositoryContents");
+		repositoryContents.extendsFrom(
+				project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME),
+				project.getConfigurations().getByName("mavenRepository"));
+		repositoryContents.setCanBeConsumed(false);
+		TaskProvider<ResolvedConfigurationMavenRepository> populateMavenRepository = project.getTasks()
+			.register("populateResolvedDependenciesMavenRepository", ResolvedConfigurationMavenRepository.class,
+					(task) -> {
+						task.setConfiguration(repositoryContents);
+						task.getOutputDir()
+							.set(project.getLayout().getBuildDirectory().dir("resolved-dependencies-maven-repository"));
+					});
 		project.getDependencies()
 			.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
 		TaskProvider<Sync> populateRepository = project.getTasks()
 			.register("populateTestMavenRepository", Sync.class, (task) -> {
 				task.setDestinationDir(
 						project.getLayout().getBuildDirectory().dir("test-maven-repository").get().getAsFile());
-				task.with(copyIntTestMavenRepositoryFiles(project, runtimeClasspathMavenRepository));
+				task.with(copyIntTestMavenRepositoryFiles(project, populateMavenRepository));
 				task.dependsOn(
 						project.getTasks().getByName(MavenRepositoryPlugin.PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME));
 			});
@@ -190,7 +193,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private CopySpec copyIntTestMavenRepositoryFiles(Project project,
-			TaskProvider<RuntimeClasspathMavenRepository> runtimeClasspathMavenRepository) {
+			TaskProvider<ResolvedConfigurationMavenRepository> runtimeClasspathMavenRepository) {
 		CopySpec copySpec = project.copySpec();
 		copySpec.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
 		copySpec.from(project.getLayout().getBuildDirectory().dir("maven-repository"));
@@ -434,25 +437,25 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	}
 
-	public abstract static class RuntimeClasspathMavenRepository extends DefaultTask {
+	public abstract static class ResolvedConfigurationMavenRepository extends DefaultTask {
 
-		private final Configuration runtimeClasspath;
-
-		public RuntimeClasspathMavenRepository() {
-			this.runtimeClasspath = getProject().getConfigurations().getByName("runtimeClasspathWithMetadata");
-		}
+		private Configuration configuration;
 
 		@OutputDirectory
 		public abstract DirectoryProperty getOutputDir();
 
 		@Classpath
-		public Configuration getRuntimeClasspath() {
-			return this.runtimeClasspath;
+		public Configuration getConfiguration() {
+			return this.configuration;
+		}
+
+		public void setConfiguration(Configuration configuration) {
+			this.configuration = configuration;
 		}
 
 		@TaskAction
 		public void createRepository() {
-			for (ResolvedArtifactResult result : this.runtimeClasspath.getIncoming().getArtifacts()) {
+			for (ResolvedArtifactResult result : this.configuration.getIncoming().getArtifacts()) {
 				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier identifier) {
 					String fileName = result.getFile()
 						.getName()
