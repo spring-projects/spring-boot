@@ -95,6 +95,7 @@ dependencies {
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
+	mavenRepository("org.springframework:spring-test")
 
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "resolvedBom"))
 }
