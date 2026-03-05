@@ -31,11 +31,11 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
 		Method method = ReflectionUtils.findMethod(MyClass.class, "sayHello", String.class);
 		hints.reflection().registerMethod(method, ExecutableMode.INVOKE);
 
+		// Register type for java serialization
+		hints.reflection().registerJavaSerialization(MySerializableClass.class);
+
 		// Register resources
 		hints.resources().registerPattern("my-resource.txt");
-
-		// Register serialization
-		hints.serialization().registerType(MySerializableClass.class);
 
 		// Register proxy
 		hints.proxies().registerJdkProxy(MyInterface.class);
