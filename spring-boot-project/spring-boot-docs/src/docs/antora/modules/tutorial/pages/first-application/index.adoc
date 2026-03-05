@@ -24,9 +24,9 @@ Before we begin, open a terminal and run the following commands to ensure that y
 [source,shell]
 ----
 $ java -version
-openjdk version "17.0.16" 2025-07-15 LTS
-OpenJDK Runtime Environment (build 17.0.16+12-LTS)
-OpenJDK 64-Bit Server VM (build 17.0.16+12-LTS, mixed mode, sharing)
+openjdk version "17.0.18" 2026-01-20 LTS
+OpenJDK Runtime Environment (build 17.0.18+10-LTS)
+OpenJDK 64-Bit Server VM (build 17.0.18+10-LTS, mixed mode, sharing)
 ----
 
 NOTE: This sample needs to be created in its own directory.
@@ -42,9 +42,9 @@ If you want to use Maven, ensure that you have Maven installed:
 [source,shell]
 ----
 $ mvn -v
-Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)
+Apache Maven 3.9.12 (848fbb4bf2d427b72bdb2471c22fced7ebd9a7a1)
 Maven home: /Users/developer/.sdkman/candidates/maven/current
-Java version: 17.0.16, vendor: BellSoft, runtime: /Users/developer/.sdkman/candidates/java/17.0.16-librca
+Java version: 17.0.18, vendor: BellSoft, runtime: /Users/developer/.sdkman/candidates/java/17.0.18-librca
 ----
 
 
@@ -59,18 +59,18 @@ If you want to use Gradle, ensure that you have Gradle installed:
 $ gradle --version
 
 ------------------------------------------------------------
-Gradle 8.14.3
+Gradle 8.14.4
 ------------------------------------------------------------
 
-Build time:    2025-07-04 13:15:44 UTC
-Revision:      e5ee1df3d88b8ca3a8074787a94f373e3090e1db
+Build time:    2026-01-23 16:30:23 UTC
+Revision:      ad5ff774b4b0e9a8a0cf1a14ca70d7230003c3ad
 
 Kotlin:        2.0.21
-Groovy:        3.0.24
+Groovy:        3.0.25
 Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
-Launcher JVM:  17.0.16 (BellSoft 17.0.16+12-LTS)
-Daemon JVM:    /Users/developer/.sdkman/candidates/java/17.0.16-librca (no JDK specified, using current Java home)
-OS:            Mac OS X 15.7.1 aarch64
+Launcher JVM:  17.0.18 (BellSoft 17.0.18+10-LTS)
+Daemon JVM:    /Users/developer/.sdkman/candidates/java/17.0.18-librca (no JDK specified, using current Java home)
+OS:            Mac OS X 26.3 aarch64
 ----
 
 
@@ -88,57 +88,37 @@ Open your favorite text editor and add the following:
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>com.example</groupId>
-	<artifactId>myproject</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-	<parent>
+    <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>{version-spring-boot}</version>
 	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<!-- Additional lines to be added here... -->
 
-ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
-		<!-- (you don't need this if you are using a release version) -->
-		<repositories>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
-endif::[]
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
-		<!-- (you don't need this if you are using a release version) -->
-		<repositories>
-			<repository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-				<snapshots><enabled>true</enabled></snapshots>
-			</repository>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-			</pluginRepository>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
+    <!-- you don't need this if you are using a release version -->
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 endif::[]
 </project>
 ----
@@ -175,21 +155,22 @@ Open your favorite text editor and add the following:
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version-spring-boot}'
+    id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
 }
-
-apply plugin: 'io.spring.dependency-management'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 repositories {
 	mavenCentral()
 ifeval::["{artifact-release-type}" != "release"]
-	maven { url 'https://repo.spring.io/milestone' }
+    // you don't need this if you are using a release version
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }
@@ -516,7 +497,7 @@ $ java -jar target/myproject-0.0.1-SNAPSHOT.jar
 ....... . . .
 ....... . . . (log output here)
 ....... . . .
-........ Started MyApplication in 0.999 seconds (process running for 1.253)
+........ Started MyApplication in 0.497 seconds (process running for 0.651)
 ----
 
 As before, to exit the application, press `ctrl-c`.
@@ -561,7 +542,7 @@ $ java -jar build/libs/myproject-0.0.1-SNAPSHOT.jar
 ....... . . .
 ....... . . . (log output here)
 ....... . . .
-........ Started MyApplication in 0.999 seconds (process running for 1.253)
+........ Started MyApplication in 0.484 seconds (process running for 0.642)
 ----
 
 As before, to exit the application, press `ctrl-c`.
