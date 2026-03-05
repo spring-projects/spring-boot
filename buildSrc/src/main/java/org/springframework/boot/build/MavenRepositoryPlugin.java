@@ -23,8 +23,11 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.ProjectDependency;
+import org.gradle.api.attributes.Category;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -77,19 +80,20 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 		DependencySet target = projectRepository.getDependencies();
 		project.getPlugins()
 			.withType(JavaPlugin.class)
-			.all((javaPlugin) -> addMavenRepositoryDependencies(project, JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME,
-					target));
+			.all((javaPlugin) -> addMavenRepositoryProjectDependencies(project,
+					JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, target));
 		project.getPlugins()
 			.withType(JavaLibraryPlugin.class)
-			.all((javaLibraryPlugin) -> addMavenRepositoryDependencies(project, JavaPlugin.API_CONFIGURATION_NAME,
-					target));
-		project.getPlugins()
-			.withType(JavaPlatformPlugin.class)
-			.all((javaPlugin) -> addMavenRepositoryDependencies(project, JavaPlatformPlugin.API_CONFIGURATION_NAME,
-					target));
+			.all((javaLibraryPlugin) -> addMavenRepositoryProjectDependencies(project,
+					JavaPlugin.API_CONFIGURATION_NAME, target));
+		project.getPlugins().withType(JavaPlatformPlugin.class).all((javaPlugin) -> {
+			addMavenRepositoryProjectDependencies(project, JavaPlatformPlugin.API_CONFIGURATION_NAME, target);
+			addMavenRepositoryPlatformDependencies(project, JavaPlatformPlugin.API_CONFIGURATION_NAME, target);
+		});
 	}
 
-	private void addMavenRepositoryDependencies(Project project, String sourceConfigurationName, DependencySet target) {
+	private void addMavenRepositoryProjectDependencies(Project project, String sourceConfigurationName,
+			DependencySet target) {
 		project.getConfigurations()
 			.getByName(sourceConfigurationName)
 			.getDependencies()
@@ -100,6 +104,23 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 					copy.setTargetConfiguration(MAVEN_REPOSITORY_CONFIGURATION_NAME);
 				}
 				target.add(copy);
+			});
+	}
+
+	private void addMavenRepositoryPlatformDependencies(Project project, String sourceConfigurationName,
+			DependencySet target) {
+		project.getConfigurations()
+			.getByName(sourceConfigurationName)
+			.getDependencies()
+			.withType(ModuleDependency.class)
+			.matching((dependency) -> {
+				Category category = dependency.getAttributes().getAttribute(Category.CATEGORY_ATTRIBUTE);
+				return Category.REGULAR_PLATFORM.equals(category.getName());
+			})
+			.all((dependency) -> {
+				Dependency pom = project.getDependencies()
+					.create(dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion());
+				target.add(pom);
 			});
 	}
 
