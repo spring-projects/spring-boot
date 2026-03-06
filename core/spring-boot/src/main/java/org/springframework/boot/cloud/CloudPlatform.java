@@ -49,6 +49,10 @@ public enum CloudPlatform {
 			return false;
 		}
 
+		@Override
+		public boolean isUsingForwardHeaders() {
+			return false;
+		}
 	},
 
 	/**
