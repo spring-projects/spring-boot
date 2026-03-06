@@ -1755,7 +1755,6 @@ bom {
 			version {
 				of "io.opentelemetry:opentelemetry-api"
 				from "io.micrometer:micrometer-tracing-bridge-otel"
-				managedBy "Micrometer Tracing"
 			}
 		}
 		links {
