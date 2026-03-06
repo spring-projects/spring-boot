@@ -20,6 +20,8 @@ services:
       -u elastic:secret https://localhost:9200/_cluster/health || exit 1"]
       interval: 5s
       retries: 5
+      start_period: 60s
+      timeout: 10s
     labels:
       - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
       - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
