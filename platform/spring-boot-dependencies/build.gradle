@@ -1281,7 +1281,7 @@ bom {
 			releaseNotes("https://github.com/Kotlin/kotlinx.serialization/releases/tag/v{version}")
 		}
 	}
-	library("Lettuce", "7.2.1.RELEASE") {
+	library("Lettuce", "7.5.0.RELEASE") {
 		prohibit {
 			contains ".BETA"
 			because "we don't want betas"
