@@ -271,6 +271,7 @@ class CloudPlatformTests {
 		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
 	}
 
+	@Test
 	void isActiveWhenNoCloudPlatformIsEnforcedAndHasKubernetesServiceHostAndKubernetesServicePort() {
 		Map<String, Object> envVars = new HashMap<>();
 		envVars.put("EXAMPLE_SERVICE_HOST", "---");
@@ -279,6 +280,11 @@ class CloudPlatformTests {
 		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
 		assertThat(Stream.of(CloudPlatform.values()).filter((platform) -> platform.isActive(environment)))
 			.containsExactly(CloudPlatform.NONE);
+	}
+
+	@Test
+	void nonePlatformShouldDisableCloudPlatformFeatures() {
+		assertThat(CloudPlatform.NONE.isUsingForwardHeaders()).isFalse();
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
