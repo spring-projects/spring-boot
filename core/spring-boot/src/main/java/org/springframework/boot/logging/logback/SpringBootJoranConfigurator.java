@@ -56,7 +56,7 @@ import org.springframework.aot.generate.GeneratedFiles.FileHandler;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
-import org.springframework.aot.hint.SerializationHints;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
@@ -187,8 +187,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				.handleFile(Kind.RESOURCE, MODEL_RESOURCE_LOCATION,
 						new RequireNewOrMatchingContentFileHandler(serializedModel));
 			generationContext.getRuntimeHints().resources().registerPattern(MODEL_RESOURCE_LOCATION);
-			SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
-			serializationTypes(this.model).forEach(serializationHints::registerType);
+			ReflectionHints reflectionHints = generationContext.getRuntimeHints().reflection();
+			serializationTypes(this.model).forEach(reflectionHints::registerJavaSerialization);
 			reflectionTypes(this.model).forEach((type) -> generationContext.getRuntimeHints()
 				.reflection()
 				.registerType(TypeReference.of(type), MemberCategory.INVOKE_PUBLIC_METHODS,
