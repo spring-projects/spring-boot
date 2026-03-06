@@ -1049,7 +1049,7 @@ bom {
 			releaseNotes("https://github.com/hunterhacker/jdom/releases/tag/JDOM-{version}")
 		}
 	}
-	library("Jedis", "7.2.1") {
+	library("Jedis", "7.3.0") {
 		alignWith {
 			property {
 				name "jedis"
