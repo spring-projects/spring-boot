@@ -393,37 +393,15 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * Factory method to create a {@link Kind#INITIAL_IMPORT initial import} contributor.
 	 * This contributor is used to trigger initial imports of additional contributors. It
 	 * does not contribute any properties itself.
-	 * @param initialImport the initial import location (with placeholders resolved)
+	 * @param initialImports the initial import locations (with placeholders resolved)
 	 * @param conversionService the conversion service to use
 	 * @return a new {@link ConfigDataEnvironmentContributor} instance
 	 */
-	static ConfigDataEnvironmentContributor ofInitialImport(ConfigDataLocation initialImport,
+	static ConfigDataEnvironmentContributor ofInitialImports(List<ConfigDataLocation> initialImports,
 			ConversionService conversionService) {
-		List<ConfigDataLocation> imports = Collections.singletonList(initialImport);
-		ConfigDataProperties properties = new ConfigDataProperties(imports, null);
+		ConfigDataProperties properties = new ConfigDataProperties(initialImports, null);
 		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT, null, null, false, null, null, properties,
 				null, null, conversionService);
-	}
-
-	/**
-	 * Factory method to create a {@link Kind#INITIAL_IMPORT_PROPERTY initial import property}
-	 * contributor. This contributor is a container that wraps initial imports from
-	 * {@code spring.config.import} property, allowing profile-specific imports to take
-	 * precedence over the imported locations.
-	 * @param contributors the contributors created from the import locations
-	 * @param conversionService the conversion service to use
-	 * @param locations the original import locations from the property
-	 * @return a new {@link ConfigDataEnvironmentContributor} instance
-	 */
-	static ConfigDataEnvironmentContributor ofInitialImportProperty(
-			List<ConfigDataEnvironmentContributor> contributors,
-			ConversionService conversionService,
-			List<ConfigDataLocation> locations) {
-		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children = new LinkedHashMap<>();
-		ConfigDataProperties properties = new ConfigDataProperties(locations, null);
-		children.put(ImportPhase.BEFORE_PROFILE_ACTIVATION, Collections.unmodifiableList(contributors));
-		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT_PROPERTY, null, null, false, null, null, properties, null, children,
-				conversionService);
 	}
 
 	/**
@@ -498,11 +476,6 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		 * An initial import that needs to be processed.
 		 */
 		INITIAL_IMPORT,
-
-		/**
-		 * A container contributor that wraps initial imports from spring.config.import property.
-		 */
-		INITIAL_IMPORT_PROPERTY,
 
 		/**
 		 * An existing property source that contributes properties but no imports.
