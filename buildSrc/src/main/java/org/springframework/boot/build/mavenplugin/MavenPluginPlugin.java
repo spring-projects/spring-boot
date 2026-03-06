@@ -166,6 +166,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		repositoryContents.extendsFrom(
 				project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME),
 				project.getConfigurations().getByName("mavenRepository"));
+		repositoryContents.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
+				project.getObjects().named(DocsType.class, "maven-repository")));
 		repositoryContents.setCanBeConsumed(false);
 		TaskProvider<ResolvedConfigurationMavenRepository> populateMavenRepository = project.getTasks()
 			.register("populateResolvedDependenciesMavenRepository", ResolvedConfigurationMavenRepository.class,
