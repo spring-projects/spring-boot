@@ -30,8 +30,8 @@ import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitAmqpAutoConfiguration;
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
@@ -57,7 +58,7 @@ class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
 
 	@Autowired(required = false)
-	private RabbitConnectionDetails connectionDetails;
+	private AmqpConnectionDetails connectionDetails;
 
 	@Autowired
 	private RabbitAmqpTemplate rabbitAmqpTemplate;

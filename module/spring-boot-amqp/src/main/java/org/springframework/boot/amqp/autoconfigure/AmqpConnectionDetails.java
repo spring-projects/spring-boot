@@ -16,23 +16,17 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.util.Assert;
 
 /**
- * Details required to establish a connection to a RabbitMQ service.
+ * Details required to establish a connection to a RabbitMQ AMQP service.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
- * @since 4.0.0
+ * @author Eddú Meléndez
+ * @since 4.1.0
  */
-public interface RabbitConnectionDetails extends ConnectionDetails {
+public interface AmqpConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Login user to authenticate to the broker.
@@ -59,30 +53,11 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * List of addresses to which the client should connect. Must return at least one
-	 * address.
-	 * @return the list of addresses to which the client should connect
-	 */
-	List<Address> getAddresses();
-
-	/**
-	 * Returns the first address.
-	 * @return the first address
+	 * Returns the address.
+	 * @return the address
 	 * @throws IllegalStateException if the address list is empty
 	 */
-	default Address getFirstAddress() {
-		List<Address> addresses = getAddresses();
-		Assert.state(!addresses.isEmpty(), "Address list is empty");
-		return addresses.get(0);
-	}
-
-	/**
-	 * SSL bundle to use.
-	 * @return the SSL bundle to use
-	 */
-	default @Nullable SslBundle getSslBundle() {
-		return null;
-	}
+	Address getAddress();
 
 	/**
 	 * A RabbitMQ address.

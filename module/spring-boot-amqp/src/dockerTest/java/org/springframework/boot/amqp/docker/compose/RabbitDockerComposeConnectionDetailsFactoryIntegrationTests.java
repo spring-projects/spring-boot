@@ -16,8 +16,8 @@
 
 package org.springframework.boot.amqp.docker.compose;
 
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
@@ -30,20 +30,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Eddú Meléndez
  */
 class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbit-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
+	void runCreatesConnectionDetails(AmqpConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) {
+	private void assertConnectionDetails(AmqpConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
-		assertThat(connectionDetails.getAddresses()).hasSize(1);
-		Address address = connectionDetails.getFirstAddress();
+		assertThat(connectionDetails.getAddress()).isNotNull();
+		Address address = connectionDetails.getAddress();
 		assertThat(address.host()).isNotNull();
 		assertThat(address.port()).isGreaterThan(0);
 	}

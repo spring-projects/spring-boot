@@ -17,42 +17,37 @@
 package org.springframework.boot.amqp.testcontainers;
 
 import java.net.URI;
-import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
- * from a {@link ServiceConnection @ServiceConnection}-annotated
- * {@link RabbitMQContainer}.
+ * {@link ContainerConnectionDetailsFactory} to create {@link AmqpConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link RabbitMQContainer}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 class RabbitContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<RabbitMQContainer, AmqpConnectionDetails> {
 
 	@Override
-	protected RabbitConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<RabbitMQContainer> source) {
-		return new RabbitMqContainerConnectionDetails(source);
+	protected AmqpConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
+		return new AmqpMqContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link RabbitConnectionDetails} backed by a {@link ContainerConnectionSource}.
+	 * {@link AmqpConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
-			implements RabbitConnectionDetails {
+	static final class AmqpMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
+			implements AmqpConnectionDetails {
 
-		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
+		private AmqpMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
 		}
 
@@ -67,9 +62,9 @@ class RabbitContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public List<Address> getAddresses() {
+		public Address getAddress() {
 			URI uri = URI.create((getSslBundle() != null) ? getContainer().getAmqpsUrl() : getContainer().getAmqpUrl());
-			return List.of(new Address(uri.getHost(), uri.getPort()));
+			return new Address(uri.getHost(), uri.getPort());
 		}
 
 		@Override

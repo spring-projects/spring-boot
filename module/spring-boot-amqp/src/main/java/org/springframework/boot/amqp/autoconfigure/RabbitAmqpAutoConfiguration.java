@@ -31,14 +31,13 @@ import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContain
 import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails.Address;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -50,20 +49,20 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration
 @ConditionalOnClass({ RabbitAmqpTemplate.class, Connection.class })
-@EnableConfigurationProperties(RabbitProperties.class)
+@EnableConfigurationProperties(AmqpProperties.class)
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public final class RabbitAmqpAutoConfiguration {
 
-	private final RabbitProperties properties;
+	private final AmqpProperties properties;
 
-	RabbitAmqpAutoConfiguration(RabbitProperties properties) {
+	RabbitAmqpAutoConfiguration(AmqpProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	RabbitConnectionDetails rabbitConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
-		return new PropertiesRabbitConnectionDetails(this.properties, sslBundles.getIfAvailable());
+	AmqpConnectionDetails rabbitConnectionDetails() {
+		return new PropertiesAmqpConnectionDetails(this.properties);
 	}
 
 	@Bean(name = "rabbitListenerContainerFactory")
@@ -73,19 +72,19 @@ public final class RabbitAmqpAutoConfiguration {
 		RabbitAmqpListenerContainerFactory factory = new RabbitAmqpListenerContainerFactory(connectionFactory);
 		amqpContainerCustomizer.ifUnique(factory::setContainerCustomizer);
 
-		RabbitProperties.AmqpContainer configuration = this.properties.getListener().getSimple();
+		AmqpProperties.AmqpContainer configuration = this.properties.getListener().getAmqp();
 		factory.setObservationEnabled(configuration.isObservationEnabled());
 		return factory;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	Environment rabbitAmqpEnvironment(RabbitConnectionDetails connectionDetails,
+	Environment rabbitAmqpEnvironment(AmqpConnectionDetails connectionDetails,
 			ObjectProvider<AmqpEnvironmentBuilderCustomizer> customizers,
 			ObjectProvider<CredentialsProvider> credentialsProvider) {
 		PropertyMapper map = PropertyMapper.get();
 		EnvironmentConnectionSettings environmentConnectionSettings = new AmqpEnvironmentBuilder().connectionSettings();
-		Address address = connectionDetails.getFirstAddress();
+		Address address = connectionDetails.getAddress();
 		map.from(address::host).to(environmentConnectionSettings::host);
 		map.from(address::port).to(environmentConnectionSettings::port);
 		map.from(connectionDetails::getUsername).to(environmentConnectionSettings::username);
@@ -113,7 +112,7 @@ public final class RabbitAmqpAutoConfiguration {
 		if (messageConverter.getIfAvailable() != null) {
 			rabbitAmqpTemplate.setMessageConverter(messageConverter.getIfAvailable());
 		}
-		RabbitProperties.Template templateProperties = this.properties.getTemplate();
+		AmqpProperties.Template templateProperties = this.properties.getTemplate();
 
 		PropertyMapper map = PropertyMapper.get();
 		map.from(templateProperties::getDefaultReceiveQueue).to(rabbitAmqpTemplate::setReceiveQueue);
