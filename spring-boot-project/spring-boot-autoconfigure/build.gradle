@@ -236,7 +236,9 @@ dependencies {
 	optional("org.springframework.session:spring-session-hazelcast")
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
-	optional("org.springframework.amqp:spring-rabbit-stream")
+	optional("org.springframework.amqp:spring-rabbit-stream") {
+		exclude group: "org.lz4", module: "lz4-java"
+	}
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.ws:spring-ws-core") {
 		exclude group: "com.sun.mail", module: "jakarta.mail"
