@@ -60,18 +60,31 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
+		Path logFile = Files.createTempFile("docker-compose-test", ".log");
 		Store store = context.getStore(NAMESPACE);
 		Path workspace = Files.createTempDirectory("DockerComposeTestExtension-");
 		store.put(STORE_KEY_WORKSPACE, workspace);
 		try {
 			Path composeFile = prepareComposeFile(workspace, context);
 			copyAdditionalResources(workspace, context);
-			SpringApplication application = prepareApplication(composeFile);
+			SpringApplication application = prepareApplication(composeFile, logFile);
 			store.put(STORE_KEY_APPLICATION_CONTEXT, application.run());
 		}
 		catch (Exception ex) {
 			cleanUp(context);
-			throw ex;
+			throw new DockerComposeApplicationRunException(readLogs(logFile));
+		}
+		finally {
+			Files.delete(logFile);
+		}
+	}
+
+	private String readLogs(Path logFile) {
+		try {
+			return Files.readString(logFile);
+		}
+		catch (IOException ex) {
+			return "Unavailable: " + ex.getMessage();
 		}
 	}
 
@@ -115,7 +128,7 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		}
 	}
 
-	private SpringApplication prepareApplication(Path composeFile) {
+	private SpringApplication prepareApplication(Path composeFile, Path logFile) {
 		SpringApplication application = new SpringApplication(Config.class);
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("spring.docker.compose.skip.in-tests", "false");
@@ -123,6 +136,7 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		properties.put("spring.docker.compose.stop.command", "down");
 		properties.put("spring.docker.compose.start.arguments[0]", "--wait-timeout");
 		properties.put("spring.docker.compose.start.arguments[1]", "120");
+		properties.put("logging.file.name", logFile.toString());
 		application.setDefaultProperties(properties);
 		return application;
 	}
@@ -167,6 +181,14 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
+
+	}
+
+	static class DockerComposeApplicationRunException extends RuntimeException {
+
+		DockerComposeApplicationRunException(String logs) {
+			super("Docker Compose failed. Application logs:%n%n%s".formatted(logs));
+		}
 
 	}
 
