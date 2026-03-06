@@ -1613,8 +1613,23 @@ bom {
 	}
 	library("Micrometer Tracing", "1.5.10-SNAPSHOT") {
 		considerSnapshots()
+		alignWith {
+			dependencyManagementDeclaredIn("io.micrometer:micrometer-tracing-bom") {
+				excluding { id ->
+					!id.artifactId().startsWith("micrometer-tracing") && !id.artifactId().equals("docs")
+				}
+			}
+		}
 		group("io.micrometer") {
-			bom("micrometer-tracing-bom")
+			modules = [
+				"docs",
+				"micrometer-tracing",
+				"micrometer-tracing-bridge-brave",
+				"micrometer-tracing-bridge-otel",
+				"micrometer-tracing-integration-test",
+				"micrometer-tracing-reporter-wavefront",
+				"micrometer-tracing-test"
+			]
 		}
 		links {
 			site("https://micrometer.io")
