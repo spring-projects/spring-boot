@@ -56,6 +56,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nan Chiu
  */
 class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironmentContributor> {
 
@@ -401,14 +402,13 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * Factory method to create a {@link Kind#INITIAL_IMPORT initial import} contributor.
 	 * This contributor is used to trigger initial imports of additional contributors. It
 	 * does not contribute any properties itself.
-	 * @param initialImport the initial import location (with placeholders resolved)
+	 * @param initialImports the initial import locations (with placeholders resolved)
 	 * @param conversionService the conversion service to use
 	 * @return a new {@link ConfigDataEnvironmentContributor} instance
 	 */
-	static ConfigDataEnvironmentContributor ofInitialImport(ConfigDataLocation initialImport,
+	static ConfigDataEnvironmentContributor ofInitialImports(List<ConfigDataLocation> initialImports,
 			ConversionService conversionService) {
-		List<ConfigDataLocation> imports = Collections.singletonList(initialImport);
-		ConfigDataProperties properties = new ConfigDataProperties(imports, null);
+		ConfigDataProperties properties = new ConfigDataProperties(initialImports, null);
 		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT, null, null, false, null, null, properties,
 				null, null, conversionService);
 	}

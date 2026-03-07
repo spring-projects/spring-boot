@@ -146,7 +146,7 @@ class ConfigDataEnvironmentTests {
 			.map(ConfigDataEnvironmentContributor::getImports)
 			.map(Object::toString)
 			.toArray();
-		assertThat(imports).containsExactly("[i2]", "[i1]", "[a2]", "[a1]", "[l2]", "[l1]");
+		assertThat(imports).containsExactly("[i1, i2]", "[a1, a2]", "[l1, l2]");
 	}
 
 	@Test

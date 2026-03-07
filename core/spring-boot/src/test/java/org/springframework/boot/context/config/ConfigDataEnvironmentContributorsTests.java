@@ -91,8 +91,8 @@ class ConfigDataEnvironmentContributorsTests {
 
 	@Test
 	void createCreatesWithInitialContributors() {
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, List.of(contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -123,8 +123,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 			.willReturn(imported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, List.of(contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -155,8 +155,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(secondPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(secondLocations)))
 			.willReturn(secondImported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, List.of(contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -184,8 +184,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 			.willReturn(imported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -215,8 +215,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(secondPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(secondLocations)))
 			.willReturn(secondImported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, List.of(contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -243,8 +243,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 			.willReturn(imported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -269,8 +269,8 @@ class ConfigDataEnvironmentContributorsTests {
 				new ConfigData(List.of(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 			.willReturn(imported);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1,
-				this.conversionService);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
+			.ofInitialImports(List.of(LOCATION_1), this.conversionService);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor), this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
