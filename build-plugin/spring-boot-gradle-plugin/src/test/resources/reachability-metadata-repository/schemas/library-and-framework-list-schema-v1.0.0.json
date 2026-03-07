@@ -1,0 +1,100 @@
+{
+  "$id": "https://raw.githubusercontent.com/oracle/graalvm-reachability-metadata/master/metadata/schemas/library-and-framework-support-schema-v1.0.0.json",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "default": [],
+  "examples": [
+    {
+      "artifact": "io.netty:netty5-parent",
+      "details": [
+        {
+          "minimum_version": "4.1",
+          "metadata_locations": [
+            "https://github.com/netty/netty/tree/main/common/src/main/resources/META-INF/native-image"
+          ],
+          "tests_locations": [
+            "https://github.com/netty/netty/actions"
+          ],
+          "test_level": "fully-tested"
+        }
+      ]
+    }
+  ],
+  "items": {
+    "properties": {
+      "artifact": {
+        "default": "",
+        "description": "The artifact name in the groupId:artifactId format",
+        "pattern": "^[a-zA-Z0-9._-]+:[a-zA-Z0-9._*-]+$",
+        "title": "The name of the artifact",
+        "type": "string"
+      },
+      "description": {
+        "default": "",
+        "title": "Short description of the library or framework",
+        "type": "string"
+      },
+      "details": {
+        "default": [],
+        "items": {
+          "default": {},
+          "properties": {
+            "maximal_version": {
+              "default": "",
+              "description": "Maximum version for which this entry applies. If not defined, it is assumed to be supported for all versions starting from the minimum_version",
+              "title": "Maximal version for which this entry applies",
+              "type": "string"
+            },
+            "metadata_locations": {
+              "default": [],
+              "items": {
+                "default": "",
+                "type": "string"
+              },
+              "title": "Web URLs of provided metadata",
+              "type": "array"
+            },
+            "minimum_version": {
+              "default": "",
+              "title": "Minimal version for which this entry applies",
+              "type": "string"
+            },
+            "test_level": {
+              "default": "Untested",
+              "enum": [
+                "untested",
+                "community-tested",
+                "fully-tested"
+              ],
+              "title": "Testing level of reachability metadata for the library or framework",
+              "type": "string"
+            },
+            "tests_locations": {
+              "default": [],
+              "items": {
+                "default": "",
+                "type": "string"
+              },
+              "title": "Web URLs to tests (sources, CI dashboards/configurations, ...)",
+              "type": "array"
+            }
+          },
+          "required": [
+            "minimum_version",
+            "metadata_locations",
+            "tests_locations",
+            "test_level"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": [
+      "artifact",
+      "details"
+    ],
+    "type": "object"
+  },
+  "title": "Schema for the 'library-and-framework-list.json'",
+  "type": "array"
+}
