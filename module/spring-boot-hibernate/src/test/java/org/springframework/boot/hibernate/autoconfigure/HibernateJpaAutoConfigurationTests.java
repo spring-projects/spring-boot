@@ -69,7 +69,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.hibernate.SpringJtaPlatform;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.hibernate.autoconfigure.mapping.NonAnnotatedEntity;
@@ -109,6 +108,7 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.hibernate.ConfigurableJtaPlatform;
 import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
@@ -547,7 +547,7 @@ class HibernateJpaAutoConfigurationTests {
 	@Test
 	void jtaDefaultPlatform() {
 		this.contextRunner.withUserConfiguration(JtaTransactionManagerConfiguration.class)
-			.run(assertJtaPlatform(SpringJtaPlatform.class));
+			.run(assertJtaPlatform(ConfigurableJtaPlatform.class));
 	}
 
 	@Test

@@ -17,7 +17,6 @@
 package org.springframework.boot.hibernate.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,12 +26,9 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
-import org.hibernate.cfg.ManagedBeanSettings;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -42,11 +38,9 @@ import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeHint.Builder;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.hibernate.SpringJtaPlatform;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
@@ -57,12 +51,8 @@ import org.springframework.boot.jpa.autoconfigure.JpaProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
-import org.springframework.jndi.JndiLocatorDelegate;
-import org.springframework.orm.jpa.hibernate.SpringBeanContainer;
-import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link JpaBaseConfiguration} implementation for Hibernate.
@@ -79,10 +69,6 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnSingleCandidate(DataSource.class)
 @ImportRuntimeHints(HibernateRuntimeHints.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
-
-	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
-
-	private static final String JTA_PLATFORM = "hibernate.transaction.jta.platform";
 
 	private static final String PROVIDER_DISABLES_AUTOCOMMIT = "hibernate.connection.provider_disables_autocommit";
 
@@ -104,8 +90,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
-			ConfigurableListableBeanFactory beanFactory, ObjectProvider<JtaTransactionManager> jtaTransactionManager,
-			HibernateProperties hibernateProperties,
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager, HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<SchemaManagementProvider> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
@@ -118,20 +103,15 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(metadataProviders.getIfAvailable());
 		this.sqlExceptionTranslator = sqlExceptionTranslator;
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
-				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(), beanFactory,
+				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(),
 				hibernatePropertiesCustomizers.orderedStream().toList());
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
 			@Nullable PhysicalNamingStrategy physicalNamingStrategy,
-			@Nullable ImplicitNamingStrategy implicitNamingStrategy, ConfigurableListableBeanFactory beanFactory,
+			@Nullable ImplicitNamingStrategy implicitNamingStrategy,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
-		if (ClassUtils.isPresent("org.hibernate.resource.beans.container.spi.BeanContainer",
-				getClass().getClassLoader())) {
-			customizers.add((properties) -> properties.put(ManagedBeanSettings.BEAN_CONTAINER,
-					new SpringBeanContainer(beanFactory)));
-		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
 			customizers
 				.add(new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
@@ -141,9 +121,13 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	@Override
-	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
+	protected HibernateJpaVendorAdapter createJpaVendorAdapter() {
 		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
 		this.sqlExceptionTranslator.ifUnique(adapter.getJpaDialect()::setJdbcExceptionTranslator);
+		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
+		if (jtaTransactionManager != null) {
+			adapter.setJtaTransactionManager(jtaTransactionManager);
+		}
 		return adapter;
 	}
 
@@ -158,24 +142,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 		super.customizeVendorProperties(vendorProperties);
-		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
-			configureJtaPlatform(vendorProperties);
-		}
 		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT)) {
 			configureProviderDisablesAutocommit(vendorProperties);
-		}
-	}
-
-	private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
-		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
-		// Make sure Hibernate doesn't attempt to auto-detect a JTA platform
-		if (jtaTransactionManager == null) {
-			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
-		}
-		// As of Hibernate 5.2, Hibernate can fully integrate with the WebSphere
-		// transaction manager on its own.
-		else if (!runningOnWebSphere()) {
-			configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
 		}
 	}
 
@@ -188,52 +156,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private boolean isDataSourceAutoCommitDisabled() {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(getDataSource());
 		return poolMetadata != null && Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
-	}
-
-	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
-				getClass().getClassLoader());
-	}
-
-	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
-			JtaTransactionManager jtaTransactionManager) {
-		try {
-			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(jtaTransactionManager));
-		}
-		catch (LinkageError ex) {
-			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
-			// containers (e.g. JBoss EAP 6) wrap it in the superclass LinkageError
-			if (!isUsingJndi()) {
-				throw new IllegalStateException(
-						"Unable to set Hibernate JTA platform, are you using the correct version of Hibernate?", ex);
-			}
-			// Assume that Hibernate will use JNDI
-			if (logger.isDebugEnabled()) {
-				logger.debug("Unable to set Hibernate JTA platform : " + ex.getMessage());
-			}
-		}
-	}
-
-	private boolean isUsingJndi() {
-		try {
-			return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
-		}
-		catch (Error ex) {
-			return false;
-		}
-	}
-
-	private Object getNoJtaPlatformManager() {
-		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
-			try {
-				return Class.forName(candidate).getDeclaredConstructor().newInstance();
-			}
-			catch (Exception ex) {
-				// Continue searching
-			}
-		}
-		throw new IllegalStateException(
-				"No available JtaPlatform candidates amongst " + Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
