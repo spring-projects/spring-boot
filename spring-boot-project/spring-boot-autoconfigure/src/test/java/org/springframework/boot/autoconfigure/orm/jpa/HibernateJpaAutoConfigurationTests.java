@@ -472,6 +472,21 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
+	void beanContainerIsConfiguredByDefault() {
+		contextRunner().run((context) -> assertThat(
+				context.getBean(LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap())
+			.containsKey(ManagedBeanSettings.BEAN_CONTAINER));
+	}
+
+	@Test
+	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
+		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
+			.run((context) -> assertThat(
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap())
+				.doesNotContainKey(ManagedBeanSettings.BEAN_CONTAINER));
+	}
+
+	@Test
 	@WithResource(name = "city.sql",
 			content = "INSERT INTO CITY (ID, NAME, STATE, COUNTRY, MAP) values (2000, 'Washington', 'DC', 'US', 'Google')")
 	void eventListenerCanBeRegisteredAsBeans() {
@@ -485,12 +500,6 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				assertThat(context).hasSingleBean(City.class);
 				assertThat(context.getBean(City.class).getName()).isEqualTo("Washington");
 			});
-	}
-
-	@Test
-	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
-		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(City.class));
 	}
 
 	@Test
