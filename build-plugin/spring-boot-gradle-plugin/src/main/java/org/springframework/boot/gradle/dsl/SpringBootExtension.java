@@ -93,8 +93,11 @@ public class SpringBootExtension {
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			SourceSetContainer sourceSets = this.project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
-			sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).configure((sourceSet) -> sourceSet.getResources().srcDirs(bootBuildInfo));
+			SourceSetContainer sourceSets = this.project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets();
+			sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME)
+				.configure((sourceSet) -> sourceSet.getResources().srcDirs(bootBuildInfo));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
 				.convention(this.project.provider(this::determineArtifactBaseName)));
