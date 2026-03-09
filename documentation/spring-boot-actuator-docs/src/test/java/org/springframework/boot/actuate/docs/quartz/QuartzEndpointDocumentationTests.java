@@ -402,7 +402,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.uri("/actuator/quartz/jobs/samples/jobOne"))
 			.hasStatusOk()
 			.apply(document("quartz/trigger-job", preprocessRequest(), preprocessResponse(prettyPrint()),
-					requestFields(fieldWithPath("state").description("The desired state of the job.")),
+					requestFields(fieldWithPath("state").description("Desired state of the job. Must be `running`.")),
 					responseFields(fieldWithPath("group").description("Name of the group."),
 							fieldWithPath("name").description("Name of the job."),
 							fieldWithPath("className").description("Fully qualified name of the job implementation."),
