@@ -738,6 +738,13 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
+	void beanContainerIsConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(
+				context.getBean(LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap())
+			.containsKey(ManagedBeanSettings.BEAN_CONTAINER));
+	}
+
+	@Test
 	@WithResource(name = "city.sql",
 			content = "INSERT INTO CITY (ID, NAME, STATE, COUNTRY, MAP) values (2000, 'Washington', 'DC', 'US', 'Google')")
 	void eventListenerCanBeRegisteredAsBeans() {
@@ -751,12 +758,6 @@ class HibernateJpaAutoConfigurationTests {
 				assertThat(context).hasSingleBean(City.class);
 				assertThat(context.getBean(City.class).getName()).isEqualTo("Washington");
 			});
-	}
-
-	@Test
-	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
-		this.contextRunner.withUserConfiguration(DisableBeanContainerConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(City.class));
 	}
 
 	@Test
@@ -1254,16 +1255,6 @@ class HibernateJpaAutoConfigurationTests {
 				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
 				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class DisableBeanContainerConfiguration {
-
-		@Bean
-		HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
-			return (hibernateProperties) -> hibernateProperties.remove(ManagedBeanSettings.BEAN_CONTAINER);
 		}
 
 	}
