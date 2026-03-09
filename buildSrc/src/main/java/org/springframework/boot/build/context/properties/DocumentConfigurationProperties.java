@@ -63,6 +63,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		Snippets snippets = new Snippets(this.configurationPropertyMetadata, getDeprecated().getOrElse(false));
 		snippets.add("application-properties.core", "Core Properties", this::corePrefixes);
 		snippets.add("application-properties.cache", "Cache Properties", this::cachePrefixes);
+		snippets.add("application-properties.grpc", "gRPC Properties", this::grpcPrefixes);
 		snippets.add("application-properties.mail", "Mail Properties", this::mailPrefixes);
 		snippets.add("application-properties.json", "JSON Properties", this::jsonPrefixes);
 		snippets.add("application-properties.data", "Data Properties", this::dataPrefixes);
@@ -113,6 +114,10 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 
 	private void cachePrefixes(Config config) {
 		config.accept("spring.cache");
+	}
+
+	private void grpcPrefixes(Config prefix) {
+		prefix.accept("spring.grpc");
 	}
 
 	private void mailPrefixes(Config config) {
