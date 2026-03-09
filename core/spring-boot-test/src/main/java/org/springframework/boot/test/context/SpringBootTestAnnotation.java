@@ -29,10 +29,9 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
- * {@link ContextCustomizer} to track attributes of
- * {@link SpringBootTest @SptringBootTest} that are taken into account when evaluating a
- * {@link MergedContextConfiguration} to determine if a context can be shared between
- * tests.
+ * {@link ContextCustomizer} to track attributes of {@link SpringBootTest @SpringBootTest}
+ * that are taken into account when evaluating a {@link MergedContextConfiguration} to
+ * determine if a context can be shared between tests.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
