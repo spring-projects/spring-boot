@@ -25,6 +25,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
@@ -92,7 +93,8 @@ public class SpringBootExtension {
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
+			SourceSetContainer sourceSets = this.project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+			sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).configure((sourceSet) -> sourceSet.getResources().srcDirs(bootBuildInfo));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
 				.convention(this.project.provider(this::determineArtifactBaseName)));
