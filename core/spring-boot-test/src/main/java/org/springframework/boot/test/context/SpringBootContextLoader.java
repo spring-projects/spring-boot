@@ -53,7 +53,6 @@ import org.springframework.context.aot.AotApplicationContextInitializer;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
@@ -158,9 +157,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
 		Assert.state(mergedConfig.hasResources(),
-				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
-						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
-						+ SpringVersion.getVersion() + ").");
+				() -> "No configuration classes or locations found. Check your test's configuration.");
 	}
 
 	private @Nullable Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
