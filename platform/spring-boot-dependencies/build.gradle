@@ -2286,6 +2286,7 @@ bom {
 				"spring-boot-starter-reactor-netty",
 				"spring-boot-starter-restclient",
 				"spring-boot-starter-restclient-test",
+				"spring-boot-starter-restdocs",
 				"spring-boot-starter-rsocket",
 				"spring-boot-starter-rsocket-test",
 				"spring-boot-starter-security",
