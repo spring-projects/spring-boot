@@ -153,9 +153,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
-		boolean hasClasses = !ObjectUtils.isEmpty(mergedConfig.getClasses());
-		boolean hasLocations = !ObjectUtils.isEmpty(mergedConfig.getLocations());
-		Assert.state(hasClasses || hasLocations,
+		Assert.state(mergedConfig.hasResources(),
 				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
 						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
 						+ SpringVersion.getVersion() + ").");
