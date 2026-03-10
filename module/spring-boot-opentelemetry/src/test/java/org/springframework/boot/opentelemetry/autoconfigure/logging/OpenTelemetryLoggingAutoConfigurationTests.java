@@ -16,7 +16,9 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging;
 
+import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.opentelemetry.context.Context;
@@ -120,6 +122,26 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 				assertThat(context
 					.getBean("customSdkLoggerProviderBuilderCustomizer2", NoopSdkLoggerProviderBuilderCustomizer.class)
 					.called()).isEqualTo(1);
+			});
+	}
+
+	@Test
+	void shouldConfigureBatchLogRecordProcessorWithProperties() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.timeout=45s",
+					"management.opentelemetry.logging.export.max-batch-size=256",
+					"management.opentelemetry.logging.export.max-queue-size=4096",
+					"management.opentelemetry.logging.export.schedule-delay=15s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(BatchLogRecordProcessor.class);
+				BatchLogRecordProcessor processor = context.getBean(BatchLogRecordProcessor.class);
+				assertThat(processor).extracting("worker")
+					.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Duration.ofSeconds(45).toNanos())
+					.hasFieldOrPropertyWithValue("maxExportBatchSize", 256)
+					.hasFieldOrPropertyWithValue("scheduleDelayNanos", Duration.ofSeconds(15).toNanos())
+					.extracting("queue")
+					.isInstanceOfSatisfying(ArrayBlockingQueue.class,
+							(queue) -> assertThat(queue.remainingCapacity()).isEqualTo(4096));
 			});
 	}
 

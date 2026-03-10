@@ -49,6 +49,18 @@ management:
           endpoint: "https://otlp.example.com:4318/v1/logs"
 ----
 
+The `management.opentelemetry.logging.export.*` configuration properties can be used to configure the javadoc:io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor[].
+For example, to change the export interval to 15 seconds:
+
+[configprops,yaml]
+----
+management:
+  opentelemetry:
+    logging:
+      export:
+        schedule-delay: "15s"
+----
+
 NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot.
 For more details, see the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback appender] or the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 appender] in the https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub repository].
 

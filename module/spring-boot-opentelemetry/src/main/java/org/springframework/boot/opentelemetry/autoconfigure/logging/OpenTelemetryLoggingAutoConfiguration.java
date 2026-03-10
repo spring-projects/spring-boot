@@ -29,7 +29,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingProperties.Export;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,16 +42,26 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = OpenTelemetrySdkAutoConfiguration.class)
 @ConditionalOnClass(SdkLoggerProvider.class)
+@EnableConfigurationProperties(OpenTelemetryLoggingProperties.class)
 public final class OpenTelemetryLoggingAutoConfiguration {
 
-	OpenTelemetryLoggingAutoConfiguration() {
+	private final OpenTelemetryLoggingProperties properties;
+
+	OpenTelemetryLoggingAutoConfiguration(OpenTelemetryLoggingProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	BatchLogRecordProcessor openTelemetryBatchLogRecordProcessor(ObjectProvider<LogRecordExporter> logRecordExporters) {
 		LogRecordExporter exporter = LogRecordExporter.composite(logRecordExporters.orderedStream().toList());
-		return BatchLogRecordProcessor.builder(exporter).build();
+		Export export = this.properties.getExport();
+		return BatchLogRecordProcessor.builder(exporter)
+			.setExporterTimeout(export.getTimeout())
+			.setMaxQueueSize(export.getMaxQueueSize())
+			.setScheduleDelay(export.getScheduleDelay())
+			.setMaxExportBatchSize(export.getMaxBatchSize())
+			.build();
 	}
 
 	@Bean
