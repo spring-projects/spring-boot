@@ -34,8 +34,21 @@ public class OpenTelemetryTracingProperties {
 	 */
 	private final Export export = new Export();
 
+	/**
+	 * Sampler to use.
+	 */
+	private Sampler sampler = Sampler.PARENT_BASED_TRACE_ID_RATIO;
+
 	public Export getExport() {
 		return this.export;
+	}
+
+	public Sampler getSampler() {
+		return this.sampler;
+	}
+
+	public void setSampler(Sampler sampler) {
+		this.sampler = sampler;
 	}
 
 	public static class Export {
@@ -105,6 +118,16 @@ public class OpenTelemetryTracingProperties {
 		public void setScheduleDelay(Duration scheduleDelay) {
 			this.scheduleDelay = scheduleDelay;
 		}
+
+	}
+
+	/**
+	 * Supported samplers.
+	 */
+	public enum Sampler {
+
+		ALWAYS_ON, ALWAYS_OFF, TRACE_ID_RATIO, PARENT_BASED_ALWAYS_ON, PARENT_BASED_ALWAYS_OFF,
+		PARENT_BASED_TRACE_ID_RATIO
 
 	}
 

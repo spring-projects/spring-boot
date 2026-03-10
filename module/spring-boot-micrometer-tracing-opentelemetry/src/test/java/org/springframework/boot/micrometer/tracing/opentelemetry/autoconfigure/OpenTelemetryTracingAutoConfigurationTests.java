@@ -118,12 +118,75 @@ class OpenTelemetryTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void samplerIsParentBased() {
+	void samplerIsParentBasedTraceIdRatioByDefault() {
 		this.contextRunner.run((context) -> {
 			Sampler sampler = context.getBean(Sampler.class);
-			assertThat(sampler).isNotNull();
-			assertThat(sampler.getDescription()).startsWith("ParentBased{");
+			assertThat(sampler.getDescription()).startsWith("ParentBased{root:TraceIdRatioBased{");
 		});
+	}
+
+	@Test
+	void samplerUsesCustomProbability() {
+		this.contextRunner.withPropertyValues("management.tracing.sampling.probability=0.5").run((context) -> {
+			Sampler sampler = context.getBean(Sampler.class);
+			assertThat(sampler.getDescription()).contains("0.5");
+		});
+	}
+
+	@Test
+	void samplerCanBeSetToAlwaysOn() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.tracing.sampler=always-on").run((context) -> {
+			Sampler sampler = context.getBean(Sampler.class);
+			assertThat(sampler.getDescription()).isEqualTo("AlwaysOnSampler");
+		});
+	}
+
+	@Test
+	void samplerCanBeSetToAlwaysOff() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.tracing.sampler=always-off").run((context) -> {
+			Sampler sampler = context.getBean(Sampler.class);
+			assertThat(sampler.getDescription()).isEqualTo("AlwaysOffSampler");
+		});
+	}
+
+	@Test
+	void samplerCanBeSetToTraceIdRatio() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.tracing.sampler=trace-id-ratio",
+					"management.tracing.sampling.probability=0.3")
+			.run((context) -> {
+				Sampler sampler = context.getBean(Sampler.class);
+				assertThat(sampler.getDescription()).startsWith("TraceIdRatioBased{").contains("0.3");
+			});
+	}
+
+	@Test
+	void samplerCanBeSetToParentBasedAlwaysOn() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.tracing.sampler=parent-based-always-on")
+			.run((context) -> {
+				Sampler sampler = context.getBean(Sampler.class);
+				assertThat(sampler.getDescription()).startsWith("ParentBased{root:AlwaysOnSampler");
+			});
+	}
+
+	@Test
+	void samplerCanBeSetToParentBasedAlwaysOff() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.tracing.sampler=parent-based-always-off")
+			.run((context) -> {
+				Sampler sampler = context.getBean(Sampler.class);
+				assertThat(sampler.getDescription()).startsWith("ParentBased{root:AlwaysOffSampler");
+			});
+	}
+
+	@Test
+	void samplerCanBeSetToParentBasedTraceIdRatio() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.tracing.sampler=parent-based-trace-id-ratio",
+					"management.tracing.sampling.probability=0.7")
+			.run((context) -> {
+				Sampler sampler = context.getBean(Sampler.class);
+				assertThat(sampler.getDescription()).startsWith("ParentBased{root:TraceIdRatioBased{").contains("0.7");
+			});
 	}
 
 	@ParameterizedTest

@@ -58,6 +58,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.NoopTracerAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
+import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.NoPropagation;
+import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithBaggage;
+import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingProperties.Export;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -74,9 +77,7 @@ import org.springframework.util.CollectionUtils;
 @AutoConfiguration(before = { MicrometerTracingAutoConfiguration.class, NoopTracerAutoConfiguration.class })
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class })
 @EnableConfigurationProperties({ TracingProperties.class, OpenTelemetryTracingProperties.class })
-@Import({ OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage.class,
-		OpenTelemetryPropagationConfigurations.PropagationWithBaggage.class,
-		OpenTelemetryPropagationConfigurations.NoPropagation.class })
+@Import({ PropagationWithoutBaggage.class, PropagationWithBaggage.class, NoPropagation.class })
 public final class OpenTelemetryTracingAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(OpenTelemetryTracingAutoConfiguration.class);
@@ -113,8 +114,15 @@ public final class OpenTelemetryTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Sampler otelSampler() {
-		Sampler rootSampler = Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability());
-		return Sampler.parentBased(rootSampler);
+		return switch (this.openTelemetryTracingProperties.getSampler()) {
+			case ALWAYS_ON -> Sampler.alwaysOn();
+			case ALWAYS_OFF -> Sampler.alwaysOff();
+			case TRACE_ID_RATIO -> Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability());
+			case PARENT_BASED_ALWAYS_ON -> Sampler.parentBased(Sampler.alwaysOn());
+			case PARENT_BASED_ALWAYS_OFF -> Sampler.parentBased(Sampler.alwaysOff());
+			case PARENT_BASED_TRACE_ID_RATIO ->
+				Sampler.parentBased(Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability()));
+		};
 	}
 
 	@Bean
