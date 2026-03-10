@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.common.CompletableResultCode;
+import io.opentelemetry.sdk.logs.LogLimits;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
 import io.opentelemetry.sdk.logs.ReadWriteLogRecord;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
@@ -65,6 +66,7 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BatchLogRecordProcessor.class);
 			assertThat(context).hasSingleBean(SdkLoggerProvider.class);
+			assertThat(context).hasSingleBean(LogLimits.class);
 		});
 	}
 
@@ -123,6 +125,26 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 					.getBean("customSdkLoggerProviderBuilderCustomizer2", NoopSdkLoggerProviderBuilderCustomizer.class)
 					.called()).isEqualTo(1);
 			});
+	}
+
+	@Test
+	void logLimitsShouldBeConfiguredWithCustomProperties() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.limits.max-attribute-value-length=256",
+					"management.opentelemetry.logging.limits.max-attributes=64")
+			.run((context) -> {
+				LogLimits logLimits = context.getBean(LogLimits.class);
+				assertThat(logLimits.getMaxAttributeValueLength()).isEqualTo(256);
+				assertThat(logLimits.getMaxNumberOfAttributes()).isEqualTo(64);
+			});
+	}
+
+	@Test
+	void shouldBackOffOnCustomLogLimitsBean() {
+		this.contextRunner.withUserConfiguration(CustomLogLimitsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(LogLimits.class);
+			assertThat(context).hasBean("customLogLimits");
+		});
 	}
 
 	@Test
@@ -201,6 +223,16 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 		@Bean
 		SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer2() {
 			return new NoopSdkLoggerProviderBuilderCustomizer();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomLogLimitsConfiguration {
+
+		@Bean
+		LogLimits customLogLimits() {
+			return LogLimits.builder().setMaxNumberOfAttributes(99).build();
 		}
 
 	}

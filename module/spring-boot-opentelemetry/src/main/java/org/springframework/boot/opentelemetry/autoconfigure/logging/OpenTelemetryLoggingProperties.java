@@ -34,8 +34,17 @@ public class OpenTelemetryLoggingProperties {
 	 */
 	private final Export export = new Export();
 
+	/**
+	 * Log limits configuration.
+	 */
+	private final Limits limits = new Limits();
+
 	public Export getExport() {
 		return this.export;
+	}
+
+	public Limits getLimits() {
+		return this.limits;
 	}
 
 	public static class Export {
@@ -91,6 +100,39 @@ public class OpenTelemetryLoggingProperties {
 
 		public void setScheduleDelay(Duration scheduleDelay) {
 			this.scheduleDelay = scheduleDelay;
+		}
+
+	}
+
+	/**
+	 * Log limits.
+	 */
+	public static class Limits {
+
+		/**
+		 * Maximum number of characters for string attribute values.
+		 */
+		private int maxAttributeValueLength = Integer.MAX_VALUE;
+
+		/**
+		 * Maximum number of attributes per log record.
+		 */
+		private int maxAttributes = 128;
+
+		public int getMaxAttributeValueLength() {
+			return this.maxAttributeValueLength;
+		}
+
+		public void setMaxAttributeValueLength(int maxAttributeValueLength) {
+			this.maxAttributeValueLength = maxAttributeValueLength;
+		}
+
+		public int getMaxAttributes() {
+			return this.maxAttributes;
+		}
+
+		public void setMaxAttributes(int maxAttributes) {
+			this.maxAttributes = maxAttributes;
 		}
 
 	}

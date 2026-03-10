@@ -35,12 +35,21 @@ public class OpenTelemetryTracingProperties {
 	private final Export export = new Export();
 
 	/**
+	 * Span limit configuration.
+	 */
+	private final Limits limits = new Limits();
+
+	/**
 	 * Sampler to use.
 	 */
 	private Sampler sampler = Sampler.PARENT_BASED_TRACE_ID_RATIO;
 
 	public Export getExport() {
 		return this.export;
+	}
+
+	public Limits getLimits() {
+		return this.limits;
 	}
 
 	public Sampler getSampler() {
@@ -117,6 +126,91 @@ public class OpenTelemetryTracingProperties {
 
 		public void setScheduleDelay(Duration scheduleDelay) {
 			this.scheduleDelay = scheduleDelay;
+		}
+
+	}
+
+	/**
+	 * Span limits.
+	 */
+	public static class Limits {
+
+		/**
+		 * Maximum number of characters for string attribute values.
+		 */
+		private int maxAttributeValueLength = Integer.MAX_VALUE;
+
+		/**
+		 * Maximum number of attributes per span.
+		 */
+		private int maxAttributes = 128;
+
+		/**
+		 * Maximum number of events per span.
+		 */
+		private int maxEvents = 128;
+
+		/**
+		 * Maximum number of links per span.
+		 */
+		private int maxLinks = 128;
+
+		/**
+		 * Maximum number of attributes per event.
+		 */
+		private int maxAttributesPerEvent = 128;
+
+		/**
+		 * Maximum number of attributes per link.
+		 */
+		private int maxAttributesPerLink = 128;
+
+		public int getMaxAttributeValueLength() {
+			return this.maxAttributeValueLength;
+		}
+
+		public void setMaxAttributeValueLength(int maxAttributeValueLength) {
+			this.maxAttributeValueLength = maxAttributeValueLength;
+		}
+
+		public int getMaxAttributes() {
+			return this.maxAttributes;
+		}
+
+		public void setMaxAttributes(int maxAttributes) {
+			this.maxAttributes = maxAttributes;
+		}
+
+		public int getMaxEvents() {
+			return this.maxEvents;
+		}
+
+		public void setMaxEvents(int maxEvents) {
+			this.maxEvents = maxEvents;
+		}
+
+		public int getMaxLinks() {
+			return this.maxLinks;
+		}
+
+		public void setMaxLinks(int maxLinks) {
+			this.maxLinks = maxLinks;
+		}
+
+		public int getMaxAttributesPerEvent() {
+			return this.maxAttributesPerEvent;
+		}
+
+		public void setMaxAttributesPerEvent(int maxAttributesPerEvent) {
+			this.maxAttributesPerEvent = maxAttributesPerEvent;
+		}
+
+		public int getMaxAttributesPerLink() {
+			return this.maxAttributesPerLink;
+		}
+
+		public void setMaxAttributesPerLink(int maxAttributesPerLink) {
+			this.maxAttributesPerLink = maxAttributesPerLink;
 		}
 
 	}

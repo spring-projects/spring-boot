@@ -40,6 +40,7 @@ import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
+import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessorBuilder;
@@ -62,6 +63,7 @@ import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.O
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithBaggage;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingProperties.Export;
+import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingProperties.Limits;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.util.CollectionUtils;
@@ -98,11 +100,28 @@ public final class OpenTelemetryTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SdkTracerProvider otelSdkTracerProvider(Resource resource, SpanProcessors spanProcessors, Sampler sampler,
-			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
-		SdkTracerProviderBuilder builder = SdkTracerProvider.builder().setSampler(sampler).setResource(resource);
+			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers, SpanLimits spanLimits) {
+		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
+			.setSampler(sampler)
+			.setResource(resource)
+			.setSpanLimits(spanLimits);
 		spanProcessors.forEach(builder::addSpanProcessor);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	SpanLimits otelSpanLimits() {
+		Limits limits = this.openTelemetryTracingProperties.getLimits();
+		return SpanLimits.builder()
+			.setMaxAttributeValueLength(limits.getMaxAttributeValueLength())
+			.setMaxNumberOfAttributes(limits.getMaxAttributes())
+			.setMaxNumberOfEvents(limits.getMaxEvents())
+			.setMaxNumberOfLinks(limits.getMaxLinks())
+			.setMaxNumberOfAttributesPerEvent(limits.getMaxAttributesPerEvent())
+			.setMaxNumberOfAttributesPerLink(limits.getMaxAttributesPerLink())
+			.build();
 	}
 
 	@Bean

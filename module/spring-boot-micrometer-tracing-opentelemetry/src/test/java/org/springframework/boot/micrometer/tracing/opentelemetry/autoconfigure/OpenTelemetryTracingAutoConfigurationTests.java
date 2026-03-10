@@ -114,6 +114,7 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
 			assertThat(context).hasSingleBean(SpanProcessors.class);
 			assertThat(context).hasSingleBean(SpanExporters.class);
+			assertThat(context).hasSingleBean(SpanLimits.class);
 		});
 	}
 
@@ -388,6 +389,34 @@ class OpenTelemetryTracingAutoConfigurationTests {
 	}
 
 	@Test
+	void spanLimitsShouldBeConfiguredWithCustomProperties() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.tracing.limits.max-attribute-value-length=256",
+					"management.opentelemetry.tracing.limits.max-attributes=64",
+					"management.opentelemetry.tracing.limits.max-events=32",
+					"management.opentelemetry.tracing.limits.max-links=16",
+					"management.opentelemetry.tracing.limits.max-attributes-per-event=8",
+					"management.opentelemetry.tracing.limits.max-attributes-per-link=4")
+			.run((context) -> {
+				SpanLimits spanLimits = context.getBean(SpanLimits.class);
+				assertThat(spanLimits.getMaxAttributeValueLength()).isEqualTo(256);
+				assertThat(spanLimits.getMaxNumberOfAttributes()).isEqualTo(64);
+				assertThat(spanLimits.getMaxNumberOfEvents()).isEqualTo(32);
+				assertThat(spanLimits.getMaxNumberOfLinks()).isEqualTo(16);
+				assertThat(spanLimits.getMaxNumberOfAttributesPerEvent()).isEqualTo(8);
+				assertThat(spanLimits.getMaxNumberOfAttributesPerLink()).isEqualTo(4);
+			});
+	}
+
+	@Test
+	void shouldBackOffOnCustomSpanLimitsBean() {
+		this.contextRunner.withUserConfiguration(CustomSpanLimitsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(SpanLimits.class);
+			assertThat(context).hasBean("customSpanLimits");
+		});
+	}
+
+	@Test
 	void shouldCustomizeSdkTracerProvider() {
 		this.contextRunner.withUserConfiguration(SdkTracerProviderCustomizationConfiguration.class).run((context) -> {
 			SdkTracerProvider tracerProvider = context.getBean(SdkTracerProvider.class);
@@ -617,6 +646,16 @@ class OpenTelemetryTracingAutoConfigurationTests {
 		@Bean
 		Propagator customPropagator() {
 			return mock(Propagator.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomSpanLimitsConfiguration {
+
+		@Bean
+		SpanLimits customSpanLimits() {
+			return SpanLimits.builder().setMaxNumberOfEvents(99).build();
 		}
 
 	}
