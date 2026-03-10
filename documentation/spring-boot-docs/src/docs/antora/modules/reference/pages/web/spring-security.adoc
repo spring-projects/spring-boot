@@ -299,7 +299,11 @@ spring:
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
-Alternatively, you can define your own javadoc:org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector[] bean for servlet applications or a javadoc:org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector[] for reactive applications.
+
+The result is an auto-configured introspector. Either a javadoc:org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector[] or, in a reactive application, a javadoc:org.springframework.security.oauth2.server.resource.introspection.SpringReactiveOpaqueTokenIntrospector[].
+These auto-configured introspectors can be customized using javadoc:org.springframework.boot.security.oauth2.server.resource.autoconfigure.SpringOpaqueTokenIntrospectorBuilderCustomizer[] and javadoc:org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive.SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer[] beans respectively.
+
+To take complete control of the introspection, define your own javadoc:org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector[] or javadoc:org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector[] bean.
 
 
 
