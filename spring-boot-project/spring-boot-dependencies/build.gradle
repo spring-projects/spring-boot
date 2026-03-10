@@ -1589,7 +1589,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.15.10-SNAPSHOT") {
+	library("Micrometer", "1.15.10") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
