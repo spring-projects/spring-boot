@@ -18,3 +18,5 @@ runs:
           sleep 60
         done
         echo "$url is available"
+
+        
