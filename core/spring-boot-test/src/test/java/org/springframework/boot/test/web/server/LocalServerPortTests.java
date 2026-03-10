@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.web.server;
 
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -37,20 +36,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = "local.server.port=8181")
 class LocalServerPortTests {
 
-	@Value("${local.server.port}")
-	private @Nullable String fromValue;
+    @Value("${local.server.port}")
+    private int fromValue;
 
-	@LocalServerPort
-	private @Nullable String fromAnnotation;
+    @LocalServerPort
+    private int fromAnnotation;
 
-	@Test
-	void testLocalServerPortAnnotation() {
-		assertThat(this.fromAnnotation).isNotNull().isEqualTo(this.fromValue);
-	}
+    @Test
+    void localServerPortShouldMatchPropertyValue() {
+        assertThat(this.fromAnnotation).isEqualTo(this.fromValue);
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	static class Config {
-
-	}
+    @Configuration(proxyBeanMethods = false)
+    static class Config {
+    
+    }
 
 }
