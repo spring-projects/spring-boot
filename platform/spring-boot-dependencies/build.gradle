@@ -708,7 +708,8 @@ bom {
 			modules = [
 				"httpclient5",
 				"httpclient5-cache",
-				"httpclient5-fluent"
+				"httpclient5-fluent",
+				"httpclient5-observation"
 			]
 		}
 	}
