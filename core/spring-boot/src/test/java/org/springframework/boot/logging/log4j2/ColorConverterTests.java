@@ -174,6 +174,50 @@ class ColorConverterTests {
 	}
 
 	@Test
+	void bold() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bold").format(this.event, output);
+		assertThat(output).hasToString("\033[1min\033[0;39m");
+	}
+
+	@Test
+	void italic() {
+		StringBuilder output = new StringBuilder();
+		newConverter("italic").format(this.event, output);
+		assertThat(output).hasToString("\033[3min\033[0;39m");
+	}
+
+	@Test
+	void underline() {
+		StringBuilder output = new StringBuilder();
+		newConverter("underline").format(this.event, output);
+		assertThat(output).hasToString("\033[4min\033[0;39m");
+	}
+
+	@Test
+	void bgRed() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_red").format(this.event, output);
+		assertThat(output).hasToString("\033[41min\033[0;39m");
+	}
+
+	@Test
+	void bgBrightGreen() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bg_bright_green").format(this.event, output);
+		assertThat(output).hasToString("\033[102min\033[0;39m");
+	}
+
+	@Test
+	void boldAndRed() {
+		StringBuilder output = new StringBuilder();
+		ColorConverter converter = ColorConverter.newInstance(null, new String[] { this.in, "bold", "red" });
+		assertThat(converter).isNotNull();
+		converter.format(this.event, output);
+		assertThat(output).hasToString("\033[1;31min\033[0;39m");
+	}
+
+	@Test
 	void highlightFatal() {
 		this.event.setLevel(Level.FATAL);
 		StringBuilder output = new StringBuilder();

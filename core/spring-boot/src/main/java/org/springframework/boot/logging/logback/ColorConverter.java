@@ -19,13 +19,16 @@ package org.springframework.boot.logging.logback;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
 
+import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
@@ -33,8 +36,8 @@ import org.springframework.boot.ansi.AnsiStyle;
 
 /**
  * Logback {@link CompositeConverter} to color output using the {@link AnsiOutput} class.
- * A single 'color' option can be provided to the converter, or if not specified color
- * will be picked based on the logging level.
+ * One or more options can be provided to the converter to set the color and style, or if
+ * not specified color will be picked based on the logging level.
  *
  * @author Phillip Webb
  * @since 1.0.0
@@ -48,7 +51,13 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
 			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
+		Arrays.stream(AnsiBackground.values())
+			.filter((bg) -> bg != AnsiBackground.DEFAULT)
+			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
+		ansiElements.put("bold", AnsiStyle.BOLD);
 		ansiElements.put("faint", AnsiStyle.FAINT);
+		ansiElements.put("italic", AnsiStyle.ITALIC);
+		ansiElements.put("underline", AnsiStyle.UNDERLINE);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}
 
@@ -63,17 +72,29 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
 	@Override
 	protected String transform(ILoggingEvent event, String in) {
-		AnsiElement color = ELEMENTS.get(getFirstOption());
-		if (color == null) {
-			// Assume highlighting
-			color = LEVELS.get(event.getLevel().toInteger());
-			color = (color != null) ? color : AnsiColor.GREEN;
+		List<String> options = getOptionList();
+		if (options != null && !options.isEmpty()) {
+			AnsiElement[] elements = options.stream()
+				.map(ELEMENTS::get)
+				.filter(Objects::nonNull)
+				.toArray(AnsiElement[]::new);
+			if (elements.length > 0) {
+				return toAnsiString(in, elements);
+			}
 		}
+		// Assume highlighting
+		AnsiElement color = LEVELS.get(event.getLevel().toInteger());
+		color = (color != null) ? color : AnsiColor.GREEN;
 		return toAnsiString(in, color);
 	}
 
-	protected String toAnsiString(String in, AnsiElement element) {
-		return AnsiOutput.toString(element, in);
+	protected String toAnsiString(String in, AnsiElement... elements) {
+		Object[] args = new Object[elements.length + 1];
+		for (int i = 0; i < elements.length; i++) {
+			args[i] = elements[i];
+		}
+		args[elements.length] = in;
+		return AnsiOutput.toString(args);
 	}
 
 	static String getName(AnsiElement element) {

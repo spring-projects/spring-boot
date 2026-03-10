@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
@@ -35,6 +36,7 @@ import org.apache.logging.log4j.core.pattern.PatternFormatter;
 import org.apache.logging.log4j.core.pattern.PatternParser;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
@@ -42,8 +44,8 @@ import org.springframework.boot.ansi.AnsiStyle;
 
 /**
  * Log4j2 {@link LogEventPatternConverter} to color output using the {@link AnsiOutput}
- * class. A single option 'styling' can be provided to the converter, or if not specified
- * color styling will be picked based on the logging level.
+ * class. One or more options can be provided to the converter to set the color and style,
+ * or if not specified color styling will be picked based on the logging level.
  *
  * @author Vladimir Tsanev
  * @since 1.3.0
@@ -59,7 +61,13 @@ public final class ColorConverter extends LogEventPatternConverter {
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
 			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
+		Arrays.stream(AnsiBackground.values())
+			.filter((bg) -> bg != AnsiBackground.DEFAULT)
+			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
+		ansiElements.put("bold", AnsiStyle.BOLD);
 		ansiElements.put("faint", AnsiStyle.FAINT);
+		ansiElements.put("italic", AnsiStyle.ITALIC);
+		ansiElements.put("underline", AnsiStyle.UNDERLINE);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}
 
@@ -75,12 +83,12 @@ public final class ColorConverter extends LogEventPatternConverter {
 
 	private final List<PatternFormatter> formatters;
 
-	private final @Nullable AnsiElement styling;
+	private final AnsiElement @Nullable [] stylings;
 
-	private ColorConverter(List<PatternFormatter> formatters, @Nullable AnsiElement styling) {
+	private ColorConverter(List<PatternFormatter> formatters, AnsiElement @Nullable [] stylings) {
 		super("style", "style");
 		this.formatters = formatters;
-		this.styling = styling;
+		this.stylings = stylings;
 	}
 
 	@Override
@@ -100,18 +108,25 @@ public final class ColorConverter extends LogEventPatternConverter {
 			formatter.format(event, buf);
 		}
 		if (!buf.isEmpty()) {
-			AnsiElement element = this.styling;
-			if (element == null) {
-				// Assume highlighting
-				element = LEVELS.get(event.getLevel().intLevel());
-				element = (element != null) ? element : AnsiColor.GREEN;
+			if (this.stylings != null && this.stylings.length > 0) {
+				appendAnsiString(toAppendTo, buf.toString(), this.stylings);
 			}
-			appendAnsiString(toAppendTo, buf.toString(), element);
+			else {
+				// Assume highlighting
+				AnsiElement element = LEVELS.get(event.getLevel().intLevel());
+				element = (element != null) ? element : AnsiColor.GREEN;
+				appendAnsiString(toAppendTo, buf.toString(), element);
+			}
 		}
 	}
 
-	private void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
-		toAppendTo.append(AnsiOutput.toString(element, in));
+	private void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement... elements) {
+		Object[] args = new Object[elements.length + 1];
+		for (int i = 0; i < elements.length; i++) {
+			args[i] = elements[i];
+		}
+		args[elements.length] = in;
+		toAppendTo.append(AnsiOutput.toString(args));
 	}
 
 	/**
@@ -131,8 +146,11 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
-		AnsiElement element = (options.length != 1) ? ELEMENTS.get(options[1]) : null;
-		return new ColorConverter(formatters, element);
+		AnsiElement[] elements = Arrays.stream(options, 1, options.length)
+			.map(ELEMENTS::get)
+			.filter(Objects::nonNull)
+			.toArray(AnsiElement[]::new);
+		return new ColorConverter(formatters, (elements.length > 0) ? elements : null);
 	}
 
 }
