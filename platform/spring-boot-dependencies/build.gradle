@@ -1609,23 +1609,8 @@ bom {
 	}
 	library("Micrometer Tracing", "1.7.0-SNAPSHOT") {
 		considerSnapshots()
-		alignWith {
-			dependencyManagementDeclaredIn("io.micrometer:micrometer-tracing-bom") {
-				excluding { id ->
-					!id.artifactId().startsWith("micrometer-tracing") && !id.artifactId().equals("docs")
-				}
-			}
-		}
 		group("io.micrometer") {
-			modules = [
-				"docs",
-				"micrometer-tracing",
-				"micrometer-tracing-bridge-brave",
-				"micrometer-tracing-bridge-otel",
-				"micrometer-tracing-integration-test",
-				"micrometer-tracing-reporter-wavefront",
-				"micrometer-tracing-test"
-			]
+			bom("micrometer-tracing-bom")
 		}
 		links {
 			site("https://micrometer.io")
@@ -1761,6 +1746,7 @@ bom {
 			version {
 				of "io.opentelemetry:opentelemetry-api"
 				from "io.micrometer:micrometer-tracing-bridge-otel"
+				managedBy "Micrometer Tracing"
 			}
 		}
 		links {
