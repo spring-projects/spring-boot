@@ -527,6 +527,10 @@ Custom headers, for example for authentication, can also be provided using confi
 
 If an `OtlpMetricsSender` bean is available, it will be configured on the `OtlpMeterRegistry` that Spring Boot auto-configures.
 
+https://opentelemetry.io/docs/specs/otel/metrics/data-model/#exemplars[OTLP Exemplars] are also supported.
+To enable this feature, an javadoc:io.micrometer.registry.otlp.ExemplarContextProvider[] bean should be present.
+If you use xref:actuator/tracing.adoc[Micrometer Tracing], this will be auto-configured for you.
+
 
 
 [[actuator.metrics.export.prometheus]]

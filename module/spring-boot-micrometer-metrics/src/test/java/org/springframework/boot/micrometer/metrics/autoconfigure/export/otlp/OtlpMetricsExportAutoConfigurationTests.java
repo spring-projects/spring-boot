@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 import java.util.concurrent.ScheduledExecutorService;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.registry.otlp.ExemplarContextProvider;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
@@ -143,11 +144,37 @@ class OtlpMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void allowsCustomExemplarContextProviderToBeUsed() {
+		this.contextRunner
+			.withUserConfiguration(BaseConfiguration.class, CustomExemplarContextProviderConfiguration.class)
+			.run(this::assertHasCustomExemplarContextProvider);
+	}
+
+	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void allowsCustomMetricsSenderToBeUsedWithVirtualThreads() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
 			.withPropertyValues("spring.threads.virtual.enabled=true")
 			.run(this::assertHasCustomMetricsSender);
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void allowsCustomExemplarContextProviderToBeUsedWithVirtualThreads() {
+		this.contextRunner
+			.withUserConfiguration(BaseConfiguration.class, CustomExemplarContextProviderConfiguration.class)
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run(this::assertHasCustomExemplarContextProvider);
+	}
+
+	@Test
+	void exemplarContextProviderShouldBeMissingIfNoExemplarContextProviderBeanPresent() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(ExemplarContextProvider.class);
+			assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+			OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+			assertThat(registry).extracting("exemplarSamplerFactory").isNull();
+		});
 	}
 
 	@Test
@@ -162,6 +189,15 @@ class OtlpMetricsExportAutoConfigurationTests {
 		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
 		assertThat(registry).extracting("metricsSender")
 			.satisfies((sender) -> assertThat(sender).isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
+	}
+
+	private void assertHasCustomExemplarContextProvider(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+		assertThat(registry).extracting("exemplarSamplerFactory")
+			.extracting("exemplarContextProvider")
+			.satisfies((provider) -> assertThat(provider)
+				.isSameAs(CustomExemplarContextProviderConfiguration.customExemplarContextProvider));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -215,6 +251,18 @@ class OtlpMetricsExportAutoConfigurationTests {
 		@Bean
 		OtlpMetricsSender customMetricsSender() {
 			return customMetricsSender;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExemplarContextProviderConfiguration {
+
+		static ExemplarContextProvider customExemplarContextProvider = () -> null;
+
+		@Bean
+		ExemplarContextProvider customExemplarContextProvider() {
+			return customExemplarContextProvider;
 		}
 
 	}
