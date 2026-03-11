@@ -40,9 +40,11 @@ import org.springframework.context.annotation.Bean;
  * @author Wick Dynex
  * @author Phillip Webb
  * @since 4.0.0
+ * @deprecated since 4.0.4 for removal in 4.2.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration")
 @ConditionalOnClass({ ZipkinSpanExporter.class, Span.class })
+@Deprecated(since = "4.0.4", forRemoval = true)
 public final class ZipkinWithOpenTelemetryTracingAutoConfiguration {
 
 	@Bean

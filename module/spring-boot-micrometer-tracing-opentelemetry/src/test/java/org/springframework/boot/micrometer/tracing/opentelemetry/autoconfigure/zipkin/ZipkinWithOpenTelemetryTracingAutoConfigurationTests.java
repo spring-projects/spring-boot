@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings("removal")
 class ZipkinWithOpenTelemetryTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
