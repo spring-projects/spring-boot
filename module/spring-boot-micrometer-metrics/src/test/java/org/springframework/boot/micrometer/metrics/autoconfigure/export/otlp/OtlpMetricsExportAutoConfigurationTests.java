@@ -196,7 +196,7 @@ class OtlpMetricsExportAutoConfigurationTests {
 		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
 		assertThat(registry).extracting("exemplarSamplerFactory")
 			.extracting("exemplarContextProvider")
-			.satisfies((sender) -> assertThat(sender)
+			.satisfies((provider) -> assertThat(provider)
 				.isSameAs(CustomExemplarContextProviderConfiguration.customExemplarContextProvider));
 	}
 

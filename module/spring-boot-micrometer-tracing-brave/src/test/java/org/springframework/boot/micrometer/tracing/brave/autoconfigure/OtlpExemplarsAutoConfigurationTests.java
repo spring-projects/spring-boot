@@ -87,7 +87,6 @@ class OtlpExemplarsAutoConfigurationTests {
 			OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
 			TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
 			otlpMeterRegistry.close();
-
 			assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
 				.containsOnlyOnce("exemplars")
 				.containsOnlyOnce("span_id")
