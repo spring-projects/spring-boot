@@ -57,6 +57,14 @@ abstract class AbstractDeploymentTests {
 	}
 
 	@Test
+	void errorPage() {
+		getDeployedApplication().test((rest) -> {
+			ResponseEntity<String> response = rest.getForEntity("/does-not-exist", String.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		});
+	}
+
+	@Test
 	void health() {
 		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
@@ -97,7 +105,7 @@ abstract class AbstractDeploymentTests {
 
 		private void test(Consumer<TestRestTemplate> consumer) {
 			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-				.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
+				.baseUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
 						+ "/spring-boot")
 				.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))

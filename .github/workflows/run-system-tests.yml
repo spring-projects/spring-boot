@@ -2,12 +2,12 @@ name: Run System Tests
 on:
   push:
     branches:
-      - 'main'
+      - "main"
 permissions:
   contents: read
 jobs:
   run-system-tests:
-    name: 'Java ${{ matrix.java.version}}'
+    name: "Java ${{ matrix.java.version}}"
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     strategy:
@@ -18,6 +18,11 @@ jobs:
           - version: 21
             toolchain: true
     steps:
+      - name: Switch Docker to Overlay2
+        shell: bash
+        run: |
+          echo '{"storage-driver":"overlay2"}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       - name: Check Out Code
         uses: actions/checkout@v6
       - name: Prepare Gradle Build

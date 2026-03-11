@@ -16,6 +16,8 @@
 
 package org.springframework.boot.diagnostics;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -64,8 +66,10 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	private static List<FailureAnalyzer> loadFailureAnalyzers(@Nullable ConfigurableApplicationContext context,
 			SpringFactoriesLoader springFactoriesLoader) {
-		return springFactoriesLoader.load(FailureAnalyzer.class, getArgumentResolver(context),
-				FailureHandler.logging(logger));
+		List<FailureAnalyzer> analyzers = new ArrayList<>(springFactoriesLoader.load(FailureAnalyzer.class,
+				getArgumentResolver(context), FailureHandler.logging(logger)));
+		analyzers.add(FailureAnalyzedException::analyze);
+		return Collections.unmodifiableList(analyzers);
 	}
 
 	private static @Nullable ArgumentResolver getArgumentResolver(@Nullable ConfigurableApplicationContext context) {

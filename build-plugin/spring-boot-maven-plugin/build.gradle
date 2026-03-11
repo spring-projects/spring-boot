@@ -94,6 +94,7 @@ dependencies {
 	mavenRepository(project(path: ":module:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":core:spring-boot-docker-compose", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":starter:spring-boot-starter-parent", configuration: "mavenRepository"))
+	mavenRepository("org.springframework:spring-test")
 
 	versionProperties(project(path: ":platform:spring-boot-dependencies", configuration: "resolvedBom"))
 }
@@ -107,18 +108,12 @@ tasks.named("checkCompileClasspathForProhibitedDependencies") {
 	permittedGroups = ["javax.inject"]
 }
 
-tasks.register("copySettingsXml", Copy) {
-	from file("src/intTest/projects/settings.xml")
-	into layout.buildDirectory.dir("generated-resources/settings")
-	filter(springRepositoryTransformers.mavenSettings())
-}
-
 sourceSets {
 	main {
 		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties"])
 	}
 	dockerTest {
 		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
@@ -145,7 +140,8 @@ tasks.register("xsdResources", Sync) {
 }
 
 prepareMavenBinaries {
-	versions = [ "3.9.9", "3.6.3" ]
+	versions.add(providers.gradleProperty('mavenVersion'))
+	versions.add("3.6.3")
 }
 
 tasks.named("documentPluginGoals") {

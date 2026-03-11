@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  */
+@SuppressWarnings("removal")
 class RootUriBuilderFactoryTests {
 
 	@Test

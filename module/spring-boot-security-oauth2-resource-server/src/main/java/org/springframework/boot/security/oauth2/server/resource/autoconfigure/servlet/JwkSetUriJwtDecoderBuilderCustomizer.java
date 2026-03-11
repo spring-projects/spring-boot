@@ -26,14 +26,12 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDeco
  *
  * @author Andy Wilkinson
  * @since 4.0.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+ * {@link org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwkSetUriJwtDecoderBuilderCustomizer}
  */
 @FunctionalInterface
-public interface JwkSetUriJwtDecoderBuilderCustomizer {
-
-	/**
-	 * Customize the given {@code builder}.
-	 * @param builder the {@code builder} to customize
-	 */
-	void customize(JwkSetUriJwtDecoderBuilder builder);
+@Deprecated(since = "4.1.0", forRemoval = true)
+public interface JwkSetUriJwtDecoderBuilderCustomizer extends
+		org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwkSetUriJwtDecoderBuilderCustomizer {
 
 }

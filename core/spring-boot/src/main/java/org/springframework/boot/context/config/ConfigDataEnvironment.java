@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -59,6 +60,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nan Chiu
  */
 class ConfigDataEnvironment {
 
@@ -213,16 +215,18 @@ class ConfigDataEnvironment {
 
 	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
 			ConfigDataLocation[] locations) {
-		for (int i = locations.length - 1; i >= 0; i--) {
-			if (ConfigDataLocation.isNotEmpty(locations[i])) {
-				initialContributors.add(createInitialImportContributor(locations[i]));
-			}
-		}
+		addInitialImportContributors(initialContributors,
+				Arrays.stream(locations).filter(ConfigDataLocation::isNotEmpty).toList());
 	}
 
-	private ConfigDataEnvironmentContributor createInitialImportContributor(ConfigDataLocation location) {
-		this.logger.trace(LogMessage.format("Adding initial config data import from location '%s'", location));
-		return ConfigDataEnvironmentContributor.ofInitialImport(location, this.environment.getConversionService());
+	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
+			List<ConfigDataLocation> locations) {
+		if (!locations.isEmpty()) {
+			this.logger.trace(LogMessage.format("Adding initial config data import from locations %s", locations));
+			ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImports(locations,
+					this.environment.getConversionService());
+			initialContributors.add(contributor);
+		}
 	}
 
 	/**

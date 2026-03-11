@@ -82,7 +82,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	List<Map<String, Object>> load() {
 		List<Map<String, Object>> result = new ArrayList<>();
-		process((properties, map) -> result.add(getFlattenedMap(map)));
+		process((properties, map) -> result.add(getFlattenedMap(map, true, "")));
 		return result;
 	}
 

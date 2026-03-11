@@ -4,8 +4,8 @@
 Spring AOT is a process that analyzes your code at build-time in order to generate an optimized version of it.
 It is most often used to help generate GraalVM native images.
 
-The Spring Boot Gradle plugin provides tasks that can be used to perform AOT processing on both application and test code.
-The tasks are configured automatically when the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied:
+The `org.springframework.boot.aot` Gradle plugin provides tasks that can be used to perform AOT processing on both application and test code.
+The plugin is applied automatically when the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied:
 
 [tabs]
 ======
@@ -20,6 +20,24 @@ Kotlin::
 [source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot/apply-native-image-plugin.gradle.kts[]
+----
+======
+
+If you want to  xref:reference:packaging/aot.adoc[run an AOT-processed application on the JVM] rather than as a native image, apply the `org.springframework.boot.aot` plugin directly:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot/apply-aot-plugin.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot/apply-aot-plugin.gradle.kts[]
 ----
 ======
 

@@ -44,6 +44,7 @@ import static org.mockito.Mockito.never;
  * @author Phillip Webb
  */
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("removal")
 class DelayedLiveReloadTriggerTests {
 
 	private static final String URL = "http://localhost:8080";

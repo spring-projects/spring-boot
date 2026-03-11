@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet;
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure.web;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.ApplicationContext;
 
@@ -33,14 +34,15 @@ import static org.springframework.boot.autoconfigure.AutoConfigurationImportedCo
  * @author Andy Wilkinson
  */
 @WebMvcTest
-class OAuth2ResourceServerWebMvcTestIntegrationTests {
+class OAuth2ResourceServerWebSecurityAutoConfigurationMvcIntegrationTests {
 
 	@Autowired
-	private ApplicationContext applicationContext;
+	private ApplicationContext context;
 
 	@Test
 	void oauth2ResourceServerAutoConfigurationWasImported() {
-		assertThat(this.applicationContext).has(importedAutoConfiguration(OAuth2ResourceServerAutoConfiguration.class));
+		assertThat(this.context).has(importedAutoConfiguration(OAuth2ResourceServerAutoConfiguration.class));
+		assertThat(this.context).has(importedAutoConfiguration(OAuth2ResourceServerWebSecurityAutoConfiguration.class));
 	}
 
 	@SpringBootConfiguration

@@ -150,6 +150,61 @@ Use the `management.tracing.export.zipkin.*` configuration properties to configu
 
 
 
+[[actuator.micrometer-tracing.sampling]]
+== Sampling
+
+By default, Spring Boot samples only 10% of requests to prevent overwhelming the trace backend.
+The configprop:management.tracing.sampling.probability[] property can be used to configure this.
+
+When using OpenTelemetry, you can also configure which sampler is used via the configprop:management.opentelemetry.tracing.sampler[] property.
+The following samplers are supported:
+
+|===
+|Sampler |Description
+
+|`always-on`
+|Samples every trace.
+
+|`always-off`
+|Discards every trace.
+
+|`trace-id-ratio`
+|Samples a fraction of traces based on configprop:management.tracing.sampling.probability[].
+
+|`parent-based-always-on`
+|If the parent span is sampled, samples the child span. If there is no parent, samples every trace.
+
+|`parent-based-always-off`
+|If the parent span is sampled, samples the child span. If there is no parent, discards every trace.
+
+|`parent-based-trace-id-ratio` (default)
+|If the parent span is sampled, samples the child span. If there is no parent, samples a fraction of traces based on configprop:management.tracing.sampling.probability[].
+|===
+
+
+
+[[actuator.micrometer-tracing.span-limits]]
+== Span Limits
+
+When using OpenTelemetry, you can configure span limits via the `management.opentelemetry.tracing.limits.*` configuration properties.
+These allow you to control the maximum number of attributes, events, and links per span, as well as the maximum length of string attribute values.
+
+For example, to limit the number of attributes per span to 64 and the maximum attribute value length to 256 characters:
+
+[configprops,yaml]
+----
+management:
+  opentelemetry:
+    tracing:
+      limits:
+        max-attributes: 64
+        max-attribute-value-length: 256
+----
+
+If you need full control, you can register a custom javadoc:io.opentelemetry.sdk.trace.SpanLimits[] bean.
+
+
+
 [[actuator.micrometer-tracing.micrometer-observation]]
 == Integration with Micrometer Observation
 

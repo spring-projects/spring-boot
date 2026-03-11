@@ -16,6 +16,7 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging;
 
+import io.opentelemetry.sdk.logs.LogLimits;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
@@ -29,7 +30,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingProperties.Export;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingProperties.Limits;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,16 +44,26 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = OpenTelemetrySdkAutoConfiguration.class)
 @ConditionalOnClass(SdkLoggerProvider.class)
+@EnableConfigurationProperties(OpenTelemetryLoggingProperties.class)
 public final class OpenTelemetryLoggingAutoConfiguration {
 
-	OpenTelemetryLoggingAutoConfiguration() {
+	private final OpenTelemetryLoggingProperties properties;
+
+	OpenTelemetryLoggingAutoConfiguration(OpenTelemetryLoggingProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	BatchLogRecordProcessor openTelemetryBatchLogRecordProcessor(ObjectProvider<LogRecordExporter> logRecordExporters) {
 		LogRecordExporter exporter = LogRecordExporter.composite(logRecordExporters.orderedStream().toList());
-		return BatchLogRecordProcessor.builder(exporter).build();
+		Export export = this.properties.getExport();
+		return BatchLogRecordProcessor.builder(exporter)
+			.setExporterTimeout(export.getTimeout())
+			.setMaxQueueSize(export.getMaxQueueSize())
+			.setScheduleDelay(export.getScheduleDelay())
+			.setMaxExportBatchSize(export.getMaxBatchSize())
+			.build();
 	}
 
 	@Bean
@@ -57,12 +71,23 @@ public final class OpenTelemetryLoggingAutoConfiguration {
 	@ConditionalOnBean(Resource.class)
 	SdkLoggerProvider openTelemetrySdkLoggerProvider(Resource openTelemetryResource,
 			ObjectProvider<LogRecordProcessor> logRecordProcessors,
-			ObjectProvider<SdkLoggerProviderBuilderCustomizer> customizers) {
-		SdkLoggerProviderBuilder builder = SdkLoggerProvider.builder();
-		builder.setResource(openTelemetryResource);
+			ObjectProvider<SdkLoggerProviderBuilderCustomizer> customizers, LogLimits logLimits) {
+		SdkLoggerProviderBuilder builder = SdkLoggerProvider.builder()
+			.setResource(openTelemetryResource)
+			.setLogLimits(() -> logLimits);
 		logRecordProcessors.orderedStream().forEach(builder::addLogRecordProcessor);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	LogLimits openTelemetryLogLimits() {
+		Limits limits = this.properties.getLimits();
+		return LogLimits.builder()
+			.setMaxAttributeValueLength(limits.getMaxAttributeValueLength())
+			.setMaxNumberOfAttributes(limits.getMaxAttributes())
+			.build();
 	}
 
 }

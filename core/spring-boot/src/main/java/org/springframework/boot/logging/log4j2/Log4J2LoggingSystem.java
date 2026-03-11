@@ -58,8 +58,10 @@ import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.core.Conventions;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -121,11 +123,19 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance.
 	 * @param classLoader the class loader to use.
-	 * @param loggerContext the {@link LoggerContext} to use.
+	 * @throws IllegalArgumentException if the logger context is not a
+	 * {@link LoggerContext}.
 	 */
-	Log4J2LoggingSystem(ClassLoader classLoader, LoggerContext loggerContext) {
+	Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
-		this.loggerContext = loggerContext;
+		org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = LogManager.getContext(classLoader, false);
+		Assert.isInstanceOf(LoggerContext.class, spiLoggerContext);
+		this.loggerContext = (LoggerContext) spiLoggerContext;
+	}
+
+	@Override
+	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
+		return new Log4j2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override
@@ -528,10 +538,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
-				org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = LogManager.getContext(classLoader, false);
-				Assert.state(spiLoggerContext instanceof LoggerContext, "");
-				if (spiLoggerContext instanceof LoggerContext coreLoggerContext) {
-					return new Log4J2LoggingSystem(classLoader, coreLoggerContext);
+				try {
+					return new Log4J2LoggingSystem(classLoader);
+				}
+				catch (IllegalStateException ex) {
+					// Continue
 				}
 			}
 			return null;

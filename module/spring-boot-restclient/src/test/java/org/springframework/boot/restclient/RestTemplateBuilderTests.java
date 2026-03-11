@@ -55,6 +55,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,8 +122,8 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void rootUriShouldApply() {
-		RestTemplate restTemplate = this.builder.rootUri("https://example.com").build();
+	void baseUriShouldApply() {
+		RestTemplate restTemplate = this.builder.baseUri("https://example.com").build();
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(requestTo("https://example.com/hello")).andRespond(withSuccess());
 		restTemplate.getForEntity("/hello", String.class);
@@ -130,6 +131,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void rootUriShouldApplyAfterUriTemplateHandler() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
 		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
@@ -466,14 +468,14 @@ class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		this.builder.interceptors(this.interceptor)
 			.messageConverters(this.messageConverter)
-			.rootUri("http://localhost:8080")
+			.baseUri("http://localhost:8080")
 			.errorHandler(errorHandler)
 			.basicAuthentication("spring", "boot")
 			.requestFactory(() -> requestFactory)
 			.customizers((restTemplate) -> {
 				assertThat(restTemplate.getInterceptors()).hasSize(1);
 				assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
-				assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriBuilderFactory.class);
+				assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(DefaultUriBuilderFactory.class);
 				assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
 				ClientHttpRequestFactory actualRequestFactory = restTemplate.getRequestFactory();
 				assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);

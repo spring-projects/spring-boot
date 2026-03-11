@@ -16,6 +16,9 @@
 
 package org.springframework.boot.diagnostics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +49,8 @@ class FailureAnalyzersTests {
 	private static FailureAnalyzer failureAnalyzer;
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final List<FailureAnalysis> reports = new ArrayList<>();
 
 	@BeforeEach
 	void configureMock() {
@@ -87,6 +92,37 @@ class FailureAnalyzersTests {
 		then(failureAnalyzer).should().analyze(failure);
 	}
 
+	@Test
+	void failureAnalyzedExceptionAreReported() {
+		FailureAnalyzedException failure = new FailureAnalyzedException("Bad", "Fix it!");
+		analyzeAndReport(failure);
+		assertThat(this.reports).hasSize(1);
+		FailureAnalysis report = this.reports.get(0);
+		assertThat(report.getDescription()).isEqualTo("Bad");
+		assertThat(report.getAction()).isEqualTo("Fix it!");
+		assertThat(report.getCause()).isSameAs(failure);
+	}
+
+	@Test
+	void wrappedFailureAnalyzedExceptionAreReported() {
+		FailureAnalyzedException failure = new FailureAnalyzedException("Bad", "Fix it!");
+		analyzeAndReport(new IllegalStateException("the state of this!", failure));
+		assertThat(this.reports).hasSize(1);
+		FailureAnalysis report = this.reports.get(0);
+		assertThat(report.getDescription()).isEqualTo("Bad");
+		assertThat(report.getAction()).isEqualTo("Fix it!");
+		assertThat(report.getCause()).isSameAs(failure);
+	}
+
+	@Test
+	void whenOtherAnalyzerIsAvailableFailureAnalyzedExceptionAreNotReported() {
+		FailureAnalyzedException failure = new FailureAnalyzedException("Bad", "Fix it!");
+		analyzeAndReport(new IllegalStateException("the state of this!", failure), IllegalStateFailureAnalyzer.class);
+		assertThat(this.reports).hasSize(1);
+		FailureAnalysis report = this.reports.get(0);
+		assertThat(report.getDescription()).isEqualTo("analyzed state");
+	}
+
 	@SafeVarargs
 	private void analyzeAndReport(Throwable failure, Class<? extends FailureAnalyzer>... failureAnalyzerClasses) {
 		analyzeAndReport(failure, this.context, failureAnalyzerClasses);
@@ -99,6 +135,7 @@ class FailureAnalyzersTests {
 		for (Class<? extends FailureAnalyzer> failureAnalyzerClass : failureAnalyzerClasses) {
 			loader.add(FailureAnalyzer.class, failureAnalyzerClass);
 		}
+		loader.addInstance(FailureAnalysisReporter.class, this.reports::add);
 		new FailureAnalyzers(context, loader).reportException(failure);
 	}
 
@@ -147,6 +184,18 @@ class FailureAnalyzersTests {
 
 		EnvironmentConstructorFailureAnalyzer(Environment environment) {
 			assertThat(environment).isNotNull();
+		}
+
+	}
+
+	static class IllegalStateFailureAnalyzer implements FailureAnalyzer {
+
+		@Override
+		public @Nullable FailureAnalysis analyze(Throwable failure) {
+			if (failure instanceof IllegalStateException) {
+				return new FailureAnalysis("analyzed state", null, failure);
+			}
+			return null;
 		}
 
 	}

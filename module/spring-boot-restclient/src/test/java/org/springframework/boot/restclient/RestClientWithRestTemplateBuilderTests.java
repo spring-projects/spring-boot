@@ -36,7 +36,7 @@ class RestClientWithRestTemplateBuilderTests {
 
 	@Test
 	void buildUsingRestTemplateBuilderRootUri() {
-		RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://resttemplate.example.com").build();
+		RestTemplate restTemplate = new RestTemplateBuilder().baseUri("https://resttemplate.example.com").build();
 		RestClient.Builder builder = RestClient.builder(restTemplate);
 		RestClient client = buildMockedClient(builder, "https://resttemplate.example.com/test");
 		assertThat(client.get().uri("/test").retrieve().toBodilessEntity().getStatusCode().is2xxSuccessful()).isTrue();
@@ -52,7 +52,7 @@ class RestClientWithRestTemplateBuilderTests {
 
 	@Test
 	void buildRestTemplateBuilderRootUriAndRestClientBuilderBaseUrl() {
-		RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://resttemplate.example.com").build();
+		RestTemplate restTemplate = new RestTemplateBuilder().baseUri("https://resttemplate.example.com").build();
 		RestClient.Builder builder = RestClient.builder(restTemplate).baseUrl("https://restclient.example.com");
 		RestClient client = buildMockedClient(builder, "https://resttemplate.example.com/test");
 		assertThat(client.get().uri("/test").retrieve().toBodilessEntity().getStatusCode().is2xxSuccessful()).isTrue();

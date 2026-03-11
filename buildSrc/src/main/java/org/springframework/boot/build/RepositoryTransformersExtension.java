@@ -43,8 +43,6 @@ public class RepositoryTransformersExtension {
 
 	private static final String REPOSITORIES_MARKER = "{spring.mavenRepositories}";
 
-	private static final String PLUGIN_REPOSITORIES_MARKER = "{spring.mavenPluginRepositories}";
-
 	private final Project project;
 
 	@Inject
@@ -76,20 +74,6 @@ public class RepositoryTransformersExtension {
 			return transform(line, hostCredentials.entrySet(), (entry,
 					indent) -> "%s<credentials host=\"%s\" realm=\"Artifactory Realm\" username=\"%s\" passwd=\"%s\" />%n"
 						.formatted(indent, entry.getKey(), entry.getValue().username(), entry.getValue().password()));
-		}
-		return line;
-	}
-
-	public Transformer<String, String> mavenSettings() {
-		return this::transformMavenSettings;
-	}
-
-	private String transformMavenSettings(String line) {
-		if (line.contains(REPOSITORIES_MARKER)) {
-			return transformMavenRepositories(line, false);
-		}
-		if (line.contains(PLUGIN_REPOSITORIES_MARKER)) {
-			return transformMavenRepositories(line, true);
 		}
 		return line;
 	}

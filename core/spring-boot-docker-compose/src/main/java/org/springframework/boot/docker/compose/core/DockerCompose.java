@@ -106,6 +106,13 @@ public interface DockerCompose {
 	void stop(Duration timeout, List<String> arguments);
 
 	/**
+	 * Run {@code docker compose logs} to view Docker Compose's recent logs.
+	 * @return the recent logs
+	 * @since 4.1.0
+	 */
+	String logs();
+
+	/**
 	 * Return if services have been defined in the {@link DockerComposeFile} for the
 	 * active profiles.
 	 * @return {@code true} if services have been defined

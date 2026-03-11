@@ -19,6 +19,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -128,7 +129,13 @@ class DockerComposeLifecycleManager {
 				logger.info(skip.getLogMessage());
 			}
 			else {
-				start.getCommand().applyTo(dockerCompose, start.getLogLevel(), start.getArguments());
+				try {
+					start.getCommand().applyTo(dockerCompose, start.getLogLevel(), start.getArguments());
+				}
+				catch (RuntimeException ex) {
+					logDockerComposeLogs(dockerCompose, start);
+					throw ex;
+				}
 				runningServices = dockerCompose.getRunningServices();
 				if (wait == Wait.ONLY_IF_STARTED) {
 					wait = Wait.ALWAYS;
@@ -145,6 +152,28 @@ class DockerComposeLifecycleManager {
 			this.serviceReadinessChecks.waitUntilReady(relevantServices);
 		}
 		publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext, relevantServices));
+	}
+
+	private void logDockerComposeLogs(DockerCompose dockerCompose, Start start) {
+		String command = start.getCommand().name().toLowerCase(Locale.ROOT);
+		String logs = retrieveLogsIfPossible(dockerCompose);
+		if (logs == null) {
+			start.getLogLevel()
+				.log(logger, "docker compose %s failed and its logs were unavailable".formatted(command));
+		}
+		else {
+			start.getLogLevel()
+				.log(logger, "docker compose %s failed with the following logs:%n%n%s".formatted(command, logs));
+		}
+	}
+
+	private @Nullable String retrieveLogsIfPossible(DockerCompose dockerCompose) {
+		try {
+			return dockerCompose.logs();
+		}
+		catch (Exception ex) {
+			return null;
+		}
 	}
 
 	protected DockerComposeFile getComposeFile() {

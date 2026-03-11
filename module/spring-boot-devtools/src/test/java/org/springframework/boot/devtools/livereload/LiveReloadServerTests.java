@@ -83,6 +83,7 @@ import static org.hamcrest.Matchers.not;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class LiveReloadServerTests {
 
 	private static final String HANDSHAKE = "{command: 'hello', "

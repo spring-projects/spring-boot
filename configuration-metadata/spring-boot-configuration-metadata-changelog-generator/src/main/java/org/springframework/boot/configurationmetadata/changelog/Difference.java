@@ -51,7 +51,7 @@ record Difference(DifferenceType type, ConfigurationMetadataProperty oldProperty
 				&& newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
 			return new Difference(DifferenceType.DELETED, oldProperty, newProperty);
 		}
-		if (!Objects.equals(oldProperty.getDefaultValue(), newProperty.getDefaultValue())) {
+		if (!Objects.deepEquals(oldProperty.getDefaultValue(), newProperty.getDefaultValue())) {
 			return new Difference(DifferenceType.DEFAULT_CHANGED, oldProperty, newProperty);
 		}
 		return null;

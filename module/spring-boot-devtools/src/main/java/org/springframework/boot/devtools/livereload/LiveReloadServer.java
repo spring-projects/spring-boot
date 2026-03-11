@@ -42,7 +42,9 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @since 1.3.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 with no replacement.
  */
+@Deprecated(since = "4.1.0", forRemoval = true)
 public class LiveReloadServer {
 
 	/**

@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Francis Lavoie
  */
+@SuppressWarnings("removal")
 class Connection {
 
 	private static final Log logger = LogFactory.getLog(Connection.class);

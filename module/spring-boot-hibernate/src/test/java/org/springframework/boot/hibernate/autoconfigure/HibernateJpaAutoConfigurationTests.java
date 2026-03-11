@@ -69,7 +69,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.hibernate.SpringJtaPlatform;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.hibernate.autoconfigure.mapping.NonAnnotatedEntity;
@@ -109,6 +108,7 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.hibernate.ConfigurableJtaPlatform;
 import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
@@ -547,7 +547,7 @@ class HibernateJpaAutoConfigurationTests {
 	@Test
 	void jtaDefaultPlatform() {
 		this.contextRunner.withUserConfiguration(JtaTransactionManagerConfiguration.class)
-			.run(assertJtaPlatform(SpringJtaPlatform.class));
+			.run(assertJtaPlatform(ConfigurableJtaPlatform.class));
 	}
 
 	@Test
@@ -738,6 +738,13 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
+	void beanContainerIsConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(
+				context.getBean(LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap())
+			.containsKey(ManagedBeanSettings.BEAN_CONTAINER));
+	}
+
+	@Test
 	@WithResource(name = "city.sql",
 			content = "INSERT INTO CITY (ID, NAME, STATE, COUNTRY, MAP) values (2000, 'Washington', 'DC', 'US', 'Google')")
 	void eventListenerCanBeRegisteredAsBeans() {
@@ -751,12 +758,6 @@ class HibernateJpaAutoConfigurationTests {
 				assertThat(context).hasSingleBean(City.class);
 				assertThat(context.getBean(City.class).getName()).isEqualTo("Washington");
 			});
-	}
-
-	@Test
-	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
-		this.contextRunner.withUserConfiguration(DisableBeanContainerConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(City.class));
 	}
 
 	@Test
@@ -1254,16 +1255,6 @@ class HibernateJpaAutoConfigurationTests {
 				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
 				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class DisableBeanContainerConfiguration {
-
-		@Bean
-		HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
-			return (hibernateProperties) -> hibernateProperties.remove(ManagedBeanSettings.BEAN_CONTAINER);
 		}
 
 	}

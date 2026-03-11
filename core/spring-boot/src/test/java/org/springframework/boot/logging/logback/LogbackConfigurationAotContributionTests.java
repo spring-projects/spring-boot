@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -50,10 +49,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
-import org.springframework.aot.hint.JavaSerializationHint;
 import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.SerializationHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -89,12 +87,11 @@ class LogbackConfigurationAotContributionTests {
 		InMemoryGeneratedFiles generatedFiles = generationContext.getGeneratedFiles();
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-model"));
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-pattern-rules"));
-		SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
-		assertThat(serializationHints.javaSerializationHints()
-			.map(JavaSerializationHint::getType)
-			.map(TypeReference::getName))
-			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
-		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
+		ReflectionHints reflectionHints = generationContext.getRuntimeHints().reflection();
+		assertThat(reflectionHints.typeHints().map(TypeHint::getType)).containsExactlyInAnyOrderElementsOf(
+				TypeReference.listOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
+		assertThat(reflectionHints.typeHints().map(TypeHint::hasJavaSerialization).distinct()).singleElement()
+			.isEqualTo(true);
 		InputStreamSource generatedFile = generatedFiles.getGeneratedFile(Kind.RESOURCE,
 				"META-INF/spring/logback-pattern-rules");
 		assertThat(generatedFile).isNotNull();
@@ -111,12 +108,11 @@ class LogbackConfigurationAotContributionTests {
 		InMemoryGeneratedFiles generatedFiles = generationContext.getGeneratedFiles();
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-model"));
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-pattern-rules"));
-		SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
-		assertThat(serializationHints.javaSerializationHints()
-			.map(JavaSerializationHint::getType)
-			.map(TypeReference::getName))
-			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
-		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
+		ReflectionHints reflectionHints = generationContext.getRuntimeHints().reflection();
+		assertThat(reflectionHints.typeHints().map(TypeHint::getType)).containsExactlyInAnyOrderElementsOf(
+				TypeReference.listOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
+		assertThat(reflectionHints.typeHints().map(TypeHint::hasJavaSerialization).distinct()).singleElement()
+			.isEqualTo(true);
 		InputStreamSource generatedFile = generatedFiles.getGeneratedFile(Kind.RESOURCE,
 				"META-INF/spring/logback-pattern-rules");
 		assertThat(generatedFile).isNotNull();
@@ -328,10 +324,6 @@ class LogbackConfigurationAotContributionTests {
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
 			.getObject(BeanFactoryInitializationAotContribution.class.getName());
 		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
-	}
-
-	private String[] namesOf(Class<?>... types) {
-		return Stream.of(types).map(Class::getName).toArray(String[]::new);
 	}
 
 	private void withSystemProperty(String name, String value, Runnable action) {

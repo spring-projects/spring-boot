@@ -47,10 +47,13 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Nan Chiu
  */
 class ConfigDataEnvironmentContributorTests {
 
 	private static final ConfigDataLocation TEST_LOCATION = ConfigDataLocation.of("test");
+
+	private static final List<ConfigDataLocation> TEST_LOCATIONS = List.of(TEST_LOCATION);
 
 	private final ConfigDataActivationContext activationContext = new ConfigDataActivationContext(
 			CloudPlatform.KUBERNETES, null);
@@ -59,14 +62,14 @@ class ConfigDataEnvironmentContributorTests {
 
 	@Test
 	void getKindReturnsKind() {
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(TEST_LOCATION,
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImports(TEST_LOCATIONS,
 				this.conversionService);
 		assertThat(contributor.getKind()).isEqualTo(Kind.INITIAL_IMPORT);
 	}
 
 	@Test
 	void isActiveWhenPropertiesIsNullReturnsTrue() {
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(TEST_LOCATION,
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImports(TEST_LOCATIONS,
 				this.conversionService);
 		assertThat(contributor.isActive(null)).isTrue();
 	}
@@ -291,12 +294,12 @@ class ConfigDataEnvironmentContributorTests {
 	}
 
 	@Test
-	void ofInitialImportCreatedInitialImportContributor() {
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(TEST_LOCATION,
+	void ofInitialImportsCreatedInitialImportContributor() {
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImports(TEST_LOCATIONS,
 				this.conversionService);
 		assertThat(contributor.getKind()).isEqualTo(Kind.INITIAL_IMPORT);
 		assertThat(contributor.getResource()).isNull();
-		assertThat(contributor.getImports()).containsExactly(TEST_LOCATION);
+		assertThat(contributor.getImports()).isEqualTo(TEST_LOCATIONS);
 		assertThat(contributor.isActive(this.activationContext)).isTrue();
 		assertThat(contributor.getPropertySource()).isNull();
 		assertThat(contributor.getConfigurationPropertySource()).isNull();

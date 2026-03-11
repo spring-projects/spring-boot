@@ -18,6 +18,15 @@ In this section, we look at what it takes to get the xref:tutorial:first-applica
 
 
 
+[[howto.deployment.cloud.security]]
+== Security considerations
+
+Support for xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server[forwarded headers] should only be enabled when the application receives traffic from a trusted HTTP proxy, and is only directly accessible from a trusted network.
+When running on a cloud platform, forward headers are enabled automatically.
+This builds on the assumption that the platform will ensure that individual application instances will only be directly accessible from a trusted network.
+If that is not the case for your specific platform, set `spring.forward-headers-strategy` to `none`.
+
+
 [[howto.deployment.cloud.cloud-foundry]]
 == Cloud Foundry
 

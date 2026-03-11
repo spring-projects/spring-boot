@@ -40,7 +40,7 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 	private final RestTemplate restTemplate;
 
 	public RemoteVehicleDetailsService(ServiceProperties properties, RestTemplateBuilder restTemplateBuilder) {
-		this.restTemplate = restTemplateBuilder.rootUri(properties.getVehicleServiceRootUrl()).build();
+		this.restTemplate = restTemplateBuilder.baseUri(properties.getVehicleServiceRootUrl()).build();
 	}
 
 	@Override

@@ -1,0 +1,6 @@
+plugins {
+	id 'org.springframework.boot' version '{version-spring-boot}'
+	id 'java'
+}
+
+apply plugin: 'org.springframework.boot.aot'

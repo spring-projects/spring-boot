@@ -386,7 +386,7 @@ spring:
     serviceclient:
       echo:
         base-url: "https://echo.zuplo.io"
-        read-timeout: 2s;
+        read-timeout: 2s
         apiversion:
           default: 1.0.0
           insert:

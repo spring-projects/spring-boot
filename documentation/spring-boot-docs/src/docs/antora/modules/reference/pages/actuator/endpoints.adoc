@@ -248,6 +248,9 @@ The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request 
 Several other matcher methods are also available on javadoc:org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest[].
 See the xref:api:rest/actuator/index.adoc[API documentation] for details.
 
+NOTE: When matching for Actuator endpoints, `EndpointRequest.to("endpoint")` will consider the endpoint root and all its subpaths,
+effectively matching `"/actuator/endpoint/**"` even if the endpoint does not declare nested routes.
+
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
 

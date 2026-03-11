@@ -30,6 +30,7 @@ import static org.mockito.Mockito.never;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class OptionalLiveReloadServerTests {
 
 	@Test
