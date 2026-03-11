@@ -171,6 +171,17 @@ class BuildInfoTests {
 			.withMessage("Cannot add an entry with a null value to a property of type Map.");
 	}
 
+	@Test
+	void filenameCanBeCustomized() {
+		Project project = createProject("test");
+		BuildInfo task = createTask(project);
+		task.getFilename().set("custom-location-build-info.properties");
+		task.generateBuildProperties();
+		assertThat(new File(project.getLayout().getBuildDirectory().dir("testBuildInfo").get().getAsFile(),
+				"custom-location-build-info.properties"))
+			.exists();
+	}
+
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
 		return GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
@@ -182,7 +193,8 @@ class BuildInfoTests {
 
 	private Properties buildInfoProperties(BuildInfo task) {
 		task.generateBuildProperties();
-		return buildInfoProperties(new File(task.getDestinationDir().get().getAsFile(), "build-info.properties"));
+		return buildInfoProperties(
+				new File(task.getDestinationDir().get().getAsFile(), "META-INF/build-info.properties"));
 	}
 
 	private Properties buildInfoProperties(File file) {

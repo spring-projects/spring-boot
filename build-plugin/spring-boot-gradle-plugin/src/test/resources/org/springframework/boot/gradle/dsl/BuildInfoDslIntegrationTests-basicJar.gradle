@@ -24,4 +24,7 @@ version = '1.0'
 
 springBoot {
 	buildInfo()
+	mainClass = "com.example.Main"
 }
+
+

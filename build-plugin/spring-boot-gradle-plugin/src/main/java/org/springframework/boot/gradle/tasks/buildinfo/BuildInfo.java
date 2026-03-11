@@ -23,7 +23,9 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
@@ -35,8 +37,8 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * {@link Task} for generating a {@code build-info.properties} file from a
- * {@code Project}.
+ * {@link Task} for generating a build info properties file from
+ * {@link BuildInfoProperties}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -49,6 +51,7 @@ public abstract class BuildInfo extends DefaultTask {
 	public BuildInfo() {
 		this.properties = getProject().getObjects().newInstance(BuildInfoProperties.class, getExcludes());
 		getDestinationDir().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
+		getFilename().convention("META-INF/build-info.properties");
 	}
 
 	/**
@@ -60,8 +63,17 @@ public abstract class BuildInfo extends DefaultTask {
 	public abstract SetProperty<String> getExcludes();
 
 	/**
-	 * Generates the {@code build-info.properties} file in the configured
-	 * {@link #getDestinationDir destination}.
+	 * Returns the name of the file that is written to the {@link #getDestinationDir
+	 * destination dir}. Convention is {@code META-INF/build-info.properties}.
+	 * @return the name of the written file
+	 * @since 4.1.0
+	 */
+	@Input
+	public abstract Property<String> getFilename();
+
+	/**
+	 * Generates the build info properties file in the configured
+	 * {@link #getDestinationDir destination dir}.
 	 */
 	@TaskAction
 	public void generateBuildProperties() {
@@ -70,8 +82,8 @@ public abstract class BuildInfo extends DefaultTask {
 					this.properties.getArtifactIfNotExcluded(), this.properties.getVersionIfNotExcluded(),
 					this.properties.getNameIfNotExcluded(), this.properties.getTimeIfNotExcluded(),
 					this.properties.getAdditionalIfNotExcluded());
-			new BuildPropertiesWriter(new File(getDestinationDir().get().getAsFile(), "build-info.properties"))
-				.writeBuildProperties(details);
+			File outputFile = new File(getDestinationDir().getAsFile().get(), getFilename().get());
+			new BuildPropertiesWriter(outputFile).writeBuildProperties(details);
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
@@ -79,8 +91,8 @@ public abstract class BuildInfo extends DefaultTask {
 	}
 
 	/**
-	 * Returns the directory to which the {@code build-info.properties} file will be
-	 * written.
+	 * Returns the directory to which the build info file will be written. Convention is
+	 * <code>build/${taskName}</code>.
 	 * @return the destination directory
 	 */
 	@OutputDirectory
@@ -88,7 +100,7 @@ public abstract class BuildInfo extends DefaultTask {
 
 	/**
 	 * Returns the {@link BuildInfoProperties properties} that will be included in the
-	 * {@code build-info.properties} file.
+	 * written file.
 	 * @return the properties
 	 */
 	@Nested

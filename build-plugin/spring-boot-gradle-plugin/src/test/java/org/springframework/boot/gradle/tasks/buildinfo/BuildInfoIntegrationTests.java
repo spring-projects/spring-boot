@@ -133,7 +133,8 @@ class BuildInfoIntegrationTests {
 		BuildTask task = this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
+		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(),
+				"build/buildInfo/META-INF/build-info.properties");
 		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(buildInfoProperties.delete()).isTrue();
 		Thread.sleep(1500);
@@ -157,7 +158,7 @@ class BuildInfoIntegrationTests {
 	}
 
 	private Properties buildInfoProperties() {
-		File file = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
+		File file = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/META-INF/build-info.properties");
 		assertThat(file).isFile();
 		Properties properties = new Properties();
 		try (FileReader reader = new FileReader(file)) {

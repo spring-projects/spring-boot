@@ -38,7 +38,7 @@ import org.gradle.api.tasks.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The properties that are written into the {@code build-info.properties} file.
+ * The properties that are written into the {@code META-INF/build-info.properties} file.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

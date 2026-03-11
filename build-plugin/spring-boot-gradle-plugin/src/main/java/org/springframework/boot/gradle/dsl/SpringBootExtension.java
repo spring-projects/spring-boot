@@ -16,10 +16,9 @@
 
 package org.springframework.boot.gradle.dsl;
 
-import java.io.File;
-
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -31,7 +30,6 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
-import org.springframework.util.Assert;
 
 /**
  * Entry point to Spring Boot's Gradle DSL.
@@ -66,25 +64,25 @@ public class SpringBootExtension {
 	}
 
 	/**
-	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and configures the
-	 * Java plugin's {@code classes} task to depend upon it.
+	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and adds its
+	 * output as a {@link SourceDirectorySet#srcDir source directory} of the main source
+	 * set's {@link SourceSet#getResources resources}.
 	 * <p>
-	 * By default, the task's destination dir will be a directory named {@code META-INF}
-	 * beneath the main source set's resources output directory, and the task's project
-	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
+	 * By default, the task's project artifact will be the archive base name of the
+	 * {@code bootWar} or {@code bootJar} task.
 	 */
 	public void buildInfo() {
 		buildInfo(null);
 	}
 
 	/**
-	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and configures the
-	 * Java plugin's {@code classes} task to depend upon it. The task is passed to the
-	 * given {@code configurer} for further configuration.
+	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and adds its
+	 * output as a {@link SourceDirectorySet#srcDir source directory} of the main source
+	 * set's {@link SourceSet#getResources resources}. The task is passed to the given
+	 * {@code configurer} for further configuration.
 	 * <p>
-	 * By default, the task's destination dir will be a directory named {@code META-INF}
-	 * beneath the main source set's resources output directory, and the task's project
-	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
+	 * By default, the task's project artifact will be the archive base name of the
+	 * {@code bootWar} or {@code bootJar} task.
 	 * @param configurer the task configurer
 	 */
 	public void buildInfo(@Nullable Action<BuildInfo> configurer) {
@@ -92,10 +90,15 @@ public class SpringBootExtension {
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
 				.convention(this.project.provider(this::determineArtifactBaseName)));
+			this.project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getResources()
+				.srcDir(bootBuildInfo);
 		});
 		if (configurer != null) {
 			bootBuildInfo.configure(configurer);
@@ -105,20 +108,6 @@ public class SpringBootExtension {
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
-		task.getDestinationDir()
-			.convention(this.project.getLayout()
-				.dir(this.project.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
-	}
-
-	private File determineMainSourceSetResourcesOutputDir() {
-		File resourcesDir = this.project.getExtensions()
-			.getByType(JavaPluginExtension.class)
-			.getSourceSets()
-			.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-			.getOutput()
-			.getResourcesDir();
-		Assert.state(resourcesDir != null, "'resourcesDir' must not be null");
-		return resourcesDir;
 	}
 
 	private @Nullable String determineArtifactBaseName() {
