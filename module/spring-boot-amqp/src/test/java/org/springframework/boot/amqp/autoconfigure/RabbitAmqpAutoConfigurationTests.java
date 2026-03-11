@@ -16,14 +16,12 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.config.BaseRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbitmq.client.AmqpConnectionFactory;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin;
@@ -39,9 +37,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.retry.RetryPolicy;
-import org.springframework.core.retry.RetryTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -89,16 +84,6 @@ class RabbitAmqpAutoConfigurationTests {
 				then(secondCustomizer).should(inOrder).customize(template);
 				inOrder.verifyNoMoreInteractions();
 			});
-	}
-
-	private void assertListenerRetryTemplate(BaseRabbitListenerContainerFactory<?> rabbitListenerContainerFactory,
-			RetryPolicy retryPolicy) {
-		Advice[] adviceChain = rabbitListenerContainerFactory.getAdviceChain();
-		assertThat(adviceChain).isNotNull();
-		assertThat(adviceChain).hasSize(1);
-		Advice advice = adviceChain[0];
-		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryOperations");
-		assertThat(retryTemplate).hasFieldOrPropertyWithValue("retryPolicy", retryPolicy);
 	}
 
 	@Test
