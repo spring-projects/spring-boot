@@ -123,12 +123,22 @@ For example, to make the text yellow, use the following setting:
 
 The following colors and styles are supported:
 
+* `black`
 * `blue`
+* `bright_black`
+* `bright_blue`
+* `bright_cyan`
+* `bright_green`
+* `bright_magenta`
+* `bright_red`
+* `bright_white`
+* `bright_yellow`
 * `cyan`
 * `faint`
 * `green`
 * `magenta`
 * `red`
+* `white`
 * `yellow`
 
 
