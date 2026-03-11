@@ -122,6 +122,9 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq" or javadoc:org.testcontainers.activemq.ActiveMQContainer[]
 
+| javadoc:org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[]
+
 | javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.activemq.ArtemisContainer[]
 

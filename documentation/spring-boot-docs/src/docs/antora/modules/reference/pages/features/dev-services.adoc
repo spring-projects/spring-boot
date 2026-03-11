@@ -86,6 +86,9 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq" or "apache/activemq-classic"
 
+| javadoc:org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails[]
+| Containers named "rabbitmq" with container port 5672 mapped
+
 | javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis"
 
@@ -131,7 +134,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq" with container port 5672 mapped
 
-| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails[]
 | Containers named "rabbitmq" with container port 5552 mapped
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
