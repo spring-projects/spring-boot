@@ -61,14 +61,11 @@ public final class ColorConverter extends LogEventPatternConverter {
 
 	static {
 		Map<String, AnsiElement> ansiElements = new HashMap<>();
-		// Foreground colors (e.g. "red", "bright_blue")
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
 			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
-		// Text styles (e.g. "bold", "italic", "underline", "reverse", "faint", "normal")
 		Arrays.stream(AnsiStyle.values())
 			.forEach((style) -> ansiElements.put(style.name().toLowerCase(Locale.ROOT), style));
-		// Background colors with "bg_" prefix (e.g. "bg_red", "bg_bright_blue")
 		Arrays.stream(AnsiBackground.values())
 			.filter((bg) -> bg != AnsiBackground.DEFAULT)
 			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
@@ -153,14 +150,12 @@ public final class ColorConverter extends LogEventPatternConverter {
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
 		List<AnsiElement> stylings = new ArrayList<>();
-		for (int i = 1; i < options.length; i++) {
-			if (options[i] != null) {
-				String[] optionParts = options[i].split(",");
-				for (String optionPart : optionParts) {
-					AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
-					if (element != null) {
-						stylings.add(element);
-					}
+		if (options.length >= 2 && options[1] != null) {
+			String[] optionParts = options[1].split(",");
+			for (String optionPart : optionParts) {
+				AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
+				if (element != null) {
+					stylings.add(element);
 				}
 			}
 		}

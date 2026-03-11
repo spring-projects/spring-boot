@@ -51,14 +51,11 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
 	static {
 		Map<String, AnsiElement> ansiElements = new HashMap<>();
-		// Foreground colors (e.g. "red", "bright_blue")
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
 			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
-		// Text styles (e.g. "bold", "italic", "underline", "reverse", "faint", "normal")
 		Arrays.stream(AnsiStyle.values())
 			.forEach((style) -> ansiElements.put(style.name().toLowerCase(Locale.ROOT), style));
-		// Background colors with "bg_" prefix (e.g. "bg_red", "bg_bright_blue")
 		Arrays.stream(AnsiBackground.values())
 			.filter((bg) -> bg != AnsiBackground.DEFAULT)
 			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
