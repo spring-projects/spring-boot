@@ -485,6 +485,31 @@ class OpenTelemetryTracingAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenOpenTelemetryIsDisabledDoesNotProvideTracingSignalBeans() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(SdkTracerProvider.class);
+			assertThat(context).doesNotHaveBean(SpanLimits.class);
+			assertThat(context).doesNotHaveBean(Sampler.class);
+			assertThat(context).doesNotHaveBean(SpanProcessors.class);
+			assertThat(context).doesNotHaveBean(SpanExporters.class);
+			assertThat(context).doesNotHaveBean(BatchSpanProcessor.class);
+		});
+	}
+
+	@Test
+	void whenOpenTelemetryIsDisabledStillProvidesBridgeAndPropagationBeans() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(OtelTracer.class);
+			assertThat(context).hasSingleBean(OtelPropagator.class);
+			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
+			assertThat(context).hasSingleBean(Slf4JEventListener.class);
+			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
+			assertThat(context).hasSingleBean(ContextPropagators.class);
+			assertThat(context).hasSingleBean(TextMapPropagator.class);
+		});
+	}
+
 	@Test // gh-41439
 	@ForkedClassPath
 	void shouldPublishEventsWhenContextStorageIsInitializedEarly() {

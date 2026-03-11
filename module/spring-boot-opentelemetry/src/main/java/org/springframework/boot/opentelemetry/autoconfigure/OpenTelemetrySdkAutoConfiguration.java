@@ -31,8 +31,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
@@ -51,6 +53,7 @@ public final class OpenTelemetrySdkAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
+	@ConditionalOnEnabledOpenTelemetry
 	OpenTelemetrySdk openTelemetrySdk(ObjectProvider<SdkTracerProvider> openTelemetrySdkTracerProvider,
 			ObjectProvider<ContextPropagators> openTelemetryContextPropagators,
 			ObjectProvider<SdkLoggerProvider> openTelemetrySdkLoggerProvider,
@@ -64,6 +67,15 @@ public final class OpenTelemetrySdkAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(OpenTelemetry.class)
+	@Conditional(OnDisabledOpenTelemetryCondition.class)
+	OpenTelemetrySdk disabledOpenTelemetrySdk(ObjectProvider<ContextPropagators> openTelemetryContextPropagators) {
+		OpenTelemetrySdkBuilder builder = OpenTelemetrySdk.builder();
+		openTelemetryContextPropagators.ifAvailable(builder::setPropagators);
+		return builder.build();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		return Resource.getDefault().merge(toResource(environment, properties));
@@ -73,6 +85,19 @@ public final class OpenTelemetrySdkAutoConfiguration {
 		ResourceBuilder builder = Resource.builder();
 		new OpenTelemetryResourceAttributes(environment, properties.getResourceAttributes()).applyTo(builder::put);
 		return builder.build();
+	}
+
+	static class OnDisabledOpenTelemetryCondition extends NoneNestedConditions {
+
+		OnDisabledOpenTelemetryCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnEnabledOpenTelemetry
+		static class EnabledCondition {
+
+		}
+
 	}
 
 }

@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.ConditionalOnEnabledOpenTelemetry;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingProperties.Export;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingProperties.Limits;
@@ -44,6 +45,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = OpenTelemetrySdkAutoConfiguration.class)
 @ConditionalOnClass(SdkLoggerProvider.class)
+@ConditionalOnEnabledOpenTelemetry
 @EnableConfigurationProperties(OpenTelemetryLoggingProperties.class)
 public final class OpenTelemetryLoggingAutoConfiguration {
 

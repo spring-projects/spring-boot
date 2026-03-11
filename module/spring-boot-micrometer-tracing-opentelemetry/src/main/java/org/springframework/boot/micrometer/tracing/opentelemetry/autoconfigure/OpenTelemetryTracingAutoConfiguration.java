@@ -64,6 +64,7 @@ import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.O
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingProperties.Export;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingProperties.Limits;
+import org.springframework.boot.opentelemetry.autoconfigure.ConditionalOnEnabledOpenTelemetry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.util.CollectionUtils;
@@ -99,6 +100,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	SdkTracerProvider otelSdkTracerProvider(Resource resource, SpanProcessors spanProcessors, Sampler sampler,
 			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers, SpanLimits spanLimits) {
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
@@ -112,6 +114,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	SpanLimits otelSpanLimits() {
 		Limits limits = this.openTelemetryTracingProperties.getLimits();
 		return SpanLimits.builder()
@@ -132,6 +135,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	Sampler otelSampler() {
 		return switch (this.openTelemetryTracingProperties.getSampler()) {
 			case ALWAYS_ON -> Sampler.alwaysOn();
@@ -146,12 +150,14 @@ public final class OpenTelemetryTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	SpanProcessors spanProcessors(ObjectProvider<SpanProcessor> spanProcessors) {
 		return SpanProcessors.of(spanProcessors.orderedStream().toList());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
@@ -171,6 +177,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnEnabledOpenTelemetry
 	SpanExporters spanExporters(ObjectProvider<SpanExporter> spanExporters) {
 		return SpanExporters.of(spanExporters.orderedStream().toList());
 	}

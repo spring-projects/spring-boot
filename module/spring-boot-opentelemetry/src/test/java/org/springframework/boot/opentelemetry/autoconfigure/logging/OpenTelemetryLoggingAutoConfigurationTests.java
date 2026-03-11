@@ -71,6 +71,15 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Test
+	void whenOpenTelemetryIsDisabledDoesNotProvideBeans() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(BatchLogRecordProcessor.class);
+			assertThat(context).doesNotHaveBean(SdkLoggerProvider.class);
+			assertThat(context).doesNotHaveBean(LogLimits.class);
+		});
+	}
+
+	@Test
 	void whenOpenTelemetryLogsIsNotOnClasspathDoesNotProvideBeans() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.sdk.logs")).run((context) -> {
 			assertThat(context).doesNotHaveBean(BatchLogRecordProcessor.class);

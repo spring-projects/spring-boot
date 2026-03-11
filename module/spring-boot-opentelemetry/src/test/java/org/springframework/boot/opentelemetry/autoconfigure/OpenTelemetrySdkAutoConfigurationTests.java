@@ -180,6 +180,57 @@ class OpenTelemetrySdkAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenOpenTelemetryIsDisabledStillProvidesOpenTelemetrySdk() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(OpenTelemetrySdk.class);
+			assertThat(context).hasBean("disabledOpenTelemetrySdk");
+		});
+	}
+
+	@Test
+	void whenOpenTelemetryIsDisabledStillConfiguresPropagators() {
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false")
+			.withBean(ContextPropagators.class, ContextPropagators::noop)
+			.run((context) -> {
+				OpenTelemetry openTelemetry = context.getBean(OpenTelemetry.class);
+				assertThat(openTelemetry.getPropagators()).isNotNull();
+			});
+	}
+
+	@Test
+	void whenOpenTelemetryIsDisabledDoesNotUseTracerProvider() {
+		SdkTracerProvider tracerProvider = SdkTracerProvider.builder().build();
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false")
+			.withBean(SdkTracerProvider.class, () -> tracerProvider)
+			.run((context) -> {
+				OpenTelemetrySdk openTelemetry = context.getBean(OpenTelemetrySdk.class);
+				assertThat(openTelemetry.getSdkTracerProvider()).isNotSameAs(tracerProvider);
+			});
+	}
+
+	@Test
+	void whenOpenTelemetryIsDisabledDoesNotUseLoggerProvider() {
+		SdkLoggerProvider loggerProvider = SdkLoggerProvider.builder().build();
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false")
+			.withBean(SdkLoggerProvider.class, () -> loggerProvider)
+			.run((context) -> {
+				OpenTelemetrySdk openTelemetry = context.getBean(OpenTelemetrySdk.class);
+				assertThat(openTelemetry.getSdkLoggerProvider()).isNotSameAs(loggerProvider);
+			});
+	}
+
+	@Test
+	void whenOpenTelemetryIsDisabledDoesNotUseMeterProvider() {
+		SdkMeterProvider meterProvider = SdkMeterProvider.builder().build();
+		this.contextRunner.withPropertyValues("management.opentelemetry.enabled=false")
+			.withBean(SdkMeterProvider.class, () -> meterProvider)
+			.run((context) -> {
+				OpenTelemetrySdk openTelemetry = context.getBean(OpenTelemetrySdk.class);
+				assertThat(openTelemetry.getSdkMeterProvider()).isNotSameAs(meterProvider);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class UserConfiguration {
 

@@ -125,6 +125,17 @@ Exporting OpenTelemetry traces is only auto-configured when used together with x
 
 
 
+[[actuator.observability.opentelemetry.disabling]]
+=== Disabling OpenTelemetry
+
+The OpenTelemetry support can be disabled by setting the configprop:management.opentelemetry.enabled[] property to `false`.
+This behaves similarly to the https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration[`OTEL_SDK_DISABLED`] environment variable (but negated): when the SDK is disabled, metrics, traces, and logging will use no-op implementations.
+Context propagators are not affected and continue to function normally.
+
+NOTE: Keep in mind that Spring Boot doesn't use OpenTelemetry's metrics functionality, so metrics might still be enabled even when disabling OpenTelemetry.
+
+
+
 [[actuator.observability.opentelemetry.environment-variables]]
 === Environment variables
 
