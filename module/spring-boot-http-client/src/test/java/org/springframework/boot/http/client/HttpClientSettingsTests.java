@@ -47,7 +47,8 @@ class HttpClientSettingsTests {
 
 	@Test
 	void createWithNulls() {
-		HttpClientSettings settings = new HttpClientSettings(null, null, null, null);
+		HttpClientSettings settings = new HttpClientSettings(null, null, null, null, null);
+		assertThat(settings.cookieHandling()).isNull();
 		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
@@ -83,6 +84,16 @@ class HttpClientSettingsTests {
 	}
 
 	@Test
+	void withCookieHandlingReturnsInstanceWithUpdatedCookieHandling() {
+		HttpClientSettings settings = HttpClientSettings.defaults().withCookieHandling(HttpCookieHandling.DISABLE);
+		assertThat(settings.cookieHandling()).isEqualTo(HttpCookieHandling.DISABLE);
+		assertThat(settings.redirects()).isNull();
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.sslBundle()).isNull();
+	}
+
+	@Test
 	void withRedirectsReturnsInstanceWithUpdatedRedirect() {
 		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
@@ -94,8 +105,10 @@ class HttpClientSettingsTests {
 	@Test
 	void orElseReturnsNewInstanceWithUpdatedValues() {
 		SslBundle sslBundle = mock(SslBundle.class);
-		HttpClientSettings settings = new HttpClientSettings(null, ONE_SECOND, null, null)
-			.orElse(new HttpClientSettings(HttpRedirects.FOLLOW_WHEN_POSSIBLE, TWO_SECONDS, TWO_SECONDS, sslBundle));
+		HttpClientSettings settings = new HttpClientSettings(null, null, ONE_SECOND, null, null)
+			.orElse(new HttpClientSettings(HttpCookieHandling.ENABLE, HttpRedirects.FOLLOW_WHEN_POSSIBLE, TWO_SECONDS,
+					TWO_SECONDS, sslBundle));
+		assertThat(settings.cookieHandling()).isEqualTo(HttpCookieHandling.ENABLE);
 		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isEqualTo(TWO_SECONDS);

@@ -21,6 +21,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -80,6 +81,15 @@ class HttpClientSettingsPropertyMapperTests {
 	}
 
 	@Test
+	void mapMapsCookieHandling() {
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.setCookieHandling(HttpCookieHandling.DISABLE);
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.cookieHandling()).isEqualTo(HttpCookieHandling.DISABLE);
+	}
+
+	@Test
 	void mapMapsSslBundle() {
 		SslBundle sslBundle = mock(SslBundle.class);
 		SslBundles sslBundles = mock(SslBundles.class);
@@ -93,7 +103,7 @@ class HttpClientSettingsPropertyMapperTests {
 
 	@Test
 	void mapUsesBaseSettingsForMissingProperties() {
-		HttpClientSettings baseSettings = new HttpClientSettings(HttpRedirects.FOLLOW_WHEN_POSSIBLE,
+		HttpClientSettings baseSettings = new HttpClientSettings(null, HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				Duration.ofSeconds(15), Duration.ofSeconds(25), null);
 		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, baseSettings);
 		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();

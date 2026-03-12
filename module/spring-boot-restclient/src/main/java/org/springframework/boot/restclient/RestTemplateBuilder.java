@@ -35,6 +35,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
@@ -479,6 +480,20 @@ public class RestTemplateBuilder {
 				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
+	}
+
+	/**
+	 * Sets the cookie handling strategy on the underlying
+	 * {@link ClientHttpRequestFactory}.
+	 * @param cookieHandling the cookie handling strategy
+	 * @return a new builder instance.
+	 * @since 4.1.0
+	 */
+	public RestTemplateBuilder cookieHandling(HttpCookieHandling cookieHandling) {
+		return new RestTemplateBuilder(this.clientSettings.withCookieHandling(cookieHandling),
+				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
+				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
 
 	/**

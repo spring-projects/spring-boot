@@ -19,8 +19,11 @@ package org.springframework.boot.http.client;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.io.ClientConnector;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -73,6 +76,28 @@ class JettyClientHttpRequestFactoryBuilderTests
 		assertThat(factory).extracting("httpClient")
 			.extracting("transport")
 			.isInstanceOf(TestHttpClientTransport.class);
+	}
+
+	@Test
+	void defaultCookieHandling() {
+		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
+			.build(HttpClientSettings.defaults());
+		assertThat(factory).extracting("httpClient.cookieStore").isNull();
+	}
+
+	@Test
+	void cookieHandlingDisabled() {
+		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
+			.build(HttpClientSettings.defaults().withCookieHandling(HttpCookieHandling.DISABLE));
+		assertThat(factory).extracting("httpClient.cookieStore").isInstanceOf(HttpCookieStore.Empty.class);
+	}
+
+	@ParameterizedTest
+	@EnumSource(names = { "ENABLE", "ENABLE_WHEN_POSSIBLE" })
+	void cookieHandlingEnabled(HttpCookieHandling cookieHandling) {
+		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
+			.build(HttpClientSettings.defaults().withCookieHandling(cookieHandling));
+		assertThat(factory).extracting("httpClient.cookieStore").isInstanceOf(HttpCookieStore.Default.class);
 	}
 
 	@Override
