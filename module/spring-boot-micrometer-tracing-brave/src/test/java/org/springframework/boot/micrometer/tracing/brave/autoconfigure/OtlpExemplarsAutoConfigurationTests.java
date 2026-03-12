@@ -94,6 +94,43 @@ class OtlpExemplarsAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void otlpOutputShouldContainExemplarsWhenFilterIsAlwaysOnAndSpanIsNotSampled() {
+		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
+			.withPropertyValues("management.tracing.sampling.probability=0.0",
+					"management.tracing.exemplars.filter=always-on")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ExemplarContextProvider.class);
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test.observation", observationRegistry).stop();
+				OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
+				TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
+				otlpMeterRegistry.close();
+				assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
+					.containsOnlyOnce("exemplars")
+					.containsOnlyOnce("span_id")
+					.containsOnlyOnce("trace_id");
+			});
+	}
+
+	@Test
+	void otlpOutputShouldNotContainExemplarsWhenFilterIsAlwaysOff() {
+		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
+			.withPropertyValues("management.tracing.exemplars.filter=always-off")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ExemplarContextProvider.class);
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test.observation", observationRegistry).stop();
+				OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
+				TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
+				otlpMeterRegistry.close();
+				assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
+					.doesNotContain("exemplars")
+					.doesNotContain("span_id")
+					.doesNotContain("trace_id");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static final class CustomConfiguration {
 

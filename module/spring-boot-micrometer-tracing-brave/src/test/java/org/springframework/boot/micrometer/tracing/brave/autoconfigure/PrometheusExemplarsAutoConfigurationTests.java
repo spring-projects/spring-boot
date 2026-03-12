@@ -32,6 +32,7 @@ import io.prometheus.metrics.tracer.common.SpanContext;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
@@ -146,6 +147,33 @@ class PrometheusExemplarsAutoConfigurationTests {
 
 			assertThat(bucketTraceInfo).isNotEmpty().contains(counterTraceInfo.orElse(null));
 		});
+	}
+
+	@Test
+	void shouldFailWhenFilterIsAlwaysOn() {
+		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
+			.withPropertyValues("management.tracing.exemplars.filter=always-on")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.isInstanceOf(InvalidConfigurationPropertyValueException.class)
+				.hasMessageContaining(
+						"Property management.tracing.exemplars.filter with value 'always-on' is invalid: Prometheus doesn't support the 'always-on' exemplar filter."));
+	}
+
+	@Test
+	void prometheusOpenMetricsOutputShouldNotContainExemplarsWhenFilterIsAlwaysOff() {
+		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
+			.withPropertyValues("management.tracing.exemplars.filter=always-off")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpanContext.class);
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test.observation", observationRegistry).stop();
+				PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
+				String openMetricsOutput = prometheusMeterRegistry.scrape(OpenMetricsTextFormatWriter.CONTENT_TYPE);
+				assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");
+				assertThat(openMetricsOutput).doesNotContain("span_id").doesNotContain("trace_id");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

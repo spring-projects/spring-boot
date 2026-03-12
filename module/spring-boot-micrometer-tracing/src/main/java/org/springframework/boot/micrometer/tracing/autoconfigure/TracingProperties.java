@@ -48,6 +48,11 @@ public class TracingProperties {
 	 */
 	private final Propagation propagation = new Propagation();
 
+	/**
+	 * Exemplars configuration.
+	 */
+	private final Exemplars exemplars = new Exemplars();
+
 	public Sampling getSampling() {
 		return this.sampling;
 	}
@@ -58,6 +63,10 @@ public class TracingProperties {
 
 	public Propagation getPropagation() {
 		return this.propagation;
+	}
+
+	public Exemplars getExemplars() {
+		return this.exemplars;
 	}
 
 	public static class Sampling {
@@ -244,6 +253,46 @@ public class TracingProperties {
 			 * multiple headers</a> propagation.
 			 */
 			B3_MULTI
+
+		}
+
+	}
+
+	/**
+	 * Exemplars configuration.
+	 */
+	public static class Exemplars {
+
+		/**
+		 * Filter which exemplars are selected. ALWAYS_ON is not supported when using
+		 * Prometheus.
+		 */
+		private Filter filter = Filter.SAMPLED_TRACES;
+
+		public Filter getFilter() {
+			return this.filter;
+		}
+
+		public void setFilter(Filter filter) {
+			this.filter = filter;
+		}
+
+		public enum Filter {
+
+			/**
+			 * Always select exemplars, regardless of whether the span is sampled.
+			 */
+			ALWAYS_ON,
+
+			/**
+			 * Never select exemplars.
+			 */
+			ALWAYS_OFF,
+
+			/**
+			 * Only select exemplars from sampled traces.
+			 */
+			SAMPLED_TRACES
 
 		}
 

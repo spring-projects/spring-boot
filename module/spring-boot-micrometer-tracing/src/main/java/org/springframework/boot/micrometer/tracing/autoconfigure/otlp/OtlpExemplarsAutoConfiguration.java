@@ -29,7 +29,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.Contract;
 import org.springframework.util.function.SingletonSupplier;
@@ -39,6 +42,7 @@ import org.springframework.util.function.SingletonSupplier;
  * Exemplars with Micrometer Tracing.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  * @since 4.1.0
  */
 @AutoConfiguration(
@@ -46,12 +50,14 @@ import org.springframework.util.function.SingletonSupplier;
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, ExemplarContextProvider.class })
+@EnableConfigurationProperties(TracingProperties.class)
 public final class OtlpExemplarsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ExemplarContextProvider exemplarContextProvider(ObjectProvider<Tracer> tracerProvider) {
-		return new LazyTracingExemplarContextProvider(tracerProvider);
+	ExemplarContextProvider exemplarContextProvider(ObjectProvider<Tracer> tracerProvider,
+			TracingProperties properties) {
+		return new LazyTracingExemplarContextProvider(tracerProvider, properties.getExemplars().getFilter());
 	}
 
 	/**
@@ -64,14 +70,17 @@ public final class OtlpExemplarsAutoConfiguration {
 
 		private final SingletonSupplier<Tracer> tracer;
 
-		LazyTracingExemplarContextProvider(ObjectProvider<Tracer> tracerProvider) {
+		private final Filter filter;
+
+		LazyTracingExemplarContextProvider(ObjectProvider<Tracer> tracerProvider, Filter filter) {
 			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
+			this.filter = filter;
 		}
 
 		@Override
 		public @Nullable OtlpExemplarContext getExemplarContext() {
 			Span span = this.tracer.obtain().currentSpan();
-			if (isSampled(span)) {
+			if (isExemplar(span)) {
 				TraceContext context = span.context();
 				return new OtlpExemplarContext(context.traceId(), context.spanId());
 			}
@@ -79,10 +88,18 @@ public final class OtlpExemplarsAutoConfiguration {
 		}
 
 		@Contract("null -> false")
-		private boolean isSampled(@Nullable Span span) {
+		private boolean isExemplar(@Nullable Span span) {
 			if (span == null) {
 				return false;
 			}
+			return switch (this.filter) {
+				case ALWAYS_ON -> true;
+				case ALWAYS_OFF -> false;
+				case SAMPLED_TRACES -> isSampled(span);
+			};
+		}
+
+		private boolean isSampled(Span span) {
 			Boolean sampled = span.context().sampled();
 			return sampled != null && sampled;
 		}

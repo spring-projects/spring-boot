@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Filter;
 import org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpExemplarsAutoConfiguration.LazyTracingExemplarContextProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,8 +63,8 @@ class LazyTracingExemplarContextProviderTests {
 
 	};
 
-	private final LazyTracingExemplarContextProvider contextProvider = new LazyTracingExemplarContextProvider(
-			this.objectProvider);
+	private LazyTracingExemplarContextProvider contextProvider = new LazyTracingExemplarContextProvider(
+			this.objectProvider, Filter.SAMPLED_TRACES);
 
 	@Test
 	void whenCurrentSpanIsNullThenExemplarContextIsNull() {
@@ -142,6 +143,34 @@ class LazyTracingExemplarContextProviderTests {
 		given(this.tracer.currentSpan()).willReturn(span);
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.sampled()).willReturn(null);
+		given(span.context()).willReturn(traceContext);
+		assertThat(this.contextProvider.getExemplarContext()).isNull();
+	}
+
+	@Test
+	void whenFilterIsAlwaysOnAndSpanIsNotSampledThenExemplarContextIsNotNull() {
+		this.contextProvider = new LazyTracingExemplarContextProvider(this.objectProvider, Filter.ALWAYS_ON);
+		Span span = mock(Span.class);
+		given(this.tracer.currentSpan()).willReturn(span);
+		TraceContext traceContext = mock(TraceContext.class);
+		given(traceContext.sampled()).willReturn(false);
+		given(span.context()).willReturn(traceContext);
+		assertThat(this.contextProvider.getExemplarContext()).isNotNull();
+	}
+
+	@Test
+	void whenFilterIsAlwaysOnAndCurrentSpanIsNullThenExemplarContextIsNull() {
+		this.contextProvider = new LazyTracingExemplarContextProvider(this.objectProvider, Filter.ALWAYS_ON);
+		assertThat(this.contextProvider.getExemplarContext()).isNull();
+	}
+
+	@Test
+	void whenFilterIsAlwaysOffAndSpanIsSampledThenExemplarContextIsNull() {
+		this.contextProvider = new LazyTracingExemplarContextProvider(this.objectProvider, Filter.ALWAYS_OFF);
+		Span span = mock(Span.class);
+		given(this.tracer.currentSpan()).willReturn(span);
+		TraceContext traceContext = mock(TraceContext.class);
+		given(traceContext.sampled()).willReturn(true);
 		given(span.context()).willReturn(traceContext);
 		assertThat(this.contextProvider.getExemplarContext()).isNull();
 	}
