@@ -109,6 +109,9 @@ public final class ReactorHttpClientBuilder {
 			.orFrom(() -> HttpRedirects.FOLLOW_WHEN_POSSIBLE)
 			.as(this::followRedirects)
 			.to(httpClient, HttpClient::followRedirect);
+		if (HttpCookieHandling.ENABLE.equals(settings.cookieHandling())) {
+			throw new IllegalArgumentException("Reactor Netty HTTP client does not support cookie handling");
+		}
 		httpClient = map.from(settings::sslBundle).to(httpClient, this::secure);
 		return this.customizer.apply(httpClient);
 	}

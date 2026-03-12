@@ -85,7 +85,7 @@ public final class JdkHttpClientBuilder {
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(settings::cookies).as(this::asCookieHandler).to(builder::cookieHandler);
+		map.from(settings::cookieHandling).as(this::asCookieHandler).to(builder::cookieHandler);
 		map.from(settings::redirects).always().as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
@@ -102,8 +102,8 @@ public final class JdkHttpClientBuilder {
 		return parameters;
 	}
 
-	private @Nullable CookieHandler asCookieHandler(HttpCookies cookies) {
-		return switch (cookies) {
+	private @Nullable CookieHandler asCookieHandler(HttpCookieHandling cookieHandling) {
+		return switch (cookieHandling) {
 			case ENABLE_WHEN_POSSIBLE, ENABLE -> new CookieManager();
 			case DISABLE -> null;
 		};

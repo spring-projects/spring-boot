@@ -22,20 +22,24 @@ package org.springframework.boot.http.client;
  * @author Apoorv Darshan
  * @since 4.1.0
  */
-public enum HttpCookies {
+public enum HttpCookieHandling {
 
 	/**
-	 * Enable cookies (if the underlying library has support).
+	 * Enable cookie handling (if the underlying library has support). When enabled,
+	 * cookies received in a response are stored and automatically included in subsequent
+	 * matching requests.
 	 */
 	ENABLE_WHEN_POSSIBLE,
 
 	/**
-	 * Enable cookies (fail if the underlying library has no support).
+	 * Enable cookie handling (fail if the underlying library has no support). When
+	 * enabled, cookies received in a response are stored and automatically included in
+	 * subsequent matching requests.
 	 */
 	ENABLE,
 
 	/**
-	 * Disable cookies (fail if the underlying library has no support).
+	 * Disable cookie handling (fail if the underlying library has no support).
 	 */
 	DISABLE
 

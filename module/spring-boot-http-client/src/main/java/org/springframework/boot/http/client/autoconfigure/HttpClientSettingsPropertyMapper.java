@@ -49,6 +49,7 @@ public class HttpClientSettingsPropertyMapper {
 			settings = map.from(properties::getRedirects).to(settings, HttpClientSettings::withRedirects);
 			settings = map.from(properties::getConnectTimeout).to(settings, HttpClientSettings::withConnectTimeout);
 			settings = map.from(properties::getReadTimeout).to(settings, HttpClientSettings::withReadTimeout);
+			settings = map.from(properties::getCookieHandling).to(settings, HttpClientSettings::withCookieHandling);
 			settings = map.from(properties::getSsl)
 				.as(HttpClientSettingsProperties.Ssl::getBundle)
 				.as(this::getSslBundle)

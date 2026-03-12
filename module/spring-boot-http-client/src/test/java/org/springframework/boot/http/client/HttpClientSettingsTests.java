@@ -48,7 +48,7 @@ class HttpClientSettingsTests {
 	@Test
 	void createWithNulls() {
 		HttpClientSettings settings = new HttpClientSettings(null, null, null, null, null);
-		assertThat(settings.cookies()).isNull();
+		assertThat(settings.cookieHandling()).isNull();
 		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
@@ -84,9 +84,9 @@ class HttpClientSettingsTests {
 	}
 
 	@Test
-	void withCookiesReturnsInstanceWithUpdatedCookies() {
-		HttpClientSettings settings = HttpClientSettings.defaults().withCookies(HttpCookies.DISABLE);
-		assertThat(settings.cookies()).isEqualTo(HttpCookies.DISABLE);
+	void withCookieHandlingReturnsInstanceWithUpdatedCookieHandling() {
+		HttpClientSettings settings = HttpClientSettings.defaults().withCookieHandling(HttpCookieHandling.DISABLE);
+		assertThat(settings.cookieHandling()).isEqualTo(HttpCookieHandling.DISABLE);
 		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
@@ -106,9 +106,9 @@ class HttpClientSettingsTests {
 	void orElseReturnsNewInstanceWithUpdatedValues() {
 		SslBundle sslBundle = mock(SslBundle.class);
 		HttpClientSettings settings = new HttpClientSettings(null, null, ONE_SECOND, null, null)
-			.orElse(new HttpClientSettings(HttpCookies.ENABLE, HttpRedirects.FOLLOW_WHEN_POSSIBLE, TWO_SECONDS,
+			.orElse(new HttpClientSettings(HttpCookieHandling.ENABLE, HttpRedirects.FOLLOW_WHEN_POSSIBLE, TWO_SECONDS,
 					TWO_SECONDS, sslBundle));
-		assertThat(settings.cookies()).isEqualTo(HttpCookies.ENABLE);
+		assertThat(settings.cookieHandling()).isEqualTo(HttpCookieHandling.ENABLE);
 		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isEqualTo(TWO_SECONDS);

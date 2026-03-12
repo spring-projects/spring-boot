@@ -41,7 +41,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
-import org.springframework.boot.http.client.HttpCookies;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
@@ -164,8 +164,7 @@ public class TestRestTemplate {
 	private static HttpComponentsClientHttpRequestFactoryBuilder applyHttpClientOptions(
 			HttpComponentsClientHttpRequestFactoryBuilder builder, HttpClientOption[] httpClientOptions) {
 		if (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions)) {
-			builder = builder.withDefaultRequestConfigCustomizer(
-					new CookieSpecCustomizer(true));
+			builder = builder.withDefaultRequestConfigCustomizer(new CookieSpecCustomizer(true));
 		}
 		if (HttpClientOption.SSL.isPresent(httpClientOptions)) {
 			builder = builder.withTlsSocketStrategyFactory(new SelfSignedTlsSocketStrategyFactory());
@@ -979,15 +978,15 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will apply the given {@link HttpCookies}. The request factory used is
-	 * a new instance of the underlying {@link RestTemplate}'s request factory type (when
-	 * possible).
-	 * @param cookies the new cookie settings
+	 * except that it will apply the given {@link HttpCookieHandling}. The request factory
+	 * used is a new instance of the underlying {@link RestTemplate}'s request factory
+	 * type (when possible).
+	 * @param cookieHandling the new cookie handling
 	 * @return the new template
 	 * @since 4.1.0
 	 */
-	public TestRestTemplate withCookies(HttpCookies cookies) {
-		return withClientSettings((settings) -> settings.withCookies(cookies));
+	public TestRestTemplate withCookieHandling(HttpCookieHandling cookieHandling) {
+		return withClientSettings((settings) -> settings.withCookieHandling(cookieHandling));
 	}
 
 	/**
@@ -1053,7 +1052,7 @@ public class TestRestTemplate {
 		/**
 		 * Enable cookies.
 		 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
-		 * {@link TestRestTemplate#withCookies(HttpCookies)}
+		 * {@link TestRestTemplate#withCookieHandling(HttpCookieHandling)}
 		 */
 		@Deprecated(since = "4.1.0", forRemoval = true)
 		ENABLE_COOKIES,

@@ -25,7 +25,7 @@ import org.springframework.boot.ssl.SslBundle;
 /**
  * Settings that can be applied when creating an imperative or reactive HTTP client.
  *
- * @param cookies the cookie handling strategy to use or null to use the underlying
+ * @param cookieHandling the cookie handling strategy to use or null to use the underlying
  * library's default
  * @param redirects the follow redirect strategy to use or null to redirect whenever the
  * underlying library allows it
@@ -35,7 +35,7 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Phillip Webb
  * @since 3.5.0
  */
-public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRedirects redirects,
+public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @Nullable HttpRedirects redirects,
 		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
 	/**
@@ -45,7 +45,7 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @param readTimeout the read timeout
 	 * @param sslBundle the SSL bundle providing SSL configuration
 	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
-	 * {@link HttpClientSettings#HttpClientSettings(HttpCookies, HttpRedirects, Duration, Duration, SslBundle)}
+	 * {@link HttpClientSettings#HttpClientSettings(HttpCookieHandling, HttpRedirects, Duration, Duration, SslBundle)}
 	 */
 	@Deprecated(since = "4.1.0", forRemoval = true)
 	public HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
@@ -58,12 +58,13 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated cookie handling
 	 * setting.
-	 * @param cookies the new cookie handling setting
+	 * @param cookieHandling the new cookie handling setting
 	 * @return a new {@link HttpClientSettings} instance
 	 * @since 4.1.0
 	 */
-	public HttpClientSettings withCookies(@Nullable HttpCookies cookies) {
-		return new HttpClientSettings(cookies, this.redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+	public HttpClientSettings withCookieHandling(@Nullable HttpCookieHandling cookieHandling) {
+		return new HttpClientSettings(cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
+				this.sslBundle);
 	}
 
 	/**
@@ -74,7 +75,8 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withConnectTimeout(@Nullable Duration connectTimeout) {
-		return new HttpClientSettings(this.cookies, this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, this.readTimeout,
+				this.sslBundle);
 	}
 
 	/**
@@ -85,7 +87,8 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withReadTimeout(@Nullable Duration readTimeout) {
-		return new HttpClientSettings(this.cookies, this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, readTimeout,
+				this.sslBundle);
 	}
 
 	/**
@@ -97,7 +100,7 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
-		return new HttpClientSettings(this.cookies, this.redirects, connectTimeout, readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -108,7 +111,8 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withSslBundle(@Nullable SslBundle sslBundle) {
-		return new HttpClientSettings(this.cookies, this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
+		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
+				sslBundle);
 	}
 
 	/**
@@ -118,7 +122,8 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withRedirects(@Nullable HttpRedirects redirects) {
-		return new HttpClientSettings(this.cookies, redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookieHandling, redirects, this.connectTimeout, this.readTimeout,
+				this.sslBundle);
 	}
 
 	/**
@@ -132,12 +137,12 @@ public record HttpClientSettings(@Nullable HttpCookies cookies, @Nullable HttpRe
 		if (other == null) {
 			return this;
 		}
-		HttpCookies cookies = (cookies() != null) ? cookies() : other.cookies();
+		HttpCookieHandling cookieHandling = (cookieHandling() != null) ? cookieHandling() : other.cookieHandling();
 		HttpRedirects redirects = (redirects() != null) ? redirects() : other.redirects();
 		Duration connectTimeout = (connectTimeout() != null) ? connectTimeout() : other.connectTimeout();
 		Duration readTimeout = (readTimeout() != null) ? readTimeout() : other.readTimeout();
 		SslBundle sslBundle = (sslBundle() != null) ? sslBundle() : other.sslBundle();
-		return new HttpClientSettings(cookies, redirects, connectTimeout, readTimeout, sslBundle);
+		return new HttpClientSettings(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
 	/**

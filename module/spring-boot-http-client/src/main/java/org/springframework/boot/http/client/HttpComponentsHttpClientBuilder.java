@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -220,8 +221,11 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private RequestConfig createDefaultRequestConfig(HttpClientSettings settings) {
 		RequestConfig.Builder builder = RequestConfig.custom();
-		String cookieSpec = HttpComponentsCookieSpec.get(settings.cookies());
-		if (cookieSpec != null) {
+		if (settings.cookieHandling() != null) {
+			String cookieSpec = switch (settings.cookieHandling()) {
+				case ENABLE_WHEN_POSSIBLE, ENABLE -> StandardCookieSpec.STRICT;
+				case DISABLE -> StandardCookieSpec.IGNORE;
+			};
 			builder.setCookieSpec(cookieSpec);
 		}
 		this.defaultRequestConfigCustomizer.accept(builder);

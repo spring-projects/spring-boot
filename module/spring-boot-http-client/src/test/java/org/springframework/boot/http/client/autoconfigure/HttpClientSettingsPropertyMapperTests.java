@@ -21,6 +21,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -77,6 +78,15 @@ class HttpClientSettingsPropertyMapperTests {
 		properties.setReadTimeout(Duration.ofSeconds(30));
 		HttpClientSettings result = mapper.map(properties);
 		assertThat(result.readTimeout()).isEqualTo(Duration.ofSeconds(30));
+	}
+
+	@Test
+	void mapMapsCookieHandling() {
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.setCookieHandling(HttpCookieHandling.DISABLE);
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.cookieHandling()).isEqualTo(HttpCookieHandling.DISABLE);
 	}
 
 	@Test

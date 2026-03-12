@@ -21,6 +21,7 @@ import java.time.Duration;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 
 /**
@@ -46,6 +47,11 @@ public abstract class HttpClientSettingsProperties {
 	 * Default read timeout for a client HTTP request.
 	 */
 	private @Nullable Duration readTimeout;
+
+	/**
+	 * Handling for HTTP cookies.
+	 */
+	private @Nullable HttpCookieHandling cookieHandling;
 
 	/**
 	 * Default SSL configuration for a client HTTP request.
@@ -74,6 +80,14 @@ public abstract class HttpClientSettingsProperties {
 
 	public void setReadTimeout(@Nullable Duration readTimeout) {
 		this.readTimeout = readTimeout;
+	}
+
+	public @Nullable HttpCookieHandling getCookieHandling() {
+		return this.cookieHandling;
+	}
+
+	public void setCookieHandling(@Nullable HttpCookieHandling cookieHandling) {
+		this.cookieHandling = cookieHandling;
 	}
 
 	public Ssl getSsl() {

@@ -26,6 +26,7 @@ import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.classic.RedirectExec;
 import org.apache.hc.client5.http.protocol.RedirectStrategy;
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.HttpCookies;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
@@ -154,11 +155,16 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withCookies() {
+	void withCookieHandling() {
 		TestRestTemplate template = new TestRestTemplate();
 		assertThat(getRequestConfig(template).getCookieSpec()).isNull();
-		assertThat(getRequestConfig(template.withCookies(HttpCookies.ENABLE)).getCookieSpec()).isEqualTo("strict");
-		assertThat(getRequestConfig(template.withCookies(HttpCookies.DISABLE)).getCookieSpec()).isEqualTo("ignoreCookies");
+		assertThat(getRequestConfig(template.withCookieHandling(HttpCookieHandling.ENABLE)).getCookieSpec())
+			.isEqualTo(StandardCookieSpec.STRICT);
+		assertThat(
+				getRequestConfig(template.withCookieHandling(HttpCookieHandling.ENABLE_WHEN_POSSIBLE)).getCookieSpec())
+			.isEqualTo(StandardCookieSpec.STRICT);
+		assertThat(getRequestConfig(template.withCookieHandling(HttpCookieHandling.DISABLE)).getCookieSpec())
+			.isEqualTo(StandardCookieSpec.IGNORE);
 	}
 
 	@Test

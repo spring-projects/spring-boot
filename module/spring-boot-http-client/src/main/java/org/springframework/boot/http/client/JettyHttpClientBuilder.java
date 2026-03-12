@@ -141,7 +141,7 @@ public final class JettyHttpClientBuilder {
 		HttpClient httpClient = createHttpClient(settings.readTimeout(), transport);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).as(Duration::toMillis).to(httpClient::setConnectTimeout);
-		map.from(settings::cookies).as(this::asCookieStore).to(httpClient::setHttpCookieStore);
+		map.from(settings::cookieHandling).as(this::asCookieStore).to(httpClient::setHttpCookieStore);
 		map.from(settings::redirects).always().as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
 		return httpClient;
@@ -184,9 +184,9 @@ public final class JettyHttpClientBuilder {
 		return factory;
 	}
 
-	private @Nullable HttpCookieStore asCookieStore(HttpCookies cookies) {
-		return switch (cookies) {
-			case ENABLE_WHEN_POSSIBLE, ENABLE -> null;
+	private @Nullable HttpCookieStore asCookieStore(HttpCookieHandling cookieHandling) {
+		return switch (cookieHandling) {
+			case ENABLE_WHEN_POSSIBLE, ENABLE -> new HttpCookieStore.Default();
 			case DISABLE -> new HttpCookieStore.Empty();
 		};
 	}
