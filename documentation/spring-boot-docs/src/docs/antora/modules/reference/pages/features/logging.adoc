@@ -113,15 +113,15 @@ The following table describes the mapping of log levels to colors:
 | Green
 |===
 
-Alternatively, you can specify the color or style that should be used by providing it as an option to the conversion.
-For example, to make the text yellow, use the following setting:
+Alternatively, you can specify the color and styles that should be used by providing them as options to the conversion.
+For example, to make the text yellow and bold, use the following setting:
 
 [source]
 ----
-%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){yellow}
+%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){yellow,bold}
 ----
 
-The following colors and styles are supported:
+The following text colors are supported:
 
 * `black`
 * `blue`
@@ -134,12 +134,39 @@ The following colors and styles are supported:
 * `bright_white`
 * `bright_yellow`
 * `cyan`
-* `faint`
 * `green`
 * `magenta`
 * `red`
 * `white`
 * `yellow`
+
+The following background colors are supported:
+
+* `bg_black`
+* `bg_blue`
+* `bg_bright_black`
+* `bg_bright_blue`
+* `bg_bright_cyan`
+* `bg_bright_green`
+* `bg_bright_magenta`
+* `bg_bright_red`
+* `bg_bright_white`
+* `bg_bright_yellow`
+* `bg_cyan`
+* `bg_green`
+* `bg_magenta`
+* `bg_red`
+* `bg_white`
+* `bg_yellow`
+
+The following styles are supported:
+
+* `bold`
+* `faint`
+* `italic`
+* `normal`
+* `reverse`
+* `underline`
 
 
 
