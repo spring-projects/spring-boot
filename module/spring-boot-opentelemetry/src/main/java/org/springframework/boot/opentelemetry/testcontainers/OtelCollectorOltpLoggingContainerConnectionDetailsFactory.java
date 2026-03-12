@@ -16,11 +16,13 @@
 
 package org.springframework.boot.opentelemetry.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -64,7 +66,13 @@ class OtelCollectorOltpLoggingContainerConnectionDetailsFactory
 				case HTTP -> OTLP_HTTP_PORT;
 				case GRPC -> OTLP_GRPC_PORT;
 			};
-			return "http://%s:%d/v1/logs".formatted(getContainer().getHost(), getContainer().getMappedPort(port));
+			String scheme = (getSslBundle() != null) ? "https" : "http";
+			return "%s://%s:%d/v1/logs".formatted(scheme, getContainer().getHost(), getContainer().getMappedPort(port));
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

@@ -55,6 +55,7 @@ class GrafanaOtlpLoggingContainerConnectionDetailsFactoryTests {
 			.isEqualTo("%s/v1/logs".formatted(container.getOtlpGrpcUrl()));
 		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
 			.isEqualTo("%s/v1/logs".formatted(container.getOtlpHttpUrl()));
+		assertThat(this.connectionDetails.getSslBundle()).isNull();
 	}
 
 	@Configuration(proxyBeanMethods = false)

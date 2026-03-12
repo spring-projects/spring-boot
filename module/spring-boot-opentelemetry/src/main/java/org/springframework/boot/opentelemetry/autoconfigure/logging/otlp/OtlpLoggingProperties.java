@@ -66,6 +66,8 @@ public class OtlpLoggingProperties {
 	 */
 	private final Map<String, String> headers = new HashMap<>();
 
+	private final Ssl ssl = new Ssl();
+
 	public @Nullable String getEndpoint() {
 		return this.endpoint;
 	}
@@ -108,6 +110,27 @@ public class OtlpLoggingProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 	public enum Compression {

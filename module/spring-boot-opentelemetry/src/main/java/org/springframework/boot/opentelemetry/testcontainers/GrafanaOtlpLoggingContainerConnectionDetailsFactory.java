@@ -16,10 +16,12 @@
 
 package org.springframework.boot.opentelemetry.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.grafana.LgtmStackContainer;
 
 import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -58,7 +60,15 @@ class GrafanaOtlpLoggingContainerConnectionDetailsFactory
 				case HTTP -> getContainer().getOtlpHttpUrl();
 				case GRPC -> getContainer().getOtlpGrpcUrl();
 			};
+			if (getSslBundle() != null) {
+				url = url.replaceFirst("^http://", "https://");
+			}
 			return "%s/v1/logs".formatted(url);
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

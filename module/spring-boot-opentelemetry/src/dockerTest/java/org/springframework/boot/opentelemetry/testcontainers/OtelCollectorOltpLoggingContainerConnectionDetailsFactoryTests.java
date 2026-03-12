@@ -56,6 +56,7 @@ class OtelCollectorOltpLoggingContainerConnectionDetailsFactoryTests {
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/logs");
 		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/logs");
+		assertThat(this.connectionDetails.getSslBundle()).isNull();
 	}
 
 	@Configuration(proxyBeanMethods = false)
