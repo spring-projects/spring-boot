@@ -17,7 +17,6 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
 import java.net.http.HttpClient;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.net.ssl.SSLContext;
@@ -240,8 +239,9 @@ class OtlpMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void whenCustomConnectionDetailsProvidesSslBundleConfiguresSslOnHttpSender() throws NoSuchAlgorithmException {
+	void whenCustomConnectionDetailsProvidesSslBundleConfiguresSslOnHttpSender() throws Exception {
 		SSLContext customSslContext = SSLContext.getInstance("TLS");
+		customSslContext.init(null, null, null);
 		SslBundle sslBundle = mock(SslBundle.class);
 		given(sslBundle.createSslContext()).willReturn(customSslContext);
 		given(sslBundle.getOptions()).willReturn(SslOptions.NONE);
