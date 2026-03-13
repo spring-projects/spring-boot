@@ -247,7 +247,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing RabbitMQ.
 	 */
-	RABBITMQ("rabbitmq", "3.11-alpine", () -> RabbitMQContainer.class,
+	RABBITMQ("rabbitmq", "4.2.4-alpine", () -> RabbitMQContainer.class,
 			(container) -> ((RabbitMQContainer) container).withStartupTimeout(Duration.ofMinutes(4))),
 
 	/**

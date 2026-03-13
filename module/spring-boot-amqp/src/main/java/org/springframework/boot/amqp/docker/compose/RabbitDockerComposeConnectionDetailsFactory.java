@@ -16,25 +16,20 @@
 
 package org.springframework.boot.amqp.docker.compose;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
-import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.ssl.SslBundle;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link RabbitStreamConnectionDetails} for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link AmqpConnectionDetails}
+ * for a {@code rabbitmq} service.
  *
- * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
-class RabbitDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
+class RabbitDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<AmqpConnectionDetails> {
 
 	private static final int RABBITMQ_PORT = 5672;
 
@@ -43,10 +38,9 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	@Override
-	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
-			DockerComposeConnectionSource source) {
+	protected @Nullable AmqpConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
 		try {
-			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+			return new AmqpDockerComposeConnectionDetails(source.getRunningService());
 		}
 		catch (IllegalStateException ex) {
 			return null;
@@ -54,23 +48,19 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link RabbitConnectionDetails} backed by a {@code rabbitmq}
-	 * {@link RunningService}.
+	 * {@link AmqpConnectionDetails} backed by a {@code rabbitmq} {@link RunningService}.
 	 */
-	static class RabbitDockerComposeConnectionDetails extends DockerComposeConnectionDetails
-			implements RabbitConnectionDetails {
+	static class AmqpDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+			implements AmqpConnectionDetails {
 
 		private final RabbitEnvironment environment;
 
-		private final List<Address> addresses;
+		private final Address address;
 
-		private final @Nullable SslBundle sslBundle;
-
-		protected RabbitDockerComposeConnectionDetails(RunningService service) {
+		protected AmqpDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
-			this.sslBundle = getSslBundle(service);
-			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
+			this.address = new Address(service.host(), service.ports().get(RABBITMQ_PORT));
 		}
 
 		@Override
@@ -84,18 +74,13 @@ class RabbitDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public @Nullable SslBundle getSslBundle() {
-			return this.sslBundle;
-		}
-
-		@Override
 		public String getVirtualHost() {
 			return "/";
 		}
 
 		@Override
-		public List<Address> getAddresses() {
-			return this.addresses;
+		public Address getAddress() {
+			return this.address;
 		}
 
 	}
