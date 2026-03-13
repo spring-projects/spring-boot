@@ -85,6 +85,17 @@ class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldNotCreateWebSocketRouteProviderWhenDedicatedPortIsSet() {
+		reactiveWebContextRunner()
+			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.transport=websocket",
+					"spring.rsocket.server.mapping-path=/rsocket")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RSocketServerFactory.class);
+				assertThat(context).doesNotHaveBean(RSocketWebSocketNettyRouteProvider.class);
+			});
+	}
+
+	@Test
 	void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
 		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
 			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)

@@ -150,7 +150,7 @@ public final class RSocketServerAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(name = "spring.rsocket.server.port", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.rsocket.server.port", havingValue = "false", matchIfMissing = true)
 		static class HasNoPortConfigured {
 
 		}
