@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -41,6 +42,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.client.RestTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory}.
@@ -60,8 +63,12 @@ class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTes
 	@Autowired
 	private MeterRegistry meterRegistry;
 
+	@Autowired
+	private OtlpMetricsConnectionDetails connectionDetails;
+
 	@Test
 	void connectionCanBeMadeToOpenTelemetryCollectorContainer() {
+		assertThat(this.connectionDetails.getSslBundle()).isNull();
 		Counter.builder("test.counter").register(this.meterRegistry).increment(42);
 		Gauge.builder("test.gauge", () -> 12).register(this.meterRegistry);
 		Timer.builder("test.timer").register(this.meterRegistry).record(Duration.ofMillis(123));

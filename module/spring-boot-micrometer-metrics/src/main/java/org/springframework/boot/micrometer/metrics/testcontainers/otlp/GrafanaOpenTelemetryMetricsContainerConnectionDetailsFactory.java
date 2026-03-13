@@ -16,9 +16,11 @@
 
 package org.springframework.boot.micrometer.metrics.testcontainers.otlp;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.grafana.LgtmStackContainer;
 
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -54,7 +56,16 @@ class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory
 
 		@Override
 		public String getUrl() {
-			return "%s/v1/metrics".formatted(getContainer().getOtlpHttpUrl());
+			String url = getContainer().getOtlpHttpUrl();
+			if (getSslBundle() != null) {
+				url = url.replaceFirst("^http://", "https://");
+			}
+			return "%s/v1/metrics".formatted(url);
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

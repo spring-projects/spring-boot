@@ -55,7 +55,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		this.properties = new OtlpMetricsProperties();
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
-		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties);
+		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties, null);
 	}
 
 	@Test

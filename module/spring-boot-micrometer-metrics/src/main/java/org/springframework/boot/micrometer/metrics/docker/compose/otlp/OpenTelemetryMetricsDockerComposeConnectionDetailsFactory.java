@@ -16,10 +16,13 @@
 
 package org.springframework.boot.micrometer.metrics.docker.compose.otlp;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -52,15 +55,24 @@ class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 
 		private final int port;
 
+		private final @Nullable SslBundle sslBundle;
+
 		private OpenTelemetryMetricsDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.port = source.ports().get(OTLP_PORT);
+			this.sslBundle = getSslBundle(source);
 		}
 
 		@Override
 		public String getUrl() {
-			return "http://%s:%d/v1/metrics".formatted(this.host, this.port);
+			String scheme = (this.sslBundle != null) ? "https" : "http";
+			return "%s://%s:%d/v1/metrics".formatted(scheme, this.host, this.port);
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 	}

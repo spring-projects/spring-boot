@@ -16,9 +16,12 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
+import java.time.Duration;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.ExemplarContextProvider;
 import io.micrometer.registry.otlp.OtlpConfig;
+import io.micrometer.registry.otlp.OtlpHttpMetricsSender;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
 import org.jspecify.annotations.Nullable;
@@ -36,10 +39,14 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConf
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryProperties;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
@@ -65,8 +72,8 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails() {
-		return new PropertiesOtlpMetricsConnectionDetails(this.properties);
+	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesOtlpMetricsConnectionDetails(this.properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -78,10 +85,19 @@ public final class OtlpMetricsExportAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(OtlpMetricsSender.class)
+	OtlpHttpMetricsSender otlpMetricsSender(OtlpMetricsConnectionDetails connectionDetails) {
+		Duration connectTimeout = this.properties.getConnectTimeout();
+		Duration timeout = connectTimeout.plus(this.properties.getReadTimeout());
+		JdkClientHttpSender httpSender = new JdkClientHttpSender(connectTimeout, timeout,
+				connectionDetails.getSslBundle());
+		return new OtlpHttpMetricsSender(httpSender);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender,
+	OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock, OtlpMetricsSender metricsSender,
 			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
 		return builder(otlpConfig, clock, metricsSender, exemplarContextProvider).build();
 	}
@@ -90,19 +106,18 @@ public final class OtlpMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender,
-			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
+			OtlpMetricsSender metricsSender, ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
 		VirtualThreadTaskExecutor executor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
 		return builder(otlpConfig, clock, metricsSender, exemplarContextProvider)
 			.threadFactory(executor.getVirtualThreadFactory())
 			.build();
 	}
 
-	private OtlpMeterRegistry.Builder builder(OtlpConfig otlpConfig, Clock clock,
-			ObjectProvider<OtlpMetricsSender> metricsSender,
+	private OtlpMeterRegistry.Builder builder(OtlpConfig otlpConfig, Clock clock, OtlpMetricsSender metricsSender,
 			ObjectProvider<ExemplarContextProvider> exemplarContextProvider) {
-		OtlpMeterRegistry.Builder builder = OtlpMeterRegistry.builder(otlpConfig).clock(clock);
-		metricsSender.ifAvailable(builder::metricsSender);
+		OtlpMeterRegistry.Builder builder = OtlpMeterRegistry.builder(otlpConfig)
+			.clock(clock)
+			.metricsSender(metricsSender);
 		exemplarContextProvider.ifAvailable(builder::exemplarContextProvider);
 		return builder;
 	}
@@ -114,13 +129,26 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 		private final OtlpMetricsProperties properties;
 
-		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties) {
+		private final @Nullable SslBundles sslBundles;
+
+		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties, @Nullable SslBundles sslBundles) {
 			this.properties = properties;
+			this.sslBundles = sslBundles;
 		}
 
 		@Override
 		public @Nullable String getUrl() {
 			return this.properties.getUrl();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			String bundleName = this.properties.getSsl().getBundle();
+			if (StringUtils.hasLength(bundleName)) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(bundleName);
+			}
+			return null;
 		}
 
 	}

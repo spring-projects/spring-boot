@@ -74,6 +74,7 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("io.micrometer:micrometer-registry-atlas")
 	testImplementation("io.micrometer:micrometer-registry-new-relic")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")

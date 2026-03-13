@@ -1,0 +1,8 @@
+services:
+  otlp:
+    image: '{imageName}'
+    ports:
+      - '4317'
+      - '4318'
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'

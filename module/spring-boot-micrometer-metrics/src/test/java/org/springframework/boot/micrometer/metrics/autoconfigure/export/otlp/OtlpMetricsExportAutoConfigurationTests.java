@@ -16,11 +16,16 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
+import java.net.http.HttpClient;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ScheduledExecutorService;
+
+import javax.net.ssl.SSLContext;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.ExemplarContextProvider;
 import io.micrometer.registry.otlp.OtlpConfig;
+import io.micrometer.registry.otlp.OtlpHttpMetricsSender;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
 import org.junit.jupiter.api.Test;
@@ -28,16 +33,23 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.assertj.ScheduledExecutorServiceAssert;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OtlpMetricsExportAutoConfiguration}.
@@ -140,7 +152,10 @@ class OtlpMetricsExportAutoConfigurationTests {
 	@Test
 	void allowsCustomMetricsSenderToBeUsed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
-			.run(this::assertHasCustomMetricsSender);
+			.run((context) -> {
+				assertHasCustomMetricsSender(context);
+				assertThat(context).doesNotHaveBean(OtlpHttpMetricsSender.class);
+			});
 	}
 
 	@Test
@@ -182,6 +197,81 @@ class OtlpMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.withClassLoader(new FilteredClassLoader("org.springframework.boot.opentelemetry"))
 			.run((context) -> assertThat(context).doesNotHaveBean(OtlpMetricsExportAutoConfiguration.class));
+	}
+
+	@Test
+	void autoConfiguresOtlpHttpMetricsSender() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(OtlpHttpMetricsSender.class));
+	}
+
+	@Test
+	void whenNoSslBundleConfiguredConnectionDetailsReturnsNull() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OtlpMetricsConnectionDetails.class);
+			OtlpMetricsConnectionDetails connectionDetails = context.getBean(OtlpMetricsConnectionDetails.class);
+			assertThat(connectionDetails.getSslBundle()).isNull();
+		});
+	}
+
+	@Test
+	void whenNoSslBundleDefaultHttpSenderHasDefaultSslContext() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OtlpHttpMetricsSender.class);
+			OtlpHttpMetricsSender metricsSender = context.getBean(OtlpHttpMetricsSender.class);
+			HttpClient httpClient = extractHttpClient(metricsSender);
+			assertThat(httpClient.sslContext()).isSameAs(SSLContext.getDefault());
+		});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void whenHasSslBundleConfiguresSslOnHttpSender() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues("management.otlp.metrics.export.ssl.bundle=mybundle",
+					"spring.ssl.bundle.jks.mybundle.truststore.location=classpath:test.jks")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpMetricsSender.class);
+				OtlpHttpMetricsSender metricsSender = context.getBean(OtlpHttpMetricsSender.class);
+				HttpClient httpClient = extractHttpClient(metricsSender);
+				assertThat(httpClient.sslContext()).isNotSameAs(SSLContext.getDefault());
+			});
+	}
+
+	@Test
+	void whenCustomConnectionDetailsProvidesSslBundleConfiguresSslOnHttpSender() throws NoSuchAlgorithmException {
+		SSLContext customSslContext = SSLContext.getInstance("TLS");
+		SslBundle sslBundle = mock(SslBundle.class);
+		given(sslBundle.createSslContext()).willReturn(customSslContext);
+		given(sslBundle.getOptions()).willReturn(SslOptions.NONE);
+		OtlpMetricsConnectionDetails connectionDetails = new OtlpMetricsConnectionDetails() {
+			@Override
+			public String getUrl() {
+				return "https://localhost:4318/v1/metrics";
+			}
+
+			@Override
+			public SslBundle getSslBundle() {
+				return sslBundle;
+			}
+		};
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withBean("customOtlpMetricsConnectionDetails", OtlpMetricsConnectionDetails.class, () -> connectionDetails)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpMetricsSender.class);
+				OtlpHttpMetricsSender metricsSender = context.getBean(OtlpHttpMetricsSender.class);
+				HttpClient httpClient = extractHttpClient(metricsSender);
+				assertThat(httpClient.sslContext()).isSameAs(customSslContext);
+			});
+	}
+
+	private HttpClient extractHttpClient(OtlpHttpMetricsSender metricsSender) {
+		Object field = ReflectionTestUtils.getField(metricsSender, "httpSender");
+		assertThat(field).isNotNull();
+		Object httpClient = ReflectionTestUtils.getField(field, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return (HttpClient) httpClient;
 	}
 
 	private void assertHasCustomMetricsSender(AssertableApplicationContext context) {

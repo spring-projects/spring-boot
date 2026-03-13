@@ -91,6 +91,8 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 */
 	private final Map<String, Meter> meter = new LinkedHashMap<>();
 
+	private final Ssl ssl = new Ssl();
+
 	public @Nullable String getUrl() {
 		return this.url;
 	}
@@ -165,6 +167,27 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public Map<String, Meter> getMeter() {
 		return this.meter;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 	/**
