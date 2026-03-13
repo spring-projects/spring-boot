@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.tracing.opentelemetry.docker.compose
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.Transport;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,16 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests 
 	void runCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("http://").endsWith("/v1/traces");
 		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("http://").endsWith("/v1/traces");
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
+
+	@DockerComposeTest(composeFile = "otlp-ssl-compose.yaml", image = TestImage.OTEL_COLLECTOR,
+			additionalResources = "ca.crt")
+	void runWithSslCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("https://").endsWith("/v1/traces");
+		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("https://").endsWith("/v1/traces");
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		assertThat(sslBundle).isNotNull();
 	}
 
 }

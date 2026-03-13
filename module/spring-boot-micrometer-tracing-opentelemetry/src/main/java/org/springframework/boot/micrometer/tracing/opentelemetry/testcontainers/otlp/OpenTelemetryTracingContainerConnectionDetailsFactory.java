@@ -16,11 +16,13 @@
 
 package org.springframework.boot.micrometer.tracing.opentelemetry.testcontainers.otlp;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.Transport;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -64,7 +66,14 @@ class OpenTelemetryTracingContainerConnectionDetailsFactory
 				case HTTP -> OTLP_HTTP_PORT;
 				case GRPC -> OTLP_GRPC_PORT;
 			};
-			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(), getContainer().getMappedPort(port));
+			String scheme = (getSslBundle() != null) ? "https" : "http";
+			return "%s://%s:%d/v1/traces".formatted(scheme, getContainer().getHost(),
+					getContainer().getMappedPort(port));
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

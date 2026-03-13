@@ -18,20 +18,28 @@ package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.
 
 import java.util.Locale;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configurations imported by {@link OtlpTracingAutoConfiguration}.
@@ -47,8 +55,9 @@ final class OtlpTracingConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty("management.opentelemetry.tracing.export.otlp.endpoint")
-		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpTracingProperties properties) {
-			return new PropertiesOtlpTracingConnectionDetails(properties);
+		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpTracingProperties properties,
+				ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesOtlpTracingConnectionDetails(properties, sslBundles.getIfAvailable());
 		}
 
 		/**
@@ -58,8 +67,11 @@ final class OtlpTracingConfigurations {
 
 			private final OtlpTracingProperties properties;
 
-			PropertiesOtlpTracingConnectionDetails(OtlpTracingProperties properties) {
+			private final @Nullable SslBundles sslBundles;
+
+			PropertiesOtlpTracingConnectionDetails(OtlpTracingProperties properties, @Nullable SslBundles sslBundles) {
 				this.properties = properties;
+				this.sslBundles = sslBundles;
 			}
 
 			@Override
@@ -70,6 +82,16 @@ final class OtlpTracingConfigurations {
 				String endpoint = this.properties.getEndpoint();
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
+			}
+
+			@Override
+			public @Nullable SslBundle getSslBundle() {
+				String bundleName = this.properties.getSsl().getBundle();
+				if (StringUtils.hasLength(bundleName)) {
+					Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+					return this.sslBundles.getBundle(bundleName);
+				}
+				return null;
 			}
 
 		}
@@ -95,6 +117,7 @@ final class OtlpTracingConfigurations {
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
+			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
@@ -111,8 +134,34 @@ final class OtlpTracingConfigurations {
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
+			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
+		}
+
+		private void configureSsl(OtlpTracingConnectionDetails connectionDetails,
+				SslContextConfigurer sslContextConfigurer) {
+			SslBundle sslBundle = connectionDetails.getSslBundle();
+			if (sslBundle != null) {
+				SSLContext sslContext = sslBundle.createSslContext();
+				X509TrustManager trustManager = extractTrustManager(sslBundle);
+				sslContextConfigurer.configure(sslContext, trustManager);
+			}
+		}
+
+		private X509TrustManager extractTrustManager(SslBundle sslBundle) {
+			for (TrustManager trustManager : sslBundle.getManagers().getTrustManagers()) {
+				if (trustManager instanceof X509TrustManager x509TrustManager) {
+					return x509TrustManager;
+				}
+			}
+			throw new IllegalStateException("No X509TrustManager found in the SSL bundle trust managers");
+		}
+
+		private interface SslContextConfigurer {
+
+			void configure(SSLContext sslContext, X509TrustManager trustManager);
+
 		}
 
 	}

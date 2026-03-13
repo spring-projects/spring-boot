@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.net.ssl.X509TrustManager;
+
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.internal.compression.GzipCompressor;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
@@ -30,13 +32,18 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConfigurations.ConnectionDetails.PropertiesOtlpTracingConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OtlpTracingAutoConfiguration}.
@@ -266,6 +273,58 @@ class OtlpTracingAutoConfigurationTests {
 				assertThat(exporter).extracting("delegate.grpcSender.client")
 					.hasFieldOrPropertyWithValue("connectTimeoutMillis", (int) connectTimeout.toMillis())
 					.hasFieldOrPropertyWithValue("callTimeoutMillis", (int) timeout.toMillis());
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void whenHasSslBundleConfiguresHttpExporter() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues(
+					"management.opentelemetry.tracing.export.otlp.endpoint=https://localhost:4318/v1/traces",
+					"management.opentelemetry.tracing.export.otlp.ssl.bundle=mybundle",
+					"spring.ssl.bundle.jks.mybundle.truststore.location=classpath:test.jks")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.client.sslSocketFactoryOrNull").isNotNull();
+				assertThat(exporter).extracting("delegate.httpSender.client.x509TrustManager")
+					.isInstanceOf(X509TrustManager.class);
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void whenHasSslBundleConfiguresGrpcExporter() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues(
+					"management.opentelemetry.tracing.export.otlp.endpoint=https://localhost:4318/v1/traces",
+					"management.opentelemetry.tracing.export.otlp.transport=grpc",
+					"management.opentelemetry.tracing.export.otlp.ssl.bundle=mybundle",
+					"spring.ssl.bundle.jks.mybundle.truststore.location=classpath:test.jks")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class);
+				OtlpGrpcSpanExporter exporter = context.getBean(OtlpGrpcSpanExporter.class);
+				assertThat(exporter).extracting("delegate.grpcSender.client.sslSocketFactoryOrNull").isNotNull();
+				assertThat(exporter).extracting("delegate.grpcSender.client.x509TrustManager")
+					.isInstanceOf(X509TrustManager.class);
+			});
+	}
+
+	@Test
+	void whenCustomConnectionDetailsProvidesSslBundleConfiguresHttpExporter() {
+		SslBundle sslBundle = SslBundle.systemDefault();
+		OtlpTracingConnectionDetails connectionDetails = mock(OtlpTracingConnectionDetails.class);
+		given(connectionDetails.getUrl(Transport.HTTP)).willReturn("https://localhost:4318/v1/traces");
+		given(connectionDetails.getSslBundle()).willReturn(sslBundle);
+		this.contextRunner
+			.withBean("customOtlpTracingConnectionDetails", OtlpTracingConnectionDetails.class, () -> connectionDetails)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.client.sslSocketFactoryOrNull").isNotNull();
+				assertThat(exporter).extracting("delegate.httpSender.client.x509TrustManager")
+					.isInstanceOf(X509TrustManager.class);
 			});
 	}
 

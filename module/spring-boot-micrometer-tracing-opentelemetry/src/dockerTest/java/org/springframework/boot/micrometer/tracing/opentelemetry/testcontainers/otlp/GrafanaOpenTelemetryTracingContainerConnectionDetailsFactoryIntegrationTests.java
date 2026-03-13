@@ -55,6 +55,7 @@ class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTes
 			.isEqualTo("%s/v1/traces".formatted(container.getOtlpHttpUrl()));
 		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
 			.isEqualTo("%s/v1/traces".formatted(container.getOtlpGrpcUrl()));
+		assertThat(this.connectionDetails.getSslBundle()).isNull();
 	}
 
 	@Configuration(proxyBeanMethods = false)
