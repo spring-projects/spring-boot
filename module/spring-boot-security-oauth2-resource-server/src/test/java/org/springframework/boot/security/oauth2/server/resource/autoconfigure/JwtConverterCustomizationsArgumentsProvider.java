@@ -72,10 +72,10 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 			.claim(customPrincipalClaim, customPrincipalValue);
 		Jwt noAuthoritiesCustomizationsJwt = jwtBuilder.claim("scp", jwtScopes[0] + " " + jwtScopes[1]).build();
 		Jwt customAuthoritiesDelimiterJwt = jwtBuilder.claim("scp", jwtScopes[0] + "~" + jwtScopes[1]).build();
-		Jwt customAuthoritiesClaimJwt = jwtBuilder.claim("scp", null)
+		Jwt customAuthoritiesClaimJwt = jwtBuilder.claim("scp", "value")
 			.claim(customAuthoritiesClaim, jwtScopes[0] + " " + jwtScopes[1])
 			.build();
-		Jwt customAuthoritiesClaimAndDelimiterJwt = jwtBuilder.claim("scp", null)
+		Jwt customAuthoritiesClaimAndDelimiterJwt = jwtBuilder.claim("scp", "value")
 			.claim(customAuthoritiesClaim, jwtScopes[0] + "~" + jwtScopes[1])
 			.build();
 		String[] customPrefixAuthorities = { customPrefix + jwtScopes[0], customPrefix + jwtScopes[1] };

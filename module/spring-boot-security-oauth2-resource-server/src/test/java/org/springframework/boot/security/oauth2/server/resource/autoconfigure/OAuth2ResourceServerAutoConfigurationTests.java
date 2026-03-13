@@ -46,6 +46,7 @@ import org.mockito.InOrder;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -314,7 +315,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=NOT_VALID")
 			.run((context) -> assertThat(context).hasFailed()
 				.getFailure()
-				.hasMessageContaining("signatureAlgorithm cannot be null"));
+				.hasMessageContaining("Unknown algorithm")
+				.hasRootCauseExactlyInstanceOf(InvalidConfigurationPropertyValueException.class));
 	}
 
 	@Test

@@ -33,6 +33,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.util.Assert;
 
 /**
  * Maps {@link OAuth2AuthorizationServerProperties} to Authorization Server types.
@@ -132,11 +133,14 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		if (jwsAlgorithm == null) {
 			jwsAlgorithm = MacAlgorithm.from(name);
 		}
+		Assert.notNull(jwsAlgorithm, "JWS algorithm " + name + " is unknown");
 		return jwsAlgorithm;
 	}
 
 	private SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
-		return SignatureAlgorithm.from(signatureAlgorithm.toUpperCase(Locale.ROOT));
+		SignatureAlgorithm algorithm = SignatureAlgorithm.from(signatureAlgorithm.toUpperCase(Locale.ROOT));
+		Assert.notNull(algorithm, "Signature algorithm " + signatureAlgorithm + " is unknown");
+		return algorithm;
 	}
 
 }

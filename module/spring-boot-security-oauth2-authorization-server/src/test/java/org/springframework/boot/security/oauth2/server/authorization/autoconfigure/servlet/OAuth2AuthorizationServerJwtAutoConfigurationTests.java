@@ -31,6 +31,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OAuth2AuthorizationServerJwtAutoConfiguration}.
@@ -96,7 +97,7 @@ class OAuth2AuthorizationServerJwtAutoConfigurationTests {
 
 		@Bean
 		JwtDecoder jwtDecoder() {
-			return (token) -> null;
+			return mock(JwtDecoder.class);
 		}
 
 	}

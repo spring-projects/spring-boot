@@ -33,6 +33,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.ConditionalOnIssuerLocationJwtDecoder;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerProperties;
@@ -88,7 +89,7 @@ class ReactiveJwtDecoderConfiguration {
 	NimbusReactiveJwtDecoder reactiveJwtDecoderByPublicKeyValue() throws Exception {
 		RSAPublicKey publicKey = getReadPublicKey();
 		PublicKeyReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder.withPublicKey(publicKey);
-		builder.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()));
+		builder.signatureAlgorithm(exactlyOneAlgorithm());
 		NimbusReactiveJwtDecoder decoder = builder.build();
 		decoder.setJwtValidator(getValidator());
 		return decoder;
@@ -104,19 +105,25 @@ class ReactiveJwtDecoderConfiguration {
 			.decode(value.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", ""));
 	}
 
-	private String exactlyOneAlgorithm() {
+	private SignatureAlgorithm exactlyOneAlgorithm() {
 		List<String> algorithms = this.properties.getJwsAlgorithms();
 		Assert.state(algorithms != null && algorithms.size() == 1,
 				() -> "Creating a JWT decoder using a public key requires exactly one JWS algorithm but "
 						+ algorithms.size() + " were configured");
-		return algorithms.get(0);
+		SignatureAlgorithm algorithm = SignatureAlgorithm.from(algorithms.get(0));
+		if (algorithm == null) {
+			throw new InvalidConfigurationPropertyValueException(
+					"spring.security.oauth2.resourceserver.jwt.jws-algorithms", algorithms.get(0), "Unknown algorithm");
+		}
+		return algorithm;
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	ReactiveJwtDecoder reactiveJwtDecoderByJwkKeySetUri() {
-		JwkSetUriReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder
-			.withJwkSetUri(this.properties.getJwkSetUri());
+		String jwkSetUri = this.properties.getJwkSetUri();
+		Assert.notNull(jwkSetUri, "No JWK Set URI specified");
+		JwkSetUriReactiveJwtDecoderBuilder builder = NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri);
 		builder.jwsAlgorithms(this::jwsAlgorithms);
 		return buildJwkSetUriJwtDecoder(builder);
 	}

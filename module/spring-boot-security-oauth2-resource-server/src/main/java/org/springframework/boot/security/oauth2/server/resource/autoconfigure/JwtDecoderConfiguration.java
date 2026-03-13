@@ -31,6 +31,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -47,6 +48,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.PublicKeyJwtDeco
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Configuration @Configuration} for JWT decoder beans.
@@ -82,7 +84,7 @@ class JwtDecoderConfiguration {
 	@ConditionalOnPublicKeyJwtDecoder
 	JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 		PublicKeyJwtDecoderBuilder builder = NimbusJwtDecoder.withPublicKey(getReadPublicKey());
-		builder.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()));
+		builder.signatureAlgorithm(exactlyOneAlgorithm());
 		NimbusJwtDecoder decoder = builder.build();
 		decoder.setJwtValidator(getValidator());
 		return decoder;
@@ -98,18 +100,26 @@ class JwtDecoderConfiguration {
 			.decode(value.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", ""));
 	}
 
-	private String exactlyOneAlgorithm() {
+	private SignatureAlgorithm exactlyOneAlgorithm() {
 		List<String> algorithms = this.properties.getJwsAlgorithms();
 		Assert.state(algorithms != null && algorithms.size() == 1,
 				() -> "Creating a JWT decoder using a public key requires exactly one JWS algorithm but "
 						+ algorithms.size() + " were configured");
-		return algorithms.get(0);
+		SignatureAlgorithm algorithm = SignatureAlgorithm.from(algorithms.get(0));
+		if (algorithm == null) {
+			throw new InvalidConfigurationPropertyValueException(
+					"spring.security.oauth2.resourceserver.jwt.jws-algorithms",
+					StringUtils.collectionToCommaDelimitedString(algorithms), "Unknown algorithm");
+		}
+		return algorithm;
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	JwtDecoder jwtDecoderByJwkKeySetUri() {
-		JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri());
+		String jwkSetUri = this.properties.getJwkSetUri();
+		Assert.state(jwkSetUri != null, "No JWK Set URI property specified");
+		JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri);
 		builder.jwsAlgorithms(this::jwsAlgorithms);
 		return buildJwkSetUriJwtDecoder(builder);
 	}
