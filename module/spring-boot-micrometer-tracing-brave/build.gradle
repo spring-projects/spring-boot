@@ -19,7 +19,6 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -49,9 +48,5 @@ dependencies {
 }
 
 tasks.named("compileTestJava") {
-	options.nullability.checking = "tests"
-}
-
-tasks.named("compileDockerTestJava") {
 	options.nullability.checking = "tests"
 }
