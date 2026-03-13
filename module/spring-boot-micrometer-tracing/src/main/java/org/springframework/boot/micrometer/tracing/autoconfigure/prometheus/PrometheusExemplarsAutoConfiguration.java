@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
-import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Filter;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Include;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -54,7 +54,7 @@ public final class PrometheusExemplarsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SpanContext spanContext(ObjectProvider<Tracer> tracerProvider, TracingProperties properties) {
-		return new LazyTracingSpanContext(tracerProvider, properties.getExemplars().getFilter());
+		return new LazyTracingSpanContext(tracerProvider, properties.getExemplars().getInclude());
 	}
 
 	/**
@@ -66,15 +66,15 @@ public final class PrometheusExemplarsAutoConfiguration {
 
 		private final SingletonSupplier<Tracer> tracer;
 
-		private final Filter filter;
+		private final Include include;
 
-		LazyTracingSpanContext(ObjectProvider<Tracer> tracerProvider, Filter filter) {
-			if (filter == Filter.ALWAYS_ON) {
-				throw new InvalidConfigurationPropertyValueException("management.tracing.exemplars.filter", "always-on",
-						"Prometheus doesn't support the 'always-on' exemplar filter.");
+		LazyTracingSpanContext(ObjectProvider<Tracer> tracerProvider, Include include) {
+			if (include == Include.ALL) {
+				throw new InvalidConfigurationPropertyValueException("management.tracing.exemplars.include", "all",
+						"Prometheus doesn't support including 'all' traces as exemplars.");
 			}
 			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
-			this.filter = filter;
+			this.include = include;
 		}
 
 		@Override
@@ -95,9 +95,10 @@ public final class PrometheusExemplarsAutoConfiguration {
 			if (currentSpan == null) {
 				return false;
 			}
-			return switch (this.filter) {
-				case ALWAYS_ON -> throw new UnsupportedOperationException("ALWAYS_ON filter is not supported");
-				case ALWAYS_OFF -> false;
+			return switch (this.include) {
+				case ALL ->
+					throw new UnsupportedOperationException("Including 'all' traces as exemplars is not supported");
+				case NONE -> false;
 				case SAMPLED_TRACES -> isSampled(currentSpan);
 			};
 		}

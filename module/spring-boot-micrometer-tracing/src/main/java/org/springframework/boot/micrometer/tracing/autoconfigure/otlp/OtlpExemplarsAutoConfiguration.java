@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
-import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Filter;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Include;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.Contract;
 import org.springframework.util.function.SingletonSupplier;
@@ -57,7 +57,7 @@ public final class OtlpExemplarsAutoConfiguration {
 	@ConditionalOnMissingBean
 	ExemplarContextProvider exemplarContextProvider(ObjectProvider<Tracer> tracerProvider,
 			TracingProperties properties) {
-		return new LazyTracingExemplarContextProvider(tracerProvider, properties.getExemplars().getFilter());
+		return new LazyTracingExemplarContextProvider(tracerProvider, properties.getExemplars().getInclude());
 	}
 
 	/**
@@ -70,11 +70,11 @@ public final class OtlpExemplarsAutoConfiguration {
 
 		private final SingletonSupplier<Tracer> tracer;
 
-		private final Filter filter;
+		private final Include include;
 
-		LazyTracingExemplarContextProvider(ObjectProvider<Tracer> tracerProvider, Filter filter) {
+		LazyTracingExemplarContextProvider(ObjectProvider<Tracer> tracerProvider, Include include) {
 			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
-			this.filter = filter;
+			this.include = include;
 		}
 
 		@Override
@@ -92,9 +92,9 @@ public final class OtlpExemplarsAutoConfiguration {
 			if (span == null) {
 				return false;
 			}
-			return switch (this.filter) {
-				case ALWAYS_ON -> true;
-				case ALWAYS_OFF -> false;
+			return switch (this.include) {
+				case ALL -> true;
+				case NONE -> false;
 				case SAMPLED_TRACES -> isSampled(span);
 			};
 		}

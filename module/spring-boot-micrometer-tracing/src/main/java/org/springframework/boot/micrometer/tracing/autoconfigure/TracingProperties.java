@@ -264,33 +264,32 @@ public class TracingProperties {
 	public static class Exemplars {
 
 		/**
-		 * Filter which exemplars are selected. ALWAYS_ON is not supported when using
-		 * Prometheus.
+		 * Traces to include as exemplars. 'all' is not supported when using Prometheus.
 		 */
-		private Filter filter = Filter.SAMPLED_TRACES;
+		private Include include = Include.SAMPLED_TRACES;
 
-		public Filter getFilter() {
-			return this.filter;
+		public Include getInclude() {
+			return this.include;
 		}
 
-		public void setFilter(Filter filter) {
-			this.filter = filter;
+		public void setInclude(Include include) {
+			this.include = include;
 		}
 
-		public enum Filter {
+		public enum Include {
 
 			/**
-			 * Always select exemplars, regardless of whether the span is sampled.
+			 * Include all traces as exemplars, regardless of whether the span is sampled.
 			 */
-			ALWAYS_ON,
+			ALL,
 
 			/**
-			 * Never select exemplars.
+			 * Don't include any traces as exemplars.
 			 */
-			ALWAYS_OFF,
+			NONE,
 
 			/**
-			 * Only select exemplars from sampled traces.
+			 * Only include sampled traces as exemplars.
 			 */
 			SAMPLED_TRACES
 

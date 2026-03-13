@@ -150,21 +150,21 @@ class PrometheusExemplarsAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldFailWhenFilterIsAlwaysOn() {
+	void shouldFailWhenIncludeIsAll() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
-			.withPropertyValues("management.tracing.exemplars.filter=always-on")
+			.withPropertyValues("management.tracing.exemplars.include=all")
 			.run((context) -> assertThat(context).hasFailed()
 				.getFailure()
 				.rootCause()
 				.isInstanceOf(InvalidConfigurationPropertyValueException.class)
 				.hasMessageContaining(
-						"Property management.tracing.exemplars.filter with value 'always-on' is invalid: Prometheus doesn't support the 'always-on' exemplar filter."));
+						"Property management.tracing.exemplars.include with value 'all' is invalid: Prometheus doesn't support including 'all' traces as exemplars."));
 	}
 
 	@Test
-	void prometheusOpenMetricsOutputShouldNotContainExemplarsWhenFilterIsAlwaysOff() {
+	void prometheusOpenMetricsOutputShouldNotContainExemplarsWhenIncludeIsNone() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
-			.withPropertyValues("management.tracing.exemplars.filter=always-off")
+			.withPropertyValues("management.tracing.exemplars.include=none")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SpanContext.class);
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);

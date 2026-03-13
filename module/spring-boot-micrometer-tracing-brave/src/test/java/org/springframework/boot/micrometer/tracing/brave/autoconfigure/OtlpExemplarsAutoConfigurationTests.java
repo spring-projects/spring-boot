@@ -95,10 +95,10 @@ class OtlpExemplarsAutoConfigurationTests {
 	}
 
 	@Test
-	void otlpOutputShouldContainExemplarsWhenFilterIsAlwaysOnAndSpanIsNotSampled() {
+	void otlpOutputShouldContainExemplarsWhenIncludeIsAllAndSpanIsNotSampled() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
 			.withPropertyValues("management.tracing.sampling.probability=0.0",
-					"management.tracing.exemplars.filter=always-on")
+					"management.tracing.exemplars.include=all")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ExemplarContextProvider.class);
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
@@ -114,9 +114,9 @@ class OtlpExemplarsAutoConfigurationTests {
 	}
 
 	@Test
-	void otlpOutputShouldNotContainExemplarsWhenFilterIsAlwaysOff() {
+	void otlpOutputShouldNotContainExemplarsWhenIncludeIsNone() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
-			.withPropertyValues("management.tracing.exemplars.filter=always-off")
+			.withPropertyValues("management.tracing.exemplars.include=none")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ExemplarContextProvider.class);
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);

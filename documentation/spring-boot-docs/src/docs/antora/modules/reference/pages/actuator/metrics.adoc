@@ -530,8 +530,8 @@ If an `OtlpMetricsSender` bean is available, it will be configured on the `OtlpM
 https://opentelemetry.io/docs/specs/otel/metrics/data-model/#exemplars[OTLP Exemplars] are also supported.
 To enable this feature, an javadoc:io.micrometer.registry.otlp.ExemplarContextProvider[] bean should be present.
 If you use xref:actuator/tracing.adoc[Micrometer Tracing], this will be auto-configured for you.
-By default, only sampled traces are selected as exemplars.
-You can control this behavior using the configprop:management.tracing.exemplars.filter[] property.
+By default, only sampled traces are included as exemplars.
+You can control this behavior using the configprop:management.tracing.exemplars.include[] property.
 
 
 
@@ -558,9 +558,9 @@ https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Pr
 To enable this feature, a javadoc:io.prometheus.metrics.tracer.common.SpanContext[] bean should be present.
 If you're using the deprecated Prometheus simpleclient support and want to enable that feature, a javadoc:io.prometheus.client.exemplars.tracer.common.SpanContextSupplier[] bean should be present.
 If you use {url-micrometer-tracing-docs}[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
-By default, only sampled traces are selected as exemplars.
-You can control this behavior using the configprop:management.tracing.exemplars.filter[] property.
-The value `always-on` is not supported with Prometheus.
+By default, only sampled traces are included as exemplars.
+You can control this behavior using the configprop:management.tracing.exemplars.include[] property.
+The value `all` is not supported with Prometheus.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.

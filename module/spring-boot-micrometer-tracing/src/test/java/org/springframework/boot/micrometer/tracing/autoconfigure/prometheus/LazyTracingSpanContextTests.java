@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
-import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Filter;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Include;
 import org.springframework.boot.micrometer.tracing.autoconfigure.prometheus.PrometheusExemplarsAutoConfiguration.LazyTracingSpanContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +66,8 @@ class LazyTracingSpanContextTests {
 
 	};
 
-	private LazyTracingSpanContext spanContext = new LazyTracingSpanContext(this.objectProvider, Filter.SAMPLED_TRACES);
+	private LazyTracingSpanContext spanContext = new LazyTracingSpanContext(this.objectProvider,
+			Include.SAMPLED_TRACES);
 
 	@Test
 	void whenCurrentSpanIsNullThenSpanIdIsNull() {
@@ -152,14 +153,14 @@ class LazyTracingSpanContextTests {
 	}
 
 	@Test
-	void whenFilterIsAlwaysOnThenConstructorThrows() {
+	void whenIncludeIsAllThenConstructorThrows() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
-			.isThrownBy(() -> new LazyTracingSpanContext(this.objectProvider, Filter.ALWAYS_ON));
+			.isThrownBy(() -> new LazyTracingSpanContext(this.objectProvider, Include.ALL));
 	}
 
 	@Test
-	void whenFilterIsAlwaysOffAndSpanIsSampledThenSampledIsFalse() {
-		this.spanContext = new LazyTracingSpanContext(this.objectProvider, Filter.ALWAYS_OFF);
+	void whenIncludeIsNoneAndSpanIsSampledThenSampledIsFalse() {
+		this.spanContext = new LazyTracingSpanContext(this.objectProvider, Include.NONE);
 		Span span = mock(Span.class);
 		given(this.tracer.currentSpan()).willReturn(span);
 		TraceContext traceContext = mock(TraceContext.class);
