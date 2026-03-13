@@ -164,6 +164,7 @@ public class PropertiesLauncher extends Launcher {
 		else {
 			String[] names = getPropertyWithDefault(CONFIG_NAME, "loader").split(",");
 			for (String name : names) {
+				assertNoPathTraversal(name);
 				String propertiesFile = name + ".properties";
 				configs.add("file:" + this.homeDirectory + "/" + propertiesFile);
 				configs.add("classpath:" + propertiesFile);
@@ -196,6 +197,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private InputStream getClasspathResource(String config) {
 		config = stripLeadingSlashes(config);
+		assertNoPathTraversal(config);
 		config = "/" + config;
 		debug.log("Trying classpath: %s", config);
 		return getClass().getResourceAsStream(config);
@@ -481,6 +483,9 @@ public class PropertiesLauncher extends Launcher {
 
 	private Set<URL> getClassPathUrlsForPath(String path) throws Exception {
 		File file = (!isAbsolutePath(path)) ? new File(this.homeDirectory, path) : new File(path);
+		if (!isAbsolutePath(path)) {
+			assertFileIsContainedInDirectory(this.homeDirectory, file, path);
+		}
 		Set<URL> urls = new LinkedHashSet<>();
 		if (!"/".equals(path)) {
 			if (file.isDirectory()) {
@@ -512,6 +517,7 @@ public class PropertiesLauncher extends Launcher {
 		File file = null;
 		if (isJustArchive) {
 			File candidate = new File(this.homeDirectory, path);
+			assertFileIsContainedInDirectory(this.homeDirectory, candidate, path);
 			if (candidate.exists()) {
 				file = candidate;
 				path = "";
@@ -519,8 +525,14 @@ public class PropertiesLauncher extends Launcher {
 		}
 		int separatorIndex = path.indexOf('!');
 		if (separatorIndex != -1) {
-			file = (!path.startsWith(JAR_FILE_PREFIX)) ? new File(this.homeDirectory, path.substring(0, separatorIndex))
-					: new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
+			String archivePath = path.substring(0, separatorIndex);
+			if (!path.startsWith(JAR_FILE_PREFIX)) {
+				file = new File(this.homeDirectory, archivePath);
+				assertFileIsContainedInDirectory(this.homeDirectory, file, archivePath);
+			}
+			else {
+				file = new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
+			}
 			path = path.substring(separatorIndex + 1);
 			path = stripLeadingSlashes(path);
 		}
@@ -565,6 +577,24 @@ public class PropertiesLauncher extends Launcher {
 	private boolean isAbsolutePath(String root) {
 		// Windows contains ":" others start with "/"
 		return root.contains(":") || root.startsWith("/");
+	}
+
+	private void assertNoPathTraversal(String path) {
+		if (path.contains("..")) {
+			throw new IllegalStateException(
+					"Path '%s' must not contain path traversal sequences".formatted(path));
+		}
+	}
+
+	private void assertFileIsContainedInDirectory(File directory, File file, String name) throws IOException {
+		String canonicalDirectoryPath = directory.getCanonicalPath() + File.separator;
+		String canonicalFilePath = file.getCanonicalPath();
+		if (!canonicalFilePath.startsWith(canonicalDirectoryPath)
+				&& !canonicalFilePath.equals(directory.getCanonicalPath())) {
+			throw new IllegalStateException(
+					"'%s' resolves to '%s' which is outside of '%s'. Verify your loader properties configuration."
+						.formatted(name, canonicalFilePath, canonicalDirectoryPath));
+		}
 	}
 
 	private String stripLeadingSlashes(String string) {
