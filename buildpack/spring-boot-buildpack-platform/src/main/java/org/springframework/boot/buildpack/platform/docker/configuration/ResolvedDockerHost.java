@@ -59,9 +59,17 @@ public class ResolvedDockerHost extends DockerHost {
 	public String getAddress() {
 		String address = super.getAddress();
 		if (address == null) {
-			address = getDefaultAddress();
+			return getDefaultAddress();
 		}
-		return address.startsWith(UNIX_SOCKET_PREFIX) ? address.substring(UNIX_SOCKET_PREFIX.length()) : address;
+		if (address.startsWith(UNIX_SOCKET_PREFIX)) {
+			return address.substring(UNIX_SOCKET_PREFIX.length());
+		}
+		if (address.startsWith("tcp://")) {
+			while (address.endsWith("/")) {
+				address = address.substring(0, address.length() - 1);
+			}
+		}
+		return address;
 	}
 
 	public boolean isRemote() {

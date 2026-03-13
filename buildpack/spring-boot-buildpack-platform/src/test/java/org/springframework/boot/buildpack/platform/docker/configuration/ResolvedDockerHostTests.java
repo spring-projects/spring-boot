@@ -141,6 +141,17 @@ class ResolvedDockerHostTests {
 	}
 
 	@Test
+	void resolveWhenDockerHostAddressIsTcpWithTrailingReturnsAddress() {
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
+				new DockerConnectionConfiguration.Host("tcp://192.168.99.100:2376/", true, "/cert-path"));
+		assertThat(dockerHost.isLocalFileReference()).isFalse();
+		assertThat(dockerHost.isRemote()).isTrue();
+		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
+		assertThat(dockerHost.isSecure()).isTrue();
+		assertThat(dockerHost.getCertificatePath()).isEqualTo("/cert-path");
+	}
+
+	@Test
 	void resolveWhenEnvironmentAddressIsLocalReturnsAddress(@TempDir Path tempDir) throws IOException {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
 		this.environment.put("DOCKER_HOST", socketFilePath);
@@ -169,6 +180,20 @@ class ResolvedDockerHostTests {
 	@Test
 	void resolveWhenEnvironmentAddressIsTcpReturnsAddress() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.99.100:2376");
+		this.environment.put("DOCKER_TLS_VERIFY", "1");
+		this.environment.put("DOCKER_CERT_PATH", "/cert-path");
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
+				new DockerConnectionConfiguration.Host("tcp://1.1.1.1"));
+		assertThat(dockerHost.isLocalFileReference()).isFalse();
+		assertThat(dockerHost.isRemote()).isTrue();
+		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
+		assertThat(dockerHost.isSecure()).isTrue();
+		assertThat(dockerHost.getCertificatePath()).isEqualTo("/cert-path");
+	}
+
+	@Test
+	void resolveWhenEnvironmentAddressIsTcpWithTrailingSlashReturnsAddress() {
+		this.environment.put("DOCKER_HOST", "tcp://192.168.99.100:2376/");
 		this.environment.put("DOCKER_TLS_VERIFY", "1");
 		this.environment.put("DOCKER_CERT_PATH", "/cert-path");
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
