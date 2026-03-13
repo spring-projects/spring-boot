@@ -18,65 +18,73 @@ package org.springframework.boot.mail.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link NoSuchMailSenderBeanFailureAnalyzer}.
+ *
+ * @author MJY (answndud)
+ * @author Andy Wilkinson
  */
 class NoSuchMailSenderBeanFailureAnalyzerTests {
 
 	@Test
 	void analyzeWhenNotNoSuchBeanDefinitionExceptionShouldReturnNull() {
-		assertThat(new NoSuchMailSenderBeanFailureAnalyzer(null).analyze(new Exception())).isNull();
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class))
+			.run((context) -> {
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				FailureAnalysis analysis = new NoSuchMailSenderBeanFailureAnalyzer(beanFactory)
+					.analyze(new Exception());
+				assertThat(analysis).isNull();
+			});
 	}
 
 	@Test
 	void analyzeWhenNoSuchBeanDefinitionExceptionForDifferentTypeShouldReturnNull() {
-		assertThat(
-				new NoSuchMailSenderBeanFailureAnalyzer(null).analyze(new NoSuchBeanDefinitionException(String.class)))
-			.isNull();
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class))
+			.run((context) -> {
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				assertThatException().isThrownBy(() -> context.getBean(String.class)).satisfies((ex) -> {
+					FailureAnalysis analysis = new NoSuchMailSenderBeanFailureAnalyzer(beanFactory).analyze(ex);
+					assertThat(analysis).isNull();
+				});
+			});
 	}
 
 	@Test
-	void analyzeWhenMailHostPropertyIsConfiguredShouldReturnNull() {
-		Environment environment = new MockEnvironment().withProperty("spring.mail.host", "smtp.example.org");
-		assertThat(new NoSuchMailSenderBeanFailureAnalyzer(environment)
-			.analyze(new NoSuchBeanDefinitionException(MailSender.class))).isNull();
+	void analyzeWithoutMailSenderAutoConfigurationShouldReturnNull() {
+		new ApplicationContextRunner().run((context) -> {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			assertThatException().isThrownBy(() -> context.getBean(MailSender.class)).satisfies((ex) -> {
+				FailureAnalysis analysis = new NoSuchMailSenderBeanFailureAnalyzer(beanFactory).analyze(ex);
+				assertThat(analysis).isNull();
+			});
+		});
 	}
 
 	@Test
-	void analyzeWhenMailJndiNamePropertyIsConfiguredShouldReturnNull() {
-		Environment environment = new MockEnvironment().withProperty("spring.mail.jndi-name", "mail/Session");
-		assertThat(new NoSuchMailSenderBeanFailureAnalyzer(environment)
-			.analyze(new NoSuchBeanDefinitionException(MailSender.class))).isNull();
-	}
-
-	@Test
-	void analyzeWhenMailSenderBeanIsMissingAndNoMailPropertiesAreConfiguredShouldProvideGuidance() {
-		FailureAnalysis analysis = new NoSuchMailSenderBeanFailureAnalyzer(new MockEnvironment())
-			.analyze(new NoSuchBeanDefinitionException(MailSender.class));
-		assertThat(analysis).isNotNull();
-		assertThat(analysis.getDescription())
-			.contains("A MailSender bean could not be found")
-			.contains("spring.mail.host")
-			.contains("spring.mail.jndi-name");
-		assertThat(analysis.getAction())
-			.contains("spring.mail.host")
-			.contains("spring.mail.jndi-name")
-			.contains("MailSender bean");
-	}
-
-	@Test
-	void analyzeWhenJavaMailSenderBeanIsMissingAndNoMailPropertiesAreConfiguredShouldProvideGuidance() {
-		assertThat(new NoSuchMailSenderBeanFailureAnalyzer(new MockEnvironment())
-			.analyze(new NoSuchBeanDefinitionException(JavaMailSender.class))).isNotNull();
+	void analyzeWhenMailSenderBeanIsMissingAndMailSenderConditionDidNotMatchShouldProvideGuidance() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class))
+			.run((context) -> {
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				assertThatException().isThrownBy(() -> context.getBean(MailSender.class)).satisfies((ex) -> {
+					FailureAnalysis analysis = new NoSuchMailSenderBeanFailureAnalyzer(beanFactory).analyze(ex);
+					assertThat(analysis).isNotNull();
+					assertThat(analysis.getDescription()).contains("A MailSender bean could not be found")
+						.contains("spring.mail.host")
+						.contains("spring.mail.jndi-name");
+					assertThat(analysis.getAction()).contains("spring.mail.host")
+						.contains("spring.mail.jndi-name")
+						.contains("MailSender bean");
+				});
+			});
 	}
 
 }

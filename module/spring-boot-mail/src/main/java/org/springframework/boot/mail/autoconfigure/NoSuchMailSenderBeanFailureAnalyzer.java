@@ -16,18 +16,27 @@
 
 package org.springframework.boot.mail.autoconfigure;
 
+import java.util.Map;
+
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration.MailSenderCondition;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.MailSender;
 
 /**
  * An {@link AbstractFailureAnalyzer} that improves missing {@link MailSender} guidance
- * when mail auto-configuration is present but not activated.
+ * when {@link MailSenderAutoConfiguration} is present but did not match.
+ *
+ * @author MJY (answndud)
+ * @author Andy Wilkinson
  */
 class NoSuchMailSenderBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBeanDefinitionException>
 		implements Ordered {
@@ -36,18 +45,22 @@ class NoSuchMailSenderBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuch
 
 	private static final String MAIL_JNDI_NAME_PROPERTY = "spring.mail.jndi-name";
 
-	private final @Nullable Environment environment;
+	private final BeanFactory beanFactory;
 
-	NoSuchMailSenderBeanFailureAnalyzer(@Nullable Environment environment) {
-		this.environment = environment;
+	NoSuchMailSenderBeanFailureAnalyzer(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	}
 
 	@Override
 	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
-		if (!isMissingMailSenderBean(cause) || hasMailConfigurationProperty()) {
+		if (!isMissingMailSenderBean(cause)) {
 			return null;
 		}
-		String description = "A MailSender bean could not be found because Spring Boot mail auto-configuration "
+		ConditionAndOutcome conditionAndOutcome = findMailSenderConditionOutcome();
+		if (conditionAndOutcome == null || conditionAndOutcome.getOutcome().isMatch()) {
+			return null;
+		}
+		String description = "A MailSender bean could not be found because MailSenderAutoConfiguration "
 				+ "did not match. Neither '" + MAIL_HOST_PROPERTY + "' nor '" + MAIL_JNDI_NAME_PROPERTY
 				+ "' is configured.";
 		String action = "Consider configuring '" + MAIL_HOST_PROPERTY + "' or '" + MAIL_JNDI_NAME_PROPERTY
@@ -56,17 +69,29 @@ class NoSuchMailSenderBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuch
 		return new FailureAnalysis(description, action, cause);
 	}
 
+	private @Nullable ConditionAndOutcome findMailSenderConditionOutcome() {
+		ConditionEvaluationReport conditionEvaluationReport = ConditionEvaluationReport.find(this.beanFactory);
+		if (conditionEvaluationReport != null) {
+			Map<String, ConditionAndOutcomes> conditionAndOutcomesBySource = conditionEvaluationReport
+				.getConditionAndOutcomesBySource();
+			ConditionAndOutcomes conditionAndOutcomes = conditionAndOutcomesBySource
+				.get(MailSenderAutoConfiguration.class.getName());
+			if (conditionAndOutcomes != null) {
+				return conditionAndOutcomes.stream()
+					.filter((candidate) -> candidate.getCondition() instanceof MailSenderCondition)
+					.findFirst()
+					.orElse(null);
+			}
+		}
+		return null;
+	}
+
 	private boolean isMissingMailSenderBean(NoSuchBeanDefinitionException cause) {
 		Class<?> beanType = cause.getBeanType();
 		if (beanType == null && cause.getResolvableType() != null) {
 			beanType = cause.getResolvableType().resolve();
 		}
 		return (beanType != null) && MailSender.class.isAssignableFrom(beanType);
-	}
-
-	private boolean hasMailConfigurationProperty() {
-		return this.environment != null && (this.environment.containsProperty(MAIL_HOST_PROPERTY)
-				|| this.environment.containsProperty(MAIL_JNDI_NAME_PROPERTY));
 	}
 
 	@Override
