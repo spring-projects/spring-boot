@@ -224,11 +224,25 @@ public final class EndpointRequest {
 		}
 
 		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, String basePath) {
+				RequestMatcherProvider matcherProvider, String linksPath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath));
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath, "/"));
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksPath));
+			if (!"/".equals(linksPath)) {
+				linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksPath, "/"));
+			}
 			return linksMatchers;
+		}
+
+		protected @Nullable String getLinksPath(WebApplicationContext context, String basePath) {
+			if (StringUtils.hasText(basePath)) {
+				return basePath;
+			}
+			ManagementPortType managementPortType = this.managementPortType;
+			if (managementPortType == null) {
+				managementPortType = ManagementPortType.get(context.getEnvironment());
+				this.managementPortType = managementPortType;
+			}
+			return (managementPortType == ManagementPortType.DIFFERENT) ? "/" : null;
 		}
 
 		protected RequestMatcherProvider getRequestMatcherProvider(WebApplicationContext context) {
@@ -341,8 +355,9 @@ public final class EndpointRequest {
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths,
 					this.httpMethod);
 			String basePath = endpoints.getBasePath();
-			if (this.includeLinks && StringUtils.hasText(basePath)) {
-				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
+			String linksPath = getLinksPath(context, basePath);
+			if (this.includeLinks && linksPath != null) {
+				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, linksPath));
 			}
 			if (delegateMatchers.isEmpty()) {
 				return EMPTY_MATCHER;
@@ -375,10 +390,10 @@ public final class EndpointRequest {
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
 			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
-			String basePath = properties.getBasePath();
-			if (StringUtils.hasText(basePath)) {
+			String linksPath = getLinksPath(context, properties.getBasePath());
+			if (linksPath != null) {
 				return new OrRequestMatcher(
-						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), basePath));
+						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), linksPath));
 			}
 			return EMPTY_MATCHER;
 		}
