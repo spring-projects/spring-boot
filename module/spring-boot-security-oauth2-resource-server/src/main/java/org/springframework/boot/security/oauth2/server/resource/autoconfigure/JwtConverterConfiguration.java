@@ -16,17 +16,31 @@
 
 package org.springframework.boot.security.oauth2.server.resource.autoconfigure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.DelegatingJwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.ExpressionJwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link Configuration @Configuration} for JWT converter beans.
@@ -47,18 +61,24 @@ class JwtConverterConfiguration {
 
 	@Bean
 	JwtAuthenticationConverter jwtAuthenticationConverter(OAuth2ResourceServerProperties properties) {
-		return jwtAuthenticationConverter(properties.getJwt());
-	}
-
-	private JwtAuthenticationConverter jwtAuthenticationConverter(OAuth2ResourceServerProperties.Jwt properties) {
 		PropertyMapper map = PropertyMapper.get();
+		OAuth2ResourceServerProperties.Jwt jwtProperties = properties.getJwt();
 		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-		map.from(properties::getPrincipalClaimName).to(converter::setPrincipalClaimName);
-		map.from(properties).as(this::getGrantedAuthoritiesConverter).to(converter::setJwtGrantedAuthoritiesConverter);
+		map.from(jwtProperties::getPrincipalClaimName).to(converter::setPrincipalClaimName);
+		map.from(jwtProperties).as(this::grantedAuthoritiesConverter).to(converter::setJwtGrantedAuthoritiesConverter);
 		return converter;
 	}
 
-	private JwtGrantedAuthoritiesConverter getGrantedAuthoritiesConverter(
+	private Converter<Jwt, Collection<GrantedAuthority>> grantedAuthoritiesConverter(
+			OAuth2ResourceServerProperties.Jwt properties) {
+		List<String> authoritiesExpressions = properties.getAuthoritiesExpressions();
+		if (CollectionUtils.isEmpty(authoritiesExpressions)) {
+			return createJwtGrantedAuthoritiesConverter(properties);
+		}
+		return createExpressionJwtGrantedAuthoritiesConverters(properties, authoritiesExpressions);
+	}
+
+	private Converter<Jwt, Collection<GrantedAuthority>> createJwtGrantedAuthoritiesConverter(
 			OAuth2ResourceServerProperties.Jwt properties) {
 		PropertyMapper map = PropertyMapper.get();
 		JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
@@ -66,6 +86,44 @@ class JwtConverterConfiguration {
 		map.from(properties::getAuthoritiesClaimDelimiter).to(converter::setAuthoritiesClaimDelimiter);
 		map.from(properties::getAuthoritiesClaimName).to(converter::setAuthoritiesClaimName);
 		return converter;
+	}
+
+	private Converter<Jwt, Collection<GrantedAuthority>> createExpressionJwtGrantedAuthoritiesConverters(
+			OAuth2ResourceServerProperties.Jwt properties, List<String> authoritiesExpressions) {
+		checkMutualExclusivity(properties);
+		List<Converter<Jwt, Collection<GrantedAuthority>>> converters = new ArrayList<>();
+		SpelExpressionParser parser = new SpelExpressionParser();
+		for (String authoritiesExpression : authoritiesExpressions) {
+			ExpressionJwtGrantedAuthoritiesConverter converter = new ExpressionJwtGrantedAuthoritiesConverter(
+					parser.parseExpression(authoritiesExpression));
+			if (properties.getAuthorityPrefix() != null) {
+				converter.setAuthorityPrefix(properties.getAuthorityPrefix());
+			}
+			converters.add(converter);
+		}
+		return (converters.size() == 1) ? converters.get(0) : new DelegatingJwtGrantedAuthoritiesConverter(converters);
+	}
+
+	private void checkMutualExclusivity(OAuth2ResourceServerProperties.Jwt properties) {
+		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
+					properties.getAuthoritiesExpressions());
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-name",
+					properties.getAuthoritiesClaimName());
+		}, (value) -> !nullOrEmptyList(value));
+		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
+					properties.getAuthoritiesExpressions());
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter",
+					properties.getAuthoritiesClaimDelimiter());
+		}, (value) -> !nullOrEmptyList(value));
+	}
+
+	private boolean nullOrEmptyList(Object value) {
+		if (value == null) {
+			return true;
+		}
+		return (value instanceof List<?> list) ? list.isEmpty() : false;
 	}
 
 	static class PropertiesCondition extends AnyNestedCondition {
@@ -86,6 +144,20 @@ class JwtConverterConfiguration {
 
 		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authorities-claim-name")
 		static class OnAuthoritiesClaimName {
+
+		}
+
+		@Conditional(OnAuthoritiesExpressionsCondition.class)
+		static class OnAuthoritiesExpressions {
+
+		}
+
+		static class OnAuthoritiesExpressionsCondition extends OnPropertyListCondition {
+
+			OnAuthoritiesExpressionsCondition() {
+				super("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
+						() -> ConditionMessage.forCondition("Authorities expressions"));
+			}
 
 		}
 

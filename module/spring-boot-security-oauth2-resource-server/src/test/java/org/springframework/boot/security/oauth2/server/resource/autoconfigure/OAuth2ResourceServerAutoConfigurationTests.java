@@ -47,6 +47,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -74,6 +75,7 @@ import org.springframework.security.oauth2.jwt.JwtTypeValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.ExpressionJwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
@@ -687,6 +689,72 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	void shouldConfigureJwtConverterIfAuthorityClaimsNameIsSet() {
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-name=dummy")
 			.run((context) -> assertThat(context).hasSingleBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthoritiesExpressionIsSet() {
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions=zero")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtAuthenticationConverter.class);
+				JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
+				assertThat(converter).extracting("jwtGrantedAuthoritiesConverter")
+					.isInstanceOf(ExpressionJwtGrantedAuthoritiesConverter.class)
+					.extracting("authorityPrefix")
+					.isEqualTo("SCOPE_");
+			});
+	}
+
+	@Test
+	void shouldConfigureJwtConverterIfAuthoritiesExpressionsAreSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-expressions[1]=one")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtAuthenticationConverter.class);
+				JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
+				assertThat(converter)
+					.extracting("jwtGrantedAuthoritiesConverter.authoritiesConverters", InstanceOfAssertFactories.LIST)
+					.hasSize(2)
+					.extracting("authorityPrefix")
+					.containsOnly("SCOPE_");
+			});
+	}
+
+	@Test
+	void shouldApplyCustomAuthorityPrefixIfAuthoritiesExpressionsAreSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-expressions[1]=one",
+					"spring.security.oauth2.resourceserver.jwt.authority-prefix=CUSTOM_")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtAuthenticationConverter.class);
+				JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
+				assertThat(converter)
+					.extracting("jwtGrantedAuthoritiesConverter.authoritiesConverters", InstanceOfAssertFactories.LIST)
+					.hasSize(2)
+					.extracting("authorityPrefix")
+					.containsOnly("CUSTOM_");
+			});
+	}
+
+	@Test
+	void shouldFailIfBothAuthoritiesExpressionsAndAuthoritiesClaimDelimiterAreSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter=delimiter")
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
+	}
+
+	@Test
+	void shouldFailIfBothAuthoritiesExpressionsAndAuthoritiesClaimNameAreSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-claim-name=name")
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 
 	@Test

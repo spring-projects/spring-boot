@@ -99,6 +99,14 @@ public class OAuth2ResourceServerProperties {
 		private @Nullable String authoritiesClaimName;
 
 		/**
+		 * List of expressions to use to extract authorities from a JWT. Mutually
+		 * exclusive with
+		 * 'spring.security.oauth2.resourceserver.jwt.authorities-claim-name' and
+		 * 'spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter'.
+		 */
+		private List<String> authoritiesExpressions = new ArrayList<>();
+
+		/**
 		 * JWT principal claim name.
 		 */
 		private @Nullable String principalClaimName;
@@ -165,6 +173,14 @@ public class OAuth2ResourceServerProperties {
 
 		public void setAuthoritiesClaimName(@Nullable String authoritiesClaimName) {
 			this.authoritiesClaimName = authoritiesClaimName;
+		}
+
+		public List<String> getAuthoritiesExpressions() {
+			return this.authoritiesExpressions;
+		}
+
+		public void setAuthoritiesExpressions(List<String> authoritiesExpressions) {
+			this.authoritiesExpressions = authoritiesExpressions;
 		}
 
 		public @Nullable String getPrincipalClaimName() {
