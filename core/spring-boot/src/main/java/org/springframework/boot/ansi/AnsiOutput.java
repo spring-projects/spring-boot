@@ -31,6 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Yong-Hyun Kim
+ * @author Philemon Hilscher
  * @since 1.0.0
  */
 public abstract class AnsiOutput {
@@ -42,8 +43,6 @@ public abstract class AnsiOutput {
 	private static @Nullable Boolean consoleAvailable;
 
 	private static @Nullable Boolean ansiCapable;
-
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
 	private static final String ENCODE_START = "\033[";
 
@@ -171,11 +170,33 @@ public abstract class AnsiOutput {
 					}
 				}
 			}
-			return !(OPERATING_SYSTEM_NAME.contains("win"));
+			if (isWindows(System.getProperty("os.name"))) {
+				return isWindowsAnsiCapable(System.getProperty("os.version"));
+			}
+			return true;
 		}
 		catch (Throwable ex) {
 			return false;
 		}
+	}
+
+	static boolean isWindows(String osName) {
+		return osName.toLowerCase(Locale.ENGLISH).contains("win");
+	}
+
+	static boolean isWindowsAnsiCapable(String osVersion) {
+		String[] parts = osVersion.split("\\.");
+		if (parts.length >= 2) {
+			try {
+				int major = Integer.parseInt(parts[0]);
+				int minor = Integer.parseInt(parts[1]);
+				// ANSI support on Windows 10 = 10.0, Build 10586+
+				return (major > 10) || (major == 10 && minor >= 0);
+			} catch (NumberFormatException ex) {
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/**
