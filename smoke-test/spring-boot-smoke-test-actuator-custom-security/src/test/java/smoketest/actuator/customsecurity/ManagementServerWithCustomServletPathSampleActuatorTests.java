@@ -30,14 +30,14 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports with custom dispatcher
- * servlet path.
+ * Integration tests for a separate management server with a custom dispatcher servlet
+ * path.
  *
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "spring.mvc.servlet.path=/example" })
-class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
+class ManagementServerWithCustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort
 	private int port;
@@ -61,8 +61,8 @@ class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleA
 	}
 
 	@Override
-	String getManagementPath() {
-		return "http://localhost:" + this.managementPort;
+	String getActuatorPath() {
+		return "http://localhost:" + this.managementPort + "/actuator";
 	}
 
 	@Override

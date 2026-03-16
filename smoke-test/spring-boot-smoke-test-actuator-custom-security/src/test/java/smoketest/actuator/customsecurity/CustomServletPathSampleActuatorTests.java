@@ -42,8 +42,8 @@ class CustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomS
 	}
 
 	@Override
-	String getManagementPath() {
-		return "http://localhost:" + this.port + "/example";
+	String getActuatorPath() {
+		return "http://localhost:" + this.port + "/example/actuator";
 	}
 
 	@Override
