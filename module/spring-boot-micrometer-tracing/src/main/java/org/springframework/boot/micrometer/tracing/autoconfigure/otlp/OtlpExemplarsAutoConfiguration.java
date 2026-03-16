@@ -29,11 +29,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Include;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.lang.Contract;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -54,10 +57,24 @@ import org.springframework.util.function.SingletonSupplier;
 public final class OtlpExemplarsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	ExemplarContextProvider exemplarContextProvider(ObjectProvider<Tracer> tracerProvider,
+	@ConditionalOnMissingBean(ExemplarContextProvider.class)
+	@Conditional(ExemplarContextProviderNotDisabledCondition.class)
+	LazyTracingExemplarContextProvider exemplarContextProvider(ObjectProvider<Tracer> tracerProvider,
 			TracingProperties properties) {
 		return new LazyTracingExemplarContextProvider(tracerProvider, properties.getExemplars().getInclude());
+	}
+
+	static class ExemplarContextProviderNotDisabledCondition extends NoneNestedConditions {
+
+		ExemplarContextProviderNotDisabledCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(value = "management.tracing.exemplars.include", havingValue = "none")
+		static class NoneIncluded {
+
+		}
+
 	}
 
 	/**

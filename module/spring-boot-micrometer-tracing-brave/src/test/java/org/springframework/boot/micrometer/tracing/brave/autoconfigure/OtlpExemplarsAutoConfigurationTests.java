@@ -114,21 +114,10 @@ class OtlpExemplarsAutoConfigurationTests {
 	}
 
 	@Test
-	void otlpOutputShouldNotContainExemplarsWhenIncludeIsNone() {
+	void shouldNotSupplyExemplarContextProviderWhenIncludeIsNone() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
 			.withPropertyValues("management.tracing.exemplars.include=none")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(ExemplarContextProvider.class);
-				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-				Observation.start("test.observation", observationRegistry).stop();
-				OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
-				TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
-				otlpMeterRegistry.close();
-				assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
-					.doesNotContain("exemplars")
-					.doesNotContain("span_id")
-					.doesNotContain("trace_id");
-			});
+			.run((context) -> assertThat(context).doesNotHaveBean(ExemplarContextProvider.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
