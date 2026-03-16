@@ -31,6 +31,8 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-micrometer-observation"))
+	optional(project(":module:spring-boot-security"))
+	optional(project(":module:spring-boot-security-oauth2-resource-server"))
 	optional("com.fasterxml.jackson.core:jackson-annotations")
 	optional("io.projectreactor:reactor-core")
 	optional("io.grpc:grpc-servlet-jakarta")

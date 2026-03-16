@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_package = "smoketest.grpcserveroauth.proto";
+option java_multiple_files = true;
+
+service HelloWorld {
+    rpc SayHelloProfileScope (HelloRequest) returns (HelloReply) {}
+    rpc SayHelloEmailScope (HelloRequest) returns (HelloReply) {}
+    rpc SayHelloAuthenticated (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloReply {
+    string message = 1;
+}

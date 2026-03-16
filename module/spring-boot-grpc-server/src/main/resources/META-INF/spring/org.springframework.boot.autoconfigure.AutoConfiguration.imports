@@ -3,3 +3,5 @@ org.springframework.boot.grpc.server.autoconfigure.GrpcServerObservationAutoConf
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerServicesAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthSchedulerAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.security.GrpcServerOAuth2ResourceServerAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.security.GrpcServerSecurityAutoConfiguration
