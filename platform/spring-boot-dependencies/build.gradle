@@ -436,7 +436,7 @@ bom {
 			releaseNotes("https://github.com/git-commit-id/git-commit-id-maven-plugin/releases/tag/v{version}")
 		}
 	}
-	library("Glassfish JAXB", "4.0.6") {
+	library("Glassfish JAXB", "4.0.7") {
 		alignWith {
 			dependencyManagementDeclaredIn("org.glassfish.jaxb:jaxb-bom") {
 				excluding { candidate -> candidate.classifier().equals("sources") }
