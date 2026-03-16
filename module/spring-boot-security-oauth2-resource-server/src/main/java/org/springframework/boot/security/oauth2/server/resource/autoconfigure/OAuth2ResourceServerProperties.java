@@ -104,7 +104,7 @@ public class OAuth2ResourceServerProperties {
 		 * 'spring.security.oauth2.resourceserver.jwt.authorities-claim-name' and
 		 * 'spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter'.
 		 */
-		private List<String> authoritiesExpressions = new ArrayList<>();
+		private List<String> authoritiesClaimExpressions = new ArrayList<>();
 
 		/**
 		 * JWT principal claim name.
@@ -175,12 +175,12 @@ public class OAuth2ResourceServerProperties {
 			this.authoritiesClaimName = authoritiesClaimName;
 		}
 
-		public List<String> getAuthoritiesExpressions() {
-			return this.authoritiesExpressions;
+		public List<String> getAuthoritiesClaimExpressions() {
+			return this.authoritiesClaimExpressions;
 		}
 
 		public void setAuthoritiesExpressions(List<String> authoritiesExpressions) {
-			this.authoritiesExpressions = authoritiesExpressions;
+			this.authoritiesClaimExpressions = authoritiesExpressions;
 		}
 
 		public @Nullable String getPrincipalClaimName() {

@@ -77,11 +77,11 @@ class ReactiveJwtConverterConfiguration {
 
 	private Converter<Jwt, Collection<GrantedAuthority>> grantedAuthoritiesConverter(
 			OAuth2ResourceServerProperties.Jwt properties) {
-		List<String> authoritiesExpressions = properties.getAuthoritiesExpressions();
-		if (CollectionUtils.isEmpty(authoritiesExpressions)) {
+		List<String> authoritiesClaimExpressions = properties.getAuthoritiesClaimExpressions();
+		if (CollectionUtils.isEmpty(authoritiesClaimExpressions)) {
 			return createJwtGrantedAuthoritiesConverter(properties);
 		}
-		return createExpressionJwtGrantedAuthoritiesConverters(properties, authoritiesExpressions);
+		return createExpressionJwtGrantedAuthoritiesConverters(properties, authoritiesClaimExpressions);
 	}
 
 	private Converter<Jwt, Collection<GrantedAuthority>> createJwtGrantedAuthoritiesConverter(
@@ -95,13 +95,13 @@ class ReactiveJwtConverterConfiguration {
 	}
 
 	private Converter<Jwt, Collection<GrantedAuthority>> createExpressionJwtGrantedAuthoritiesConverters(
-			OAuth2ResourceServerProperties.Jwt properties, List<String> authoritiesExpressions) {
+			OAuth2ResourceServerProperties.Jwt properties, List<String> claimExpressions) {
 		checkMutualExclusivity(properties);
 		List<Converter<Jwt, Collection<GrantedAuthority>>> converters = new ArrayList<>();
 		SpelExpressionParser parser = new SpelExpressionParser();
-		for (String authoritiesExpression : authoritiesExpressions) {
+		for (String claimExpression : claimExpressions) {
 			ExpressionJwtGrantedAuthoritiesConverter converter = new ExpressionJwtGrantedAuthoritiesConverter(
-					parser.parseExpression(authoritiesExpression));
+					parser.parseExpression(claimExpression));
 			if (properties.getAuthorityPrefix() != null) {
 				converter.setAuthorityPrefix(properties.getAuthorityPrefix());
 			}
@@ -112,14 +112,14 @@ class ReactiveJwtConverterConfiguration {
 
 	private void checkMutualExclusivity(OAuth2ResourceServerProperties.Jwt properties) {
 		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
-			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
-					properties.getAuthoritiesExpressions());
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions",
+					properties.getAuthoritiesClaimExpressions());
 			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-name",
 					properties.getAuthoritiesClaimName());
 		}, (value) -> !nullOrEmptyList(value));
 		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
-			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
-					properties.getAuthoritiesExpressions());
+			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions",
+					properties.getAuthoritiesClaimExpressions());
 			entries.put("spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter",
 					properties.getAuthoritiesClaimDelimiter());
 		}, (value) -> !nullOrEmptyList(value));
@@ -161,8 +161,8 @@ class ReactiveJwtConverterConfiguration {
 		static class OnAuthoritiesExpressionsCondition extends OnPropertyListCondition {
 
 			OnAuthoritiesExpressionsCondition() {
-				super("spring.security.oauth2.resourceserver.jwt.authorities-expressions",
-						() -> ConditionMessage.forCondition("Authorities expressions"));
+				super("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions",
+						() -> ConditionMessage.forCondition("Authorities claim expressions"));
 			}
 
 		}

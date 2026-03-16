@@ -682,7 +682,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void shouldConfigureJwtConverterIfAuthoritiesExpressionIsSet() {
-		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions=zero")
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions=zero")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class);
 				ReactiveJwtAuthenticationConverter converter = context
@@ -697,8 +698,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	void shouldConfigureJwtConverterIfAuthoritiesExpressionsAreSet() {
 		this.contextRunner
-			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
-					"spring.security.oauth2.resourceserver.jwt.authorities-expressions[1]=one")
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[1]=one")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class);
 				ReactiveJwtAuthenticationConverter converter = context
@@ -715,8 +716,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	void shouldApplyCustomAuthorityPrefixIfAuthoritiesExpressionsAreSet() {
 		this.contextRunner
-			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
-					"spring.security.oauth2.resourceserver.jwt.authorities-expressions[1]=one",
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[0]=zero",
+					"spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[1]=one",
 					"spring.security.oauth2.resourceserver.jwt.authority-prefix=CUSTOM_")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class);
@@ -734,7 +735,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	void shouldFailIfBothAuthoritiesExpressionsAndAuthoritiesClaimDelimiterAreSet() {
 		this.contextRunner
-			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[0]=zero",
 					"spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter=delimiter")
 			.run((context) -> assertThat(context).getFailure()
 				.rootCause()
@@ -744,7 +745,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	void shouldFailIfBothAuthoritiesExpressionsAndAuthoritiesClaimNameAreSet() {
 		this.contextRunner
-			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-expressions[0]=zero",
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions[0]=zero",
 					"spring.security.oauth2.resourceserver.jwt.authorities-claim-name=name")
 			.run((context) -> assertThat(context).getFailure()
 				.rootCause()
