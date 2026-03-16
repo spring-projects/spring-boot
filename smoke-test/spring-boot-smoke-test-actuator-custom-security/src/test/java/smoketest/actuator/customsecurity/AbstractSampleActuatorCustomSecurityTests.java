@@ -37,7 +37,7 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	abstract String getPath();
 
-	abstract String getManagementPath();
+	abstract String getActuatorPath();
 
 	abstract ApplicationContext getApplicationContext();
 
@@ -58,119 +58,110 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	@Test
 	void actuatorInsecureEndpoint() {
-		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/health",
-				String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity(getActuatorPath() + "/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/health/diskSpace", String.class);
+		entity = restTemplate().getForEntity(getActuatorPath() + "/health/diskSpace", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 	@Test
 	void actuatorLinksWithAnonymous() {
-		ResponseEntity<Object> entity = restTemplate().getForEntity(getManagementPath() + "/actuator", Object.class);
+		ResponseEntity<Object> entity = restTemplate().getForEntity(getActuatorPath(), Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/", Object.class);
+		entity = restTemplate().getForEntity(getActuatorPath() + "/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void actuatorLinksWithUnauthorizedUser() {
-		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator",
-				Object.class);
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getActuatorPath(), Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/", Object.class);
+		entity = userRestTemplate().getForEntity(getActuatorPath() + "/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void actuatorLinksWithAuthorizedUser() {
-		ResponseEntity<Object> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator",
-				Object.class);
+		ResponseEntity<Object> entity = adminRestTemplate().getForEntity(getActuatorPath(), Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		adminRestTemplate().getForEntity(getManagementPath() + "/actuator/", Object.class);
+		adminRestTemplate().getForEntity(getActuatorPath() + "/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void actuatorSecureEndpointWithAnonymous() {
-		ResponseEntity<Object> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = restTemplate().getForEntity(getActuatorPath() + "/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = restTemplate().getForEntity(
-				getManagementPath() + "/actuator/env/management.endpoints.web.exposure.include", Object.class);
+		entity = restTemplate().getForEntity(getActuatorPath() + "/env/management.endpoints.web.exposure.include",
+				Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void actuatorSecureEndpointWithUnauthorizedUser() {
-		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getActuatorPath() + "/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		entity = userRestTemplate().getForEntity(
-				getManagementPath() + "/actuator/env/management.endpoints.web.exposure.include", Object.class);
+		entity = userRestTemplate().getForEntity(getActuatorPath() + "/env/management.endpoints.web.exposure.include",
+				Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void actuatorSecureEndpointWithAuthorizedUser() {
-		ResponseEntity<Object> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = adminRestTemplate().getForEntity(getActuatorPath() + "/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/env/", Object.class);
+		entity = adminRestTemplate().getForEntity(getActuatorPath() + "/env/", Object.class);
 		// EndpointRequest matches the trailing slash but MVC doesn't
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		entity = adminRestTemplate().getForEntity(
-				getManagementPath() + "/actuator/env/management.endpoints.web.exposure.include", Object.class);
+		entity = adminRestTemplate().getForEntity(getActuatorPath() + "/env/management.endpoints.web.exposure.include",
+				Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void secureServletEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1",
-				String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity(getActuatorPath() + "/se1", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
+		entity = restTemplate().getForEntity(getActuatorPath() + "/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void secureServletEndpointWithUnauthorizedUser() {
-		ResponseEntity<String> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/se1",
-				String.class);
+		ResponseEntity<String> entity = userRestTemplate().getForEntity(getActuatorPath() + "/se1", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
+		entity = userRestTemplate().getForEntity(getActuatorPath() + "/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void secureServletEndpointWithAuthorizedUser() {
-		ResponseEntity<String> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/se1",
-				String.class);
+		ResponseEntity<String> entity = adminRestTemplate().getForEntity(getActuatorPath() + "/se1", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
+		entity = adminRestTemplate().getForEntity(getActuatorPath() + "/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate()
-			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = restTemplate().getForEntity(getActuatorPath() + "/example/echo?text={t}",
+				String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithUnauthorizedUser() {
-		ResponseEntity<String> entity = userRestTemplate()
-			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = userRestTemplate().getForEntity(getActuatorPath() + "/example/echo?text={t}",
+				String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAuthorizedUser() {
-		ResponseEntity<String> entity = adminRestTemplate()
-			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = adminRestTemplate().getForEntity(getActuatorPath() + "/example/echo?text={t}",
+				String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("test");
 		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");
@@ -178,8 +169,7 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	@Test
 	void actuatorExcludedFromEndpointRequestMatcher() {
-		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/mappings",
-				Object.class);
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity(getActuatorPath() + "/mappings", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

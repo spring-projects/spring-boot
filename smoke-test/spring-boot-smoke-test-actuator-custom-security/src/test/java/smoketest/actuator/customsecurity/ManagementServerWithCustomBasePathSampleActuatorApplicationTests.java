@@ -31,15 +31,15 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports with custom management
- * context path.
+ * Integration tests for a separate management server with a custom base path.
  *
  * @author Dave Syer
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "management.server.base-path=/management" })
-class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSampleActuatorCustomSecurityTests {
+class ManagementServerWithCustomBasePathSampleActuatorApplicationTests
+		extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort
 	private int port;
@@ -53,7 +53,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-			.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
+			.getForEntity(getActuatorPath() + "/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}
@@ -64,8 +64,8 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	}
 
 	@Override
-	String getManagementPath() {
-		return "http://localhost:" + this.managementPort + "/management";
+	String getActuatorPath() {
+		return "http://localhost:" + this.managementPort + "/management/actuator";
 	}
 
 	@Override

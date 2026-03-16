@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -94,6 +95,15 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toAnyEndpointWhenBasePathIsEmptyAndManagementPortDifferentShouldMatchLinks() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
+				WebServerNamespace.MANAGEMENT);
+		assertMatcher.matches("/");
+		assertMatcher.matches("/foo");
+	}
+
+	@Test
 	void toAnyEndpointShouldNotMatchOtherPath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher).doesNotMatch("/actuator/baz");
@@ -143,6 +153,15 @@ class EndpointRequestTests {
 		assertMatcher.doesNotMatch("/actuator/foo");
 		assertMatcher.doesNotMatch("/actuator/bar");
 		assertMatcher.doesNotMatch("/");
+	}
+
+	@Test
+	void toLinksWhenBasePathEmptyAndManagementPortDifferentShouldMatchRoot() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
+				WebServerNamespace.MANAGEMENT);
+		assertMatcher.matches("/");
+		assertMatcher.doesNotMatch("/foo");
 	}
 
 	@Test
@@ -327,10 +346,14 @@ class EndpointRequestTests {
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
 			@Nullable PathMappedEndpoints pathMappedEndpoints, @Nullable WebServerNamespace namespace) {
-		StaticApplicationContext context = new StaticApplicationContext();
+		StaticWebApplicationContext context;
 		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
-			NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
-			context.setParent(parentContext);
+			context = new NamedStaticWebApplicationContext(namespace);
+			context.setParent(new StaticWebApplicationContext());
+			TestPropertyValues.of("management.server.port=0").applyTo(context);
+		}
+		else {
+			context = new StaticWebApplicationContext();
 		}
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
