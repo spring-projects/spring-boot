@@ -578,8 +578,9 @@ class BootBuildImageIntegrationTests {
 	void failsWithIncompatiblePlatform() throws IOException {
 		writeMainClass();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
-		assertThat(result.getOutput()).contains(
-				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'");
+		assertThat(result.getOutput()).containsAnyOf(
+				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'",
+				"image with reference ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64 was found but its platform (linux/amd64) does not match the specified platform (linux/arm64)");
 	}
 
 	private void writeMainClass() throws IOException {
