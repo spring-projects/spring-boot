@@ -86,10 +86,9 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		if (this.kotlin) {
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")));
 			classpath.add(new File(pathOfJarContaining(KotlinToolingVersion.class)));
-			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.build.report.metrics.BuildTime")));
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.build.report.metrics.BuildTimes")));
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.buildtools.api.CompilationService")));
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")));
-			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.konan.library.KonanLibrary")));
 			classpath.add(new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)));
 			classpath.add(new File(pathOfJarContaining(LanguageSettings.class)));
 			classpath.add(new File(pathOfJarContaining(BuildUidService.class)));
