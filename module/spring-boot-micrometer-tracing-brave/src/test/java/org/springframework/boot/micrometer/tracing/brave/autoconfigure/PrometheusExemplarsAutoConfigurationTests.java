@@ -162,18 +162,10 @@ class PrometheusExemplarsAutoConfigurationTests {
 	}
 
 	@Test
-	void prometheusOpenMetricsOutputShouldNotContainExemplarsWhenIncludeIsNone() {
+	void shouldNotSupplySpanContextWhenIncludeIsNone() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
 			.withPropertyValues("management.tracing.exemplars.include=none")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SpanContext.class);
-				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-				Observation.start("test.observation", observationRegistry).stop();
-				PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
-				String openMetricsOutput = prometheusMeterRegistry.scrape(OpenMetricsTextFormatWriter.CONTENT_TYPE);
-				assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");
-				assertThat(openMetricsOutput).doesNotContain("span_id").doesNotContain("trace_id");
-			});
+			.run((context) -> assertThat(context).doesNotHaveBean(SpanContext.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

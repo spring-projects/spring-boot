@@ -27,12 +27,15 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Exemplars.Include;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.util.function.SingletonSupplier;
 
 /**
@@ -52,9 +55,23 @@ import org.springframework.util.function.SingletonSupplier;
 public final class PrometheusExemplarsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	SpanContext spanContext(ObjectProvider<Tracer> tracerProvider, TracingProperties properties) {
+	@ConditionalOnMissingBean(SpanContext.class)
+	@Conditional(SpanContextNotDisabledCondition.class)
+	LazyTracingSpanContext spanContext(ObjectProvider<Tracer> tracerProvider, TracingProperties properties) {
 		return new LazyTracingSpanContext(tracerProvider, properties.getExemplars().getInclude());
+	}
+
+	static class SpanContextNotDisabledCondition extends NoneNestedConditions {
+
+		SpanContextNotDisabledCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(value = "management.tracing.exemplars.include", havingValue = "none")
+		static class NoneIncluded {
+
+		}
+
 	}
 
 	/**
