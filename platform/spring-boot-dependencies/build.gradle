@@ -948,7 +948,7 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.ws.rs")
 		}
 	}
-	library("Jakarta XML Bind", "4.0.4") {
+	library("Jakarta XML Bind", "4.0.5") {
 		alignWith {
 			version {
 				from "org.glassfish.jaxb:jaxb-core"
