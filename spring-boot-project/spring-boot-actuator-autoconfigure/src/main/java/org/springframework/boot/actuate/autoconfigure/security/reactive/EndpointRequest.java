@@ -374,10 +374,7 @@ public final class EndpointRequest {
 			if (linksPath != null) {
 				List<ServerWebExchangeMatcher> linksMatchers = new ArrayList<>();
 				linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath));
-				if ("/".equals(linksPath)) {
-					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(""));
-				}
-				else {
+				if (!linksPath.endsWith("/")) {
 					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath + "/"));
 				}
 				return new OrServerWebExchangeMatcher(linksMatchers);

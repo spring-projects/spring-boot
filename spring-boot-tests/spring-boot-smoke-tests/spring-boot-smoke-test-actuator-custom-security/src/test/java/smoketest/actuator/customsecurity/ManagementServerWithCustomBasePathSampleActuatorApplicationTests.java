@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -30,14 +31,15 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports with custom dispatcher
- * servlet path.
+ * Integration tests for a separate management server with a custom base path.
  *
+ * @author Dave Syer
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "spring.mvc.servlet.path=/example" })
-class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "management.server.base-path=/management" })
+class ManagementServerWithCustomBasePathSampleActuatorApplicationTests
+		extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort
 	private int port;
@@ -49,20 +51,21 @@ class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleA
 	private Environment environment;
 
 	@Test
-	void actuatorPathOnMainPortShouldNotMatch() {
-		ResponseEntity<String> entity = new TestRestTemplate()
-			.getForEntity("http://localhost:" + this.port + "/example/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	void testMissing() {
+		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
+			.getForEntity(getActuatorPath() + "/missing", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(entity.getBody()).contains("\"status\":404");
 	}
 
 	@Override
 	String getPath() {
-		return "http://localhost:" + this.port + "/example";
+		return "http://localhost:" + this.port;
 	}
 
 	@Override
-	String getManagementPath() {
-		return "http://localhost:" + this.managementPort;
+	String getActuatorPath() {
+		return "http://localhost:" + this.managementPort + "/management/actuator";
 	}
 
 	@Override

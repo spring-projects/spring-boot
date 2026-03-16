@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
@@ -33,10 +32,10 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -97,7 +96,7 @@ class EndpointRequestTests {
 	void toAnyEndpointWhenBasePathIsEmptyAndManagementPortDifferentShouldMatchLinks() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
-				WebServerNamespace.MANAGEMENT, true);
+				WebServerNamespace.MANAGEMENT);
 		assertMatcher.matches("/");
 		assertMatcher.matches("/foo");
 	}
@@ -158,7 +157,7 @@ class EndpointRequestTests {
 	void toLinksWhenBasePathEmptyAndManagementPortDifferentShouldMatchRoot() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
-				WebServerNamespace.MANAGEMENT, true);
+				WebServerNamespace.MANAGEMENT);
 		assertMatcher.matches("/");
 		assertMatcher.doesNotMatch("/foo");
 	}
@@ -345,25 +344,14 @@ class EndpointRequestTests {
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
 			PathMappedEndpoints pathMappedEndpoints, WebServerNamespace namespace) {
-		return assertMatcher(matcher, pathMappedEndpoints, namespace, false);
-	}
-
-	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints, WebServerNamespace namespace, boolean managementPortDifferent) {
-		StaticApplicationContext context = new StaticApplicationContext();
+		StaticWebApplicationContext context;
 		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
-			if (managementPortDifferent) {
-				context = new NamedStaticWebApplicationContext(namespace);
-			}
-			else {
-				NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
-				context.setParent(parentContext);
-			}
+			context = new NamedStaticWebApplicationContext(namespace);
+			context.setParent(new StaticWebApplicationContext());
+			TestPropertyValues.of("management.server.port=0").applyTo(context);
 		}
-		if (managementPortDifferent) {
-			context.getEnvironment()
-				.getPropertySources()
-				.addFirst(new MapPropertySource("test", Map.of("management.server.port", 0)));
+		else {
+			context = new StaticWebApplicationContext();
 		}
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {

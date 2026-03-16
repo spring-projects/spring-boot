@@ -16,12 +16,13 @@
 
 package smoketest.actuator.customsecurity;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -30,21 +31,33 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for actuator endpoints with custom security configuration.
+ * Integration tests for a separate management server with custom base path and web
+ * endpoints base path.
  *
+ * @author Dave Syer
  * @author Madhura Bhave
- * @author Stephane Nicoll
- * @author Scott Frederick
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "server.error.include-message=always" })
-class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuatorCustomSecurityTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port=0",
+		"management.server.base-path=/management", "management.endpoints.web.base-path=/" })
+class ManagementServerWithCustomBasePathAndWebEndpointsBasePathSampleActuatorApplicationTests
+		extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort
 	private int port;
 
+	@LocalManagementPort
+	private int managementPort;
+
 	@Autowired
 	private Environment environment;
+
+	@Test
+	void testMissing() {
+		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
+			.getForEntity(getActuatorPath() + "/missing", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(entity.getBody()).contains("\"status\":404");
+	}
 
 	@Override
 	String getPath() {
@@ -53,29 +66,12 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 
 	@Override
 	String getActuatorPath() {
-		return "http://localhost:" + this.port + "/actuator";
+		return "http://localhost:" + this.managementPort + "/management";
 	}
 
 	@Override
 	Environment getEnvironment() {
 		return this.environment;
-	}
-
-	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void testInsecureApplicationPath() {
-		ResponseEntity<Map> entity = restTemplate().getForEntity(getPath() + "/foo", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		Map<String, Object> body = entity.getBody();
-		assertThat((String) body.get("message")).contains("Expected exception in controller");
-	}
-
-	@Test
-	void mvcMatchersCanBeUsedToSecureActuators() {
-		ResponseEntity<Object> entity = beansRestTemplate().getForEntity(getActuatorPath() + "/beans", Object.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = beansRestTemplate().getForEntity(getActuatorPath() + "/beans/", Object.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 }
