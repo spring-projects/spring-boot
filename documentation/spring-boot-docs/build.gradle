@@ -371,9 +371,16 @@ configurations {
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 		}
 		extendsFrom configurations.javadoc
-		resolutionStrategy.eachDependency {
-			if (it.requested.group == 'org.opensaml') {
-				it.useVersion '4.0.1'
+		resolutionStrategy {
+			capabilitiesResolution {
+				withCapability("org.lz4:lz4-java") {
+					select(candidates.find { ((ModuleComponentIdentifier) it.id).group == "at.yawk.lz4" })
+				}
+			}
+			eachDependency {
+				if (it.requested.group == 'org.opensaml') {
+					it.useVersion '4.0.1'
+				}
 			}
 		}
 	}
