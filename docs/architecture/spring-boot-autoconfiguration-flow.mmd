@@ -1,0 +1,58 @@
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#6DB33F', 'primaryTextColor': '#fff'}}}%%
+
+flowchart TD
+    A["@SpringBootApplication"] --> B["@EnableAutoConfiguration"]
+    B --> C["@Import(AutoConfigurationImportSelector)"]
+
+    C --> D["AutoConfigurationImportSelector<br/>.getAutoConfigurationEntry()"]
+
+    D --> E["getCandidateConfigurations()"]
+    E --> F["ImportCandidates.load(<br/>AutoConfiguration.class)"]
+    F --> G["扫描所有 JAR 中的<br/>META-INF/spring/<br/>...AutoConfiguration.imports"]
+    G --> H["得到候选配置类列表<br/>(通常 100+ 个)"]
+
+    H --> I["removeDuplicates()<br/>去重"]
+
+    I --> J["getExclusions()<br/>处理排除项"]
+    J --> J1["@SpringBootApplication(exclude=...)"]
+    J --> J2["spring.autoconfigure.exclude 属性"]
+
+    J --> K["configurations.removeAll(exclusions)"]
+
+    K --> L["getConfigurationClassFilter().filter()"]
+
+    L --> L1["OnClassCondition<br/>@ConditionalOnClass<br/>检查类是否在 classpath"]
+    L --> L2["OnBeanCondition<br/>@ConditionalOnBean<br/>检查 Bean 是否存在"]
+    L --> L3["OnWebApplicationCondition<br/>@ConditionalOnWebApplication<br/>检查 Web 类型"]
+
+    L1 --> M["快速过滤阶段完成<br/>(仅读取 metadata, 不加载类)"]
+    L2 --> M
+    L3 --> M
+
+    M --> N["fireAutoConfigurationImportEvents()<br/>发送事件通知"]
+
+    N --> O["返回最终的<br/>AutoConfigurationEntry<br/>(通常 20-50 个配置类)"]
+
+    O --> P["ConfigurationClassParser<br/>逐个解析配置类"]
+
+    P --> Q{"评估方法级<br/>@Conditional 注解"}
+
+    Q -->|条件满足| R["注册 BeanDefinition"]
+    Q -->|条件不满足| S["跳过该 Bean"]
+
+    R --> T["BeanFactory 创建 Bean"]
+    T --> U["自动配置生效!<br/>Bean 可用"]
+
+    style A fill:#4CAF50,color:white
+    style B fill:#2196F3,color:white
+    style C fill:#2196F3,color:white
+    style D fill:#FF9800,color:white
+    style H fill:#9C27B0,color:white
+    style L fill:#F44336,color:white
+    style L1 fill:#E91E63,color:white
+    style L2 fill:#E91E63,color:white
+    style L3 fill:#E91E63,color:white
+    style M fill:#FF5722,color:white
+    style O fill:#009688,color:white
+    style U fill:#4CAF50,color:white
+    style S fill:#757575,color:white

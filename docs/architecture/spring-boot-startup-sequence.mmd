@@ -1,0 +1,99 @@
+sequenceDiagram
+    autonumber
+    participant Main as main()
+    participant SA as SpringApplication
+    participant SFL as SpringFactoriesLoader
+    participant Listeners as RunListeners
+    participant Env as Environment
+    participant Ctx as ApplicationContext
+    participant BF as BeanFactory
+    participant Web as WebServer
+    participant Runners as Runner
+
+    Main->>SA: new SpringApplication(primarySources)
+    activate SA
+
+    SA->>SA: WebApplicationType.deduce()
+    Note right of SA: 检测 classpath 判断:<br/>SERVLET / REACTIVE / NONE
+
+    SA->>SFL: 加载 BootstrapRegistryInitializer
+    SA->>SFL: 加载 ApplicationContextInitializer
+    SA->>SFL: 加载 ApplicationListener
+    SA->>SA: deduceMainApplicationClass()
+
+    Main->>SA: run(args)
+
+    SA->>SA: Startup.create() 记录启动时间
+
+    SA->>SA: createBootstrapContext()
+
+    SA->>SFL: 加载 SpringApplicationRunListener
+    SFL-->>SA: EventPublishingRunListener
+
+    SA->>Listeners: starting()
+    Note right of Listeners: 发布 ApplicationStartingEvent
+
+    rect rgb(230, 245, 255)
+        Note over SA,Env: 阶段: 准备 Environment
+        SA->>Env: getOrCreateEnvironment()
+        SA->>Env: configureEnvironment(args)
+        SA->>Env: ConfigurationPropertySources.attach()
+        SA->>Listeners: environmentPrepared()
+        Note right of Listeners: 发布 ApplicationEnvironmentPreparedEvent<br/>触发加载 application.yml
+        SA->>Env: bindToSpringApplication()
+    end
+
+    SA->>SA: printBanner()
+    Note right of SA: 打印 Spring Boot Banner
+
+    rect rgb(255, 245, 230)
+        Note over SA,Ctx: 阶段: 创建 ApplicationContext
+        SA->>Ctx: createApplicationContext()
+        Note right of Ctx: 根据 WebApplicationType 创建:<br/>AnnotationConfigServletWebServer...<br/>或 AnnotationConfigReactiveWebServer...<br/>或 AnnotationConfigApplicationContext
+    end
+
+    rect rgb(230, 255, 230)
+        Note over SA,BF: 阶段: 准备 Context
+        SA->>Ctx: setEnvironment(env)
+        SA->>Ctx: postProcessApplicationContext()
+        SA->>SA: applyInitializers(context)
+        Note right of SA: 执行所有 ApplicationContextInitializer
+        SA->>Listeners: contextPrepared()
+        Note right of Listeners: 发布 ApplicationContextInitializedEvent
+        SA->>BF: registerSingleton("springApplicationArguments")
+        SA->>Ctx: load(sources) 注册主配置类
+        SA->>Listeners: contextLoaded()
+        Note right of Listeners: 发布 ApplicationPreparedEvent
+    end
+
+    rect rgb(255, 230, 230)
+        Note over SA,Web: 阶段: 刷新 Context (核心!)
+        SA->>Ctx: refresh()
+        Note right of Ctx: AbstractApplicationContext.refresh()
+
+        Ctx->>BF: invokeBeanFactoryPostProcessors()
+        Note right of BF: 处理 @Configuration<br/>处理 @EnableAutoConfiguration<br/>AutoConfigurationImportSelector 执行<br/>条件评估 + 过滤
+
+        Ctx->>BF: registerBeanPostProcessors()
+        Ctx->>BF: finishBeanFactoryInitialization()
+        Note right of BF: 创建所有单例 Bean<br/>依赖注入<br/>@PostConstruct 回调
+
+        Ctx->>Web: 创建并启动 WebServer
+        Note right of Web: Tomcat/Jetty/Netty<br/>绑定端口<br/>注册 DispatcherServlet
+
+        Ctx->>Ctx: finishRefresh()
+        Note right of Ctx: 发布 ContextRefreshedEvent
+    end
+
+    SA->>Listeners: started(context)
+    Note right of Listeners: 发布 ApplicationStartedEvent
+
+    SA->>Runners: callRunners()
+    Note right of Runners: 执行 ApplicationRunner<br/>执行 CommandLineRunner<br/>按 @Order 排序
+
+    SA->>Listeners: ready(context)
+    Note right of Listeners: 发布 ApplicationReadyEvent<br/>应用完全就绪!
+
+    deactivate SA
+
+    Note over Main,Web: 应用运行中，等待请求...

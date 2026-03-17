@@ -1,0 +1,108 @@
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#6DB33F', 'primaryTextColor': '#fff', 'primaryBorderColor': '#5A9E2F', 'lineColor': '#333', 'secondaryColor': '#34302D', 'tertiaryColor': '#F1F1F1'}}}%%
+
+graph TB
+    subgraph APP["你的 Spring Boot 应用"]
+        YourCode["你的业务代码<br/>@SpringBootApplication"]
+    end
+
+    subgraph STARTER["Starter 层 (依赖聚合, 不含代码)"]
+        S_WEB["spring-boot-starter-web"]
+        S_JPA["spring-boot-starter-data-jpa"]
+        S_SEC["spring-boot-starter-security"]
+        S_ACT["spring-boot-starter-actuator"]
+        S_TEST["spring-boot-starter-test"]
+        S_BASE["spring-boot-starter"]
+        S_REDIS["spring-boot-starter-data-redis"]
+        S_KAFKA["spring-boot-starter-kafka"]
+    end
+
+    subgraph MODULE["Module 层 (功能模块, 自动配置实现)"]
+        M_WEBMVC["spring-boot-webmvc<br/>MVC 自动配置"]
+        M_TOMCAT["spring-boot-tomcat<br/>Tomcat 容器"]
+        M_JACKSON["spring-boot-jackson<br/>JSON 序列化"]
+        M_JPA["spring-boot-data-jpa<br/>JPA 自动配置"]
+        M_JDBC["spring-boot-jdbc<br/>数据源配置"]
+        M_SEC["spring-boot-security<br/>安全配置"]
+        M_ACT["spring-boot-actuator<br/>监控端点"]
+        M_REDIS["spring-boot-data-redis<br/>Redis 配置"]
+        M_KAFKA["spring-boot-kafka<br/>Kafka 配置"]
+        M_HTTP["spring-boot-http-converter<br/>HTTP 消息转换"]
+    end
+
+    subgraph CORE["Core 层 (核心基础设施)"]
+        C_BOOT["spring-boot<br/>SpringApplication<br/>启动引擎"]
+        C_AUTO["spring-boot-autoconfigure<br/>自动配置基础<br/>条件注解体系"]
+        C_TEST["spring-boot-test<br/>spring-boot-test-autoconfigure"]
+    end
+
+    subgraph LOADER["Loader 层"]
+        L_LOADER["spring-boot-loader<br/>Fat JAR 启动器"]
+        L_TOOLS["spring-boot-loader-tools<br/>打包工具"]
+    end
+
+    subgraph PLUGIN["构建插件"]
+        P_GRADLE["spring-boot-gradle-plugin"]
+        P_MAVEN["spring-boot-maven-plugin"]
+    end
+
+    subgraph PLATFORM["平台 (BOM)"]
+        DEPS["spring-boot-dependencies<br/>统一版本管理"]
+    end
+
+    %% 应用依赖 Starter
+    YourCode --> S_WEB
+    YourCode --> S_JPA
+    YourCode --> S_SEC
+    YourCode --> S_ACT
+
+    %% Starter 依赖 Module
+    S_WEB --> M_WEBMVC
+    S_WEB --> M_TOMCAT
+    S_WEB --> M_JACKSON
+    S_WEB --> M_HTTP
+    S_JPA --> M_JPA
+    S_JPA --> M_JDBC
+    S_SEC --> M_SEC
+    S_ACT --> M_ACT
+    S_REDIS --> M_REDIS
+    S_KAFKA --> M_KAFKA
+    S_TEST --> C_TEST
+
+    %% Starter 基础依赖
+    S_WEB --> S_BASE
+    S_JPA --> S_BASE
+    S_SEC --> S_BASE
+    S_BASE --> C_AUTO
+
+    %% Module 依赖 Core
+    M_WEBMVC --> C_AUTO
+    M_JPA --> C_AUTO
+    M_SEC --> C_AUTO
+    M_ACT --> C_AUTO
+    C_AUTO --> C_BOOT
+
+    %% 构建插件使用 Loader
+    P_GRADLE --> L_TOOLS
+    P_MAVEN --> L_TOOLS
+    L_TOOLS --> L_LOADER
+
+    %% BOM 管理版本
+    DEPS -.->|版本管理| S_WEB
+    DEPS -.->|版本管理| M_WEBMVC
+    DEPS -.->|版本管理| C_BOOT
+
+    classDef appStyle fill:#4CAF50,stroke:#388E3C,color:white
+    classDef starterStyle fill:#2196F3,stroke:#1976D2,color:white
+    classDef moduleStyle fill:#FF9800,stroke:#F57C00,color:white
+    classDef coreStyle fill:#F44336,stroke:#D32F2F,color:white
+    classDef loaderStyle fill:#9C27B0,stroke:#7B1FA2,color:white
+    classDef pluginStyle fill:#607D8B,stroke:#455A64,color:white
+    classDef platformStyle fill:#795548,stroke:#5D4037,color:white
+
+    class YourCode appStyle
+    class S_WEB,S_JPA,S_SEC,S_ACT,S_TEST,S_BASE,S_REDIS,S_KAFKA starterStyle
+    class M_WEBMVC,M_TOMCAT,M_JACKSON,M_JPA,M_JDBC,M_SEC,M_ACT,M_REDIS,M_KAFKA,M_HTTP moduleStyle
+    class C_BOOT,C_AUTO,C_TEST coreStyle
+    class L_LOADER,L_TOOLS loaderStyle
+    class P_GRADLE,P_MAVEN pluginStyle
+    class DEPS platformStyle

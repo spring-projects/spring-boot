@@ -1,0 +1,145 @@
+%%{init: {'theme': 'base'}}%%
+
+classDiagram
+    direction TB
+
+    class SpringApplication {
+        -Set~Class~ primarySources
+        -Class mainApplicationClass
+        -WebApplicationType webApplicationType
+        -List~ApplicationContextInitializer~ initializers
+        -List~ApplicationListener~ listeners
+        -ApplicationContextFactory applicationContextFactory
+        +run(String... args) ConfigurableApplicationContext
+        -createBootstrapContext() DefaultBootstrapContext
+        -prepareEnvironment() ConfigurableEnvironment
+        -createApplicationContext() ConfigurableApplicationContext
+        -prepareContext()
+        -refreshContext()
+        -callRunners()
+        +static run(Class, String[]) ConfigurableApplicationContext
+    }
+
+    class SpringApplicationRunListener {
+        <<interface>>
+        +starting(bootstrapContext)
+        +environmentPrepared(bootstrapContext, environment)
+        +contextPrepared(context)
+        +contextLoaded(context)
+        +started(context, timeTaken)
+        +ready(context, timeTaken)
+        +failed(context, exception)
+    }
+
+    class ApplicationContextFactory {
+        <<interface>>
+        +create(webApplicationType) ConfigurableApplicationContext
+        +createEnvironment(webApplicationType) ConfigurableEnvironment
+        +getEnvironmentType(webApplicationType) Class
+    }
+
+    class WebApplicationType {
+        <<enum>>
+        NONE
+        SERVLET
+        REACTIVE
+        +deduce() WebApplicationType
+    }
+
+    class AutoConfigurationImportSelector {
+        -ConfigurableListableBeanFactory beanFactory
+        -Environment environment
+        -ClassLoader beanClassLoader
+        +selectImports(metadata) String[]
+        #getAutoConfigurationEntry(metadata) AutoConfigurationEntry
+        #getCandidateConfigurations(metadata, attributes) List~String~
+        #getExclusions(metadata, attributes) Set~String~
+        -getConfigurationClassFilter() ConfigurationClassFilter
+    }
+
+    class EnableAutoConfiguration {
+        <<annotation>>
+        +exclude() Class[]
+        +excludeName() String[]
+    }
+
+    class SpringBootApplication {
+        <<annotation>>
+        +exclude() Class[]
+        +scanBasePackages() String[]
+        +proxyBeanMethods() boolean
+    }
+
+    class AutoConfiguration {
+        <<annotation>>
+        +value() String
+        +before() Class[]
+        +after() Class[]
+    }
+
+    class SpringBootCondition {
+        <<abstract>>
+        +getMatchOutcome(context, metadata) ConditionOutcome
+    }
+
+    class OnClassCondition {
+        +getMatchOutcome() ConditionOutcome
+    }
+
+    class OnBeanCondition {
+        +getMatchOutcome() ConditionOutcome
+    }
+
+    class OnPropertyCondition {
+        +getMatchOutcome() ConditionOutcome
+    }
+
+    class OnWebApplicationCondition {
+        +getMatchOutcome() ConditionOutcome
+    }
+
+    class ApplicationRunner {
+        <<interface>>
+        +run(ApplicationArguments args)
+    }
+
+    class CommandLineRunner {
+        <<interface>>
+        +run(String... args)
+    }
+
+    class ApplicationContextInitializer {
+        <<interface>>
+        +initialize(applicationContext)
+    }
+
+    class ApplicationListener {
+        <<interface>>
+        +onApplicationEvent(event)
+    }
+
+    class EnvironmentPostProcessor {
+        <<interface>>
+        +postProcessEnvironment(environment, application)
+    }
+
+    %% Relationships
+    SpringApplication --> WebApplicationType : 持有
+    SpringApplication --> ApplicationContextFactory : 使用
+    SpringApplication --> SpringApplicationRunListener : 通知
+    SpringApplication --> ApplicationContextInitializer : 调用
+    SpringApplication --> ApplicationListener : 注册
+    SpringApplication --> ApplicationRunner : 回调
+    SpringApplication --> CommandLineRunner : 回调
+
+    SpringBootApplication ..> EnableAutoConfiguration : 包含
+    EnableAutoConfiguration ..> AutoConfigurationImportSelector : @Import
+
+    AutoConfigurationImportSelector --> AutoConfiguration : 加载
+
+    SpringBootCondition <|-- OnClassCondition : 继承
+    SpringBootCondition <|-- OnBeanCondition : 继承
+    SpringBootCondition <|-- OnPropertyCondition : 继承
+    SpringBootCondition <|-- OnWebApplicationCondition : 继承
+
+    AutoConfigurationImportSelector --> SpringBootCondition : 条件过滤
