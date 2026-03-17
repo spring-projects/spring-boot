@@ -2371,7 +2371,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "3.3.14-SNAPSHOT") {
+	library("Spring Kafka", "3.3.14") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
