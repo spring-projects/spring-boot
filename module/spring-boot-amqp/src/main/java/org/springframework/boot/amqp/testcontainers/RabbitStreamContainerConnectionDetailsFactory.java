@@ -16,9 +16,11 @@
 
 package org.springframework.boot.amqp.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -29,6 +31,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * {@link ServiceConnection @ServiceConnection}-annotated {@link RabbitMQContainer}.
  *
  * @author Eddú Meléndez
+ * @author Jay Choi
  */
 class RabbitStreamContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitStreamConnectionDetails> {
@@ -57,6 +60,10 @@ class RabbitStreamContainerConnectionDetailsFactory
 	static final class RabbitMqStreamContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
 			implements RabbitStreamConnectionDetails {
 
+		private static final int STREAMS_PORT = 5552;
+
+		private static final int STREAMS_TLS_PORT = 5551;
+
 		private RabbitMqStreamContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
 		}
@@ -68,7 +75,7 @@ class RabbitStreamContainerConnectionDetailsFactory
 
 		@Override
 		public int getPort() {
-			return getContainer().getMappedPort(5552);
+			return getContainer().getMappedPort((getSslBundle() != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
 		}
 
 		@Override
@@ -79,6 +86,11 @@ class RabbitStreamContainerConnectionDetailsFactory
 		@Override
 		public String getPassword() {
 			return getContainer().getAdminPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

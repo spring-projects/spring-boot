@@ -41,7 +41,8 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "rabbit-ssl-compose.yaml", image = TestImage.RABBITMQ,
-			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key", "rabbitmq.conf" })
+			additionalResources = { "../../ca.crt", "../../server.crt", "../../server.key", "../../client.crt",
+					"../../client.key", "rabbitmq-ssl.conf" })
 	void runWithSslCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
