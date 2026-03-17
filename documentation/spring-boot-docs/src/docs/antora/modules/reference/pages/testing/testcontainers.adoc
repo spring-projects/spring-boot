@@ -235,7 +235,8 @@ The SSL annotations are supported for the following service connections:
 * Elasticsearch
 * Kafka
 * MongoDB
-* RabbitMQ (excluding streams)
+* RabbitMQ
+* RabbitMQ Streams
 * Redis
 
 The `ElasticsearchContainer` additionally supports automatic detection of server side SSL.

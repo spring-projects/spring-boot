@@ -38,8 +38,6 @@ import org.springframework.boot.ssl.SslBundle;
 class RabbitStreamDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitStreamConnectionDetails> {
 
-	private static final int RABBITMQ_STREAMS_PORT = 5552;
-
 	protected RabbitStreamDockerComposeConnectionDetailsFactory() {
 		super("rabbitmq");
 	}
@@ -62,6 +60,10 @@ class RabbitStreamDockerComposeConnectionDetailsFactory
 	static class RabbitStreamDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements RabbitStreamConnectionDetails {
 
+		private static final int STREAMS_PORT = 5552;
+
+		private static final int STREAMS_TLS_PORT = 5551;
+
 		private final RabbitEnvironment environment;
 
 		private final String host;
@@ -74,8 +76,8 @@ class RabbitStreamDockerComposeConnectionDetailsFactory
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
 			this.host = service.host();
-			this.port = service.ports().get(RABBITMQ_STREAMS_PORT);
 			this.sslBundle = getSslBundle(service);
+			this.port = service.ports().get((this.sslBundle != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
 		}
 
 		@Override

@@ -101,6 +101,12 @@ If you need to create more javadoc:org.springframework.rabbit.stream.producer.Ra
 
 
 
+[[messaging.amqp.sending-stream.ssl]]
+=== SSL
+To use SSL with RabbitMQ Streams, set configprop:spring.rabbitmq.stream.ssl.enabled[] to `true` or set configprop:spring.rabbitmq.stream.ssl.bundle[] to configure the xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to use.
+
+
+
 [[messaging.amqp.receiving]]
 == Receiving a Message
 

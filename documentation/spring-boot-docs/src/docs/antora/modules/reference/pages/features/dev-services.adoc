@@ -152,7 +152,8 @@ SSL is supported for the following service connections:
 * Cassandra
 * Elasticsearch
 * MongoDB
-* RabbitMQ (excluding streams)
+* RabbitMQ
+* RabbitMQ Streams
 * Redis
 
 To enable SSL support for a service, you can use https://docs.docker.com/reference/compose-file/services/#labels[service labels].

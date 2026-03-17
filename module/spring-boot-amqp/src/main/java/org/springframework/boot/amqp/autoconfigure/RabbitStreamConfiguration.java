@@ -28,7 +28,7 @@ import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Stream;
-import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Stream.StreamSsl;
+import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Stream.Ssl;
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.StreamContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -207,7 +207,7 @@ class RabbitStreamConfiguration {
 
 		@Override
 		public @Nullable SslBundle getSslBundle() {
-			StreamSsl ssl = this.streamProperties.getSsl();
+			Ssl ssl = this.streamProperties.getSsl();
 			if (!ssl.determineEnabled()) {
 				return null;
 			}

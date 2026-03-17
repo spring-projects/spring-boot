@@ -60,6 +60,10 @@ class RabbitStreamContainerConnectionDetailsFactory
 	static final class RabbitMqStreamContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
 			implements RabbitStreamConnectionDetails {
 
+		private static final int STREAMS_PORT = 5552;
+
+		private static final int STREAMS_TLS_PORT = 5551;
+
 		private RabbitMqStreamContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
 		}
@@ -71,7 +75,7 @@ class RabbitStreamContainerConnectionDetailsFactory
 
 		@Override
 		public int getPort() {
-			return getContainer().getMappedPort(5552);
+			return getContainer().getMappedPort((getSslBundle() != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
 		}
 
 		@Override

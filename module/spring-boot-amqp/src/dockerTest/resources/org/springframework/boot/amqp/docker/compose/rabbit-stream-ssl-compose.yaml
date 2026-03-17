@@ -4,15 +4,18 @@ services:
     environment:
       - 'RABBITMQ_DEFAULT_USER=myuser'
       - 'RABBITMQ_DEFAULT_PASS=secret'
+    configs:
+      - source: plugins
+        target: /etc/rabbitmq/enabled_plugins
     ports:
-      - '5672'
-      - '5671'
+      - '5551'
+      - '5552'
     secrets:
       - ssl-ca
       - ssl-key
       - ssl-cert
     volumes:
-      - ./rabbitmq-ssl.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq-stream-ssl.conf:/etc/rabbitmq/rabbitmq.conf:ro
     labels:
       - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
       - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
@@ -24,3 +27,6 @@ secrets:
     file: 'server.key'
   ssl-cert:
     file: 'server.crt'
+configs:
+  plugins:
+    content: "[rabbitmq_stream]."

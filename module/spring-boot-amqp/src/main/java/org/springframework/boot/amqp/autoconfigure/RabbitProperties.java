@@ -1315,7 +1315,7 @@ public class RabbitProperties {
 		/**
 		 * SSL configuration for RabbitMQ instance with the Stream plugin enabled.
 		 */
-		private final StreamSsl ssl = new StreamSsl();
+		private final Ssl ssl = new Ssl();
 
 		public String getHost() {
 			return this.host;
@@ -1365,11 +1365,11 @@ public class RabbitProperties {
 			this.name = name;
 		}
 
-		public StreamSsl getSsl() {
+		public Ssl getSsl() {
 			return this.ssl;
 		}
 
-		public static class StreamSsl {
+		public static class Ssl {
 
 			/**
 			 * Whether to enable SSL support. Enabled automatically if "bundle" is
