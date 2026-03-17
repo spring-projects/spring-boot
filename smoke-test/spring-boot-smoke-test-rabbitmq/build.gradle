@@ -19,7 +19,7 @@ plugins {
 	id "org.springframework.boot.docker-test"
 }
 
-description = "Spring Boot AMQP smoke test"
+description = "Spring Boot RabbitMQ smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-rabbitmq"))

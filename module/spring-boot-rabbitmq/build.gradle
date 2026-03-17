@@ -23,7 +23,7 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot AMQP"
+description = "Spring Boot RabbitMQ"
 
 dependencies {
 	api(project(":core:spring-boot"))
