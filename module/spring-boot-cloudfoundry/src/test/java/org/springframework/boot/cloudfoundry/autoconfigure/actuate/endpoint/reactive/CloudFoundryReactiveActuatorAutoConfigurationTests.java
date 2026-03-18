@@ -194,7 +194,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 						assertThat(cfBaseWithTrailingSlashRequestMatches).isTrue();
 						assertThat(cfRequestMatches).isTrue();
 						assertThat(cfRequestWithAdditionalPathMatches).isTrue();
-						assertThat(otherCfRequestMatches).isFalse();
+						assertThat(otherCfRequestMatches).isTrue();
 						assertThat(otherRequestMatches).isFalse();
 						otherRequestMatches = filters.get(1)
 							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))

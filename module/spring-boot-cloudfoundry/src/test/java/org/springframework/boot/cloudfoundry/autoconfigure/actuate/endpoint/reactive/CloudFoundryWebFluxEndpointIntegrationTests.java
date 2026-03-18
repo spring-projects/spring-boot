@@ -212,6 +212,12 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.doesNotExist()));
 	}
 
+	@Test
+	void unknownEndpointsAreForbidden() {
+		this.contextRunner.run(withWebTestClient(
+				(client) -> client.get().uri("/cfApplication/unknown").exchange().expectStatus().isForbidden()));
+	}
+
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> clientConsumer) {
 		return (context) -> {

@@ -79,6 +79,12 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 	}
 
 	@Override
+	protected void initHandlerMethods() {
+		super.initHandlerMethods();
+		registerCatchAllMapping(HttpStatus.FORBIDDEN);
+	}
+
+	@Override
 	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
 			ReactiveWebOperation reactiveWebOperation) {
 		return new SecureReactiveWebOperation(reactiveWebOperation, this.securityInterceptor, endpoint.getEndpointId());
