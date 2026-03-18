@@ -322,6 +322,7 @@ class EndpointRequestTests {
 				FooEndpoint.class);
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
 				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
+		assertMatcher.doesNotMatch("/additional/foo");
 		assertMatcher.doesNotMatch("/foo");
 		assertMatcher.doesNotMatch("/bar");
 	}
