@@ -52,6 +52,10 @@ class SslMeterBinder implements MeterBinder {
 
 	private static final String CHAIN_EXPIRY_METRIC_NAME = "ssl.chain.expiry";
 
+	private static final String KEY_STORE_TAG_VALUE = "key";
+
+	private static final String TRUST_STORE_TAG_VALUE = "trust";
+
 	private final Clock clock;
 
 	private final SslInfo sslInfo;
@@ -95,16 +99,23 @@ class SslMeterBinder implements MeterBinder {
 	private void createOrUpdateBundleMetrics(MeterRegistry meterRegistry, BundleInfo bundle) {
 		MultiGauge multiGauge = this.bundleMetrics.getGauge(bundle, meterRegistry);
 		List<Row<CertificateInfo>> rows = new ArrayList<>();
-		for (CertificateChainInfo chain : bundle.getCertificateChains()) {
-			Row<CertificateInfo> row = createRowForChain(bundle, chain);
+		addRows(rows, bundle, bundle.getCertificateChains(), KEY_STORE_TAG_VALUE);
+		addRows(rows, bundle, bundle.getTrustStoreCertificateChains(), TRUST_STORE_TAG_VALUE);
+		multiGauge.register(rows, true);
+	}
+
+	private void addRows(List<Row<CertificateInfo>> rows, BundleInfo bundle, List<CertificateChainInfo> chains,
+			String store) {
+		for (CertificateChainInfo chain : chains) {
+			Row<CertificateInfo> row = createRowForChain(bundle, chain, store);
 			if (row != null) {
 				rows.add(row);
 			}
 		}
-		multiGauge.register(rows, true);
 	}
 
-	private @Nullable Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain) {
+	private @Nullable Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain,
+			String store) {
 		CertificateInfo leastValidCertificate = chain.getCertificates()
 			.stream()
 			.filter((c) -> c.getValidityEnds() != null)
@@ -114,7 +125,7 @@ class SslMeterBinder implements MeterBinder {
 			return null;
 		}
 		String serialNumber = leastValidCertificate.getSerialNumber();
-		Tags tags = Tags.of("chain", chain.getAlias(), "bundle", bundle.getName(), "certificate",
+		Tags tags = Tags.of("chain", chain.getAlias(), "bundle", bundle.getName(), "store", store, "certificate",
 				(serialNumber != null) ? serialNumber : "");
 		return Row.of(tags, leastValidCertificate, this::getChainExpiry);
 	}
