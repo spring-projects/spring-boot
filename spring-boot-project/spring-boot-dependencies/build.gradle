@@ -1017,7 +1017,7 @@ bom {
 				.formatted(version.toString().replace(".java11", "")))
 		}
 	}
-	library("JBoss Logging", "3.6.2.Final") {
+	library("JBoss Logging", "3.6.3.Final") {
 		group("org.jboss.logging") {
 			modules = [
 				"jboss-logging"
