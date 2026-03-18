@@ -456,13 +456,12 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory) {
 			PathMappedEndpoints endpoints = context.getBean(PathMappedEndpoints.class);
 			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
-			Set<String> paths = this.endpoints.stream()
+			List<RequestMatcher> delegateMatchers = this.endpoints.stream()
 				.filter(Objects::nonNull)
 				.map(this::getEndpointId)
 				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
-				.collect(Collectors.toCollection(LinkedHashSet::new));
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths,
-					this.httpMethod);
+				.map((path) -> requestMatcherFactory.antPath(matcherProvider, this.httpMethod, path))
+				.collect(Collectors.toCollection(ArrayList::new));
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrRequestMatcher(delegateMatchers)
 					: EMPTY_MATCHER;
 		}

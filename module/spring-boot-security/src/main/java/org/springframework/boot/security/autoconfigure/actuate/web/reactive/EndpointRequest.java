@@ -449,12 +449,12 @@ public final class EndpointRequest {
 
 		@Override
 		protected ServerWebExchangeMatcher createDelegate(PathMappedEndpoints endpoints) {
-			Set<String> paths = this.endpoints.stream()
+			List<ServerWebExchangeMatcher> delegateMatchers = this.endpoints.stream()
 				.filter(Objects::nonNull)
 				.map(this::getEndpointId)
 				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
-				.collect(Collectors.toCollection(LinkedHashSet::new));
-			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths, this.httpMethod);
+				.map(PathPatternParserServerWebExchangeMatcher::new)
+				.collect(Collectors.toCollection(ArrayList::new));
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrServerWebExchangeMatcher(delegateMatchers)
 					: EMPTY_MATCHER;
 		}
