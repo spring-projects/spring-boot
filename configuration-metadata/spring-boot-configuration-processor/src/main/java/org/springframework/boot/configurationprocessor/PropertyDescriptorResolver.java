@@ -31,8 +31,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.Diagnostic;
 
 import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
+import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 
 /**
  * Resolve {@link PropertyDescriptor} instances.
@@ -149,8 +151,13 @@ class PropertyDescriptorResolver {
 	}
 
 	private void register(Map<String, PropertyDescriptor> candidates, PropertyDescriptor descriptor) {
-		if (!candidates.containsKey(descriptor.getName()) && isCandidate(descriptor)) {
-			candidates.put(descriptor.getName(), descriptor);
+		if (isCandidate(descriptor)) {
+			PropertyDescriptor existing = candidates.putIfAbsent(descriptor.getName(), descriptor);
+			if (existing != null) {
+				throw new InvalidConfigurationMetadataException(
+						"Multiple properties with the same name '%s' detected".formatted(descriptor.getName()),
+						Diagnostic.Kind.ERROR);
+			}
 		}
 	}
 

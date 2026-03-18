@@ -21,11 +21,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.name.ConstructorParameterNameAnnotationProperties;
+import org.springframework.boot.configurationsample.name.DuplicateNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.JavaBeanNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.LombokNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.RecordComponentNameAnnotationProperties;
+import org.springframework.core.test.tools.CompilationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Metadata generation tests for using {@code @Name}.
@@ -85,6 +88,13 @@ class NameAnnotationPropertiesTests extends AbstractMetadataGenerationTests {
 				.fromSource(LombokNameAnnotationProperties.class)
 				.withDefaultValue("Whether default mode is enabled.")
 				.withDefaultValue(true));
+	}
+
+	@Test
+	void duplicateNameAnnotationPropertiesShouldFailCompilation() {
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compile(DuplicateNameAnnotationProperties.class))
+			.withMessageContaining("Multiple properties with the same name");
 	}
 
 }
