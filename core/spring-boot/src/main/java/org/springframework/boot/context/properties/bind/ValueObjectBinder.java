@@ -77,25 +77,24 @@ class ValueObjectBinder implements DataObjectBinder {
 	public <T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
 			DataObjectPropertyBinder propertyBinder, boolean fallbackToDefaultValue) {
 		ValueObject<T> valueObject = ValueObject.get(target, context, this.constructorProvider, Discoverer.LENIENT);
-		if (valueObject == null) {
-			return null;
-		}
-		Class<?> targetType = target.getType().resolve();
-		Assert.state(targetType != null, "'targetType' must not be null");
-		context.pushConstructorBoundTypes(targetType);
-		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
-		List<@Nullable Object> args = new ArrayList<>(parameters.size());
-		boolean bound = false;
-		for (ConstructorParameter parameter : parameters) {
-			Object arg = parameter.bind(propertyBinder);
-			bound = bound || arg != null;
-			arg = (arg != null) ? arg : getDefaultValue(context, parameter);
-			args.add(arg);
-		}
-		context.clearConfigurationProperty();
-		context.popConstructorBoundTypes();
-		if (bound) {
-			return valueObject.instantiate(args);
+		if (valueObject != null) {
+			Class<?> targetType = target.getType().resolve();
+			Assert.state(targetType != null, "'targetType' must not be null");
+			context.pushConstructorBoundTypes(targetType);
+			List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
+			List<@Nullable Object> args = new ArrayList<>(parameters.size());
+			boolean bound = false;
+			for (ConstructorParameter parameter : parameters) {
+				Object arg = parameter.bind(propertyBinder);
+				bound = bound || arg != null;
+				arg = (arg != null) ? arg : getDefaultValue(context, parameter);
+				args.add(arg);
+			}
+			context.clearConfigurationProperty();
+			context.popConstructorBoundTypes();
+			if (bound) {
+				return valueObject.instantiate(args);
+			}
 		}
 		if (fallbackToDefaultValue) {
 			return getNewDefaultValueInstanceIfPossible(context, target.getType());
