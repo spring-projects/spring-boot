@@ -913,6 +913,17 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@EnumSource
+	@ParameterizedTest
+	void mapperHasASpringBeanHandlerInstantiator(MapperType mapperType) {
+		this.contextRunner.run((context) -> {
+			assertThat(mapperType.getMapper(context).deserializationConfig().getHandlerInstantiator())
+				.isInstanceOf(SpringBeanHandlerInstantiator.class);
+			assertThat(mapperType.getMapper(context).serializationConfig().getHandlerInstantiator())
+				.isInstanceOf(SpringBeanHandlerInstantiator.class);
+		});
+	}
+
 	static class MyDateFormat extends SimpleDateFormat {
 
 		MyDateFormat() {

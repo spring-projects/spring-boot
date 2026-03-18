@@ -43,6 +43,7 @@ import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
 import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.cfg.HandlerInstantiator;
 import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.cbor.CBORFactory;
@@ -57,6 +58,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -174,8 +176,10 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
-		StandardJsonMapperBuilderCustomizer standardJsonMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules) {
-			return new StandardJsonMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList());
+		StandardJsonMapperBuilderCustomizer standardJsonMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
+				AutowireCapableBeanFactory beanFactory) {
+			return new StandardJsonMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
+					beanFactory);
 		}
 
 		static final class StandardJsonFactoryBuilderCustomizer
@@ -195,9 +199,9 @@ public final class JacksonAutoConfiguration {
 		static final class StandardJsonMapperBuilderCustomizer
 				extends AbstractMapperBuilderCustomizer<JsonMapper.Builder> implements JsonMapperBuilderCustomizer {
 
-			StandardJsonMapperBuilderCustomizer(JacksonProperties jacksonProperties,
-					Collection<JacksonModule> modules) {
-				super(jacksonProperties, modules);
+			StandardJsonMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
+					AutowireCapableBeanFactory beanFactory) {
+				super(jacksonProperties, modules, beanFactory);
 			}
 
 			@Override
@@ -280,9 +284,9 @@ public final class JacksonAutoConfiguration {
 
 		@Bean
 		StandardCborMapperBuilderCustomizer standardCborMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
-				JacksonCborProperties cborProperties) {
+				JacksonCborProperties cborProperties, AutowireCapableBeanFactory beanFactory) {
 			return new StandardCborMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
-					cborProperties);
+					cborProperties, beanFactory);
 		}
 
 		static final class StandardCborFactoryBuilderCustomizer
@@ -305,8 +309,8 @@ public final class JacksonAutoConfiguration {
 			private final JacksonCborProperties cborProperties;
 
 			StandardCborMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
-					JacksonCborProperties cborProperties) {
-				super(jacksonProperties, modules);
+					JacksonCborProperties cborProperties, AutowireCapableBeanFactory beanFactory) {
+				super(jacksonProperties, modules, beanFactory);
 				this.cborProperties = cborProperties;
 			}
 
@@ -370,9 +374,9 @@ public final class JacksonAutoConfiguration {
 
 		@Bean
 		StandardXmlMapperBuilderCustomizer standardXmlMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
-				JacksonXmlProperties xmlProperties) {
+				JacksonXmlProperties xmlProperties, AutowireCapableBeanFactory beanFactory) {
 			return new StandardXmlMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
-					xmlProperties);
+					xmlProperties, beanFactory);
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -415,8 +419,8 @@ public final class JacksonAutoConfiguration {
 			private final JacksonXmlProperties xmlProperties;
 
 			StandardXmlMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
-					JacksonXmlProperties xmlProperties) {
-				super(jacksonProperties, modules);
+					JacksonXmlProperties xmlProperties, AutowireCapableBeanFactory beanFactory) {
+				super(jacksonProperties, modules, beanFactory);
 				this.xmlProperties = xmlProperties;
 			}
 
@@ -508,9 +512,13 @@ public final class JacksonAutoConfiguration {
 
 		private final Collection<JacksonModule> modules;
 
-		AbstractMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules) {
+		private final HandlerInstantiator handlerInstantiator;
+
+		AbstractMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
+				AutowireCapableBeanFactory beanFactory) {
 			this.jacksonProperties = jacksonProperties;
 			this.modules = modules;
+			this.handlerInstantiator = new SpringBeanHandlerInstantiator(beanFactory);
 		}
 
 		@Override
@@ -538,6 +546,7 @@ public final class JacksonAutoConfiguration {
 			if (this.jacksonProperties.getTimeZone() != null) {
 				builder.defaultTimeZone(this.jacksonProperties.getTimeZone());
 			}
+			builder.handlerInstantiator(this.handlerInstantiator);
 			configureVisibility(builder, this.jacksonProperties.getVisibility());
 			configureFeatures(builder, this.jacksonProperties.getDeserialization(), builder::configure);
 			configureFeatures(builder, this.jacksonProperties.getSerialization(), builder::configure);
