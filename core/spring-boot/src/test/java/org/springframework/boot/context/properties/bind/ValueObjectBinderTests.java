@@ -211,8 +211,8 @@ class ValueObjectBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "");
 		this.sources.add(source);
-		EmptyRecod emptyRecod = this.binder.bind("foo", Bindable.of(EmptyRecod.class)).get();
-		assertThat(emptyRecod).isNotNull();
+		EmptyRecord emptyRecord = this.binder.bind("foo", Bindable.of(EmptyRecord.class)).get();
+		assertThat(emptyRecord).isNotNull();
 	}
 
 	@Test
@@ -1008,7 +1008,7 @@ class ValueObjectBinderTests {
 
 	}
 
-	record EmptyRecod() {
+	record EmptyRecord() {
 
 	}
 
