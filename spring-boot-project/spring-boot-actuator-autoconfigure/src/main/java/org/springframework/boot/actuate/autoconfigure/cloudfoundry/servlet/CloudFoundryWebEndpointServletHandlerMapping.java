@@ -81,6 +81,12 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 	}
 
 	@Override
+	protected void initHandlerMethods() {
+		super.initHandlerMethods();
+		registerCatchAllMapping(HttpStatus.FORBIDDEN);
+	}
+
+	@Override
 	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
 			ServletWebOperation servletWebOperation) {
 		return new SecureServletWebOperation(servletWebOperation, this.securityInterceptor, endpoint.getEndpointId());

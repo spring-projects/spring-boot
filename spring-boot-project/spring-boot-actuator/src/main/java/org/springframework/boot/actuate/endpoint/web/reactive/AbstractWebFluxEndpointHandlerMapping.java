@@ -56,6 +56,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
@@ -102,6 +103,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			ServerWebExchange.class, Map.class);
 
 	private final Method handleReadMethod = ReflectionUtils.findMethod(ReadOperationHandler.class, "handle",
+			ServerWebExchange.class);
+
+	private final Method handleCatchAllMethod = ReflectionUtils.findMethod(CatchAllHandler.class, "handle",
 			ServerWebExchange.class);
 
 	private final boolean shouldRegisterLinksMapping;
@@ -175,6 +179,17 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
 			ReactiveWebOperation reactiveWebOperation) {
 		return reactiveWebOperation;
+	}
+
+	/**
+	 * Register a "catch all" handler for the rest of actuator namespace, ensuring that
+	 * all requests are handled by this handler mapping.
+	 * @param responseStatus the response status to use for handled requests
+	 */
+	protected void registerCatchAllMapping(HttpStatus responseStatus) {
+		String subPath = this.endpointMapping.createSubPath("/**");
+		registerMapping(RequestMappingInfo.paths(subPath).build(), new CatchAllHandler(responseStatus),
+				this.handleCatchAllMethod);
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
@@ -479,6 +494,30 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public String toString() {
 			return this.operation.toString();
+		}
+
+	}
+
+	/**
+	 * Catch-all handler that always replies with a fixed HTTP status.
+	 */
+	private static final class CatchAllHandler {
+
+		private final HttpStatus responseStatus;
+
+		CatchAllHandler(HttpStatus responseStatus) {
+			this.responseStatus = responseStatus;
+		}
+
+		Mono<Void> handle(ServerWebExchange exchange) {
+			ServerHttpResponse response = exchange.getResponse();
+			response.setStatusCode(this.responseStatus);
+			return response.setComplete();
+		}
+
+		@Override
+		public String toString() {
+			return "Actuator catch-all endpoint";
 		}
 
 	}
