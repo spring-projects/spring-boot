@@ -1870,6 +1870,19 @@ bom {
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
+	library("Qpid ProtonJ2", "1.1.0") {
+		group("org.apache.qpid") {
+			modules = [
+					"protonj2",
+					"protonj2-client"
+			]
+		}
+		links {
+			site("https://qpid.apache.org/proton")
+			javadoc("https://qpid.apache.org/releases/qpid-protonj2-{version}/api", "org.apache.qpid.protonj2")
+			releaseNotes("https://qpid.apache.org/releases/qpid-protonj2-{version}/release-notes.html")
+		}
+	}
 	library("Quartz", "2.5.2") {
 		group("org.quartz-scheduler") {
 			modules = [

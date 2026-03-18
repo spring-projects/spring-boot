@@ -94,6 +94,7 @@ dependencies {
 	implementation(project(path: ":loader:spring-boot-loader-tools"))
 	implementation(project(path: ":module:spring-boot-actuator"))
 	implementation(project(path: ":module:spring-boot-actuator-autoconfigure"))
+	implementation(project(path: ":module:spring-boot-amqp"))
 	implementation(project(path: ":module:spring-boot-cache"))
 	implementation(project(path: ":module:spring-boot-cache-test"))
 	implementation(project(path: ":module:spring-boot-data-cassandra"))
