@@ -27,7 +27,6 @@ jobs:
             toolchain: false
           - version: 26
             toolchain: true
-            early-access: true
         exclude:
           - os:
               name: Linux
