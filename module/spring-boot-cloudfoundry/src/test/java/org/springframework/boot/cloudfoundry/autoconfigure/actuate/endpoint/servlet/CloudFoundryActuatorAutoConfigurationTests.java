@@ -192,9 +192,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				testCloudFoundrySecurity(request, BASE_PATH + "/", chain);
 				testCloudFoundrySecurity(request, BASE_PATH + "/test", chain);
 				testCloudFoundrySecurity(request, BASE_PATH + "/test/a", chain);
-				request.setServletPath(BASE_PATH + "/other-path");
-				request.setRequestURI(BASE_PATH + "/other-path");
-				assertThat(chain.matches(request)).isFalse();
+				testCloudFoundrySecurity(request, BASE_PATH + "/other-path", chain);
 				request.setServletPath("/some-other-path");
 				request.setRequestURI("/some-other-path");
 				assertThat(chain.matches(request)).isFalse();

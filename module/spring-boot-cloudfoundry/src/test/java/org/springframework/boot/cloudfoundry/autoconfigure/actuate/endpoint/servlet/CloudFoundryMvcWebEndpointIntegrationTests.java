@@ -201,6 +201,17 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 					.doesNotExist());
 	}
 
+	@Test
+	void unknownEndpointsAreForbidden() {
+		load(TestEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("/cfApplication/unknown")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isForbidden());
+	}
+
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context, client) -> clientConsumer.accept(client);
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)

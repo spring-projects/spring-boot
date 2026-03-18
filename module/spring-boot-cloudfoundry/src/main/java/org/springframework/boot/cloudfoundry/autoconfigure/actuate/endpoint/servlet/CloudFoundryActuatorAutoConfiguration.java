@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
@@ -64,7 +63,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.cors.CorsConfiguration;
@@ -172,22 +170,16 @@ public final class CloudFoundryActuatorAutoConfiguration {
 
 		@Bean
 		@Order(FILTER_CHAIN_ORDER)
-		SecurityFilterChain cloudFoundrySecurityFilterChain(HttpSecurity http,
-				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
-			RequestMatcher cloudFoundryRequest = getRequestMatcher(handlerMapping);
+		SecurityFilterChain cloudFoundrySecurityFilterChain(HttpSecurity http) throws Exception {
+			RequestMatcher cloudFoundryRequest = getRequestMatcher();
 			http.csrf((csrf) -> csrf.ignoringRequestMatchers(cloudFoundryRequest));
 			http.securityMatchers((matches) -> matches.requestMatchers(cloudFoundryRequest))
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll());
 			return http.build();
 		}
 
-		private RequestMatcher getRequestMatcher(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
-			PathMappedEndpoints endpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
-			List<RequestMatcher> matchers = new ArrayList<>();
-			endpoints.getAllPaths().forEach((path) -> matchers.add(pathMatcher(path + "/**")));
-			matchers.add(pathMatcher(BASE_PATH));
-			matchers.add(pathMatcher(BASE_PATH + "/"));
-			return new OrRequestMatcher(matchers);
+		private RequestMatcher getRequestMatcher() {
+			return pathMatcher(BASE_PATH + "/**");
 		}
 
 		private PathPatternRequestMatcher pathMatcher(String path) {
