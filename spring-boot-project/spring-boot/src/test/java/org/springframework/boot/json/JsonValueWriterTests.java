@@ -300,15 +300,12 @@ class JsonValueWriterTests {
 	void shouldAllowStartingObjectWhenCurrentDepthIsMaxDepth() {
 		StringBuilder out = new StringBuilder();
 		JsonValueWriter writer = new JsonValueWriter(out, 2);
-
 		writer.start(Series.OBJECT);
 		writer.start(Series.OBJECT);
 		writer.start(Series.OBJECT);
-
 		writer.end(Series.OBJECT);
 		writer.end(Series.OBJECT);
 		writer.end(Series.OBJECT);
-
 		assertThat(out).hasToString("{{{}}}");
 	}
 
@@ -316,15 +313,12 @@ class JsonValueWriterTests {
 	void shouldAllowStartingArrayWhenCurrentDepthIsMaxDepth() {
 		StringBuilder out = new StringBuilder();
 		JsonValueWriter writer = new JsonValueWriter(out, 2);
-
 		writer.start(Series.ARRAY);
 		writer.start(Series.ARRAY);
 		writer.start(Series.ARRAY);
-
 		writer.end(Series.ARRAY);
 		writer.end(Series.ARRAY);
 		writer.end(Series.ARRAY);
-
 		assertThat(out).hasToString("[[[]]]");
 	}
 
