@@ -309,7 +309,7 @@ class JavaConventions {
 	}
 
 	private boolean isGeneratedSource(FileTreeElement candidate) {
-		String path = candidate.getFile().getPath();
+		String path = StringUtils.cleanPath(candidate.getFile().getPath());
 		return path.contains("/generated/sources/") || path.contains("/generated-source/");
 	}
 
