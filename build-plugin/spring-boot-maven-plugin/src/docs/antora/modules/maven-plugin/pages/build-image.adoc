@@ -180,7 +180,8 @@ Refer to documentation of the builder being used to determine the image OS and a
 Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `ALWAYS`
 
-| `env`
+| `env` +
+(`spring-boot.build-image.env.<ENVVAR_NAME>`)
 | Environment variables that should be passed to the builder.
 |
 
@@ -341,6 +342,17 @@ When using the Paketo builder, this can be accomplished by setting the `HTTPS_PR
 ----
 include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
 ----
+
+Environment variables can also be specified on the command line using system properties with the prefix `spring-boot.build-image.env.`, as shown in the following example:
+
+[source,shell]
+----
+$ mvn spring-boot:build-image \
+      -Dspring-boot.build-image.env.BP_JVM_VERSION=17 \
+      -Dspring-boot.build-image.env.HTTPS_PROXY=https://proxy.example.com
+----
+
+System properties override environment variables specified in the plugin configuration.
 
 
 

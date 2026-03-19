@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -349,6 +351,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 
 	private BuildRequest customize(BuildRequest request) {
 		request = customizeCreator(request);
+		request = customizeEnv(request);
 		return request;
 	}
 
@@ -358,6 +361,25 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 			request = request.withCreator(Creator.withVersion(springBootVersion));
 		}
 		return request;
+	}
+
+	private BuildRequest customizeEnv(BuildRequest request) {
+		return request.withEnv(getEnvFromSystemProperties());
+	}
+
+	private Map<String, String> getEnvFromSystemProperties() {
+		Map<String, String> env = new LinkedHashMap<>();
+		String prefix = "spring-boot.build-image.env.";
+		for (String propertyName : System.getProperties().stringPropertyNames()) {
+			if (propertyName.startsWith(prefix)) {
+				String key = propertyName.substring(prefix.length());
+				String value = System.getProperty(propertyName);
+				if (value != null) {
+					env.put(key, value);
+				}
+			}
+		}
+		return env;
 	}
 
 	/**
