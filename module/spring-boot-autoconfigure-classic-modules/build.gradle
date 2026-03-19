@@ -28,9 +28,6 @@ dependencies {
 	api(project(":module:spring-boot-activemq")) {
 		transitive = false
 	}
-	api(project(":module:spring-boot-amqp")) {
-		transitive = false
-	}
 	api(project(":module:spring-boot-artemis")) {
 		transitive = false
 	}
@@ -206,6 +203,9 @@ dependencies {
 		transitive = false
 	}
 	api(project(":module:spring-boot-r2dbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-rabbitmq")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-reactor")) {
