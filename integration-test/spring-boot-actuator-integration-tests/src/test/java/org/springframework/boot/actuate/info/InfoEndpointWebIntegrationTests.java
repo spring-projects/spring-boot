@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -26,6 +25,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link InfoEndpoint} exposed by Jersey, Spring MVC, and WebFlux.
@@ -34,54 +36,93 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = { "info.app.name=MyService" })
+@TestPropertySource(properties = "info.app.name=MyService")
 class InfoEndpointWebIntegrationTests {
 
+	private static final String ENDPOINT_PATH = "/actuator/info";
+
 	@WebEndpointTest
-	void info(WebTestClient client) {
-		client.get()
-			.uri("/actuator/info")
-			.accept(MediaType.APPLICATION_JSON)
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("beanName1.key11")
-			.isEqualTo("value11")
-			.jsonPath("beanName1.key12")
-			.isEqualTo("value12")
-			.jsonPath("beanName2.key21")
-			.isEqualTo("value21")
-			.jsonPath("beanName2.key22")
-			.isEqualTo("value22");
+	void shouldReturnInfoFromAllContributors(WebTestClient client) {
+		var response = getEndpointResponse(client);
+
+		verifySuccessStatus(response);
+		verifyContributorContent(response, TestContributor.FIRST);
+		verifyContributorContent(response, TestContributor.SECOND);
+	}
+
+	private ResponseSpec getEndpointResponse(WebTestClient client) {
+		return client.get()
+				.uri(ENDPOINT_PATH)
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange();
+	}
+
+	private void verifySuccessStatus(ResponseSpec response) {
+		response.expectStatus().isOk();
+	}
+
+	private void verifyContributorContent(ResponseSpec response, TestContributor contributor) {
+		contributor.getExpectedData().forEach((key, value) -> {
+			var jsonPath = contributor.buildJsonPath(key);
+			response.expectBody()
+					.jsonPath(jsonPath)
+					.value(actual -> assertThat(actual).isEqualTo(value));
+		});
+	}
+
+	enum TestContributor {
+
+		FIRST("firstContributor", Map.of(
+				"firstKey1", "firstValue1",
+				"firstKey2", "firstValue2"
+		)),
+
+		SECOND("secondContributor", Map.of(
+				"secondKey1", "secondValue1",
+				"secondKey2", "secondValue2"
+		));
+
+		private final String name;
+		private final Map<String, String> data;
+
+		TestContributor(String name, Map<String, String> data) {
+			this.name = name;
+			this.data = data;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Map<String, String> getExpectedData() {
+			return this.data;
+		}
+
+		String buildJsonPath(String key) {
+			return "%s.%s".formatted(this.name, key);
+		}
+
+		InfoContributor createContributor() {
+			return builder -> builder.withDetail(this.name, this.data);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
-		InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
+		InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
 			return new InfoEndpoint(infoContributors.orderedStream().toList());
 		}
 
 		@Bean
-		InfoContributor beanName1() {
-			return (builder) -> {
-				Map<String, Object> content = new LinkedHashMap<>();
-				content.put("key11", "value11");
-				content.put("key12", "value12");
-				builder.withDetail("beanName1", content);
-			};
+		InfoContributor firstContributor() {
+			return TestContributor.FIRST.createContributor();
 		}
 
 		@Bean
-		InfoContributor beanName2() {
-			return (builder) -> {
-				Map<String, Object> content = new LinkedHashMap<>();
-				content.put("key21", "value21");
-				content.put("key22", "value22");
-				builder.withDetail("beanName2", content);
-			};
+		InfoContributor secondContributor() {
+			return TestContributor.SECOND.createContributor();
 		}
 
 	}
