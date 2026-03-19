@@ -47,7 +47,9 @@ class SampleGrpcServerNettyShadedApplicationTests {
 	@Test
 	@SuppressWarnings("resource")
 	void test() {
-		String address = "host.docker.internal:" + this.startedEventListener.getPort();
+		int port = this.startedEventListener.getPort();
+		String address = "host.testcontainers.internal:" + port;
+		org.testcontainers.Testcontainers.exposeHostPorts(port);
 		try (GenericContainer<?> container = new GenericContainer<>(
 				DockerImageName.parse("fullstorydev/grpcurl:v1.9.3"))
 			.withCommand("-d", "{\"name\": \"spring\"}", "--plaintext", address, "HelloWorld/SayHello")

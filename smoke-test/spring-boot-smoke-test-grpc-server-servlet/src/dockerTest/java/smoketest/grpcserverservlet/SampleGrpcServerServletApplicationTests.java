@@ -38,12 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleGrpcServerServletApplicationTests {
 
 	@LocalServerPort
-	private String localServerPort;
+	private int localServerPort;
 
 	@Test
 	@SuppressWarnings("resource")
 	void test() {
-		String address = "host.docker.internal:" + this.localServerPort;
+		int port = this.localServerPort;
+		String address = "host.testcontainers.internal:" + port;
+		org.testcontainers.Testcontainers.exposeHostPorts(port);
 		try (GenericContainer<?> container = new GenericContainer<>(
 				DockerImageName.parse("fullstorydev/grpcurl:v1.9.3"))
 			.withCommand("-d", "{\"name\": \"spring\"}", "--plaintext", address, "HelloWorld/SayHello")
