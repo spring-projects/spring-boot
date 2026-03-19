@@ -1,0 +1,4 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.amqp.docker.compose.RabbitDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.amqp.testcontainers.RabbitContainerConnectionDetailsFactory
