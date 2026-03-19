@@ -555,6 +555,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			this.responseStatus = responseStatus;
 		}
 
+		@Reflective
 		Mono<Void> handle(ServerWebExchange exchange) {
 			ServerHttpResponse response = exchange.getResponse();
 			response.setStatusCode(this.responseStatus);
@@ -623,7 +624,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, WriteOperationHandler.class,
-					ReadOperationHandler.class);
+					ReadOperationHandler.class, CatchAllHandler.class);
 		}
 
 	}
