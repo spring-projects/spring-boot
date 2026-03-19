@@ -45,6 +45,10 @@ class AbstractWebFluxEndpointHandlerMappingTests {
 			.onType(TypeReference
 				.of("org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.ReadOperationHandler")))
 			.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference
+				.of("org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.CatchAllHandler")))
+			.accepts(runtimeHints);
 	}
 
 }

@@ -466,6 +466,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			this.responseStatus = responseStatus;
 		}
 
+		@Reflective
 		void handle(HttpServletResponse response) {
 			response.setStatus(this.responseStatus.value());
 		}
@@ -531,7 +532,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			this.reflectiveRegistrar.registerRuntimeHints(hints, OperationHandler.class);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, OperationHandler.class, CatchAllHandler.class);
 		}
 
 	}
