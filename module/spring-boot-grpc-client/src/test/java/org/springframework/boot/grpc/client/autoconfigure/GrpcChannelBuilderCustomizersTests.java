@@ -29,9 +29,11 @@ import io.grpc.netty.NettyChannelBuilder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties.Channel;
+import org.springframework.boot.grpc.client.autoconfigure.ServiceConfig.HealthCheckConfig;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -167,6 +169,38 @@ class GrpcChannelBuilderCustomizersTests {
 		Map<String, Object> expected = new LinkedHashMap<>();
 		expected.put("healthCheckConfig", Map.of("serviceName", "testdefaultservice"));
 		then(builder).should().defaultServiceConfig(expected);
+	}
+
+	@Test
+	void applyWhenHasServiceConfig() {
+		GrpcClientProperties properties = new GrpcClientProperties();
+		Channel channel = new Channel();
+		ServiceConfig serviceConfig = new ServiceConfig(null, null, null, new HealthCheckConfig("test"));
+		channel.setServiceConfig(serviceConfig);
+		properties.getChannel().put("default", channel);
+		GrpcChannelBuilderCustomizers customizers = new GrpcChannelBuilderCustomizers(properties, null, null,
+				Collections.emptyList(), Collections.emptyList());
+		NettyChannelBuilder builder = mock(NettyChannelBuilder.class);
+		customizers.apply("target", builder);
+		Map<String, Object> expected = new LinkedHashMap<>();
+		expected.put("healthCheckConfig", Map.of("serviceName", "test"));
+		then(builder).should().defaultServiceConfig(expected);
+	}
+
+	@Test
+	void applyWhenHasClashingServiceConfigAndHealth() {
+		GrpcClientProperties properties = new GrpcClientProperties();
+		Channel channel = new Channel();
+		channel.getHealth().setEnabled(true);
+		channel.getHealth().setServiceName("fromhealth");
+		ServiceConfig serviceConfig = new ServiceConfig(null, null, null, new HealthCheckConfig("fromservice"));
+		channel.setServiceConfig(serviceConfig);
+		properties.getChannel().put("default", channel);
+		GrpcChannelBuilderCustomizers customizers = new GrpcChannelBuilderCustomizers(properties, null, null,
+				Collections.emptyList(), Collections.emptyList());
+		NettyChannelBuilder builder = mock(NettyChannelBuilder.class);
+		assertThatIllegalStateException().isThrownBy(() -> customizers.apply("target", builder))
+			.withMessage("Unable to change health check config service name from 'fromservice' to 'fromhealth'");
 	}
 
 	@Test

@@ -70,6 +70,11 @@ public class GrpcClientProperties {
 		 */
 		private boolean bypassCertificateValidation;
 
+		/**
+		 * Service config for the channel.
+		 */
+		private @Nullable ServiceConfig serviceConfig;
+
 		private final Inbound inbound = new Inbound();
 
 		@Name("default")
@@ -105,6 +110,14 @@ public class GrpcClientProperties {
 
 		public void setBypassCertificateValidation(boolean bypassCertificateValidation) {
 			this.bypassCertificateValidation = bypassCertificateValidation;
+		}
+
+		public @Nullable ServiceConfig getServiceConfig() {
+			return this.serviceConfig;
+		}
+
+		public void setServiceConfig(@Nullable ServiceConfig serviceConfig) {
+			this.serviceConfig = serviceConfig;
 		}
 
 		public Inbound getInbound() {

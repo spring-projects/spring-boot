@@ -30,6 +30,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-micrometer-observation"))
+	optional("io.grpc:grpc-grpclb")
 	optional("io.grpc:grpc-stub")
 	optional("io.grpc:grpc-netty")
 	optional("io.grpc:grpc-netty-shaded")
