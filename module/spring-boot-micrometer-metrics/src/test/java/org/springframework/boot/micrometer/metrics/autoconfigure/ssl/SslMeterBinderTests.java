@@ -71,19 +71,19 @@ class SslMeterBinderTests {
 				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains.p12")));
 		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
 		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
 			.hasDays(1095);
-		assertThat(Duration.ofSeconds(
-				findExpiryGauge(meterRegistry, "trust", "intermediary", "60f79365fc46bf69149754d377680192b3b6bcf5")))
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "intermediary",
+				"60f79365fc46bf69149754d377680192b3b6bcf5")))
 			.hasDays(730);
-		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
-			.hasDays(365);
-		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
-			.hasDays(-386);
 		assertThat(Duration.ofSeconds(
-				findExpiryGauge(meterRegistry, "trust", "not-yet-valid", "7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
+				findExpiryGauge(meterRegistry, "truststore", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
+			.hasDays(365);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
+			.hasDays(-386);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "not-yet-valid",
+				"7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
 			.hasDays(36889);
 	}
 
@@ -95,10 +95,10 @@ class SslMeterBinderTests {
 						"classpath:certificates/chains.p12")));
 		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
 		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "key", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.ofSeconds(findExpiryGauge(meterRegistry, "keystore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
 			.hasDays(1095);
 		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
 			.hasDays(1095);
 	}
 
@@ -138,22 +138,22 @@ class SslMeterBinderTests {
 				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains2.p12")));
 		sslBundleRegistry.updateBundle("test-0",
 				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains.p12")));
-		assertThat(meterRegistry.find("ssl.chain.expiry").tags("bundle", "test-0", "store", "trust").meters())
+		assertThat(meterRegistry.find("ssl.chain.expiry").tags("bundle", "test-0", "source", "truststore").meters())
 			.hasSize(5);
 		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
 			.hasDays(1095);
-		assertThat(Duration.ofSeconds(
-				findExpiryGauge(meterRegistry, "trust", "intermediary", "60f79365fc46bf69149754d377680192b3b6bcf5")))
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "intermediary",
+				"60f79365fc46bf69149754d377680192b3b6bcf5")))
 			.hasDays(730);
-		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
-			.hasDays(365);
-		assertThat(Duration
-			.ofSeconds(findExpiryGauge(meterRegistry, "trust", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
-			.hasDays(-386);
 		assertThat(Duration.ofSeconds(
-				findExpiryGauge(meterRegistry, "trust", "not-yet-valid", "7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
+				findExpiryGauge(meterRegistry, "truststore", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
+			.hasDays(365);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
+			.hasDays(-386);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "not-yet-valid",
+				"7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
 			.hasDays(36889);
 	}
 
@@ -167,14 +167,14 @@ class SslMeterBinderTests {
 	}
 
 	private long findExpiryGauge(MeterRegistry meterRegistry, String chain, String certificateSerialNumber) {
-		return findExpiryGauge(meterRegistry, "key", chain, certificateSerialNumber);
+		return findExpiryGauge(meterRegistry, "keystore", chain, certificateSerialNumber);
 	}
 
-	private long findExpiryGauge(MeterRegistry meterRegistry, String store, String chain,
+	private long findExpiryGauge(MeterRegistry meterRegistry, String source, String chain,
 			String certificateSerialNumber) {
 		return (long) meterRegistry.get("ssl.chain.expiry")
 			.tag("bundle", "test-0")
-			.tag("store", store)
+			.tag("source", source)
 			.tag("chain", chain)
 			.tag("certificate", certificateSerialNumber)
 			.gauge()

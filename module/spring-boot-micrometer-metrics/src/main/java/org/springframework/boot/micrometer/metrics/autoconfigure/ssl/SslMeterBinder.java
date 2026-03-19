@@ -52,9 +52,11 @@ class SslMeterBinder implements MeterBinder {
 
 	private static final String CHAIN_EXPIRY_METRIC_NAME = "ssl.chain.expiry";
 
-	private static final String KEY_STORE_TAG_VALUE = "key";
+	private static final String SOURCE_TAG_NAME = "source";
 
-	private static final String TRUST_STORE_TAG_VALUE = "trust";
+	private static final String KEY_STORE_SOURCE_TAG_VALUE = "keystore";
+
+	private static final String TRUST_STORE_SOURCE_TAG_VALUE = "truststore";
 
 	private final Clock clock;
 
@@ -99,15 +101,15 @@ class SslMeterBinder implements MeterBinder {
 	private void createOrUpdateBundleMetrics(MeterRegistry meterRegistry, BundleInfo bundle) {
 		MultiGauge multiGauge = this.bundleMetrics.getGauge(bundle, meterRegistry);
 		List<Row<CertificateInfo>> rows = new ArrayList<>();
-		addRows(rows, bundle, bundle.getCertificateChains(), KEY_STORE_TAG_VALUE);
-		addRows(rows, bundle, bundle.getTrustStoreCertificateChains(), TRUST_STORE_TAG_VALUE);
+		addRows(rows, bundle, bundle.getCertificateChains(), KEY_STORE_SOURCE_TAG_VALUE);
+		addRows(rows, bundle, bundle.getTrustStoreCertificateChains(), TRUST_STORE_SOURCE_TAG_VALUE);
 		multiGauge.register(rows, true);
 	}
 
 	private void addRows(List<Row<CertificateInfo>> rows, BundleInfo bundle, List<CertificateChainInfo> chains,
-			String store) {
+			String source) {
 		for (CertificateChainInfo chain : chains) {
-			Row<CertificateInfo> row = createRowForChain(bundle, chain, store);
+			Row<CertificateInfo> row = createRowForChain(bundle, chain, source);
 			if (row != null) {
 				rows.add(row);
 			}
@@ -115,7 +117,7 @@ class SslMeterBinder implements MeterBinder {
 	}
 
 	private @Nullable Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain,
-			String store) {
+			String source) {
 		CertificateInfo leastValidCertificate = chain.getCertificates()
 			.stream()
 			.filter((c) -> c.getValidityEnds() != null)
@@ -125,8 +127,8 @@ class SslMeterBinder implements MeterBinder {
 			return null;
 		}
 		String serialNumber = leastValidCertificate.getSerialNumber();
-		Tags tags = Tags.of("chain", chain.getAlias(), "bundle", bundle.getName(), "store", store, "certificate",
-				(serialNumber != null) ? serialNumber : "");
+		Tags tags = Tags.of("chain", chain.getAlias(), "bundle", bundle.getName(), SOURCE_TAG_NAME, source,
+				"certificate", (serialNumber != null) ? serialNumber : "");
 		return Row.of(tags, leastValidCertificate, this::getChainExpiry);
 	}
 

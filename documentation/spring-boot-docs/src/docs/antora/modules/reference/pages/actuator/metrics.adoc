@@ -831,8 +831,8 @@ This metric is tagged with the following information:
 | `chain`
 | The name of the certificate chain.
 
-| `store`
-| Whether the certificate chain comes from the key store (`key`) or trust store (`trust`)
+| `source`
+| Whether the certificate chain comes from the key store (`keystore`) or trust store (`truststore`)
 |===
 
 
