@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
- * {@link RabbitContainerConnectionDetailsFactoryIntegrationTests}.
+ * {@link RabbitMqContainerConnectionDetailsFactoryIntegrationTests}.
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)

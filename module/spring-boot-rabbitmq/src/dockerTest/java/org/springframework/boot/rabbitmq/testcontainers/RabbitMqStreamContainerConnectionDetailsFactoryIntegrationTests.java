@@ -28,7 +28,6 @@ import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
-import org.testcontainers.utility.MountableFile;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +36,8 @@ import org.springframework.boot.rabbitmq.autoconfigure.EnvironmentBuilderCustomi
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
-import org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
-import org.springframework.boot.rabbitmq.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
-import org.springframework.boot.testcontainers.service.connection.PemKeyStore;
-import org.springframework.boot.testcontainers.service.connection.PemTrustStore;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitMqContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitMqStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +50,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with SSL.
+ * Tests for {@link RabbitMqStreamContainerConnectionDetailsFactory} with a single
+ * container that's only used for streams.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
@@ -62,34 +60,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(
 		properties = { "spring.rabbitmq.stream.name=stream.queue1", "spring.rabbitmq.listener.type=stream" })
 @Testcontainers(disabledWithoutDocker = true)
-class RabbitStreamWithSslContainerConnectionDetailsFactoryIntegrationTests {
+class RabbitMqStreamContainerConnectionDetailsFactoryIntegrationTests {
 
-	private static final int RABBITMQ_STREAMS_TLS_PORT = 5551;
+	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
 	@Container
 	@ServiceConnection(type = RabbitStreamConnectionDetails.class)
-	@PemTrustStore(certificate = "classpath:org/springframework/boot/rabbitmq/ca.crt")
-	@PemKeyStore(certificate = "classpath:org/springframework/boot/rabbitmq/client.crt",
-			privateKey = "classpath:org/springframework/boot/rabbitmq/client.key")
 	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
 
 	private static RabbitMQContainer getRabbitMqStreamContainer() {
 		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
-		container.addExposedPorts(RABBITMQ_STREAMS_TLS_PORT);
+		container.addExposedPorts(RABBITMQ_STREAMS_PORT);
 		String enabledPlugins = "[rabbitmq_stream,rabbitmq_prometheus].";
 		container.withCopyToContainer(Transferable.of(enabledPlugins), "/etc/rabbitmq/enabled_plugins");
-		container.withCopyFileToContainer(
-				MountableFile
-					.forClasspathResource("org/springframework/boot/rabbitmq/testcontainers/rabbitmq-stream-ssl.conf"),
-				"/etc/rabbitmq/rabbitmq.conf");
-		container.withCopyFileToContainer(
-				MountableFile.forClasspathResource("org/springframework/boot/rabbitmq/ca.crt"), "/etc/rabbitmq/ca.crt");
-		container.withCopyFileToContainer(
-				MountableFile.forClasspathResource("org/springframework/boot/rabbitmq/server.key"),
-				"/etc/rabbitmq/server.key");
-		container.withCopyFileToContainer(
-				MountableFile.forClasspathResource("org/springframework/boot/rabbitmq/server.crt"),
-				"/etc/rabbitmq/server.crt");
 		return container;
 	}
 
@@ -109,7 +92,6 @@ class RabbitStreamWithSslContainerConnectionDetailsFactoryIntegrationTests {
 	void connectionCanBeMadeToRabbitContainer() {
 		assertThat(this.connectionDetails).isNotInstanceOf(RabbitMqContainerConnectionDetails.class);
 		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
-		assertThat(this.streamConnectionDetails.getSslBundle()).isNotNull();
 		this.rabbitStreamTemplate.convertAndSend("message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
@@ -127,7 +109,7 @@ class RabbitStreamWithSslContainerConnectionDetailsFactoryIntegrationTests {
 		@Bean
 		EnvironmentBuilderCustomizer environmentBuilderCustomizer() {
 			return (env) -> env.addressResolver(
-					(address) -> new Address(rabbit.getHost(), rabbit.getMappedPort(RABBITMQ_STREAMS_TLS_PORT)));
+					(address) -> new Address(rabbit.getHost(), rabbit.getMappedPort(RABBITMQ_STREAMS_PORT)));
 		}
 
 		@Bean

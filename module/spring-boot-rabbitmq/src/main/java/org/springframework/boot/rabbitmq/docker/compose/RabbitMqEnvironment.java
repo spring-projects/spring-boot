@@ -28,13 +28,13 @@ import org.jspecify.annotations.Nullable;
  * @author Phillip Webb
  * @author Scott Frederick
  */
-class RabbitEnvironment {
+class RabbitMqEnvironment {
 
 	private final @Nullable String username;
 
 	private final @Nullable String password;
 
-	RabbitEnvironment(Map<String, @Nullable String> env) {
+	RabbitMqEnvironment(Map<String, @Nullable String> env) {
 		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
 		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
 	}

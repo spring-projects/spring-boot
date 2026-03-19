@@ -33,10 +33,10 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  * @author Jay Choi
  */
-class RabbitStreamContainerConnectionDetailsFactory
+class RabbitMqStreamContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitStreamConnectionDetails> {
 
-	RabbitStreamContainerConnectionDetailsFactory() {
+	RabbitMqStreamContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "org.springframework.rabbit.stream.producer.RabbitStreamTemplate");
 	}
 

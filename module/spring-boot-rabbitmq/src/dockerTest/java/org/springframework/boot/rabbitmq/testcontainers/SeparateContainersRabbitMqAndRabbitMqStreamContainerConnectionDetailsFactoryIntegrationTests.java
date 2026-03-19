@@ -40,8 +40,8 @@ import org.springframework.boot.rabbitmq.autoconfigure.EnvironmentBuilderCustomi
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails;
-import org.springframework.boot.rabbitmq.testcontainers.RabbitContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
-import org.springframework.boot.rabbitmq.testcontainers.RabbitStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitMqContainerConnectionDetailsFactory.RabbitMqContainerConnectionDetails;
+import org.springframework.boot.rabbitmq.testcontainers.RabbitMqStreamContainerConnectionDetailsFactory.RabbitMqStreamContainerConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
@@ -54,8 +54,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitStreamContainerConnectionDetailsFactory} with a single container
- * used for both streams and standard messaging.
+ * Tests for {@link RabbitMqStreamContainerConnectionDetailsFactory} with two containers,
+ * one for streams and one for standard messaging.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
@@ -64,13 +64,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(
 		properties = { "spring.rabbitmq.stream.name=stream.queue1", "spring.rabbitmq.listener.type=stream" })
 @Testcontainers(disabledWithoutDocker = true)
-class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryIntegrationTests {
+class SeparateContainersRabbitMqAndRabbitMqStreamContainerConnectionDetailsFactoryIntegrationTests {
 
 	private static final int RABBITMQ_STREAMS_PORT = 5552;
 
 	@Container
-	@ServiceConnection(type = { RabbitConnectionDetails.class, RabbitStreamConnectionDetails.class })
-	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
+	@ServiceConnection
+	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
+
+	@Container
+	@ServiceConnection(type = RabbitStreamConnectionDetails.class)
+	static final RabbitMQContainer rabbitStream = getRabbitMqStreamContainer();
 
 	private static RabbitMQContainer getRabbitMqStreamContainer() {
 		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
@@ -87,10 +91,10 @@ class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryInteg
 	private RabbitStreamConnectionDetails streamConnectionDetails;
 
 	@Autowired
-	private RabbitStreamTemplate rabbitStreamTemplate;
+	private RabbitTemplate rabbitTemplate;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private RabbitStreamTemplate rabbitStreamTemplate;
 
 	@Autowired
 	private StreamTestListener streamListener;
@@ -98,11 +102,13 @@ class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryInteg
 	@Test
 	void rabbitConnectionDetailsAreSourcedFromContainer() {
 		assertThat(this.connectionDetails).isInstanceOf(RabbitMqContainerConnectionDetails.class);
+		assertThat(this.connectionDetails.getFirstAddress().port()).isEqualTo(rabbit.getAmqpPort());
 	}
 
 	@Test
 	void rabbitStreamConnectionDetailsAreSourcedFromContainer() {
 		assertThat(this.streamConnectionDetails).isInstanceOf(RabbitMqStreamContainerConnectionDetails.class);
+		assertThat(this.streamConnectionDetails.getPort()).isEqualTo(rabbitStream.getMappedPort(RABBITMQ_STREAMS_PORT));
 	}
 
 	@Test
@@ -136,8 +142,8 @@ class SingleContainerRabbitAndRabbitStreamContainerConnectionDetailsFactoryInteg
 
 		@Bean
 		EnvironmentBuilderCustomizer environmentBuilderCustomizer() {
-			return (env) -> env.addressResolver(
-					(address) -> new Address(rabbit.getHost(), rabbit.getMappedPort(RABBITMQ_STREAMS_PORT)));
+			return (env) -> env.addressResolver((address) -> new Address(rabbitStream.getHost(),
+					rabbitStream.getMappedPort(RABBITMQ_STREAMS_PORT)));
 		}
 
 		@Bean

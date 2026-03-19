@@ -24,48 +24,48 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitEnvironment}.
+ * Tests for {@link RabbitMqEnvironment}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
  */
-class RabbitEnvironmentTests {
+class RabbitMqEnvironmentTests {
 
 	@Test
-	void getUsernameWhenNoRabbitmqDefaultUser() {
-		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
+	void getUsernameWhenNoRabbitMqDefaultUser() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Collections.emptyMap());
 		assertThat(environment.getUsername()).isEqualTo("guest");
 	}
 
 	@Test
-	void getUsernameWhenHasRabbitmqDefaultUser() {
-		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_DEFAULT_USER", "me"));
+	void getUsernameWhenHasRabbitMqDefaultUser() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Map.of("RABBITMQ_DEFAULT_USER", "me"));
 		assertThat(environment.getUsername()).isEqualTo("me");
 	}
 
 	@Test
-	void getUsernameWhenHasRabbitmqUsername() {
-		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_USERNAME", "me"));
+	void getUsernameWhenHasRabbitMqUsername() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Map.of("RABBITMQ_USERNAME", "me"));
 		assertThat(environment.getUsername()).isEqualTo("me");
 	}
 
 	@Test
-	void getUsernameWhenNoRabbitmqDefaultPass() {
-		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
+	void getUsernameWhenNoRabbitMqDefaultPass() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Collections.emptyMap());
 		assertThat(environment.getPassword()).isEqualTo("guest");
 	}
 
 	@Test
-	void getUsernameWhenHasRabbitmqDefaultPass() {
-		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_DEFAULT_PASS", "secret"));
+	void getUsernameWhenHasRabbitMqDefaultPass() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Map.of("RABBITMQ_DEFAULT_PASS", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void getUsernameWhenHasRabbitmqPassword() {
-		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_PASSWORD", "secret"));
+	void getUsernameWhenHasRabbitMqPassword() {
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(Map.of("RABBITMQ_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 

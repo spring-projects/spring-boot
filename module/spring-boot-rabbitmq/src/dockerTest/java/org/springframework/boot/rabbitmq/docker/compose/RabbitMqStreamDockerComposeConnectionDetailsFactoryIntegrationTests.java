@@ -24,18 +24,18 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link RabbitStreamDockerComposeConnectionDetailsFactory}.
+ * Integration tests for {@link RabbitMqStreamDockerComposeConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
  */
-class RabbitStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
+class RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "rabbit-stream-compose.yaml", image = TestImage.RABBITMQ)
+	@DockerComposeTest(composeFile = "rabbitmq-stream-compose.yaml", image = TestImage.RABBITMQ)
 	void runCreatesConnectionDetails(RabbitStreamConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "rabbit-stream-ssl-compose.yaml", image = TestImage.RABBITMQ,
+	@DockerComposeTest(composeFile = "rabbitmq-stream-ssl-compose.yaml", image = TestImage.RABBITMQ,
 			additionalResources = { "../../ca.crt", "../../server.crt", "../../server.key", "../../client.crt",
 					"../../client.key", "rabbitmq-stream-ssl.conf" })
 	void runWithSslCreatesConnectionDetails(RabbitStreamConnectionDetails connectionDetails) {

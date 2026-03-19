@@ -16,8 +16,6 @@
 
 package org.springframework.boot.rabbitmq.docker.compose;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -28,25 +26,27 @@ import org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDet
 import org.springframework.boot.ssl.SslBundle;
 
 /**
- * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link RabbitStreamConnectionDetails} for a {@code rabbitmq} service.
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
+ * for a {@code rabbitmq} service.
  *
+ * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Jay Choi
  */
-class RabbitDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
+class RabbitMqStreamDockerComposeConnectionDetailsFactory
+		extends DockerComposeConnectionDetailsFactory<RabbitStreamConnectionDetails> {
 
-	private static final int RABBITMQ_PORT = 5672;
-
-	protected RabbitDockerComposeConnectionDetailsFactory() {
+	protected RabbitMqStreamDockerComposeConnectionDetailsFactory() {
 		super("rabbitmq");
 	}
 
 	@Override
-	protected @Nullable RabbitConnectionDetails getDockerComposeConnectionDetails(
+	protected @Nullable RabbitStreamConnectionDetails getDockerComposeConnectionDetails(
 			DockerComposeConnectionSource source) {
 		try {
-			return new RabbitDockerComposeConnectionDetails(source.getRunningService());
+			return new RabbitStreamDockerComposeConnectionDetails(source.getRunningService());
 		}
 		catch (IllegalStateException ex) {
 			return null;
@@ -54,23 +54,30 @@ class RabbitDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link RabbitConnectionDetails} backed by a {@code rabbitmq}
+	 * {@link RabbitStreamConnectionDetails} backed by a {@code rabbitmq}
 	 * {@link RunningService}.
 	 */
-	static class RabbitDockerComposeConnectionDetails extends DockerComposeConnectionDetails
-			implements RabbitConnectionDetails {
+	static class RabbitStreamDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+			implements RabbitStreamConnectionDetails {
 
-		private final RabbitEnvironment environment;
+		private static final int STREAMS_PORT = 5552;
 
-		private final List<Address> addresses;
+		private static final int STREAMS_TLS_PORT = 5551;
+
+		private final RabbitMqEnvironment environment;
+
+		private final String host;
+
+		private final int port;
 
 		private final @Nullable SslBundle sslBundle;
 
-		protected RabbitDockerComposeConnectionDetails(RunningService service) {
+		protected RabbitStreamDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.environment = new RabbitEnvironment(service.env());
+			this.environment = new RabbitMqEnvironment(service.env());
+			this.host = service.host();
 			this.sslBundle = getSslBundle(service);
-			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
+			this.port = service.ports().get((this.sslBundle != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
 		}
 
 		@Override
@@ -84,18 +91,23 @@ class RabbitDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public @Nullable SslBundle getSslBundle() {
-			return this.sslBundle;
-		}
-
-		@Override
 		public String getVirtualHost() {
 			return "/";
 		}
 
 		@Override
-		public List<Address> getAddresses() {
-			return this.addresses;
+		public String getHost() {
+			return this.host;
+		}
+
+		@Override
+		public int getPort() {
+			return this.port;
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 	}

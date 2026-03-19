@@ -25,23 +25,17 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link RabbitDockerComposeConnectionDetailsFactory} and
- * {@link RabbitStreamDockerComposeConnectionDetailsFactory} when used in combination.
+ * Integration tests for {@link RabbitMqDockerComposeConnectionDetailsFactory} and
+ * {@link RabbitMqStreamDockerComposeConnectionDetailsFactory} when using a single service
+ * for standard and stream-based messaging.
  *
  * @author Andy Wilkinson
  */
-class RabbitAndRabbitStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
+class SingleServiceRabbitAndRabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "rabbit-and-rabbit-stream-separate-services-compose.yaml",
+	@DockerComposeTest(composeFile = "rabbitmq-and-rabbitmq-stream-single-service-compose.yaml",
 			image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetailsFromSeparateServices(RabbitConnectionDetails connectionDetails,
-			RabbitStreamConnectionDetails streamConnectionDetails) {
-		assertConnectionDetails(connectionDetails);
-		assertConnectionDetails(streamConnectionDetails);
-	}
-
-	@DockerComposeTest(composeFile = "rabbit-and-rabbit-stream-single-service-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetailsFromSingleService(RabbitConnectionDetails connectionDetails,
+	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails,
 			RabbitStreamConnectionDetails streamConnectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		assertConnectionDetails(streamConnectionDetails);
