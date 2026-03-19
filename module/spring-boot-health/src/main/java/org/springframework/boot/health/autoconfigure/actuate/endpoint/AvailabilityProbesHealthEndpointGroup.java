@@ -67,7 +67,7 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 
 	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
-		return HttpCodeStatusMapper.DEFAULT;
+		return HttpCodeStatusMapper.getDefault();
 	}
 
 	@Override

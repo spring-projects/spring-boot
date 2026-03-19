@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class SimpleHttpCodeStatusMapperTests {
 
 	@Test

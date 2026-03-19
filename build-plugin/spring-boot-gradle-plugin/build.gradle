@@ -49,6 +49,7 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
+	optional("com.google.protobuf:protobuf-gradle-plugin")
 	optional("org.graalvm.buildtools:native-gradle-plugin")
 	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")

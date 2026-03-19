@@ -1,0 +1,29 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.grpc.server.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable gRPC server auto-configuration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.factory.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable gRPC server factory bean auto-configuration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.observation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Observations on the server.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.reflection.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Reflection on the gRPC server.",
+      "defaultValue": true
+    }
+  ]
+}

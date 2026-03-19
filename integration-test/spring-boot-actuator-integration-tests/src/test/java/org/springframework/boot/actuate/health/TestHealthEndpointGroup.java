@@ -23,8 +23,6 @@ import org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpoint
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroup;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapper;
-import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 
 /**
@@ -34,9 +32,9 @@ import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
  */
 class TestHealthEndpointGroup implements HealthEndpointGroup {
 
-	private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
+	private final StatusAggregator statusAggregator = StatusAggregator.getDefault();
 
-	private final HttpCodeStatusMapper httpCodeStatusMapper = new SimpleHttpCodeStatusMapper();
+	private final HttpCodeStatusMapper httpCodeStatusMapper = HttpCodeStatusMapper.getDefault();
 
 	private final Predicate<String> memberPredicate;
 

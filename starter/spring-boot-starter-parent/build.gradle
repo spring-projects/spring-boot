@@ -66,6 +66,29 @@ publishing.publications.withType(MavenPublication) {
 				pluginManagement {
 					plugins {
 						plugin {
+							delegate.groupId('io.github.ascopes')
+							delegate.artifactId('protobuf-maven-plugin')
+							configuration {
+								delegate.protoc('${protobuf-java.version}')
+								plugins {
+									plugin(kind: 'binary-maven') {
+										delegate.groupId('io.grpc')
+										delegate.artifactId('protoc-gen-grpc-java')
+										delegate.version('${grpc-java.version}')
+										delegate.options('@generated=omit')
+									}
+								}
+							}
+							executions {
+								execution {
+									delegate.id('generate')
+									goals {
+										delegate.goal('generate')
+									}
+								}
+							}
+						}
+						plugin {
 							delegate.groupId('org.jetbrains.kotlin')
 							delegate.artifactId('kotlin-maven-plugin')
 							delegate.version('${kotlin.version}')

@@ -148,7 +148,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
 				new ApplicationPluginAction(), new KotlinPluginAction(), new NativeImagePluginAction(),
-				new CyclonedxPluginAction());
+				new CyclonedxPluginAction(), new ProtobufPluginAction());
 		for (PluginApplicationAction action : actions) {
 			withPluginClassOfAction(action,
 					(pluginClass) -> project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project)));

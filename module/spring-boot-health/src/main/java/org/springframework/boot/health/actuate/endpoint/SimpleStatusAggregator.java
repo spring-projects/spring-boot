@@ -16,9 +16,7 @@
 
 package org.springframework.boot.health.actuate.endpoint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -36,42 +34,39 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @since 4.0.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link StatusAggregator#of}
  */
+@Deprecated(since = "4.1.0", forRemoval = true)
 public class SimpleStatusAggregator implements StatusAggregator {
 
-	private static final List<String> DEFAULT_ORDER;
-
-	static final StatusAggregator INSTANCE;
-
-	static {
-		List<String> defaultOrder = new ArrayList<>();
-		defaultOrder.add(Status.DOWN.getCode());
-		defaultOrder.add(Status.OUT_OF_SERVICE.getCode());
-		defaultOrder.add(Status.UP.getCode());
-		defaultOrder.add(Status.UNKNOWN.getCode());
-		DEFAULT_ORDER = Collections.unmodifiableList(getUniformCodes(defaultOrder.stream()));
-		INSTANCE = new SimpleStatusAggregator();
-	}
+	static final SimpleStatusAggregator DEFAULT_ORDER = new SimpleStatusAggregator();
 
 	private final List<String> order;
 
-	private final Comparator<Status> comparator = new StatusComparator();
+	private final Comparator<Status> comparator = Comparator.comparingInt(this::orderIndex)
+		.thenComparing(Status::getCode);
 
 	public SimpleStatusAggregator() {
-		this.order = DEFAULT_ORDER;
+		this(Status.DEFAULT_ORDER.stream().map(Status::getCode));
 	}
 
 	public SimpleStatusAggregator(Status... order) {
-		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER
-				: getUniformCodes(Arrays.stream(order).map(Status::getCode));
+		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER.order
+				: Arrays.stream(order).map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
 	public SimpleStatusAggregator(String... order) {
-		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER : getUniformCodes(Arrays.stream(order));
+		this.order = ObjectUtils.isEmpty(order) ? DEFAULT_ORDER.order
+				: Arrays.stream(order).map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
 	public SimpleStatusAggregator(List<String> order) {
-		this.order = CollectionUtils.isEmpty(order) ? DEFAULT_ORDER : getUniformCodes(order.stream());
+		this.order = CollectionUtils.isEmpty(order) ? DEFAULT_ORDER.order
+				: order.stream().map(SimpleStatusAggregator::getUniformCode).toList();
+	}
+
+	SimpleStatusAggregator(Stream<String> order) {
+		this.order = order.map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
 	@Override
@@ -80,41 +75,24 @@ public class SimpleStatusAggregator implements StatusAggregator {
 	}
 
 	private boolean contains(Status status) {
-		return this.order.contains(getUniformCode(status.getCode()));
+		return this.order.contains(getUniformCode(status));
 	}
 
-	private static List<String> getUniformCodes(Stream<String> codes) {
-		return codes.map(SimpleStatusAggregator::getUniformCode).toList();
+	private int orderIndex(Status status) {
+		return this.order.indexOf(getUniformCode(status));
+	}
+
+	private static @Nullable String getUniformCode(Status status) {
+		return getUniformCode(status.getCode());
 	}
 
 	@Contract("!null -> !null")
 	private static @Nullable String getUniformCode(@Nullable String code) {
-		if (code == null) {
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < code.length(); i++) {
-			char ch = code.charAt(i);
-			if (Character.isAlphabetic(ch) || Character.isDigit(ch)) {
-				builder.append(Character.toLowerCase(ch));
-			}
-		}
-		return builder.toString();
-	}
-
-	/**
-	 * {@link Comparator} used to order {@link Status}.
-	 */
-	private final class StatusComparator implements Comparator<Status> {
-
-		@Override
-		public int compare(Status s1, Status s2) {
-			List<String> order = SimpleStatusAggregator.this.order;
-			int i1 = order.indexOf(getUniformCode(s1.getCode()));
-			int i2 = order.indexOf(getUniformCode(s2.getCode()));
-			return (i1 < i2) ? -1 : (i1 != i2) ? 1 : s1.getCode().compareTo(s2.getCode());
-		}
-
+		return (code != null) ? code.codePoints()
+			.filter(Character::isLetterOrDigit)
+			.map(Character::toLowerCase)
+			.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+			.toString() : null;
 	}
 
 }

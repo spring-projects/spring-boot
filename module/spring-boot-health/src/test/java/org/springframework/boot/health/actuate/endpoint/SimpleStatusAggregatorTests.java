@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
+@SuppressWarnings("removal")
 class SimpleStatusAggregatorTests {
 
 	@Test

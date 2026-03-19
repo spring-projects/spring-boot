@@ -104,3 +104,14 @@ When the {url-cyclonedx-docs-gradle-plugin}[CycloneDX plugin] is applied to a pr
 .. Disable full license texts.
 . Adds the SBOM under `META-INF/sbom` in the generated jar or war file.
 . Adds the `Sbom-Format` and `Sbom-Location` to the manifest of the jar or war file.
+
+
+
+[[reacting-to-other-plugins.protobuf]]
+== Reacting to the Protobuf Plugin
+
+When the {url-protobuf-docs-gradle-plugin}[Protobuf plugin] is applied to a project, the Spring Boot plugin:
+
+. Configures `protoc` to use the artifact `com.google.protobuf:protoc`, aligning its version with that of Protobuf dependencies on the runtime classpath.
+. Configures the `grpc` plugin to use the artifact `io.grpc:protoc-gen-grpc-java`, aligning its version with that of gRPC dependencies on the runtime classpath.
+. Configures the `grpc` plugin of all generate proto tasks with the option `@generated=omit`.

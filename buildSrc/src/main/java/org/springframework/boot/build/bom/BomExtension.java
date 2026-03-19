@@ -93,6 +93,13 @@ public class BomExtension {
 		return this.libraries;
 	}
 
+	public Library getLibrary(String name) {
+		return getLibraries().stream()
+			.filter((library) -> library.getName().equals(name))
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("No library found named '%s'".formatted(name)));
+	}
+
 	public void upgrade(Action<UpgradeHandler> action) {
 		action.execute(this.upgradeHandler);
 	}

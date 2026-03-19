@@ -1,0 +1,21 @@
+logging.level.org.springframework.security: TRACE
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          oidc-client:
+            registration:
+              client-id: "spring"
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "client_credentials"
+                - "refresh_token"
+              scopes:
+                - "openid"
+                - "profile"
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/oauth2/jwks

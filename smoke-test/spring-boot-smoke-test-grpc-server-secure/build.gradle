@@ -1,0 +1,66 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java"
+	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot gRPC server secure smoke test"
+
+dependencies {
+	implementation(project(":starter:spring-boot-starter-grpc-server"))
+	implementation(project(":starter:spring-boot-starter-security"))
+
+	testImplementation(project(":starter:spring-boot-starter-grpc-client"))
+	testImplementation(project(":starter:spring-boot-starter-grpc-test"))
+	testImplementation(project(":starter:spring-boot-starter-test"))
+}
+
+def dependenciesBom = project(":platform:spring-boot-dependencies").extensions.getByName("bom")
+def grpcJava = dependenciesBom.getLibrary("Grpc Java")
+def protobufJava = dependenciesBom.getLibrary("Protobuf Java")
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+nullability {
+	requireExplicitNullMarking = false
+}
+
+configurations.named { it.startsWith("protobufToolsLocator_") || it.toLowerCase().endsWith("protopath") }.all {
+	extendsFrom(configurations.dependencyManagement)
+}
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:${protobufJava.version}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcJava.version}"
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+		}
+	}
+}

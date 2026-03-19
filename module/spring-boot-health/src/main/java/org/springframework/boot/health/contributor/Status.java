@@ -16,6 +16,8 @@
 
 package org.springframework.boot.health.contributor;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,6 +61,12 @@ public final class Status {
 	 * service and should not be used.
 	 */
 	public static final Status OUT_OF_SERVICE = new Status("OUT_OF_SERVICE");
+
+	/**
+	 * The default order use to prioritize standard status instances.
+	 * @since 4.1.0
+	 */
+	public static final List<Status> DEFAULT_ORDER = List.of(DOWN, OUT_OF_SERVICE, UP, UNKNOWN);
 
 	private final String code;
 

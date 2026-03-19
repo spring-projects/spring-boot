@@ -1,0 +1,29 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.grpc.client.channelfactory.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable gRPC channel factory bean auto-configuration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable gRPC client auto-configuration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.inprocess.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to configure the in-process channel factory.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.observation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Observations on the client.",
+      "defaultValue": true
+    }
+  ]
+}

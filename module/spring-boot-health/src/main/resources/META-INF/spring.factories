@@ -1,3 +1,0 @@
-# Failure Analyzers
-org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.health.autoconfigure.actuate.endpoint.NoSuchHealthContributorFailureAnalyzer

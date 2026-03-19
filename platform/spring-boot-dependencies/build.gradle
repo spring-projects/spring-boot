@@ -562,6 +562,30 @@ bom {
 			site("https://groovy-lang.org")
 		}
 	}
+	library("Grpc Java", "1.78.0") {
+		group("io.grpc") {
+			bom("grpc-bom")
+		}
+		links {
+			github("https://github.com/grpc/grpc-java")
+			docs("https://grpc.io/docs/languages/java/")
+			releaseNotes("https://github.com/grpc/grpc-java/releases/tag/v{version}")
+		}
+	}
+	library("Grpc Kotlin", "1.5.0") {
+		group("io.grpc") {
+			modules = [
+					"grpc-kotlin-stub" {
+						exclude group: "javax.annotation", module: "javax.annotation-api"
+					}
+			]
+		}
+		links {
+			github("https://github.com/grpc/grpc-kotlin")
+			docs("https://grpc.io/docs/languages/kotlin/")
+			releaseNotes("https://github.com/grpc/grpc-kotlin/releases/tag/v{version}")
+		}
+	}
 	library("Gson", "2.13.2") {
 		group("com.google.code.gson") {
 			modules = [
@@ -1817,6 +1841,17 @@ bom {
 			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
 		}
 	}
+	library("Protobuf Maven Plugin", "5.0.1") {
+		group("io.github.ascopes") {
+			plugins = [
+				"protobuf-maven-plugin"
+			]
+		}
+		links {
+			site("https://github.com/ascopes/protobuf-maven-plugin")
+			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/tag/v{version}")
+		}
+	}
 	library("Pooled JMS", "3.2.2") {
 		group("org.messaginghub") {
 			modules = [
@@ -1881,6 +1916,27 @@ bom {
 			site("https://qpid.apache.org/proton")
 			javadoc("https://qpid.apache.org/releases/qpid-protonj2-{version}/api", "org.apache.qpid.protonj2")
 			releaseNotes("https://qpid.apache.org/releases/qpid-protonj2-{version}/release-notes.html")
+		}
+	}
+	library("Protobuf Common Protos", "2.65.0") {
+		group("com.google.api.grpc") {
+			modules = [
+				"proto-google-common-protos"
+			]
+		}
+		links {
+			github("https://github.com/googleapis/sdk-platform-java")
+			releaseNotes("https://github.com/googleapis/sdk-platform-java/releases/tag/v-{version}")
+		}
+	}
+	library("Protobuf Java", "4.34.0") {
+		group("com.google.protobuf") {
+			bom("protobuf-bom")
+		}
+		links {
+			site("https://protobuf.dev")
+			github("https://github.com/protocolbuffers/protobuf")
+			releaseNotes("https://github.com/protocolbuffers/protobuf/releases/tag/v{version}")
 		}
 	}
 	library("Quartz", "2.5.2") {
@@ -2107,6 +2163,9 @@ bom {
 				"spring-boot-freemarker",
 				"spring-boot-graphql",
 				"spring-boot-graphql-test",
+				"spring-boot-grpc-client",
+				"spring-boot-grpc-server",
+				"spring-boot-grpc-test",
 				"spring-boot-groovy-templates",
 				"spring-boot-gson",
 				"spring-boot-h2console",
@@ -2237,6 +2296,9 @@ bom {
 				"spring-boot-starter-freemarker-test",
 				"spring-boot-starter-graphql",
 				"spring-boot-starter-graphql-test",
+				"spring-boot-starter-grpc-client",
+				"spring-boot-starter-grpc-server",
+				"spring-boot-starter-grpc-test",
 				"spring-boot-starter-groovy-templates",
 				"spring-boot-starter-groovy-templates-test",
 				"spring-boot-starter-gson",
@@ -2523,6 +2585,23 @@ bom {
 			docs(version -> "https://docs.spring.io/spring-graphql/reference/%s"
 				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
+		}
+	}
+	library("Spring gRPC", "1.1.0-SNAPSHOT") {
+		considerSnapshots()
+		group("org.springframework.grpc") {
+			modules = [
+					"spring-grpc-core"
+			]
+		}
+		links {
+			site("https://spring.io/projects/spring-grpc")
+			github("https://github.com/spring-projects/spring-grpc")
+			javadoc(version -> "https://docs.spring.io/spring-grpc/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.grpc")
+			docs(version -> "https://docs.spring.io/spring-grpc/docs/%s/reference"
+					.formatted(version.forMajorMinorGeneration()))
+			releaseNotes("https://github.com/spring-projects/spring-grpc/releases/tag/v{version}")
 		}
 	}
 	library("Spring HATEOAS", "3.1.0-M1") {
