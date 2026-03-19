@@ -563,16 +563,16 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithSystemPropertyEnv(MavenBuild mavenBuild) {
 		mavenBuild.project("dockerTest", "build-image-with-env-entry")
-				.goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.systemProperty("spring-boot.build-image.env.SOME_KEY", "bar")
-				.execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-with-env-entry:0.0.1.BUILD-SNAPSHOT")
-							.contains("env: SOME_KEY=bar")
-							.contains("Successfully built image");
-					removeImage("build-image-with-env-entry", "0.0.1.BUILD-SNAPSHOT");
-				});
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("spring-boot.build-image.env.SOME_KEY", "bar")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-with-env-entry:0.0.1.BUILD-SNAPSHOT")
+					.contains("env: SOME_KEY=bar")
+					.contains("Successfully built image");
+				removeImage("build-image-with-env-entry", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
