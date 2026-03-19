@@ -40,6 +40,10 @@ class AbstractWebMvcEndpointHandlerMappingTests {
 			.onType(TypeReference
 				.of("org.springframework.boot.webmvc.actuate.endpoint.web.AbstractWebMvcEndpointHandlerMapping.OperationHandler")))
 			.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference
+				.of("org.springframework.boot.webmvc.actuate.endpoint.web.AbstractWebMvcEndpointHandlerMapping.CatchAllHandler")))
+			.accepts(runtimeHints);
 	}
 
 }
