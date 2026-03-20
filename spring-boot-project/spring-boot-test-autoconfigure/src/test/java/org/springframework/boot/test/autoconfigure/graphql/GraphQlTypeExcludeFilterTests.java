@@ -60,8 +60,8 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithNoControllers.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
-		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
+		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebInterceptor.class)).isTrue();
@@ -76,8 +76,8 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithController.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
-		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
+		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebInterceptor.class)).isTrue();
@@ -92,8 +92,8 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(NotUsingDefaultFilters.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
-		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isTrue();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isTrue();
+		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebInterceptor.class)).isTrue();
@@ -108,8 +108,8 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithIncludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
-		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
+		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
 		assertThat(excludes(filter, ExampleWebInterceptor.class)).isTrue();
@@ -124,8 +124,8 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithExcludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
-		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
+		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebInterceptor.class)).isTrue();
