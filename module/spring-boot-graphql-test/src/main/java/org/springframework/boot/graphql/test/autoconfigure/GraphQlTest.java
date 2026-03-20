@@ -124,9 +124,10 @@ public @interface GraphQlTest {
 	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
 	 * {@code @Controller} (when no explicit {@link #controllers() controllers} are
 	 * defined), {@code ControllerAdvice}, {@code RuntimeWiringConfigurer},
-	 * {@code @JacksonComponent}, {@code @JsonComponent} (deprecated), {@code Converter}, {@code GenericConverter},
-	 * {@code DataFetcherExceptionResolver}, {@code Instrumentation} and
-	 * {@code GraphQlSourceBuilderCustomizer} beans are included.
+	 * {@code @JacksonComponent}, {@code @JsonComponent} (deprecated), {@code Converter},
+	 * {@code GenericConverter}, {@code DataFetcherExceptionResolver},
+	 * {@code Instrumentation} and {@code GraphQlSourceBuilderCustomizer} beans are
+	 * included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used
