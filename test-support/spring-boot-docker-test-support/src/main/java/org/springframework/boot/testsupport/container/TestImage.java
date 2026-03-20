@@ -245,10 +245,9 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(3))),
 
 	/**
-	 * A container image suitable for testing RabbitMQ with support for both AMQP 0.9 and
-	 * 1.0. Queues can be declared using {@code rabbitmqadmin}.
+	 * A container image suitable for testing RabbitMQ.
 	 */
-	RABBITMQ("rabbitmq", "4.2-management", () -> RabbitMQContainer.class,
+	RABBITMQ("rabbitmq", "3.11-alpine", () -> RabbitMQContainer.class,
 			(container) -> ((RabbitMQContainer) container).withStartupTimeout(Duration.ofMinutes(4))),
 
 	/**

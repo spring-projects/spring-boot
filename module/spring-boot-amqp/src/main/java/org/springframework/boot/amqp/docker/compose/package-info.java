@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for Docker Compose generic AMQP service connections.
+ * Support for Docker Compose RabbitMQ service connections.
  */
 @NullMarked
 package org.springframework.boot.amqp.docker.compose;

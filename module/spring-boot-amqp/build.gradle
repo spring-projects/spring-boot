@@ -23,28 +23,32 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot support for AMQP 1.0"
+description = "Spring Boot AMQP"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("org.apache.qpid:protonj2-client")
 	api("org.springframework:spring-messaging")
-	api("org.springframework.amqp:spring-amqp-client")
+	api("org.springframework.amqp:spring-rabbit")
+
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	implementation(project(":module:spring-boot-transaction"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
-	optional(project(":module:spring-boot-jackson"))
 	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional("io.micrometer:micrometer-core")
+	optional("org.springframework.amqp:spring-rabbit-stream")
 	optional("org.testcontainers:testcontainers-rabbitmq")
 
-	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

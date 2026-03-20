@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for generic AMQP 1.0 support.
+ * Auto-configuration for RabbitMQ.
  */
 @NullMarked
 package org.springframework.boot.amqp.autoconfigure;

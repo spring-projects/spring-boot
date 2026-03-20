@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for generic AMQP 1.0 support"
+description = "Starter for using Spring AMQP and Rabbit MQ"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))

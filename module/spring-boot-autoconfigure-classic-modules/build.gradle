@@ -214,9 +214,6 @@ dependencies {
 	api(project(":module:spring-boot-r2dbc")) {
 		transitive = false
 	}
-	api(project(":module:spring-boot-rabbitmq")) {
-		transitive = false
-	}
 	api(project(":module:spring-boot-reactor")) {
 		transitive = false
 	}

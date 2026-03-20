@@ -3,53 +3,7 @@
 
 The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
 The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions.
-Spring Boot offers several conveniences for working with AMQP: generic AMQP 1.0 support is provided by the `spring-boot-starter-amqp` starter while specific RabbitMQ support is available via the `spring-boot-starter-rabbitmq` starter.
-
-
-
-[[messaging.amqp.generic]]
-== Generic AMQP 1.0 Support
-
-AMQP 1.0 is supported by several brokers and messaging services beyond RabbitMQ, including ActiveMQ, Azure Service Bus, and others.
-Spring AMQP provides {url-spring-amqp-docs}/amqp10-client.html[generic support for AMQP 1.0] via `org.springframework.amqp:spring-amqp-client` that is based on the https://github.com/apache/qpid-protonj2/blob/main/protonj2-client/README.md[Qpid ProtonJ2 Client Library].
-
-AMQP configuration is controlled by external configuration properties in `+spring.amqp.*+`.
-For example, you might declare the following in your configuration:
-
-[configprops,yaml]
-----
-spring:
-  amqp:
-    host: "localhost"
-    port: 5672
-    username: "admin"
-    password: "secret"
-----
-
-To configure javadoc:org.apache.qpid.protonj2.client.ConnectionOptions[connection options] of the auto-configured javadoc:org.springframework.amqp.client.AmqpConnectionFactory[], define a javadoc:org.springframework.boot.amqp.autoconfigure.ConnectionOptionsCustomizer[] bean.
-
-[[messaging.amqp.generic.sending]]
-=== Sending a Message
-
-Spring's javadoc:org.springframework.amqp.client.AmqpClient[] is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
-
-include-code::MyBean[]
-
-If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] bean is defined, it is associated automatically with the auto-configured javadoc:org.springframework.amqp.client.AmqpClient[].
-If no such converter is defined and Jackson is available, javadoc:org.springframework.amqp.support.converter.JacksonJsonMessageConverter[] is used.
-
-Client-specific settings can be configured as follows:
-
-[configprops,yaml]
-----
-spring:
-  amqp:
-    client:
-      default-to-address: "/queues/default_queue"
-      completion-timeout: "500ms"
-----
-
-To further configure the auto-configured javadoc:org.springframework.amqp.client.AmqpClient[], define a javadoc:org.springframework.boot.amqp.autoconfigure.AmqpClientCustomizer[] bean.
+Spring Boot offers several conveniences for working with AMQP through RabbitMQ, including the `spring-boot-starter-amqp` starter.
 
 
 
@@ -84,19 +38,19 @@ spring:
 NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
 If the address uses the `amqps` protocol, SSL support is enabled automatically.
 
-See javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitProperties[] for more of the supported property-based configuration options.
-To configure lower-level details of the RabbitMQ javadoc:com.rabbitmq.client.ConnectionFactory[] that is used by Spring AMQP, define a javadoc:org.springframework.boot.rabbitmq.autoconfigure.ConnectionFactoryCustomizer[] bean.
+See javadoc:org.springframework.boot.amqp.autoconfigure.RabbitProperties[] for more of the supported property-based configuration options.
+To configure lower-level details of the RabbitMQ javadoc:com.rabbitmq.client.ConnectionFactory[] that is used by Spring AMQP, define a javadoc:org.springframework.boot.amqp.autoconfigure.ConnectionFactoryCustomizer[] bean.
 
 If a javadoc:org.springframework.amqp.rabbit.connection.ConnectionNameStrategy[] bean exists in the context, it will be automatically used to name connections created by the auto-configured javadoc:org.springframework.amqp.rabbit.connection.CachingConnectionFactory[].
 
-To make an application-wide, additive customization to the javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[], use a javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitTemplateCustomizer[] bean.
+To make an application-wide, additive customization to the javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[], use a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitTemplateCustomizer[] bean.
 
 TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
 
 
 
-[[messaging.amqp.rabbitmq.sending]]
-=== Sending a Message
+[[messaging.amqp.sending]]
+== Sending a Message
 
 Spring's javadoc:org.springframework.amqp.core.AmqpTemplate[] and javadoc:org.springframework.amqp.core.AmqpAdmin[] are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
@@ -120,16 +74,16 @@ spring:
 ----
 
 Retries are disabled by default.
-You can also customize the javadoc:org.springframework.core.retry.RetryTemplate[] programmatically by declaring a javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitTemplateRetrySettingsCustomizer[] bean.
+You can also customize the javadoc:org.springframework.core.retry.RetryTemplate[] programmatically by declaring a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitTemplateRetrySettingsCustomizer[] bean.
 
-If you need to create more javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] with the same settings as the factories used by the auto-configuration.
+If you need to create more javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] with the same settings as the factories used by the auto-configuration.
 
 If there's a bean of type javadoc:org.springframework.amqp.rabbit.support.micrometer.RabbitTemplateObservationConvention[] in the context, it will automatically be configured on the javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[].
 
 
 
-[[messaging.amqp.rabbitmq.sending-stream]]
-=== Sending a Message To A Stream
+[[messaging.amqp.sending-stream]]
+== Sending a Message To A Stream
 
 To send a message to a particular stream, specify the name of the stream, as shown in the following example:
 
@@ -143,18 +97,18 @@ spring:
 
 If a javadoc:org.springframework.amqp.support.converter.MessageConverter[], javadoc:org.springframework.rabbit.stream.support.converter.StreamMessageConverter[], javadoc:org.springframework.rabbit.stream.producer.ProducerCustomizer[] or javadoc:org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservationConvention[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[].
 
-If you need to create more javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] with the same settings as the factories used by the auto-configuration.
+If you need to create more javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] with the same settings as the factories used by the auto-configuration.
 
 
 
-[[messaging.amqp.rabbitmq.sending-stream.ssl]]
-==== SSL
+[[messaging.amqp.sending-stream.ssl]]
+=== SSL
 To use SSL with RabbitMQ Streams, set configprop:spring.rabbitmq.stream.ssl.enabled[] to `true` or set configprop:spring.rabbitmq.stream.ssl.bundle[] to configure the xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to use.
 
 
 
-[[messaging.amqp.rabbitmq.receiving]]
-=== Receiving a Message
+[[messaging.amqp.receiving]]
+== Receiving a Message
 
 When the Rabbit infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
 If no javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] has been defined, a default javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] is automatically configured and you can switch to a direct container using the configprop:spring.rabbitmq.listener.type[] property.
@@ -166,7 +120,7 @@ include-code::MyBean[]
 
 TIP: See javadoc:org.springframework.amqp.rabbit.annotation.EnableRabbit[format=annotation] for more details.
 
-If you need to create more javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.rabbitmq.autoconfigure.SimpleRabbitListenerContainerFactoryConfigurer[] and a javadoc:org.springframework.boot.rabbitmq.autoconfigure.DirectRabbitListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] and a javadoc:org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory[] with the same settings as the factories used by the auto-configuration.
+If you need to create more javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.SimpleRabbitListenerContainerFactoryConfigurer[] and a javadoc:org.springframework.boot.amqp.autoconfigure.DirectRabbitListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] and a javadoc:org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory[] with the same settings as the factories used by the auto-configuration.
 
 TIP: It does not matter which container type you chose.
 Those two beans are exposed by the auto-configuration.
@@ -183,7 +137,7 @@ You can enable retries to handle situations where your listener throws an except
 By default, javadoc:org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer[] is used, but you can define a javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] of your own.
 When retries are exhausted, the message is rejected and either dropped or routed to a dead-letter exchange if the broker is configured to do so.
 By default, retries are disabled.
-You can also customize the javadoc:org.springframework.core.retry.RetryPolicy[] programmatically by declaring a javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitListenerRetrySettingsCustomizer[] bean.
+You can also customize the javadoc:org.springframework.core.retry.RetryPolicy[] programmatically by declaring a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitListenerRetrySettingsCustomizer[] bean.
 
 IMPORTANT: By default, if retries are disabled and the listener throws an exception, the delivery is retried indefinitely.
 You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an javadoc:org.springframework.amqp.AmqpRejectAndDontRequeueException[] to signal the message should be rejected.
