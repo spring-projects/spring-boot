@@ -148,7 +148,7 @@ jobs:
     name: Trigger Docs Build
     needs:
       - build-and-stage-release
-      - sync-to-maven-central
+      - promote-release
     permissions:
       actions: write
     runs-on: ubuntu-latest
