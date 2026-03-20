@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
-import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -36,11 +36,8 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
- * {@link RabbitContainerConnectionDetailsFactory}.
  */
-@Deprecated(since = "4.0.0", forRemoval = true)
-class DeprecatedRabbitContainerConnectionDetailsFactory
+class RabbitContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitConnectionDetails> {
 
 	@Override
@@ -52,7 +49,7 @@ class DeprecatedRabbitContainerConnectionDetailsFactory
 	/**
 	 * {@link RabbitConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
+	static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
 			implements RabbitConnectionDetails {
 
 		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {

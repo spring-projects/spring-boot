@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -42,18 +42,15 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeprecatedRabbitContainerConnectionDetailsFactory}.
+ * Tests for {@link RabbitContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
- * {@link RabbitContainerConnectionDetailsFactoryIntegrationTests}.
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-@Deprecated(since = "4.0.0", forRemoval = true)
-class DeprecatedRabbitContainerConnectionDetailsFactoryIntegrationTests {
+class RabbitContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
@@ -74,7 +71,6 @@ class DeprecatedRabbitContainerConnectionDetailsFactoryIntegrationTests {
 		this.rabbitTemplate.convertAndSend("test", "message");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -171,7 +171,6 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 
 	private void integrationPrefixes(Config prefix) {
 		prefix.accept("spring.activemq");
-		prefix.accept("spring.amqp");
 		prefix.accept("spring.artemis");
 		prefix.accept("spring.batch");
 		prefix.accept("spring.integration");
