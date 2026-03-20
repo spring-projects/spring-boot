@@ -34,6 +34,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 /**
  * {@link TypeExcludeFilter} for {@link GraphQlTest @GraphQlTest}.
@@ -51,6 +52,7 @@ class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableTypeExclude
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
+		includes.add(ControllerAdvice.class);
 		includes.add(JacksonComponent.class);
 		includes.add(RuntimeWiringConfigurer.class);
 		includes.add(Converter.class);
