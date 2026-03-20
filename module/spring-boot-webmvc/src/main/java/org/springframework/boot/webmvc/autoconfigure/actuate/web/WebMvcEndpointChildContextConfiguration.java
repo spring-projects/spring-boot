@@ -16,7 +16,12 @@
 
 package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -24,18 +29,25 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletRegistrationBean;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -106,6 +118,29 @@ class WebMvcEndpointChildContextConfiguration {
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ Observation.class, ObservationProperties.class })
+	@ConditionalOnBean({ ObservationRegistry.class, ObservationProperties.class })
+	static class ObservationFilterConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(value = ServerHttpObservationFilter.class,
+				parameterizedContainer = FilterRegistrationBean.class, search = SearchStrategy.CURRENT)
+		FilterRegistrationBean<ServerHttpObservationFilter> managementWebMvcObservationFilter(
+				ObservationRegistry registry, ObjectProvider<ServerRequestObservationConvention> customConvention,
+				ObservationProperties observationProperties) {
+			String name = observationProperties.getHttp().getServer().getRequests().getName();
+			ServerRequestObservationConvention convention = customConvention
+				.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
+			ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
+			FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
+			registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+			return registration;
+		}
+
 	}
 
 	/**
