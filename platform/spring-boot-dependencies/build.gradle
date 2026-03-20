@@ -2055,7 +2055,7 @@ bom {
 			releaseNotes("https://github.com/r2dbc/r2dbc-spi/releases/tag/v{version}")
 		}
 	}
-	library("Rabbit AMQP Client", "5.30.0") {
+	library("RabbitMQ Client", "5.30.0") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
@@ -2067,7 +2067,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
-	library("Rabbit Stream Client", "1.6.0") {
+	library("RabbitMQ Stream Client", "1.6.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
@@ -2123,7 +2123,6 @@ bom {
 				"spring-boot-activemq",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
-				"spring-boot-amqp",
 				"spring-boot-artemis",
 				"spring-boot-autoconfigure",
 				"spring-boot-autoconfigure-classic",
@@ -2219,6 +2218,7 @@ bom {
 				"spring-boot-pulsar",
 				"spring-boot-quartz",
 				"spring-boot-r2dbc",
+				"spring-boot-rabbitmq",
 				"spring-boot-reactor",
 				"spring-boot-reactor-netty",
 				"spring-boot-restclient",
@@ -2244,8 +2244,6 @@ bom {
 				"spring-boot-starter-activemq-test",
 				"spring-boot-starter-actuator",
 				"spring-boot-starter-actuator-test",
-				"spring-boot-starter-amqp",
-				"spring-boot-starter-amqp-test",
 				"spring-boot-starter-artemis",
 				"spring-boot-starter-artemis-test",
 				"spring-boot-starter-aspectj",
@@ -2364,6 +2362,8 @@ bom {
 				"spring-boot-starter-quartz-test",
 				"spring-boot-starter-r2dbc",
 				"spring-boot-starter-r2dbc-test",
+				"spring-boot-starter-rabbitmqmq",
+				"spring-boot-starter-rabbitmqmq-test",
 				"spring-boot-starter-reactor-netty",
 				"spring-boot-starter-restclient",
 				"spring-boot-starter-restclient-test",
