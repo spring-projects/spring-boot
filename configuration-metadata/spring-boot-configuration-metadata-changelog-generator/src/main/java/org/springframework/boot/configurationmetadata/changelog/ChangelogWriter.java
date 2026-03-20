@@ -220,7 +220,7 @@ class ChangelogWriter implements AutoCloseable {
 	}
 
 	private String escapeForTableCell(String content) {
-		return content.replace("|", "\\|");
+		return content.replace("|", "\\|").replace("%", "%%");
 	}
 
 	private void write(String format, Object... args) {
