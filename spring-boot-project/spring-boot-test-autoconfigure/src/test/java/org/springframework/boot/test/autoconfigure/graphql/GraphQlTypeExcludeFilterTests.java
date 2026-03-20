@@ -42,6 +42,7 @@ import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +60,7 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithNoControllers.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
@@ -74,6 +76,7 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithController.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
@@ -89,6 +92,7 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(NotUsingDefaultFilters.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isTrue();
 		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
@@ -104,6 +108,7 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithIncludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
@@ -119,6 +124,7 @@ class GraphQlTypeExcludeFilterTests {
 		GraphQlTypeExcludeFilter filter = new GraphQlTypeExcludeFilter(WithExcludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
+		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleRuntimeWiringConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
@@ -166,6 +172,11 @@ class GraphQlTypeExcludeFilterTests {
 
 	@Controller
 	static class Controller2 {
+
+	}
+
+	@ControllerAdvice
+	static class ExampleControllerAdvice {
 
 	}
 
