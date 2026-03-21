@@ -144,7 +144,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	/**
 	 * Return a new {@link StandardStackTracePrinter} from this one that will print all
-	 * common frames rather the replacing them with the {@literal "... N more"} message.
+	 * common frames rather than replacing them with the {@literal "... N more"} message.
 	 * @return a new {@link StandardStackTracePrinter} instance
 	 */
 	public StandardStackTracePrinter withCommonFrames() {
@@ -162,7 +162,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	/**
 	 * Return a new {@link StandardStackTracePrinter} from this one that will use ellipses
-	 * to truncate output longer that the specified length.
+	 * to truncate output longer than the specified length.
 	 * @param maximumLength the maximum length that can be printed
 	 * @return a new {@link StandardStackTracePrinter} instance
 	 */
@@ -173,8 +173,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	/**
-	 * Return a new {@link StandardStackTracePrinter} from this one that filter frames
-	 * (including caused and suppressed) deeper then the specified maximum.
+	 * Return a new {@link StandardStackTracePrinter} from this one that filters frames
+	 * (including caused and suppressed) deeper than the specified maximum.
 	 * @param maximumThrowableDepth the maximum throwable depth
 	 * @return a new {@link StandardStackTracePrinter} instance
 	 */
@@ -208,7 +208,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	/**
-	 * Return a new {@link StandardStackTracePrinter} from this one that print the stack
+	 * Return a new {@link StandardStackTracePrinter} from this one that prints the stack
 	 * trace using the specified line separator.
 	 * @param lineSeparator the line separator to use
 	 * @return a new {@link StandardStackTracePrinter} instance
@@ -220,8 +220,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	/**
-	 * Return a new {@link StandardStackTracePrinter} from this one uses the specified
-	 * formatter to create a string representation of a throwable.
+	 * Return a new {@link StandardStackTracePrinter} from this one that uses the
+	 * specified formatter to create a string representation of a throwable.
 	 * @param formatter the formatter to use
 	 * @return a new {@link StandardStackTracePrinter} instance
 	 * @see #withLineSeparator(String)
@@ -233,8 +233,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	/**
-	 * Return a new {@link StandardStackTracePrinter} from this one uses the specified
-	 * formatter to create a string representation of a frame.
+	 * Return a new {@link StandardStackTracePrinter} from this one that uses the
+	 * specified formatter to create a string representation of a frame.
 	 * @param frameFormatter the frame formatter to use
 	 * @return a new {@link StandardStackTracePrinter} instance
 	 * @see #withLineSeparator(String)
