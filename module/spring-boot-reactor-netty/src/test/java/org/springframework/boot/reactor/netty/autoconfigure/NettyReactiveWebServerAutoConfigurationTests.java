@@ -19,10 +19,13 @@ package org.springframework.boot.reactor.netty.autoconfigure;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.server.HttpServer;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.reactor.netty.NettyServerCustomizer;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.reactive.AbstractReactiveWebServerAutoConfigurationTests;
+import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Raheela Aslam
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Daeho Kwon
  */
 // @DirtiesUrlFactories
 class NettyReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebServerAutoConfigurationTests {
@@ -65,6 +69,13 @@ class NettyReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebSe
 				assertThat(factory.getServerCustomizers()).contains(customizer);
 				then(customizer).should().apply(any(HttpServer.class));
 			});
+	}
+
+	@Test
+	void autoConfigurationDoesNotApplyToNonWebApplication() {
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveWebServerFactory.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
