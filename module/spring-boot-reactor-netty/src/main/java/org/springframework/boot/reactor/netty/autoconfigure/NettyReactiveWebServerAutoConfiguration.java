@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.reactor.netty.NettyRouteProvider;
@@ -42,10 +44,12 @@ import org.springframework.http.client.ReactorResourceFactory;
  * server.
  *
  * @author Andy Wilkinson
+ * @author Daeho Kwon
  * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, HttpServer.class })
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(NettyServerProperties.class)
 @Import({ ReactiveWebServerConfiguration.class, ReactorResourceFactoryConfiguration.class })
 public final class NettyReactiveWebServerAutoConfiguration {
