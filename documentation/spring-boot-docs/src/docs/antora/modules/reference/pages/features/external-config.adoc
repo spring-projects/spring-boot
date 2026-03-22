@@ -940,7 +940,7 @@ my.service.security=
 Will be bound as `new MyProperties(true, null, new Security(null, null, List.of("USER")))`
 ====
 
-If you want to always bind a a non-null instance of `Security`, even when properties are missing, you can use use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
+If you want to always bind a non-null instance of `Security`, even when properties are missing, you can use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
 
 include-code::nonnull/MyProperties[tag=*]
 
