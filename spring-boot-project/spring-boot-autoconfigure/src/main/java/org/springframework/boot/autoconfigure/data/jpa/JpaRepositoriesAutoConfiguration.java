@@ -95,7 +95,14 @@ public class JpaRepositoriesAutoConfiguration {
 		if (taskExecutors.size() == 1) {
 			return taskExecutors.values().iterator().next();
 		}
-		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		AsyncTaskExecutor executor = taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		if (executor != null) {
+			return executor;
+		}
+		// No applicationTaskExecutor bean found; return first available to ensure
+		// bootstrap-mode=deferred actually runs asynchronously instead of silently
+		// falling back to the main thread (see gh-49688)
+		return taskExecutors.values().iterator().next();
 	}
 
 	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
