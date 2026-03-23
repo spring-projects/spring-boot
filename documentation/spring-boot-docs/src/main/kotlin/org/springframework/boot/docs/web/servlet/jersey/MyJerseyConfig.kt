@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.using.devtools.restart.disable
+package org.springframework.boot.docs.web.servlet.jersey
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import org.glassfish.jersey.server.ResourceConfig
+import org.springframework.stereotype.Component
 
-@SpringBootApplication
-class MyApplication
+@Component
+class MyJerseyConfig : ResourceConfig() {
 
-fun main(args: Array<String>) {
-	System.setProperty("spring.devtools.restart.enabled", "false")
-	runApplication<MyApplication>(*args)
+	init {
+		register(MyEndpoint::class.java)
+	}
+
 }
