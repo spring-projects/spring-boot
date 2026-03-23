@@ -145,7 +145,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 
 	private Resource[] getResources(PathMatchingResourcePatternResolver resolver, Location location, Resource root) {
 		try {
-			return resolver.getResources(root.getURI() + "/*");
+			return resolver.getResources(root.getURI() + "/**/*");
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Failed to list resources for " + location.getDescriptor(), ex);

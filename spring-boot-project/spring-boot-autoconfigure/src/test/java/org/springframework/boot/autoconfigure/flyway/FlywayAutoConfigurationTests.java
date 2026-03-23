@@ -968,6 +968,8 @@ class FlywayAutoConfigurationTests {
 		new FlywayAutoConfigurationRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/nested/V2__users.sql"))
+			.accepts(runtimeHints);
 	}
 
 	@Test

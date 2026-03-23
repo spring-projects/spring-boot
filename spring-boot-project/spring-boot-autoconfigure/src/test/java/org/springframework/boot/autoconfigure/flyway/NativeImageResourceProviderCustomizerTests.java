@@ -25,6 +25,7 @@ import org.flywaydb.core.internal.resource.NoopResourceProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.testsupport.classpath.resources.WithResources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,6 +55,19 @@ class NativeImageResourceProviderCustomizerTests {
 		Collection<LoadableResource> migrations = resourceProvider.getResources("V", new String[] { ".sql" });
 		LoadableResource migration = resourceProvider.getResource("V1__init.sql");
 		assertThat(migrations).containsExactly(migration);
+	}
+
+	@Test
+	@WithResources({ @WithResource(name = "db/migration/V1__init.sql"),
+			@WithResource(name = "db/migration/nested/V2__users.sql") })
+	void nativeImageResourceProviderShouldFindNestedMigrations() {
+		FluentConfiguration configuration = new FluentConfiguration();
+		this.customizer.customize(configuration);
+		ResourceProvider resourceProvider = configuration.getResourceProvider();
+		Collection<LoadableResource> migrations = resourceProvider.getResources("V", new String[] { ".sql" });
+		LoadableResource v1 = resourceProvider.getResource("V1__init.sql");
+		LoadableResource v2 = resourceProvider.getResource("nested/V2__users.sql");
+		assertThat(migrations).containsExactly(v1, v2);
 	}
 
 	@Test
