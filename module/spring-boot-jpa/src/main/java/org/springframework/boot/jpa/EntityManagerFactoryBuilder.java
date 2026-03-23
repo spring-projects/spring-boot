@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -261,48 +262,37 @@ public class EntityManagerFactoryBuilder {
 			return this;
 		}
 
+		/**
+		 * Build a new {@link LocalContainerEntityManagerFactoryBean} instance from this
+		 * builder.
+		 * @return the built {@link LocalContainerEntityManagerFactoryBean}
+		 */
 		public LocalContainerEntityManagerFactoryBean build() {
-			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
-				entityManagerFactoryBean
-					.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
-			}
-			if (this.persistenceUnit != null) {
-				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
-			}
-			entityManagerFactoryBean.setJpaVendorAdapter(EntityManagerFactoryBuilder.this.jpaVendorAdapter);
+			PropertyMapper map = PropertyMapper.get();
+			LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+			map.from(EntityManagerFactoryBuilder.this.persistenceUnitManager).to(factory::setPersistenceUnitManager);
+			map.from(this.persistenceUnit).to(factory::setPersistenceUnitName);
+			map.from(EntityManagerFactoryBuilder.this.jpaVendorAdapter).to(factory::setJpaVendorAdapter);
+			map.from(this.dataSource).to((!this.jta) ? factory::setDataSource : factory::setJtaDataSource);
+			map.from(this.managedTypes).to(factory::setManagedTypes);
+			map.from(this.packagesToScan).to(factory::setPackagesToScan);
+			map.from(this::jpaPropertyMap).to(factory.getJpaPropertyMap()::putAll);
+			map.from(this.mappingResources).whenNot(ObjectUtils::isEmpty).to(factory::setMappingResources);
+			map.from(EntityManagerFactoryBuilder.this.persistenceUnitRootLocation)
+				.as(Object::toString)
+				.to(factory::setPersistenceUnitRootLocation);
+			map.from(EntityManagerFactoryBuilder.this.bootstrapExecutor).to(factory::setBootstrapExecutor);
+			map.from(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors)
+				.as((postProcessors) -> postProcessors.toArray(PersistenceUnitPostProcessor[]::new))
+				.to(factory::setPersistenceUnitPostProcessors);
+			return factory;
+		}
 
-			if (this.jta) {
-				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
-			}
-			else {
-				entityManagerFactoryBean.setDataSource(this.dataSource);
-			}
-			if (this.managedTypes != null) {
-				entityManagerFactoryBean.setManagedTypes(this.managedTypes);
-			}
-			else if (this.packagesToScan != null) {
-				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
-			}
-			Map<String, ?> jpaProperties = EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource);
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(new LinkedHashMap<>(jpaProperties));
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
-			if (!ObjectUtils.isEmpty(this.mappingResources)) {
-				entityManagerFactoryBean.setMappingResources(this.mappingResources);
-			}
-			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;
-			if (rootLocation != null) {
-				entityManagerFactoryBean.setPersistenceUnitRootLocation(rootLocation.toString());
-			}
-			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
-				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
-			}
-			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
-				entityManagerFactoryBean
-					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors
-						.toArray(PersistenceUnitPostProcessor[]::new));
-			}
-			return entityManagerFactoryBean;
+		private Map<String, Object> jpaPropertyMap() {
+			Map<String, Object> jpaPropertyMap = new LinkedHashMap<>();
+			jpaPropertyMap.putAll(EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource));
+			jpaPropertyMap.putAll(this.properties);
+			return jpaPropertyMap;
 		}
 
 	}
