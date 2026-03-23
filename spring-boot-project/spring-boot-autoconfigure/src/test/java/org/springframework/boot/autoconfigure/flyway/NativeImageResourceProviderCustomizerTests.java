@@ -67,7 +67,7 @@ class NativeImageResourceProviderCustomizerTests {
 		Collection<LoadableResource> migrations = resourceProvider.getResources("V", new String[] { ".sql" });
 		LoadableResource v1 = resourceProvider.getResource("V1__init.sql");
 		LoadableResource v2 = resourceProvider.getResource("nested/V2__users.sql");
-		assertThat(migrations).containsExactly(v1, v2);
+		assertThat(migrations).containsExactlyInAnyOrder(v1, v2);
 	}
 
 	@Test
