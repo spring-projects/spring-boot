@@ -19,11 +19,10 @@ package org.springframework.boot.docs.using.usingthespringbootapplicationannotat
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-// same as @SpringBootConfiguration @EnableAutoConfiguration @ComponentScan
+// Same as @SpringBootConfiguration @EnableAutoConfiguration @ComponentScan
 @SpringBootApplication
 class MyApplication
 
 fun main(args: Array<String>) {
 	runApplication<MyApplication>(*args)
 }
-

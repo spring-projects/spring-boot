@@ -115,7 +115,8 @@ javadoc:org.springframework.boot.context.properties.ConfigurationProperties[form
 data class KotlinExampleProperties(
 		val name: String,
 		val description: String,
-		val myService: MyService) {
+		val myService: MyService
+) {
 
 	data class MyService(
 			val apiToken: String,
