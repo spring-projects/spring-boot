@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.datasource.SmartDataSource;
 
@@ -69,6 +70,14 @@ class DataSourceUnwrapperTests {
 	void unwrapWithProxy() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
+			.isSameAs(dataSource);
+	}
+
+	@Test
+	void unwrapWithLazyConnectionDataSource() {
+		HikariDataSource dataSource = new HikariDataSource();
+		DataSource actual = new LazyConnectionDataSourceProxy(dataSource);
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
 			.isSameAs(dataSource);
 	}

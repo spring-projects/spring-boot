@@ -163,6 +163,28 @@ spring:
 
 
 
+[[data.sql.datasource.lazy-connection]]
+=== Lazy Connection Proxy
+
+When a pooled `DataSource` is auto-configured, it can be wrapped in a proxy that fetches JDBC connections as late as possible by setting configprop:spring.datasource.connection-fetch[] to `lazy`, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  datasource:
+    connection-fetch: "lazy"
+----
+
+With this feature enabled, JDBC Connections are only fetched from the pool when actually necessary.
+JDBC transaction control can happen without fetching a Connection from the pool or communicating with the database; this will be done lazily on the first creation of a JDBC Statement.
+To get access to the target auto-configured `DataSource`, use `DataSource.unwrap`.
+
+TIP: If you are wrapping the target `DataSource` in a `TransactionAwareDataSourceProxy`, make sure to do so with a `BeanPostProcessor` that has a positive order.
+
+See javadoc:org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy[] for more details.
+
+
+
 [[data.sql.jdbc-template]]
 == Using JdbcTemplate
 

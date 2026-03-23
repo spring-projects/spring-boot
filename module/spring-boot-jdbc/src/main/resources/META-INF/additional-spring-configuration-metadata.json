@@ -7,6 +7,12 @@
       "defaultValue": true
     },
     {
+      "name": "spring.datasource.connection-fetch",
+      "type": "java.lang.String",
+      "description": "Whether the auto-configured DataSource should be wrapped in a proxy that fetches JDBC connections as late as possible.",
+      "defaultValue": "eager"
+    },
+    {
       "name": "spring.datasource.continue-on-error",
       "type": "java.lang.Boolean",
       "deprecation": {
@@ -118,6 +124,19 @@
     }
   ],
   "hints": [
+    {
+      "name": "spring.datasource.connection-fetch",
+      "values": [
+        {
+          "value": "eager",
+          "description": "Fetch JDBC connections directly."
+        },
+        {
+          "value": "lazy",
+          "description": "Fetch JDBC connections as late as possible, or not at all if no statement is executed."
+        }
+      ]
+    },
     {
       "name": "spring.datasource.data",
       "providers": [
