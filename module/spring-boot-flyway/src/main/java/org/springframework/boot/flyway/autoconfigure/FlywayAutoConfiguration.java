@@ -480,7 +480,7 @@ public final class FlywayAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
-			hints.resources().registerPattern("db/migration/*");
+			hints.resources().registerPattern("db/migration/**");
 		}
 
 	}
