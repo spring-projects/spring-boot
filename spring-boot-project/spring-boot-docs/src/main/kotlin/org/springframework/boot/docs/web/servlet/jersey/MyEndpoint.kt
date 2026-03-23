@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.using.devtools.restart.disable
+package org.springframework.boot.docs.web.servlet.jersey
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import org.springframework.stereotype.Component
 
-@SpringBootApplication
-class MyApplication
+@Component
+@Path("/hello")
+class MyEndpoint {
 
-fun main(args: Array<String>) {
-	System.setProperty("spring.devtools.restart.enabled", "false")
-	runApplication<MyApplication>(*args)
+	@GET
+	fun message(): String {
+		return "Hello"
+	}
+
 }
