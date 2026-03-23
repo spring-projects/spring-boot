@@ -17,8 +17,12 @@
 package org.springframework.boot.ansi;
 
 import java.io.Console;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -171,7 +175,8 @@ public abstract class AnsiOutput {
 				}
 			}
 			if (isWindows(System.getProperty("os.name"))) {
-				return isWindowsAnsiCapable(System.getProperty("os.version"));
+				Integer buildNumber = parseWindowsBuildNumber(WINDOWS_BUILD_NUMBER).orElse(0);
+				return isWindowsAnsiCapable(buildNumber);
 			}
 			return true;
 		}
@@ -184,19 +189,29 @@ public abstract class AnsiOutput {
 		return osName.toLowerCase(Locale.ENGLISH).contains("win");
 	}
 
-	static boolean isWindowsAnsiCapable(String osVersion) {
-		String[] parts = osVersion.split("\\.");
-		if (parts.length >= 2) {
-			try {
-				int major = Integer.parseInt(parts[0]);
-				int minor = Integer.parseInt(parts[1]);
-				// ANSI support on Windows 10 = 10.0, Build 10586+
-				return (major > 10) || (major == 10 && minor >= 0);
-			} catch (NumberFormatException ex) {
-				return false;
-			}
+	private static final String CURRENT_BUILD = "CurrentBuild";
+	private static final Supplier<String> WINDOWS_BUILD_NUMBER = () -> {
+		try {
+			Process buildNumberRequest = Runtime.getRuntime().exec(
+					"reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" /v " + CURRENT_BUILD);
+			return new String(buildNumberRequest.getInputStream().readAllBytes());
+		} catch (IOException e) {
+			return "";
 		}
-		return false;
+	};
+
+	static Optional<Integer> parseWindowsBuildNumber(Supplier<String> osBuildSupplier) {
+		String plainResult = osBuildSupplier.get();
+		return Arrays.stream(plainResult.split("\\r\\n"))
+				.map(String::trim)
+				.filter(line -> line.startsWith(CURRENT_BUILD))
+				.findFirst()
+				.map(s -> s.split("\\s+")[2])
+				.map(Integer::decode);
+	}
+
+	static boolean isWindowsAnsiCapable(Integer buildNumber) {
+		return buildNumber >= 22000; // 22,000+ -> Windows 11 or higher
 	}
 
 	/**
