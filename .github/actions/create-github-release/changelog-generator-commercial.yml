@@ -6,7 +6,7 @@ changelog:
       summary:
         mode: "member-comment"
         config:
-          prefix: "Attention Required:"
+          prefix: "Attention required:"
     - title: ":star: New Features"
       labels:
         - "type: enhancement"
