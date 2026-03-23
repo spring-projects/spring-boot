@@ -126,7 +126,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
 /**
- * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
+ * Test for {@link HibernateJpaAutoConfiguration} and {@link JpaBaseConfiguration}.
  *
  * @author Phillip Webb
  * @author Dave Syer

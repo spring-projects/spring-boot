@@ -19,6 +19,8 @@ package org.springframework.boot.data.jpa.test.autoconfigure;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.repository.config.BootstrapMode;
 
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @DataJpaTest(properties = "spring.profiles.active=test", bootstrapMode = BootstrapMode.DEFERRED)
+@ImportAutoConfiguration(TaskExecutionAutoConfiguration.class)
 class DataJpaTestAttributesIntegrationTests {
 
 	@Autowired

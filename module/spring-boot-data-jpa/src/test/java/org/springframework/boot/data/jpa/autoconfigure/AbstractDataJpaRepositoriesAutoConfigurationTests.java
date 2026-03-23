@@ -88,23 +88,12 @@ abstract class AbstractDataJpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBootstrapModeIsLazyWithMultipleAsyncExecutorBootstrapExecutorIsConfigured() {
-		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
-			.withConfiguration(
-					AutoConfigurations.of(TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class))
-			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
-			.run((context) -> assertThat(
-					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isEqualTo(context.getBean("applicationTaskExecutor")));
-	}
-
-	@Test
-	void whenBootstrapModeIsLazyWithSingleAsyncExecutorBootstrapExecutorIsConfigured() {
+	void whenBootstrapModeDoesNotUseFallbackBootstrapExecutor() {
 		this.contextRunner.withUserConfiguration(SingleAsyncTaskExecutorConfiguration.class)
 			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
 			.run((context) -> assertThat(
 					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isEqualTo(context.getBean("testAsyncTaskExecutor")));
+				.isNull());
 	}
 
 	@Test

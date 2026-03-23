@@ -25,7 +25,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -35,8 +34,8 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
+import org.springframework.boot.jpa.autoconfigure.PropertyBasedRequiredBackgroundBootstrapping;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -83,15 +82,11 @@ import org.springframework.util.ClassUtils;
 public final class DataJpaRepositoriesAutoConfiguration {
 
 	@Bean
-	@Conditional(BootstrapExecutorCondition.class)
+	@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
 	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
-		return (builder) -> {
-			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
-			if (bootstrapExecutor != null) {
-				builder.setBootstrapExecutor(bootstrapExecutor);
-			}
-		};
+		return (builder) -> builder.requireBootstrapExecutor(new PropertyBasedRequiredBackgroundBootstrapping(
+				"spring.data.jpa.repositories.bootstrap-mode", "deferred"));
 	}
 
 	@Bean
@@ -104,24 +99,6 @@ public final class DataJpaRepositoriesAutoConfiguration {
 			return taskExecutors.values().iterator().next();
 		}
 		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
-	}
-
-	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
-
-		BootstrapExecutorCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
-		}
-
-		@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
-		static class DeferredBootstrapMode {
-
-		}
-
-		@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "lazy")
-		static class LazyBootstrapMode {
-
-		}
-
 	}
 
 	static class JpaRepositoriesImportSelector implements ImportSelector {

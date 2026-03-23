@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -35,9 +36,11 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -65,9 +68,13 @@ public class EntityManagerFactoryBuilder {
 
 	private final @Nullable URL persistenceUnitRootLocation;
 
+	private final @Nullable AsyncTaskExecutor fallbackBootstrapExecutor;
+
 	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
 	private @Nullable List<PersistenceUnitPostProcessor> persistenceUnitPostProcessors;
+
+	private @Nullable Supplier<? extends RuntimeException> requireBootstrapExecutorExceptionSupplier;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -98,10 +105,32 @@ public class EntityManagerFactoryBuilder {
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
 			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation) {
+		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, persistenceUnitRootLocation, null);
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaPropertiesFactory the JPA properties to be passed to the persistence
+	 * provider, based on the {@linkplain #dataSource(DataSource) configured data source}
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
+	 * fallback or {@code null}
+	 * @param fallbackBootstrapExecutor the fallback executor to use when background
+	 * bootstrapping is required but no explicit executor has been set
+	 * @since 4.1.0
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation,
+			@Nullable AsyncTaskExecutor fallbackBootstrapExecutor) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaPropertiesFactory = jpaPropertiesFactory;
 		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
+		this.fallbackBootstrapExecutor = fallbackBootstrapExecutor;
 	}
 
 	/**
@@ -121,6 +150,20 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
 		this.bootstrapExecutor = bootstrapExecutor;
+	}
+
+	/**
+	 * Require a bootstrap executor to be configured when the
+	 * {@link LocalEntityManagerFactoryBean} is built. If no bootstrap executor is
+	 * {@link #setBootstrapExecutor(AsyncTaskExecutor) explicitly set} and no
+	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL, AsyncTaskExecutor)
+	 * fallbackBootstrapExecutor} is available then the supplied exception is thrown.
+	 * @param exceptionSupplier a supplier providing the exception to throw
+	 * @since 4.1.0
+	 */
+	public void requireBootstrapExecutor(Supplier<? extends RuntimeException> exceptionSupplier) {
+		Assert.notNull(exceptionSupplier, "'exceptionSupplier' must not be null");
+		this.requireBootstrapExecutorExceptionSupplier = exceptionSupplier;
 	}
 
 	/**
@@ -281,7 +324,7 @@ public class EntityManagerFactoryBuilder {
 			map.from(EntityManagerFactoryBuilder.this.persistenceUnitRootLocation)
 				.as(Object::toString)
 				.to(factory::setPersistenceUnitRootLocation);
-			map.from(EntityManagerFactoryBuilder.this.bootstrapExecutor).to(factory::setBootstrapExecutor);
+			map.from(this::bootstrapExecutor).to(factory::setBootstrapExecutor);
 			map.from(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors)
 				.as((postProcessors) -> postProcessors.toArray(PersistenceUnitPostProcessor[]::new))
 				.to(factory::setPersistenceUnitPostProcessors);
@@ -293,6 +336,20 @@ public class EntityManagerFactoryBuilder {
 			jpaPropertyMap.putAll(EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource));
 			jpaPropertyMap.putAll(this.properties);
 			return jpaPropertyMap;
+		}
+
+		private @Nullable AsyncTaskExecutor bootstrapExecutor() {
+			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
+				return EntityManagerFactoryBuilder.this.bootstrapExecutor;
+			}
+			if (EntityManagerFactoryBuilder.this.requireBootstrapExecutorExceptionSupplier != null) {
+				if (EntityManagerFactoryBuilder.this.fallbackBootstrapExecutor != null) {
+					return EntityManagerFactoryBuilder.this.fallbackBootstrapExecutor;
+				}
+				RuntimeException ex = EntityManagerFactoryBuilder.this.requireBootstrapExecutorExceptionSupplier.get();
+				throw (ex != null) ? ex : new IllegalStateException("A bootstrap executor is required");
+			}
+			return null;
 		}
 
 	}

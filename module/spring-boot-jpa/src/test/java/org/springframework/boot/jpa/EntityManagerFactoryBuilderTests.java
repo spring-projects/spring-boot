@@ -24,12 +24,17 @@ import javax.sql.DataSource;
 
 import jakarta.persistence.spi.PersistenceProvider;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -86,9 +91,48 @@ class EntityManagerFactoryBuilderTests {
 			.containsExactly(postProcessor, postProcessor2);
 	}
 
+	@Test
+	void requireBootstrapExecutorWhenExecutorProvidedDoesNotThrow() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilder();
+		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
+		builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor());
+		DataSource dataSource = mock();
+		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
+	}
+
+	@Test
+	void requireBootstrapExecutorWhenFallbackExecutorProvidesExecutorDoesNotThrow() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilder(new SimpleAsyncTaskExecutor());
+		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
+		DataSource dataSource = mock();
+		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
+	}
+
+	@Test
+	void requireBootstrapExecutorWhenExecutorAndNoFallbackExecutorThrowsException() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilder();
+		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
+		DataSource dataSource = mock();
+		assertThatIllegalStateException().isThrownBy(builder.dataSource(dataSource)::build).withMessage("BAD");
+	}
+
+	@Test
+	void requireBootstrapExecutorWhenSupplierReturnsNullExecutorAndNoFallbackExecutorThrowsException() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilder();
+		builder.requireBootstrapExecutor(() -> null);
+		DataSource dataSource = mock();
+		assertThatIllegalStateException().isThrownBy(builder.dataSource(dataSource)::build)
+			.withMessage("A bootstrap executor is required");
+	}
+
 	private EntityManagerFactoryBuilder createEmptyBuilder() {
+		return createEmptyBuilder(null);
+	}
+
+	private EntityManagerFactoryBuilder createEmptyBuilder(@Nullable AsyncTaskExecutor fallbackBootstrapExecutor) {
 		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
-		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null);
+		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null, null,
+				fallbackBootstrapExecutor);
 	}
 
 	static class TestJpaVendorAdapter extends AbstractJpaVendorAdapter {
