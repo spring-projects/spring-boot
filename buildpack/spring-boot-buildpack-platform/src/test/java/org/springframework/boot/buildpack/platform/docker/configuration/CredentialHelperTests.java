@@ -102,14 +102,16 @@ class CredentialHelperTests {
 	void getWhenExecutableDoesNotExistErrorThrowsException() {
 		String executable = "docker-credential-%s".formatted(UUID.randomUUID().toString());
 		assertThatIOException().isThrownBy(() -> new CredentialHelper(executable).get("invalid.example.com"))
-			.withMessageContaining(executable)
-			.satisfies((ex) -> {
-				if (Platform.isMac()) {
-					assertThat(ex.getMessage()).doesNotContain("/usr/local/bin/");
-					assertThat(ex.getSuppressed()).allSatisfy((suppressed) -> assertThat(suppressed)
-						.hasMessageContaining("/usr/local/bin/" + executable));
-				}
-			});
+				.withMessageContaining(executable)
+				.satisfies((ex) -> {
+					if (Platform.isMac()) {
+						assertThat(ex.getMessage()).doesNotContain("/usr/local/bin/");
+						assertThat(ex.getSuppressed()).anySatisfy(
+								(suppressed) -> assertThat(suppressed).hasMessageContaining("/opt/homebrew/bin/" + executable));
+						assertThat(ex.getSuppressed()).anySatisfy(
+								(suppressed) -> assertThat(suppressed).hasMessageContaining("/usr/local/bin/" + executable));
+					}
+				});
 	}
 
 }
