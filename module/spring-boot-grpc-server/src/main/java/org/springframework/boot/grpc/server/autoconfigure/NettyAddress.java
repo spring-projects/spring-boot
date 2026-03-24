@@ -40,7 +40,7 @@ record NettyAddress(@Nullable Transport transport, @Nullable InetAddress address
 		@Nullable String domainSocketPath) {
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		Transport transport = (this.transport != null) ? this.transport : deduceTransport();
 		return switch (transport) {
 			case TCP -> tcpAddress();

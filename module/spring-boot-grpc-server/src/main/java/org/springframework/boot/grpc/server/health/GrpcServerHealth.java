@@ -44,11 +44,11 @@ import org.springframework.util.Assert;
  */
 public class GrpcServerHealth {
 
-	private HealthContributorRegistry registry;
+	private final HealthContributorRegistry registry;
 
-	private @Nullable ReactiveHealthContributorRegistry fallbackRegistry;
+	private final @Nullable ReactiveHealthContributorRegistry fallbackRegistry;
 
-	private HealthCheckedGrpcComponents components;
+	private final HealthCheckedGrpcComponents components;
 
 	/**
 	 * Create a new {@link GrpcServerHealth} instance.
@@ -69,16 +69,16 @@ public class GrpcServerHealth {
 		update(manager::setStatus);
 	}
 
-	public void update(BiConsumer<String, ServingStatus> updator) {
+	public void update(BiConsumer<String, ServingStatus> updater) {
 		Cache cache = new Cache();
 		HealthCheckedGrpcComponent serverComponent = this.components.getServer();
 		if (serverComponent != null) {
-			updator.accept("", getServingStatus(cache, serverComponent));
+			updater.accept("", getServingStatus(cache, serverComponent));
 		}
 		for (String serviceName : this.components.getServiceNames()) {
 			HealthCheckedGrpcComponent serviceComponent = this.components.getService(serviceName);
 			if (!serviceName.isEmpty() && serviceComponent != null) {
-				updator.accept(serviceName, getServingStatus(cache, serviceComponent));
+				updater.accept(serviceName, getServingStatus(cache, serviceComponent));
 			}
 		}
 	}
@@ -109,11 +109,11 @@ public class GrpcServerHealth {
 		}
 	}
 
-	class Cache {
+	static class Cache {
 
 		private final Map<String, Health> health = new HashMap<>();
 
-		Health getHealth(String name, HealthIndicator indicator) {
+		@Nullable Health getHealth(String name, HealthIndicator indicator) {
 			return this.health.computeIfAbsent(name, (key) -> indicator.health(false));
 		}
 

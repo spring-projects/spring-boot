@@ -113,8 +113,8 @@ public final class GrpcServerHealthAutoConfiguration {
 					reactiveHealthContributorRegistry.getIfAvailable(), VALIDATE_MEMBERSHIP_PROPERTY,
 					(members) -> properties.getService().forEach((serviceName, service) -> {
 						String property = "spring.grpc.server.health.service." + serviceName;
-						members.member(property + ".include".formatted(serviceName), service.getInclude());
-						members.member(property + ".exclude".formatted(serviceName), service.getExclude());
+						members.member(property + ".include", service.getInclude());
+						members.member(property + ".exclude", service.getExclude());
 					}));
 		}
 

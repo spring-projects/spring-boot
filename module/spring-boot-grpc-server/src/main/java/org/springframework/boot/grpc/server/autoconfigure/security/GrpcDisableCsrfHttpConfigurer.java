@@ -74,7 +74,7 @@ class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCs
 
 	static class GrpcCsrfRequestMatcher implements RequestMatcher {
 
-		static GrpcCsrfRequestMatcher INSTANCE = new GrpcCsrfRequestMatcher();
+		static final GrpcCsrfRequestMatcher INSTANCE = new GrpcCsrfRequestMatcher();
 
 		@Override
 		public boolean matches(HttpServletRequest request) {

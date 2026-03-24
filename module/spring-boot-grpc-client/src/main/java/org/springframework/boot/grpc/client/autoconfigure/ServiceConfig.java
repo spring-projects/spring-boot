@@ -182,7 +182,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		 * @param outOfBandReportingPeriod load reporting interval to request from the
 		 * server
 		 * @param enableOutOfBandLoadReport whether to enable out-of-band utilization
-		 * reporting collection from the endpoints
+		 * reporting collections from the endpoints
 		 * @param weightUpdatePeriod how often endpoint weights are recalculated
 		 * @param errorUtilizationPenalty multiplier used to adjust endpoint weights with
 		 * the error rate calculated as eps/qps
@@ -327,7 +327,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		 * @param maxBackoff maximum exponential backoff
 		 * @param backoffMultiplier exponential backoff multiplier
 		 * @param perAttemptReceiveTimeout per-attempt receive timeout
-		 * @param retryableStatusCodes status codes which may be retried
+		 * @param retryableStatusCodes status codes that may be retried
 		 */
 		public record RetryPolicy(Integer maxAttempts, Duration initialBackoff, Duration maxBackoff,
 				Double backoffMultiplier, Duration perAttemptReceiveTimeout, Set<Status.Code> retryableStatusCodes) {

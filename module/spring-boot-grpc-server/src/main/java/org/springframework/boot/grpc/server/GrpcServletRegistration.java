@@ -49,7 +49,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class GrpcServletRegistration extends DynamicRegistrationBean<Dynamic> {
 
-	private static Log logger = LogFactory.getLog(GrpcServletRegistration.class);
+	private static final Log logger = LogFactory.getLog(GrpcServletRegistration.class);
 
 	private final GrpcServlet servlet;
 

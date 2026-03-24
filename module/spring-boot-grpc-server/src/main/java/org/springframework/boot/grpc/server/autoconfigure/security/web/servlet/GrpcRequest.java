@@ -110,7 +110,7 @@ public final class GrpcRequest {
 			this.delegate = createDelegate(context.get());
 		}
 
-		private @Nullable RequestMatcher createDelegate(GrpcServiceDiscoverer grpcServiceDiscoverer) {
+		private RequestMatcher createDelegate(GrpcServiceDiscoverer grpcServiceDiscoverer) {
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(grpcServiceDiscoverer);
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrRequestMatcher(delegateMatchers)
 					: EMPTY_MATCHER;
@@ -125,7 +125,7 @@ public final class GrpcRequest {
 		}
 
 		private boolean isExcluded(String service) {
-			return !this.excludes.stream().anyMatch((candidate) -> candidate.equals(service));
+			return this.excludes.stream().noneMatch((candidate) -> candidate.equals(service));
 		}
 
 		private String getPath(String service) {

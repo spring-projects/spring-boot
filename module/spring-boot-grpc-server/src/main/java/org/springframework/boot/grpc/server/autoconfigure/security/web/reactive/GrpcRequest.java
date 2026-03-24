@@ -125,7 +125,7 @@ public final class GrpcRequest {
 		}
 
 		private boolean isExcluded(String service) {
-			return !this.excludes.stream().anyMatch((candidate) -> candidate.equals(service));
+			return this.excludes.stream().noneMatch((candidate) -> candidate.equals(service));
 		}
 
 		private String getPath(String service) {

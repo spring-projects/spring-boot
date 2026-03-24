@@ -58,7 +58,7 @@ class AutoConfiguredHealthCheckedGrpcComponents implements HealthCheckedGrpcComp
 	/**
 	 * Create a new {@link AutoConfiguredHealthCheckedGrpcComponents} instance.
 	 * @param applicationContext the application context used to check for override beans
-	 * @param properties the grpc server health properties
+	 * @param properties the gRPC server health properties
 	 */
 	AutoConfiguredHealthCheckedGrpcComponents(ApplicationContext applicationContext,
 			GrpcServerHealthProperties properties) {
