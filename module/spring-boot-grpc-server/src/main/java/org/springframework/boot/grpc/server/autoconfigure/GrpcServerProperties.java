@@ -115,7 +115,8 @@ public class GrpcServerProperties {
 		/**
 		 * Maximum time to wait for the server to gracefully shutdown. When the value is
 		 * negative, the server waits forever. When the value is 0, the server will force
-		 * shutdown immediately. The default is 30 seconds.
+		 * shutdown immediately. The default is 30 seconds. If a duration suffix is not
+		 * specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration gracePeriod = Duration.ofSeconds(30);
@@ -217,7 +218,8 @@ public class GrpcServerProperties {
 	public static class Keepalive {
 
 		/**
-		 * Duration without read activity before sending a keep alive ping (default 2h).
+		 * Duration without read activity before sending a keep alive ping. If a duration
+		 * suffix is not specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private @Nullable Duration time = Duration.ofHours(2);
@@ -225,7 +227,7 @@ public class GrpcServerProperties {
 		/**
 		 * Maximum time to wait for read activity after sending a keep alive ping. If
 		 * sender does not receive an acknowledgment within this time, it will close the
-		 * connection (default 20s).
+		 * connection. If a duration suffix is not specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private @Nullable Duration timeout = Duration.ofSeconds(20);
@@ -264,7 +266,8 @@ public class GrpcServerProperties {
 		public static class Permit {
 
 			/**
-			 * Maximum keep-alive time clients are permitted to configure (default 5m).
+			 * Maximum keep-alive time clients are permitted to configure. If a duration
+			 * suffix is not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration time = Duration.ofMinutes(5);
@@ -300,20 +303,23 @@ public class GrpcServerProperties {
 
 			/**
 			 * Maximum time a connection can remain idle before being gracefully
-			 * terminated (default infinite).
+			 * terminated (default infinite). If a duration suffix is not specified,
+			 * seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration maxIdleTime;
 
 			/**
 			 * Maximum time a connection may exist before being gracefully terminated
-			 * (default infinite).
+			 * (default infinite). If a duration suffix is not specified, seconds will be
+			 * used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration maxAge;
 
 			/**
-			 * Maximum time for graceful connection termination (default infinite).
+			 * Maximum time for graceful connection termination (default infinite). If a
+			 * duration suffix is not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration gracePeriod = Duration.ofSeconds(30);

@@ -211,8 +211,10 @@ public class GrpcClientProperties {
 		public static class Default {
 
 			/**
-			 * The default deadline for RPCs performed on this channel.
+			 * The default deadline for RPCs performed on this channel. If a duration
+			 * suffix is not specified, seconds will be used.
 			 */
+			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration deadline;
 
 			/**
@@ -244,7 +246,8 @@ public class GrpcClientProperties {
 		public static class Idle {
 
 			/**
-			 * The duration without ongoing RPCs before going to idle mode.
+			 * The duration without ongoing RPCs before going to idle mode. If a duration
+			 * suffix is not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofSeconds(20);
@@ -267,13 +270,15 @@ public class GrpcClientProperties {
 			/**
 			 * The delay before sending a keepAlive. Note that shorter intervals increase
 			 * the network burden for the server and this value can not be lower than
-			 * 'permitKeepAliveTime' on the server.
+			 * 'permitKeepAliveTime' on the server. If a duration suffix is not specified,
+			 * seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration time = Duration.ofMinutes(5);
 
 			/**
-			 * The default timeout for a keepAlives ping request.
+			 * The default timeout for a keepAlives ping request. If a duration suffix is
+			 * not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofSeconds(20);
