@@ -544,7 +544,7 @@ public final class PropertyMapper {
 			public interface Mapper<R extends @Nullable Object, T> {
 
 				/**
-				 * Map a existing instance for the given nullable value.
+				 * Map an existing instance for the given nullable value.
 				 * @param instance the existing instance
 				 * @param value the value to map (may be {@code null})
 				 * @return the resulting mapped instance
