@@ -18,6 +18,8 @@ package org.springframework.boot.context.config;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -30,6 +32,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -146,7 +149,7 @@ class ConfigDataEnvironmentTests {
 			.map(ConfigDataEnvironmentContributor::getImports)
 			.map(Object::toString)
 			.toArray();
-		assertThat(imports).containsExactly("[i1, i2]", "[a1, a2]", "[l1, l2]");
+		assertThat(imports).containsExactly("[i1, i2]", "[a2]", "[a1]", "[l2]", "[l1]");
 	}
 
 	@Test
@@ -380,6 +383,19 @@ class ConfigDataEnvironmentTests {
 			.asInstanceOf(InstanceOfAssertFactories.LIST)
 			.extracting((item) -> (Class) item.getClass())
 			.containsOnly(SeparateClassLoaderConfigDataLoader.class);
+	}
+
+	@Test // gh-49724
+	@WithResource(name = "application-local.properties", content = "test.property=classpath-local")
+	void processAndApplyWhenExternalFileConfigOverridesProfileSpecificClasspathConfig(@TempDir Path tempDir)
+			throws IOException {
+		Files.writeString(tempDir.resolve("application.properties"), "test.property=file-default\n");
+		this.environment.setProperty("spring.config.location",
+				"optional:classpath:/,optional:file:" + tempDir.toAbsolutePath() + "/");
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
+				this.environment, this.resourceLoader, List.of("local"), null);
+		configDataEnvironment.processAndApply();
+		assertThat(this.environment.getProperty("test.property")).isEqualTo("file-default");
 	}
 
 	private String getConfigLocation(TestInfo info) {

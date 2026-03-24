@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -201,22 +200,23 @@ class ConfigDataEnvironment {
 
 	private List<ConfigDataEnvironmentContributor> getInitialImportContributors(Binder binder) {
 		List<ConfigDataEnvironmentContributor> initialContributors = new ArrayList<>();
-		addInitialImportContributors(initialContributors, bindLocations(binder, IMPORT_PROPERTY, EMPTY_LOCATIONS));
-		addInitialImportContributors(initialContributors,
-				bindLocations(binder, ADDITIONAL_LOCATION_PROPERTY, EMPTY_LOCATIONS));
-		addInitialImportContributors(initialContributors,
-				bindLocations(binder, LOCATION_PROPERTY, DEFAULT_SEARCH_LOCATIONS));
+		addInitialImportContributors(initialContributors, binder, IMPORT_PROPERTY, EMPTY_LOCATIONS, false);
+		addInitialImportContributors(initialContributors, binder, ADDITIONAL_LOCATION_PROPERTY, EMPTY_LOCATIONS, true);
+		addInitialImportContributors(initialContributors, binder, LOCATION_PROPERTY, DEFAULT_SEARCH_LOCATIONS, true);
 		return initialContributors;
 	}
 
-	private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
-		return binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(other);
-	}
-
-	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
-			ConfigDataLocation[] locations) {
-		addInitialImportContributors(initialContributors,
-				Arrays.stream(locations).filter(ConfigDataLocation::isNotEmpty).toList());
+	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors, Binder binder,
+			String propertyName, ConfigDataLocation[] defaultValue, boolean registerIndividually) {
+		ConfigDataLocation[] locations = binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(defaultValue);
+		if (registerIndividually) {
+			for (int i = locations.length - 1; i >= 0; i--) {
+				addInitialImportContributors(initialContributors, List.of(locations[i]));
+			}
+		}
+		else {
+			addInitialImportContributors(initialContributors, List.of(locations));
+		}
 	}
 
 	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
