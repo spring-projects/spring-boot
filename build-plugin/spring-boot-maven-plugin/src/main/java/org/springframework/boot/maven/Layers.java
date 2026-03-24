@@ -32,6 +32,8 @@ public class Layers {
 
 	private @Nullable File configuration;
 
+	private @Nullable String configurationName;
+
 	/**
 	 * Whether a {@code layers.idx} file should be added to the jar.
 	 * @return true if a {@code layers.idx} file should be added.
@@ -52,6 +54,19 @@ public class Layers {
 
 	public void setConfiguration(@Nullable File configuration) {
 		this.configuration = configuration;
+	}
+
+	/**
+	 * The name of the layers configuration to load from the classpath. A matching file is
+	 * expected at {@code META-INF/spring/layers/<name>.xml}
+	 * @return the layers configuration name to load from the classpath
+	 */
+	public @Nullable String getConfigurationName() {
+		return this.configurationName;
+	}
+
+	public void setConfigurationName(@Nullable String configurationName) {
+		this.configurationName = configurationName;
 	}
 
 }

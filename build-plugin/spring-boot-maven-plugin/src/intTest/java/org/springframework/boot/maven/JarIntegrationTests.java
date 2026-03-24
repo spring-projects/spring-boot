@@ -438,6 +438,27 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenJarIsRepackagedWithTheCustomLayersFromClasspath(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-layered-custom-name").execute((project) -> {
+			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot");
+			try (JarFile jarFile = new JarFile(repackaged)) {
+				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
+				assertThat(layerIndex.keySet()).containsExactly("my-dependencies-name", "snapshot-dependencies",
+						"configuration", "application");
+				assertThat(layerIndex.get("application"))
+					.contains("BOOT-INF/lib/jar-release-0.0.1.RELEASE.jar",
+							"BOOT-INF/lib/jar-snapshot-0.0.1.BUILD-SNAPSHOT.jar",
+							"BOOT-INF/lib/jar-classifier-0.0.1-bravo.jar")
+					.doesNotContain("BOOT-INF/lib/jar-classifier-0.0.1-alpha.jar",
+							"BOOT-INF/lib/jar-layers-configuration-0.0.1.jar");
+			}
+		});
+	}
+
+	@TestTemplate
 	void repackagedJarContainsClasspathIndex(MavenBuild mavenBuild) {
 		mavenBuild.project("jar").execute((project) -> {
 			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");

@@ -83,12 +83,25 @@ include::example$packaging/disable-layers-pom.xml[tags=disable-layers]
 === Custom Layers Configuration
 
 Depending on your application, you may want to tune how layers are created and add new ones.
-This can be done using a separate configuration file that should be registered as shown below:
+This can be done using a configuration loaded from a file or from the classpath.
+
+To use a configuration file, register it as shown below:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/custom-layers-pom.xml[tags=custom-layers]
 ----
+
+Alternatively, the configuration can be loaded from the classpath by specifying its name.
+A matching file is expected at `META-INF/spring/layers/<name>.xml` on the plugin's classpath.
+The jar that contains the configuration can be added as a plugin dependency, as shown below:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/custom-layers-classpath-pom.xml[tags=custom-layers-classpath]
+----
+
+In the example above, `META-INF/spring/layers/custom.xml` is expected to be available on the plugin's classpath.
 
 The configuration file describes how an archive can be separated into layers, and the order of those layers.
 The following example shows how the default ordering described above can be defined explicitly:
