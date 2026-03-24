@@ -98,7 +98,7 @@ public interface Archive extends AutoCloseable {
 	 * Factory method to create an appropriate {@link Archive} from the given
 	 * {@link Class} target.
 	 * @param target a target class that will be used to find the archive code source
-	 * @return an new {@link Archive} instance
+	 * @return a new {@link Archive} instance
 	 * @throws Exception if the archive cannot be created
 	 */
 	static Archive create(Class<?> target) throws Exception {

@@ -391,7 +391,7 @@ public interface JsonWriter<T> {
 
 		/**
 		 * Only include this member when an extracted value is not {@code null}.
-		 * @param extractor an function used to extract the value to test
+		 * @param extractor a function used to extract the value to test
 		 * @return a {@link Member} which may be configured further
 		 */
 		public Member<T> whenNotNull(Function<T, ?> extractor) {
