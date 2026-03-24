@@ -115,8 +115,8 @@ public class GrpcServerProperties {
 		/**
 		 * Maximum time to wait for the server to gracefully shutdown. When the value is
 		 * negative, the server waits forever. When the value is 0, the server will force
-		 * shutdown immediately. The default is 30 seconds. If a duration suffix is not
-		 * specified, seconds will be used.
+		 * shutdown immediately. If a duration suffix is not specified, seconds will be
+		 * used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration gracePeriod = Duration.ofSeconds(30);
@@ -154,7 +154,8 @@ public class GrpcServerProperties {
 		public static class Message {
 
 			/**
-			 * Maximum message size allowed to be received by the server (default 4MiB).
+			 * Maximum message size allowed to be received by the server. If a data size
+			 * suffix is not specified, bytes will be used.
 			 */
 			@DataSizeUnit(DataUnit.BYTES)
 			private DataSize maxSize = DataSize.ofBytes(4194304);
@@ -175,7 +176,8 @@ public class GrpcServerProperties {
 		public static class Metadata {
 
 			/**
-			 * Maximum metadata size allowed to be received by the server (default 8KiB).
+			 * Maximum metadata size allowed to be received by the server. If a data size
+			 * suffix is not specified, bytes will be used.
 			 */
 			@DataSizeUnit(DataUnit.BYTES)
 			private DataSize maxSize = DataSize.ofBytes(8192);
@@ -198,7 +200,7 @@ public class GrpcServerProperties {
 	public static class Inprocess {
 
 		/**
-		 * The name of the in-process server or null to not start the in-process server.
+		 * Name of the in-process server or null to not start the in-process server.
 		 */
 		private @Nullable String name;
 
@@ -225,7 +227,7 @@ public class GrpcServerProperties {
 		private @Nullable Duration time = Duration.ofHours(2);
 
 		/**
-		 * Maximum time to wait for read activity after sending a keep alive ping. If
+		 * Maximum time to wait for read activity after sending a keep alive ping. If the
 		 * sender does not receive an acknowledgment within this time, it will close the
 		 * connection. If a duration suffix is not specified, seconds will be used.
 		 */
@@ -274,7 +276,7 @@ public class GrpcServerProperties {
 
 			/**
 			 * Whether clients are permitted to send keep alive pings when there are no
-			 * outstanding RPCs on the connection (default false).
+			 * outstanding RPCs on the connection.
 			 */
 			private boolean withoutCalls;
 
@@ -303,23 +305,23 @@ public class GrpcServerProperties {
 
 			/**
 			 * Maximum time a connection can remain idle before being gracefully
-			 * terminated (default infinite). If a duration suffix is not specified,
-			 * seconds will be used.
+			 * terminated (infinite if not specified). If a duration suffix is not
+			 * specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration maxIdleTime;
 
 			/**
 			 * Maximum time a connection may exist before being gracefully terminated
-			 * (default infinite). If a duration suffix is not specified, seconds will be
-			 * used.
+			 * (infinite if not specified). If a duration suffix is not specified, seconds
+			 * will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration maxAge;
 
 			/**
-			 * Maximum time for graceful connection termination (default infinite). If a
-			 * duration suffix is not specified, seconds will be used.
+			 * Maximum time for graceful connection termination. If a duration suffix is
+			 * not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration gracePeriod = Duration.ofSeconds(30);
@@ -368,13 +370,13 @@ public class GrpcServerProperties {
 		private ClientAuth clientAuth = ClientAuth.NONE;
 
 		/**
-		 * SSL bundle name. Should match a bundle configured in spring.ssl.bundle.
+		 * SSL bundle name.
 		 */
 		private @Nullable String bundle;
 
 		/**
-		 * Flag to indicate that client authentication is secure (i.e. certificates are
-		 * checked). Do not set this to false in production.
+		 * Whether client authentication is secure (that is certificates are checked). Do
+		 * not set this to false in production.
 		 */
 		private boolean secure = true;
 
@@ -418,9 +420,9 @@ public class GrpcServerProperties {
 	public static class Netty {
 
 		/**
-		 * Transport mechanism used for Netty and Netty Shaded servers. If not specified
-		 * will the appropriate transport will be picked based on the
-		 * 'deomain-socket-path' or 'address/port'.
+		 * Transport mechanism used for Netty and Netty Shaded servers. If not specified,
+		 * the appropriate transport will be picked based on the 'domain-socket-path' or
+		 * 'address/port'.
 		 */
 		private @Nullable Transport transport;
 

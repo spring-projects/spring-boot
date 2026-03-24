@@ -44,7 +44,7 @@ import org.springframework.util.CollectionUtils;
 public class GrpcServerHealthProperties {
 
 	/**
-	 * Whether to auto-configure Health feature on the gRPC server.
+	 * Whether to auto-configure the Health feature on the gRPC server.
 	 */
 	private @Nullable Boolean enabled;
 
@@ -53,13 +53,10 @@ public class GrpcServerHealthProperties {
 	 */
 	private boolean includeOverallHealth = true;
 
-	/**
-	 * Properties that apply to all services.
-	 */
 	private final Services services = new Services();
 
 	/**
-	 * Service specific health reporting.
+	 * Service-specific health reporting.
 	 */
 	private final Map<String, Service> service = new LinkedHashMap<>();
 
@@ -127,7 +124,7 @@ public class GrpcServerHealthProperties {
 	}
 
 	/**
-	 * A health for a specific service.
+	 * Health for a specific service.
 	 */
 	public static class Service {
 
@@ -141,9 +138,6 @@ public class GrpcServerHealthProperties {
 		 */
 		private @Nullable Set<String> exclude;
 
-		/**
-		 * Status configuration.
-		 */
 		@NestedConfigurationProperty
 		private final Status status = new Status();
 
@@ -219,7 +213,7 @@ public class GrpcServerHealthProperties {
 		private Duration period = Duration.ofSeconds(5);
 
 		/**
-		 * The initial delay before updating the health status the very first time. If a
+		 * Initial delay before updating the health status the very first time. If a
 		 * duration suffix is not specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)

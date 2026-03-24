@@ -39,7 +39,7 @@ import org.springframework.util.unit.DataSize;
 public class GrpcClientProperties {
 
 	/**
-	 * Map of channel configured by name.
+	 * Map of channels configured by name.
 	 */
 	private final Map<String, Channel> channel = new LinkedHashMap<>();
 
@@ -55,18 +55,18 @@ public class GrpcClientProperties {
 		static final String DEFAULT_TARGET = "static://localhost:9090";
 
 		/**
-		 * The channel target address.
+		 * Channel target address.
 		 */
 		private String target = DEFAULT_TARGET;
 
 		/**
-		 * The custom User-Agent for the channel.
+		 * Custom User-Agent for the channel.
 		 */
 		private @Nullable String userAgent;
 
 		/**
-		 * Bypass certificate validation for easier testing (so the remote certificate
-		 * could be anonymous). Should not be set in production.
+		 * Whether to bypass certificate validation for easier testing (so the remote
+		 * certificate could be anonymous). Should not be enabled in production.
 		 */
 		private boolean bypassCertificateValidation;
 
@@ -211,14 +211,14 @@ public class GrpcClientProperties {
 		public static class Default {
 
 			/**
-			 * The default deadline for RPCs performed on this channel. If a duration
-			 * suffix is not specified, seconds will be used.
+			 * Default deadline for RPCs performed on this channel. If a duration suffix
+			 * is not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private @Nullable Duration deadline;
 
 			/**
-			 * The load balancing policy the channel should use.
+			 * Load balancing policy the channel should use.
 			 */
 			private String loadBalancingPolicy = "round_robin";
 
@@ -246,8 +246,8 @@ public class GrpcClientProperties {
 		public static class Idle {
 
 			/**
-			 * The duration without ongoing RPCs before going to idle mode. If a duration
-			 * suffix is not specified, seconds will be used.
+			 * Time without ongoing RPCs before going to idle mode. If a duration suffix
+			 * is not specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofSeconds(20);
@@ -268,8 +268,8 @@ public class GrpcClientProperties {
 		public static class Keepalive {
 
 			/**
-			 * The delay before sending a keepAlive. Note that shorter intervals increase
-			 * the network burden for the server and this value can not be lower than
+			 * Delay before sending a keepAlive. Note that shorter intervals increase the
+			 * network burden for the server, and this value cannot be lower than
 			 * 'permitKeepAliveTime' on the server. If a duration suffix is not specified,
 			 * seconds will be used.
 			 */
@@ -277,8 +277,8 @@ public class GrpcClientProperties {
 			private Duration time = Duration.ofMinutes(5);
 
 			/**
-			 * The default timeout for a keepAlives ping request. If a duration suffix is
-			 * not specified, seconds will be used.
+			 * Default timeout for a keepAlives ping request. If a duration suffix is not
+			 * specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofSeconds(20);
