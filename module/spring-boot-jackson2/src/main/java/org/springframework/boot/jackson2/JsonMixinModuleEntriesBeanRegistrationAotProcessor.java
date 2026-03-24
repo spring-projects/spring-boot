@@ -40,7 +40,7 @@ import org.springframework.javapoet.CodeBlock;
 
 /**
  * {@link BeanRegistrationAotProcessor} that replaces any {@link JsonMixinModuleEntries}
- * by an hard-coded equivalent. This has the effect of disabling scanning at runtime.
+ * by a hard-coded equivalent. This has the effect of disabling scanning at runtime.
  *
  * @author Stephane Nicoll
  * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3
