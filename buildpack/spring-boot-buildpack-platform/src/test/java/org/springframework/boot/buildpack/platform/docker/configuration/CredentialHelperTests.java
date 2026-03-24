@@ -106,7 +106,9 @@ class CredentialHelperTests {
 			.satisfies((ex) -> {
 				if (Platform.isMac()) {
 					assertThat(ex.getMessage()).doesNotContain("/usr/local/bin/");
-					assertThat(ex.getSuppressed()).allSatisfy((suppressed) -> assertThat(suppressed)
+					assertThat(ex.getSuppressed()).anySatisfy((suppressed) -> assertThat(suppressed)
+						.hasMessageContaining("/opt/homebrew/bin/" + executable));
+					assertThat(ex.getSuppressed()).anySatisfy((suppressed) -> assertThat(suppressed)
 						.hasMessageContaining("/usr/local/bin/" + executable));
 				}
 			});
