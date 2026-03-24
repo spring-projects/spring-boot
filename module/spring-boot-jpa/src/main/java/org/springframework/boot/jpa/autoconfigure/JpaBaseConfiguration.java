@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.jpa.autoconfigure.JpaProperties.Bootstrap;
 import org.springframework.boot.persistence.autoconfigure.EntityScanPackages;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
@@ -127,6 +128,10 @@ public abstract class JpaBaseConfiguration {
 		@Nullable AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
+		if (this.properties.getBootstrap() == Bootstrap.ASYNC) {
+			builder.requireBootstrapExecutor(
+					new PropertyBasedRequiredBackgroundBootstrapping("spring.jpa.bootstrap", "async"));
+		}
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}

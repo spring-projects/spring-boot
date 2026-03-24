@@ -67,6 +67,8 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.diagnostics.FailureAnalyzedException;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
@@ -102,6 +104,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
@@ -245,6 +248,59 @@ class HibernateJpaAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					TransactionAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
+	}
+
+	@Test
+	void whenBackgroundBootstrapingAndSingleAsyncTaksExecutorConfiguresBackgroundExecutor() {
+		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
+			.withUserConfiguration(SingleAsyncTaskExecutorConfiguration.class)
+			.run((context) -> assertThat(
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
+				.isInstanceOf(SimpleAsyncTaskExecutor.class));
+	}
+
+	@Test
+	void whenBackgroundBootstrapingAndApplicationTaksExecutorConfiguresBackgroundExecutor() {
+		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
+			.withUserConfiguration(MultipleAsyncTaskExecutorsConfiguration.class,
+					ApplicationTaskExecutorConfiguration.class)
+			.run((context) -> assertThat(
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
+				.isSameAs(context.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)));
+	}
+
+	@Test
+	void whenBackgroundBootstrapingAndMissingTaksExecutorThrowsException() {
+		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(FailureAnalyzedException.class)
+				.message()
+				.contains("bootstrap executor is required when 'spring.jpa.bootstrap' is set to 'async'"));
+	}
+
+	@Test
+	void whenBackgroundBootstrapingAndMultipleTaksExecutorThrowsException() {
+		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
+			.withUserConfiguration(MultipleAsyncTaskExecutorsConfiguration.class)
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(FailureAnalyzedException.class)
+				.message()
+				.contains("bootstrap executor is required when 'spring.jpa.bootstrap' is set to 'async'"));
+	}
+
+	@Test
+	void whenBackgroundBootstrapingAndCustomizedBackgroundExecutorThrowsException() {
+		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
+			.withBean(EntityManagerFactoryBuilderCustomizer.class, this::bootstrapExecutorCustomizer)
+			.run((context) -> assertThat(
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
+				.isInstanceOf(SimpleAsyncTaskExecutor.class));
+	}
+
+	private EntityManagerFactoryBuilderCustomizer bootstrapExecutorCustomizer() {
+		return (builder) -> builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor());
 	}
 
 	@Test
@@ -1379,6 +1435,41 @@ class HibernateJpaAutoConfigurationTests {
 			jtaTransactionManager.setUserTransaction(mock(UserTransaction.class));
 			jtaTransactionManager.setTransactionManager(mock(TransactionManager.class));
 			return jtaTransactionManager;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SingleAsyncTaskExecutorConfiguration {
+
+		@Bean
+		SimpleAsyncTaskExecutor exampleTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleAsyncTaskExecutorsConfiguration {
+
+		@Bean
+		SimpleAsyncTaskExecutor exampleTaskExecutor1() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+		@Bean
+		SimpleAsyncTaskExecutor exampleTaskExecutor2() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApplicationTaskExecutorConfiguration {
+
+		@Bean
+		SimpleAsyncTaskExecutor applicationTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
 		}
 
 	}

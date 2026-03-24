@@ -77,6 +77,11 @@ public class JpaProperties {
 	 */
 	private @Nullable Boolean openInView;
 
+	/**
+	 * Bootstrap method to use.
+	 */
+	private Bootstrap bootstrap = Bootstrap.DEFAULT;
+
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
@@ -127,6 +132,33 @@ public class JpaProperties {
 
 	public void setOpenInView(@Nullable Boolean openInView) {
 		this.openInView = openInView;
+	}
+
+	public Bootstrap getBootstrap() {
+		return this.bootstrap;
+	}
+
+	public void setBootstrap(Bootstrap bootstrap) {
+		this.bootstrap = bootstrap;
+	}
+
+	/**
+	 * Bootstrap methods that can be used with JPA.
+	 */
+	public enum Bootstrap {
+
+		/**
+		 * Default JPA bootstrapping.
+		 */
+		DEFAULT,
+
+		/**
+		 * Asynchronous JPA bootstrapping. The ApplicationContext must either have a
+		 * single AsyncTaskExecutor bean, or an AsyncTaskExecutor bean named
+		 * 'applicationTaskExecutor'.
+		 */
+		ASYNC
+
 	}
 
 }
