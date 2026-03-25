@@ -22,6 +22,7 @@ import java.util.Map;
 
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
@@ -53,6 +54,8 @@ class SecurityService {
 	private final WebClient webClient;
 
 	private final String cloudControllerUrl;
+
+	private volatile @Nullable String uaaUrl;
 
 	SecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
@@ -149,6 +152,10 @@ class SecurityService {
 	 * @return the UAA url Mono
 	 */
 	Mono<String> getUaaUrl() {
+		String uaaUrl = this.uaaUrl;
+		if (uaaUrl != null) {
+			return Mono.just(uaaUrl);
+		}
 		return this.webClient.get()
 			.uri(this.cloudControllerUrl + "/info")
 			.retrieve()
@@ -156,6 +163,7 @@ class SecurityService {
 			.map((response) -> {
 				String tokenEndpoint = (String) response.get("token_endpoint");
 				Assert.state(tokenEndpoint != null, "No 'token_endpoint' found in response");
+				this.uaaUrl = tokenEndpoint;
 				return tokenEndpoint;
 			})
 			.cache()

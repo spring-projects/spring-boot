@@ -213,6 +213,10 @@ class SecurityServiceTests {
 			.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
 			.expectComplete()
 			.verify();
+		StepVerifier.create(this.securityService.getUaaUrl())
+			.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
+			.expectComplete()
+			.verify();
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
 		expectRequestCount(1);
 	}
@@ -226,6 +230,27 @@ class SecurityServiceTests {
 				.isEqualTo(Reason.SERVICE_UNAVAILABLE);
 		}).verify();
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
+	}
+
+	@Test
+	void getUaaUrlShouldRetryAfterFailure() throws Exception {
+		prepareResponse((response) -> response.setResponseCode(500));
+		StepVerifier.create(this.securityService.getUaaUrl()).consumeErrorWith((throwable) -> {
+			assertThat(throwable).isInstanceOf(CloudFoundryAuthorizationException.class);
+			assertThat(((CloudFoundryAuthorizationException) throwable).getReason())
+				.isEqualTo(Reason.SERVICE_UNAVAILABLE);
+		}).verify();
+		prepareResponse((response) -> {
+			response.setBody("{\"token_endpoint\":\"" + UAA_URL + "\"}");
+			response.setHeader("Content-Type", "application/json");
+		});
+		StepVerifier.create(this.securityService.getUaaUrl())
+			.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
+			.expectComplete()
+			.verify();
+		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
+		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
+		expectRequestCount(2);
 	}
 
 	private void prepareResponse(Consumer<MockResponse> consumer) {
