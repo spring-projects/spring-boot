@@ -128,7 +128,7 @@ public @interface SpringBootTest {
 	UseMainMethod useMainMethod() default UseMainMethod.NEVER;
 
 	/**
-	 * An enumeration web environment modes.
+	 * An enumeration of web environment modes.
 	 */
 	enum WebEnvironment {
 
