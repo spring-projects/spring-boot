@@ -53,9 +53,9 @@ public final class GrpcClientObservationAutoConfiguration {
 	@GlobalClientInterceptor
 	@ConditionalOnMissingBean
 	ObservationGrpcClientInterceptor grpcClientObservationInterceptor(ObservationRegistry observationRegistry,
-			ObjectProvider<GrpcClientObservationConvention> GrpcClientObservationConvention) {
+			ObjectProvider<GrpcClientObservationConvention> convention) {
 		ObservationGrpcClientInterceptor interceptor = new ObservationGrpcClientInterceptor(observationRegistry);
-		GrpcClientObservationConvention.ifAvailable(interceptor::setCustomConvention);
+		convention.ifAvailable(interceptor::setCustomConvention);
 		return interceptor;
 	}
 
