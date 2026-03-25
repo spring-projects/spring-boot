@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
@@ -44,7 +45,6 @@ import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
-import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
@@ -61,31 +61,31 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
 		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
+@ConditionalOnClass({ WebSocketMessageBrokerConfigurer.class, DelegatingWebSocketMessageBrokerConfiguration.class })
+@ConditionalOnBean(DelegatingWebSocketMessageBrokerConfiguration.class)
 public final class WebSocketMessagingAutoConfiguration {
 
+	@Bean
+	static LazyInitializationExcludeFilter eagerStompWebSocketHandlerMapping() {
+		return (name, definition, type) -> name.equals("stompWebSocketHandlerMapping");
+	}
+
+	@Bean
+	WebSocketMessageBrokerExecutorConfigurer webSocketMessageBrokerExecutorConfigurer(
+			Map<String, AsyncTaskExecutor> taskExecutors) {
+		return new WebSocketMessageBrokerExecutorConfigurer(taskExecutors);
+	}
+
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, JsonMapper.class })
-	@ConditionalOnClass({ JsonMapper.class, AbstractMessageBrokerConfiguration.class })
+	@ConditionalOnBean(JsonMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
 	@Order(0)
 	static class SpringBootWebSocketMessageBrokerConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		private final JsonMapper jsonMapper;
 
-		private final @Nullable AsyncTaskExecutor executor;
-
-		SpringBootWebSocketMessageBrokerConfiguration(JsonMapper jsonMapper,
-				Map<String, AsyncTaskExecutor> taskExecutors) {
+		SpringBootWebSocketMessageBrokerConfiguration(JsonMapper jsonMapper) {
 			this.jsonMapper = jsonMapper;
-			this.executor = determineAsyncTaskExecutor(taskExecutors);
-		}
-
-		private static @Nullable AsyncTaskExecutor determineAsyncTaskExecutor(
-				Map<String, AsyncTaskExecutor> taskExecutors) {
-			if (taskExecutors.size() == 1) {
-				return taskExecutors.values().iterator().next();
-			}
-			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 		}
 
 		@Override
@@ -98,25 +98,6 @@ public final class WebSocketMessagingAutoConfiguration {
 			converter.setContentTypeResolver(resolver);
 			messageConverters.add(converter);
 			return false;
-		}
-
-		@Override
-		public void configureClientInboundChannel(ChannelRegistration registration) {
-			if (this.executor != null) {
-				registration.executor(this.executor);
-			}
-		}
-
-		@Override
-		public void configureClientOutboundChannel(ChannelRegistration registration) {
-			if (this.executor != null) {
-				registration.executor(this.executor);
-			}
-		}
-
-		@Bean
-		static LazyInitializationExcludeFilter eagerStompWebSocketHandlerMapping() {
-			return (name, definition, type) -> name.equals("stompWebSocketHandlerMapping");
 		}
 
 	}
@@ -187,6 +168,43 @@ public final class WebSocketMessagingAutoConfiguration {
 		@ConditionalOnProperty(name = "spring.websocket.messaging.preferred-json-mapper", havingValue = "jackson2")
 		static class Jackson2Preferred {
 
+		}
+
+	}
+
+	static class WebSocketMessageBrokerExecutorConfigurer implements WebSocketMessageBrokerConfigurer, Ordered {
+
+		private final @Nullable AsyncTaskExecutor executor;
+
+		WebSocketMessageBrokerExecutorConfigurer(Map<String, AsyncTaskExecutor> taskExecutors) {
+			this.executor = determineAsyncTaskExecutor(taskExecutors);
+		}
+
+		private static @Nullable AsyncTaskExecutor determineAsyncTaskExecutor(
+				Map<String, AsyncTaskExecutor> taskExecutors) {
+			if (taskExecutors.size() == 1) {
+				return taskExecutors.values().iterator().next();
+			}
+			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		}
+
+		@Override
+		public void configureClientInboundChannel(ChannelRegistration registration) {
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
+		}
+
+		@Override
+		public void configureClientOutboundChannel(ChannelRegistration registration) {
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}
