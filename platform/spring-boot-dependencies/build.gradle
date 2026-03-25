@@ -31,7 +31,11 @@ bom {
 			]
 		}
 	}
-	library("ActiveMQ", "6.2.2") {
+	library("ActiveMQ", "6.2.1") {
+		prohibit {
+			versionRange "[6.2.2]"
+			because "it contains a regression on Windows (https://github.com/apache/activemq/issues/1830)"
+		}
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-console",
