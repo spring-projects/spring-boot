@@ -213,6 +213,10 @@ class SecurityServiceTests {
 			.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
 			.expectComplete()
 			.verify();
+		prepareResponse((response) -> {
+			response.setBody("{\"token_endpoint\":\"" + UAA_URL + "\"}");
+			response.setHeader("Content-Type", "application/json");
+		});
 		StepVerifier.create(this.securityService.getUaaUrl())
 			.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL))
 			.expectComplete()

@@ -22,7 +22,6 @@ import java.util.Map;
 
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
@@ -55,7 +54,7 @@ class SecurityService {
 
 	private final String cloudControllerUrl;
 
-	private volatile @Nullable String uaaUrl;
+	private final Mono<String> uaaUrl;
 
 	SecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
@@ -65,6 +64,18 @@ class SecurityService {
 		}
 		this.webClient = webClientBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
+		this.uaaUrl = this.webClient.get()
+			.uri(this.cloudControllerUrl + "/info")
+			.retrieve()
+			.bodyToMono(Map.class)
+			.map((response) -> {
+				String tokenEndpoint = (String) response.get("token_endpoint");
+				Assert.state(tokenEndpoint != null, "No 'token_endpoint' found in response");
+				return tokenEndpoint;
+			})
+			.cacheInvalidateIf((token) -> false)
+			.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+					"Unable to fetch token keys from UAA."));
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
@@ -152,23 +163,7 @@ class SecurityService {
 	 * @return the UAA url Mono
 	 */
 	Mono<String> getUaaUrl() {
-		String uaaUrl = this.uaaUrl;
-		if (uaaUrl != null) {
-			return Mono.just(uaaUrl);
-		}
-		return this.webClient.get()
-			.uri(this.cloudControllerUrl + "/info")
-			.retrieve()
-			.bodyToMono(Map.class)
-			.map((response) -> {
-				String tokenEndpoint = (String) response.get("token_endpoint");
-				Assert.state(tokenEndpoint != null, "No 'token_endpoint' found in response");
-				this.uaaUrl = tokenEndpoint;
-				return tokenEndpoint;
-			})
-			.cache()
-			.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
-					"Unable to fetch token keys from UAA."));
+		return this.uaaUrl;
 	}
 
 }
