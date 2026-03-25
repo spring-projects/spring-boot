@@ -74,7 +74,7 @@ public class EntityManagerFactoryBuilder {
 
 	private @Nullable List<PersistenceUnitPostProcessor> persistenceUnitPostProcessors;
 
-	private @Nullable Supplier<? extends RuntimeException> requireBootstrapExecutorExceptionSupplier;
+	private @Nullable Supplier<@Nullable ? extends RuntimeException> requireBootstrapExecutorExceptionSupplier;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -161,7 +161,7 @@ public class EntityManagerFactoryBuilder {
 	 * @param exceptionSupplier a supplier providing the exception to throw
 	 * @since 4.1.0
 	 */
-	public void requireBootstrapExecutor(Supplier<? extends RuntimeException> exceptionSupplier) {
+	public void requireBootstrapExecutor(Supplier<@Nullable ? extends RuntimeException> exceptionSupplier) {
 		Assert.notNull(exceptionSupplier, "'exceptionSupplier' must not be null");
 		this.requireBootstrapExecutorExceptionSupplier = exceptionSupplier;
 	}
