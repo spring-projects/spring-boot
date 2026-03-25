@@ -120,6 +120,7 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
@@ -459,6 +460,39 @@ class WebFluxAutoConfigurationTests {
 	void hiddenHttpMethodFilterCanBeEnabled() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
 			.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	void defaultHtmlEscapeIsNotConfiguredByDefault() {
+		this.contextRunner.run((context) -> {
+			WebHttpHandlerBuilderCustomizer customizer = context.getBean("defaultHtmlEscapeCustomizer",
+					WebHttpHandlerBuilderCustomizer.class);
+			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(mock(WebHandler.class));
+			customizer.customize(builder);
+			assertThat(builder.getDefaultHtmlEscape()).isNull();
+		});
+	}
+
+	@Test
+	void defaultHtmlEscapeCanBeEnabled() {
+		this.contextRunner.withPropertyValues("spring.webflux.default-html-escape=true").run((context) -> {
+			WebHttpHandlerBuilderCustomizer customizer = context.getBean("defaultHtmlEscapeCustomizer",
+					WebHttpHandlerBuilderCustomizer.class);
+			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(mock(WebHandler.class));
+			customizer.customize(builder);
+			assertThat(builder.getDefaultHtmlEscape()).isTrue();
+		});
+	}
+
+	@Test
+	void defaultHtmlEscapeCanBeDisabled() {
+		this.contextRunner.withPropertyValues("spring.webflux.default-html-escape=false").run((context) -> {
+			WebHttpHandlerBuilderCustomizer customizer = context.getBean("defaultHtmlEscapeCustomizer",
+					WebHttpHandlerBuilderCustomizer.class);
+			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(mock(WebHandler.class));
+			customizer.customize(builder);
+			assertThat(builder.getDefaultHtmlEscape()).isFalse();
+		});
 	}
 
 	@Test
