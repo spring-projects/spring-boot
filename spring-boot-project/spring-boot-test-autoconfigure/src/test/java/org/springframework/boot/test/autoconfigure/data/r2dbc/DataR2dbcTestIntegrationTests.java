@@ -25,6 +25,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -70,6 +72,13 @@ class DataR2dbcTestIntegrationTests {
 	@Test
 	void serviceConnectionAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
+	}
+
+	@Test
+	void transactionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(TransactionAutoConfiguration.class));
+		assertThat(this.applicationContext)
+			.has(importedAutoConfiguration(TransactionManagerCustomizationAutoConfiguration.class));
 	}
 
 }

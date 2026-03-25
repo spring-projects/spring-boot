@@ -23,6 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -76,6 +78,13 @@ class DataMongoTestIntegrationTests {
 	@Test
 	void serviceConnectionAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
+	}
+
+	@Test
+	void transactionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(TransactionAutoConfiguration.class));
+		assertThat(this.applicationContext)
+			.has(importedAutoConfiguration(TransactionManagerCustomizationAutoConfiguration.class));
 	}
 
 }

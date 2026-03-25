@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.ExampleComponent;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -89,6 +91,13 @@ class JooqTestIntegrationTests {
 	@Test
 	void serviceConnectionAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(ServiceConnectionAutoConfiguration.class));
+	}
+
+	@Test
+	void transactionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(TransactionAutoConfiguration.class));
+		assertThat(this.applicationContext)
+			.has(importedAutoConfiguration(TransactionManagerCustomizationAutoConfiguration.class));
 	}
 
 }
