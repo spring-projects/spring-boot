@@ -113,13 +113,12 @@ class ProcessRunner {
 		catch (IOException ex) {
 			String path = processBuilder.environment().get("PATH");
 			if (MAC_OS && path != null) {
-				String commandName = getCommandName(command[0]);
 				for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
 					if (path.contains(binDirectory) || command[0].startsWith(binDirectory + "/")) {
 						continue;
 					}
 					String[] localCommand = command.clone();
-					localCommand[0] = binDirectory + "/" + commandName;
+					localCommand[0] = binDirectory + "/" + command[0];
 					ProcessBuilder localProcessBuilder = new ProcessBuilder(localCommand);
 					localProcessBuilder.directory(this.workingDirectory);
 					try {
@@ -132,11 +131,6 @@ class ProcessRunner {
 			}
 			throw new ProcessStartException(command, ex);
 		}
-	}
-
-	private String getCommandName(String command) {
-		int lastSlash = command.lastIndexOf('/');
-		return (lastSlash != -1) ? command.substring(lastSlash + 1) : command;
 	}
 
 	private int waitForProcess(Process process) {

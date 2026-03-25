@@ -96,27 +96,23 @@ class CredentialHelper {
 			if (!Platform.isMac()) {
 				throw ex;
 			}
-			String executableName = getExecutableName(processBuilder.command().get(0));
+			String executable = processBuilder.command().get(0);
 			for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
 				try {
 					List<String> command = new ArrayList<>(processBuilder.command());
-					if (command.get(0).startsWith(binDirectory)) {
+					if (executable.startsWith(binDirectory)) {
 						continue;
 					}
-					command.set(0, binDirectory + executableName);
+					command.set(0, binDirectory + executable);
 					return processBuilder.command(command).start();
 				}
 				catch (Exception suppressed) {
+					// Suppresses the exception and rethrows the original exception
 					ex.addSuppressed(suppressed);
 				}
 			}
 			throw ex;
 		}
-	}
-
-	private String getExecutableName(String executable) {
-		int lastSlash = executable.lastIndexOf('/');
-		return (lastSlash != -1) ? executable.substring(lastSlash + 1) : executable;
 	}
 
 	private static boolean isCredentialsNotFoundError(String message) {

@@ -77,13 +77,12 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		catch (Exception ex) {
 			String path = processBuilder.environment().get("PATH");
 			if (MAC_OS && path != null) {
-				String commandName = getCommandName(command[0]);
 				for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
 					if (path.contains(binDirectory) || command[0].startsWith(binDirectory + "/")) {
 						continue;
 					}
 					String[] localCommand = command.clone();
-					localCommand[0] = binDirectory + "/" + commandName;
+					localCommand[0] = binDirectory + "/" + command[0];
 					try {
 						check(new ProcessBuilder(localCommand));
 						return;
@@ -102,11 +101,6 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		Assert.state(process.waitFor(30, TimeUnit.SECONDS), "Process did not exit within 30 seconds");
 		Assert.state(process.exitValue() == 0, () -> "Process exited with %d".formatted(process.exitValue()));
 		process.destroy();
-	}
-
-	private String getCommandName(String command) {
-		int lastSlash = command.lastIndexOf('/');
-		return (lastSlash != -1) ? command.substring(lastSlash + 1) : command;
 	}
 
 }
