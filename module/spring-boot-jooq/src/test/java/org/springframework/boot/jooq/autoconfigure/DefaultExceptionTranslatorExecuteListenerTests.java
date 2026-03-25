@@ -93,6 +93,7 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 		return context;
 	}
 
+	@SuppressWarnings({ "deprecation", "removal" })
 	static Object[] exceptionTranslatesSqlExceptions() {
 		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802") },
 				new Object[] { SQLDialect.DERBY, new SQLSyntaxErrorException() },

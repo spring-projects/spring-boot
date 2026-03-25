@@ -47,6 +47,7 @@ class SqlDialectLookupTests {
 	}
 
 	@Test
+	@SuppressWarnings({ "deprecation", "removal" })
 	void getSqlDialectWhenDerbyShouldReturnDerby() throws Exception {
 		testGetSqlDialect("jdbc:derby:", SQLDialect.DERBY);
 	}
