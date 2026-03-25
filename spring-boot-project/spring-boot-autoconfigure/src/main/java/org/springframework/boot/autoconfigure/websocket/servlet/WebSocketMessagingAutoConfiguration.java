@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
@@ -39,7 +40,6 @@ import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
-import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
@@ -55,30 +55,31 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
+@ConditionalOnClass({ WebSocketMessageBrokerConfigurer.class, DelegatingWebSocketMessageBrokerConfiguration.class })
+@ConditionalOnBean(DelegatingWebSocketMessageBrokerConfiguration.class)
 public class WebSocketMessagingAutoConfiguration {
 
+	@Bean
+	static LazyInitializationExcludeFilter eagerStompWebSocketHandlerMapping() {
+		return (name, definition, type) -> name.equals("stompWebSocketHandlerMapping");
+	}
+
+	@Bean
+	WebSocketMessageBrokerExecutorConfigurer webSocketMessageBrokerExecutorConfigurer(
+			Map<String, AsyncTaskExecutor> taskExecutors) {
+		return new WebSocketMessageBrokerExecutorConfigurer(taskExecutors);
+	}
+
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
-	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
+	@ConditionalOnBean(ObjectMapper.class)
+	@ConditionalOnClass(ObjectMapper.class)
 	@Order(0)
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		private final ObjectMapper objectMapper;
 
-		private final AsyncTaskExecutor executor;
-
-		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
-				Map<String, AsyncTaskExecutor> taskExecutors) {
+		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
 			this.objectMapper = objectMapper;
-			this.executor = determineAsyncTaskExecutor(taskExecutors);
-		}
-
-		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
-			if (taskExecutors.size() == 1) {
-				return taskExecutors.values().iterator().next();
-			}
-			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 		}
 
 		@Override
@@ -91,6 +92,23 @@ public class WebSocketMessagingAutoConfiguration {
 			messageConverters.add(new ByteArrayMessageConverter());
 			messageConverters.add(converter);
 			return false;
+		}
+
+	}
+
+	static class WebSocketMessageBrokerExecutorConfigurer implements WebSocketMessageBrokerConfigurer, Ordered {
+
+		private final AsyncTaskExecutor executor;
+
+		WebSocketMessageBrokerExecutorConfigurer(Map<String, AsyncTaskExecutor> taskExecutors) {
+			this.executor = determineAsyncTaskExecutor(taskExecutors);
+		}
+
+		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+			if (taskExecutors.size() == 1) {
+				return taskExecutors.values().iterator().next();
+			}
+			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 		}
 
 		@Override
@@ -107,9 +125,9 @@ public class WebSocketMessagingAutoConfiguration {
 			}
 		}
 
-		@Bean
-		static LazyInitializationExcludeFilter eagerStompWebSocketHandlerMapping() {
-			return (name, definition, type) -> name.equals("stompWebSocketHandlerMapping");
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}
