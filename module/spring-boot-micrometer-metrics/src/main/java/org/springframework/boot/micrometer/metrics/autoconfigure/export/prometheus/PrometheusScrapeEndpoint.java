@@ -64,7 +64,7 @@ public class PrometheusScrapeEndpoint {
 		this.prometheusRegistry = prometheusRegistry;
 		PrometheusProperties prometheusProperties = (exporterProperties != null)
 				? PrometheusPropertiesLoader.load(exporterProperties) : PrometheusPropertiesLoader.load();
-		this.expositionFormats = ExpositionFormats.init(prometheusProperties.getExporterProperties());
+		this.expositionFormats = ExpositionFormats.init(prometheusProperties);
 	}
 
 	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
