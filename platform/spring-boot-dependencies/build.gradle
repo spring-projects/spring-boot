@@ -1929,7 +1929,7 @@ bom {
 			releaseNotes("https://github.com/googleapis/sdk-platform-java/releases/tag/v-{version}")
 		}
 	}
-	library("Protobuf Java", "4.34.0") {
+	library("Protobuf Java", "4.34.1") {
 		group("com.google.protobuf") {
 			bom("protobuf-bom")
 		}
