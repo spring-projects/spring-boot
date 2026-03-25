@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -35,6 +36,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -165,10 +167,10 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	}
 
-	static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
+	static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor, Ordered {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName) {
+		public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof DataSource) {
 				bean = spy(bean);
 			}
@@ -176,8 +178,8 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) {
-			return bean;
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
 		}
 
 	}
