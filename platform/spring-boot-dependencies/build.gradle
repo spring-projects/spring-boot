@@ -562,7 +562,7 @@ bom {
 			site("https://groovy-lang.org")
 		}
 	}
-	library("Grpc Java", "1.78.0") {
+	library("Grpc Java", "1.80.0") {
 		group("io.grpc") {
 			bom("grpc-bom")
 		}
