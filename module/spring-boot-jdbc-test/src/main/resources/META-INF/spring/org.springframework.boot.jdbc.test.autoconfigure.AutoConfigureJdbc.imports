@@ -3,4 +3,5 @@ org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConf
 org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration
 org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

@@ -4,4 +4,5 @@ org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jReactiveRepositoriesA
 org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jRepositoriesAutoConfiguration
 org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration
 org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

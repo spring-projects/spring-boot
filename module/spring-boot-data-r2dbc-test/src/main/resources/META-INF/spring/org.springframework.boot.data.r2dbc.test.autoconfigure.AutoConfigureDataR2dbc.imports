@@ -4,4 +4,5 @@ org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcTransactionManagerAutoConfiguration
 org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
