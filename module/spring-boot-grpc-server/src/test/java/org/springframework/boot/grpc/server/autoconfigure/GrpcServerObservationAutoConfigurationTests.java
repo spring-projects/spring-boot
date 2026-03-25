@@ -22,6 +22,7 @@ import java.util.Map;
 import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
 import io.micrometer.context.ContextRegistry;
+import io.micrometer.core.instrument.binder.grpc.GrpcServerObservationConvention;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerInterceptor;
 import io.micrometer.core.instrument.kotlin.ObservationCoroutineContextServerInterceptor;
 import io.micrometer.observation.ObservationRegistry;
@@ -35,6 +36,7 @@ import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.GrpcServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for the {@link GrpcServerObservationAutoConfiguration}.
@@ -121,6 +123,14 @@ class GrpcServerObservationAutoConfigurationTests {
 			assertThat(annotated).hasSize(2);
 			assertThat(interceptors.get(0)).isInstanceOf(ObservationGrpcServerInterceptor.class);
 		});
+	}
+
+	@Test
+	void whenCustomConventionBeanIsPresentThenInterceptorUsesIt() {
+		GrpcServerObservationConvention customConvention = mock(GrpcServerObservationConvention.class);
+		this.contextRunner.withBean(GrpcServerObservationConvention.class, () -> customConvention)
+			.run((context) -> assertThat(context.getBean(ObservationGrpcServerInterceptor.class))
+				.hasFieldOrPropertyWithValue("customConvention", customConvention));
 	}
 
 	@Test
