@@ -49,7 +49,8 @@ class ConstructorParameterPropertyDescriptor extends ParameterPropertyDescriptor
 
 	@Override
 	protected boolean isMarkedAsNested(MetadataGenerationEnvironment environment) {
-		return environment.getNestedConfigurationPropertyAnnotation(this.field) != null;
+		return environment.getNestedConfigurationPropertyAnnotation(this.field) != null
+				|| environment.getNestedConfigurationPropertyAnnotation(getGetter()) != null;
 	}
 
 	@Override

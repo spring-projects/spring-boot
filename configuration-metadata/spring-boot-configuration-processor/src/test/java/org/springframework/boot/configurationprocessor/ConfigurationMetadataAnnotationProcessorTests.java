@@ -33,6 +33,7 @@ import org.springframework.boot.configurationprocessor.test.CompiledMetadataRead
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.deprecation.Dbcp2Configuration;
 import org.springframework.boot.configurationsample.method.NestedPropertiesMethod;
+import org.springframework.boot.configurationsample.method.NestedPropertiesMethodImmutable;
 import org.springframework.boot.configurationsample.record.ExampleRecord;
 import org.springframework.boot.configurationsample.record.NestedPropertiesRecord;
 import org.springframework.boot.configurationsample.record.RecordWithGetter;
@@ -427,6 +428,13 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("method-nested.nested.my-nested-property"));
 		assertThat(metadata).has(Metadata.withGroup("method-nested.inner.nested"));
 		assertThat(metadata).has(Metadata.withProperty("method-nested.inner.nested.my-nested-property"));
+	}
+
+	@Test
+	void nestedClassMethodImmutable() {
+		ConfigurationMetadata metadata = compile(NestedPropertiesMethodImmutable.class);
+		assertThat(metadata).has(Metadata.withGroup("immutable-nested.nested"));
+		assertThat(metadata).has(Metadata.withProperty("immutable-nested.nested.my-nested-property"));
 	}
 
 	@Test
