@@ -71,41 +71,16 @@ public final class WebSocketMessagingAutoConfiguration {
 	}
 
 	@Bean
-	WebSocketMessageBrokerExecutorConfigurer webSocketMessageBrokerExecutorConfigurer(
+	SpringBootWebSocketMessageBrokerConfigurer springBootWebSocketMessageBrokerConfigurer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
-		return new WebSocketMessageBrokerExecutorConfigurer(taskExecutors);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(JsonMapper.class)
-	@ConditionalOnClass(JsonMapper.class)
-	@Order(0)
-	static class SpringBootWebSocketMessageBrokerConfiguration implements WebSocketMessageBrokerConfigurer {
-
-		private final JsonMapper jsonMapper;
-
-		SpringBootWebSocketMessageBrokerConfiguration(JsonMapper jsonMapper) {
-			this.jsonMapper = jsonMapper;
-		}
-
-		@Override
-		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			messageConverters.add(new StringMessageConverter());
-			messageConverters.add(new ByteArrayMessageConverter());
-			JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(this.jsonMapper);
-			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
-			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
-			converter.setContentTypeResolver(resolver);
-			messageConverters.add(converter);
-			return false;
-		}
-
+		return new SpringBootWebSocketMessageBrokerConfigurer(taskExecutors);
 	}
 
 	@Order(1)
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = "spring.websocket.messaging.preferred-json-mapper", havingValue = "jackson",
 			matchIfMissing = true)
+	@ConditionalOnBean(JsonMapper.class)
 	@ConditionalOnClass(JsonMapper.class)
 	static class JacksonWebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
@@ -132,6 +107,7 @@ public final class WebSocketMessagingAutoConfiguration {
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	@Conditional(NoJacksonOrJackson2Preferred.class)
+	@ConditionalOnBean(ObjectMapper.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class Jackson2WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
@@ -172,11 +148,11 @@ public final class WebSocketMessagingAutoConfiguration {
 
 	}
 
-	static class WebSocketMessageBrokerExecutorConfigurer implements WebSocketMessageBrokerConfigurer, Ordered {
+	static class SpringBootWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer, Ordered {
 
 		private final @Nullable AsyncTaskExecutor executor;
 
-		WebSocketMessageBrokerExecutorConfigurer(Map<String, AsyncTaskExecutor> taskExecutors) {
+		SpringBootWebSocketMessageBrokerConfigurer(Map<String, AsyncTaskExecutor> taskExecutors) {
 			this.executor = determineAsyncTaskExecutor(taskExecutors);
 		}
 
@@ -186,6 +162,13 @@ public final class WebSocketMessagingAutoConfiguration {
 				return taskExecutors.values().iterator().next();
 			}
 			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		}
+
+		@Override
+		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+			messageConverters.add(new StringMessageConverter());
+			messageConverters.add(new ByteArrayMessageConverter());
+			return false;
 		}
 
 		@Override

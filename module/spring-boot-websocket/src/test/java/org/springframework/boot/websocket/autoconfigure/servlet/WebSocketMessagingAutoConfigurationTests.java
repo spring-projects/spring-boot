@@ -17,7 +17,6 @@
 package org.springframework.boot.websocket.autoconfigure.servlet;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -51,8 +49,7 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.JacksonWebSocketMessageConverterConfiguration;
-import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.SpringBootWebSocketMessageBrokerConfiguration;
-import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageBrokerExecutorConfigurer;
+import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.SpringBootWebSocketMessageBrokerConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -119,6 +116,7 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@Test
 	void basicMessagingWithJsonResponse() throws Throwable {
+		this.context.register(JacksonAutoConfiguration.class);
 		Object result = performStompSubscription("/app/json");
 		JSONAssert.assertEquals("{\"foo\" : 5,\"bar\" : \"baz\"}", new String((byte[]) result), true);
 	}
@@ -138,7 +136,10 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@Test
 	void customizedConverterTypesMatchDefaultConverterTypes() {
-		List<MessageConverter> customizedConverters = getCustomizedConverters();
+		this.context.register(WebSocketMessagingConfiguration.class, JacksonAutoConfiguration.class);
+		this.context.refresh();
+		List<MessageConverter> customizedConverters = getConverters(
+				this.context.getBean(DelegatingWebSocketMessageBrokerConfiguration.class));
 		List<MessageConverter> defaultConverters = getDefaultConverters();
 		assertThat(customizedConverters).hasSameSizeAs(defaultConverters);
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
@@ -202,13 +203,11 @@ class WebSocketMessagingAutoConfigurationTests {
 		assertThat(delegatingConfiguration).extracting("configurers")
 			.asInstanceOf(InstanceOfAssertFactories.LIST)
 			.satisfies((configurers) -> {
-				assertThat(configurers).hasSize(6);
+				assertThat(configurers).hasSize(5);
 				assertThat(configurers).first().isInstanceOf(CustomHighWebSocketMessageBrokerConfigurer.class);
-				assertThat((List<Object>) configurers.subList(1, 3)).contains(
-						this.context.getBean(SpringBootWebSocketMessageBrokerConfiguration.class),
-						this.context.getBean(WebSocketMessageBrokerExecutorConfigurer.class));
-				assertThat(configurers.get(3)).isInstanceOf(JacksonWebSocketMessageConverterConfiguration.class);
-				assertThat((List<Object>) configurers.subList(4, 6)).contains(
+				assertThat(configurers.get(1)).isInstanceOf(SpringBootWebSocketMessageBrokerConfigurer.class);
+				assertThat(configurers.get(2)).isInstanceOf(JacksonWebSocketMessageConverterConfiguration.class);
+				assertThat((List<Object>) configurers.subList(3, 5)).contains(
 						this.context.getBean(WebSocketMessagingConfiguration.class),
 						this.context.getBean(CustomLowWebSocketMessageBrokerConfigurer.class));
 			});
@@ -234,26 +233,39 @@ class WebSocketMessagingAutoConfigurationTests {
 	@SuppressWarnings("removal")
 	@ClassPathExclusions("jackson-*-3*")
 	void shouldUseJackson2WhenJacksonIsMissing() {
-		TestPropertyValues.of("server.port:0").applyTo(this.context);
-		this.context.register(WebSocketMessagingConfiguration.class, CustomLowWebSocketMessageBrokerConfigurer.class,
-				CustomHighWebSocketMessageBrokerConfigurer.class);
+		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.registerBean(ObjectMapper.class);
 		this.context.refresh();
-		assertThat(AssertableApplicationContext.get(() -> this.context)).hasSingleBean(
-				org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.Jackson2WebSocketMessageConverterConfiguration.class)
+		assertThat(AssertableApplicationContext.get(() -> this.context))
+			.hasSingleBean(WebSocketMessagingAutoConfiguration.Jackson2WebSocketMessageConverterConfiguration.class)
 			.doesNotHaveBean(JacksonWebSocketMessageConverterConfiguration.class);
 	}
 
-	private List<MessageConverter> getCustomizedConverters() {
-		List<MessageConverter> customizedConverters = new ArrayList<>();
-		WebSocketMessagingAutoConfiguration.SpringBootWebSocketMessageBrokerConfiguration configuration = new WebSocketMessagingAutoConfiguration.SpringBootWebSocketMessageBrokerConfiguration(
-				new JsonMapper());
-		configuration.configureMessageConverters(customizedConverters);
-		return customizedConverters;
+	@Test
+	@Deprecated(since = "4.0.4", forRemoval = true)
+	@SuppressWarnings("removal")
+	@ClassPathExclusions("jackson-*-3*")
+	void jackson2ConfigurationShouldBackOffWhenThereIsNoObjectMapperBean() {
+		this.context.register(WebSocketMessagingConfiguration.class);
+		this.context.refresh();
+		assertThat(AssertableApplicationContext.get(() -> this.context))
+			.doesNotHaveBean(WebSocketMessagingAutoConfiguration.Jackson2WebSocketMessageConverterConfiguration.class)
+			.doesNotHaveBean(JacksonWebSocketMessageConverterConfiguration.class);
+	}
+
+	@Test
+	void jacksonConfigurationShouldBackOffWhenThereIsNoJsonMapperBean() {
+		this.context.register(WebSocketMessagingConfiguration.class);
+		this.context.refresh();
+		assertThat(AssertableApplicationContext.get(() -> this.context))
+			.doesNotHaveBean(JacksonWebSocketMessageConverterConfiguration.class);
 	}
 
 	private List<MessageConverter> getDefaultConverters() {
-		DelegatingWebSocketMessageBrokerConfiguration configuration = new DelegatingWebSocketMessageBrokerConfiguration();
+		return getConverters(new DelegatingWebSocketMessageBrokerConfiguration());
+	}
+
+	private List<MessageConverter> getConverters(DelegatingWebSocketMessageBrokerConfiguration configuration) {
 		CompositeMessageConverter compositeDefaultConverter = configuration.brokerMessageConverter();
 		return compositeDefaultConverter.getConverters();
 	}
@@ -325,8 +337,8 @@ class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
-			WebSocketMessagingAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
+	@ImportAutoConfiguration({ TomcatServletWebServerAutoConfiguration.class, WebSocketMessagingAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		@Override
