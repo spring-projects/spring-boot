@@ -22,7 +22,7 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.boot.configurationmetadata.Deprecation.Level;
 
 /**
- * A difference the metadata.
+ * A difference in the metadata.
  *
  * @param type the type of the difference
  * @param oldProperty the old property

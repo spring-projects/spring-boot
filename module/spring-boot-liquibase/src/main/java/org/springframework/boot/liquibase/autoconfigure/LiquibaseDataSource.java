@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Qualifier annotation for a DataSource to be injected in to Liquibase. If used for a
+ * Qualifier annotation for a DataSource to be injected into Liquibase. If used for a
  * second data source, the other (main) one would normally be marked as {@code @Primary}.
  *
  * @author Eddú Meléndez

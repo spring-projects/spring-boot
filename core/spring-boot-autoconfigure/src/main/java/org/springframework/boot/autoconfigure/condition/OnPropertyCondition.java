@@ -40,7 +40,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Condition} that checks if properties are defined in environment.
+ * {@link Condition} that checks if properties are defined in the environment.
  *
  * @author Maciej Walkowiak
  * @author Phillip Webb

@@ -37,7 +37,7 @@ public interface Operation {
 	 * Invoke the underlying operation using the given {@code context}. Results intended
 	 * to be returned in the body of the response should additionally implement
 	 * {@link OperationResponseBody}.
-	 * @param context the context in to use when invoking the operation
+	 * @param context the context to use when invoking the operation
 	 * @return the result of the operation, may be {@code null}
 	 */
 	@Nullable Object invoke(InvocationContext context);
