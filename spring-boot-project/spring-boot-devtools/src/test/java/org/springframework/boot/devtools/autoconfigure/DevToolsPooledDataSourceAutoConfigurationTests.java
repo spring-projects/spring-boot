@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -135,7 +136,8 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 		try (ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:test;create=true",
 						DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
-			HikariDataSource dataSource = context.getBean(HikariDataSource.class);
+			HikariDataSource dataSource = DataSourceUnwrapper.unwrap(context.getBean(DataSource.class),
+					HikariDataSource.class);
 			JdbcTemplate jdbc = new JdbcTemplate(dataSource);
 			jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 			HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
