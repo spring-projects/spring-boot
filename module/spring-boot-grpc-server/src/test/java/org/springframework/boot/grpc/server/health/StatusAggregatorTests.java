@@ -18,7 +18,6 @@ package org.springframework.boot.grpc.server.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;

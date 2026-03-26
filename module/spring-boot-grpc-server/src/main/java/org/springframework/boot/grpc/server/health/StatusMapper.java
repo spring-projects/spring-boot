@@ -34,10 +34,10 @@ import org.springframework.util.CollectionUtils;
 public interface StatusMapper {
 
 	/**
-	 * Return the HTTP status code that corresponds to the given {@link Status health
+	 * Return the gRPC serving status that corresponds to the given {@link Status health
 	 * status}.
 	 * @param status the health status to map
-	 * @return the corresponding HTTP status code
+	 * @return the corresponding gRPC serving status
 	 */
 	ServingStatus getServingStatus(Status status);
 

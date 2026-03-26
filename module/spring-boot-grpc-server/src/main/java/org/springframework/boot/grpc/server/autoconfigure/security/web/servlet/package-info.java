@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for gRPC web security when using a reactive stack.
+ * Auto-configuration for gRPC web security when using a servlet stack.
  */
 @NullMarked
 package org.springframework.boot.grpc.server.autoconfigure.security.web.servlet;

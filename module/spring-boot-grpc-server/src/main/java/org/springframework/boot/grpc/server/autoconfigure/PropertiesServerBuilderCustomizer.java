@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.ServerBuilder;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -33,7 +32,7 @@ import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ServerBuilderCustomizer} that maps {@link GrpcServerProperties} to a
- * {@link ManagedChannelBuilder}.
+ * {@link ServerBuilder}.
  *
  * @param <T> the type of server builder
  * @param properties the properties to map

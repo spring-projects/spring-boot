@@ -28,7 +28,7 @@ import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Address {@link GrpcServerFactory} address.
+ * Represents the network address for a {@link GrpcServerFactory}.
  *
  * @author Phillip Webb
  * @param transport the transport to use

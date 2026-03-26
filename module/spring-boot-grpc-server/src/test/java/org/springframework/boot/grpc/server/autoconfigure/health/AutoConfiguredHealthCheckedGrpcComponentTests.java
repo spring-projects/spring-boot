@@ -51,7 +51,7 @@ class AutoConfiguredHealthCheckedGrpcComponentTests {
 	}
 
 	@Test
-	void isMemberWhenMembershipRejectsReturnsTrue() {
+	void isMemberWhenMembershipRejectsReturnsFalse() {
 		AutoConfiguredHealthCheckedGrpcComponent component = new AutoConfiguredHealthCheckedGrpcComponent(
 				(name) -> name.startsWith("a"), this.statusAggregator, this.statusMapper);
 		assertThat(component.isMember("bert")).isFalse();
@@ -66,7 +66,7 @@ class AutoConfiguredHealthCheckedGrpcComponentTests {
 	}
 
 	@Test
-	void getStatusMapperReturnsHttpCodeStatusMapper() {
+	void getStatusMapperReturnsStatusMapper() {
 		AutoConfiguredHealthCheckedGrpcComponent component = new AutoConfiguredHealthCheckedGrpcComponent(
 				(name) -> true, this.statusAggregator, this.statusMapper);
 		assertThat(component.getStatusMapper()).isSameAs(this.statusMapper);

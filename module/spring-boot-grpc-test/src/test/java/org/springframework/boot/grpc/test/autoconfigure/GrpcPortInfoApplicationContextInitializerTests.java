@@ -70,10 +70,10 @@ class GrpcPortInfoApplicationContextInitializerTests {
 	private void testListener(GrpcServerFactory factory, int port, @Nullable String expected) {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Config.class)) {
 			context.getBean(GrpcPortInfoApplicationContextInitializer.class).initialize(context);
-			GrpcServerLifecycle lifecyle = mock();
+			GrpcServerLifecycle lifecycle = mock();
 			Server server = mock();
-			given(lifecyle.getFactory()).willReturn(factory);
-			GrpcServerStartedEvent event = new GrpcServerStartedEvent(lifecyle, server, "localhost", port);
+			given(lifecycle.getFactory()).willReturn(factory);
+			GrpcServerStartedEvent event = new GrpcServerStartedEvent(lifecycle, server, "localhost", port);
 			context.publishEvent(event);
 			assertThat(context.getEnvironment().getProperty(PORT_PROPERTY)).isEqualTo(expected);
 		}

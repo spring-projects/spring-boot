@@ -85,7 +85,7 @@ class PropertiesChannelCredentialsProviderTests {
 	}
 
 	@Test
-	void getChannelCredentialsWhenSslExplictlyDisabled() {
+	void getChannelCredentialsWhenSslExplicitlyDisabled() {
 		GrpcClientProperties properties = new GrpcClientProperties();
 		Channel channelProperties = new Channel();
 		channelProperties.getSsl().setEnabled(false);
@@ -97,7 +97,7 @@ class PropertiesChannelCredentialsProviderTests {
 	}
 
 	@Test
-	void getChannelCredentialsWhenSslExplictlyEnabledAndNoBundle() {
+	void getChannelCredentialsWhenSslExplicitlyEnabledAndNoBundle() {
 		GrpcClientProperties properties = new GrpcClientProperties();
 		Channel channelProperties = new Channel();
 		channelProperties.getSsl().setEnabled(true);

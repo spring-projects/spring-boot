@@ -42,7 +42,7 @@ import org.springframework.grpc.server.GrpcServerFactory;
  * @author Chris Bono
  * @author Dave Syer
  * @author Andrey Litvitski
- * @since 1.0.0
+ * @since 4.1.0
  */
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")

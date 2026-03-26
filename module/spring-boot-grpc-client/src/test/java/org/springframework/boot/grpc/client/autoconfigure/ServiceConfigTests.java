@@ -201,7 +201,7 @@ class ServiceConfigTests {
 			  - pickfirst: {}
 			    weightedroundrobin: {}
 			""")
-	void whenMultileLoadBalancingPoliciesInListItemThrowsException() {
+	void whenMultipleLoadBalancingPoliciesInListItemThrowsException() {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindAndGetAsMap())
 			.havingRootCause()
 			.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);

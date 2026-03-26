@@ -33,7 +33,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.function.SingletonSupplier;
 
 /**
- * Schedules gRPC health updates one the gRPC server has been started.
+ * Schedules gRPC health updates once the gRPC server has been started.
  *
  * @author Phillip Webb
  * @author Chris Bono

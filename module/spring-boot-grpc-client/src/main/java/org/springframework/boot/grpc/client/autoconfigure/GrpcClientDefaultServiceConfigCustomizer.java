@@ -24,8 +24,8 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.VirtualTargets;
 
 /**
- * Callback interface that can be used to customize the default service config of the
- * {@link GrpcChannelBuilderCustomizer}.
+ * Callback interface that can be used to customize the default service config of the gRPC
+ * channel.
  * <p>
  * This customizer should be used instead of calling
  * {@link ManagedChannelBuilder#defaultServiceConfig(Map)} from a

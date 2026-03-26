@@ -63,7 +63,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests fir {@link GrpcServerAutoConfiguration}.
+ * Tests for {@link GrpcServerAutoConfiguration}.
  *
  * @author Chris Bono
  * @author Andrey Litvitski

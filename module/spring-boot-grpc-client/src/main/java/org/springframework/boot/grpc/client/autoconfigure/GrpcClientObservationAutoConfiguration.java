@@ -39,7 +39,6 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
  * @author Phillip Webb
  * @since 4.1.0
  */
-
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnClass({ AbstractStub.class, GrpcChannelBuilderCustomizer.class, ObservationRegistry.class,

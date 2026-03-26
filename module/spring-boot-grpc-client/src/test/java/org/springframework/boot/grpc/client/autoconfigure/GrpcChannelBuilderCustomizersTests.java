@@ -219,7 +219,7 @@ class GrpcChannelBuilderCustomizersTests {
 	}
 
 	@Test
-	void applyWhenNoCustomizersOrHealthDoesSetDefaultServiceConfig() {
+	void applyWhenNoCustomizersOrHealthDoesNotSetDefaultServiceConfig() {
 		GrpcClientProperties properties = new GrpcClientProperties();
 		GrpcChannelBuilderCustomizers customizers = new GrpcChannelBuilderCustomizers(properties, null, null,
 				Collections.emptyList(), Collections.emptyList());

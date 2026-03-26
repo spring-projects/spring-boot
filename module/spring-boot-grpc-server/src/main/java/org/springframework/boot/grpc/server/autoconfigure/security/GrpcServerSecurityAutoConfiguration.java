@@ -113,7 +113,7 @@ public final class GrpcServerSecurityAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "io.grpc.kotlin.CoroutineContextServerInterceptor")
-	static class GrpcClientCoroutineStubConfiguration {
+	static class GrpcServerCoroutineStubConfiguration {
 
 		@Bean
 		@GlobalServerInterceptor

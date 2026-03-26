@@ -213,7 +213,7 @@ class GrpcServerHealthAutoConfigurationTests {
 	}
 
 	@Test
-	void whenHasHttpCodeStatusMapperBeanIgnoresProperties() {
+	void whenHasStatusMapperBeanIgnoresProperties() {
 		this.contextRunner.withUserConfiguration(StatusMapperConfiguration.class)
 			.withPropertyValues("spring.grpc.server.health.status.mapping.up=not-serving")
 			.run((context) -> {
@@ -427,7 +427,7 @@ class GrpcServerHealthAutoConfigurationTests {
 	static class StatusMapperConfiguration {
 
 		@Bean
-		StatusMapper httpCodeStatusMapper() {
+		StatusMapper statusMapper() {
 			return (status) -> ServingStatus.UNRECOGNIZED;
 		}
 

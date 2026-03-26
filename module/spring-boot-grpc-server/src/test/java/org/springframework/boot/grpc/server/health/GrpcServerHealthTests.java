@@ -262,13 +262,13 @@ class GrpcServerHealthTests {
 
 		private final StatusMapper statusMapper;
 
-		TestHealthCheckedGrpcComponent(Set<String> memebers) {
-			this(memebers, StatusAggregator.getDefault(), StatusMapper.getDefault());
+		TestHealthCheckedGrpcComponent(Set<String> members) {
+			this(members, StatusAggregator.getDefault(), StatusMapper.getDefault());
 		}
 
-		TestHealthCheckedGrpcComponent(Set<String> memebers, StatusAggregator statusAggregator,
+		TestHealthCheckedGrpcComponent(Set<String> members, StatusAggregator statusAggregator,
 				StatusMapper statusMapper) {
-			this.members = memebers;
+			this.members = members;
 			this.statusAggregator = statusAggregator;
 			this.statusMapper = statusMapper;
 		}

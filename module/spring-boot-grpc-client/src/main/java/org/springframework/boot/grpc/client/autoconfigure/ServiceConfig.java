@@ -413,7 +413,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 	/**
 	 * Internal helper to collection gRPC java config.
 	 *
-	 * @param asMap the underling data as a map
+	 * @param asMap the underlying data as a map
 	 */
 	record GrpcJavaConfig(Map<String, Object> asMap) {
 

@@ -16,13 +16,11 @@
 
 package org.springframework.boot.grpc.test.autoconfigure;
 
-import java.util.List;
-
 import io.grpc.BindableService;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.stub.AbstractStub;
-import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,7 +38,6 @@ import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
-import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.ServerServiceDefinitionFilter;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
@@ -70,10 +67,9 @@ public final class TestGrpcTransportAutoConfiguration {
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		TestGrpcServerFactory testGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
-				GrpcServiceConfigurer serviceConfigurer,
-				List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers,
-				@Nullable ServerServiceDefinitionFilter serviceFilter) {
+				GrpcServiceConfigurer serviceConfigurer, ObjectProvider<ServerServiceDefinitionFilter> serviceFilter) {
 			TestGrpcServerFactory factory = new TestGrpcServerFactory(address);
+			serviceFilter.ifAvailable(factory::setServiceFilter);
 			serviceDiscoverer.findServices()
 				.stream()
 				.map((spec) -> serviceConfigurer.configure(spec, factory))

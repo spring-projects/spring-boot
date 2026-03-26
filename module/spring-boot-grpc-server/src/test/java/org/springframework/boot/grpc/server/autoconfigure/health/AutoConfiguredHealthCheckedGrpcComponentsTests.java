@@ -417,7 +417,7 @@ class AutoConfiguredHealthCheckedGrpcComponentsTests {
 
 		@Bean
 		@Primary
-		StatusMapper httpCodeStatusMapper() {
+		StatusMapper statusMapper() {
 			return StatusMapper.of(Collections.singletonMap(Status.DOWN.getCode(), ServingStatus.SERVING));
 		}
 
@@ -428,7 +428,7 @@ class AutoConfiguredHealthCheckedGrpcComponentsTests {
 
 		@Bean
 		@Qualifier("a")
-		StatusMapper httpCodeStatusMapper() {
+		StatusMapper statusMapper() {
 			return StatusMapper.of(Collections.singletonMap(Status.DOWN.getCode(), ServingStatus.SERVING));
 		}
 

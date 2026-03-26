@@ -43,7 +43,7 @@ class StatusMapperTests {
 	}
 
 	@Test
-	void getStatusCodeReturnsMappedStatus() {
+	void getServingStatusReturnsMappedStatus() {
 		Map<String, ServingStatus> map = new LinkedHashMap<>();
 		map.put("up", ServingStatus.UNRECOGNIZED);
 		map.put("down", ServingStatus.UNKNOWN);
@@ -54,7 +54,7 @@ class StatusMapperTests {
 	}
 
 	@Test
-	void getStatusCodeWhenMappingsAreNotUniformReturnsMappedStatus() {
+	void getServingStatusWhenMappingsAreNotUniformReturnsMappedStatus() {
 		Map<String, ServingStatus> map = new LinkedHashMap<>();
 		map.put("out-of-service", ServingStatus.SERVING);
 		StatusMapper mapper = StatusMapper.of(map);

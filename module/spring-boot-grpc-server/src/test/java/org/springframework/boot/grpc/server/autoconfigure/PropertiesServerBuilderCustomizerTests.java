@@ -60,7 +60,7 @@ class PropertiesServerBuilderCustomizerTests {
 	}
 
 	@Test
-	void customizerWhenServletServerBuilder() {
+	void customizeWhenServletServerBuilder() {
 		ServletServerBuilder builder = mock();
 		PropertiesServerBuilderCustomizer<ServletServerBuilder> customizer = new PropertiesServerBuilderCustomizer<>(
 				getProperties());

@@ -167,7 +167,7 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void compressionCustomizerWhenNoRegistrry() {
+	void compressionCustomizerWhenNoRegistry() {
 		// Codec class guards the imported GrpcCodecConfiguration to hide registry
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Codec.class)).run((context) -> {
 			GrpcChannelBuilderCustomizers customizers = context.getBean(GrpcChannelBuilderCustomizers.class);

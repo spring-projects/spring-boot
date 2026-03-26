@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * The configuration that contains all gRPC codec related beans.
+ * {@link Configuration @Configuration} for gRPC codecs.
  *
  * @author Andrei Lisa
  */

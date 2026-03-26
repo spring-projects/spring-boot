@@ -23,7 +23,7 @@ import io.grpc.Compressor;
 import io.grpc.CompressorRegistry;
 import io.grpc.Decompressor;
 import io.grpc.DecompressorRegistry;
-import io.grpc.ServerBuilder;
+import io.grpc.ManagedChannelBuilder;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,7 +41,8 @@ class GrpcClientCodecConfiguration {
 
 	/**
 	 * The compressor registry that is set on the
-	 * {@link ServerBuilder#compressorRegistry(CompressorRegistry) server builder} .
+	 * {@link ManagedChannelBuilder#compressorRegistry(CompressorRegistry) channel
+	 * builder}.
 	 * @param compressors the compressors to use on the registry
 	 * @return a new {@link CompressorRegistry#newEmptyInstance() registry} with the
 	 * specified compressors or the {@link CompressorRegistry#getDefaultInstance() default
@@ -60,7 +61,8 @@ class GrpcClientCodecConfiguration {
 
 	/**
 	 * The decompressor registry that is set on the
-	 * {@link ServerBuilder#decompressorRegistry(DecompressorRegistry) server builder}.
+	 * {@link ManagedChannelBuilder#decompressorRegistry(DecompressorRegistry) channel
+	 * builder}.
 	 * @param decompressors the decompressors to use on the registry
 	 * @return a new {@link DecompressorRegistry#emptyInstance() registry} with the
 	 * specified decompressors or the {@link DecompressorRegistry#getDefaultInstance()

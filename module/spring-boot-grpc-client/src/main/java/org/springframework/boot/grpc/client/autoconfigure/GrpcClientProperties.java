@@ -48,7 +48,7 @@ public class GrpcClientProperties {
 	}
 
 	/**
-	 * Channel Properties.
+	 * Channel properties.
 	 */
 	public static class Channel {
 
@@ -277,7 +277,7 @@ public class GrpcClientProperties {
 			private Duration time = Duration.ofMinutes(5);
 
 			/**
-			 * Default timeout for a keepAlives ping request. If a duration suffix is not
+			 * Default timeout for a keep-alive ping request. If a duration suffix is not
 			 * specified, seconds will be used.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
