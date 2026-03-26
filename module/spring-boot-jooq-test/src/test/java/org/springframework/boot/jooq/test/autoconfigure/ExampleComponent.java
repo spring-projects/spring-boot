@@ -19,7 +19,7 @@ package org.springframework.boot.jooq.test.autoconfigure;
 import org.springframework.stereotype.Component;
 
 /**
- * Example component used with {@JooqTest @JooqTest} tests.
+ * Example component used with {@link JooqTest @JooqTest} tests.
  *
  * @author Phillip Webb
  */
