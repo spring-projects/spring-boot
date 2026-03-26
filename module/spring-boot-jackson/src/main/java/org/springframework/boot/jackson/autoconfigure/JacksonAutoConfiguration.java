@@ -667,13 +667,11 @@ public final class JacksonAutoConfiguration {
 
 		private void configureConstructorDetector(MapperBuilder<?, ?> builder) {
 			ConstructorDetectorStrategy strategy = this.jacksonProperties.getConstructorDetector();
-			if (strategy != null) {
-				switch (strategy) {
-					case USE_PROPERTIES_BASED -> builder.constructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
-					case USE_DELEGATING -> builder.constructorDetector(ConstructorDetector.USE_DELEGATING);
-					case EXPLICIT_ONLY -> builder.constructorDetector(ConstructorDetector.EXPLICIT_ONLY);
-					default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
-				}
+			switch (strategy) {
+				case USE_PROPERTIES_BASED -> builder.constructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+				case USE_DELEGATING -> builder.constructorDetector(ConstructorDetector.USE_DELEGATING);
+				case EXPLICIT_ONLY -> builder.constructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+				default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
 			}
 		}
 
