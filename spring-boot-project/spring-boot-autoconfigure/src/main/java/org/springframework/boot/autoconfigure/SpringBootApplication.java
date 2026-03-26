@@ -85,7 +85,7 @@ public @interface SpringBootApplication {
 	 * <p>
 	 * <strong>Note:</strong> this setting is an alias for
 	 * {@link ComponentScan @ComponentScan} only. It has no effect on {@code @Entity}
-	 * scanning or Spring Data {@link Repository} scanning. For those you should add
+	 * scanning or Spring Data {@code Repository} scanning. For those you should add
 	 * {@link org.springframework.boot.autoconfigure.domain.EntityScan @EntityScan} and
 	 * {@code @Enable...Repositories} annotations.
 	 * @return base packages to scan
@@ -103,7 +103,7 @@ public @interface SpringBootApplication {
 	 * <p>
 	 * <strong>Note:</strong> this setting is an alias for
 	 * {@link ComponentScan @ComponentScan} only. It has no effect on {@code @Entity}
-	 * scanning or Spring Data {@link Repository} scanning. For those you should add
+	 * scanning or Spring Data {@code Repository} scanning. For those you should add
 	 * {@link org.springframework.boot.autoconfigure.domain.EntityScan @EntityScan} and
 	 * {@code @Enable...Repositories} annotations.
 	 * @return base packages to scan
