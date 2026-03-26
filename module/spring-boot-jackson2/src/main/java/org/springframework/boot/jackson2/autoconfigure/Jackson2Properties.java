@@ -108,7 +108,7 @@ public class Jackson2Properties {
 	 * Strategy to use to auto-detect constructor, and in particular behavior with
 	 * single-argument constructors.
 	 */
-	private @Nullable ConstructorDetectorStrategy constructorDetector;
+	private ConstructorDetectorStrategy constructorDetector = ConstructorDetectorStrategy.DEFAULT;
 
 	/**
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
@@ -190,11 +190,11 @@ public class Jackson2Properties {
 	}
 
 	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
-	public @Nullable ConstructorDetectorStrategy getConstructorDetector() {
+	public ConstructorDetectorStrategy getConstructorDetector() {
 		return this.constructorDetector;
 	}
 
-	public void setConstructorDetector(@Nullable ConstructorDetectorStrategy constructorDetector) {
+	public void setConstructorDetector(ConstructorDetectorStrategy constructorDetector) {
 		this.constructorDetector = constructorDetector;
 	}
 
