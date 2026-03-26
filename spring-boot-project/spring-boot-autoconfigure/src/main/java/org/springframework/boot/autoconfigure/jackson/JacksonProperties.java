@@ -104,7 +104,7 @@ public class JacksonProperties {
 	 * Strategy to use to auto-detect constructor, and in particular behavior with
 	 * single-argument constructors.
 	 */
-	private ConstructorDetectorStrategy constructorDetector;
+	private ConstructorDetectorStrategy constructorDetector = ConstructorDetectorStrategy.DEFAULT;
 
 	/**
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or

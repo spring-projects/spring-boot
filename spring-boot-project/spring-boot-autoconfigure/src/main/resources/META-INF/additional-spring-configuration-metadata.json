@@ -1855,10 +1855,6 @@
       "defaultValue": "classpath:git.properties"
     },
     {
-      "name": "spring.jackson.constructor-detector",
-      "defaultValue": "default"
-    },
-    {
       "name": "spring.jackson.datatype.enum",
       "description": "Jackson on/off features for enums."
     },
