@@ -370,7 +370,7 @@
       "deprecation": {
         "level": "warning",
         "replacement": "logging.structured.json.stacktrace.hash.generate",
-        "since": "3.6.0"
+        "since": "4.0.0"
       }
     },
     {
