@@ -64,10 +64,13 @@ public final class HttpHandlerAutoConfiguration {
 		@Bean
 		HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider,
 				ObjectProvider<WebHttpHandlerBuilderCustomizer> handlerBuilderCustomizers) {
+			WebFluxProperties properties = propsProvider.getIfAvailable();
 			WebHttpHandlerBuilder handlerBuilder = WebHttpHandlerBuilder.applicationContext(this.applicationContext);
+			if (properties != null) {
+				handlerBuilder.defaultHtmlEscape(properties.getDefaultHtmlEscape());
+			}
 			handlerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(handlerBuilder));
 			HttpHandler httpHandler = handlerBuilder.build();
-			WebFluxProperties properties = propsProvider.getIfAvailable();
 			if (properties != null && StringUtils.hasText(properties.getBasePath())) {
 				Map<String, HttpHandler> handlersMap = Collections.singletonMap(properties.getBasePath(), httpHandler);
 				return new ContextPathCompositeHandler(handlersMap);

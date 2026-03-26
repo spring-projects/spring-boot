@@ -304,11 +304,6 @@ public final class WebFluxAutoConfiguration {
 				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
 		}
 
-		@Bean
-		WebHttpHandlerBuilderCustomizer defaultHtmlEscapeCustomizer() {
-			return (builder) -> builder.defaultHtmlEscape(this.webFluxProperties.getDefaultHtmlEscape());
-		}
-
 	}
 
 	/**
