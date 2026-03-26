@@ -130,7 +130,7 @@ public abstract class JpaBaseConfiguration {
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
 		if (this.properties.getBootstrap() == Bootstrap.ASYNC) {
 			builder.requireBootstrapExecutor(
-					new PropertyBasedRequiredBackgroundBootstrapping("spring.jpa.bootstrap", "async"));
+					() -> BootstrapExecutorRequiredException.ofProperty("spring.jpa.bootstrap", "async"));
 		}
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;

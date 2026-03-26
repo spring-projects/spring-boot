@@ -68,7 +68,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
-import org.springframework.boot.diagnostics.FailureAnalyzedException;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
@@ -82,6 +81,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoC
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.XADataSourceAutoConfiguration;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.jpa.autoconfigure.BootstrapExecutorRequiredException;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.jpa.autoconfigure.JpaBaseConfiguration;
 import org.springframework.boot.jpa.autoconfigure.JpaProperties;
@@ -274,7 +274,7 @@ class HibernateJpaAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.run((context) -> assertThat(context).getFailure()
 				.rootCause()
-				.isInstanceOf(FailureAnalyzedException.class)
+				.isInstanceOf(BootstrapExecutorRequiredException.class)
 				.message()
 				.contains("bootstrap executor is required when 'spring.jpa.bootstrap' is set to 'async'"));
 	}
@@ -285,7 +285,7 @@ class HibernateJpaAutoConfigurationTests {
 			.withUserConfiguration(MultipleAsyncTaskExecutorsConfiguration.class)
 			.run((context) -> assertThat(context).getFailure()
 				.rootCause()
-				.isInstanceOf(FailureAnalyzedException.class)
+				.isInstanceOf(BootstrapExecutorRequiredException.class)
 				.message()
 				.contains("bootstrap executor is required when 'spring.jpa.bootstrap' is set to 'async'"));
 	}

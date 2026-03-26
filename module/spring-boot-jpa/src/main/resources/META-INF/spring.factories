@@ -1,3 +1,7 @@
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.jpa.autoconfigure.BootstrapExecutorRequiredFailureAnalyzer
+
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.jpa.JpaDatabaseInitializerDetector

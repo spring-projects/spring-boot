@@ -33,8 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
+import org.springframework.boot.jpa.autoconfigure.BootstrapExecutorRequiredException;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
-import org.springframework.boot.jpa.autoconfigure.PropertyBasedRequiredBackgroundBootstrapping;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -85,8 +85,8 @@ public final class DataJpaRepositoriesAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
 	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
-		return (builder) -> builder.requireBootstrapExecutor(new PropertyBasedRequiredBackgroundBootstrapping(
-				"spring.data.jpa.repositories.bootstrap-mode", "deferred"));
+		return (builder) -> builder.requireBootstrapExecutor(() -> BootstrapExecutorRequiredException
+			.ofProperty("spring.data.jpa.repositories.bootstrap-mode", "deferred"));
 	}
 
 	@Bean
