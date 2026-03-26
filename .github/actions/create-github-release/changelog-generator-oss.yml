@@ -21,6 +21,10 @@ changelog:
       sort: "title"
       labels:
         - "type: dependency-upgrade"
+      summary:
+        mode: "body-regex"
+        config:
+          expression: '(Upgrade to \[.*\]\(.*\)).*'
   issues:
     generate_links: true
     ports:
