@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -155,6 +156,19 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer));
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} with a
+	 * replacement {@link DnsResolver}.
+	 * @param dnsResolver the new DNS resolver
+	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
+	 * @since 4.1.0
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder withDnsResolver(DnsResolver dnsResolver) {
+		Assert.notNull(dnsResolver, "'dnsResolver' must not be null");
+		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withDnsResolver(dnsResolver));
 	}
 
 	/**

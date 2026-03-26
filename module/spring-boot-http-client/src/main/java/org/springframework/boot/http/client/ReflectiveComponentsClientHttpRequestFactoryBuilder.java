@@ -82,6 +82,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 				settings.cookieHandling() == null
 						|| settings.cookieHandling() == HttpCookieHandling.ENABLE_WHEN_POSSIBLE,
 				"Unable to set HTTP cookie handling using reflection");
+		Assert.state(settings.inetAddressFilter() == null, "Unable to set InetAddress filter using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));

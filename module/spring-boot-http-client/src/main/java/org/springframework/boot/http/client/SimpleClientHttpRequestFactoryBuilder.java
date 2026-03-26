@@ -78,9 +78,10 @@ public final class SimpleClientHttpRequestFactoryBuilder
 
 	@Override
 	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
-		if (settings.cookieHandling() == HttpCookieHandling.ENABLE) {
-			throw new IllegalArgumentException("Simple HTTP request factory does not support HTTP cookie handling");
-		}
+		Assert.state(settings.cookieHandling() != HttpCookieHandling.ENABLE,
+				"Simple HTTP request factory does not support HTTP cookie handling");
+		Assert.state(settings.inetAddressFilter() == null,
+				"Simple HTTP request factory does not support InetAddress filtering");
 		SslBundle sslBundle = settings.sslBundle();
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),

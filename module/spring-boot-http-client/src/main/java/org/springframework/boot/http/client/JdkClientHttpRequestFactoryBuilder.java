@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client;
 
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
@@ -87,6 +88,19 @@ public final class JdkClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} with a replacement
+	 * {@link ProxySelector}.
+	 * @param proxySelector the new proxy selector
+	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
+	 * @since 4.1.0
+	 */
+	public JdkClientHttpRequestFactoryBuilder withProxySelector(ProxySelector proxySelector) {
+		Assert.notNull(proxySelector, "'proxySelector' must not be null");
+		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withProxySelector(proxySelector));
 	}
 
 	/**

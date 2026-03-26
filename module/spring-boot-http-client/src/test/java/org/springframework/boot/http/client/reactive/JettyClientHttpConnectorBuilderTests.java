@@ -16,19 +16,21 @@
 
 package org.springframework.boot.http.client.reactive;
 
-import java.time.Duration;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.SocketAddressResolver;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JettyClientHttpConnectorBuilder} and {@link JettyHttpClientBuilder}.
@@ -76,6 +78,26 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 			.isInstanceOf(TestHttpClientTransport.class);
 	}
 
+	@Test
+	void withSocketAddressResolver() {
+		SocketAddressResolver socketAddressResolver = mock();
+		JettyClientHttpConnector connector = ClientHttpConnectorBuilder.jetty()
+			.withSocketAddressResolver(socketAddressResolver)
+			.build();
+		assertThat(connector).extracting("httpClient.resolver").isSameAs(socketAddressResolver);
+	}
+
+	@Test
+	void withSocketAddressResolverWhenHasInetAddressMatcher() {
+		SocketAddressResolver socketAddressResolver = mock();
+		JettyClientHttpConnector connector = ClientHttpConnectorBuilder.jetty()
+			.withSocketAddressResolver(socketAddressResolver)
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
+		assertThat(connector).extracting("httpClient.resolver")
+			.matches((resolver) -> resolver.getClass().getName().contains("JettyFiltered"));
+		assertThat(connector).extracting("httpClient.resolver.delegate").isSameAs(socketAddressResolver);
+	}
+
 	@Override
 	protected long connectTimeout(JettyClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
@@ -87,9 +109,10 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 	protected long readTimeout(JettyClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient).isNotNull();
-		Object field = ReflectionTestUtils.getField(httpClient, "readTimeout");
-		assertThat(field).isNotNull();
-		return ((Duration) field).toMillis();
+		HttpClientSettings settings = (HttpClientSettings) ReflectionTestUtils.getField(httpClient, "settings");
+		assertThat(settings).isNotNull();
+		assertThat(settings.readTimeout()).isNotNull();
+		return settings.readTimeout().toMillis();
 	}
 
 	static class TestHttpClientTransport extends HttpClientTransportOverHTTP {

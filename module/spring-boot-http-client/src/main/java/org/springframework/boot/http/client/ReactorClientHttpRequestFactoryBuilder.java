@@ -25,6 +25,8 @@ import java.util.function.UnaryOperator;
 
 import org.jspecify.annotations.Nullable;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.client.HttpClientConfig;
+import reactor.netty.transport.ClientTransport.ResolvedAddressSelector;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
@@ -105,6 +107,21 @@ public final class ReactorClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withHttpClientCustomizer(httpClientCustomizer));
+	}
+
+	/**
+	 * Return a new {@link ReactorHttpClientBuilder} that uses the
+	 * {@link ResolvedAddressSelector}. This method should be used in favor of a
+	 * customizer so that {@link HttpClientSettings#inetAddressFilter()} can be applied.
+	 * @param resolvedAddressSelector the resolved address selector to use
+	 * @return a new {@link ReactorHttpClientBuilder} instance
+	 * @since 4.1.0
+	 */
+	public ReactorClientHttpRequestFactoryBuilder withResolvedAddressSelector(
+			ResolvedAddressSelector<? super HttpClientConfig> resolvedAddressSelector) {
+		Assert.notNull(resolvedAddressSelector, "'resolvedAddressSelector' must not be null");
+		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withResolvedAddressSelector(resolvedAddressSelector));
 	}
 
 	/**

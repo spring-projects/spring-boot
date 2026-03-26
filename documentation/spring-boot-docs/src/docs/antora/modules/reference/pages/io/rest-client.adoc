@@ -446,3 +446,22 @@ spring:
       read-timeout: 1s
       redirects: dont-follow
 ----
+
+
+
+[[io.rest-client.global-configuration.inetaddress-filtering]]
+=== InetAddress Filtering and SSRF Protection
+
+It's sometimes useful to limit the remote addresses that an HTTP client is permitted to call.
+This technique can be especially useful when hardening your application against Server-Side Request Forgery (SSRF) attacks.
+
+To limit the address that a client can call, you can use an javadoc:org.springframework.boot.http.client.InetAddressFilter[] which will only allow outgoing calls to addresses that match the filter.
+The filter is a functional interface and you can either create your own implementation, or use one of the convenient factory methods.
+
+Filters may be applied to the javadoc:org.springframework.boot.http.client.HttpClientSettings[] you used when building a client:
+
+include-code::MyService[]
+
+Or you can also define one as a javadoc:org.springframework.context.annotation.Bean[format=annotation] if you want to apply it to all auto-confugured HTTP client builders:
+
+include-code::MyHttpClientConfiguration[]

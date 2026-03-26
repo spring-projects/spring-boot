@@ -16,18 +16,22 @@
 
 package org.springframework.boot.http.client.reactive;
 
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.Executor;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JdkClientHttpConnectorBuilder} and {@link JdkHttpClientBuilder}.
@@ -66,6 +70,29 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 		TestCustomizer<HttpClient.Builder> customizer = new TestCustomizer<>();
 		ClientHttpConnectorBuilder.jdk().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
 		customizer.assertCalled();
+	}
+
+	@Test
+	void withProxySelector() {
+		ProxySelector proxySelector = mock();
+		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk().withProxySelector(proxySelector).build();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		assertThat(httpClient.proxy()).contains(proxySelector);
+	}
+
+	@Test
+	void withProxySelectorWhenHasInetAddressMatcher() {
+		ProxySelector proxySelector = mock();
+		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk()
+			.withProxySelector(proxySelector)
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		assertThat(httpClient.proxy()).isNotNull();
+		ProxySelector actual = httpClient.proxy().get();
+		assertThat(actual).matches((proxy) -> proxy.getClass().getName().contains("JdkFiltered"));
+		assertThat(actual).extracting("delegate").isEqualTo(proxySelector);
 	}
 
 	@Override

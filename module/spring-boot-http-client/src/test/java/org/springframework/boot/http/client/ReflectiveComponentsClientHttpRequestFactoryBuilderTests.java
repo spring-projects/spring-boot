@@ -46,6 +46,15 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 		super(ClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.of(JettyClientHttpRequestFactory::new));
 	}
 
+	@Test
+	@Override
+	void filteredInetAddress() throws Exception {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> getBuilder()
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses())))
+			.withMessage("Unable to set InetAddress filter using reflection");
+	}
+
 	@Override
 	void connectWithSslBundle(String httpMethod) throws Exception {
 		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());

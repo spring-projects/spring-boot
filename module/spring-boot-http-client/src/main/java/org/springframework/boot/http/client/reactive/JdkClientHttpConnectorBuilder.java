@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client.reactive;
 
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
@@ -83,6 +84,19 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpConnectorBuilder} with a replacement
+	 * {@link ProxySelector}.
+	 * @param proxySelector the new proxy selector
+	 * @return a new {@link JdkClientHttpConnectorBuilder} instance
+	 * @since 4.1.0
+	 */
+	public JdkClientHttpConnectorBuilder withProxySelector(ProxySelector proxySelector) {
+		Assert.notNull(proxySelector, "'proxySelector' must not be null");
+		return new JdkClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withProxySelector(proxySelector));
 	}
 
 	/**

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.async.HttpAsyncClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
@@ -33,12 +34,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HttpComponentsClientHttpConnectorBuilder} and
@@ -102,6 +105,28 @@ class HttpComponentsClientHttpConnectorBuilderTests
 			.with((builder) -> builder.withHttpClientCustomizer(customizer))
 			.build();
 		customizer.assertCalled();
+	}
+
+	@Test
+	void withDnsResolver() {
+		DnsResolver dnsResolver = mock();
+		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
+			.withDnsResolver(dnsResolver)
+			.build();
+		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver")
+			.isSameAs(dnsResolver);
+	}
+
+	@Test
+	void withDnsResolverWhenHasInetAddressMatcher() {
+		DnsResolver dnsResolver = mock();
+		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
+			.withDnsResolver(dnsResolver)
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
+		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver")
+			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
+		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver.delegate")
+			.isSameAs(dnsResolver);
 	}
 
 	@Override

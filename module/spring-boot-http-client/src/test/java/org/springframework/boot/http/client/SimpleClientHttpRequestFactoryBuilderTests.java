@@ -26,7 +26,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -84,8 +83,17 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	}
 
 	@Test
+	@Override
+	void filteredInetAddress() throws Exception {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> getBuilder()
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses())))
+			.withMessage("Simple HTTP request factory does not support InetAddress filtering");
+	}
+
+	@Test
 	void throwsWhenCookieHandlingEnabled() {
-		assertThatIllegalArgumentException().isThrownBy(() -> ClientHttpRequestFactoryBuilder.simple()
+		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactoryBuilder.simple()
 			.build(HttpClientSettings.defaults().withCookieHandling(HttpCookieHandling.ENABLE)));
 	}
 

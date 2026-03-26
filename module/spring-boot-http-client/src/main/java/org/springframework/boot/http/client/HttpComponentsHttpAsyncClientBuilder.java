@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.apache.hc.client5.http.DnsResolver;
+import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.async.HttpAsyncClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -57,21 +59,24 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 
 	private final Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory;
 
+	private final DnsResolver dnsResolver;
+
 	public HttpComponentsHttpAsyncClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
-				HttpComponentsSslBundleTlsStrategy::get);
+				HttpComponentsSslBundleTlsStrategy::get, SystemDefaultDnsResolver.INSTANCE);
 	}
 
 	private HttpComponentsHttpAsyncClientBuilder(Consumer<HttpAsyncClientBuilder> customizer,
 			Consumer<PoolingAsyncClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
-			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory, DnsResolver dnsResolver) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.connectionConfigCustomizer = connectionConfigCustomizer;
 		this.defaultRequestConfigCustomizer = defaultRequestConfigCustomizer;
 		this.tlsStrategyFactory = tlsStrategyFactory;
+		this.dnsResolver = dnsResolver;
 	}
 
 	/**
@@ -84,7 +89,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		Assert.notNull(customizer, "'customizer' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer.andThen(customizer),
 				this.connectionManagerCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
-				this.tlsStrategyFactory);
+				this.tlsStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -98,7 +103,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		Assert.notNull(connectionManagerCustomizer, "'connectionManagerCustomizer' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer,
 				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.connectionConfigCustomizer,
-				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory);
+				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -113,7 +118,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.connectionConfigCustomizer.andThen(connectionConfigCustomizer),
-				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory);
+				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -127,7 +132,8 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory) {
 		Assert.notNull(tlsStrategyFactory, "'tlsStrategyFactory' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, tlsStrategyFactory);
+				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, tlsStrategyFactory,
+				this.dnsResolver);
 	}
 
 	/**
@@ -143,7 +149,22 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.connectionConfigCustomizer,
-				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer), this.tlsStrategyFactory);
+				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer), this.tlsStrategyFactory,
+				this.dnsResolver);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} with a replacement
+	 * {@link DnsResolver}.
+	 * @param dnsResolver the new DNS resolver
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 * @since 4.1.0
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withDnsResolver(DnsResolver dnsResolver) {
+		Assert.notNull(dnsResolver, "'dnsResolver' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, this.tlsStrategyFactory,
+				dnsResolver);
 	}
 
 	/**
@@ -168,6 +189,11 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultConnectionConfig(createConnectionConfig(settings));
 		map.from(settings::sslBundle).as(this.tlsStrategyFactory::apply).to(builder::setTlsStrategy);
+		DnsResolver dnsResolver = this.dnsResolver;
+		if (settings.inetAddressFilter() != null) {
+			dnsResolver = new HttpComponentsFilteredDnsResolver(dnsResolver, settings.inetAddressFilter());
+		}
+		builder.setDnsResolver(dnsResolver);
 		this.connectionManagerCustomizer.accept(builder);
 		return builder.build();
 	}

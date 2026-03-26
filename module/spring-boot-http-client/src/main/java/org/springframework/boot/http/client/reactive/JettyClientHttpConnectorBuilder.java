@@ -25,6 +25,7 @@ import java.util.function.UnaryOperator;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.SocketAddressResolver;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.HttpClientSettings;
@@ -114,6 +115,19 @@ public final class JettyClientHttpConnectorBuilder
 		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
 		return new JettyClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpConnectorBuilder} with a replacement
+	 * {@link SocketAddressResolver}.
+	 * @param socketAddressResolver the new socket address resolver
+	 * @return a new {@link JettyClientHttpConnectorBuilder} instance
+	 * @since 4.1.0
+	 */
+	public JettyClientHttpConnectorBuilder withSocketAddressResolver(SocketAddressResolver socketAddressResolver) {
+		Assert.notNull(socketAddressResolver, "'socketAddressResolver' must not be null");
+		return new JettyClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withSocketAddressResolver(socketAddressResolver));
 	}
 
 	/**

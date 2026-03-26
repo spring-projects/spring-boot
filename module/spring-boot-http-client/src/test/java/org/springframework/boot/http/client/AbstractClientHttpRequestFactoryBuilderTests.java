@@ -53,6 +53,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
@@ -188,6 +189,26 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		}
 	}
 
+	@Test
+	void filteredInetAddress() throws Exception {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			ClientHttpRequestFactory requestFactory = this.builder
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
+			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
+			assertThatException().isThrownBy(request::execute)
+				.matches((ex) -> ex instanceof FilteredHostException || ex.getCause() instanceof FilteredHostException);
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
 	private ClientHttpRequest request(ClientHttpRequestFactory factory, URI uri, String method) throws IOException {
 		return factory.createRequest(uri, HttpMethod.valueOf(method));
 	}
@@ -221,6 +242,10 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	protected abstract long connectTimeout(T requestFactory);
 
 	protected abstract long readTimeout(T requestFactory);
+
+	protected final ClientHttpRequestFactoryBuilder<T> getBuilder() {
+		return this.builder;
+	}
 
 	public static class TestServlet extends HttpServlet {
 

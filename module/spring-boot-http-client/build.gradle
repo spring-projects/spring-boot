@@ -42,6 +42,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("org.springframework:spring-webflux")
+	testImplementation("org.springframework.security:spring-security-core")
 	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testCompileOnly("com.google.code.findbugs:jsr305")

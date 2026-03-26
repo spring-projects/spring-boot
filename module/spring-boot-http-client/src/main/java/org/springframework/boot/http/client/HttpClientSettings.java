@@ -32,11 +32,13 @@ import org.springframework.boot.ssl.SslBundle;
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
+ * @param inetAddressFilter the inetAddress filter used to filter out matching requests
  * @author Phillip Webb
  * @since 3.5.0
  */
 public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @Nullable HttpRedirects redirects,
-		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle,
+		@Nullable InetAddressFilter inetAddressFilter) {
 
 	/**
 	 * Create a new {@link HttpClientSettings} instance.
@@ -53,7 +55,22 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 		this(null, redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
-	private static final HttpClientSettings defaults = new HttpClientSettings(null, null, null, null, null);
+	/**
+	 * Create a new {@link HttpClientSettings} instance.
+	 * @param cookieHandling the cookie handling strategy to use or null to use the
+	 * underlying library's default
+	 * @param redirects the follow redirect strategy to use
+	 * @param connectTimeout the connect timeout
+	 * @param readTimeout the read timeout
+	 * @param sslBundle the SSL bundle providing SSL configuration
+	 * @since 3.5.0
+	 */
+	public HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @Nullable HttpRedirects redirects,
+			@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle, null);
+	}
+
+	private static final HttpClientSettings defaults = new HttpClientSettings(null, null, null, null, null, null);
 
 	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated cookie handling
@@ -64,7 +81,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withCookieHandling(@Nullable HttpCookieHandling cookieHandling) {
 		return new HttpClientSettings(cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -76,7 +93,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withConnectTimeout(@Nullable Duration connectTimeout) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, this.readTimeout,
-				this.sslBundle);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -88,7 +105,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withReadTimeout(@Nullable Duration readTimeout) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, readTimeout,
-				this.sslBundle);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -100,7 +117,8 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 * @since 4.0.0
 	 */
 	public HttpClientSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
-		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, readTimeout, this.sslBundle);
+		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, readTimeout, this.sslBundle,
+				this.inetAddressFilter);
 	}
 
 	/**
@@ -112,7 +130,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withSslBundle(@Nullable SslBundle sslBundle) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
-				sslBundle);
+				sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -123,7 +141,19 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withRedirects(@Nullable HttpRedirects redirects) {
 		return new HttpClientSettings(this.cookieHandling, redirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle);
+				this.sslBundle, this.inetAddressFilter);
+	}
+
+	/**
+	 * Return a new {@link HttpClientSettings} instance with an updated inetAddress
+	 * filter.
+	 * @param inetAddressFilter the new inetAddress filter
+	 * @return a new {@link HttpClientSettings} instance
+	 * @since 4.1.0
+	 */
+	public HttpClientSettings withInetAddressFilter(@Nullable InetAddressFilter inetAddressFilter) {
+		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
+				this.sslBundle, inetAddressFilter);
 	}
 
 	/**
@@ -142,7 +172,10 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 		Duration connectTimeout = (connectTimeout() != null) ? connectTimeout() : other.connectTimeout();
 		Duration readTimeout = (readTimeout() != null) ? readTimeout() : other.readTimeout();
 		SslBundle sslBundle = (sslBundle() != null) ? sslBundle() : other.sslBundle();
-		return new HttpClientSettings(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle);
+		InetAddressFilter inetAddressFilter = (inetAddressFilter() != null) ? inetAddressFilter()
+				: other.inetAddressFilter();
+		return new HttpClientSettings(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle,
+				inetAddressFilter);
 	}
 
 	/**

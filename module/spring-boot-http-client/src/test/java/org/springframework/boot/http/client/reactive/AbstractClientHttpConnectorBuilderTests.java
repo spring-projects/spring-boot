@@ -34,8 +34,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.http.client.FilteredHostException;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
@@ -55,6 +57,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunctions;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
@@ -186,6 +189,27 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			if (expectedStatus == HttpStatus.OK) {
 				assertThat(response.bodyToMono(String.class).block()).contains("request to /redirected");
 			}
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@Test
+	void filteredInetAddress() throws Exception {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			ClientHttpConnector connector = this.builder
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
+			ClientRequest request = createRequest("GET", uri);
+			assertThatException().isThrownBy(() -> getResponse(connector, request))
+				.matches((ex) -> ex instanceof FilteredHostException || ex.getCause() instanceof FilteredHostException);
+
 		}
 		finally {
 			webServer.stop();
