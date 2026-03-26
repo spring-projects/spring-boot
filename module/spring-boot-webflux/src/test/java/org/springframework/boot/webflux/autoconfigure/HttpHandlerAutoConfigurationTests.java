@@ -18,6 +18,8 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -35,6 +37,7 @@ import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -97,6 +100,29 @@ class HttpHandlerAutoConfigurationTests {
 				assertThat(httpHandler).isInstanceOf(ContextPathCompositeHandler.class)
 					.extracting("handlerMap", InstanceOfAssertFactories.map(String.class, HttpHandler.class))
 					.containsKey("/something");
+			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void shouldConfigureDefaultHtmlEscape(boolean enabled) {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withPropertyValues("spring.webflux.default-html-escape=" + enabled)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpHandler.class);
+				assertThat(context.getBean(HttpHandler.class)).isInstanceOfSatisfying(HttpWebHandlerAdapter.class,
+						(adapter) -> assertThat(adapter.getDefaultHtmlEscape()).isEqualTo(enabled));
+			});
+	}
+
+	@Test
+	void shouldNotConfigureDefaultHtmlEscaperWithoutWebFluxAutoConfiguration() {
+		this.contextRunner.withUserConfiguration(CustomWebHandler.class)
+			.withPropertyValues("spring.webflux.default-html-escape=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpHandler.class);
+				assertThat(context.getBean(HttpHandler.class)).isInstanceOfSatisfying(HttpWebHandlerAdapter.class,
+						(adapter) -> assertThat(adapter.getDefaultHtmlEscape()).isNull());
 			});
 	}
 

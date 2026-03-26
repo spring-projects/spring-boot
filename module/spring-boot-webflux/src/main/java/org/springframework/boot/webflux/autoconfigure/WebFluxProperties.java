@@ -58,6 +58,11 @@ public class WebFluxProperties {
 	 */
 	private String webjarsPathPattern = "/webjars/**";
 
+	/**
+	 * Whether default HTML escaping is enabled for the web application.
+	 */
+	private @Nullable Boolean defaultHtmlEscape;
+
 	public @Nullable String getBasePath() {
 		return this.basePath;
 	}
@@ -108,6 +113,14 @@ public class WebFluxProperties {
 
 	public void setWebjarsPathPattern(String webjarsPathPattern) {
 		this.webjarsPathPattern = webjarsPathPattern;
+	}
+
+	public @Nullable Boolean getDefaultHtmlEscape() {
+		return this.defaultHtmlEscape;
+	}
+
+	public void setDefaultHtmlEscape(@Nullable Boolean defaultHtmlEscape) {
+		this.defaultHtmlEscape = defaultHtmlEscape;
 	}
 
 	public static class Format {
