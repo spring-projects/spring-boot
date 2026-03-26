@@ -32,6 +32,7 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
@@ -117,35 +118,42 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+				.getArg(StackTraceHashFieldConfiguration.class);
 			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer.Builder<?> jsonMembersCustomizerBuilder = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.Builder.class);
 			Assert.state(environment != null, "'environment' must not be null");
 			Assert.state(contextPairs != null, "'contextPairs' must not be null");
 			Assert.state(jsonMembersCustomizerBuilder != null, "'jsonMembersCustomizerBuilder' must not be null");
-			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
-					jsonMembersCustomizerBuilder);
+			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, hashFieldConfiguration,
+					contextPairs, jsonMembersCustomizerBuilder);
 		}
 
 		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+				.getArg(StackTraceHashFieldConfiguration.class);
 			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
 			Assert.state(environment != null, "'environment' must not be null");
 			Assert.state(contextPairs != null, "'contextPairs' must not be null");
-			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
-					jsonMembersCustomizer);
+			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter,
+					hashFieldConfiguration, contextPairs, jsonMembersCustomizer);
 		}
 
 		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+				.getArg(StackTraceHashFieldConfiguration.class);
 			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
 			Assert.state(contextPairs != null, "'contextPairs' must not be null");
-			return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, jsonMembersCustomizer);
+			return new LogstashStructuredLogFormatter(stackTracePrinter, hashFieldConfiguration, contextPairs,
+					jsonMembersCustomizer);
 		}
 
 	}

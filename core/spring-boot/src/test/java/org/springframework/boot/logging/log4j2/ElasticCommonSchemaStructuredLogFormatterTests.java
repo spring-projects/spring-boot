@@ -55,7 +55,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		this.environment.setProperty("logging.structured.ecs.service.environment", "test");
 		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		this.environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null,
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null, null,
 				TestContextPairs.include(), this.customizerBuilder);
 	}
 
@@ -116,7 +116,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@SuppressWarnings("unchecked")
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
-				TestContextPairs.include(), this.customizerBuilder);
+				null, TestContextPairs.include(), this.customizerBuilder);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
