@@ -31,6 +31,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -53,6 +54,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * {@link Configuration @Configuration} for reactive JWT decoder beans.
@@ -67,6 +69,7 @@ import org.springframework.util.CollectionUtils;
  * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(WebClient.class)
 @ConditionalOnMissingBean(ReactiveJwtDecoder.class)
 class ReactiveJwtDecoderConfiguration {
 

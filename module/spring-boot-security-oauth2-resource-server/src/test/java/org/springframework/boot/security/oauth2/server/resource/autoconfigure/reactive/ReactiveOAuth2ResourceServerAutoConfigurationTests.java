@@ -83,6 +83,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -298,6 +299,15 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 			});
+	}
+
+	@Test
+	void autoConfigurationShouldBackOffIfWebClientIsNotAvailable() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(WebClient.class))
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.run((context) -> assertThat(context).hasNotFailed()
+				.doesNotHaveBean(NimbusReactiveJwtDecoder.class)
+				.doesNotHaveBean(ReactiveJwtDecoder.class));
 	}
 
 	@Test
