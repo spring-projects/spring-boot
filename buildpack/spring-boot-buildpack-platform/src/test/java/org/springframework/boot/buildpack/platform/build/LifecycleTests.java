@@ -482,7 +482,7 @@ class LifecycleTests {
 		return (invocation) -> {
 			ContainerConfig config = invocation.getArgument(0, ContainerConfig.class);
 			ArrayNode command = getCommand(config);
-			String name = command.get(0).asString().substring(1).replaceAll("/", "-");
+			String name = command.get(0).asString().substring(1).replace('/', '-');
 			this.configs.put(name, config);
 			if (invocation.getArguments().length > 2) {
 				this.content.put(name, invocation.getArgument(2, ContainerContent.class));
