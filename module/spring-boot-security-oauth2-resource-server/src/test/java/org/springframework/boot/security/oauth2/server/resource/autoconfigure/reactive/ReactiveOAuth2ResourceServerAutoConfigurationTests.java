@@ -53,6 +53,7 @@ import org.springframework.boot.security.oauth2.server.resource.autoconfigure.Jw
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -382,6 +383,17 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.withUserConfiguration(JwtDecoderConfig.class)
 			.withClassLoader(new FilteredClassLoader(ReactiveJwtDecoder.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
+	}
+
+	@Test
+	void autoConfigurationShouldBeConditionalOnReactiveWebApplication() {
+		new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(ReactiveJwtDecoder.class);
+				assertThat(context).doesNotHaveBean(ReactiveOpaqueTokenIntrospector.class);
+			});
 	}
 
 	@Test
