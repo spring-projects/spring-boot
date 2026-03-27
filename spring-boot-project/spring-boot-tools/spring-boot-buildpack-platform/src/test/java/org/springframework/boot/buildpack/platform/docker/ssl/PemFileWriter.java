@@ -181,7 +181,7 @@ public class PemFileWriter {
 	Path writeFile(String name, String... contents) throws IOException {
 		Path path = Paths.get(this.tempDir.toString(), name);
 		for (String content : contents) {
-			Files.write(path, content.replaceAll(EXAMPLE_SECRET_QUALIFIER, "").getBytes(), StandardOpenOption.CREATE,
+			Files.write(path, content.replace(EXAMPLE_SECRET_QUALIFIER, "").getBytes(), StandardOpenOption.CREATE,
 					StandardOpenOption.APPEND);
 		}
 		return path;

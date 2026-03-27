@@ -240,7 +240,7 @@ final class PemPrivateKeyParser {
 		}
 
 		private static byte[] decodeBase64(String content) {
-			byte[] contentBytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
+			byte[] contentBytes = content.replace("\r", "").replace("\n", "").getBytes();
 			return Base64.getDecoder().decode(contentBytes);
 		}
 
