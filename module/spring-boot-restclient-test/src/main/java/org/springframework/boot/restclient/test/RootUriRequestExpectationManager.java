@@ -50,7 +50,7 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Phillip Webb
  * @since 4.0.0
- * @see RootUriTemplateHandler
+ * @see DefaultUriBuilderFactory
  * @see #bindTo(RestTemplate)
  * @see #forRestTemplate(RestTemplate, RequestExpectationManager)
  */
