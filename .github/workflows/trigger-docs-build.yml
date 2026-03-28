@@ -35,4 +35,4 @@ jobs:
         INPUT_BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
         INPUT_BUILD_SHA: ${{ github.event.inputs.build-sha }}
         INPUT_BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${INPUT_BUILD_REFNAME} -f build-sha=${INPUT_BUILD_SHA} -f build-version=${INPUT_BUILD_VERSION}
+      run: gh workflow run deploy-docs.yml -r docs-build -f build-refname="${INPUT_BUILD_REFNAME}" -f build-sha="${INPUT_BUILD_SHA}" -f build-version="${INPUT_BUILD_VERSION}"
