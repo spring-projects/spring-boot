@@ -32,4 +32,7 @@ jobs:
     - name: Trigger Workflow
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${{ github.event.inputs.build-refname }} -f build-sha=${{ github.event.inputs.build-sha }} -f build-version=${{ github.event.inputs.build-version }}
+        INPUT_BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
+        INPUT_BUILD_SHA: ${{ github.event.inputs.build-sha }}
+        INPUT_BUILD_VERSION: ${{ github.event.inputs.build-version }}
+      run: gh workflow run deploy-docs.yml -r docs-build -f build-refname="${INPUT_BUILD_REFNAME}" -f build-sha="${INPUT_BUILD_SHA}" -f build-version="${INPUT_BUILD_VERSION}"
