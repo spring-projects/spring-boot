@@ -36,6 +36,7 @@ import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
@@ -53,15 +54,16 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			(pair) -> pair.value);
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter,
 			StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
-				customizerBuilder.nested().build());
+		super((members) -> jsonMembers(environment, stackTracePrinter, hashFieldConfiguration, contextPairs,
+				throwableProxyConverter, members), customizerBuilder.nested().build());
 	}
 
 	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant);
 		members.add("log").usingMembers((log) -> {
@@ -87,11 +89,23 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 				error.add("stack_trace", extractor::stackTrace);
 			});
 		});
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), (event) -> event)
+				.whenNotNull(getThrowableProxy)
+				.as((event) -> hashFieldConfiguration.computeHash(extractThrowable(event)));
+		}
 		members.add("tags", ILoggingEvent::getMarkerList)
 			.whenNotNull()
 			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
 			.whenNotEmpty();
 		members.add("ecs").usingMembers((ecs) -> ecs.add("version", "8.11"));
+	}
+
+	private static @Nullable Throwable extractThrowable(ILoggingEvent event) {
+		if (event.getThrowableProxy() instanceof ch.qos.logback.classic.spi.ThrowableProxy throwableProxy) {
+			return throwableProxy.getThrowable();
+		}
+		return null;
 	}
 
 	private static Set<String> getMarkers(List<Marker> markers) {
