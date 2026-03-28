@@ -17,8 +17,12 @@
 package org.springframework.boot.ansi;
 
 import java.io.Console;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -31,6 +35,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Yong-Hyun Kim
+ * @author Philemon Hilscher
  * @since 1.0.0
  */
 public abstract class AnsiOutput {
@@ -42,8 +47,6 @@ public abstract class AnsiOutput {
 	private static @Nullable Boolean consoleAvailable;
 
 	private static @Nullable Boolean ansiCapable;
-
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
 	private static final String ENCODE_START = "\033[";
 
@@ -171,11 +174,44 @@ public abstract class AnsiOutput {
 					}
 				}
 			}
-			return !(OPERATING_SYSTEM_NAME.contains("win"));
+			if (isWindows(System.getProperty("os.name"))) {
+				Integer buildNumber = parseWindowsBuildNumber(WINDOWS_BUILD_NUMBER).orElse(0);
+				return isWindowsAnsiCapable(buildNumber);
+			}
+			return true;
 		}
 		catch (Throwable ex) {
 			return false;
 		}
+	}
+
+	static boolean isWindows(String osName) {
+		return osName.toLowerCase(Locale.ENGLISH).contains("win");
+	}
+
+	private static final String CURRENT_BUILD = "CurrentBuild";
+	private static final Supplier<String> WINDOWS_BUILD_NUMBER = () -> {
+		try {
+			Process buildNumberRequest = Runtime.getRuntime().exec(
+					"reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" /v " + CURRENT_BUILD);
+			return new String(buildNumberRequest.getInputStream().readAllBytes());
+		} catch (IOException e) {
+			return "";
+		}
+	};
+
+	static Optional<Integer> parseWindowsBuildNumber(Supplier<String> osBuildSupplier) {
+		String plainResult = osBuildSupplier.get();
+		return Arrays.stream(plainResult.split("\\r\\n"))
+				.map(String::trim)
+				.filter(line -> line.startsWith(CURRENT_BUILD))
+				.findFirst()
+				.map(s -> s.split("\\s+")[2])
+				.map(Integer::decode);
+	}
+
+	static boolean isWindowsAnsiCapable(Integer buildNumber) {
+		return buildNumber >= 22000; // 22,000+ -> Windows 11 or higher
 	}
 
 	/**
