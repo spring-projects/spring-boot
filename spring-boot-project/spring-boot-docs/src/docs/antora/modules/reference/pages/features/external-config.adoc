@@ -790,6 +790,9 @@ TIP: To use a reserved keyword in the name of a property, such as `my.service.im
 
 NOTE: The properties that map to javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
+NOTE: Default values defined in javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] classes are not reflected in the javadoc:org.springframework.core.env.Environment[].
+If your application code references the same property using javadoc:org.springframework.beans.factory.annotation.Value[format=annotation], javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation], or its own javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] class, it will not see the default value -- only values that are actually present in the javadoc:org.springframework.core.env.Environment[] will be applied.
+
 [NOTE]
 ====
 Such arrangement relies on a default empty constructor and getters and setters are usually mandatory, since binding is through standard Java Beans property descriptors, just like in Spring MVC.
