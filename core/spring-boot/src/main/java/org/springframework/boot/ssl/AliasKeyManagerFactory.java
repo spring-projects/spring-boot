@@ -106,7 +106,7 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		@Override
 		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
-			return this.delegate.chooseEngineClientAlias(strings, principals, sslEngine);
+			return this.alias;
 		}
 
 		@Override
@@ -116,7 +116,7 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		@Override
 		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-			return this.delegate.chooseClientAlias(keyType, issuers, socket);
+			return this.alias;
 		}
 
 		@Override

@@ -34,21 +34,40 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 class AliasKeyManagerFactoryTests {
+	private static final String ALIAS = "test-alias";
 
 	@Test
 	void chooseEngineServerAliasReturnsAlias() throws Exception {
-		KeyManagerFactory delegate = mock(KeyManagerFactory.class);
-		given(delegate.getKeyManagers()).willReturn(new KeyManager[] { mock(X509ExtendedKeyManager.class) });
-		AliasKeyManagerFactory factory = new AliasKeyManagerFactory(delegate, "test-alias",
-				KeyManagerFactory.getDefaultAlgorithm());
-		factory.init(null, null);
-		KeyManager[] keyManagers = factory.getKeyManagers();
-		X509ExtendedKeyManager x509KeyManager = (X509ExtendedKeyManager) Arrays.stream(keyManagers)
-			.filter(X509ExtendedKeyManager.class::isInstance)
-			.findAny()
-			.get();
-		String chosenAlias = x509KeyManager.chooseEngineServerAlias(null, null, null);
-		assertThat(chosenAlias).isEqualTo("test-alias");
+		X509ExtendedKeyManager keyManager = createKeyManager();
+		String chosenAlias = keyManager.chooseEngineServerAlias(null, null, null);
+		assertThat(chosenAlias).isEqualTo(ALIAS);
 	}
 
+	@Test
+	void chooseEngineClientAliasReturnsAlias() throws Exception {
+		X509ExtendedKeyManager keyManager = createKeyManager();
+		String chosenAlias = keyManager.chooseEngineClientAlias(null, null, null);
+		assertThat(chosenAlias).isEqualTo(ALIAS);
+	}
+
+	@Test
+	void chooseClientAliasReturnsAlias() throws Exception {
+		X509ExtendedKeyManager keyManager = createKeyManager();
+		String chosenAlias = keyManager.chooseClientAlias(null, null, null);
+		assertThat(chosenAlias).isEqualTo(ALIAS);
+	}
+
+	private X509ExtendedKeyManager createKeyManager() throws Exception {
+		KeyManagerFactory delegate = mock(KeyManagerFactory.class);
+		given(delegate.getKeyManagers()).willReturn(new KeyManager[] { mock(X509ExtendedKeyManager.class) });
+
+		AliasKeyManagerFactory factory =
+				new AliasKeyManagerFactory(delegate, ALIAS, KeyManagerFactory.getDefaultAlgorithm());
+		factory.init(null, null);
+
+		return (X509ExtendedKeyManager) Arrays.stream(factory.getKeyManagers())
+				.filter(X509ExtendedKeyManager.class::isInstance)
+				.findFirst()
+				.orElseThrow();
+	}
 }
