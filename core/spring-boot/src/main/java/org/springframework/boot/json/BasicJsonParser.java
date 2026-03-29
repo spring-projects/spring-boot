@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Really basic JSON parser for when you have nothing else available. Comes with some
- * limitations with respect to the JSON specification (e.g. only supports String rawSplit),
+ * limitations with respect to the JSON specification (e.g. only supports String values),
  * so users will probably prefer to have a library handle things instead (Jackson or Snake
  * YAML are supported).
  *
