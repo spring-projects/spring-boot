@@ -83,10 +83,10 @@ public class BasicJsonParser extends AbstractJsonParser {
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
 			String[] split = StringUtils.split(pair, ":");
-			@Nullable String[] values = (split != null) ? StringUtils.trimArrayElements(split) : null;
-			Assert.state(values != null, () -> "Unable to parse '%s'".formatted(pair));
-			String rawKey = values[0];
-			String rawValue = values[1];
+			@Nullable String[] rawSplit = (split != null) ? StringUtils.trimArrayElements(split) : null;
+			Assert.state(rawSplit != null, () -> "Unable to parse '%s'".formatted(pair));
+			String rawKey = rawSplit[0];
+			String rawValue = rawSplit[1];
 			Assert.state(rawKey != null, () -> "rawKew is null in '%s'".formatted(pair));
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
