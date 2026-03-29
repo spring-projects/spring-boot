@@ -815,7 +815,7 @@ To customize the tags, provide a javadoc:org.springframework.context.annotation.
 === SSL Bundle Metrics
 
 Spring Boot Actuator publishes expiry metrics about SSL bundles.
-The metric `ssl.chain.expiry` gauges the expiry date of each certificate chain in seconds.
+The metric `ssl.chain.expiry` gauges the expiry date of each certificate chain in key stores and trust stores in seconds.
 This number will be negative if the chain has already expired.
 This metric is tagged with the following information:
 
@@ -830,6 +830,9 @@ This metric is tagged with the following information:
 
 | `chain`
 | The name of the certificate chain.
+
+| `source`
+| Whether the certificate chain comes from the key store (`keystore`) or trust store (`truststore`)
 |===
 
 
