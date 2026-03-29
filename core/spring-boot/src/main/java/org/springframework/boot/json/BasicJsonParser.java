@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Really basic JSON parser for when you have nothing else available. Comes with some
- * limitations with respect to the JSON specification (e.g. only supports String values),
+ * limitations with respect to the JSON specification (e.g. only supports String rawSplit),
  * so users will probably prefer to have a library handle things instead (Jackson or Snake
  * YAML are supported).
  *
@@ -83,10 +83,10 @@ public class BasicJsonParser extends AbstractJsonParser {
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
 			String[] split = StringUtils.split(pair, ":");
-			@Nullable String[] values = (split != null) ? StringUtils.trimArrayElements(split) : null;
-			Assert.state(values != null, () -> "Unable to parse '%s'".formatted(pair));
-			String rawKey = values[0];
-			String rawValue = values[1];
+			@Nullable String[] rawSplit = (split != null) ? StringUtils.trimArrayElements(split) : null;
+			Assert.state(rawSplit != null, () -> "Unable to parse '%s'".formatted(pair));
+			String rawKey = rawSplit[0];
+			String rawValue = rawSplit[1];
 			Assert.state(rawKey != null, () -> "rawKew is null in '%s'".formatted(pair));
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
@@ -170,7 +170,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	private static final class Tracking {
 
-		private final int[] counts = new int[Tracked.values().length];
+		private final int[] counts = new int[Tracked.rawSplit().length];
 
 		boolean in(Tracked... tracked) {
 			return Arrays.stream(tracked).mapToInt(this::get).anyMatch((i) -> i > 0);
