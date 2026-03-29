@@ -170,7 +170,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	private static final class Tracking {
 
-		private final int[] counts = new int[Tracked.rawSplit().length];
+		private final int[] counts = new int[Tracked.values().length];
 
 		boolean in(Tracked... tracked) {
 			return Arrays.stream(tracked).mapToInt(this::get).anyMatch((i) -> i > 0);
