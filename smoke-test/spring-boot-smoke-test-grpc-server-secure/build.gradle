@@ -16,7 +16,7 @@
 
 plugins {
 	id "java"
-	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
+	id "com.google.protobuf"
 	id "org.springframework.boot.docker-test"
 }
 
