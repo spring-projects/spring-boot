@@ -74,6 +74,7 @@ class JmsAutoConfigurationTests {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(JmsAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(JmsTemplate.class)
 				.doesNotHaveBean(JmsMessagingTemplate.class)
+				.doesNotHaveBean(JmsClient.Builder.class)
 				.doesNotHaveBean(JmsClient.class)
 				.doesNotHaveBean(DefaultJmsListenerContainerFactoryConfigurer.class)
 				.doesNotHaveBean(SimpleJmsListenerContainerFactoryConfigurer.class)
@@ -86,6 +87,7 @@ class JmsAutoConfigurationTests {
 			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
 			assertThat(context).hasSingleBean(JmsTemplate.class)
 				.hasSingleBean(JmsMessagingTemplate.class)
+				.hasSingleBean(JmsClient.Builder.class)
 				.hasSingleBean(JmsClient.class);
 			JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 			assertThat(jmsTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
@@ -106,6 +108,13 @@ class JmsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration5.class)
 			.run((context) -> assertThat(context.getBean(JmsMessagingTemplate.class).getDefaultDestinationName())
 				.isEqualTo("fooBar"));
+	}
+
+	@Test
+	void testJmsClientBuilderBackOff() {
+		JmsClient.Builder userJmsClientBuilder = mock(JmsClient.Builder.class);
+		this.contextRunner.withBean("userJmsClientBuilder", JmsClient.Builder.class, () -> userJmsClientBuilder)
+			.run((context) -> assertThat(context.getBean(JmsClient.Builder.class)).isEqualTo(userJmsClientBuilder));
 	}
 
 	@Test

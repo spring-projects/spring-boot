@@ -22,6 +22,7 @@ import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -30,6 +31,7 @@ import org.springframework.boot.jms.autoconfigure.JmsProperties.DeliveryMode;
 import org.springframework.boot.jms.autoconfigure.JmsProperties.Template;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsClient;
 import org.springframework.jms.core.JmsMessageOperations;
 import org.springframework.jms.core.JmsMessagingTemplate;
@@ -120,10 +122,18 @@ abstract class JmsClientConfigurations {
 	static class JmsClientConfiguration {
 
 		@Bean
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		JmsClient jmsClient(JmsTemplate jmsTemplate) {
-			return JmsClient.create(jmsTemplate);
+		JmsClient.Builder jmsClientBuilder(JmsTemplate jmsTemplate) {
+			return JmsClient.builder(jmsTemplate);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnSingleCandidate(JmsClient.Builder.class)
+		JmsClient jmsClient(JmsClient.Builder jmsClientBuilder) {
+			return jmsClientBuilder.build();
 		}
 
 	}
