@@ -86,6 +86,9 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq", "apache/activemq-classic" or "apache/activemq"
 
+| javadoc:org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails[]
+| Containers named "rabbitmq" or "apache/activemq-classic" or "apache/activemq-artemis"
+
 | javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis" or "apache/artemis"
 

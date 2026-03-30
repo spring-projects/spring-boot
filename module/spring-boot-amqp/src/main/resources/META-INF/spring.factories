@@ -1,0 +1,8 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.amqp.docker.compose.ActiveMqAmqpDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.amqp.docker.compose.ArtemisAmqpDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.amqp.docker.compose.RabbitMqAmqpDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.amqp.testcontainers.ActiveMqAmqpContainerConnectionDetailsFactory,\
+org.springframework.boot.amqp.testcontainers.ArtemisAmqpContainerConnectionDetailsFactory,\
+org.springframework.boot.amqp.testcontainers.RabbitMqAmqpContainerConnectionDetailsFactory
