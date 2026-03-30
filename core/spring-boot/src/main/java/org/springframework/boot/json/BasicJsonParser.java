@@ -82,12 +82,12 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
-			String[] split = StringUtils.split(pair, ":");
-			@Nullable String[] values = (split != null) ? StringUtils.trimArrayElements(split) : null;
-			Assert.state(values != null, () -> "Unable to parse '%s'".formatted(pair));
-			String rawKey = values[0];
-			String rawValue = values[1];
-			Assert.state(rawKey != null, () -> "rawKew is null in '%s'".formatted(pair));
+			String @Nullable [] split = StringUtils.split(pair, ":");
+			Assert.state(split != null, () -> "Unable to parse '%s'".formatted(pair));
+			@Nullable String[] rawElement = StringUtils.trimArrayElements(split);
+			String rawKey = rawElement[0];
+			String rawValue = rawElement[1];
+			Assert.state(rawKey != null, () -> "rawKey is null in '%s'".formatted(pair));
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
 			String key = trimEdges(rawKey, '"', '"');
