@@ -187,4 +187,11 @@ eclipse {
 	}
 }
 
-jar.dependsOn check
+if (isRegularBuild(providers)) {
+	jar.dependsOn(check)
+}
+
+static boolean isRegularBuild(ProviderFactory providers) {
+	def isIdeSync = providers.systemProperty("idea.sync.active")
+	return !isIdeSync.isPresent()
+}
