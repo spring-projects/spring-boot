@@ -61,12 +61,20 @@ final class ProtobufPluginAction implements PluginApplicationAction {
 	@Override
 	public void execute(Project project) {
 		ProtobufExtension protobuf = project.getExtensions().getByType(ProtobufExtension.class);
+		configureProtobuf(protobuf);
 		protobuf.protoc(this::configureProtoc);
 		protobuf.plugins(this::configurePlugins);
 		protobuf.generateProtoTasks(this::configureGenerateProtoTasks);
 		project.getConfigurations()
 			.named(this::isProtobufToolsLocator)
 			.configureEach((configuration) -> configureProtobufToolsLocator(project, configuration));
+	}
+
+	private void configureProtobuf(ProtobufExtension protobuf) {
+		// Clears javaExecutablePath to prevent build cache misses across machines.
+		// This is safe as long as the Protobuf tool is NOT configured as a JAR.
+		// See: https://github.com/google/protobuf-gradle-plugin/issues/785
+		protobuf.getJavaExecutablePath().set("");
 	}
 
 	private void configureProtoc(ExecutableLocator protoc) {
