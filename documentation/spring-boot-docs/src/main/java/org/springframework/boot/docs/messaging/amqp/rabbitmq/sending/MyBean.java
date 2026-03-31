@@ -16,27 +16,23 @@
 
 package org.springframework.boot.docs.messaging.amqp.rabbitmq.sending;
 
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MyBean {
 
-	private final AmqpAdmin amqpAdmin;
+	private final RabbitAmqpAdmin amqpAdmin;
 
-	private final AmqpTemplate amqpTemplate;
+	private final RabbitAmqpTemplate amqpTemplate;
 
-	public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+	public MyBean(RabbitAmqpAdmin amqpAdmin, RabbitAmqpTemplate amqpTemplate) {
 		this.amqpAdmin = amqpAdmin;
 		this.amqpTemplate = amqpTemplate;
 	}
 
 	// @fold:on // ...
-	public void someMethod() {
-		this.amqpAdmin.getQueueInfo("someQueue");
-	}
-
 	public void someOtherMethod() {
 		this.amqpTemplate.convertAndSend("hello");
 	}

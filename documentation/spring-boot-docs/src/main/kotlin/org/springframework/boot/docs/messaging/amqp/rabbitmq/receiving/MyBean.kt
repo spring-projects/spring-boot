@@ -16,17 +16,18 @@
 
 package org.springframework.boot.docs.messaging.amqp.rabbitmq.receiving
 
+import org.springframework.amqp.rabbit.annotation.RabbitHandler
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 
 @Suppress("UNUSED_PARAMETER")
 @Component
+@RabbitListener(queues = ["someQueue"])
 class MyBean {
 
-	@RabbitListener(queues = ["someQueue"])
+	@RabbitHandler
 	fun processMessage(content: String?) {
 		// ...
 	}
 
 }
-

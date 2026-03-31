@@ -3,7 +3,14 @@
 
 The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
 The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions.
-Spring Boot offers several conveniences for working with AMQP: generic AMQP 1.0 support is provided by the `spring-boot-starter-amqp` starter while specific RabbitMQ support is available via the `spring-boot-starter-rabbitmq` starter.
+Spring Boot provides auto-configuration for three different AMQP styles:
+
+* xref:messaging/amqp.adoc#messaging.amqp.generic[Generic AMQP 1.0] (`spring-boot-starter-amqp`) — broker-agnostic AMQP 1.0 support based on the Qpid ProtonJ2 client library.
+  Use this when portability across AMQP 1.0-compatible brokers such as ActiveMQ, Azure Service Bus, or RabbitMQ is important.
+* xref:messaging/amqp.adoc#messaging.amqp.rabbitmq[RabbitMQ AMQP 1.0] (`spring-boot-starter-amqp-rabbitmq`) — RabbitMQ-specific support via the native https://github.com/rabbitmq/rabbitmq-amqp-java-client[RabbitMQ AMQP 1.0 Java client].
+  Use this when your application targets RabbitMQ exclusively and you want to use the AMQP 1.0 protocol.
+* xref:messaging/amqp.adoc#messaging.amqp.rabbitmq09[RabbitMQ AMQP 0.9] (`spring-boot-starter-rabbitmq`) — RabbitMQ support via the classic AMQP 0.9.1 protocol.
+  Use this for the most established and feature-rich RabbitMQ integration, including Streams support.
 
 
 
@@ -77,9 +84,107 @@ Then you can use the factory in any javadoc:org.springframework.amqp.client.anno
 include-code::custom/MyBean[]
 
 
-
 [[messaging.amqp.rabbitmq]]
-== RabbitMQ Support
+== RabbitMQ AMQP 1.0 Support
+
+Spring AMQP provides {url-spring-amqp-docs}/rabbitmq-amqp-client.html[RabbitMQ dedicated support for AMQP 1.0] via `org.springframework.amqp:spring-rabbitmq-client`.
+
+RabbitMQ AMQP 1.0 configuration is controlled by external configuration properties in `+spring.amqp.rabbitmq.*+`.
+For example, you might declare the following section in `application.properties`:
+
+[configprops,yaml]
+----
+spring:
+  amqp:
+    rabbitmq:
+      host: "localhost"
+      port: 5672
+      username: "admin"
+      password: "secret"
+----
+
+Alternatively, you could configure the same connection using the `address` attribute:
+
+[configprops,yaml]
+----
+spring:
+  amqp:
+    rabbitmq:
+      address: "amqp://admin:secret@localhost"
+----
+
+NOTE: When specifying an address that way, the `host` and `port` properties are ignored.
+If the address uses the `amqps` scheme, an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] must be configured.
+
+See javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitProperties[] for more of the supported property-based configuration options.
+To configure lower-level details of the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[], define a javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpEnvironmentCustomizer[] bean.
+
+If a javadoc:com.rabbitmq.client.amqp.CredentialsProvider[] bean exists in the context, it will be automatically used by the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[].
+
+
+
+[[messaging.amqp.rabbitmq.ssl]]
+=== SSL
+
+To use SSL with RabbitMQ AMQP 1.0, set configprop:spring.amqp.rabbitmq.ssl.bundle[] to configure the xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to use.
+
+
+
+[[messaging.amqp.rabbitmq.sending]]
+=== Sending a Message
+
+Spring's javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[] and javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin[] are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
+
+include-code::MyBean[]
+
+If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[].
+
+You can set properties for the template as follows:
+
+[configprops,yaml]
+----
+spring:
+  amqp:
+    rabbitmq:
+      template:
+        exchange: "my-exchange"
+        routing-key: "my-key"
+        default-receive-queue: "my-queue"
+----
+
+To further configure the auto-configured javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[], declare a javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.RabbitAmqpTemplateCustomizer[] bean.
+
+
+
+[[messaging.amqp.rabbitmq.receiving]]
+=== Receiving a Message
+
+When the RabbitMQ AMQP 1.0 infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
+If no javadoc:org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory[] has been defined, a default one is automatically configured.
+If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] bean is defined, it is associated automatically with the default factory.
+
+The following sample component creates a listener endpoint on the `someQueue` queue:
+
+include-code::MyBean[]
+
+TIP: See javadoc:org.springframework.amqp.rabbit.annotation.EnableRabbit[format=annotation] for more details.
+
+If you need to create more javadoc:org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.RabbitAmqpListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory[] with the same settings as the factory used by the auto-configuration.
+
+For instance, the following configuration class exposes another factory that uses a specific javadoc:org.springframework.amqp.support.converter.MessageConverter[]:
+
+include-code::custom/MyRabbitAmqpConfiguration[]
+
+Then you can use the factory in any javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation]-annotated method, as follows:
+
+include-code::custom/MyBean[]
+
+To customize the listener container, define a javadoc:org.springframework.amqp.rabbit.config.ContainerCustomizer[] bean parameterized with javadoc:org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer[].
+
+
+
+[[messaging.amqp.rabbitmq09]]
+== RabbitMQ AMQP 0.9 Support
 
 https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
 Spring uses RabbitMQ to communicate through the AMQP protocol.
@@ -120,7 +225,7 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 
 
 
-[[messaging.amqp.rabbitmq.sending]]
+[[messaging.amqp.rabbitmq09.sending]]
 === Sending a Message
 
 Spring's javadoc:org.springframework.amqp.core.AmqpTemplate[] and javadoc:org.springframework.amqp.core.AmqpAdmin[] are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
@@ -153,7 +258,7 @@ If there's a bean of type javadoc:org.springframework.amqp.rabbit.support.microm
 
 
 
-[[messaging.amqp.rabbitmq.sending-stream]]
+[[messaging.amqp.rabbitmq09.sending-stream]]
 === Sending a Message To A Stream
 
 To send a message to a particular stream, specify the name of the stream, as shown in the following example:
@@ -172,13 +277,13 @@ If you need to create more javadoc:org.springframework.rabbit.stream.producer.Ra
 
 
 
-[[messaging.amqp.rabbitmq.sending-stream.ssl]]
+[[messaging.amqp.rabbitmq09.sending-stream.ssl]]
 ==== SSL
 To use SSL with RabbitMQ Streams, set configprop:spring.rabbitmq.stream.ssl.enabled[] to `true` or set configprop:spring.rabbitmq.stream.ssl.bundle[] to configure the xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to use.
 
 
 
-[[messaging.amqp.rabbitmq.receiving]]
+[[messaging.amqp.rabbitmq09.receiving]]
 === Receiving a Message
 
 When the Rabbit infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
@@ -213,85 +318,3 @@ You can also customize the javadoc:org.springframework.core.retry.RetryPolicy[] 
 IMPORTANT: By default, if retries are disabled and the listener throws an exception, the delivery is retried indefinitely.
 You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an javadoc:org.springframework.amqp.AmqpRejectAndDontRequeueException[] to signal the message should be rejected.
 The latter is the mechanism used when retries are enabled and the maximum number of delivery attempts is reached.
-
-
-
-[[messaging.amqp.rabbitmq-amqp]]
-== RabbitMQ AMQP 1.0 Support
-
-https://www.rabbitmq.com/[RabbitMQ] supports the AMQP 1.0 protocol via the https://github.com/rabbitmq/rabbitmq-amqp-java-client[RabbitMQ AMQP 1.0 Java client].
-Spring AMQP provides support for this client through `spring-rabbitmq-client`.
-Spring Boot offers auto-configuration for this support via the `spring-boot-starter-amqp-rabbitmq` starter.
-
-RabbitMQ AMQP 1.0 configuration is controlled by external configuration properties in `+spring.amqp.rabbitmq.*+`.
-For example, you might declare the following section in `application.properties`:
-
-[configprops,yaml]
-----
-spring:
-  amqp:
-    rabbitmq:
-      host: "localhost"
-      port: 5672
-      username: "admin"
-      password: "secret"
-----
-
-Alternatively, you could configure the same connection using the `address` attribute:
-
-[configprops,yaml]
-----
-spring:
-  amqp:
-    rabbitmq:
-      address: "amqp://admin:secret@localhost"
-----
-
-NOTE: When specifying an address that way, the `host` and `port` properties are ignored.
-
-See javadoc:org.springframework.boot.amqp.autoconfigure.RabbitAmqpProperties[] for more of the supported property-based configuration options.
-To configure lower-level details of the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[], define a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitAmqpEnvironmentBuilderCustomizer[] bean.
-
-If a javadoc:com.rabbitmq.client.amqp.CredentialsProvider[] bean exists in the context, it will be automatically used by the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[].
-
-
-
-[[messaging.amqp.rabbitmq-amqp.sending]]
-=== Sending a Message
-
-Spring's javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[] and javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin[] are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
-
-include-code::MyBean[]
-
-If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[].
-
-You can set properties for the template as follows:
-
-[configprops,yaml]
-----
-spring:
-  amqp:
-    rabbitmq:
-      template:
-        exchange: "my-exchange"
-        routing-key: "my-key"
-        default-receive-queue: "my-queue"
-----
-
-You can also customize the javadoc:org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate[] programmatically by declaring a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitAmqpTemplateCustomizer[] bean.
-
-
-
-[[messaging.amqp.rabbitmq-amqp.receiving]]
-=== Receiving a Message
-
-When the RabbitMQ AMQP 1.0 infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
-If no javadoc:org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory[] has been defined, a default one is automatically configured.
-
-The following sample component creates a listener endpoint on the `someQueue` queue:
-
-include-code::MyBean[]
-
-TIP: See javadoc:org.springframework.amqp.rabbit.annotation.EnableRabbit[format=annotation] for more details.
-
-To customize the listener container, define a javadoc:org.springframework.amqp.rabbit.config.ContainerCustomizer[] bean parameterized with javadoc:org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer[].

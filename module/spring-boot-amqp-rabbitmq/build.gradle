@@ -23,7 +23,7 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot AMQP"
+description = "Spring Boot AMQP 1.0 support for RabbitMQ"
 
 dependencies {
 	api(project(":core:spring-boot"))
@@ -38,9 +38,6 @@ dependencies {
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-micrometer-metrics"))
-	optional("io.micrometer:micrometer-core")
-	optional("org.springframework.amqp:spring-rabbit-stream")
 	optional("org.testcontainers:testcontainers-rabbitmq")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))

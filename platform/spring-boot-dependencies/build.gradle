@@ -2063,8 +2063,20 @@ bom {
 		}
 		links {
 			site("https://github.com/rabbitmq/rabbitmq-java-client")
-			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current", "com.rabbitmq")
+			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current", "com.rabbitmq.client")
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
+		}
+	}
+	library("RabbitMQ AMQP Client", "1.2.0") {
+		group("com.rabbitmq.client") {
+			modules = [
+					"amqp-client"
+			]
+		}
+		links {
+			site("https://github.com/rabbitmq/rabbitmq-amqp-java-client")
+			javadoc("https://rabbitmq.github.io/rabbitmq-amqp-java-client/stable/api", "com.rabbitmq.amqp.client")
+			releaseNotes("https://github.com/rabbitmq/rabbitmq-amqp-java-client/releases/tag/v{version}")
 		}
 	}
 	library("RabbitMQ Stream Client", "1.6.0") {
@@ -2248,6 +2260,7 @@ bom {
 				"spring-boot-starter-actuator-test",
 				"spring-boot-starter-amqp",
 				"spring-boot-starter-amqp-rabbitmq",
+				"spring-boot-starter-amqp-rabbitmq-test",
 				"spring-boot-starter-amqp-test",
 				"spring-boot-starter-artemis",
 				"spring-boot-starter-artemis-test",
