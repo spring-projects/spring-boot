@@ -881,7 +881,7 @@ TIP: To use a reserved keyword in the name of a property, such as `my.service.im
 
 
 [[features.external-config.typesafe-configuration-properties.constructor-binding.default-values]]
-==== Default Values
+==== @DefaultValue and Binding
 
 Default values can be specified using javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] on constructor parameters and record components.
 The conversion service will be applied to coerce the annotation's javadoc:java.lang.String[] value to the target type of a missing property.
@@ -945,6 +945,18 @@ If you want to always bind a non-null instance of `Security`, even when properti
 include-code::nonnull/MyProperties[tag=*]
 
 TIP: When using Kotlin, you will need to declare the `username` and `password` parameters as nullable since they do not have default values
+
+
+
+[[features.external-config.typesafe-configuration-properties.default-values]]
+=== Default Values
+
+Default Values defined in configuration properties are not reflected in the javadoc:org.springframework.core.env.Environment[].
+In the examples above, the `enabled` property of `MyProperties` bound to `my.service` is `false` by default.
+
+However,  `my.service.enabled` is not available in the `Environment` with a value of `false` if no such property is set by the user.
+Concretely, this prevents you to use `@Value(${"my.service.enabled"})` or `my.service.enabled` as a placeholder in configuration properties without explicitly providing a default.
+If you need to query the javadoc:org.springframework.core.env.Environment[] for that property, for instance in a javadoc:org.springframework.context.annotation.Condition[] implementation, the default needs to be provided as well.
 
 
 
