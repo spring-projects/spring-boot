@@ -852,6 +852,18 @@ TIP: To use a reserved keyword in the name of a property, such as `my.service.im
 
 
 
+[[features.external-config.typesafe-configuration-properties.default-values]]
+=== Default Values
+
+Default Values defined in configuration properties are not reflected in the javadoc:org.springframework.core.env.Environment[].
+In the examples above, the `enabled` property of `MyProperties` bound to `my.service` is `false` by default.
+
+However,  `my.service.enabled` is not available in the `Environment` with a value of `false` if no such property is set by the user.
+Concretely, this prevents you to use `@Value(${"my.service.enabled"})` or `my.service.enabled` as a placeholder in configuration properties without explicitly providing a default.
+If you need to query the javadoc:org.springframework.core.env.Environment[] for that property, for instance in a javadoc:org.springframework.context.annotation.Condition[] implementation, the default needs to be provided as well.
+
+
+
 [[features.external-config.typesafe-configuration-properties.enabling-annotated-types]]
 === Enabling @ConfigurationProperties-annotated Types
 
