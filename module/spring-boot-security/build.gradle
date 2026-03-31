@@ -36,7 +36,6 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jersey"))
 	optional(project(":module:spring-boot-reactor"))
-	optional(project(":module:spring-boot-restclient-test"))
 	optional(project(":module:spring-boot-rsocket"))
 	optional(project(":module:spring-boot-webflux"))
 	optional(project(":module:spring-boot-webmvc"))
