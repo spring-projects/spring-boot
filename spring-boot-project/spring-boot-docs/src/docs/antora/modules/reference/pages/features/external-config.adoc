@@ -790,9 +790,6 @@ TIP: To use a reserved keyword in the name of a property, such as `my.service.im
 
 NOTE: The properties that map to javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
-NOTE: Default values defined in javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] classes are not reflected in the javadoc:org.springframework.core.env.Environment[].
-If your application code references the same property using javadoc:org.springframework.beans.factory.annotation.Value[format=annotation], javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation], or its own javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] class, it will not see the default value -- only values that are actually present in the javadoc:org.springframework.core.env.Environment[] will be applied.
-
 [NOTE]
 ====
 Such arrangement relies on a default empty constructor and getters and setters are usually mandatory, since binding is through standard Java Beans property descriptors, just like in Spring MVC.
@@ -852,6 +849,18 @@ As such, it is not well-suited to configuration property injection.
 For consistency with properties of other types, if you do declare an javadoc:java.util.Optional[] property and it has no value, `null` rather than an empty javadoc:java.util.Optional[] will be bound.
 
 TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the javadoc:org.springframework.boot.context.properties.bind.Name[format=annotation] annotation on the constructor parameter.
+
+
+
+[[features.external-config.typesafe-configuration-properties.default-values]]
+=== Default Values
+
+Default Values defined in configuration properties are not reflected in the javadoc:org.springframework.core.env.Environment[].
+In the examples above, the `enabled` property of `MyProperties` bound to `my.service` is `false` by default.
+
+However,  `my.service.enabled` is not available in the `Environment` with a value of `false` if no such property is set by the user.
+Concretely, this prevents you to use `@Value(${"my.service.enabled"})` or `my.service.enabled` as a placeholder in configuration properties without explicitly providing a default.
+If you need to query the javadoc:org.springframework.core.env.Environment[] for that property, for instance in a javadoc:org.springframework.context.annotation.Condition[] implementation, the default needs to be provided as well.
 
 
 
