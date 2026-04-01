@@ -114,8 +114,19 @@ public abstract class SslBundleProperties {
 		private @Nullable String password;
 
 		/**
+		 * The alias that identifies the server key in the key store.
+		 */
+		private @Nullable String serverAlias;
+
+		/**
+		 * The alias that identifies the client key in the key store.
+		 */
+		private @Nullable String clientAlias;
+
+		/**
 		 * The alias that identifies the key in the key store.
 		 */
+		@Deprecated(since = "4.0.0")
 		private @Nullable String alias;
 
 		public @Nullable String getPassword() {
@@ -126,14 +137,30 @@ public abstract class SslBundleProperties {
 			this.password = password;
 		}
 
+		public @Nullable String getServerAlias() {
+			return this.serverAlias;
+		}
+
+		public void setServerAlias(@Nullable String serverAlias) {
+			this.serverAlias = serverAlias;
+		}
+
+		public @Nullable String getClientAlias() {
+			return this.clientAlias;
+		}
+
+		public void setClientAlias(@Nullable String clientAlias) {
+			this.clientAlias = clientAlias;
+		}
+
+		@Deprecated(since = "4.0.0")
 		public @Nullable String getAlias() {
 			return this.alias;
 		}
 
+		@Deprecated(since = "4.0.0")
 		public void setAlias(@Nullable String alias) {
 			this.alias = alias;
 		}
-
 	}
-
 }

@@ -56,7 +56,7 @@ public final class WebServerSslBundle implements SslBundle {
 
 	private WebServerSslBundle(SslStoreBundle stores, @Nullable String keyPassword, Ssl ssl) {
 		this.stores = stores;
-		this.key = SslBundleKey.of(keyPassword, ssl.getKeyAlias());
+		this.key = SslBundleKey.of(keyPassword, ssl.getKeyAlias(), null);
 		this.protocol = ssl.getProtocol();
 		this.options = SslOptions.of(ssl.getCiphers(), ssl.getEnabledProtocols());
 		this.managers = SslManagerBundle.from(this.stores, this.key);

@@ -34,6 +34,8 @@ import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedKeyManager;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link KeyManagerFactory} that allows a configurable key alias to be used. Due to the
  * fact that the actual calls to retrieve the key by alias are done at request time the
@@ -45,8 +47,8 @@ import javax.net.ssl.X509ExtendedKeyManager;
  */
 final class AliasKeyManagerFactory extends KeyManagerFactory {
 
-	AliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
-		super(new AliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
+	AliasKeyManagerFactory(KeyManagerFactory delegate, @Nullable String serverAlias, @Nullable String clientAlias, String algorithm) {
+		super(new AliasKeyManagerFactorySpi(delegate, serverAlias, clientAlias), delegate.getProvider(), algorithm);
 	}
 
 	/**
@@ -56,11 +58,14 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		private final KeyManagerFactory delegate;
 
-		private final String alias;
+		private final @Nullable String serverAlias;
 
-		private AliasKeyManagerFactorySpi(KeyManagerFactory delegate, String alias) {
+		private final @Nullable String clientAlias;
+
+		private AliasKeyManagerFactorySpi(KeyManagerFactory delegate, @Nullable String serverAlias, @Nullable String clientAlias) {
 			this.delegate = delegate;
-			this.alias = alias;
+			this.serverAlias = serverAlias;
+			this.clientAlias = clientAlias;
 		}
 
 		@Override
@@ -85,7 +90,7 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 		}
 
 		private AliasKeyManagerFactory.AliasX509ExtendedKeyManager wrap(X509ExtendedKeyManager keyManager) {
-			return new AliasX509ExtendedKeyManager(keyManager, this.alias);
+			return new AliasX509ExtendedKeyManager(keyManager, this.serverAlias, this.clientAlias);
 		}
 
 	}
@@ -97,26 +102,41 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		private final X509ExtendedKeyManager delegate;
 
-		private final String alias;
+		private final @Nullable String serverAlias;
 
-		private AliasX509ExtendedKeyManager(X509ExtendedKeyManager keyManager, String alias) {
+		private final @Nullable String clientAlias;
+
+		private AliasX509ExtendedKeyManager(X509ExtendedKeyManager keyManager, @Nullable String serverAlias, @Nullable String clientAlias) {
 			this.delegate = keyManager;
-			this.alias = alias;
+			this.serverAlias = serverAlias;
+			this.clientAlias = clientAlias;
 		}
 
 		@Override
 		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
-			return this.alias;
+			if (this.clientAlias != null) {
+				return this.clientAlias;
+			}
+
+			return this.delegate.chooseEngineClientAlias(strings, principals, sslEngine);
 		}
 
 		@Override
 		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
-			return this.alias;
+			if (this.serverAlias != null) {
+				return this.serverAlias;
+			}
+
+			return this.delegate.chooseEngineServerAlias(s, principals, sslEngine);
 		}
 
 		@Override
 		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-			return this.alias;
+			if (this.clientAlias != null) {
+				return this.clientAlias;
+			}
+
+			return this.delegate.chooseClientAlias(keyType, issuers, socket);
 		}
 
 		@Override
