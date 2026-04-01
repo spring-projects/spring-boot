@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          cert_file: /etc/certs/server.crt
+          key_file: /etc/certs/server.key
+        auth:
+          authenticator: basicauth/server
+
+processors:
+  batch:
+
+exporters:
+  logging:
+    loglevel: debug
+
+extensions:
+  basicauth/server:
+    htpasswd:
+      inline: |
+        testuser:testpass123
+
+service:
+  extensions: [basicauth/server]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]

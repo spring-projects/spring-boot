@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.actuator.observability.opentelemetry.environmentvariables;
+package smoketest.opentelemetry;
 
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+@SpringBootApplication
+public class SampleOpenTelemetryApplication {
 
-@Configuration(proxyBeanMethods = false)
-class AutoConfiguredOpenTelemetrySdkConfiguration {
-
-	@Bean
-	OpenTelemetry autoConfiguredOpenTelemetrySdk() {
-		return AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk();
+	public static void main(String[] args) {
+		SpringApplication.run(SampleOpenTelemetryApplication.class, args);
 	}
 
 }

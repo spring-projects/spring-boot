@@ -6,7 +6,7 @@
     "@antora/cli": "3.2.0-alpha.11",
     "@antora/site-generator": "3.2.0-alpha.11",
     "@antora/atlas-extension": "1.0.0-alpha.5",
-    "@springio/antora-extensions": "1.14.9",
+    "@springio/antora-extensions": "1.14.10",
     "@springio/antora-xref-extension": "1.0.0-alpha.5",
     "@springio/antora-zip-contents-collector-extension": "1.0.0-alpha.10",
     "@asciidoctor/tabs": "1.0.0-beta.6",
