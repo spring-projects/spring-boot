@@ -313,8 +313,8 @@ class EndpointRequestTests {
 
 	@Test
 	void toAdditionalPathsWithHttpMethodShouldRespectRequestMethod() {
-		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER,
-				FooEndpoint.class)
+		ServerWebExchangeMatcher matcher = EndpointRequest
+			.toAdditionalPaths(WebServerNamespace.SERVER, FooEndpoint.class)
 			.withHttpMethod(HttpMethod.POST);
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
 				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
