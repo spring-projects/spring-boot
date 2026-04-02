@@ -47,7 +47,7 @@ import org.springframework.session.jdbc.config.annotation.SpringSessionDataSourc
 import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuraion} for Spring Session JDBC.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Session JDBC.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
