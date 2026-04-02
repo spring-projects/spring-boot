@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
-import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
@@ -83,7 +82,13 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Artemis.
 	 */
-	ARTEMIS("apache/activemq-artemis", "2.34.0", () -> ArtemisContainer.class),
+	ARTEMIS("apache/artemis", "2.53.0", () -> ArtemisContainer.class),
+
+	/**
+	 * A container image suitable for testing Artemis using the legacy
+	 * {@code apache/activemq-artemis} image.
+	 */
+	ARTEMIS_LEGACY("apache/activemq-artemis", "2.34.0", () -> ArtemisLegacyContainer.class),
 
 	/**
 	 * A container image suitable for testing Cassandra.
