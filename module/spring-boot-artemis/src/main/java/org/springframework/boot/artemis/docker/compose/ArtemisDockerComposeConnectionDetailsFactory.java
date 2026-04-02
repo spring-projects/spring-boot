@@ -37,7 +37,7 @@ class ArtemisDockerComposeConnectionDetailsFactory
 	private static final int ACTIVEMQ_PORT = 61616;
 
 	protected ArtemisDockerComposeConnectionDetailsFactory() {
-		super("apache/activemq-artemis");
+		super(new String[] { "apache/activemq-artemis", "apache/artemis" });
 	}
 
 	@Override
