@@ -24,8 +24,10 @@ import org.springframework.boot.configurationsample.name.ConstructorParameterNam
 import org.springframework.boot.configurationsample.name.JavaBeanNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.LombokNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.RecordComponentNameAnnotationProperties;
-
+import org.springframework.boot.configurationsample.name.DuplicateNameAnnotationProperties;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.core.test.tools.CompilationException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Metadata generation tests for using {@code @Name}.
@@ -86,5 +88,13 @@ class NameAnnotationPropertiesTests extends AbstractMetadataGenerationTests {
 				.withDefaultValue("Whether default mode is enabled.")
 				.withDefaultValue(true));
 	}
+
+	@Test
+	void duplicateNameAnnotationPropertiesShouldFailCompilation() {
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compile(DuplicateNameAnnotationProperties.class))
+			.withMessageContaining("Multiple properties with the same name");
+	}
+
 
 }
