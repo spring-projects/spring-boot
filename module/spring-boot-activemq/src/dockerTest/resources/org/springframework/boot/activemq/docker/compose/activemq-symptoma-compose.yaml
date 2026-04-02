@@ -4,5 +4,5 @@ services:
     ports:
       - '61616'
     environment:
-      ACTIVEMQ_CONNECTION_USER: 'root'
-      ACTIVEMQ_CONNECTION_PASSWORD: 'secret'
+      ACTIVEMQ_USERNAME: 'root'
+      ACTIVEMQ_PASSWORD: 'secret'

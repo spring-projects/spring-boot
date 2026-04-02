@@ -25,11 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Integration tests for {@link ActiveMQDockerComposeConnectionDetailsFactory}.
  *
- * @author Moritz Halbritter
+ * @author Stephane Nicoll
  */
-class ActiveMQDockerComposeConnectionDetailsFactoryIntegrationTests {
+class ActiveMQSymptomaDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "activemq-compose.yaml", image = TestImage.ACTIVE_MQ)
+	@DockerComposeTest(composeFile = "activemq-symptoma-compose.yaml", image = TestImage.ACTIVE_MQ_SYMPTOMA)
 	void runCreatesConnectionDetails(ActiveMQConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getBrokerUrl()).isNotNull().startsWith("tcp://");
 		assertThat(connectionDetails.getUser()).isEqualTo("root");

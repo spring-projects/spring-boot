@@ -36,7 +36,7 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 	private static final int ACTIVEMQ_PORT = 61616;
 
 	protected ActiveMQClassicDockerComposeConnectionDetailsFactory() {
-		super("apache/activemq-classic");
+		super(new String[] { "apache/activemq-classic", "apache/activemq" });
 	}
 
 	@Override

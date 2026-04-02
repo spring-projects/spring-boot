@@ -21,7 +21,6 @@ import java.time.Duration;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.ActiveMQClassicContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +47,7 @@ class SampleActiveMqTests {
 
 	@Container
 	@ServiceConnection
-	private static final ActiveMQContainer container = TestImage.container(ActiveMQContainer.class);
+	private static final ActiveMQClassicContainer container = TestImage.container(ActiveMQClassicContainer.class);
 
 	@Autowired
 	private Producer producer;
