@@ -87,7 +87,7 @@ The following service connections are currently supported:
 | Containers named "symptoma/activemq", "apache/activemq-classic" or "apache/activemq"
 
 | javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
-| Containers named "apache/activemq-artemis"
+| Containers named "apache/activemq-artemis" or "apache/artemis"
 
 | javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
 | Containers named "cassandra", "bitnami/cassandra" or "bitnamilegacy/cassandra"

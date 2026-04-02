@@ -27,8 +27,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link ArtemisDockerComposeConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests {
+
+	@DockerComposeTest(composeFile = "artemis-compose.yaml", image = TestImage.ARTEMIS_LEGACY)
+	void runCreatesConnectionDetailsWithLegacyImage(ArtemisConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getMode()).isEqualTo(ArtemisMode.NATIVE);
+		assertThat(connectionDetails.getBrokerUrl()).isNotNull().startsWith("tcp://");
+		assertThat(connectionDetails.getUser()).isEqualTo("root");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+	}
 
 	@DockerComposeTest(composeFile = "artemis-compose.yaml", image = TestImage.ARTEMIS)
 	void runCreatesConnectionDetails(ArtemisConnectionDetails connectionDetails) {
