@@ -47,13 +47,13 @@ public abstract class AnsiOutput {
 
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name");
 
+	private static final List<String> WINDOWS_ANSI_COMPATIBLE = List.of("Windows 11", "Windows Server 2025");
+
 	private static final String ENCODE_START = "\033[";
 
 	private static final String ENCODE_END = "m";
 
 	private static final String RESET = "0;" + AnsiColor.DEFAULT;
-
-	private static final List<String> WINDOWS_ANSI_COMPATIBLE = List.of("Windows 11", "Windows Server 2025");
 
 	/**
 	 * Sets if ANSI output is enabled.
@@ -175,7 +175,7 @@ public abstract class AnsiOutput {
 					}
 				}
 			}
-			if (isWindows(OPERATING_SYSTEM_NAME)) {
+			if (OPERATING_SYSTEM_NAME.toLowerCase(Locale.ENGLISH).contains("win")) {
 				return WINDOWS_ANSI_COMPATIBLE.contains(OPERATING_SYSTEM_NAME);
 			}
 			return true;
@@ -183,10 +183,6 @@ public abstract class AnsiOutput {
 		catch (Throwable ex) {
 			return false;
 		}
-	}
-
-	static boolean isWindows(String osName) {
-		return osName.toLowerCase(Locale.ENGLISH).contains("win");
 	}
 
 	/**
