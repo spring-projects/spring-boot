@@ -192,12 +192,18 @@ public class SpringApplication {
 
 	/**
 	 * Default banner location.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link SpringApplicationBannerPrinter#DEFAULT_BANNER_LOCATION}.
 	 */
+	@Deprecated(forRemoval = true)
 	public static final String BANNER_LOCATION_PROPERTY_VALUE = SpringApplicationBannerPrinter.DEFAULT_BANNER_LOCATION;
 
 	/**
 	 * Banner location property key.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link SpringApplicationBannerPrinter#BANNER_LOCATION_PROPERTY}.
 	 */
+	@Deprecated(forRemoval = true)
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
