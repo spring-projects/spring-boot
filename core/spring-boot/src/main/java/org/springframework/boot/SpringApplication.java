@@ -206,7 +206,7 @@ public class SpringApplication {
 
 	static final SpringApplicationShutdownHook shutdownHook = new SpringApplicationShutdownHook();
 
-	private static final ThreadLocal<SpringApplicationHook> applicationHook = new ThreadLocal<>();
+	private static final ThreadLocal<@Nullable SpringApplicationHook> applicationHook = new ThreadLocal<>();
 
 	private final Set<Class<?>> primarySources;
 
@@ -1075,7 +1075,7 @@ public class SpringApplication {
 	 */
 	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer bootstrapRegistryInitializer) {
 		Assert.notNull(bootstrapRegistryInitializer, "'bootstrapRegistryInitializer' must not be null");
-		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializer));
+		this.bootstrapRegistryInitializers.add(bootstrapRegistryInitializer);
 	}
 
 	/**
@@ -1300,7 +1300,7 @@ public class SpringApplication {
 	 * @since 2.4.0
 	 */
 	public void setApplicationStartup(ApplicationStartup applicationStartup) {
-		this.applicationStartup = (applicationStartup != null) ? applicationStartup : ApplicationStartup.DEFAULT;
+		this.applicationStartup = applicationStartup;
 	}
 
 	/**
@@ -1815,8 +1815,8 @@ public class SpringApplication {
 
 		@Override
 		protected @Nullable Long processUptime() {
-			Long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
-			return (uptime >= 0) ? uptime : this.fallback.processUptime();
+			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
+			return (uptime >= 0) ? Long.valueOf(uptime) : this.fallback.processUptime();
 		}
 
 		@Override
