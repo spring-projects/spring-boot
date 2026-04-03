@@ -453,7 +453,7 @@ public final class EndpointRequest {
 				.filter(Objects::nonNull)
 				.map(this::getEndpointId)
 				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
-				.map(PathPatternParserServerWebExchangeMatcher::new)
+				.map((path) -> new PathPatternParserServerWebExchangeMatcher(path, this.httpMethod))
 				.collect(Collectors.toCollection(ArrayList::new));
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrServerWebExchangeMatcher(delegateMatchers)
 					: EMPTY_MATCHER;

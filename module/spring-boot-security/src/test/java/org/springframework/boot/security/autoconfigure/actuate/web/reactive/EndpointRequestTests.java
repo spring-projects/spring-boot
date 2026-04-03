@@ -312,6 +312,17 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toAdditionalPathsWithHttpMethodShouldRespectRequestMethod() {
+		ServerWebExchangeMatcher matcher = EndpointRequest
+			.toAdditionalPaths(WebServerNamespace.SERVER, FooEndpoint.class)
+			.withHttpMethod(HttpMethod.POST);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
+				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
+		assertMatcher.matches(HttpMethod.POST, "/additional");
+		assertMatcher.doesNotMatch(HttpMethod.GET, "/additional");
+	}
+
+	@Test
 	void toAdditionalPathsWithEndpointClassShouldNotMatchOtherPaths() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER,
 				FooEndpoint.class);
