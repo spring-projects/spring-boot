@@ -96,18 +96,15 @@ class CredentialHelper {
 			if (!Platform.isMac()) {
 				throw ex;
 			}
-			String executable = processBuilder.command().get(0);
+			List<String> originalCommand = List.copyOf(processBuilder.command());
+			String executable = originalCommand.get(0);
 			for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
+				List<String> command = new ArrayList<>(originalCommand);
+				command.set(0, binDirectory + executable);
 				try {
-					List<String> command = new ArrayList<>(processBuilder.command());
-					if (executable.startsWith(binDirectory)) {
-						continue;
-					}
-					command.set(0, binDirectory + executable);
 					return processBuilder.command(command).start();
 				}
 				catch (Exception suppressed) {
-					// Suppresses the exception and rethrows the original exception
 					ex.addSuppressed(suppressed);
 				}
 			}

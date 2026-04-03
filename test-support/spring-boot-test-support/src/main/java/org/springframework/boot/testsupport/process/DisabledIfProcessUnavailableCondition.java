@@ -78,7 +78,7 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 			String path = processBuilder.environment().get("PATH");
 			if (MAC_OS && path != null) {
 				for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
-					if (path.contains(binDirectory) || command[0].startsWith(binDirectory + "/")) {
+					if (path.contains(binDirectory) || command[0].startsWith("/")) {
 						continue;
 					}
 					String[] localCommand = command.clone();
@@ -87,7 +87,8 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 						check(new ProcessBuilder(localCommand));
 						return;
 					}
-					catch (Exception ignored) {
+					catch (Exception suppressed) {
+						ex.addSuppressed(suppressed);
 					}
 				}
 			}
