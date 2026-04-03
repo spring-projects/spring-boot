@@ -25,8 +25,10 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Name;
+import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
 
 /**
  * Configuration properties for gRPC clients.
@@ -167,9 +169,11 @@ public class GrpcClientProperties {
 			public static class Message {
 
 				/**
-				 * Maximum message size allowed to be received by the channel. Set to '-1'
-				 * to use the highest possible limit (not recommended).
+				 * Maximum message size allowed to be received by the channel. If a data
+				 * size suffix is not specified, bytes will be used. Set to '-1' to use
+				 * the highest possible limit (not recommended).
 				 */
+				@DataSizeUnit(DataUnit.BYTES)
 				private DataSize maxSize = DataSize.ofBytes(4194304);
 
 				public DataSize getMaxSize() {
@@ -188,9 +192,11 @@ public class GrpcClientProperties {
 			public static class Metadata {
 
 				/**
-				 * Maximum metadata size allowed to be received by the channel. Set to
-				 * '-1' to use the highest possible limit (not recommended).
+				 * Maximum metadata size allowed to be received by the channel. If a data
+				 * size suffix is not specified, bytes will be used.Set to '-1' to use the
+				 * highest possible limit (not recommended).
 				 */
+				@DataSizeUnit(DataUnit.BYTES)
 				private DataSize maxSize = DataSize.ofBytes(8192);
 
 				public DataSize getMaxSize() {
