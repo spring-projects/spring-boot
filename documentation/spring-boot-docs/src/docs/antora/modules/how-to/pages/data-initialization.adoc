@@ -98,8 +98,8 @@ Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Fly
 === Execute Flyway Database Migrations on Startup
 
 To automatically run Flyway database migrations on startup, add the appropriate Flyway module to your classpath.
-In-memory and file-based databases are supported by `org.flywaydb:flyway-core`.
-Otherwise, a database-specific module is required.
+In-memory and file-based databases are supported by the `spring-boot-starter-flyway` starter.
+Other cases require also a database-specific module.
 For example, use `org.flywaydb:flyway-database-postgresql` with PostgreSQL and `org.flywaydb:flyway-mysql` with MySQL.
 See https://documentation.red-gate.com/fd/supported-databases-and-versions-143754067.html[the Flyway Documentation] for further details.
 
@@ -169,11 +169,11 @@ With that setup, migrations in `dev/db/migration` run only when the `dev` profil
 [[howto.data-initialization.migration-tool.liquibase]]
 === Execute Liquibase Database Migrations on Startup
 
-To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
+To automatically run Liquibase database migrations on startup, add the `spring-boot-starter-liquibase` starter to your classpath.
 
 [NOTE]
 ====
-When you add the `org.liquibase:liquibase-core` to your classpath, database migrations run by default for both during application startup and before your tests run.
+When you add `spring-boot-starter-liquibase` to your classpath, database migrations run by default for both during application startup and before your tests run.
 This behavior can be customized by using the configprop:spring.liquibase.enabled[] property, setting different values in the `main` and `test` configurations.
 It is not possible to use two different ways to initialize the database (for example Liquibase for application startup, JPA for test runs).
 ====
