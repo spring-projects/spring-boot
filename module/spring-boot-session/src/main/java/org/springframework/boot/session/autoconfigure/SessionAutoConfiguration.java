@@ -97,6 +97,7 @@ public final class SessionAutoConfiguration {
 		static class EmbeddedWebServerConfiguration {
 
 			@Bean
+			@ConditionalOnMissingBean
 			SessionTimeout embeddedWebServerSessionTimeout(SessionProperties sessionProperties,
 					ServerProperties serverProperties) {
 				return () -> determineTimeout(sessionProperties,
@@ -137,6 +138,7 @@ public final class SessionAutoConfiguration {
 			}
 
 			@Bean
+			@ConditionalOnMissingBean
 			SessionTimeout warDeplomentSessionTimeout(SessionProperties sessionProperties) {
 				return sessionProperties::getTimeout;
 			}
@@ -172,6 +174,7 @@ public final class SessionAutoConfiguration {
 	static class ReactiveSessionConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		SessionTimeout embeddedWebServerSessionTimeout(SessionProperties sessionProperties,
 				ServerProperties serverProperties) {
 			return () -> determineTimeout(sessionProperties, serverProperties.getReactive().getSession()::getTimeout);
