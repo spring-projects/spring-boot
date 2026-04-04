@@ -28,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
@@ -50,6 +51,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
@@ -87,6 +89,14 @@ class EnvironmentEndpointTests {
 		PropertySourceDescriptor two = sources.get("two");
 		assertThat(two).isNotNull();
 		assertThat(two.getProperties()).containsOnlyKeys("my.key");
+	}
+
+	@Test
+	void invalidPatternThrowsInvalidEndpointRequestException() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
+		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> endpoint.environment("["))
+			.withMessageContaining("Pattern '[' is not a valid regular expression");
 	}
 
 	@Test
