@@ -44,6 +44,10 @@ class ProcessRunner {
 
 	private static final String USR_LOCAL_BIN = "/usr/local/bin";
 
+	private static final String OPT_HOMEBREW_BIN = "/opt/homebrew/bin";
+
+	private static final String[] MAC_OS_BIN_DIRECTORIES = { OPT_HOMEBREW_BIN, USR_LOCAL_BIN };
+
 	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 
 	private static final Log logger = LogFactory.getLog(ProcessRunner.class);
@@ -108,11 +112,22 @@ class ProcessRunner {
 		}
 		catch (IOException ex) {
 			String path = processBuilder.environment().get("PATH");
-			if (MAC_OS && path != null && !path.contains(USR_LOCAL_BIN)
-					&& !command[0].startsWith(USR_LOCAL_BIN + "/")) {
-				String[] localCommand = command.clone();
-				localCommand[0] = USR_LOCAL_BIN + "/" + localCommand[0];
-				return startProcess(localCommand);
+			if (MAC_OS && path != null) {
+				for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
+					if (path.contains(binDirectory) || command[0].startsWith("/")) {
+						continue;
+					}
+					String[] localCommand = command.clone();
+					localCommand[0] = binDirectory + "/" + command[0];
+					ProcessBuilder localProcessBuilder = new ProcessBuilder(localCommand);
+					localProcessBuilder.directory(this.workingDirectory);
+					try {
+						return localProcessBuilder.start();
+					}
+					catch (IOException suppressed) {
+						ex.addSuppressed(suppressed);
+					}
+				}
 			}
 			throw new ProcessStartException(command, ex);
 		}

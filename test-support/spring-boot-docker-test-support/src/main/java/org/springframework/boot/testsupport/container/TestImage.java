@@ -25,8 +25,6 @@ import java.util.function.Supplier;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
-import org.testcontainers.activemq.ActiveMQContainer;
-import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
@@ -62,14 +60,19 @@ import org.springframework.util.Assert;
 public enum TestImage {
 
 	/**
+	 * A container image suitable for testing ActiveMQ made by Symptoma.
+	 */
+	ACTIVE_MQ_SYMPTOMA("symptoma/activemq", "5.18.3", () -> SymptomaActiveMQContainer.class),
+
+	/**
 	 * A container image suitable for testing ActiveMQ.
 	 */
-	ACTIVE_MQ("symptoma/activemq", "5.18.3", () -> SymptomaActiveMQContainer.class),
+	ACTIVE_MQ("apache/activemq", "6.2.1", () -> ActiveMQContainer.class),
 
 	/**
 	 * A container image suitable for testing ActiveMQ classic.
 	 */
-	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQContainer.class),
+	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQClassicContainer.class),
 
 	/**
 	 * A container image suitable for testing Apache Kafka.
@@ -79,7 +82,13 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Artemis.
 	 */
-	ARTEMIS("apache/activemq-artemis", "2.34.0", () -> ArtemisContainer.class),
+	ARTEMIS("apache/artemis", "2.53.0", () -> ArtemisContainer.class),
+
+	/**
+	 * A container image suitable for testing Artemis using the legacy
+	 * {@code apache/activemq-artemis} image.
+	 */
+	ARTEMIS_LEGACY("apache/activemq-artemis", "2.34.0", () -> ArtemisLegacyContainer.class),
 
 	/**
 	 * A container image suitable for testing Cassandra.

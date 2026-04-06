@@ -59,6 +59,7 @@ import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Apiversi
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Format;
 import org.springframework.boot.webflux.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -73,6 +74,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringValueResolver;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ApiVersionParser;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
@@ -312,7 +314,8 @@ public final class WebFluxAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
 	@ImportRuntimeHints(WebFluxValidatorRuntimeHints.class)
-	static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
+	static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration
+			implements EmbeddedValueResolverAware {
 
 		private final WebFluxProperties webFluxProperties;
 
@@ -321,6 +324,8 @@ public final class WebFluxAutoConfiguration {
 		private final ServerProperties serverProperties;
 
 		private final @Nullable WebFluxRegistrations webFluxRegistrations;
+
+		private @Nullable StringValueResolver embeddedValueResolver;
 
 		EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
 				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
@@ -334,12 +339,17 @@ public final class WebFluxAutoConfiguration {
 		@Override
 		public FormattingConversionService webFluxConversionService() {
 			Format format = this.webFluxProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(
+			WebConversionService conversionService = new WebConversionService(this.embeddedValueResolver,
 					new DateTimeFormatters().dateFormat(format.getDate())
 						.timeFormat(format.getTime())
 						.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
+		}
+
+		@Override
+		public void setEmbeddedValueResolver(StringValueResolver resolver) {
+			this.embeddedValueResolver = resolver;
 		}
 
 		@Bean

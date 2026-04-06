@@ -31,6 +31,7 @@ import org.springframework.format.number.money.Jsr354NumberFormatAnnotationForma
 import org.springframework.format.number.money.MonetaryAmountFormatter;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringValueResolver;
 
 /**
  * {@link org.springframework.format.support.FormattingConversionService} dedicated to web
@@ -53,7 +54,23 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	 * @since 2.3.0
 	 */
 	public WebConversionService(DateTimeFormatters dateTimeFormatters) {
-		super(false);
+		this(null, dateTimeFormatters);
+	}
+
+	/**
+	 * Create a new WebConversionService that configures formatters with the provided
+	 * date, time, and date-time formats, or registers the default if no custom format is
+	 * provided. The given {@code embeddedValueResolver} is used to resolve embedded
+	 * values such as property placeholders in
+	 * {@link org.springframework.format.annotation.DateTimeFormat#pattern()} patterns.
+	 * @param embeddedValueResolver the embedded value resolver to use, or {@code null}
+	 * @param dateTimeFormatters the formatters to use for date, time, and date-time
+	 * formatting
+	 * @since 4.1.0
+	 */
+	public WebConversionService(@Nullable StringValueResolver embeddedValueResolver,
+			DateTimeFormatters dateTimeFormatters) {
+		super(embeddedValueResolver, false);
 		if (dateTimeFormatters.isCustomized()) {
 			addFormatters(dateTimeFormatters);
 		}

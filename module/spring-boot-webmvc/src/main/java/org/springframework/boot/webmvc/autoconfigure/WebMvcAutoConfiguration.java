@@ -67,6 +67,7 @@ import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Format;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,6 +88,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringValueResolver;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
@@ -438,7 +440,8 @@ public final class WebMvcAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebProperties.class)
 	@ImportRuntimeHints(MvcValidatorRuntimeHints.class)
-	static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+	static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration
+			implements ResourceLoaderAware, EmbeddedValueResolverAware {
 
 		private final Resources resourceProperties;
 
@@ -449,6 +452,8 @@ public final class WebMvcAutoConfiguration {
 		private final ListableBeanFactory beanFactory;
 
 		private final @Nullable WebMvcRegistrations mvcRegistrations;
+
+		private @Nullable StringValueResolver embeddedValueResolver;
 
 		@SuppressWarnings("NullAway.Init")
 		private ResourceLoader resourceLoader;
@@ -566,12 +571,17 @@ public final class WebMvcAutoConfiguration {
 		@Override
 		public FormattingConversionService mvcConversionService() {
 			Format format = this.mvcProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(
+			WebConversionService conversionService = new WebConversionService(this.embeddedValueResolver,
 					new DateTimeFormatters().dateFormat(format.getDate())
 						.timeFormat(format.getTime())
 						.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
+		}
+
+		@Override
+		public void setEmbeddedValueResolver(StringValueResolver resolver) {
+			this.embeddedValueResolver = resolver;
 		}
 
 		@Bean

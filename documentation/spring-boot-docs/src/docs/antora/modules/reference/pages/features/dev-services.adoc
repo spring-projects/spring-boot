@@ -84,10 +84,10 @@ The following service connections are currently supported:
 | Connection Details | Matched on
 
 | javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
-| Containers named "symptoma/activemq" or "apache/activemq-classic"
+| Containers named "symptoma/activemq", "apache/activemq-classic" or "apache/activemq"
 
 | javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
-| Containers named "apache/activemq-artemis"
+| Containers named "apache/activemq-artemis" or "apache/artemis"
 
 | javadoc:org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails[]
 | Containers named "cassandra"

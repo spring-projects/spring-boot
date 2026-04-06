@@ -41,6 +41,10 @@ class CredentialHelper {
 
 	private static final String USR_LOCAL_BIN = "/usr/local/bin/";
 
+	private static final String OPT_HOMEBREW_BIN = "/opt/homebrew/bin/";
+
+	private static final String[] MAC_OS_BIN_DIRECTORIES = { OPT_HOMEBREW_BIN, USR_LOCAL_BIN };
+
 	private static final Set<String> CREDENTIAL_NOT_FOUND_MESSAGES = Set.of("credentials not found in native keychain",
 			"no credentials server URL", "no credentials username");
 
@@ -92,16 +96,19 @@ class CredentialHelper {
 			if (!Platform.isMac()) {
 				throw ex;
 			}
-			try {
-				List<String> command = new ArrayList<>(processBuilder.command());
-				command.set(0, USR_LOCAL_BIN + command.get(0));
-				return processBuilder.command(command).start();
+			List<String> originalCommand = List.copyOf(processBuilder.command());
+			String executable = originalCommand.get(0);
+			for (String binDirectory : MAC_OS_BIN_DIRECTORIES) {
+				List<String> command = new ArrayList<>(originalCommand);
+				command.set(0, binDirectory + executable);
+				try {
+					return processBuilder.command(command).start();
+				}
+				catch (Exception suppressed) {
+					ex.addSuppressed(suppressed);
+				}
 			}
-			catch (Exception suppressed) {
-				// Suppresses the exception and rethrows the original exception
-				ex.addSuppressed(suppressed);
-				throw ex;
-			}
+			throw ex;
 		}
 	}
 
