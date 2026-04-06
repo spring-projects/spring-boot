@@ -39,6 +39,71 @@ public interface SslBundleKey {
 	SslBundleKey NONE = of(null, null);
 
 	/**
+	 * Return the password that should be used to access the key or {@code null} if no
+	 * password is required.
+	 * @return the key password
+	 */
+	@Nullable String getPassword();
+
+	/**
+	 * Return the alias of the key or {@code null} if the key has no alias.
+	 * @return the key alias
+	 */
+	@Nullable String getAlias();
+
+	/**
+	 * Return the alias of the server key or {@code null} if the server key has no alias.
+	 * @return the server key alias
+	 */
+	default @Nullable String getServerAlias() {
+		return this.getAlias();
+	}
+
+	/**
+	 * Return the alias of the client key or {@code null} if the client key has no alias.
+	 * @return the client key alias
+	 */
+	default @Nullable String getClientAlias() {
+		return null;
+	}
+
+	/**
+	 * Assert that the alias is contained in the given keystore.
+	 * @param keyStore the keystore to check
+	 */
+	default void assertContainsAlias(@Nullable KeyStore keyStore) {
+		String alias = getAlias();
+
+		if (keyStore != null && StringUtils.hasLength(alias)) {
+			try {
+				Assert.state(keyStore.containsAlias(alias),
+						() -> String.format("Keystore does not contain alias '%s'", alias));
+			}
+			catch (KeyStoreException ex) {
+				throw new IllegalStateException(
+						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+			}
+		}
+	}
+
+	default void assertContainsAlias(@Nullable KeyStore keyStore, @Nullable String alias) {
+		if (keyStore == null) {
+			return;
+		}
+
+		try {
+			if (StringUtils.hasLength(alias)) {
+				Assert.state(keyStore.containsAlias(alias),
+						() -> String.format("Keystore does not contain alias '%s'", alias));
+			}
+		}
+		catch (KeyStoreException ex) {
+			throw new IllegalStateException(
+					String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+		}
+	}
+
+	/**
 	 * Factory method to create a new {@link SslBundleKey} instance.
 	 * @param password the password used to access the key
 	 * @return a new {@link SslBundleKey} instance
@@ -50,7 +115,7 @@ public interface SslBundleKey {
 	/**
 	 * Factory method to create a new {@link SslBundleKey} instance.
 	 * @param password the password used to access the key
-	 * @param alias the alias of the server and client key
+	 * @param alias the alias of the key
 	 * @return a new {@link SslBundleKey} instance
 	 */
 	static SslBundleKey of(@Nullable String password, @Nullable String alias) {
@@ -63,16 +128,6 @@ public interface SslBundleKey {
 
 			@Override
 			public @Nullable String getAlias() {
-				return alias;
-			}
-
-			@Override
-			public @Nullable String getServerAlias() {
-				return alias;
-			}
-
-			@Override
-			public @Nullable String getClientAlias() {
 				return alias;
 			}
 
@@ -104,7 +159,7 @@ public interface SslBundleKey {
 
 			@Override
 			public @Nullable String getAlias() {
-				return serverAlias; // returns server alias for backwards compatibility
+				return serverAlias;
 			}
 
 			@Override
@@ -128,88 +183,4 @@ public interface SslBundleKey {
 
 		};
 	}
-
-	/**
-	 * Return the password that should be used to access the key or {@code null} if no
-	 * password is required.
-	 * @return the key password
-	 */
-	@Nullable String getPassword();
-
-	/**
-	 * Return the alias of the key or {@code null} if the key has no alias.
-	 * @return the key alias
-	 * @deprecated in favor of {@link #getServerAlias()} and {@link #getClientAlias()}
-	 */
-	@Deprecated(since = "4.0.0")
-	@Nullable String getAlias();
-
-	/**
-	 * Return the alias of the key to use for server connections or {@code null} if the key has no alias.
-	 * @return the server key alias
-	 */
-	@Nullable String getServerAlias();
-
-	/**
-	 * Return the alias of the key to use for client connections or {@code null} if the key has no alias.
-	 * @return the client key alias
-	 */
-	@Nullable String getClientAlias();
-
-	/**
-	 * Assert that the alias is contained in the given keystore.
-	 * @param keyStore the keystore to check
-	 * @deprecated in favor of {@link #assertContainsServerAlias(KeyStore)} and {@link #assertContainsClientAlias(KeyStore)}
-	 */
-	@Deprecated(since = "4.0.0")
-	default void assertContainsAlias(@Nullable KeyStore keyStore) {
-		String alias = getAlias();
-		if (StringUtils.hasLength(alias) && keyStore != null) {
-			try {
-				Assert.state(keyStore.containsAlias(alias),
-						() -> String.format("Keystore does not contain alias '%s'", alias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
-			}
-		}
-	}
-
-	/**
-	 * Assert that the server alias is contained in the given keystore.
-	 * @param keyStore the keystore to check
-	 */
-	default void assertContainsServerAlias(@Nullable KeyStore keyStore) {
-		String alias = getServerAlias();
-		if (StringUtils.hasLength(alias) && keyStore != null) {
-			try {
-				Assert.state(keyStore.containsAlias(alias),
-						() -> String.format("Keystore does not contain server alias '%s'", alias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains server alias '%s'", alias), ex);
-			}
-		}
-	}
-
-	/**
-	 * Assert that the client alias is contained in the given keystore.
-	 * @param keyStore the keystore to check
-	 */
-	default void assertContainsClientAlias(@Nullable KeyStore keyStore) {
-		String alias = getClientAlias();
-		if (StringUtils.hasLength(alias) && keyStore != null) {
-			try {
-				Assert.state(keyStore.containsAlias(alias),
-						() -> String.format("Keystore does not contain client alias '%s'", alias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains client alias '%s'", alias), ex);
-			}
-		}
-	}
-
 }

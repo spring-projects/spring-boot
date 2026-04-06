@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.autoconfigure.ssl.JksSslBundleProperties.JksKey;
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
@@ -71,10 +72,11 @@ public final class PropertiesSslBundle implements SslBundle {
 			return SslBundleKey.NONE;
 		}
 
-		var serverAlias = (key.getServerAlias() != null) ? key.getServerAlias() : key.getAlias();
-		var clientAlias = (key.getClientAlias() != null) ? key.getClientAlias() : key.getAlias();
+		if (key instanceof JksKey jksKey) {
+			return SslBundleKey.of(jksKey.getPassword(), jksKey.getServerAlias(), jksKey.getClientAlias());
+		}
 
-		return SslBundleKey.of(key.getPassword(), serverAlias, clientAlias);
+		return SslBundleKey.of(key.getPassword(), key.getAlias());
 	}
 
 	private static SslOptions asSslOptions(SslBundleProperties.@Nullable Options options) {
@@ -101,7 +103,7 @@ public final class PropertiesSslBundle implements SslBundle {
 		PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore(), resourceLoader);
 		if (keyStore != null) {
 			keyStore = keyStore
-					.withAlias(properties.getKey().getAlias()) // TODO: what do we do in this case?
+					.withAlias(properties.getKey().getAlias())
 					.withPassword(properties.getKey().getPassword());
 		}
 		PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore(), resourceLoader);

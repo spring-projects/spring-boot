@@ -141,6 +141,10 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		@Override
 		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+			if (this.serverAlias != null) {
+				return this.serverAlias;
+			}
+
 			return this.delegate.chooseServerAlias(keyType, issuers, socket);
 		}
 

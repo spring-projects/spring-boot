@@ -40,12 +40,22 @@ public class JksSslBundleProperties extends SslBundleProperties {
 	 */
 	private final Store truststore = new Store();
 
+	/**
+	 * Key properties.
+	 */
+	private final JksKey key = new JksKey();
+
 	public Store getKeystore() {
 		return this.keystore;
 	}
 
 	public Store getTruststore() {
 		return this.truststore;
+	}
+
+	@Override
+	public JksKey getKey() {
+		return this.key;
 	}
 
 	/**
@@ -107,4 +117,53 @@ public class JksSslBundleProperties extends SslBundleProperties {
 
 	}
 
+	public static class JksKey extends Key {
+		/**
+		 * The alias that identifies the server key in the key store.
+		 */
+		private @Nullable String serverAlias;
+
+		/**
+		 * The alias that identifies the client key in the key store.
+		 */
+		private @Nullable String clientAlias;
+
+		public @Nullable String getServerAlias() {
+			return this.serverAlias;
+		}
+
+		public void setServerAlias(@Nullable String serverAlias) {
+			this.serverAlias = serverAlias;
+		}
+
+		public @Nullable String getClientAlias() {
+			return this.clientAlias;
+		}
+
+		public void setClientAlias(@Nullable String clientAlias) {
+			this.clientAlias = clientAlias;
+		}
+
+		/**
+		 * Alias that identifies the key in the key store. Deprecated in favor of {@link #getServerAlias()}
+		 * @return the server key alias
+		 * @deprecated in favor of {@link #getServerAlias()}
+		 */
+		@Override
+		@Deprecated(since = "4.0.0", forRemoval = true)
+		public @Nullable String getAlias() {
+			return super.getAlias();
+		}
+
+		/**
+		 * Alias that identifies the key in the key store. Deprecated in favor of {@link #setServerAlias(String)}
+		 * @param alias the server key alias to set
+		 * @deprecated in favor of {@link #setServerAlias(String)}
+		 */
+		@Override
+		@Deprecated(since = "4.0.0", forRemoval = true)
+		public void setAlias(@Nullable String alias) {
+			super.setAlias(alias);
+		}
+	}
 }

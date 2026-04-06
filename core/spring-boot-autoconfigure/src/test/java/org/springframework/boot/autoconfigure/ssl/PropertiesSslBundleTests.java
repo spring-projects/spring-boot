@@ -86,7 +86,8 @@ class PropertiesSslBundleTests {
 	@Test
 	void jksPropertiesAreMappedToSslBundle() {
 		JksSslBundleProperties properties = new JksSslBundleProperties();
-		properties.getKey().setAlias("alias");
+		properties.getKey().setServerAlias("server-alias");
+		properties.getKey().setClientAlias("client-alias");
 		properties.getKey().setPassword("secret");
 		properties.getOptions().setCiphers(Set.of("cipher1", "cipher2", "cipher3"));
 		properties.getOptions().setEnabledProtocols(Set.of("protocol1", "protocol2"));
@@ -99,7 +100,9 @@ class PropertiesSslBundleTests {
 		properties.getTruststore().setType("PKCS12");
 		properties.getTruststore().setLocation("classpath:org/springframework/boot/autoconfigure/ssl/keystore.pkcs12");
 		SslBundle sslBundle = PropertiesSslBundle.get(properties);
-		assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias");
+		assertThat(sslBundle.getKey().getAlias()).isEqualTo("server-alias");
+		assertThat(sslBundle.getKey().getServerAlias()).isEqualTo("server-alias");
+		assertThat(sslBundle.getKey().getClientAlias()).isEqualTo("client-alias");
 		assertThat(sslBundle.getKey().getPassword()).isEqualTo("secret");
 		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");
 		assertThat(sslBundle.getOptions().getEnabledProtocols()).containsExactlyInAnyOrder("protocol1", "protocol2");

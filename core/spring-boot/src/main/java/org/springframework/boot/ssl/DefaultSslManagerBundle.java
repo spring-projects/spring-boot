@@ -45,15 +45,18 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 	public KeyManagerFactory getKeyManagerFactory() {
 		try {
 			KeyStore store = this.storeBundle.getKeyStore();
-			this.key.assertContainsServerAlias(store);
-			this.key.assertContainsClientAlias(store);
-
 			String serverAlias = this.key.getServerAlias();
 			String clientAlias = this.key.getClientAlias();
 
+			this.key.assertContainsAlias(store, serverAlias);
+			this.key.assertContainsAlias(store, clientAlias);
+
 			String algorithm = KeyManagerFactory.getDefaultAlgorithm();
+
 			KeyManagerFactory factory = getKeyManagerFactoryInstance(algorithm);
-			factory = new AliasKeyManagerFactory(factory, serverAlias, clientAlias, algorithm);
+			factory = (serverAlias != null || clientAlias != null) ?
+					new AliasKeyManagerFactory(factory, serverAlias, clientAlias, algorithm) :
+					factory;
 
 			String password = this.key.getPassword();
 			password = (password != null) ? password : this.storeBundle.getKeyStorePassword();
