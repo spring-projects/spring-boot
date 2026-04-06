@@ -238,9 +238,10 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Pulsar.
 	 */
-	PULSAR("apachepulsar/pulsar", "3.3.3", () -> PulsarContainer.class,
+	PULSAR("apachepulsar/pulsar", "4.2.0", () -> PulsarContainer.class,
 			(container) -> ((PulsarContainer) container).withStartupAttempts(2)
-				.withStartupTimeout(Duration.ofMinutes(3))),
+				.withStartupTimeout(Duration.ofMinutes(3))
+				.withEnv("PULSAR_PREFIX_advertisedAddress", "localhost")),
 
 	/**
 	 * A container image suitable for testing Pulsar using the deprecated
