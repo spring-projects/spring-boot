@@ -34,6 +34,7 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.AbstractSessionAutoConfigurationTests;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
+import org.springframework.boot.session.autoconfigure.SessionTimeout;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -106,6 +107,17 @@ class JdbcSessionAutoConfigurationTests extends AbstractSessionAutoConfiguration
 					JdbcIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
 		});
+	}
+
+	@Test
+	void customSessionTimeoutBean() {
+		this.contextRunner.withBean(SessionTimeout.class, () -> () -> Duration.ofSeconds(4))
+			.withPropertyValues("spring.session.timeout=1m")
+			.run((context) -> {
+				JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+						JdbcIndexedSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofSeconds(4));
+			});
 	}
 
 	@Test

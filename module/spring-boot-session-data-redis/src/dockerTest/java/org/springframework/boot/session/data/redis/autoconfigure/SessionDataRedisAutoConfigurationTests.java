@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.AbstractSessionAutoConfigurationTests;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
+import org.springframework.boot.session.autoconfigure.SessionTimeout;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -101,6 +102,17 @@ class SessionDataRedisAutoConfigurationTests extends AbstractSessionAutoConfigur
 			.run((context) -> {
 				RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
 				assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
+			});
+	}
+
+	@Test
+	void defaultConfigWithCustomSessionTimeoutBean() {
+		this.contextRunner.withBean(SessionTimeout.class, () -> () -> Duration.ofSeconds(4))
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
+			.run((context) -> {
+				RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofSeconds(4));
 			});
 	}
 
