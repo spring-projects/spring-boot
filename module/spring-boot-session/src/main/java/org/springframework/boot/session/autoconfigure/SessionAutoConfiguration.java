@@ -91,6 +91,7 @@ public final class SessionAutoConfiguration {
 
 		}
 
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnNotWarDeployment
 		@EnableConfigurationProperties(ServerProperties.class)
 		static class EmbeddedWebServerConfiguration {
@@ -124,8 +125,9 @@ public final class SessionAutoConfiguration {
 
 		}
 
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnWarDeployment
-		static class WarDepoymentConfiguration implements ServletContextAware {
+		static class WarDeploymentConfiguration implements ServletContextAware {
 
 			private @Nullable ServletContext servletContext;
 
