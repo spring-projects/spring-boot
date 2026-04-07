@@ -140,7 +140,7 @@ class FlywayPropertiesTests {
 		// Handled as createSchemas
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
-		ignoreProperties(configuration, "databaseType", "password", "url", "user");
+		ignoreProperties(configuration, "password", "url", "user");
 		// Properties not exposed by Flyway
 		ignoreProperties(configuration, "failOnMissingTarget");
 		// Properties managed by a proprietary extension
