@@ -17,6 +17,7 @@
 package org.springframework.boot.build;
 
 import java.net.URI;
+import java.nio.file.Path;
 
 import dev.detekt.gradle.Detekt;
 import dev.detekt.gradle.extensions.DetektExtension;
@@ -106,9 +107,21 @@ class KotlinConventions {
 		project.getPlugins().apply(DetektPlugin.class);
 		DetektExtension detekt = project.getExtensions().getByType(DetektExtension.class);
 		detekt.getConfig().setFrom(project.getRootProject().file("config/detekt/config.yml"));
-		project.getTasks()
-			.withType(Detekt.class)
-			.configureEach((task) -> task.getJvmTarget().set(JVM_TARGET.getTarget()));
+		project.getTasks().withType(Detekt.class).configureEach((task) -> {
+			task.getJvmTarget().set(JVM_TARGET.getTarget());
+			normalizeMachineSpecificDefaults(project, task);
+		});
+	}
+
+	private void normalizeMachineSpecificDefaults(Project project, Detekt task) {
+		// See: https://github.com/detekt/detekt/issues/7170
+		task.getBasePath().set(pathRelativeToRootProject(task.getProject()).toString());
+	}
+
+	private static Path pathRelativeToRootProject(Project project) {
+		Path rootProjectDirectory = project.getIsolated().getRootProject().getProjectDirectory().getAsFile().toPath();
+		Path projectDirectory = project.getLayout().getProjectDirectory().getAsFile().toPath();
+		return projectDirectory.relativize(rootProjectDirectory);
 	}
 
 }
