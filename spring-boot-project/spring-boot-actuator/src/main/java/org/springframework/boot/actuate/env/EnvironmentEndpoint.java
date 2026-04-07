@@ -23,10 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
@@ -87,9 +89,19 @@ public class EnvironmentEndpoint {
 
 	EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
 		if (StringUtils.hasText(pattern)) {
-			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate(), showUnsanitized);
+			return getEnvironmentDescriptor(getPatternPredicate(pattern), showUnsanitized);
 		}
 		return getEnvironmentDescriptor((name) -> true, showUnsanitized);
+	}
+
+	private Predicate<String> getPatternPredicate(String pattern) {
+		try {
+			return Pattern.compile(pattern).asPredicate();
+		}
+		catch (PatternSyntaxException ex) {
+			throw new InvalidEndpointRequestException("Pattern '" + pattern + "' is not a valid regular expression",
+					ex.getMessage());
+		}
 	}
 
 	private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate,
