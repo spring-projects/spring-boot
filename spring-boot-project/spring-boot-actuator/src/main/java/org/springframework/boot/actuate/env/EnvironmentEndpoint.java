@@ -89,18 +89,18 @@ public class EnvironmentEndpoint {
 
 	EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
 		if (StringUtils.hasText(pattern)) {
-			return getEnvironmentDescriptor(getPatternPredicate(pattern), showUnsanitized);
+			return getEnvironmentDescriptor(parsePattern(pattern).asPredicate(), showUnsanitized);
 		}
 		return getEnvironmentDescriptor((name) -> true, showUnsanitized);
 	}
 
-	private Predicate<String> getPatternPredicate(String pattern) {
+	private Pattern parsePattern(String pattern) {
 		try {
-			return Pattern.compile(pattern).asPredicate();
+			return Pattern.compile(pattern);
 		}
 		catch (PatternSyntaxException ex) {
-			throw new InvalidEndpointRequestException("Pattern '" + pattern + "' is not a valid regular expression",
-					ex.getMessage());
+			throw new InvalidEndpointRequestException("Failed to parse regular expression: " + pattern,
+					"Invalid regular expression", ex);
 		}
 	}
 

@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -72,14 +73,6 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
-	void invalidPatternThrowsInvalidEndpointRequestException() {
-		ConfigurableEnvironment environment = emptyEnvironment();
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
-		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> endpoint.environment("["))
-			.withMessageContaining("Pattern '[' is not a valid regular expression");
-	}
-
-	@Test
 	void basicResponse() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addLast(singleKeyPropertySource("one", "my.key", "first"));
@@ -124,6 +117,15 @@ class EnvironmentEndpointTests {
 			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("123456");
 			return null;
 		});
+	}
+
+	@Test
+	void responseWhenPatternIsInvalidThrowsInvalidEndpointRequestException() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
+		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> endpoint.environment("["))
+			.withMessageContaining("Failed to parse regular expression: [")
+			.withCauseInstanceOf(PatternSyntaxException.class);
 	}
 
 	@Test
