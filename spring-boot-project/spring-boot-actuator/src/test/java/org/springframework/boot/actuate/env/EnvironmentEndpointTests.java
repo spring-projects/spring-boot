@@ -23,10 +23,12 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
@@ -48,6 +50,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
@@ -114,6 +117,15 @@ class EnvironmentEndpointTests {
 			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("123456");
 			return null;
 		});
+	}
+
+	@Test
+	void responseWhenPatternIsInvalidThrowsInvalidEndpointRequestException() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
+		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> endpoint.environment("["))
+			.withMessageContaining("Failed to parse regular expression: [")
+			.withCauseInstanceOf(PatternSyntaxException.class);
 	}
 
 	@Test
