@@ -500,7 +500,7 @@ bom {
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
-	library("Groovy", "4.0.30") {
+	library("Groovy", "4.0.31") {
 		prohibit {
 			contains "-alpha-"
 			because "we don't want alpha dependencies"
