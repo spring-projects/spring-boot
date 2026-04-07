@@ -27,6 +27,7 @@ spring:
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
 If that property is not set with a servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+To provide the timeout programmatically, define a javadoc:org.springframework.boot.session.autoconfigure.SessionTimeout[] bean.
 
 You can take control over Spring Session's configuration using `@Enable*HttpSession` (servlet) or `@EnableRedisWebSession` (reactive).
 This will cause the auto-configuration to back off.
