@@ -30,12 +30,13 @@ class ProtobufConventions {
 	void apply(Project project) {
 		project.getPlugins().withId("com.google.protobuf", (plugin) -> {
 			ProtobufExtension protobuf = project.getExtensions().getByType(ProtobufExtension.class);
-
-			// Clears javaExecutablePath to prevent build cache misses across machines.
-			// This is safe as long as the Protobuf tool is NOT configured as a JAR.
-			// See: https://github.com/google/protobuf-gradle-plugin/issues/785
-			protobuf.getJavaExecutablePath().convention("");
+			removeUnusedMachineSpecificConfiguration(protobuf);
 		});
+	}
+
+	// See: https://github.com/google/protobuf-gradle-plugin/issues/785
+	private void removeUnusedMachineSpecificConfiguration(ProtobufExtension protobuf) {
+		protobuf.getJavaExecutablePath().convention("");
 	}
 
 }
