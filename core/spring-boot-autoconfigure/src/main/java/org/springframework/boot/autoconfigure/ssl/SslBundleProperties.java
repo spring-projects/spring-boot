@@ -133,5 +133,7 @@ public abstract class SslBundleProperties {
 		public void setAlias(@Nullable String alias) {
 			this.alias = alias;
 		}
+
 	}
+
 }
