@@ -310,17 +310,17 @@ public final class EndpointRequest {
 		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointServerWebExchangeMatcher excludingLinks() {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, this.httpMethod);
 		}
 
 		/**
