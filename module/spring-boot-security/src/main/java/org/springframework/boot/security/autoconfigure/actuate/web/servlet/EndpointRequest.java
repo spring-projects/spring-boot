@@ -318,17 +318,17 @@ public final class EndpointRequest {
 		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointRequestMatcher excludingLinks() {
-			return new EndpointRequestMatcher(this.includes, this.excludes, false, null);
+			return new EndpointRequestMatcher(this.includes, this.excludes, false, this.httpMethod);
 		}
 
 		/**

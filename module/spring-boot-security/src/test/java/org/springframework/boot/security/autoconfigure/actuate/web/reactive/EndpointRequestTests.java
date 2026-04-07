@@ -237,6 +237,33 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toAnyEndpointWithHttpMethodExcludingShouldPreserveHttpMethod() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
+			.withHttpMethod(HttpMethod.POST)
+			.excluding(FooEndpoint.class)
+			.excluding("baz");
+		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
+		endpoints.add(mockEndpoint(EndpointId.of("foo"), "foo"));
+		endpoints.add(mockEndpoint(EndpointId.of("bar"), "bar"));
+		endpoints.add(mockEndpoint(EndpointId.of("baz"), "baz"));
+		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator", () -> endpoints);
+		assertMatcher(matcher, pathMappedEndpoints).matches(HttpMethod.POST, "/actuator/bar");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch(HttpMethod.GET, "/actuator/bar");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz");
+	}
+
+	@Test
+	void toAnyEndpointWithHttpMethodExcludingLinksShouldPreserveHttpMethod() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
+			.withHttpMethod(HttpMethod.POST)
+			.excludingLinks();
+		assertMatcher(matcher).matches(HttpMethod.POST, "/actuator/foo");
+		assertMatcher(matcher).doesNotMatch(HttpMethod.GET, "/actuator/foo");
+		assertMatcher(matcher).doesNotMatch("/actuator");
+	}
+
+	@Test
 	void noEndpointPathsBeansShouldNeverMatch() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo");
