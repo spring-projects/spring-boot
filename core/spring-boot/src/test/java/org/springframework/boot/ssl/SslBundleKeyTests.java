@@ -55,12 +55,20 @@ class SslBundleKeyTests {
 	}
 
 	@Test
+	void ofCreatesWithPasswordAndServerAliasAndClientAliasSslKeyReference() {
+		SslBundleKey keyReference = SslBundleKey.of("password", "server-alias", "client-alias");
+		assertThat(keyReference.getPassword()).isEqualTo("password");
+		assertThat(keyReference.getServerAlias()).isEqualTo("server-alias");
+		assertThat(keyReference.getClientAlias()).isEqualTo("client-alias");
+	}
+
+	@Test
 	void getKeyManagerFactoryWhenHasAliasNotInStoreThrowsException() throws Exception {
 		KeyStore keyStore = mock(KeyStore.class);
 		given(keyStore.containsAlias("alias")).willReturn(false);
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
-		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
-			.withMessage("Keystore does not contain alias 'alias'");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Keystore does not contain server alias 'alias'");
 	}
 
 	@Test
@@ -68,8 +76,43 @@ class SslBundleKeyTests {
 		KeyStore keyStore = mock(KeyStore.class);
 		given(keyStore.containsAlias("alias")).willThrow(KeyStoreException.class);
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
-		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
-			.withMessage("Could not determine if keystore contains alias 'alias'");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Could not determine if keystore contains server alias 'alias'");
 	}
 
+	@Test
+	void getKeyManagerFactoryWhenHasServerAliasNotInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("server-alias")).willReturn(false);
+		SslBundleKey key = SslBundleKey.of("secret", "server-alias", null);
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Keystore does not contain server alias 'server-alias'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenHasServerAliasNotDeterminedInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("server-alias")).willThrow(KeyStoreException.class);
+		SslBundleKey key = SslBundleKey.of("secret", "server-alias", null);
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Could not determine if keystore contains server alias 'server-alias'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenHasClientAliasNotInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("client-alias")).willReturn(false);
+		SslBundleKey key = SslBundleKey.of("secret", null, "client-alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Keystore does not contain client alias 'client-alias'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenHasClientAliasNotDeterminedInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("client-alias")).willThrow(KeyStoreException.class);
+		SslBundleKey key = SslBundleKey.of("secret", null, "client-alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAliases(keyStore))
+			.withMessage("Could not determine if keystore contains client alias 'client-alias'");
+	}
 }

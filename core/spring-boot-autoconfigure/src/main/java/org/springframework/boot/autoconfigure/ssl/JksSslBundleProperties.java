@@ -147,10 +147,10 @@ public class JksSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Alias that identifies the key in the key store. Deprecated in favor of {@link #getServerAlias()}
 		 * @return the server key alias
-		 * @deprecated in favor of {@link #getServerAlias()}
+		 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link #getServerAlias()}
 		 */
 		@Override
-		@Deprecated(since = "4.0.0", forRemoval = true)
+		@Deprecated(since = "4.1.0", forRemoval = true)
 		public @Nullable String getAlias() {
 			return super.getAlias();
 		}
@@ -158,10 +158,10 @@ public class JksSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Alias that identifies the key in the key store. Deprecated in favor of {@link #setServerAlias(String)}
 		 * @param alias the server key alias to set
-		 * @deprecated in favor of {@link #setServerAlias(String)}
+		 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link #setServerAlias(String)}
 		 */
 		@Override
-		@Deprecated(since = "4.0.0", forRemoval = true)
+		@Deprecated(since = "4.1.0", forRemoval = true)
 		public void setAlias(@Nullable String alias) {
 			super.setAlias(alias);
 		}

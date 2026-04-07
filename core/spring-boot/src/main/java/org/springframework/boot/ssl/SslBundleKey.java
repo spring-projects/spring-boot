@@ -54,6 +54,7 @@ public interface SslBundleKey {
 	/**
 	 * Return the alias of the server key or {@code null} if the server key has no alias.
 	 * @return the server key alias
+	 * @since 4.1.0
 	 */
 	default @Nullable String getServerAlias() {
 		return this.getAlias();
@@ -62,6 +63,7 @@ public interface SslBundleKey {
 	/**
 	 * Return the alias of the client key or {@code null} if the client key has no alias.
 	 * @return the client key alias
+	 * @since 4.1.0
 	 */
 	default @Nullable String getClientAlias() {
 		return null;
@@ -70,7 +72,9 @@ public interface SslBundleKey {
 	/**
 	 * Assert that the alias is contained in the given keystore.
 	 * @param keyStore the keystore to check
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of {@link #assertContainsAliases(KeyStore)}
 	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	default void assertContainsAlias(@Nullable KeyStore keyStore) {
 		String alias = getAlias();
 
@@ -86,20 +90,34 @@ public interface SslBundleKey {
 		}
 	}
 
-	default void assertContainsAlias(@Nullable KeyStore keyStore, @Nullable String alias) {
+	default void assertContainsAliases(@Nullable KeyStore keyStore) {
+		String serverAlias = getServerAlias();
+		String clientAlias = getClientAlias();
+
 		if (keyStore == null) {
 			return;
 		}
 
 		try {
-			if (StringUtils.hasLength(alias)) {
-				Assert.state(keyStore.containsAlias(alias),
-						() -> String.format("Keystore does not contain alias '%s'", alias));
+			if (StringUtils.hasLength(serverAlias)) {
+				Assert.state(keyStore.containsAlias(serverAlias),
+						() -> String.format("Keystore does not contain server alias '%s'", serverAlias));
 			}
 		}
 		catch (KeyStoreException ex) {
 			throw new IllegalStateException(
-					String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+					String.format("Could not determine if keystore contains server alias '%s'", serverAlias), ex);
+		}
+
+		try {
+			if (StringUtils.hasLength(clientAlias)) {
+				Assert.state(keyStore.containsAlias(clientAlias),
+						() -> String.format("Keystore does not contain client alias '%s'", clientAlias));
+			}
+		}
+		catch (KeyStoreException ex) {
+			throw new IllegalStateException(
+					String.format("Could not determine if keystore contains client alias '%s'", clientAlias), ex);
 		}
 	}
 
@@ -148,6 +166,7 @@ public interface SslBundleKey {
 	 * @param serverAlias the alias of the server key
 	 * @param clientAlias the alias of the client key
 	 * @return a new {@link SslBundleKey} instance
+	 * @since 4.1.0
 	 */
 	static SslBundleKey of(@Nullable String password, @Nullable String serverAlias, @Nullable String clientAlias) {
 		return new SslBundleKey() {

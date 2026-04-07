@@ -83,6 +83,31 @@ public final class PropertiesSslBundle implements SslBundle {
 		return (options != null) ? SslOptions.of(options.getCiphers(), options.getEnabledProtocols()) : SslOptions.NONE;
 	}
 
+	@Override
+	public SslStoreBundle getStores() {
+		return this.stores;
+	}
+
+	@Override
+	public SslBundleKey getKey() {
+		return this.key;
+	}
+
+	@Override
+	public SslOptions getOptions() {
+		return this.options;
+	}
+
+	@Override
+	public String getProtocol() {
+		return this.protocol;
+	}
+
+	@Override
+	public SslManagerBundle getManagers() {
+		return this.managers;
+	}
+
 	/**
 	 * Get an {@link SslBundle} for the given {@link PemSslBundleProperties}.
 	 * @param properties the source properties
@@ -102,9 +127,8 @@ public final class PropertiesSslBundle implements SslBundle {
 	public static SslBundle get(PemSslBundleProperties properties, ResourceLoader resourceLoader) {
 		PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore(), resourceLoader);
 		if (keyStore != null) {
-			keyStore = keyStore
-					.withAlias(properties.getKey().getAlias())
-					.withPassword(properties.getKey().getPassword());
+			keyStore = keyStore.withAlias(properties.getKey().getAlias())
+				.withPassword(properties.getKey().getPassword());
 		}
 		PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore(), resourceLoader);
 		SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
@@ -163,31 +187,6 @@ public final class PropertiesSslBundle implements SslBundle {
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
 				properties.getPassword());
-	}
-
-	@Override
-	public SslStoreBundle getStores() {
-		return this.stores;
-	}
-
-	@Override
-	public SslBundleKey getKey() {
-		return this.key;
-	}
-
-	@Override
-	public SslOptions getOptions() {
-		return this.options;
-	}
-
-	@Override
-	public String getProtocol() {
-		return this.protocol;
-	}
-
-	@Override
-	public SslManagerBundle getManagers() {
-		return this.managers;
 	}
 
 	@Override

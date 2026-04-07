@@ -48,8 +48,7 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 			String serverAlias = this.key.getServerAlias();
 			String clientAlias = this.key.getClientAlias();
 
-			this.key.assertContainsAlias(store, serverAlias);
-			this.key.assertContainsAlias(store, clientAlias);
+			this.key.assertContainsAliases(store);
 
 			String algorithm = KeyManagerFactory.getDefaultAlgorithm();
 
