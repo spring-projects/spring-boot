@@ -17,6 +17,7 @@
 package org.springframework.boot.build;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,7 +108,21 @@ class KotlinConventions {
 		project.getPlugins().apply(DetektPlugin.class);
 		DetektExtension detekt = project.getExtensions().getByType(DetektExtension.class);
 		detekt.getConfig().setFrom(project.getRootProject().file("src/detekt/config.yml"));
-		project.getTasks().withType(Detekt.class).configureEach((task) -> task.setJvmTarget(JVM_TARGET));
+		project.getTasks().withType(Detekt.class).configureEach((task) -> {
+			task.setJvmTarget(JVM_TARGET);
+			normalizeMachineSpecificDefaults(project, task);
+		});
+	}
+
+	// See: https://github.com/detekt/detekt/issues/7170
+	private void normalizeMachineSpecificDefaults(Project project, Detekt task) {
+		task.setBasePath(pathRelativeToRootProject(task.getProject()).toString());
+	}
+
+	private static Path pathRelativeToRootProject(Project project) {
+		Path rootProjectDirectory = project.getIsolated().getRootProject().getProjectDirectory().getAsFile().toPath();
+		Path projectDirectory = project.getLayout().getProjectDirectory().getAsFile().toPath();
+		return projectDirectory.relativize(rootProjectDirectory);
 	}
 
 }
