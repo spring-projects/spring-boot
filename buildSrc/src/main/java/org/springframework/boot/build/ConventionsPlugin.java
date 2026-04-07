@@ -53,6 +53,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new WarConventions().apply(project);
 		new EclipseConventions(systemRequirements).apply(project);
 		new TestFixturesConventions().apply(project);
+		new ProtobufConventions().apply(project);
 		RepositoryTransformersExtension.apply(project);
 	}
 
