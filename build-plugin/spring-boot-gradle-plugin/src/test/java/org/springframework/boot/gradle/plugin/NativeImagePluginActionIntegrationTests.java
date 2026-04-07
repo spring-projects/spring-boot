@@ -67,11 +67,8 @@ class NativeImagePluginActionIntegrationTests {
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(buildLibs.listFiles()).contains(jarFile);
 		assertThat(getEntryNames(jarFile)).contains(
-				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reachability-metadata.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/reachability-metadata.json");
 	}
 
 	@TestTemplate
@@ -87,11 +84,8 @@ class NativeImagePluginActionIntegrationTests {
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(buildLibs.listFiles()).contains(jarFile);
 		assertThat(getEntryNames(jarFile)).contains(
-				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reachability-metadata.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/reachability-metadata.json");
 	}
 
 	@TestTemplate

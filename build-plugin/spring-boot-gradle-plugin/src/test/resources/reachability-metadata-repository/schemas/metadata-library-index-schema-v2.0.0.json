@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/oracle/graalvm-reachability-metadata/master/metadata/schemas/metadata-library-index-schema-v1.0.0.json",
+  "$id": "https://raw.githubusercontent.com/oracle/graalvm-reachability-metadata/master/metadata/schemas/metadata-library-index-schema-v2.0.0.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Schema for metadata/<groupId>/<artifactId>/index.json. Each entry describes a metadata bundle for a range of library versions.",
   "type": "array",
@@ -8,15 +8,11 @@
     "type": "object",
     "additionalProperties": false,
     "required": [
-      "module",
+      "allowed-packages",
       "metadata-version",
       "tested-versions"
     ],
     "properties": {
-      "module": {
-        "$ref": "#/$defs/moduleCoordinate",
-        "description": "Maven coordinates in the form '<groupId>:<artifactId>'."
-      },
       "metadata-version": {
         "type": "string",
         "minLength": 1,
@@ -37,6 +33,26 @@
         "minLength": 1,
         "description": "Overrides 'metadata-version' for use in test directories. This allows one metadata entry to share tests defined for a different version's metadata directory."
       },
+      "source-code-url": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional URL pointing to the metadata source code for this entry."
+      },
+      "repository-url": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional URL pointing to the canonical project repository for this entry."
+      },
+      "documentation-url": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional URL pointing to the project documentation for this entry."
+      },
+      "test-code-url": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional URL pointing to the test source code for this entry."
+      },
       "latest": {
         "type": "boolean",
         "description": "Marks this entry as the latest/default metadata for currently supported versions."
@@ -48,6 +64,16 @@
       "override": {
         "type": "boolean",
         "description": "When true, expresses the intent to exclude outdated built-in metadata shipped with Native Image for the matched versions."
+      },
+      "allowed-packages": {
+        "type": "array",
+        "description": "Packages expected to contain metadata entries for this library. Used by CI checks.",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "skipped-versions": {
         "type": "array",
@@ -68,6 +94,15 @@
             }
           }
         }
+      },
+      "requires": {
+        "type": "array",
+        "description": "List of dependent modules (group:artifact) whose metadata is required at runtime.",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "#/$defs/moduleCoordinate"
+        }
       }
     }
   },
@@ -81,22 +116,26 @@
     [
       {
         "metadata-version": "0.0.1",
-        "module": "org.example:library",
         "tested-versions": [ "0.0.1", "0.0.2" ],
         "default-for": "0\\.0\\..*",
-        "test-version": "0.0.1"
+        "test-version": "0.0.1",
+        "source-code-url": "https://github.com/example/project/tree/main/metadata/org.example/library/0.0.1",
+        "repository-url": "https://github.com/example/project",
+        "test-code-url": "https://github.com/example/project/tree/main/tests/src/org.example/library/0.0.1",
+        "documentation-url": "https://github.com/example/project/tree/main/README.md",
+        "allowed-packages": [ "org.example.library" ]
       },
       {
         "latest": true,
         "metadata-version": "1.0.0",
-        "module": "org.example:library",
-        "tested-versions": [ "1.0.0", "1.1.0" , "1.2.0"]
+        "tested-versions": [ "1.0.0", "1.1.0" , "1.2.0"],
+        "allowed-packages": [ "org.example.library" ]
       },
       {
         "metadata-version": "1.19.0",
-        "module": "io.opentelemetry:opentelemetry-sdk-trace",
         "tested-versions": [ "1.19.0" ],
         "override": true,
+        "allowed-packages": [ "io.opentelemetry" ],
         "skipped-versions": [
           { "version": "1.34.0", "reason": "Dependency io.opentelemetry:opentelemetry-api:1.34.0 provides reflect-config.json which does not parse." }
         ]
