@@ -18,6 +18,7 @@ package org.springframework.boot.security.test.autoconfigure.webmvc;
 
 import java.util.Base64;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
@@ -42,6 +44,9 @@ class MockMvcSecurityIntegrationTests {
 
 	@Autowired
 	private MockMvcTester mvc;
+
+	@Autowired
+	private PathPatternRequestMatcher.@Nullable Builder pathPatternRequestMatcherBuilder;
 
 	@Test
 	@WithMockUser(username = "test", password = "test", roles = "USER")
@@ -60,6 +65,11 @@ class MockMvcSecurityIntegrationTests {
 			.uri("/")
 			.header(HttpHeaders.AUTHORIZATION, "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes())))
 			.hasStatusOk();
+	}
+
+	@Test
+	void pathPatternRequestMatcherBuilderIsAvailable() {
+		assertThat(this.pathPatternRequestMatcherBuilder).isNotNull();
 	}
 
 }
