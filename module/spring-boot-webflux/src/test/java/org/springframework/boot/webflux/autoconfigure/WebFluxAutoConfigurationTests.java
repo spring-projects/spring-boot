@@ -343,11 +343,11 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void embeddedValueResolverIsAppliedToConversionService() throws Exception {
+	void embeddedValueResolverIsAppliedToConversionService() {
 		this.contextRunner.withPropertyValues("my.date.format=yyyy-MM-dd").run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			TypeDescriptor dateType = new TypeDescriptor(FormattedDate.class.getDeclaredField("date"));
-			Date date = Date.from(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC")).toInstant());
+			Date date = Date.from(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneId.systemDefault()).toInstant());
 			assertThat(conversionService.convert(date, dateType, TypeDescriptor.valueOf(String.class)))
 				.isEqualTo("2000-01-02");
 		});
