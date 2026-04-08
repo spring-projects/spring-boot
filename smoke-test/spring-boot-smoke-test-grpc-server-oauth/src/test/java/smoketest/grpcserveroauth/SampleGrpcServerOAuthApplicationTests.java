@@ -146,6 +146,7 @@ class SampleGrpcServerOAuthApplicationTests {
 		private String token(ClientRegistrationRepository clientRegistrationRepository) {
 			RestClientClientCredentialsTokenResponseClient client = new RestClientClientCredentialsTokenResponseClient();
 			ClientRegistration registration = clientRegistrationRepository.findByRegistrationId("spring");
+			assertThat(registration).isNotNull();
 			OAuth2ClientCredentialsGrantRequest request = new OAuth2ClientCredentialsGrantRequest(registration);
 			return client.getTokenResponse(request).getAccessToken().getTokenValue();
 		}

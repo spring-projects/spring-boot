@@ -41,12 +41,15 @@ class ReactiveOpaqueTokenIntrospectionClientConfiguration {
 	SpringReactiveOpaqueTokenIntrospector reactiveOpaqueTokenIntrospector(OAuth2ResourceServerProperties properties,
 			ObjectProvider<SpringReactiveOpaqueTokenIntrospectorBuilderCustomizer> customizers) {
 		OAuth2ResourceServerProperties.Opaquetoken token = properties.getOpaquetoken();
+		String introspectionUri = token.getIntrospectionUri();
+		Assert.state(introspectionUri != null,
+				"No 'spring.security.oauth2.resourceserver.opaquetoken.introspection-uri' property specified");
 		Assert.state(token.getClientId() != null,
 				"No 'spring.security.oauth2.resourceserver.opaquetoken.client-id' property specified");
 		Assert.state(token.getClientSecret() != null,
 				"No 'spring.security.oauth2.resourceserver.opaquetoken.client-secret' property specified");
 		SpringReactiveOpaqueTokenIntrospector.Builder builder = SpringReactiveOpaqueTokenIntrospector
-			.withIntrospectionUri(token.getIntrospectionUri())
+			.withIntrospectionUri(introspectionUri)
 			.clientId(token.getClientId())
 			.clientSecret(token.getClientSecret());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));

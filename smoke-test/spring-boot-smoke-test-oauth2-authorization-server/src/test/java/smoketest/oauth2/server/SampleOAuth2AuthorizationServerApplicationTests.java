@@ -64,7 +64,9 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/.well-known/openid-configuration",
 				HttpMethod.GET, null, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(entity.getBody()).build();
+		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
+		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(body).build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
 		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
 		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
@@ -83,8 +85,9 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = this.restTemplate
 			.exchange("/.well-known/oauth-authorization-server", HttpMethod.GET, null, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(entity.getBody())
-			.build();
+		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
+		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(body).build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
 		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
 		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
