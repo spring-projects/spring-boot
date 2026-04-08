@@ -99,8 +99,8 @@ public class EnvironmentEndpoint {
 			return Pattern.compile(pattern);
 		}
 		catch (PatternSyntaxException ex) {
-			throw new InvalidEndpointRequestException("Failed to parse regular expression: " + pattern,
-					"Invalid regular expression", ex);
+			throw new InvalidEndpointRequestException("Failed to parse regular expression",
+					"Invalid regular expression");
 		}
 	}
 
