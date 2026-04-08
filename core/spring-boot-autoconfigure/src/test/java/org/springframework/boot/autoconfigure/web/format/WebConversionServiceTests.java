@@ -187,7 +187,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(
 				(value) -> value.replace("${my.date.format}", "yyyy-MM-dd"), new DateTimeFormatters());
 		TypeDescriptor dateType = new TypeDescriptor(FormattedDate.class.getDeclaredField("date"));
-		Date date = Date.from(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC")).toInstant());
+		Date date = Date.from(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneId.systemDefault()).toInstant());
 		assertThat(conversionService.convert(date, dateType, TypeDescriptor.valueOf(String.class)))
 			.isEqualTo("2000-01-02");
 	}
