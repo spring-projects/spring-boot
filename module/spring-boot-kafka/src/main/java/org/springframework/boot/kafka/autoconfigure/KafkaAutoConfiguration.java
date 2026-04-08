@@ -43,6 +43,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails.Configuration;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Jaas;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry.Topic.Backoff;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Template;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -111,9 +112,12 @@ public final class KafkaAutoConfiguration {
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		observationConvention.ifUnique(kafkaTemplate::setObservationConvention);
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
-		map.from(this.properties.getTemplate().getDefaultTopic()).to(kafkaTemplate::setDefaultTopic);
-		map.from(this.properties.getTemplate().getTransactionIdPrefix()).to(kafkaTemplate::setTransactionIdPrefix);
-		map.from(this.properties.getTemplate().isObservationEnabled()).to(kafkaTemplate::setObservationEnabled);
+		Template templateProperties = this.properties.getTemplate();
+		map.from(templateProperties.getDefaultTopic()).to(kafkaTemplate::setDefaultTopic);
+		map.from(templateProperties.getTransactionIdPrefix()).to(kafkaTemplate::setTransactionIdPrefix);
+		map.from(templateProperties.getCloseTimeout()).to(kafkaTemplate::setCloseTimeout);
+		map.from(templateProperties.isAllowNonTransactional()).to(kafkaTemplate::setAllowNonTransactional);
+		map.from(templateProperties.isObservationEnabled()).to(kafkaTemplate::setObservationEnabled);
 		return kafkaTemplate;
 	}
 

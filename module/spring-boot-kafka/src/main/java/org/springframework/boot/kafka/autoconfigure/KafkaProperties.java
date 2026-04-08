@@ -919,6 +919,16 @@ public class KafkaProperties {
 		private @Nullable String transactionIdPrefix;
 
 		/**
+		 * Maximum time to wait when closing a producer.
+		 */
+		private Duration closeTimeout = Duration.ofSeconds(5);
+
+		/**
+		 * Whether to allow sending non-transactional messages.
+		 */
+		private boolean allowNonTransactional;
+
+		/**
 		 * Whether to enable observation.
 		 */
 		private boolean observationEnabled;
@@ -937,6 +947,22 @@ public class KafkaProperties {
 
 		public void setTransactionIdPrefix(@Nullable String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
+		}
+
+		public Duration getCloseTimeout() {
+			return this.closeTimeout;
+		}
+
+		public void setCloseTimeout(Duration closeTimeout) {
+			this.closeTimeout = closeTimeout;
+		}
+
+		public boolean isAllowNonTransactional() {
+			return this.allowNonTransactional;
+		}
+
+		public void setAllowNonTransactional(boolean allowNonTransactional) {
+			this.allowNonTransactional = allowNonTransactional;
 		}
 
 		public boolean isObservationEnabled() {
