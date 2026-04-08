@@ -32,7 +32,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.MapperFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
@@ -367,7 +369,9 @@ public final class JacksonAutoConfiguration {
 		protected void customize(B builder) {
 			if (this.jacksonProperties.isUseJackson2Defaults()) {
 				builder.configureForJackson2()
-					.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+					.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
+					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+					.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 			}
 			if (this.jacksonProperties.isFindAndAddModules()) {
 				builder.findAndAddModules(getClass().getClassLoader());
