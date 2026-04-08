@@ -538,6 +538,11 @@ public class KafkaProperties {
 		private @Nullable String transactionIdPrefix;
 
 		/**
+		 * When true, enables non transaction support for producer.
+		 */
+		private boolean allowNonTransactional = false;
+
+		/**
 		 * Additional producer-specific properties used to configure the client.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -628,6 +633,14 @@ public class KafkaProperties {
 
 		public void setTransactionIdPrefix(@Nullable String transactionIdPrefix) {
 			this.transactionIdPrefix = transactionIdPrefix;
+		}
+
+		public boolean isAllowNonTransactional() {
+			return this.allowNonTransactional;
+		}
+
+		public void setAllowNonTransactional(boolean allowNonTransactional) {
+			this.allowNonTransactional = allowNonTransactional;
 		}
 
 		public Map<String, String> getProperties() {
