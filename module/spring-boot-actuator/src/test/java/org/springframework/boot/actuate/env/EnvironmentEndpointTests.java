@@ -23,7 +23,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.PatternSyntaxException;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -142,8 +141,8 @@ class EnvironmentEndpointTests {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
 		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> endpoint.environment("["))
-			.withMessageContaining("Failed to parse regular expression: [")
-			.withCauseInstanceOf(PatternSyntaxException.class);
+			.withMessage("Failed to parse regular expression")
+			.withNoCause();
 	}
 
 	@Test
