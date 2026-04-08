@@ -812,8 +812,9 @@ class JacksonAutoConfigurationTests {
 			assertThat(mapper.isEnabled(feature)).as(feature.name()).isEqualTo(expected);
 		}
 		for (DeserializationFeature feature : DeserializationFeature.values()) {
-			assertThat(mapper.isEnabled(feature)).as(feature.name())
-				.isEqualTo(jackson2ConfiguredMapper.isEnabled(feature));
+			boolean expected = (feature == DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES) ? false
+					: jackson2ConfiguredMapper.isEnabled(feature);
+			assertThat(mapper.isEnabled(feature)).as(feature.name()).isEqualTo(expected);
 		}
 		for (EnumFeature feature : EnumFeature.values()) {
 			assertThat(mapper.isEnabled(feature)).as(feature.name())
@@ -824,8 +825,9 @@ class JacksonAutoConfigurationTests {
 				.isEqualTo(jackson2ConfiguredMapper.isEnabled(feature));
 		}
 		for (MapperFeature feature : MapperFeature.values()) {
-			assertThat(mapper.isEnabled(feature)).as(feature.name())
-				.isEqualTo(jackson2ConfiguredMapper.isEnabled(feature));
+			boolean expected = (feature == MapperFeature.DEFAULT_VIEW_INCLUSION) ? false
+					: jackson2ConfiguredMapper.isEnabled(feature);
+			assertThat(mapper.isEnabled(feature)).as(feature.name()).isEqualTo(expected);
 		}
 		for (SerializationFeature feature : SerializationFeature.values()) {
 			assertThat(mapper.isEnabled(feature)).as(feature.name())
