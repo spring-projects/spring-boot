@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+package org.springframework.boot.docs.data.nosql.redis.receiving.custom;
 
-description = "Starter for using Redis key-value data store with Spring Data Redis and the Lettuce client"
+import org.springframework.data.redis.annotation.RedisListener;
+import org.springframework.stereotype.Component;
 
-dependencies {
-	api(project(":starter:spring-boot-starter"))
+@Component
+public class MyBean {
 
-	api(project(":module:spring-boot-data-redis"))
-	api("org.springframework:spring-messaging")
+	@RedisListener(topic = "someChannel", container = "myRedisMessageListenerContainer")
+	public void processMessage(String content) {
+		// ...
+	}
+
 }

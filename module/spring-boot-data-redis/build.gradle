@@ -42,6 +42,7 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("com.redis:testcontainers-redis")
+	optional("org.springframework:spring-messaging")
 	optional("redis.clients:jedis")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
