@@ -1615,7 +1615,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.5.10") {
+	library("Micrometer Tracing", "1.5.11-SNAPSHOT") {
 		considerSnapshots()
 		alignWith {
 			dependencyManagementDeclaredIn("io.micrometer:micrometer-tracing-bom") {
@@ -1626,7 +1626,6 @@ bom {
 		}
 		group("io.micrometer") {
 			modules = [
-				"docs",
 				"micrometer-tracing",
 				"micrometer-tracing-bridge-brave",
 				"micrometer-tracing-bridge-otel",
