@@ -23,6 +23,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.MockMvcBuilderCustomizer;
 import org.springframework.boot.webmvc.test.autoconfigure.MockMvcHtmlUnitDriverCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Andy Wilkinson
  * @since 4.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = ServletWebSecurityAutoConfiguration.class)
 @ConditionalOnClass(MockMvc.class)
 public final class SecurityMockMvcAutoConfiguration {
 

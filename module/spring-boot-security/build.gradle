@@ -39,6 +39,7 @@ dependencies {
 	optional(project(":module:spring-boot-rsocket"))
 	optional(project(":module:spring-boot-webflux"))
 	optional(project(":module:spring-boot-webmvc"))
+	optional(project(":module:spring-boot-webmvc-test"))
 	optional(project(":module:spring-boot-web-server"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-messaging")

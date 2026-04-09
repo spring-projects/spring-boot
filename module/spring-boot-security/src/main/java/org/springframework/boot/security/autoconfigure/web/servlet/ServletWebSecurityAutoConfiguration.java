@@ -45,7 +45,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @since 4.0.0
  */
 @AutoConfiguration(after = UserDetailsServiceAutoConfiguration.class,
-		afterName = "org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration")
+		afterName = { "org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration",
+				"org.springframework.boot.webmvc.test.autoconfigure.MockMvcAutoConfiguration" })
 @ConditionalOnClass(EnableWebSecurity.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public final class ServletWebSecurityAutoConfiguration {
