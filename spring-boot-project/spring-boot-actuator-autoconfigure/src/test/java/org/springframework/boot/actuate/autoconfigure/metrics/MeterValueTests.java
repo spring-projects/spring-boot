@@ -35,15 +35,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MeterValueTests {
 
 	@Test
-	void getValueForDistributionSummaryWhenFromNumberShouldReturnDoubleValue() {
+	void getValueForDistributionSummaryWhenFromDecimalNumberShouldReturnDoubleValue() {
 		MeterValue meterValue = MeterValue.valueOf(123.42);
 		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
 	}
 
 	@Test
-	void getValueForDistributionSummaryWhenFromNumberStringShouldReturnDoubleValue() {
+	void getValueForDistributionSummaryWhenFromWholeNumberShouldReturnDoubleValue() {
+		MeterValue meterValue = MeterValue.valueOf(123);
+		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
+	}
+
+	@Test
+	void getValueForDistributionSummaryWhenFromDecimalNumberStringShouldReturnDoubleValue() {
 		MeterValue meterValue = MeterValue.valueOf("123.42");
 		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
+	}
+
+	@Test
+	void getValueForDistributionSummaryWhenFromWholeNumberStringShouldReturnDoubleValue() {
+		MeterValue meterValue = MeterValue.valueOf("123");
+		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
 	}
 
 	@Test

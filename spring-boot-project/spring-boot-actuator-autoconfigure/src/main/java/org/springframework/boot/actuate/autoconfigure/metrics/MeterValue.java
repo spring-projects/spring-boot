@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.instrument.Meter.Type;
 
 import org.springframework.boot.convert.DurationStyle;
+import org.springframework.util.StringUtils;
 
 /**
  * A meter value that is used when configuring micrometer. Can be a String representation
@@ -86,11 +87,26 @@ public final class MeterValue {
 	 * @return a {@link MeterValue} instance
 	 */
 	public static MeterValue valueOf(String value) {
+		if (onlyDigits(value)) {
+			return new MeterValue(Double.parseDouble(value));
+		}
 		Duration duration = safeParseDuration(value);
 		if (duration != null) {
 			return new MeterValue(duration);
 		}
 		return new MeterValue(Double.parseDouble(value));
+	}
+
+	private static boolean onlyDigits(String value) {
+		if (!StringUtils.hasLength(value)) {
+			return false;
+		}
+		for (char c : value.toCharArray()) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
