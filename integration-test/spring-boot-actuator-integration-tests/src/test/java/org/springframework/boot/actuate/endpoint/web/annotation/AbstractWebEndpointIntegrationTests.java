@@ -162,15 +162,40 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 					.jsonPath("_links.length()")
 					.isEqualTo(3)
 					.jsonPath("_links.self.href")
-					.isNotEmpty()
+					.value(isLinkTo("/endpoints"))
 					.jsonPath("_links.self.templated")
 					.isEqualTo(false)
 					.jsonPath("_links.test.href")
-					.isNotEmpty()
+					.value(isLinkTo("/endpoints/test"))
 					.jsonPath("_links.test.templated")
 					.isEqualTo(false)
 					.jsonPath("_links.test-part.href")
-					.isNotEmpty()
+					.value(isLinkTo("/endpoints/test/{part}"))
+					.jsonPath("_links.test-part.templated")
+					.isEqualTo(true));
+	}
+
+	@Test
+	void whenRequestHasAQueryStringLinksToOtherEndpointsDoNotHaveAQueryString() {
+		load(TestEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("?a=alpha")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("_links.length()")
+					.isEqualTo(3)
+					.jsonPath("_links.self.href")
+					.value(isLinkTo("/endpoints"))
+					.jsonPath("_links.self.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.test.href")
+					.value(isLinkTo("/endpoints/test"))
+					.jsonPath("_links.test.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.test-part.href")
+					.value(isLinkTo("/endpoints/test/{part}"))
 					.jsonPath("_links.test-part.templated")
 					.isEqualTo(true));
 	}
@@ -666,6 +691,10 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	void endpointCanProduceAResponseWithACustomStatus() {
 		load((context) -> context.register(CustomResponseStatusEndpointConfiguration.class),
 				(client) -> client.get().uri("/customstatus").exchange().expectStatus().isEqualTo(234));
+	}
+
+	private Consumer<Object> isLinkTo(String target) {
+		return (href) -> assertThat(href).asString().doesNotContain("?").endsWith(target);
 	}
 
 	protected abstract int getPort(T context);
