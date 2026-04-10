@@ -61,6 +61,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.cors.CorsConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -164,6 +165,26 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.isNotEmpty()
 			.jsonPath("_links.test-part.templated")
 			.isEqualTo(true)));
+	}
+
+	@Test
+	void linksToOtherEndpointsWithQueryStringShouldNotContainQueryInHref() {
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication?x=1")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("_links.self.href")
+			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication"))
+			.jsonPath("_links.info.href")
+			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication/info"))
+			.jsonPath("_links.env.href")
+			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication/env"))));
 	}
 
 	@Test
