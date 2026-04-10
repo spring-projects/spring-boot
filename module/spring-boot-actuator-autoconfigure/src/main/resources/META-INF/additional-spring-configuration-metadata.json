@@ -92,9 +92,9 @@
     {
       "name": "management.httpexchanges.recording.include",
       "defaultValue": [
+        "time-taken",
         "request-headers",
-        "response-headers",
-        "errors"
+        "response-headers"
       ]
     },
     {
