@@ -146,45 +146,25 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.jsonPath("_links.length()")
 			.isEqualTo(5)
 			.jsonPath("_links.self.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication"))
 			.jsonPath("_links.self.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.info.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication/info"))
 			.jsonPath("_links.info.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.env.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication/env"))
 			.jsonPath("_links.env.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.test.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication/test"))
 			.jsonPath("_links.test.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.test-part.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication/test/{part}"))
 			.jsonPath("_links.test-part.templated")
 			.isEqualTo(true)));
-	}
-
-	@Test
-	void linksToOtherEndpointsWithQueryStringShouldNotContainQueryInHref() {
-		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
-		this.contextRunner.run(withWebTestClient((client) -> client.get()
-			.uri("/cfApplication?x=1")
-			.accept(MediaType.APPLICATION_JSON)
-			.header("Authorization", "bearer " + mockAccessToken())
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("_links.self.href")
-			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication"))
-			.jsonPath("_links.info.href")
-			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication/info"))
-			.jsonPath("_links.env.href")
-			.value((href) -> assertThat((String) href).doesNotContain("?").endsWith("/cfApplication/env"))));
 	}
 
 	@Test
@@ -216,11 +196,11 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.jsonPath("_links.length()")
 			.isEqualTo(2)
 			.jsonPath("_links.self.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication"))
 			.jsonPath("_links.self.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.info.href")
-			.isNotEmpty()
+			.value(isLinkTo("/cfApplication/info"))
 			.jsonPath("_links.info.templated")
 			.isEqualTo(false)
 			.jsonPath("_links.env")
@@ -232,9 +212,31 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	}
 
 	@Test
+	void whenRequestHasAQueryStringLinksToOtherEndpointsDoNotHaveAQueryString() {
+		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication?x=1")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("_links.self.href")
+			.value(isLinkTo("/cfApplication"))
+			.jsonPath("_links.info.href")
+			.value(isLinkTo("/cfApplication/info"))));
+	}
+
+	@Test
 	void unknownEndpointsAreForbidden() {
 		this.contextRunner.run(withWebTestClient(
 				(client) -> client.get().uri("/cfApplication/unknown").exchange().expectStatus().isForbidden()));
+	}
+
+	private Consumer<Object> isLinkTo(String target) {
+		return (href) -> assertThat(href).asString().doesNotContain("?").endsWith(target);
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
