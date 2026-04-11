@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
@@ -39,6 +41,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * {@link ServiceConnectionAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Daeho Kwon
  */
 class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -61,13 +64,23 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
 			MergedAnnotations annotations = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
-					? testcontainerBeanDefinition.getAnnotations() : null;
+					? testcontainerBeanDefinition.getAnnotations() : getAnnotationsFromFactoryMethod(beanDefinition);
 			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
 				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
 						serviceConnection);
 				registrar.registerBeanDefinitions(registry, source);
 			}
 		}
+	}
+
+	private MergedAnnotations getAnnotationsFromFactoryMethod(BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
+			Method factoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
+			if (factoryMethod != null) {
+				return MergedAnnotations.from(factoryMethod, MergedAnnotations.SearchStrategy.DIRECT);
+			}
+		}
+		return null;
 	}
 
 	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
