@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.security.springwebflux
+package org.springframework.boot.docs.security.oauth2.client
 
-import org.springframework.boot.security.autoconfigure.web.reactive.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer.withDefaults
-import org.springframework.security.config.web.server.ServerHttpSecurity
-import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.web.SecurityFilterChain
 
 @Configuration(proxyBeanMethods = false)
-class MyWebFluxSecurityConfiguration {
+@EnableWebSecurity
+open class MyOAuthClientConfiguration {
 
 	@Bean
-	fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
-		http.authorizeExchange { spec ->
-			spec.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-			spec.pathMatchers("/foo", "/bar").authenticated()
+	open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+		http {
+			authorizeHttpRequests {
+				authorize(anyRequest, authenticated)
+			}
+			oauth2Login {
+				redirectionEndpoint {
+					baseUri = "/login/oauth2/callback/*"
+				}
+			}
 		}
-		http.formLogin(withDefaults())
 		return http.build()
 	}
 

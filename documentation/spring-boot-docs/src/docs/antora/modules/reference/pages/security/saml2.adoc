@@ -1,0 +1,107 @@
+[[security.saml2]]
+= SAML 2.0
+
+https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html[SAML v2.0] is a widely adopted framework for exchanging security information between online business partners.
+
+
+
+[[security.saml2.build]]
+== Build Configuration
+SAML 2.0 support builds off of the OpenSAML library that https://shibboleth.atlassian.net/wiki/spaces/DEV/pages/1123844333/Use+of+Maven+Central#Publishing-to-Maven-Central[requires an extra repository] configuration.
+
+
+
+[[security.saml2.build.maven]]
+=== Using Maven
+With Maven, you need to add an extra `repository` element to your POM as follows:
+
+[source,xml,subs="verbatim,attributes"]
+----
+<repositories>
+	<repository>
+		<id>shibboleth-releases</id>
+		<name>Shibboleth Releases Repository</name>
+		<url>https://build.shibboleth.net/maven/releases</url>
+		<snapshots>
+			<enabled>false</enabled>
+		</snapshots>
+	</repository>
+</repositories>
+----
+
+
+[[security.saml2.build.gradle]]
+=== Using Gradle
+With Gradle, a repository element should be added to your build script:
+
+[source,gradle,subs="verbatim,attributes"]
+----
+repositories {
+    maven { url "https://build.shibboleth.net/maven/releases" }
+}
+----
+
+
+
+[[security.saml2.relying-party]]
+== Relying Party
+
+If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
+This configuration makes use of the properties under javadoc:org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties[].
+
+A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
+You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          my-relying-party1:
+            signing:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            decryption:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            singlelogout:
+               url: "https://myapp/logout/saml2/slo"
+               response-url: "https://remoteidp2.slo.url"
+               binding: "POST"
+            assertingparty:
+              verification:
+                credentials:
+                - certificate-location: "path-to-verification-cert"
+              entity-id: "remote-idp-entity-id1"
+              sso-url: "https://remoteidp1.sso.url"
+
+          my-relying-party2:
+            signing:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            decryption:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            assertingparty:
+              verification:
+                credentials:
+                - certificate-location: "path-to-other-verification-cert"
+              entity-id: "remote-idp-entity-id2"
+              sso-url: "https://remoteidp2.sso.url"
+              singlelogout:
+                url: "https://remoteidp2.slo.url"
+                response-url: "https://myapp/logout/saml2/slo"
+                binding: "POST"
+----
+
+For SAML2 logout, by default, Spring Security's javadoc:org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestFilter[] and javadoc:org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseFilter[] only process URLs matching `/logout/saml2/slo`.
+If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
+For example, for servlet applications, you can add your own javadoc:org.springframework.security.web.SecurityFilterChain[] that resembles the following:
+
+include-code::MySamlRelyingPartyConfiguration[]

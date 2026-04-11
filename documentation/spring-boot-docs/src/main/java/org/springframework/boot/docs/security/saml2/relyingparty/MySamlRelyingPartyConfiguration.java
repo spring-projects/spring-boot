@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.security.oauth2.client;
+package org.springframework.boot.docs.security.saml2.relyingparty;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration(proxyBeanMethods = false)
-@EnableWebSecurity
-public class MyOAuthClientConfiguration {
+public class MySamlRelyingPartyConfiguration {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-		// @formatter:off
-		http
-			.authorizeHttpRequests((requests) -> requests
-				.anyRequest().authenticated()
-			)
-			.oauth2Login((login) -> login
-				.redirectionEndpoint((endpoint) -> endpoint
-					.baseUri("/login/oauth2/callback/*")
-				)
-			);
-		// @formatter:on
+		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+		http.saml2Login(withDefaults());
+		http.saml2Logout((saml2) -> {
+			saml2.logoutRequest((request) -> request.logoutUrl("/SLOService.saml2"));
+			saml2.logoutResponse((response) -> response.logoutUrl("/SLOService.saml2"));
+		});
 		return http.build();
 	}
 
