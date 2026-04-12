@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} to configure the defaults used
@@ -27,5 +28,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("spring.http.clients")
 public class HttpClientsProperties extends HttpClientSettingsProperties {
+
+	/**
+	 * API version properties.
+	 */
+	@NestedConfigurationProperty
+	private final ApiversionProperties apiversion = new ApiversionProperties();
+
+	public ApiversionProperties getApiversion() {
+		return this.apiversion;
+	}
 
 }

@@ -19,8 +19,11 @@ package org.springframework.boot.restclient.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
+import org.springframework.boot.http.client.autoconfigure.PropertiesApiVersionInserter;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -43,15 +46,24 @@ public class RestClientBuilderConfigurer {
 
 	private final List<RestClientCustomizer> customizers;
 
+	private final @Nullable String defaultApiVersion;
+
+	private final PropertiesApiVersionInserter apiVersionInserter;
+
 	public RestClientBuilderConfigurer() {
-		this(ClientHttpRequestFactoryBuilder.detect(), HttpClientSettings.defaults(), Collections.emptyList());
+		this(ClientHttpRequestFactoryBuilder.detect(), HttpClientSettings.defaults(), Collections.emptyList(), null,
+				PropertiesApiVersionInserter.EMPTY);
 	}
 
 	RestClientBuilderConfigurer(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			HttpClientSettings clientSettings, List<RestClientCustomizer> customizers) {
+			HttpClientSettings clientSettings, List<RestClientCustomizer> customizers,
+			@Nullable ApiversionProperties apiversionProperties) {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 		this.clientSettings = clientSettings;
 		this.customizers = customizers;
+		this.defaultApiVersion = (apiversionProperties != null) ? apiversionProperties.getDefaultVersion() : null;
+		this.apiVersionInserter = (apiversionProperties != null)
+				? PropertiesApiVersionInserter.get(apiversionProperties.getInsert()) : PropertiesApiVersionInserter.EMPTY;
 	}
 
 	/**
@@ -62,8 +74,16 @@ public class RestClientBuilderConfigurer {
 	 */
 	public RestClient.Builder configure(RestClient.Builder builder) {
 		builder.requestFactory(this.requestFactoryBuilder.build(this.clientSettings));
+		applyApiVersion(builder);
 		applyCustomizers(builder);
 		return builder;
+	}
+
+	private void applyApiVersion(RestClient.Builder builder) {
+		if (this.defaultApiVersion != null) {
+			builder.defaultApiVersion(this.defaultApiVersion);
+		}
+		builder.apiVersionInserter(this.apiVersionInserter);
 	}
 
 	private void applyCustomizers(RestClient.Builder builder) {

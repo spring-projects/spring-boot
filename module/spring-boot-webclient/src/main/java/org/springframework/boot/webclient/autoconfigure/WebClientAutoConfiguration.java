@@ -24,6 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
+import org.springframework.boot.http.client.autoconfigure.HttpClientsProperties;
+import org.springframework.boot.http.client.autoconfigure.PropertiesApiVersionInserter;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.codec.CodecCustomizer;
@@ -58,10 +61,20 @@ public final class WebClientAutoConfiguration {
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
+	WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider,
+			HttpClientsProperties properties) {
 		WebClient.Builder builder = WebClient.builder();
+		applyApiVersion(builder, properties.getApiversion());
 		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
+	}
+
+	private void applyApiVersion(WebClient.Builder builder, ApiversionProperties apiversionProperties) {
+		String defaultVersion = apiversionProperties.getDefaultVersion();
+		if (defaultVersion != null) {
+			builder.defaultApiVersion(defaultVersion);
+		}
+		builder.apiVersionInserter(PropertiesApiVersionInserter.get(apiversionProperties.getInsert()));
 	}
 
 	@Bean

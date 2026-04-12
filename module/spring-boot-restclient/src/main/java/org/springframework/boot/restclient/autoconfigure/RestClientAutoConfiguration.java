@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.HttpClientsProperties;
 import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
@@ -77,12 +78,12 @@ public final class RestClientAutoConfiguration {
 	RestClientBuilderConfigurer restClientBuilderConfigurer(ResourceLoader resourceLoader,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<HttpClientSettings> httpClientSettings,
-			ObjectProvider<RestClientCustomizer> customizerProvider) {
+			ObjectProvider<RestClientCustomizer> customizerProvider, HttpClientsProperties properties) {
 		return new RestClientBuilderConfigurer(
 				clientHttpRequestFactoryBuilder
 					.getIfAvailable(() -> ClientHttpRequestFactoryBuilder.detect(resourceLoader.getClassLoader())),
 				httpClientSettings.getIfAvailable(HttpClientSettings::defaults),
-				customizerProvider.orderedStream().toList());
+				customizerProvider.orderedStream().toList(), properties.getApiversion());
 	}
 
 	@Bean
