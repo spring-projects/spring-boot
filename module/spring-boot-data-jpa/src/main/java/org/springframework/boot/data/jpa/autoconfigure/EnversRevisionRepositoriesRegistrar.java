@@ -17,8 +17,7 @@
 package org.springframework.boot.data.jpa.autoconfigure;
 
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Envers
@@ -30,11 +29,11 @@ class EnversRevisionRepositoriesRegistrar extends DataJpaRepositoriesRegistrar {
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableJpaRepositoriesConfiguration.class;
+		return EnableEnversRepositoriesConfiguration.class;
 	}
 
-	@EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
-	private static final class EnableJpaRepositoriesConfiguration {
+	@EnableEnversRepositories
+	private static final class EnableEnversRepositoriesConfiguration {
 
 	}
 
