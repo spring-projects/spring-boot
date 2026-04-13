@@ -92,6 +92,12 @@ abstract class PropertyDescriptor {
 	}
 
 	/**
+	 * Return the {@link Element} that primarily defines the property.
+	 * @return the source element
+	 */
+	protected abstract Element getSourceElement();
+
+	/**
 	 * Resolve the {@link ItemMetadata} for this property.
 	 * @param prefix the property prefix
 	 * @param environment the metadata generation environment

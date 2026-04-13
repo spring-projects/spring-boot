@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -31,6 +32,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.Diagnostic.Kind;
 
 import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
 
@@ -149,13 +151,28 @@ class PropertyDescriptorResolver {
 	}
 
 	private void register(Map<String, PropertyDescriptor> candidates, PropertyDescriptor descriptor) {
-		if (!candidates.containsKey(descriptor.getName()) && isCandidate(descriptor)) {
+		if (!isCandidate(descriptor)) {
+			return;
+		}
+		PropertyDescriptor existing = candidates.get(descriptor.getName());
+		if (existing == null) {
 			candidates.put(descriptor.getName(), descriptor);
+		}
+		else if (isDistinctDescriptor(existing, descriptor)) {
+			this.environment.getMessager()
+				.printMessage(Kind.ERROR,
+						"Property name '%s' maps to distinct properties in type %s".formatted(descriptor.getName(),
+								this.environment.getTypeUtils().getQualifiedName(descriptor.getDeclaringElement())));
 		}
 	}
 
 	private boolean isCandidate(PropertyDescriptor descriptor) {
 		return descriptor.isProperty(this.environment) || descriptor.isNested(this.environment);
+	}
+
+	private boolean isDistinctDescriptor(PropertyDescriptor existing, PropertyDescriptor candidate) {
+		return Objects.equals(existing.getClass(), candidate.getClass())
+				&& !Objects.equals(existing.getSourceElement(), candidate.getSourceElement());
 	}
 
 	/**

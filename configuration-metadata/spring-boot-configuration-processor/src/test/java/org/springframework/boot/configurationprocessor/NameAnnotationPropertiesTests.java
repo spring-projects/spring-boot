@@ -21,11 +21,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.name.ConstructorParameterNameAnnotationProperties;
+import org.springframework.boot.configurationsample.name.DuplicateNameConstructorParameterProperties;
+import org.springframework.boot.configurationsample.name.DuplicateNameJavaBeanProperties;
 import org.springframework.boot.configurationsample.name.JavaBeanNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.LombokNameAnnotationProperties;
 import org.springframework.boot.configurationsample.name.RecordComponentNameAnnotationProperties;
+import org.springframework.core.test.tools.CompilationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Metadata generation tests for using {@code @Name}.
@@ -85,6 +89,24 @@ class NameAnnotationPropertiesTests extends AbstractMetadataGenerationTests {
 				.fromSource(LombokNameAnnotationProperties.class)
 				.withDefaultValue("Whether default mode is enabled.")
 				.withDefaultValue(true));
+	}
+
+	@Test
+	void duplicateNameOnJavaBeanPropertiesFailsCompilation() {
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compile(DuplicateNameJavaBeanProperties.class))
+			.withMessageContaining("Unable to compile source")
+			.withMessageContaining("Property name 'aaa' maps to distinct properties in type ")
+			.withMessageContaining(DuplicateNameJavaBeanProperties.class.getName());
+	}
+
+	@Test
+	void duplicateNameOnConstructorParametersFailsCompilation() {
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compile(DuplicateNameConstructorParameterProperties.class))
+			.withMessageContaining("Unable to compile source")
+			.withMessageContaining("Property name 'aaa' maps to distinct properties in type ")
+			.withMessageContaining(DuplicateNameConstructorParameterProperties.class.getName());
 	}
 
 }

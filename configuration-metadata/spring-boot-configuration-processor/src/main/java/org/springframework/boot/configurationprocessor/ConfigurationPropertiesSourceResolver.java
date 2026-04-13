@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -144,6 +145,11 @@ class ConfigurationPropertiesSourceResolver {
 			this.delegate = delegate;
 			this.sourceItemMetadata = sourceItemMetadata;
 			this.sourceItemHint = sourceItemHint;
+		}
+
+		@Override
+		protected Element getSourceElement() {
+			return this.delegate.getSourceElement();
 		}
 
 		@Override

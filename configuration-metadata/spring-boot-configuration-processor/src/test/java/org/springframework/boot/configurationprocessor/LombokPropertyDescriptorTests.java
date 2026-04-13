@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -50,6 +51,16 @@ class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 			assertThat(property.getField().getSimpleName()).hasToString("name");
 			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
+		});
+	}
+
+	@Test
+	void getSourceElementReturnsField() {
+		process(LombokSimpleProperties.class, (roundEnv, metadataEnv) -> {
+			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleProperties.class);
+			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
+			assertThat(property.getSourceElement().getKind()).isEqualTo(ElementKind.FIELD);
+			assertThat(property.getSourceElement()).isSameAs(property.getField());
 		});
 	}
 

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
@@ -39,6 +40,11 @@ class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 			TypeElement declaringElement, ExecutableElement getter, RecordComponentElement recordComponent) {
 		super(name, type, parameter, declaringElement, getter);
 		this.recordComponent = recordComponent;
+	}
+
+	@Override
+	protected Element getSourceElement() {
+		return this.recordComponent;
 	}
 
 	@Override

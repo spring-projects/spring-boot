@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -47,6 +48,16 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 			assertThat(property.getSetter().getSimpleName()).hasToString("setMyString");
 			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
+		});
+	}
+
+	@Test
+	void getSourceElementReturnsPublicGetter() {
+		process(SimpleTypeProperties.class, (roundEnv, metadataEnv) -> {
+			TypeElement ownerElement = roundEnv.getRootElement(SimpleTypeProperties.class);
+			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "myString");
+			assertThat(property.getSourceElement().getKind()).isEqualTo(ElementKind.METHOD);
+			assertThat(property.getSourceElement()).isSameAs(property.getGetter());
 		});
 	}
 

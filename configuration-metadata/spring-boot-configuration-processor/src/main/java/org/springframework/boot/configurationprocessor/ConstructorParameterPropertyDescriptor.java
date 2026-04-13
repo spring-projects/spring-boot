@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -40,6 +41,11 @@ class ConstructorParameterPropertyDescriptor extends ParameterPropertyDescriptor
 		super(name, type, parameter, declaringElement, getter);
 		this.setter = setter;
 		this.field = field;
+	}
+
+	@Override
+	protected Element getSourceElement() {
+		return this.field;
 	}
 
 	@Override
