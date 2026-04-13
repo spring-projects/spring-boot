@@ -35,6 +35,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 
 /**
@@ -100,7 +101,8 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 			return testcontainerBeanDefinition.getAnnotations();
 		}
 		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
-			return annotatedBeanDefinition.getFactoryMethodMetadata().getAnnotations();
+			MethodMetadata metadata = annotatedBeanDefinition.getFactoryMethodMetadata();
+			return (metadata != null) ? metadata.getAnnotations() : null;
 		}
 		return null;
 	}
