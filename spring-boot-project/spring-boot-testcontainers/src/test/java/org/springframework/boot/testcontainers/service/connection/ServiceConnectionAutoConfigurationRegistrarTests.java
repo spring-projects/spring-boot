@@ -19,9 +19,9 @@ package org.springframework.boot.testcontainers.service.connection;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory.ContainerConnectionDetails;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ServiceConnectionAutoConfigurationRegistrar} to verify that
- * annotations on {@link Bean @Bean} methods are available in
- * {@link ContainerConnectionSource}.
+ * Tests for {@link ServiceConnectionAutoConfigurationRegistrar}.
  *
  * @author Daeho Kwon
  */
@@ -39,19 +37,14 @@ class ServiceConnectionAutoConfigurationRegistrarTests {
 
 	@Test
 	void sslAnnotationOnBeanMethodShouldBeDetectedInContainerConnectionSource() {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			context.register(WithServiceConnectionAutoConfiguration.class, ContainerConfiguration.class);
-			context.refresh();
-			ContainerConnectionDetails<?> details = (ContainerConnectionDetails<?>) context
-				.getBean(DatabaseConnectionDetails.class);
-			assertThat(details.hasAnnotation(Ssl.class)).isTrue();
-		}
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(ServiceConnectionAutoConfiguration.class)
-	static class WithServiceConnectionAutoConfiguration {
-
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ServiceConnectionAutoConfiguration.class))
+			.withUserConfiguration(ContainerConfiguration.class)
+			.run((context) -> {
+				ContainerConnectionDetails<?> connectionDetails = (ContainerConnectionDetails<?>) context
+					.getBean(DatabaseConnectionDetails.class);
+				assertThat(connectionDetails.hasAnnotation(Ssl.class)).isTrue();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -60,8 +53,8 @@ class ServiceConnectionAutoConfigurationRegistrarTests {
 		@Bean
 		@ServiceConnection
 		@Ssl
-		PostgreSQLContainer container() {
-			return mock(PostgreSQLContainer.class);
+		PostgreSQLContainer<?> container() {
+			return mock();
 		}
 
 	}

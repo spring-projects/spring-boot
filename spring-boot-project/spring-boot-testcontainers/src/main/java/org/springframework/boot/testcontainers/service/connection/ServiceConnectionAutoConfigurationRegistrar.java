@@ -16,7 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,10 +23,10 @@ import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
@@ -35,6 +34,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.MethodMetadata;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by
@@ -63,24 +63,13 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			MergedAnnotations annotations = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
-					? testcontainerBeanDefinition.getAnnotations() : getAnnotationsFromFactoryMethod(beanDefinition);
+			MergedAnnotations annotations = getAnnotations(beanDefinition);
 			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
 				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
 						serviceConnection);
 				registrar.registerBeanDefinitions(registry, source);
 			}
 		}
-	}
-
-	private MergedAnnotations getAnnotationsFromFactoryMethod(BeanDefinition beanDefinition) {
-		if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
-			Method factoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
-			if (factoryMethod != null) {
-				return MergedAnnotations.from(factoryMethod, MergedAnnotations.SearchStrategy.DIRECT);
-			}
-		}
-		return null;
 	}
 
 	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
@@ -103,6 +92,17 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		catch (NoSuchBeanDefinitionException ex) {
 			return null;
 		}
+	}
+
+	private MergedAnnotations getAnnotations(BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
+			return testcontainerBeanDefinition.getAnnotations();
+		}
+		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+			MethodMetadata metadata = annotatedBeanDefinition.getFactoryMethodMetadata();
+			return (metadata != null) ? metadata.getAnnotations() : null;
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
