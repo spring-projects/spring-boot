@@ -24,6 +24,7 @@ import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -41,6 +42,7 @@ import org.springframework.util.Assert;
  * {@link ServiceConnectionAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Daeho Kwon
  */
 class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -62,8 +64,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			MergedAnnotations annotations = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
-					? testcontainerBeanDefinition.getAnnotations() : null;
+			MergedAnnotations annotations = getAnnotations(beanDefinition);
 			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
 				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
 						serviceConnection);
@@ -92,6 +93,16 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		catch (NoSuchBeanDefinitionException ex) {
 			return null;
 		}
+	}
+
+	private @Nullable MergedAnnotations getAnnotations(@Nullable BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
+			return testcontainerBeanDefinition.getAnnotations();
+		}
+		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+			return annotatedBeanDefinition.getFactoryMethodMetadata().getAnnotations();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
