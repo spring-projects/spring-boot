@@ -1849,7 +1849,7 @@ bom {
 		}
 		links {
 			site("https://github.com/ascopes/protobuf-maven-plugin")
-			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/tag/v{version}")
+			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/releases/tag/v{version}")
 		}
 	}
 	library("Pooled JMS", "3.2.2") {
