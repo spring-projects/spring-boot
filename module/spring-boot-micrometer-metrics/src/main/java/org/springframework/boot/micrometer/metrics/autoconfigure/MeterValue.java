@@ -27,8 +27,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * A meter value that is used when configuring micrometer. Can be a String representation
- * of either a {@link Double} (applicable to timers and distribution summaries) or a
- * {@link Duration} (applicable to only timers).
+ * of either a {@link Double} (applicable to timers, long task timers, and distribution
+ * summaries) or a {@link Duration} (applicable to timers and long task timers).
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -55,7 +55,7 @@ public final class MeterValue {
 		if (meterType == Type.DISTRIBUTION_SUMMARY) {
 			return getDistributionSummaryValue();
 		}
-		if (meterType == Type.TIMER) {
+		if (meterType == Type.TIMER || meterType == Type.LONG_TASK_TIMER) {
 			Long timerValue = getTimerValue();
 			if (timerValue != null) {
 				return timerValue.doubleValue();

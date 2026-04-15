@@ -83,11 +83,28 @@ class MeterValueTests {
 	}
 
 	@Test
+	void getValueForLongTaskTimerWhenFromNumberShouldReturnMsToNanosValue() {
+		MeterValue meterValue = MeterValue.valueOf(123d);
+		assertThat(meterValue.getValue(Type.LONG_TASK_TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	void getValueForLongTaskTimerWhenFromNumberStringShouldReturnMsToNanosValue() {
+		MeterValue meterValue = MeterValue.valueOf("123");
+		assertThat(meterValue.getValue(Type.LONG_TASK_TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	void getValueForLongTaskTimerWhenFromDurationStringShouldReturnDurationNanos() {
+		MeterValue meterValue = MeterValue.valueOf("123ms");
+		assertThat(meterValue.getValue(Type.LONG_TASK_TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
 	void getValueForOthersShouldReturnNull() {
 		MeterValue meterValue = MeterValue.valueOf("123");
 		assertThat(meterValue.getValue(Type.COUNTER)).isNull();
 		assertThat(meterValue.getValue(Type.GAUGE)).isNull();
-		assertThat(meterValue.getValue(Type.LONG_TASK_TIMER)).isNull();
 		assertThat(meterValue.getValue(Type.OTHER)).isNull();
 	}
 
