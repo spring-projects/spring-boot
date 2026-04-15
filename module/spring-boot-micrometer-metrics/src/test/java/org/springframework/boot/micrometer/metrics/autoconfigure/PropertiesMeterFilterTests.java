@@ -206,11 +206,19 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasSloShouldSetSloToValue() {
+	void configureWhenTimerMeterHasSloShouldSetSloToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.slo.spring.boot=1,2,3"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
 			.getServiceLevelObjectiveBoundaries()).containsExactly(1000000, 2000000, 3000000);
+	}
+
+	@Test
+	void configureWhenDistributionSummaryMeterHasSloShouldSetSloToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.slo.example=1,2,3"));
+		assertThat(filter
+			.configure(createMeterId("example", Meter.Type.DISTRIBUTION_SUMMARY), DistributionStatisticConfig.DEFAULT)
+			.getServiceLevelObjectiveBoundaries()).containsExactly(1.0, 2.0, 3.0);
 	}
 
 	@Test
@@ -229,11 +237,21 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasMinimumExpectedValueShouldSetMinimumExpectedToValue() {
+	void configureWhenTimerMeterHasMinimumExpectedValueShouldSetMinimumExpectedToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.minimum-expected-value.spring.boot=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
 			.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10).toNanos());
+	}
+
+	@Test
+	void configureWhenDistributionSummaryMeterHasMinimumExpectedValueShouldSetMinimumExpectedToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.minimum-expected-value.spring.boot=10"));
+		assertThat(filter
+			.configure(createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY),
+					DistributionStatisticConfig.DEFAULT)
+			.getMinimumExpectedValueAsDouble()).isEqualTo(10);
 	}
 
 	@Test
@@ -253,11 +271,21 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasMaximumExpectedValueShouldSetMaximumExpectedToValue() {
+	void configureWhenTimerMeterHasMaximumExpectedValueShouldSetMaximumExpectedToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring.boot=5000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
 			.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(5000).toNanos());
+	}
+
+	@Test
+	void configureWhenDistributionSummaryMeterHasMaximumExpectedValueShouldSetMaximumExpectedToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.maximum-expected-value.spring.boot=10"));
+		assertThat(filter
+			.configure(createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY),
+					DistributionStatisticConfig.DEFAULT)
+			.getMaximumExpectedValueAsDouble()).isEqualTo(10);
 	}
 
 	@Test
