@@ -85,6 +85,9 @@ dependencies {
 	api(project(":module:spring-boot-restclient-test")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-resttestclient")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-rsocket-test")) {
 		transitive = false
 	}
