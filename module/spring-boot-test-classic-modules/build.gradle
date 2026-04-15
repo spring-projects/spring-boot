@@ -82,6 +82,9 @@ dependencies {
 	api(project(":module:spring-boot-micrometer-tracing-test")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-restdocs")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-restclient-test")) {
 		transitive = false
 	}
@@ -94,6 +97,9 @@ dependencies {
 	api(project(":module:spring-boot-security-test")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-webclient-test")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-webflux-test")) {
 		transitive = false
 	}
@@ -101,6 +107,9 @@ dependencies {
 		transitive = false
 	}
 	api(project(":module:spring-boot-webservices-test")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-webtestclient")) {
 		transitive = false
 	}
 }

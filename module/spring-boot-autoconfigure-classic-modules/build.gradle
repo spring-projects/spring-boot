@@ -37,6 +37,9 @@ dependencies {
 	api(project(":module:spring-boot-batch")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-batch-jdbc")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-cache")) {
 		transitive = false
 	}
@@ -133,6 +136,9 @@ dependencies {
 	api(project(":module:spring-boot-jackson")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-jackson2")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-jdbc")) {
 		transitive = false
 	}
@@ -197,6 +203,9 @@ dependencies {
 		transitive = false
 	}
 	api(project(":module:spring-boot-opentelemetry")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-persistence")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-pulsar")) {
