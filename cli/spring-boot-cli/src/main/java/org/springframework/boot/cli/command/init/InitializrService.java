@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.command.init;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -243,7 +244,7 @@ class InitializrService {
 				value = value.substring(start + FILENAME_HEADER_PREFIX.length());
 				int end = value.indexOf('\"');
 				if (end != -1) {
-					return value.substring(0, end);
+					return new File(value.substring(0, end)).getName();
 				}
 			}
 		}

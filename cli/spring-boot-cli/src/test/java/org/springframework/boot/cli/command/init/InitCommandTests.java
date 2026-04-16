@@ -26,6 +26,7 @@ import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
 import org.apache.hc.core5.http.HttpHost;
+import org.assertj.core.api.SoftAssertionsProvider.ThrowingRunnable;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -214,26 +215,30 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	void fileNotOverwrittenByDefault(@TempDir File tempDir) throws Exception {
-		File file = new File(tempDir, "test.file");
-		file.createNewFile();
-		long fileLength = file.length();
-		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip",
-				file.getAbsolutePath());
-		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run()).as("Should have failed").isEqualTo(ExitStatus.ERROR);
-		assertThat(file.length()).as("File should not have changed").isEqualTo(fileLength);
+		withUserDir(tempDir, () -> {
+			File file = new File(tempDir, "test.file");
+			file.createNewFile();
+			long fileLength = file.length();
+			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip",
+					file.getAbsolutePath());
+			mockSuccessfulProjectGeneration(request);
+			assertThat(this.command.run()).as("Should have failed").isEqualTo(ExitStatus.ERROR);
+			assertThat(file.length()).as("File should not have changed").isEqualTo(fileLength);
+		});
 	}
 
 	@Test
 	void overwriteFile(@TempDir File tempDir) throws Exception {
-		File file = new File(tempDir, "test.file");
-		file.createNewFile();
-		long fileLength = file.length();
-		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip",
-				file.getAbsolutePath());
-		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run("--force")).isEqualTo(ExitStatus.OK);
-		assertThat(fileLength).as("File should have changed").isNotEqualTo(file.length());
+		withUserDir(tempDir, () -> {
+			File file = new File(tempDir, "test.file");
+			file.createNewFile();
+			long fileLength = file.length();
+			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip",
+					file.getAbsolutePath());
+			mockSuccessfulProjectGeneration(request);
+			assertThat(this.command.run("--force")).isEqualTo(ExitStatus.OK);
+			assertThat(fileLength).as("File should have changed").isNotEqualTo(file.length());
+		});
 	}
 
 	@Test
@@ -406,6 +411,17 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		then(this.http).should()
 			.executeOpen(any(HttpHost.class), assertArg((request) -> assertThat(
 					request.getHeaders("User-Agent")[0].getValue().startsWith("SpringBootCli/"))), isNull());
+	}
+
+	private void withUserDir(File userDir, ThrowingRunnable action) throws Exception {
+		String previous = System.getProperty("user.dir");
+		System.setProperty("user.dir", userDir.getAbsolutePath());
+		try {
+			action.run();
+		}
+		finally {
+			System.setProperty("user.dir", previous);
+		}
 	}
 
 	private byte[] createFakeZipArchive(String fileName, String content) throws IOException {
