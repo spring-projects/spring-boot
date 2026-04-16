@@ -72,6 +72,8 @@ class ProjectGenerationRequest {
 
 	private @Nullable String bootVersion;
 
+	private @Nullable String configurationFileFormat;
+
 	private final List<String> dependencies = new ArrayList<>();
 
 	/**
@@ -290,6 +292,19 @@ class ProjectGenerationRequest {
 	}
 
 	/**
+	 * The configuration file format to use or {@code null} if it should not be customized.
+	 * @return the configuration file format or {@code null}
+	 */
+	@Nullable String getConfigurationFileFormat() {
+		return this.configurationFileFormat;
+	}
+
+	void setConfigurationFileFormat(@Nullable String configurationFileFormat) {
+		this.configurationFileFormat = configurationFileFormat;
+	}
+
+
+	/**
 	 * The identifiers of the dependencies to include in the project.
 	 * @return the dependency identifiers
 	 */
@@ -352,6 +367,9 @@ class ProjectGenerationRequest {
 			}
 			if (this.bootVersion != null) {
 				builder.setParameter("bootVersion", this.bootVersion);
+			}
+			if (this.configurationFileFormat != null) {
+				builder.setParameter("configurationFileFormat", this.configurationFileFormat);
 			}
 
 			return builder.build();

@@ -409,8 +409,28 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void userAgent() throws Exception {
 		this.command.run("--list", "--target=https://fake-service");
 		then(this.http).should()
-			.executeOpen(any(HttpHost.class), assertArg((request) -> assertThat(
-					request.getHeaders("User-Agent")[0].getValue().startsWith("SpringBootCli/"))), isNull());
+				.executeOpen(any(HttpHost.class), assertArg((request) -> assertThat(
+						request.getHeaders("User-Agent")[0].getValue().startsWith("SpringBootCli/"))), isNull());
+	}
+
+	@Test
+	void parseConfigurationFileFormatOption() throws Exception {
+		this.handler.disableProjectGeneration();
+
+		this.command.run("--configuration-file-format=yaml");
+
+		assertThat(this.handler.lastRequest).isNotNull();
+		assertThat(this.handler.lastRequest.getConfigurationFileFormat()).isEqualTo("yaml");
+	}
+
+	@Test
+	void parseConfigurationFileFormatCamelCaseOption() throws Exception {
+		this.handler.disableProjectGeneration();
+
+		this.command.run("--configurationFileFormat=yaml");
+
+		assertThat(this.handler.lastRequest).isNotNull();
+		assertThat(this.handler.lastRequest.getConfigurationFileFormat()).isEqualTo("yaml");
 	}
 
 	private void withUserDir(File userDir, ThrowingRunnable action) throws Exception {

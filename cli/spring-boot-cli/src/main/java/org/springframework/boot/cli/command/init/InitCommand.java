@@ -87,6 +87,7 @@ public class InitCommand extends OptionParsingCommand {
 			options.put("--packageName", "--package-name");
 			options.put("--javaVersion", "--java-version");
 			options.put("--bootVersion", "--boot-version");
+			options.put("--configurationFileFormat", "--configuration-file-format");
 			CAMEL_CASE_OPTIONS = Collections.unmodifiableMap(options);
 		}
 
@@ -140,6 +141,9 @@ public class InitCommand extends OptionParsingCommand {
 		private OptionSpec<String> bootVersion;
 
 		@SuppressWarnings("NullAway.Init")
+		private OptionSpec<String> configurationFileFormat;
+
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> dependencies;
 
 		@SuppressWarnings("NullAway.Init")
@@ -157,7 +161,7 @@ public class InitCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.target = option(Arrays.asList("target"), "URL of the service to use").withRequiredArg()
-				.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
+					.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
 			this.listCapabilities = option(Arrays.asList("list"),
 					"List the capabilities of the service. Use it to discover the "
 							+ "dependencies and the types that are available");
@@ -167,37 +171,40 @@ public class InitCommand extends OptionParsingCommand {
 
 		private void projectGenerationOptions() {
 			this.groupId = option(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.artifactId = option(Arrays.asList("artifact-id", "a"),
 					"Project coordinates; infer archive name (for example 'test')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.version = option(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description").withRequiredArg();
 			this.packageName = option(Arrays.asList("package-name"), "Package name").withRequiredArg();
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service (--list) for more details")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.build = option("build", "Build system to use (for example 'maven' or 'gradle')").withRequiredArg()
-				.defaultsTo("gradle");
+					.defaultsTo("gradle");
 			this.format = option("format", "Format of the generated content (for example 'build' for a build file, "
 					+ "'project' for a project archive)")
-				.withRequiredArg()
-				.defaultsTo("project");
+					.withRequiredArg()
+					.defaultsTo("project");
 			this.javaVersion = option(Arrays.asList("java-version", "j"), "Language level (for example '1.8')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.language = option(Arrays.asList("language", "l"), "Programming language  (for example 'java')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version (for example '1.2.0.RELEASE')")
-				.withRequiredArg();
+					.withRequiredArg();
 			this.dependencies = option(Arrays.asList("dependencies", "d"),
 					"Comma-separated list of dependency identifiers to include in the generated project")
-				.withRequiredArg();
+					.withRequiredArg();
+			this.configurationFileFormat = option(Arrays.asList("configuration-file-format"),
+					"Configuration file format (for example 'properties' or 'yaml')")
+					.withRequiredArg();
 		}
 
 		private void otherOptions() {
@@ -281,6 +288,9 @@ public class InitCommand extends OptionParsingCommand {
 			}
 			if (options.has(this.description)) {
 				request.setDescription(options.valueOf(this.description));
+			}
+			if (options.has(this.configurationFileFormat)) {
+				request.setConfigurationFileFormat(options.valueOf(this.configurationFileFormat));
 			}
 			request.setExtract(options.has(this.extract));
 			if (nonOptionArguments.size() == 1) {
