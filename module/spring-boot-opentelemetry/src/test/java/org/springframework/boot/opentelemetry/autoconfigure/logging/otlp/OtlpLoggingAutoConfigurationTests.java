@@ -121,23 +121,23 @@ class OtlpLoggingAutoConfigurationTests {
 	}
 
 	@Test
-	void whenOpenTelemetryLoggingExportEnabledPropertyIsFalseProvidesExpectedBeans() {
+	void whenOpenTelemetryLoggingExportEnabledPropertyIsFalseDoesNotProvideBeans() {
 		this.contextRunner
 			.withPropertyValues("management.logging.export.otlp.enabled=false",
 					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
 
 	@Test
-	void whenLoggingExportEnabledPropertyIsFalseNoProvideExpectedBeans() {
+	void whenLoggingExportEnabledPropertyIsFalseDoesNotProvideBeans() {
 		this.contextRunner
 			.withPropertyValues("management.logging.export.enabled=false",
 					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
