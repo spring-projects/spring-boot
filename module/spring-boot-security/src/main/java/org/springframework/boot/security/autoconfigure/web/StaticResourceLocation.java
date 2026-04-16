@@ -49,9 +49,9 @@ public enum StaticResourceLocation {
 
 	/**
 	 * The {@code "favicon.ico"} resource and resources matching
-	 * <code>"&sol;*&sol;icon-*"</code>.
+	 * <code>"/icons/icon-*"</code>.
 	 */
-	FAVICON("/favicon.*", "/*/icon-*"),
+	FAVICON("/favicon.*", "/icons/icon-*"),
 
 	/**
 	 * Resources under {@code "/fonts"}.
