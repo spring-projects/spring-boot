@@ -137,7 +137,7 @@ class ProjectGenerator {
 	}
 
 	private void writeProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
-		File outputFile = new File(output);
+		File outputFile = new File(System.getProperty("user.dir"), output);
 		if (outputFile.exists()) {
 			if (!overwrite) {
 				throw new ReportableException(

@@ -50,9 +50,9 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 	void generateSimpleProject() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
-				"foo.zip");
+				"nested/path/foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
-		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
+		assertProjectEntity(entity, mockHttpRequest.contentType, "foo.zip");
 	}
 
 	@Test
