@@ -1918,7 +1918,7 @@ bom {
 			releaseNotes("https://qpid.apache.org/releases/qpid-protonj2-{version}/release-notes.html")
 		}
 	}
-	library("Protobuf Common Protos", "2.67.0") {
+	library("Protobuf Common Protos", "2.70.0") {
 		group("com.google.api.grpc") {
 			modules = [
 				"proto-google-common-protos"
