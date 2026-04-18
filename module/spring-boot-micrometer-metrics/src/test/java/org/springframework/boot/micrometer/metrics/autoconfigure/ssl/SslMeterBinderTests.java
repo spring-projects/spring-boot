@@ -65,6 +65,44 @@ class SslMeterBinderTests {
 	}
 
 	@Test
+	void shouldRegisterTrustStoreChainExpiryMetrics() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		sslBundleRegistry.registerBundle("test-0",
+				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains.p12")));
+		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
+		assertThat(Duration
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.hasDays(1095);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "intermediary",
+				"60f79365fc46bf69149754d377680192b3b6bcf5")))
+			.hasDays(730);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
+			.hasDays(365);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
+			.hasDays(-386);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "not-yet-valid",
+				"7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
+			.hasDays(36889);
+	}
+
+	@Test
+	void shouldDifferentiateKeyStoreAndTrustStoreMetrics() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		sslBundleRegistry.registerBundle("test-0",
+				SslBundle.of(createKeyAndTrustStoreBundle("classpath:certificates/chains.p12",
+						"classpath:certificates/chains.p12")));
+		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
+		assertThat(Duration
+			.ofSeconds(findExpiryGauge(meterRegistry, "keystore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.hasDays(1095);
+		assertThat(Duration
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.hasDays(1095);
+	}
+
+	@Test
 	void shouldWatchUpdatesForBundlesRegisteredAfterConstruction() {
 		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
 		sslBundleRegistry.registerBundle("dummy",
@@ -91,6 +129,35 @@ class SslMeterBinderTests {
 	}
 
 	@Test
+	void shouldWatchTrustStoreUpdatesForBundlesRegisteredAfterConstruction() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		sslBundleRegistry.registerBundle("dummy",
+				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains2.p12")));
+		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
+		sslBundleRegistry.registerBundle("test-0",
+				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains2.p12")));
+		sslBundleRegistry.updateBundle("test-0",
+				SslBundle.of(createTrustStoreBundle("classpath:certificates/chains.p12")));
+		assertThat(meterRegistry.find("ssl.chain.expiry").tags("bundle", "test-0", "source", "truststore").meters())
+			.hasSize(5);
+		assertThat(Duration
+			.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
+			.hasDays(1095);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "intermediary",
+				"60f79365fc46bf69149754d377680192b3b6bcf5")))
+			.hasDays(730);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "server", "504c45129526ac050abb11459b1f0192b3b70fe9")))
+			.hasDays(365);
+		assertThat(Duration.ofSeconds(
+				findExpiryGauge(meterRegistry, "truststore", "expired", "562bc5dcf4f26bb179abb13068180192b3bb53dc")))
+			.hasDays(-386);
+		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "truststore", "not-yet-valid",
+				"7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
+			.hasDays(36889);
+	}
+
+	@Test
 	void shouldRegisterMetricsIfNoBundleExistsAtBindTime() {
 		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
 		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
@@ -100,8 +167,14 @@ class SslMeterBinderTests {
 	}
 
 	private long findExpiryGauge(MeterRegistry meterRegistry, String chain, String certificateSerialNumber) {
+		return findExpiryGauge(meterRegistry, "keystore", chain, certificateSerialNumber);
+	}
+
+	private long findExpiryGauge(MeterRegistry meterRegistry, String source, String chain,
+			String certificateSerialNumber) {
 		return (long) meterRegistry.get("ssl.chain.expiry")
 			.tag("bundle", "test-0")
+			.tag("source", source)
 			.tag("chain", chain)
 			.tag("certificate", certificateSerialNumber)
 			.gauge()
@@ -117,8 +190,19 @@ class SslMeterBinderTests {
 	}
 
 	private SslStoreBundle createSslStoreBundle(String location) {
-		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(location).withPassword("secret");
-		return new JksSslStoreBundle(keyStoreDetails, null);
+		return new JksSslStoreBundle(createStoreDetails(location), null);
+	}
+
+	private SslStoreBundle createTrustStoreBundle(String location) {
+		return new JksSslStoreBundle(null, createStoreDetails(location));
+	}
+
+	private SslStoreBundle createKeyAndTrustStoreBundle(String keyStoreLocation, String trustStoreLocation) {
+		return new JksSslStoreBundle(createStoreDetails(keyStoreLocation), createStoreDetails(trustStoreLocation));
+	}
+
+	private JksSslStoreDetails createStoreDetails(String location) {
+		return JksSslStoreDetails.forLocation(location).withPassword("secret");
 	}
 
 	private DefaultSslBundleRegistry createSslBundleRegistry(String... locations) {
