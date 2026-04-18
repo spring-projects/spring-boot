@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.Condition
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -102,7 +103,12 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		private void jwsAlgorithms(Set<SignatureAlgorithm> signatureAlgorithms) {
 			for (String algorithm : this.properties.getJwsAlgorithms()) {
-				signatureAlgorithms.add(SignatureAlgorithm.from(algorithm));
+				SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.from(algorithm);
+				if (signatureAlgorithm == null) {
+					throw new InvalidConfigurationPropertyValueException(
+							"spring.security.oauth2.resourceserver.jwt.jws-algorithms", algorithm, "Unknown algorithm");
+				}
+				signatureAlgorithms.add(signatureAlgorithm);
 			}
 		}
 
