@@ -73,6 +73,10 @@ class EndpointRequestTests {
 			.withHttpMethod(HttpMethod.POST);
 		assertMatcher(matcher, "/actuator").matches(HttpMethod.POST, "/actuator/foo");
 		assertMatcher(matcher, "/actuator").doesNotMatch(HttpMethod.GET, "/actuator/foo");
+		assertMatcher(matcher, "/actuator").matches(HttpMethod.POST, "/actuator");
+		assertMatcher(matcher, "/actuator").doesNotMatch(HttpMethod.GET, "/actuator");
+		assertMatcher(matcher, "/actuator").matches(HttpMethod.POST, "/actuator/");
+		assertMatcher(matcher, "/actuator").doesNotMatch(HttpMethod.GET, "/actuator/");
 	}
 
 	@Test
