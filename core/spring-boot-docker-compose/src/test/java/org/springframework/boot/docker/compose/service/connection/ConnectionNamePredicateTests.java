@@ -39,16 +39,17 @@ class ConnectionNamePredicateTests {
 
 	@Test
 	void official() {
-		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("elasticsearch"));
-		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("library/elasticsearch"));
-		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/library/elasticsearch"));
-		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/elasticsearch"));
-		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/elasticsearch:latest"));
-		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("redis"));
-		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("library/redis"));
-		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("docker.io/library/redis"));
-		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("docker.io/redis"));
-		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("docker.io/redis"));
+		assertThat(predicateOf("elasticsearch", "elasticsearch/elasticsearch")).accepts(sourceOf("elasticsearch"))
+			.accepts(sourceOf("library/elasticsearch"))
+			.accepts(sourceOf("docker.io/library/elasticsearch"))
+			.accepts(sourceOf("docker.io/library/elasticsearch"))
+			.accepts(sourceOf("docker.io/elasticsearch:latest"))
+			.accepts(sourceOf("docker.elastic.co/elasticsearch/elasticsearch:latest"))
+			.accepts(sourceOf("docker.elastic.co/elasticsearch/elasticsearch"))
+			.rejects(sourceOf("redis"))
+			.rejects(sourceOf("library/redis"))
+			.rejects(sourceOf("docker.io/library/redis"))
+			.rejects(sourceOf("docker.io/redis"));
 		assertThat(predicateOf("zipkin")).rejects(sourceOf("openzipkin/zipkin"));
 	}
 
