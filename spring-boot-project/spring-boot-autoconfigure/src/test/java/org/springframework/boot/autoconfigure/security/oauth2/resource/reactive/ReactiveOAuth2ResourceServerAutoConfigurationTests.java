@@ -178,6 +178,19 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationUsingJwkSetUriShouldFailIfJwsAlgorithmIsUnknown() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=NOT_VALID")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure())
+					.hasRootCauseMessage("Property spring.security.oauth2.resourceserver.jwt.jws-algorithms with value "
+							+ "'NOT_VALID' is invalid: Unknown algorithm");
+			});
+	}
+
+	@Test
 	@WithPublicKeyResource
 	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingSingleJwsAlgorithm() {
 		this.contextRunner
