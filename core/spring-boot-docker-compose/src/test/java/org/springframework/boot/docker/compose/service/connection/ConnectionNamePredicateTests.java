@@ -39,8 +39,7 @@ class ConnectionNamePredicateTests {
 
 	@Test
 	void official() {
-		assertThat(predicateOf("elasticsearch", "elasticsearch/elasticsearch"))
-			.accepts(sourceOf("elasticsearch"))
+		assertThat(predicateOf("elasticsearch", "elasticsearch/elasticsearch")).accepts(sourceOf("elasticsearch"))
 			.accepts(sourceOf("library/elasticsearch"))
 			.accepts(sourceOf("docker.io/library/elasticsearch"))
 			.accepts(sourceOf("docker.io/library/elasticsearch"))
