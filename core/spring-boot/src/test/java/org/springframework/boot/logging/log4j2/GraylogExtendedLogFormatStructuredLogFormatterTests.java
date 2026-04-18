@@ -53,7 +53,7 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		this.environment.setProperty("logging.structured.gelf.host", "name");
 		this.environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
 		this.environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null,
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null, null,
 				TestContextPairs.include(), this.customizer);
 	}
 
@@ -153,7 +153,7 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@Test
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment,
-				new SimpleStackTracePrinter(), TestContextPairs.include(), this.customizer);
+				new SimpleStackTracePrinter(), null, TestContextPairs.include(), this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);

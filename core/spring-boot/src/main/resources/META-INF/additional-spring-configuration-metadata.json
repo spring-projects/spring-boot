@@ -349,6 +349,16 @@
       "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
     },
     {
+      "name": "logging.structured.json.stacktrace.hash.field-name",
+      "type": "java.lang.String",
+      "description": "The name of the JSON field to use when the hash generate mode is 'as-field'. Defaults to 'stack_trace_hash' if not set."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.hash.generate",
+      "type": "org.springframework.boot.logging.structured.StackTraceHashGenerate",
+      "description": "How stack trace hashes should be generated. Use 'inline' to include the hash in the stack trace text or 'as-field' to emit the hash as a separate structured field."
+    },
+    {
       "name": "logging.structured.json.stacktrace.include-common-frames",
       "type": "java.lang.Boolean",
       "description": "Whether common frames should be included."
@@ -356,7 +366,12 @@
     {
       "name": "logging.structured.json.stacktrace.include-hashes",
       "type": "java.lang.Boolean",
-      "description": "Whether stack trace hashes should be included."
+      "description": "Whether stack trace hashes should be included.",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "logging.structured.json.stacktrace.hash.generate",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "logging.structured.json.stacktrace.max-length",
@@ -807,7 +822,7 @@
         }
       ]
     },
- 	{
+    {
       "name": "logging.structured.json.stacktrace.printer",
       "values": [
         {

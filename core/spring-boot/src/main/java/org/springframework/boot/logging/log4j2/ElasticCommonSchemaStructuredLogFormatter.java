@@ -33,6 +33,7 @@ import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.ContextPairs.Pairs;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
@@ -48,13 +49,15 @@ import org.springframework.util.ObjectUtils;
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members),
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
+		super((members) -> jsonMembers(environment, stackTracePrinter, hashFieldConfiguration, contextPairs, members),
 				customizerBuilder.nested().build());
 	}
 
 	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, JsonWriter.Members<LogEvent> members) {
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(ElasticCommonSchemaStructuredLogFormatter::asTimestamp);
 		members.add("log").usingMembers((log) -> {
@@ -76,6 +79,11 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 				error.add("message", Throwable::getMessage);
 				error.add("stack_trace", extractor::stackTrace);
 			}));
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), LogEvent::getThrown)
+				.whenNotNull()
+				.as(hashFieldConfiguration::computeHash);
+		}
 		members.add("tags", LogEvent::getMarker)
 			.whenNotNull()
 			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
