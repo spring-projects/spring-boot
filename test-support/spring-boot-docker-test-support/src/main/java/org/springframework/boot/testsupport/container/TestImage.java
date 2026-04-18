@@ -127,6 +127,11 @@ public enum TestImage {
 	ELASTICSEARCH_9("elasticsearch", "9.0.2"),
 
 	/**
+	 * A container image from Elastic Registry suitable for testing Elasticsearch 9.
+	 */
+	ELASTICSEARCH_ELASTIC_REGISTRY_9("docker.elastic.co/elasticsearch/elasticsearch", "9.0.2"),
+
+	/**
 	 * A container image suitable for testing Grafana OTel LGTM.
 	 */
 	GRAFANA_OTEL_LGTM("grafana/otel-lgtm", "0.6.0", () -> LgtmStackContainer.class,

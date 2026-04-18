@@ -44,6 +44,9 @@ class ConnectionNamePredicateTests {
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/library/elasticsearch"));
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/elasticsearch"));
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/elasticsearch:latest"));
+		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.elastic.co/elasticsearch/elasticsearch"));
+		assertThat(predicateOf("elasticsearch"))
+			.accepts(sourceOf("docker.elastic.co/elasticsearch/elasticsearch:latest"));
 		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("redis"));
 		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("library/redis"));
 		assertThat(predicateOf("elasticsearch")).rejects(sourceOf("docker.io/library/redis"));
