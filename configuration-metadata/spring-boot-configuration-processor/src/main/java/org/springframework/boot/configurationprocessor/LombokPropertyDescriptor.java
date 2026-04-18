@@ -71,7 +71,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor {
 
 	@Override
 	protected boolean isMarkedAsNested(MetadataGenerationEnvironment environment) {
-		return environment.getNestedConfigurationPropertyAnnotation(getField()) != null;
+		return environment.getNestedConfigurationPropertyAnnotation(getField()) != null
+				|| environment.getNestedConfigurationPropertyAnnotation(getGetter()) != null;
 	}
 
 	@Override
@@ -136,5 +137,5 @@ class LombokPropertyDescriptor extends PropertyDescriptor {
 		Object value = values.get("value");
 		return (value == null || value.toString().equals(LOMBOK_ACCESS_LEVEL_PUBLIC));
 	}
-
+	
 }
