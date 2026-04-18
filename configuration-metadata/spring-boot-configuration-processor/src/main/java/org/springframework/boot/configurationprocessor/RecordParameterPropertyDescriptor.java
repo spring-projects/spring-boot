@@ -56,5 +56,4 @@ class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
 		return environment.getTypeUtils().getJavaDoc(this.recordComponent);
 	}
-
 }
