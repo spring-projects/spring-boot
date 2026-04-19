@@ -120,7 +120,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public static LinksServerWebExchangeMatcher toLinks() {
-		return new LinksServerWebExchangeMatcher();
+		return new LinksServerWebExchangeMatcher(null);
 	}
 
 	/**
@@ -344,7 +344,7 @@ public final class EndpointRequest {
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths, this.httpMethod);
 			String linksPath = getLinksPath(endpoints.getBasePath());
 			if (this.includeLinks && linksPath != null) {
-				delegateMatchers.add(new LinksServerWebExchangeMatcher());
+				delegateMatchers.add(new LinksServerWebExchangeMatcher(this.httpMethod));
 			}
 			if (delegateMatchers.isEmpty()) {
 				return EMPTY_MATCHER;
@@ -373,8 +373,11 @@ public final class EndpointRequest {
 	 */
 	public static final class LinksServerWebExchangeMatcher extends AbstractWebExchangeMatcher<WebEndpointProperties> {
 
-		private LinksServerWebExchangeMatcher() {
+		private final @Nullable HttpMethod httpMethod;
+
+		private LinksServerWebExchangeMatcher(@Nullable HttpMethod httpMethod) {
 			super(WebEndpointProperties.class);
+			this.httpMethod = httpMethod;
 		}
 
 		@Override
@@ -382,9 +385,9 @@ public final class EndpointRequest {
 			String linksPath = getLinksPath(properties.getBasePath());
 			if (linksPath != null) {
 				List<ServerWebExchangeMatcher> linksMatchers = new ArrayList<>();
-				linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath));
+				linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath, this.httpMethod));
 				if (!linksPath.endsWith("/")) {
-					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath + "/"));
+					linksMatchers.add(new PathPatternParserServerWebExchangeMatcher(linksPath + "/", this.httpMethod));
 				}
 				return new OrServerWebExchangeMatcher(linksMatchers);
 			}

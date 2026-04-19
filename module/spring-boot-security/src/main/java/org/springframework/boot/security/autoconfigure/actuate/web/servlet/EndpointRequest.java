@@ -224,11 +224,11 @@ public final class EndpointRequest {
 		}
 
 		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, String linksPath) {
+				RequestMatcherProvider matcherProvider, String linksPath, @Nullable HttpMethod httpMethod) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksPath));
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, httpMethod, linksPath));
 			if (!linksPath.endsWith("/")) {
-				linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksPath, "/"));
+				linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, httpMethod, linksPath, "/"));
 			}
 			return linksMatchers;
 		}
@@ -357,7 +357,7 @@ public final class EndpointRequest {
 			String basePath = endpoints.getBasePath();
 			String linksPath = getLinksPath(context, basePath);
 			if (this.includeLinks && linksPath != null) {
-				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, linksPath));
+				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, linksPath, this.httpMethod));
 			}
 			if (delegateMatchers.isEmpty()) {
 				return EMPTY_MATCHER;
@@ -393,7 +393,7 @@ public final class EndpointRequest {
 			String linksPath = getLinksPath(context, properties.getBasePath());
 			if (linksPath != null) {
 				return new OrRequestMatcher(
-						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), linksPath));
+						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), linksPath, null));
 			}
 			return EMPTY_MATCHER;
 		}
