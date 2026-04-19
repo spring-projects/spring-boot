@@ -1123,6 +1123,19 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void apiVersionUsePathSegmentIsAppliedLastSoOtherResolversStillRun() {
+		this.contextRunner
+			.withPropertyValues("spring.mvc.apiversion.use.path-segment=0",
+					"spring.mvc.apiversion.use.media-type-parameter[application/json]=mtpv")
+			.run((context) -> {
+				ApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy", ApiVersionStrategy.class);
+				MockHttpServletRequest request = new MockHttpServletRequest();
+				request.addHeader(HttpHeaders.CONTENT_TYPE, "application/json;mtpv=123");
+				assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+			});
+	}
+
+	@Test
 	void apiVersionBeansAreInjected() {
 		this.contextRunner.withUserConfiguration(ApiVersionConfiguration.class).run((context) -> {
 			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",

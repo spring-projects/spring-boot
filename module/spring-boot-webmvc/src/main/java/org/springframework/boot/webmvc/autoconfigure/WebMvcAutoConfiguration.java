@@ -421,8 +421,8 @@ public final class WebMvcAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
 			map.from(use::getQueryParameter).whenHasText().to(configurer::useQueryParam);
-			map.from(use::getPathSegment).to(configurer::usePathSegment);
 			use.getMediaTypeParameter().forEach(configurer::useMediaTypeParameter);
+			map.from(use::getPathSegment).to(configurer::usePathSegment);
 		}
 
 		@Bean

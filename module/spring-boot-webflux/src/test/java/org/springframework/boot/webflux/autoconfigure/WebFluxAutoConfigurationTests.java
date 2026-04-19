@@ -910,6 +910,21 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void apiVersionUsePathSegmentIsAppliedLastSoOtherResolversStillRun() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.apiversion.use.path-segment=0",
+					"spring.webflux.apiversion.use.media-type-parameter[application/json]=mtpv")
+			.run((context) -> {
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
+						DefaultApiVersionStrategy.class);
+				MockServerWebExchange request = MockServerWebExchange
+					.from(MockServerHttpRequest.get("https://example.com")
+						.header("content-type", "application/json;mtpv=123"));
+				assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+			});
+	}
+
+	@Test
 	void apiVersionBeansAreInjected() {
 		this.contextRunner.withUserConfiguration(ApiVersionConfiguration.class).run((context) -> {
 			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
