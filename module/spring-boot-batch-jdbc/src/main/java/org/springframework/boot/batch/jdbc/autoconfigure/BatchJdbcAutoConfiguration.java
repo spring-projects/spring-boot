@@ -49,8 +49,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
@@ -93,7 +96,7 @@ public final class BatchJdbcAutoConfiguration {
 
 		private final @Nullable JobParametersConverter jobParametersConverter;
 
-		SpringBootBatchJdbcConfiguration(DataSource dataSource,
+		SpringBootBatchJdbcConfiguration(Environment environment, DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
@@ -102,7 +105,10 @@ public final class BatchJdbcAutoConfiguration {
 				ObjectProvider<ExecutionContextSerializer> executionContextSerializer,
 				ObjectProvider<JobParametersConverter> jobParametersConverter) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
-			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
+			this.transactionManager = batchTransactionManager.getIfAvailable(() -> {
+				DataSource batchDS = batchDataSource.getIfAvailable();
+				return (batchDS != null) ? createTransactionManager(environment, batchDS) : transactionManager;
+			});
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
@@ -163,6 +169,11 @@ public final class BatchJdbcAutoConfiguration {
 		@Override
 		protected TaskExecutor getTaskExecutor() {
 			return (this.taskExecutor != null) ? this.taskExecutor : super.getTaskExecutor();
+		}
+
+		private DataSourceTransactionManager createTransactionManager(Environment environment, DataSource dataSource) {
+			return environment.getProperty("spring.dao.exceptiontranslation.enabled", Boolean.class, Boolean.TRUE)
+					? new JdbcTransactionManager(dataSource) : new DataSourceTransactionManager(dataSource);
 		}
 
 		@Configuration(proxyBeanMethods = false)

@@ -333,8 +333,11 @@ class BatchJdbcAutoConfigurationTests {
 				.hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
 				.hasBean("batchDataSource");
 			DataSource batchDataSource = context.getBean("batchDataSource", DataSource.class);
-			assertThat(context.getBean(SpringBootBatchJdbcConfiguration.class).getDataSource())
-				.isEqualTo(batchDataSource);
+			SpringBootBatchJdbcConfiguration batchJdbcConfiguration = context
+				.getBean(SpringBootBatchJdbcConfiguration.class);
+			assertThat(batchJdbcConfiguration.getDataSource()).isEqualTo(batchDataSource);
+			assertThat(batchJdbcConfiguration.getTransactionManager()).hasFieldOrPropertyWithValue("dataSource",
+					batchDataSource);
 			assertThat(context.getBean(BatchDataSourceScriptDatabaseInitializer.class))
 				.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
 		});
