@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationprocessor.fieldvalues;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Daeho Kwon
  */
 public abstract class AbstractFieldValuesProcessorTests {
 
@@ -116,6 +118,19 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("memberSelectInt")).isNull();
 	}
 
+	@Test
+	void getInitializedFields() {
+		InitializedFieldsTestProcessor processor = new InitializedFieldsTestProcessor();
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(FieldValues.class));
+		compiler.compile((compiled) -> {
+		});
+		Set<String> fields = processor.getFields();
+		assertThat(fields).contains("stringConst", "bool", "integer", "objectInstance");
+		assertThat(fields).doesNotContain("stringNone", "boolNone", "integerNone", "objectNone");
+	}
+
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.TestConfigurationProperties" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private final class TestProcessor extends AbstractProcessor {
@@ -148,6 +163,42 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		Map<String, Object> getValues() {
 			return this.values;
+		}
+
+	}
+
+	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.TestConfigurationProperties" })
+	@SupportedSourceVersion(SourceVersion.RELEASE_6)
+	private final class InitializedFieldsTestProcessor extends AbstractProcessor {
+
+		private FieldValuesParser processor;
+
+		private final Set<String> fields = new HashSet<>();
+
+		@Override
+		public synchronized void init(ProcessingEnvironment env) {
+			this.processor = createProcessor(env);
+		}
+
+		@Override
+		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+			for (TypeElement annotation : annotations) {
+				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+					if (element instanceof TypeElement typeElement) {
+						try {
+							this.fields.addAll(this.processor.getInitializedFields(typeElement));
+						}
+						catch (Exception ex) {
+							throw new IllegalStateException(ex);
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		Set<String> getFields() {
+			return this.fields;
 		}
 
 	}

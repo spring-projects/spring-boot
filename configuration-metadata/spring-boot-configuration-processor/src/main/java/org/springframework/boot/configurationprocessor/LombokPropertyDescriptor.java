@@ -33,6 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Daeho Kwon
  */
 class LombokPropertyDescriptor extends PropertyDescriptor {
 
@@ -95,12 +96,25 @@ class LombokPropertyDescriptor extends PropertyDescriptor {
 			return false;
 		}
 		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
-		return !env.isExcluded(getType()) && (hasSetter(env) || isCollection);
+		boolean hasSetter = hasSetter(env);
+		return !env.isExcluded(getType()) && (hasSetter || isCollection)
+				&& !(hasSetter && isNonStaticInnerClass(env));
+	}
+
+	@Override
+	protected boolean isInitialized(MetadataGenerationEnvironment environment) {
+		return environment.hasFieldInitializer(getDeclaringElement(), this.field);
 	}
 
 	@Override
 	public boolean isNested(MetadataGenerationEnvironment environment) {
-		return hasLombokPublicAccessor(environment, true) && super.isNested(environment);
+		if (!hasLombokPublicAccessor(environment, true)) {
+			return false;
+		}
+		if (isNonStaticInnerClass(environment) && (hasSetter(environment) || !isInitialized(environment))) {
+			return isMarkedAsNested(environment);
+		}
+		return super.isNested(environment);
 	}
 
 	private boolean hasSetter(MetadataGenerationEnvironment env) {

@@ -97,6 +97,7 @@ import org.springframework.boot.configurationsample.specific.InvalidDefaultValue
 import org.springframework.boot.configurationsample.specific.InvalidDefaultValueFloatingPointProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDefaultValueNumberProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
+import org.springframework.boot.configurationsample.specific.NonStaticInnerClassProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.boot.configurationsample.specific.StaticAccessor;
 import org.springframework.core.test.tools.CompilationException;
@@ -119,6 +120,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -399,6 +401,26 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.ofType(DeprecatedSimplePojo.class)
 			.fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.fifth.value").withDeprecation());
+	}
+
+	@Test
+	void nonStaticInnerClassProperties() {
+		ConfigurationMetadata metadata = compile(NonStaticInnerClassProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("non-static-inner").fromSource(NonStaticInnerClassProperties.class));
+		assertThat(metadata).doesNotHave(Metadata.withGroup("non-static-inner.inner-with-setter"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("non-static-inner.inner-with-setter.value"));
+		assertThat(metadata).has(Metadata.withGroup("non-static-inner.inner-without-setter")
+			.ofType(NonStaticInnerClassProperties.InnerWithoutSetter.class)
+			.fromSource(NonStaticInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("non-static-inner.inner-without-setter.value"));
+		assertThat(metadata).has(Metadata.withGroup("non-static-inner.explicitly-nested")
+			.ofType(NonStaticInnerClassProperties.InnerWithSetter.class)
+			.fromSource(NonStaticInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("non-static-inner.explicitly-nested.value"));
+		assertThat(metadata).has(Metadata.withGroup("non-static-inner.initialized-without-setter")
+			.ofType(NonStaticInnerClassProperties.InnerWithoutSetter.class)
+			.fromSource(NonStaticInnerClassProperties.class));
+		assertThat(metadata).doesNotHave(Metadata.withGroup("non-static-inner.uninitialized-without-setter"));
 	}
 
 	@Test

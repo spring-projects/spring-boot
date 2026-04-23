@@ -27,6 +27,7 @@ import org.springframework.boot.configurationsample.lombok.LombokAccessLevelProp
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassWithGetterProperties;
+import org.springframework.boot.configurationsample.lombok.LombokNonStaticInnerClassProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
@@ -129,6 +130,18 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void lombokNonStaticInnerClassProperties() {
+		ConfigurationMetadata metadata = compile(LombokNonStaticInnerClassProperties.class);
+		assertThat(metadata)
+			.has(Metadata.withGroup("lombok-non-static-inner").fromSource(LombokNonStaticInnerClassProperties.class));
+		assertThat(metadata).doesNotHave(Metadata.withGroup("lombok-non-static-inner.inner-with-setter"));
+		assertThat(metadata)
+			.has(Metadata.withGroup("lombok-non-static-inner.inner-without-setter")
+				.ofType(LombokNonStaticInnerClassProperties.InnerWithoutSetter.class)
+				.fromSource(LombokNonStaticInnerClassProperties.class));
 	}
 
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {

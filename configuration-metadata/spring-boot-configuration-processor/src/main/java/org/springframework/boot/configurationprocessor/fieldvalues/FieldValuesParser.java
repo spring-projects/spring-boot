@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor.fieldvalues;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
@@ -27,6 +28,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCom
  * Parser which can be used to obtain the field values from an {@link TypeElement}.
  *
  * @author Phillip Webb
+ * @author Daeho Kwon
  * @since 1.1.2
  * @see JavaCompilerFieldValuesParser
  */
@@ -41,9 +43,19 @@ public interface FieldValuesParser {
 	/**
 	 * Return the field values for the given element.
 	 * @param element the element to inspect
-	 * @return a map of field names to values.
+	 * @return a map of field names to values
 	 * @throws Exception if the values cannot be extracted
 	 */
 	Map<String, Object> getFieldValues(TypeElement element) throws Exception;
+
+	/**
+	 * Return the names of fields that have an initializer for the given element.
+	 * @param element the element to inspect
+	 * @return a set of field names that have an initializer
+	 * @throws Exception if the fields cannot be extracted
+	 */
+	default Set<String> getInitializedFields(TypeElement element) throws Exception {
+		return Collections.emptySet();
+	}
 
 }

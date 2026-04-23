@@ -21,6 +21,8 @@ import java.util.Arrays;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -34,6 +36,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Daeho Kwon
  */
 abstract class PropertyDescriptor {
 
@@ -139,7 +142,36 @@ abstract class PropertyDescriptor {
 			return true;
 		}
 		return !isCyclePresent(typeElement, getDeclaringElement())
-				&& isParentTheSame(environment, typeElement, getDeclaringElement());
+				&& isParentTheSame(environment, typeElement, getDeclaringElement())
+				&& !(isNonStaticInnerClass(environment) && (hasSetter() || !isInitialized(environment)));
+	}
+
+	/**
+	 * Return whether this property's field is initialized at declaration.
+	 * @param environment the metadata generation environment
+	 * @return {@code true} if the field has an initializer
+	 */
+	protected boolean isInitialized(MetadataGenerationEnvironment environment) {
+		return false;
+	}
+
+	/**
+	 * Return whether this property's type is a non-static inner class.
+	 * @param environment the metadata generation environment
+	 * @return {@code true} if the type is a non-static member class
+	 */
+	protected final boolean isNonStaticInnerClass(MetadataGenerationEnvironment environment) {
+		Element typeElement = environment.getTypeUtils().asElement(getType());
+		return typeElement instanceof TypeElement te && te.getNestingKind() == NestingKind.MEMBER
+				&& !te.getModifiers().contains(Modifier.STATIC);
+	}
+
+	/**
+	 * Return whether this property has a setter.
+	 * @return {@code true} if the property has a setter
+	 */
+	protected boolean hasSetter() {
+		return false;
 	}
 
 	/**

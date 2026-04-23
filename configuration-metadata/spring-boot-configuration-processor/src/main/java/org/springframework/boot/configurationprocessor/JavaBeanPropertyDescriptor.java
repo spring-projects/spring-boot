@@ -29,6 +29,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Daeho Kwon
  */
 class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
@@ -77,11 +78,22 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 	}
 
 	@Override
+	protected boolean hasSetter() {
+		return this.setter != null;
+	}
+
+	@Override
+	protected boolean isInitialized(MetadataGenerationEnvironment environment) {
+		return environment.hasFieldInitializer(getDeclaringElement(), this.field);
+	}
+
+	@Override
 	public boolean isProperty(MetadataGenerationEnvironment env) {
 		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
 		boolean hasGetter = getGetter() != null;
 		boolean hasSetter = getSetter() != null;
-		return !env.isExcluded(getType()) && hasGetter && (hasSetter || isCollection);
+		return !env.isExcluded(getType()) && hasGetter && (hasSetter || isCollection)
+				&& !(hasSetter && isNonStaticInnerClass(env));
 	}
 
 }

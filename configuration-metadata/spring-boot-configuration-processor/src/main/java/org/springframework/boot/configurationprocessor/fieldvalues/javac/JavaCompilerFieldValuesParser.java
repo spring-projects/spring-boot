@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.springframework.boot.configurationprocessor.support.ConventionUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Daeho Kwon
  * @since 1.2.0
  */
 public class JavaCompilerFieldValuesParser implements FieldValuesParser {
@@ -55,6 +57,17 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return fieldCollector.getFieldValues();
 		}
 		return Collections.emptyMap();
+	}
+
+	@Override
+	public Set<String> getInitializedFields(TypeElement element) throws Exception {
+		Tree tree = this.trees.getTree(element);
+		if (tree != null) {
+			FieldCollector fieldCollector = new FieldCollector();
+			tree.accept(fieldCollector);
+			return fieldCollector.getInitializedFields();
+		}
+		return Collections.emptySet();
 	}
 
 	/**
@@ -152,6 +165,8 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 
 		private final Map<String, Object> staticFinals = new HashMap<>();
 
+		private final Set<String> initializedFields = new HashSet<>();
+
 		@Override
 		public void visitVariable(VariableTree variable) throws Exception {
 			Set<Modifier> flags = variable.getModifierFlags();
@@ -160,6 +175,9 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			}
 			if (!flags.contains(Modifier.FINAL)) {
 				this.fieldValues.put(variable.getName(), getValue(variable));
+			}
+			if (!flags.contains(Modifier.STATIC) && variable.getInitializer() != null) {
+				this.initializedFields.add(variable.getName());
 			}
 		}
 
@@ -242,6 +260,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 
 		Map<String, Object> getFieldValues() {
 			return this.fieldValues;
+		}
+
+		Set<String> getInitializedFields() {
+			return Collections.unmodifiableSet(this.initializedFields);
 		}
 
 	}

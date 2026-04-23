@@ -52,6 +52,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  */
 class MetadataGenerationEnvironment {
 
@@ -79,6 +80,8 @@ class MetadataGenerationEnvironment {
 	private final ConfigurationPropertiesSourceResolver sourceResolver;
 
 	private final Map<TypeElement, Map<String, Object>> defaultValues = new HashMap<>();
+
+	private final Map<TypeElement, Set<String>> initializedFields = new HashMap<>();
 
 	private final Map<TypeElement, SourceMetadata> sources = new HashMap<>();
 
@@ -382,6 +385,33 @@ class MetadataGenerationEnvironment {
 	private boolean isElementDeprecated(Element element) {
 		return hasAnnotation(element, "java.lang.Deprecated")
 				|| hasAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
+	}
+
+	boolean hasFieldInitializer(TypeElement type, VariableElement field) {
+		if (field == null) {
+			return false;
+		}
+		return this.initializedFields.computeIfAbsent(type, this::resolveInitializedFields)
+			.contains(field.getSimpleName().toString());
+	}
+
+	private Set<String> resolveInitializedFields(TypeElement element) {
+		Set<String> fields = new HashSet<>();
+		resolveInitializedFieldsFor(fields, element);
+		return fields;
+	}
+
+	private void resolveInitializedFieldsFor(Set<String> fields, TypeElement element) {
+		try {
+			fields.addAll(this.fieldValuesParser.getInitializedFields(element));
+		}
+		catch (Exception ex) {
+			// continue
+		}
+		Element superType = this.typeUtils.asElement(element.getSuperclass());
+		if (superType instanceof TypeElement && superType.asType().getKind() != TypeKind.NONE) {
+			resolveInitializedFieldsFor(fields, (TypeElement) superType);
+		}
 	}
 
 	private Map<String, Object> resolveFieldValues(TypeElement element) {
