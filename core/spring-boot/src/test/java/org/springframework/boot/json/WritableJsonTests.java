@@ -34,6 +34,7 @@ import org.springframework.core.io.FileSystemResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link WritableJson}.
@@ -136,6 +137,18 @@ class WritableJsonTests {
 			.havingCause()
 			.withMessage("bad");
 		assertThat(WritableJsonBytes.getCachedCharset()).isNull();
+	}
+
+	@Test
+	void toByteArrayWhenRuntimeExceptionIsThrownClearsCachedEncoder() {
+		WritableJson failing = (out) -> {
+			out.append("bad");
+			throw new IllegalStateException("bad");
+		};
+		assertThatIllegalStateException().isThrownBy(failing::toByteArray).withMessage("bad");
+		assertThat(WritableJsonBytes.getCachedCharset()).isNull();
+		WritableJson writable = (out) -> out.append("{}");
+		assertThat(writable.toByteArray()).isEqualTo("{}".getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Test

@@ -61,6 +61,10 @@ final class WritableJsonBytes {
 			WritableJsonBytes.encoder.remove();
 			throw ex;
 		}
+		catch (RuntimeException | Error ex) {
+			WritableJsonBytes.encoder.remove();
+			throw ex;
+		}
 	}
 
 	private static boolean requiresFreshWriter(Charset charset) {
