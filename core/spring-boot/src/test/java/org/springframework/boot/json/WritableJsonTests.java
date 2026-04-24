@@ -21,8 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -44,6 +47,16 @@ class WritableJsonTests {
 	@SuppressWarnings("NullAway.Init")
 	File temp;
 
+	@BeforeEach
+	void clearWritableJsonBytes() {
+		WritableJsonBytes.clear();
+	}
+
+	@AfterEach
+	void clearWritableJsonBytesAfterEachTest() {
+		WritableJsonBytes.clear();
+	}
+
 	@Test
 	void toJsonStringReturnsString() {
 		WritableJson writable = (out) -> out.append("{}");
@@ -64,6 +77,73 @@ class WritableJsonTests {
 	void toByteArrayReturnsByteArray() {
 		WritableJson writable = (out) -> out.append("{}");
 		assertThat(writable.toByteArray()).isEqualTo("{}".getBytes());
+	}
+
+	@Test
+	void toByteArrayWhenCalledRepeatedlyReturnsByteArray() {
+		WritableJson writable = (out) -> out.append("{\"message\":\"test\"}");
+		byte[] bytes = writable.toByteArray();
+		assertThat(writable.toByteArray()).isEqualTo(bytes);
+		assertThat(WritableJsonBytes.getCachedCharset()).isEqualTo(StandardCharsets.UTF_8);
+	}
+
+	@Test
+	void toByteArrayWithCharsetReturnsByteArray() {
+		WritableJson writable = (out) -> out.append("{\"message\":\"é\"}");
+		assertThat(writable.toByteArray(StandardCharsets.ISO_8859_1))
+			.isEqualTo("{\"message\":\"é\"}".getBytes(StandardCharsets.ISO_8859_1));
+		assertThat(WritableJsonBytes.getCachedCharset()).isEqualTo(StandardCharsets.ISO_8859_1);
+	}
+
+	@Test
+	void toByteArrayWhenCharsetChangesReplacesCachedEncoder() {
+		WritableJson writable = (out) -> out.append("{\"message\":\"test\"}");
+		writable.toByteArray(StandardCharsets.UTF_8);
+		assertThat(WritableJsonBytes.getCachedCharset()).isEqualTo(StandardCharsets.UTF_8);
+		writable.toByteArray(StandardCharsets.ISO_8859_1);
+		assertThat(WritableJsonBytes.getCachedCharset()).isEqualTo(StandardCharsets.ISO_8859_1);
+	}
+
+	@Test
+	void toByteArrayWithBomCharsetUsesFreshWriterForEachCall() {
+		assertUsesFreshWriterForEachCall(StandardCharsets.UTF_16);
+		assertUsesFreshWriterForEachCall(Charset.forName("UTF-32"));
+	}
+
+	private void assertUsesFreshWriterForEachCall(Charset charset) {
+		WritableJson writable = (out) -> out.append("{\"message\":\"test\"}");
+		byte[] expected = "{\"message\":\"test\"}".getBytes(charset);
+		assertThat(writable.toByteArray(charset)).isEqualTo(expected);
+		assertThat(writable.toByteArray(charset)).isEqualTo(expected);
+		assertThat(WritableJsonBytes.getCachedCharset()).isNull();
+	}
+
+	@Test
+	void toByteArrayWithNonAsciiAndSurrogatePairReturnsByteArray() {
+		String json = "{\"message\":\"Héllo 😀\"}";
+		WritableJson writable = (out) -> out.append(json);
+		assertThat(writable.toByteArray()).isEqualTo(json.getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
+	void toByteArrayWhenIOExceptionIsThrownThrowsUncheckedIOExceptionAndClearsCachedEncoder() {
+		WritableJson writable = (out) -> out.append("{}");
+		writable.toByteArray();
+		WritableJson failing = (out) -> {
+			throw new IOException("bad");
+		};
+		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(failing::toByteArray)
+			.havingCause()
+			.withMessage("bad");
+		assertThat(WritableJsonBytes.getCachedCharset()).isNull();
+	}
+
+	@Test
+	void toByteArrayWhenBufferIsOversizedDiscardsCachedEncoder() {
+		String json = "{\"message\":\"%s\"}".formatted("a".repeat(300 * 1024));
+		WritableJson writable = (out) -> out.append(json);
+		assertThat(writable.toByteArray()).isEqualTo(json.getBytes(StandardCharsets.UTF_8));
+		assertThat(WritableJsonBytes.getCachedCharset()).isNull();
 	}
 
 	@Test
