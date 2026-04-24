@@ -114,13 +114,13 @@ public class ApplicationTemp {
 	 * @return a subdirectory
 	 */
 	public File getDir(String subDir) {
-		return getPath(subDir).toFile();
+		return createDirectory(getPath().resolve(subDir)).toFile();
 	}
 
 	/**
 	 * Return the path to be used for application specific temp files.
 	 * @return the application temp path
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 */
 	public Path getPath() {
 		if (this.path == null) {
@@ -138,16 +138,6 @@ public class ApplicationTemp {
 		Path path = this.path;
 		Assert.state(path != null, "'path' must not be null");
 		return path;
-	}
-
-	/**
-	 * Return the path of a subdirectory of the application temp.
-	 * @param subDir the subdirectory name
-	 * @return the subdirectory path
-	 * @since 4.1.0
-	 */
-	public Path getPath(String subDir) {
-		return createDirectory(getPath().resolve(subDir));
 	}
 
 	private Path createDirectory(Path path) {
