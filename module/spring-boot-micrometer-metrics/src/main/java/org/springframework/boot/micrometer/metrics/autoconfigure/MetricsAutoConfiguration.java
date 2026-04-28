@@ -77,8 +77,8 @@ public final class MetricsAutoConfiguration {
 	}
 
 	@Bean
-	MeterRegistryCloser meterRegistryCloser(ApplicationContext context) {
-		return new MeterRegistryCloser(context);
+	MeterRegistryCloser meterRegistryCloser(ApplicationContext context, MetricsProperties properties) {
+		return new MeterRegistryCloser(context, properties.isUseGlobalRegistry());
 	}
 
 	@Bean
@@ -104,17 +104,19 @@ public final class MetricsAutoConfiguration {
 
 		private final Iterable<MeterRegistry> meterRegistries;
 
-		MeterRegistryCloser(ApplicationContext context) {
+		private final boolean useGlobalRegistry;
+
+		MeterRegistryCloser(ApplicationContext context, boolean useGlobalRegistry) {
 			this.meterRegistries = context.getBeansOfType(MeterRegistry.class).values();
 			this.context = context;
+			this.useGlobalRegistry = useGlobalRegistry;
 		}
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			if (this.context.equals(event.getApplicationContext())) {
-				boolean useGlobalRegistry = this.context.getBean(MetricsProperties.class).isUseGlobalRegistry();
 				for (MeterRegistry meterRegistry : this.meterRegistries) {
-					if (useGlobalRegistry) {
+					if (this.useGlobalRegistry) {
 						Metrics.globalRegistry.remove(meterRegistry);
 					}
 					if (!meterRegistry.isClosed()) {
