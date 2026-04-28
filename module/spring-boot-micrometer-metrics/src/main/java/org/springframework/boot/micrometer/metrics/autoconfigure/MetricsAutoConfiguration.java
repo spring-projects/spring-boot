@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.metrics.autoconfigure;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -112,6 +113,7 @@ public final class MetricsAutoConfiguration {
 		public void onApplicationEvent(ContextClosedEvent event) {
 			if (this.context.equals(event.getApplicationContext())) {
 				for (MeterRegistry meterRegistry : this.meterRegistries) {
+					Metrics.globalRegistry.remove(meterRegistry);
 					if (!meterRegistry.isClosed()) {
 						meterRegistry.close();
 					}

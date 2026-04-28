@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.metrics.autoconfigure;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
@@ -93,6 +94,16 @@ class MetricsAutoConfigurationTests {
 			assertThat(meterRegistry.isClosed()).isFalse();
 			context.close();
 			assertThat(meterRegistry.isClosed()).isTrue();
+		});
+	}
+
+	@Test
+	void meterRegistryCloserShouldRemoveRegistryFromGlobalRegistryOnShutdown() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(Metrics.globalRegistry.getRegistries()).contains(meterRegistry);
+			context.close();
+			assertThat(Metrics.globalRegistry.getRegistries()).doesNotContain(meterRegistry);
 		});
 	}
 
