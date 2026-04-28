@@ -42,3 +42,4 @@ secrets.yml
 .git-hooks/
 node_modules
 /.kotlin/
+.idea/
