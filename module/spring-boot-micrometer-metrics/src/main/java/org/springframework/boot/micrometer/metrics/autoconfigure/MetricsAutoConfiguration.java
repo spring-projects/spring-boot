@@ -112,8 +112,11 @@ public final class MetricsAutoConfiguration {
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			if (this.context.equals(event.getApplicationContext())) {
+				boolean useGlobalRegistry = this.context.getBean(MetricsProperties.class).isUseGlobalRegistry();
 				for (MeterRegistry meterRegistry : this.meterRegistries) {
-					Metrics.globalRegistry.remove(meterRegistry);
+					if (useGlobalRegistry) {
+						Metrics.globalRegistry.remove(meterRegistry);
+					}
 					if (!meterRegistry.isClosed()) {
 						meterRegistry.close();
 					}

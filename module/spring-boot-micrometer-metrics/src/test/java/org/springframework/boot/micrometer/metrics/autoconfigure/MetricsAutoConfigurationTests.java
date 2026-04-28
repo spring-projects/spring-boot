@@ -108,6 +108,23 @@ class MetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void meterRegistryCloserShouldNotRemoveRegistryFromGlobalRegistryWhenUseGlobalRegistryIsFalse() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
+			.withPropertyValues("management.metrics.use-global-registry=false")
+			.run((context) -> {
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				Metrics.globalRegistry.add(meterRegistry);
+				try {
+					context.close();
+					assertThat(Metrics.globalRegistry.getRegistries()).contains(meterRegistry);
+				}
+				finally {
+					Metrics.globalRegistry.remove(meterRegistry);
+				}
+			});
+	}
+
+	@Test
 	void meterRegistryCloserShouldOnlyCloseRegistriesBelongingToContextBeingClosed() {
 		MeterRegistry parentMeterRegistry = new SimpleMeterRegistry();
 		MeterRegistry childMeterRegistry = new SimpleMeterRegistry();
