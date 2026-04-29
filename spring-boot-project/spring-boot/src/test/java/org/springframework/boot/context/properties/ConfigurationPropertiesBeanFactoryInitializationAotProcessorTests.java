@@ -23,8 +23,10 @@ import org.assertj.core.api.AssertProvider;
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
@@ -108,6 +110,36 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 			.hasType(PossibleConstructorBindingProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
 			.containsExactly(TypeReference.of(PossibleConstructorBindingProperties.class));
+	}
+
+	@Test
+	void javaBeanWithClassPropertyRegistersConstructorHintForDefaultValue() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableClassPropertyProperties.class);
+		TestGenerationContext generationContext = new TestGenerationContext();
+		contribution.applyTo(generationContext, null);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(ClassPropertySample.class)
+			.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)).accepts(generationContext.getRuntimeHints());
+	}
+
+	@Test
+	void javaBeanWithNestedClassPropertyRegistersConstructorHintForDefaultValue() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableNestedClassPropertyProperties.class);
+		TestGenerationContext generationContext = new TestGenerationContext();
+		contribution.applyTo(generationContext, null);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(ClassPropertySample.class)
+			.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)).accepts(generationContext.getRuntimeHints());
+	}
+
+	@Test
+	void javaBeanWithNullClassPropertyDoesNotRegisterAdditionalHint() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableNullClassPropertyProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(NullClassPropertyProperties.class));
 	}
 
 	private Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
@@ -208,6 +240,80 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		void setValue(String value) {
 			this.value = value;
 		}
+
+	}
+
+	@EnableConfigurationProperties(ClassPropertyProperties.class)
+	static class EnableClassPropertyProperties {
+
+	}
+
+	@ConfigurationProperties("class-property")
+	static class ClassPropertyProperties {
+
+		private Class<?> target = ClassPropertySample.class;
+
+		Class<?> getTarget() {
+			return this.target;
+		}
+
+		void setTarget(Class<?> target) {
+			this.target = target;
+		}
+
+	}
+
+	@EnableConfigurationProperties(NestedClassPropertyProperties.class)
+	static class EnableNestedClassPropertyProperties {
+
+	}
+
+	@ConfigurationProperties("nested-class-property")
+	static class NestedClassPropertyProperties {
+
+		private final Nested nested = new Nested();
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private Class<?> target = ClassPropertySample.class;
+
+			Class<?> getTarget() {
+				return this.target;
+			}
+
+			void setTarget(Class<?> target) {
+				this.target = target;
+			}
+
+		}
+
+	}
+
+	@EnableConfigurationProperties(NullClassPropertyProperties.class)
+	static class EnableNullClassPropertyProperties {
+
+	}
+
+	@ConfigurationProperties("null-class-property")
+	static class NullClassPropertyProperties {
+
+		private Class<?> target;
+
+		Class<?> getTarget() {
+			return this.target;
+		}
+
+		void setTarget(Class<?> target) {
+			this.target = target;
+		}
+
+	}
+
+	static class ClassPropertySample {
 
 	}
 
