@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -112,28 +111,6 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 			});
 	}
 
-	@Test
-	void forwardedHeaderTransformerShouldBeConfigured() {
-		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
-			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
-	}
-
-	@Test
-	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
-		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-			.withPropertyValues("server.forward-headers-strategy=native", "server.port=0")
-			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
-	}
-
-	@Test
-	void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
-		this.mockServerRunner
-			.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
-			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
-			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class HttpHandlerConfiguration {
 
@@ -170,16 +147,6 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 		@Bean
 		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ForwardedHeaderTransformerConfiguration {
-
-		@Bean
-		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
-			return new ForwardedHeaderTransformer();
 		}
 
 	}

@@ -40,12 +40,14 @@ dependencies {
 	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jetty-server")
 	optional("org.eclipse.jetty.http2:jetty-http2-server")
 	optional("org.springframework:spring-webflux")
+	optional(project(":module:spring-boot-servlet"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+	testImplementation("org.springframework:spring-webmvc")
 
 	testCompileOnly("com.google.code.findbugs:jsr305")
 

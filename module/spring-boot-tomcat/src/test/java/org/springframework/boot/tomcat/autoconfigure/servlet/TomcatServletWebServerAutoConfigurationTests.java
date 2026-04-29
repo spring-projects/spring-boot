@@ -21,6 +21,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.servlet.autoconfigure.ForwardedHeaderAutoConfiguration;
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
@@ -125,6 +126,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 		this.serverRunner
 			.withPropertyValues("server.forward-headers-strategy=framework",
 					"server.tomcat.use-relative-redirects=true", "server.port=0")
+			.withUserConfiguration(ForwardedHeaderAutoConfiguration.class)
 			.run((context) -> {
 				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -137,6 +139,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 		this.serverRunner
 			.withPropertyValues("server.forward-headers-strategy=framework",
 					"server.tomcat.use-relative-redirects=false", "server.port=0")
+			.withUserConfiguration(ForwardedHeaderAutoConfiguration.class)
 			.run((context) -> {
 				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);

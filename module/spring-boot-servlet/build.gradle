@@ -35,8 +35,6 @@ dependencies {
 	optional("org.springframework.security:spring-security-config")
 
 	testImplementation(project(":core:spring-boot-test"))
-	testImplementation(project(":module:spring-boot-jetty"))
-	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("org.springframework:spring-webmvc")
 

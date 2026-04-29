@@ -1,3 +1,4 @@
+org.springframework.boot.servlet.autoconfigure.ForwardedHeaderAutoConfiguration
 org.springframework.boot.servlet.autoconfigure.HttpEncodingAutoConfiguration
 org.springframework.boot.servlet.autoconfigure.MultipartAutoConfiguration
 org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration

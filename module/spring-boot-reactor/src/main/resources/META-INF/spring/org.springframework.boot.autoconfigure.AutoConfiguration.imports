@@ -1,1 +1,2 @@
+org.springframework.boot.reactor.autoconfigure.ForwardedHeaderAutoConfiguration
 org.springframework.boot.reactor.autoconfigure.ReactorAutoConfiguration

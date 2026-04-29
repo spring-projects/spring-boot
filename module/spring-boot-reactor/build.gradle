@@ -27,8 +27,10 @@ description = "Spring Boot Reactor"
 dependencies {
 	api(project(":core:spring-boot"))
 	api("io.projectreactor:reactor-core")
+	api("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional("org.springframework:spring-webflux")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
