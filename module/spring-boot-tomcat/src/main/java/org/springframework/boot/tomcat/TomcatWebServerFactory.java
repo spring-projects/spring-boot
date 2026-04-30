@@ -74,6 +74,8 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 
 	private Set<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers = new LinkedHashSet<>();
 
+	private Set<TomcatServerCustomizer> serverCustomizers = new LinkedHashSet<>();
+
 	private List<Connector> additionalConnectors = new ArrayList<>();
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
@@ -299,6 +301,34 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	}
 
 	/**
+	 * Returns a mutable collection of the {@link TomcatServerCustomizer}s that will be
+	 * applied to the Tomcat {@link org.apache.catalina.Server}.
+	 * @return the customizers that will be applied
+	 * @since 4.2.0
+	 */
+	public Set<TomcatServerCustomizer> getServerCustomizers() {
+		return this.serverCustomizers;
+	}
+
+	/**
+	 * Set {@link TomcatServerCustomizer}s that will be applied to the Tomcat
+	 * {@link org.apache.catalina.Server}. Calling this method will replace any existing
+	 * customizers.
+	 * @param serverCustomizers the customizers to set
+	 * @since 4.2.0
+	 */
+	public void setServerCustomizers(Collection<? extends TomcatServerCustomizer> serverCustomizers) {
+		Assert.notNull(serverCustomizers, "'serverCustomizers' must not be null");
+		this.serverCustomizers = new LinkedHashSet<>(serverCustomizers);
+	}
+
+	@Override
+	public void addServerCustomizers(TomcatServerCustomizer... serverCustomizers) {
+		Assert.notNull(serverCustomizers, "'serverCustomizers' must not be null");
+		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
 	 * Tomcat server.
 	 * @return the additional connectors
@@ -396,6 +426,9 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 		for (Connector additionalConnector : this.getAdditionalConnectors()) {
 			tomcat.getService().addConnector(additionalConnector);
 			registerConnectorExecutor(tomcat, additionalConnector);
+		}
+		for (TomcatServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(tomcat.getServer());
 		}
 		return tomcat;
 	}
