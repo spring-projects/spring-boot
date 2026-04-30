@@ -95,7 +95,7 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping
-	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+	public ResponseEntity<Map<String, @Nullable Object>> error(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		if (status == HttpStatus.NO_CONTENT) {
 			return new ResponseEntity<>(status);
