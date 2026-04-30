@@ -100,7 +100,9 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.header("Authorization", "bearer " + mockAccessToken())
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.FORBIDDEN)));
+			.isEqualTo(HttpStatus.FORBIDDEN)
+			.expectBody(String.class)
+			.isEqualTo("{\"security_error\":\"Access denied\"}")));
 	}
 
 	@Test
@@ -179,7 +181,9 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 			.header("Authorization", "bearer " + mockAccessToken())
 			.exchange()
 			.expectStatus()
-			.isUnauthorized()));
+			.isUnauthorized()
+			.expectBody(String.class)
+			.isEqualTo("{\"security_error\":\"invalid-token\"}")));
 	}
 
 	@Test
