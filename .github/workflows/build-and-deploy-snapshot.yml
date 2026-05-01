@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '4.0.x'
+      - '4.0.x-internal'
 permissions:
   contents: read
 concurrency:
@@ -24,7 +24,6 @@ jobs:
           commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
           commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
           commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
-          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           gradle-cache-read-only: false
           publish: true
       - name: Deploy
@@ -50,17 +49,6 @@ jobs:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
-  trigger-docs-build:
-    name: Trigger Docs Build
-    needs: build-and-deploy-snapshot
-    permissions:
-      actions: write
-    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
-    steps:
-      - name: Run Deploy Docs Workflow
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-sha=${{ github.sha }} -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-deploy-snapshot.outputs.version }}
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
