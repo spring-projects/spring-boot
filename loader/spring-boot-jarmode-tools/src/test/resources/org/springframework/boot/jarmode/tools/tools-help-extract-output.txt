@@ -1,0 +1,12 @@
+Extract the contents from the jar
+
+Usage:
+  java -Djarmode=tools -jar test.jar extract [options]
+
+Options:
+  --launcher                     Whether to extract the Spring Boot launcher
+  --layers string list           Layers to extract
+  --destination string           Directory to extract files to. Defaults to a directory named after the uber JAR (without the file extension)
+  --libraries string             Name of the libraries directory. Only applicable when not using --launcher. Defaults to lib/
+  --application-filename string  Name of the application JAR file. Only applicable when not using --launcher. Defaults to the uber JAR filename
+  --force                        Whether to ignore non-empty directories, extract anyway

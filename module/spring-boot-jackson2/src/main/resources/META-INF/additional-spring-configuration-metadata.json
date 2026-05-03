@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.jackson2.datatype.enum",
+      "description": "Jackson on/off features for enums."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::exclude-artifact-group[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludeGroupIds>com.example</excludeGroupIds>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::exclude-artifact-group[] -->
+

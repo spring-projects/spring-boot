@@ -1,0 +1,8 @@
+org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
+org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingProcessor
+
+org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter=\
+org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer
+
+org.springframework.aot.hint.RuntimeHintsRegistrar=\
+org.springframework.boot.autoconfigure.template.TemplateRuntimeHints

@@ -1,0 +1,60 @@
+[[actuator.jmx]]
+= Monitoring and Management over JMX
+
+Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
+By default, this feature is not enabled.
+You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
+Spring Boot exposes the most suitable javadoc:javax.management.MBeanServer[] as a bean with an ID of `mbeanServer`.
+Any of your beans that are annotated with Spring JMX annotations (`@org.springframework.jmx.export.annotation.ManagedResource`, javadoc:org.springframework.jmx.export.annotation.ManagedAttribute[format=annotation], or javadoc:org.springframework.jmx.export.annotation.ManagedOperation[format=annotation]) are exposed to it.
+
+If your platform provides a standard javadoc:javax.management.MBeanServer[], Spring Boot uses that and defaults to the VM javadoc:javax.management.MBeanServer[], if necessary.
+If all that fails, a new javadoc:javax.management.MBeanServer[] is created.
+
+NOTE: `spring.jmx.enabled` affects only the management beans provided by Spring.
+Enabling management beans provided by other libraries (for example {url-log4j2-docs}/jmx.html[Log4j2] or {url-quartz-javadoc}/constant-values.html#org.quartz.impl.StdSchedulerFactory.PROP_SCHED_JMX_EXPORT[Quartz]) is independent.
+
+See the {code-spring-boot-autoconfigure-src}/jmx/JmxAutoConfiguration.java[`JmxAutoConfiguration`] class for more details.
+
+By default, Spring Boot also exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain.
+To take full control over endpoint registration in the JMX domain, consider registering your own javadoc:org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory[] implementation.
+
+
+
+[[actuator.jmx.custom-mbean-names]]
+== Customizing MBean Names
+
+The name of the MBean is usually generated from the `id` of the endpoint.
+For example, the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
+
+If your application contains more than one Spring javadoc:org.springframework.context.ApplicationContext[], you may find that names clash.
+To solve this problem, you can set the configprop:spring.jmx.unique-names[] property to `true` so that MBean names are always unique.
+
+You can also customize the JMX domain under which endpoints are exposed.
+The following settings show an example of doing so in `application.properties`:
+
+[configprops,yaml]
+----
+spring:
+  jmx:
+    unique-names: true
+management:
+  endpoints:
+    jmx:
+      domain: "com.example.myapp"
+----
+
+
+
+[[actuator.jmx.disable-jmx-endpoints]]
+== Disabling JMX Endpoints
+
+If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as the following example shows:
+
+[configprops,yaml]
+----
+management:
+  endpoints:
+    jmx:
+      exposure:
+        exclude: "*"
+----

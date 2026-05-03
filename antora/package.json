@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "antora": "node npm/antora.js"
+  },
+  "dependencies": {
+    "@antora/cli": "3.2.0-alpha.11",
+    "@antora/site-generator": "3.2.0-alpha.11",
+    "@antora/atlas-extension": "1.0.0-alpha.5",
+    "@springio/antora-extensions": "1.14.11",
+    "@springio/antora-xref-extension": "1.0.0-alpha.5",
+    "@springio/antora-zip-contents-collector-extension": "1.0.0-alpha.10",
+    "@asciidoctor/tabs": "1.0.0-beta.6",
+    "@springio/asciidoctor-extensions": "1.0.0-alpha.18"
+  },
+  "config": {
+    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.26/ui-bundle.zip"
+  }
+}

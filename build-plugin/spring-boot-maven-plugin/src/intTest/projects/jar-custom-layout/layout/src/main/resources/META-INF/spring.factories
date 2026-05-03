@@ -1,0 +1,3 @@
+# Layout Factories
+org.springframework.boot.loader.tools.LayoutFactory=\
+smoketest.layout.SampleLayoutFactory

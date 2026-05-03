@@ -1,0 +1,4 @@
+org.springframework.boot.jersey.autoconfigure.actuate.web.JerseyChildManagementContextConfiguration
+org.springframework.boot.jersey.autoconfigure.actuate.web.JerseyEndpointManagementContextConfiguration
+org.springframework.boot.jersey.autoconfigure.actuate.web.JerseySameManagementContextConfiguration
+org.springframework.boot.jersey.autoconfigure.actuate.web.JerseyWebEndpointManagementContextConfiguration

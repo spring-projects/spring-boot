@@ -1,0 +1,28 @@
+{ 
+  "properties": [
+    {
+      "name": "spring.http.codecs.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use for HTTP encoding and decoding. By default, auto-detected according to the environment. Supported values are 'jackson' and 'jackson2' (deprecated)."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.http.codecs.preferred-json-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jackson2"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}

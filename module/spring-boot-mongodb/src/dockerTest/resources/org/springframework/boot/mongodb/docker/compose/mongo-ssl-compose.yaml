@@ -1,0 +1,28 @@
+services:
+  mongo:
+    image: '{imageName}'
+    ports:
+      - '27017'
+    secrets:
+      - ssl-ca
+      - ssl-cert
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'secret'
+      MONGO_INITDB_DATABASE: 'mydatabase'
+    command: >
+      mongod
+        --auth
+        --tlsMode requireTLS
+        --tlsCertificateKeyFile /run/secrets/ssl-cert
+        --tlsCAFile /run/secrets/ssl-ca
+        --bind_ip_all
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+secrets:
+  ssl-ca:
+    file: 'ca.crt'
+  ssl-cert:
+    file: 'mongo.pem'

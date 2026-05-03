@@ -1,0 +1,71 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+bom {
+	library("ActiveMQ", "5.15.11") {
+		group("org.apache.activemq") {
+			modules = [
+				"activemq-amqp",
+				"activemq-blueprint",
+				"activemq-broker",
+				"activemq-camel",
+				"activemq-client",
+				"activemq-console",
+				"activemq-http",
+				"activemq-jaas",
+				"activemq-jdbc-store",
+				"activemq-jms-pool",
+				"activemq-kahadb-store",
+				"activemq-karaf",
+				"activemq-leveldb-store",
+				"activemq-log4j-appender",
+				"activemq-mqtt",
+				"activemq-openwire-generator",
+				"activemq-openwire-legacy",
+				"activemq-osgi",
+				"activemq-partition",
+				"activemq-pool",
+				"activemq-ra",
+				"activemq-run",
+				"activemq-runtime-config",
+				"activemq-shiro",
+				"activemq-spring",
+				"activemq-stomp",
+				"activemq-web"
+			]
+		}
+	}
+	library("Kotlin", "${kotlinVersion}") {
+		group("org.jetbrains.kotlin") {
+			imports = [
+				"kotlin-bom"
+			]
+			plugins = [
+				"kotlin-maven-plugin"
+			]
+		}
+	}
+	library("OAuth2 OIDC SDK") {
+		version("8.36.1") {
+			shouldAlignWithVersionFrom("Spring Security")
+		}
+		group("com.nimbusds") {
+			modules = [
+				"oauth2-oidc-sdk"
+			]
+		}
+	}
+}

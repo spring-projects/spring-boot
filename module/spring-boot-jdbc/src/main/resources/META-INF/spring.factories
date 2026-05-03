@@ -1,0 +1,23 @@
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.jdbc.autoconfigure.DataSourceBeanCreationFailureAnalyzer,\
+org.springframework.boot.jdbc.autoconfigure.HikariDriverConfigurationFailureAnalyzer
+
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.jdbc.docker.compose.ClickHouseJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.MariaDbJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.MySqlJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.OracleFreeJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.OracleXeJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.PostgresJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.SqlServerJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.testcontainers.JdbcContainerConnectionDetailsFactory
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector

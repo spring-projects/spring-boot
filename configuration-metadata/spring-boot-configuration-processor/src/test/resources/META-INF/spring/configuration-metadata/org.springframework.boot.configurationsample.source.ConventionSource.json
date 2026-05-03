@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "firstName",
+      "type": "java.lang.String",
+      "description": "Camel case."
+    },
+    {
+      "name": "last-name",
+      "type": "java.lang.String",
+      "description": "Canonical format."
+    }
+  ]
+}

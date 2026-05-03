@@ -1,0 +1,22 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::builder[]
+tasks.named("bootBuildImage") {
+	builder = "mine/java-cnb-builder"
+	runImage = "mine/java-cnb-run"
+}
+// end::builder[]
+
+tasks.register("bootBuildImageBuilder") {
+	doFirst {
+		println("builder=${tasks.bootBuildImage.builder.get()}")
+		println("runImage=${tasks.bootBuildImage.runImage.get()}")
+	}
+}

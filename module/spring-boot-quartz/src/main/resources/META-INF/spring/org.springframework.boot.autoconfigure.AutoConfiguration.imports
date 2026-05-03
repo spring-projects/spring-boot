@@ -1,0 +1,2 @@
+org.springframework.boot.quartz.autoconfigure.QuartzAutoConfiguration
+org.springframework.boot.quartz.autoconfigure.QuartzEndpointAutoConfiguration

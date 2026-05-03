@@ -1,0 +1,21 @@
+{
+  "User" : "root",
+  "Image" : "pack.local/ephemeral-builder",
+  "Cmd" : [ "/cnb/lifecycle/creator", "-app", "/workspace", "-platform", "/platform", "-run-image", "docker.io/cloudfoundry/run:latest", "-layers", "/layers", "-cache-dir", "/cache", "-launch-cache", "/launch-cache", "-daemon", "docker.io/library/my-application:latest" ],
+  "Env" : [ "CNB_PLATFORM_API=0.3" ],
+  "Labels" : {
+    "author" : "spring-boot"
+  },
+  "HostConfig" : {
+    "Binds" : [
+      "pack-app-aaaaaaaaaa:/workspace",
+      "pack-layers-aaaaaaaaaa:/layers",
+      "pack-cache-b35197ac41ea.build:/cache",
+      "pack-cache-b35197ac41ea.launch:/launch-cache",
+      "/var/run/docker.sock:/var/run/docker.sock"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
+    ]
+  }
+}

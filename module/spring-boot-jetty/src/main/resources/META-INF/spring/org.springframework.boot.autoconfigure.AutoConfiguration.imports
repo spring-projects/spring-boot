@@ -1,0 +1,5 @@
+org.springframework.boot.jetty.autoconfigure.actuate.web.server.JettyReactiveManagementContextAutoConfiguration
+org.springframework.boot.jetty.autoconfigure.actuate.web.server.JettyServletManagementContextAutoConfiguration
+org.springframework.boot.jetty.autoconfigure.metrics.JettyMetricsAutoConfiguration
+org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration
+org.springframework.boot.jetty.autoconfigure.servlet.JettyServletWebServerAutoConfiguration

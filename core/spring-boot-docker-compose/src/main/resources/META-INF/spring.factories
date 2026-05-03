@@ -1,0 +1,4 @@
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.docker.compose.lifecycle.DockerComposeListener,\
+org.springframework.boot.docker.compose.service.connection.DockerComposeServiceConnectionsApplicationListener

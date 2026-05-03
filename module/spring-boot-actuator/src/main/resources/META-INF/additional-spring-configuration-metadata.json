@@ -1,0 +1,12 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.endpoints.migrate-legacy-ids",
+      "type": "java.lang.Boolean",
+      "description": "Whether to transparently migrate legacy endpoint IDs.",
+      "defaultValue": false
+    }
+  ],
+  "hints": []
+}

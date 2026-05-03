@@ -1,0 +1,6 @@
+Usage:
+  java -Djarmode=tools -jar test.jar
+
+Available commands:
+  test  Description of test
+  help  Help about any command

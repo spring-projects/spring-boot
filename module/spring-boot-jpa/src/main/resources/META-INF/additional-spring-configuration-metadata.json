@@ -1,0 +1,11 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.jpa.open-in-view",
+      "defaultValue": true
+    }
+  ],
+  "hints": [
+  ]
+}

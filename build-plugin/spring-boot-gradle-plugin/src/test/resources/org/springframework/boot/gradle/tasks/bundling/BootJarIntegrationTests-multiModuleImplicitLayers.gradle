@@ -1,0 +1,62 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+subprojects {
+	apply plugin: 'java'
+	group = 'org.example.projects'
+	version = '1.2.3'
+	if (it.name == 'bravo') {
+		dependencies {
+			implementation(project(':charlie'))
+		}
+	}
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url = 'repository'
+	}
+}
+
+dependencies {
+	implementation(project(':alpha'))
+	implementation(project(':bravo'))
+	implementation("com.example:library:1.0-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+tasks.register("listLayers", JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "tools" ]
+	args "list-layers"
+}
+
+tasks.register("extractLayers", JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "tools" ]
+	args "extract", "--layers", "--launcher", "--destination", ".", "--force"
+}

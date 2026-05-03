@@ -1,0 +1,2 @@
+org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcAutoConfiguration
+org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcRepositoriesAutoConfiguration

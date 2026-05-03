@@ -1,0 +1,6 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.ldap.docker.compose.LLdapDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.ldap.docker.compose.OpenLdapDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.ldap.testcontainers.LLdapContainerConnectionDetailsFactory,\
+org.springframework.boot.ldap.testcontainers.OpenLdapContainerConnectionDetailsFactory

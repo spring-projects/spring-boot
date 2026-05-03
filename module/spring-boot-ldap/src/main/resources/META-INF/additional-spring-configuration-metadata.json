@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "management.health.ldap.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable LDAP health check.",
+      "defaultValue": true
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[[features]]
+= Core Features
+
+This section dives into the details of Spring Boot.
+Here you can learn about the key features that you may want to use and customize.
+If you have not already done so, you might want to read the xref:tutorial:index.adoc[] and xref:using/index.adoc[] sections, so that you have a good grounding of the basics.
+

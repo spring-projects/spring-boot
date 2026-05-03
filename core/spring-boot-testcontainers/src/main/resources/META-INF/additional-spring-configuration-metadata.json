@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "spring.testcontainers.beans.startup",
+      "type": "org.springframework.boot.testcontainers.lifecycle.TestcontainersStartup",
+      "description": "Testcontainers startup modes.",
+      "defaultValue": "sequential"
+    },
+    {
+      "name": "spring.testcontainers.dynamic-property-registry-injection",
+      "description": "How to treat injection of DynamicPropertyRegistry into a @Bean method.",
+      "defaultValue": "fail"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.testcontainers.dynamic-property-registry-injection",
+      "values": [
+        {
+          "value": "fail",
+          "description": "Fail with an exception."
+        },
+        {
+          "value": "warn",
+          "description": "Log a warning."
+        },
+        {
+          "value": "allow",
+          "description": "Allow the use despite its deprecation."
+        }
+      ]
+    }
+  ]
+}

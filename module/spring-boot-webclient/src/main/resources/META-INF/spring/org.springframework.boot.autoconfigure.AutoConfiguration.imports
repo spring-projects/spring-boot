@@ -1,0 +1,3 @@
+org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration
+org.springframework.boot.webclient.autoconfigure.WebClientObservationAutoConfiguration
+org.springframework.boot.webclient.autoconfigure.service.ReactiveHttpServiceClientAutoConfiguration

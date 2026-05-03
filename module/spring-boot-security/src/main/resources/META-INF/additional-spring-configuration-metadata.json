@@ -1,0 +1,19 @@
+{
+  "groups": [],
+  "properties": [
+  	{
+      "name": "spring.security.filter.dispatcher-types",
+      "defaultValue": [
+        "async",
+        "error",
+        "forward",
+        "include",
+        "request"
+      ]
+    },
+    {
+      "name": "spring.security.filter.order",
+      "defaultValue": -100
+    }
+  ]
+}

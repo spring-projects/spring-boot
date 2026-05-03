@@ -1,0 +1,35 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.r2dbc.docker.compose.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.MySqlR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.OracleFreeR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.OracleXeR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.PostgresR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.SqlServerR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.ClickHouseR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedMariaDbR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedMySqlR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedPostgresR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedSqlServerR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.MariaDbR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.MySqlR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.OracleFreeR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.OracleXeR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.PostgresR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.SqlServerR2dbcContainerConnectionDetailsFactory
+
+
+
+
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.r2dbc.autoconfigure.ConnectionFactoryBeanCreationFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.MissingR2dbcPoolDependencyFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.MultipleConnectionPoolConfigurationsFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.NoConnectionFactoryBeanFailureAnalyzer

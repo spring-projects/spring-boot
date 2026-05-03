@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+// tag::image-name[]
+tasks.named("bootBuildImage") {
+	imageName = "example.com/library/${project.name}"
+}
+// end::image-name[]
+
+tasks.register("bootBuildImageName") {
+	doFirst {
+		println(tasks.bootBuildImage.imageName.get())
+	}
+}

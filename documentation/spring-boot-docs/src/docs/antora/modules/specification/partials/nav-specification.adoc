@@ -1,0 +1,14 @@
+* Specifications
+
+** xref:specification:configuration-metadata/index.adoc[]
+*** xref:specification:configuration-metadata/format.adoc[]
+*** xref:specification:configuration-metadata/manual-hints.adoc[]
+*** xref:specification:configuration-metadata/annotation-processor.adoc[]
+
+** xref:specification:executable-jar/index.adoc[]
+*** xref:specification:executable-jar/nested-jars.adoc[]
+*** xref:specification:executable-jar/jarfile-class.adoc[]
+*** xref:specification:executable-jar/launching.adoc[]
+*** xref:specification:executable-jar/property-launcher.adoc[]
+*** xref:specification:executable-jar/restrictions.adoc[]
+*** xref:specification:executable-jar/alternatives.adoc[]

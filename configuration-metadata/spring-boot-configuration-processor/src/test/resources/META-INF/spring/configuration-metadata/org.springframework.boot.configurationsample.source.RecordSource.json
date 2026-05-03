@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "name",
+      "type": "java.lang.String",
+      "description": "Name description."
+    },
+    {
+      "name": "description",
+      "type": "java.lang.String",
+      "description": "Description description.",
+      "defaultValue": "Hello World"
+    },
+    {
+      "name": "type",
+      "type": "java.lang.String",
+      "description": "A property with a fixed set of values.",
+      "defaultValue": "single"
+    }
+  ],
+  "hints": [
+    {
+      "name": "type",
+      "values": [
+        {
+          "value": "auto",
+          "description": "Detect the type automatically."
+        },
+        {
+          "value": "single",
+          "description": "Single type."
+        },
+        {
+          "value": "multi",
+          "description": "Multi type."
+        }
+      ]
+    }
+  ]
+}

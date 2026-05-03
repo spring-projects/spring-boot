@@ -1,0 +1,30 @@
+name: Create GitHub Release
+description: 'Create the release on GitHub with a changelog'
+inputs:
+  commercial:
+    description: 'Whether to generate the changelog for the commercial release'
+    required: true
+  milestone:
+    description: 'Name of the GitHub milestone for which a release will be created'
+    required: true
+  pre-release:
+    description: 'Whether the release is a pre-release (a milestone or release candidate)'
+    required: false
+    default: 'false'
+  token:
+    description: 'Token to use for authentication with GitHub'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Generate Changelog
+      uses: spring-io/github-changelog-generator@f7d7a87a3e7c627ecb8c26cf086c38ac5a939721 #v0.0.14
+      with:
+        config-file: ${{ inputs.commercial && '.github/actions/create-github-release/changelog-generator-commercial.yml' || '.github/actions/create-github-release/changelog-generator-oss.yml' }}
+        milestone: ${{ inputs.milestone }}
+        token: ${{ inputs.token }}
+    - name: Create GitHub Release
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md ${{ inputs.pre-release == 'true' && '--prerelease' || '' }}

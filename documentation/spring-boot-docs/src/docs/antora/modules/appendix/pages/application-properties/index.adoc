@@ -1,0 +1,48 @@
+[appendix]
+[[appendix.application-properties]]
+= Common Application Properties
+
+Various properties can be specified inside your `application.properties` file, inside your `application.yaml` file, or as command line switches.
+This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
+
+TIP: Spring Boot provides various conversion mechanisms with advanced value formatting.
+Make sure to review xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion[the properties conversion section].
+
+NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
+Also, you can define your own properties.
+
+include::partial$configuration-properties/actuator.adoc[]
+
+include::partial$configuration-properties/cache.adoc[]
+
+include::partial$configuration-properties/core.adoc[]
+
+include::partial$configuration-properties/data-migration.adoc[]
+
+include::partial$configuration-properties/data.adoc[]
+
+include::partial$configuration-properties/devtools.adoc[]
+
+include::partial$configuration-properties/docker-compose.adoc[]
+
+include::partial$configuration-properties/integration.adoc[]
+
+include::partial$configuration-properties/json.adoc[]
+
+include::partial$configuration-properties/mail.adoc[]
+
+include::partial$configuration-properties/rsocket.adoc[]
+
+include::partial$configuration-properties/security.adoc[]
+
+include::partial$configuration-properties/server.adoc[]
+
+include::partial$configuration-properties/templating.adoc[]
+
+include::partial$configuration-properties/testcontainers.adoc[]
+
+include::partial$configuration-properties/testing.adoc[]
+
+include::partial$configuration-properties/transaction.adoc[]
+
+include::partial$configuration-properties/web.adoc[]

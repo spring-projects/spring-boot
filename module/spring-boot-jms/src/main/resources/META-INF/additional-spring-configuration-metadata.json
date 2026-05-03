@@ -1,0 +1,62 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.health.jms.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMS health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jms.listener.acknowledge-mode",
+      "deprecation": {
+        "replacement": "spring.jms.listener.session.acknowledge-mode",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.jms.listener.concurrency",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.jms.listener.min-concurrency",
+        "since": "3.2.0"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.jms.listener.session.acknowledge-mode",
+      "values": [
+        {
+          "value": "auto",
+          "description": "Messages sent or received from the session are automatically acknowledged. This is the simplest mode and enables once-only message delivery guarantee."
+        },
+        {
+          "value": "client",
+          "description": "Messages are acknowledged once the message listener implementation has called \"jakarta.jms.Message#acknowledge()\". This mode gives the application (rather than the JMS provider) complete control over message acknowledgement."
+        },
+        {
+          "value": "dups_ok",
+          "description": "Similar to auto acknowledgment except that said acknowledgment is lazy. As a consequence, the messages might be delivered more than once. This mode enables at-least-once message delivery guarantee."
+        }
+      ]
+    },
+    {
+      "name": "spring.jms.template.session.acknowledge-mode",
+      "values": [
+        {
+          "value": "auto",
+          "description": "Messages sent or received from the session are automatically acknowledged. This is the simplest mode and enables once-only message delivery guarantee."
+        },
+        {
+          "value": "client",
+          "description": "Messages are acknowledged once the message listener implementation has called \"jakarta.jms.Message#acknowledge()\". This mode gives the application (rather than the JMS provider) complete control over message acknowledgement."
+        },
+        {
+          "value": "dups_ok",
+          "description": "Similar to auto acknowledgment except that said acknowledgment is lazy. As a consequence, the messages might be delivered more than once. This mode enables at-least-once message delivery guarantee."
+        }
+      ]
+    }
+  ]
+}

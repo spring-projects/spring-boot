@@ -1,0 +1,10 @@
+[
+  {
+    "latest": true,
+    "metadata-version": "1.2.11",
+    "module": "ch.qos.logback:logback-classic",
+    "tested-versions": [
+      "1.2.11"
+    ]
+  }
+]

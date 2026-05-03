@@ -1,0 +1,9 @@
+h1 {
+	color: green;
+}
+
+.content {
+	font-family: sans-serif;
+	border-top: 3px solid red;
+	padding-top: 30px;
+}
