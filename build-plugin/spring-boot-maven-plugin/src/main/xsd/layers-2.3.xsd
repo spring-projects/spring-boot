@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema elementFormDefault="qualified"
+	xmlns="http://www.springframework.org/schema/boot/layers"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.springframework.org/schema/boot/layers">
+	<xsd:element name="layers" type="layersType" />
+	<xsd:complexType name="layersType">
+		<xsd:sequence>
+			<xsd:element name="application" type="applicationType" minOccurs="0"/>
+			<xsd:element name="dependencies" type="dependenciesType" minOccurs="0"/>
+			<xsd:element name="layerOrder" type="layerOrderType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="applicationType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	The 'into layer' selections that should be applied to application classes and resources.
+				]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="into" type="intoType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="dependenciesType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	The 'into layer' selections that should be applied to dependencies.
+				]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="into" type="intoType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="layerOrderType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	The order that layers should be added (starting with the least frequently changed layer).
+				]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="layer" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The layer name.
+				]]></xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:minLength value="1" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="intoType">
+		<xsd:choice maxOccurs="unbounded">
+			<xsd:element type="xsd:string" name="include"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	Pattern of the elements to include.
+			]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element type="xsd:string" name="exclude"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	Pattern of the elements to exclude.
+			]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+		<xsd:attribute type="xsd:string" name="layer"
+			use="required" />
+	</xsd:complexType>
+
+</xsd:schema>

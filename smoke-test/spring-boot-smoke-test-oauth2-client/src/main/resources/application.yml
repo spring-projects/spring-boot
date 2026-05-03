@@ -1,0 +1,32 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github-client-1:
+            client-id: ${APP-CLIENT-ID}
+            client-secret: ${APP-CLIENT-SECRET}
+            client-name: Github user
+            provider: github
+            scope: user
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+          github-client-2:
+            client-id: ${APP-CLIENT-ID}
+            client-secret: ${APP-CLIENT-SECRET}
+            client-name: Github email
+            provider: github
+            scope: user:email
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+          yahoo-oidc:
+            client-id: ${YAHOO-CLIENT-ID}
+            client-secret: ${YAHOO-CLIENT-SECRET}
+          github-repos:
+            client-id: ${APP-CLIENT-ID}
+            client-secret: ${APP-CLIENT-SECRET}
+            scope: public_repo
+            redirect-uri: "{baseUrl}/github-repos"
+            provider: github
+            client-name: GitHub Repositories
+        provider:
+          yahoo-oidc:
+            issuer-uri: https://api.login.yahoo.com

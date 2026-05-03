@@ -1,0 +1,65 @@
+[[packaging.aot-cache]]
+= AOT Cache
+:page-aliases: class-data-sharing.adoc
+
+AOT cache is a https://openjdk.org/jeps/483[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
+
+If you're using Java < 24, you should read the sections about CDS.
+CDS is the predecessor of AOT cache, but works similarly.
+
+Spring Boot supports both CDS and AOT cache, and it is recommended that you use AOT cache if it is available in the JVM version you are using (Java 24 or later).
+
+[[packaging.aot-cache.aot-cache]]
+== AOT Cache
+
+NOTE: If you're using Java < 24, AOT cache is not available.
+You have to use CDS instead.
+
+To use the AOT cache feature, you should first perform a training run on your application in extracted form:
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract --destination application
+$ cd application
+$ java -XX:AOTCacheOutput=app.aot -Dspring.context.exit=onRefresh -jar my-app.jar
+----
+
+This creates an `app.aot` cache file that can be reused as long as the application is not updated and the same Java version is used.
+
+To use the cache file, you need to add an extra parameter when starting the application:
+
+[source,shell]
+----
+$ java -XX:AOTCache=app.aot -jar my-app.jar
+----
+
+NOTE: You have to use the cache file with the extracted form of the application, otherwise it has no effect.
+
+
+
+[[packaging.aot-cache.cds]]
+== CDS
+
+NOTE: If you're using Java 24 or later, please use AOT cache instead of CDS.
+
+To use CDS, you should first perform a training run on your application in extracted form:
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract --destination application
+$ cd application
+$ java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar my-app.jar
+----
+
+This creates an `application.jsa` archive file that can be reused as long as the application is not updated.
+
+To use the archive file, you need to add an extra parameter when starting the application:
+
+[source,shell]
+----
+$ java -XX:SharedArchiveFile=application.jsa -jar my-app.jar
+----
+
+NOTE: You have to use the cache file with the extracted form of the application, otherwise it has no effect.
+
+NOTE: For more details about CDS, refer to the https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[Class Data Sharing documentation of the JDK].

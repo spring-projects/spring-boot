@@ -1,0 +1,12 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.liquibase.docker.compose.JdbcAdaptingLiquibaseConnectionDetailsFactory,\
+org.springframework.boot.liquibase.testcontainers.LiquibaseContainerConnectionDetailsFactory
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector

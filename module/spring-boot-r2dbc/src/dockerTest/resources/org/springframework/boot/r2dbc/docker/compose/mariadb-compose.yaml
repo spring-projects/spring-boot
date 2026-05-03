@@ -1,0 +1,11 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '3306'
+    environment:
+      - 'MARIADB_ROOT_PASSWORD=verysecret'
+      - 'MARIADB_USER=myuser'
+      - 'MARIADB_PASSWORD=secret'
+      - 'MARIADB_DATABASE=mydatabase'
+

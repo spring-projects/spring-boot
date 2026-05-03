@@ -1,0 +1,2 @@
+require:
+  members: false

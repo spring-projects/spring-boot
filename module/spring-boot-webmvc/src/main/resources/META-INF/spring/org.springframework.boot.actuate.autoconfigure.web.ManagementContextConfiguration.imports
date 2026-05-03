@@ -1,0 +1,2 @@
+org.springframework.boot.webmvc.autoconfigure.actuate.web.WebMvcEndpointManagementContextConfiguration
+org.springframework.boot.webmvc.autoconfigure.actuate.web.WebMvcEndpointChildContextConfiguration

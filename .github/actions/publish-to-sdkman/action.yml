@@ -1,0 +1,40 @@
+name: Publish to SDKMAN!
+description: 'Publishes the release as a new candidate version on SDKMAN!'
+inputs:
+  make-default:
+    description: 'Whether the release should be made the default version'
+    required: false
+    default: 'false'
+  sdkman-consumer-key:
+    description: 'Key for publishing to SDKMAN!'
+    required: true
+  sdkman-consumer-token:
+    description: 'Token for publishing to SDKMAN!'
+    required: true
+  spring-boot-version:
+    description: 'Version to publish'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Publish Release
+      shell: bash
+      run: >
+        curl -X POST \
+          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
+          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}", "url": "${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/{0}/spring-boot-cli-{0}-bin.zip', inputs.spring-boot-version) }}"}' \
+          https://vendors.sdkman.io/release
+    - name: Flag Release as Default
+      if: ${{ inputs.make-default == 'true' }}
+      shell: bash
+      run: >
+        curl -X PUT \
+          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
+          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}"}' \
+          https://vendors.sdkman.io/default

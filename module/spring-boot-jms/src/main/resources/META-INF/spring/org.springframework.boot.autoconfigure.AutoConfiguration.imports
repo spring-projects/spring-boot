@@ -1,0 +1,3 @@
+org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration
+org.springframework.boot.jms.autoconfigure.JndiConnectionFactoryAutoConfiguration
+org.springframework.boot.jms.autoconfigure.health.JmsHealthContributorAutoConfiguration

@@ -1,0 +1,3 @@
+org.springframework.boot.mail.autoconfigure.MailHealthContributorAutoConfiguration
+org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration
+org.springframework.boot.mail.autoconfigure.MailSenderValidatorAutoConfiguration

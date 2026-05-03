@@ -1,0 +1,11 @@
+name: boot
+version: true
+ext:
+  zip_contents_collector:
+    include:
+    - name: root
+      classifier: aggregate-content
+    - name: api
+      classifier: catalog-content
+      module: api
+      destination: content-catalog

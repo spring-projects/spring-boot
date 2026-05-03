@@ -1,0 +1,65 @@
+{
+  "groups": [
+    {
+      "name": "spring.bar",
+      "type": "org.acme.Bar",
+      "sourceType": "org.acme.config.BarApp",
+      "sourceMethod": "bar()",
+      "description": "This is Bar."
+    },
+    {
+      "name": "spring.bar",
+      "type": "org.springframework.boot.BarProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.bar.name",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Bar"
+    },
+    {
+      "name": "spring.bar.description",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Bar",
+      "description": "Bar description.",
+      "defaultValue": "BarFoo"
+    },
+    {
+      "name": "spring.bar.name",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.BarProperties"
+    },
+    {
+      "name": "spring.bar.counter",
+      "type": "java.lang.Integer",
+      "sourceType": "org.springframework.boot.BarProperties",
+      "defaultValue": 0
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.bar.description",
+      "values": [
+        {
+          "value": "one",
+          "description": "One."
+        },
+        {
+          "value": "two"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.String"
+          }
+        },
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}

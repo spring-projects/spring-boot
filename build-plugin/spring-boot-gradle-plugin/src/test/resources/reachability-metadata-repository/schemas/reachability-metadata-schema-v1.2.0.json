@@ -1,0 +1,458 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/assets/reachability-metadata-schema-v1.2.0.json",
+  "title": "JSON schema for the reachability metadata used by GraalVM Native Image",
+  "version": "1.2.0",
+  "type": "object",
+  "default": {},
+  "properties": {
+    "comment": {
+      "title": "Comment(s) applying to the whole file (e.g., generation date, author, etc.)",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "default": ""
+    },
+    "reflection": {
+      "title": "Metadata to ensure elements are accessible via reflection",
+      "type": "array",
+      "default": [],
+      "items": {
+        "title": "Elements that should be registered for reflection for a specified type",
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "reason": {
+            "$ref": "#/$defs/reason"
+          },
+          "condition": {
+            "$ref": "#/$defs/condition"
+          },
+          "type": {
+            "title": "Type descriptor of the class that should be registered for reflection",
+            "$ref": "#/$defs/type"
+          },
+          "methods": {
+            "title": "List of methods that should be registered for the type declared in <type>",
+            "type": "array",
+            "default": [],
+            "items": {
+              "title": "Method descriptor of the method that should be registered for reflection",
+              "$ref": "#/$defs/method"
+            }
+          },
+          "fields": {
+            "title": "List of class fields that can be read or written to for the type declared in <type>",
+            "type": "array",
+            "default": [],
+            "items": {
+              "title": "Field descriptor of the field that should be registered for reflection",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "title": "Name of the field that should be registered for reflection",
+                  "type": "string",
+                  "pattern": "^[^.;\\[/]+$"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "allDeclaredMethods": {
+            "title": "Register all declared methods from the type for reflective invocation",
+            "type": "boolean",
+            "default": false
+          },
+          "allDeclaredFields": {
+            "title": "Register all declared fields from the type for reflective access",
+            "type": "boolean",
+            "default": false
+          },
+          "allDeclaredConstructors": {
+            "title": "Register all declared constructors from the type for reflective invocation",
+            "type": "boolean",
+            "default": false
+          },
+          "allPublicMethods": {
+            "title": "Register all public methods from the type for reflective invocation",
+            "type": "boolean",
+            "default": false
+          },
+          "allPublicFields": {
+            "title": "Register all public fields from the type for reflective access",
+            "type": "boolean",
+            "default": false
+          },
+          "allPublicConstructors": {
+            "title": "Register all public constructors from the type for reflective invocation",
+            "type": "boolean",
+            "default": false
+          },
+          "unsafeAllocated": {
+            "title": "Allow objects of this class to be instantiated with a call to jdk.internal.misc.Unsafe#allocateInstance or JNI's AllocObject",
+            "type": "boolean",
+            "default": false
+          },
+          "serializable": {
+            "title": "Allow objects of this class to be serialized and deserialized",
+            "type": "boolean",
+            "default": false
+          },
+          "jniAccessible": {
+            "title": "Register the type, including all registered fields and methods, for runtime JNI access",
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resources": {
+      "title": "Metadata to ensure resources are accessible",
+      "type": "array",
+      "default": [],
+      "items": {
+        "oneOf": [
+          {
+            "title": "Resource that should be accessible",
+            "type": "object",
+            "properties": {
+              "reason": {
+                "$ref": "#/$defs/reason"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              },
+              "module": {
+                "title": "Module containing the resource",
+                "type": "string",
+                "default": ""
+              },
+              "glob": {
+                "title": "Resource name or pattern matching multiple resources (accepts * and ** wildcards)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "glob"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "title": "Resource bundle that should be available",
+            "type": "object",
+            "properties": {
+              "reason": {
+                "$ref": "#/$defs/reason"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              },
+              "module": {
+                "title": "Module containing the resource bundle",
+                "type": "string",
+                "default": ""
+              },
+              "bundle": {
+                "title": "Resource bundle name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "bundle"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "foreign": {
+      "properties": {
+        "downcalls": {
+          "default": [],
+          "items": {
+            "properties": {
+              "reason": {
+                "$ref": "#/$defs/reason"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              },
+              "returnType": {
+                "type": "string",
+                "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+              },
+              "parameterTypes": {
+                "default": [],
+                "items": {
+                  "type": "string",
+                  "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+                },
+                "type": "array",
+                "title": "List of the function descriptor's parameter types"
+              },
+              "options": {
+                "type": "object",
+                "title": "Linker options (see `java.lang.foreign.Linker.Option`)",
+                "properties": {
+                  "captureCallState": {
+                    "type": "boolean",
+                    "title": "Specifies whether a call state should be captured. The specific states to capture are determined at run time. See also: `java.lang.foreign.Linker.Option.captureCallState`"
+                  },
+                  "critical": {
+                    "type": "object",
+                    "title": "See `java.lang.foreign.Linker.Option.critical`",
+                    "properties": {
+                      "allowHeapAccess": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "firstVariadicArg": {
+                    "type": "integer",
+                    "title": "See `java.lang.foreign.Linker.Option.firstVariadicArg`"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "required": ["returnType", "parameterTypes"],
+            "type": "object",
+            "title": "Function descriptor to be registered for a downcall"
+          },
+          "type": "array",
+          "title": "List of function descriptors that should be registered for downcalls"
+        },
+        "upcalls": {
+          "default": [],
+          "items": {
+            "properties": {
+              "reason": {
+                "$ref": "#/$defs/reason"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              },
+              "returnType": {
+                "type": "string",
+                "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+              },
+              "parameterTypes": {
+                "default": [],
+                "items": {
+                  "type": "string",
+                  "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+                },
+                "type": "array",
+                "title": "List of the function descriptor's parameter types"
+              },
+              "options": {
+                "type": "object",
+                "title": "Linker options (see `java.lang.foreign.Linker.Option`)",
+                "description": "Currently, no linker options are allowed for upcalls. This may change in the future.",
+                "properties": { },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "required": ["returnType", "parameterTypes"],
+            "type": "object",
+            "title": "Function descriptor to be registered for an upcall"
+          },
+          "type": "array",
+          "title": "List of function descriptors that should be registered for upcalls"
+        },
+        "directUpcalls": {
+          "default": [],
+          "items": {
+            "properties": {
+              "reason": {
+                "$ref": "#/$defs/reason"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              },
+              "class": {
+                "$ref": "#/$defs/className",
+                "title": "Fully-qualified class name (e.g., `org.package.OuterClass$InnerClass`)"
+              },
+              "method": {
+                "type": "string",
+                "title": "Method name"
+              },
+              "returnType": {
+                "type": "string",
+                "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+              },
+              "parameterTypes": {
+                "default": [],
+                "items": {
+                  "type": "string",
+                  "title": "Memory layout definition (allows canonical layouts; see `java.lang.foreign.Linker`)"
+                },
+                "type": "array",
+                "title": "List of the function descriptor's parameter types"
+              },
+              "options": {
+                "type": "object",
+                "title": "Linker options (see `java.lang.foreign.Linker.Option`)",
+                "description": "Currently, no linker options are allowed for direct upcalls. This may change in the future.",
+                "properties": { },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false,
+            "required": ["class", "method"],
+            "type": "object",
+            "title": "Java method and function descriptor to be registered for a direct upcall"
+          },
+          "type": "array",
+          "title": "List of Java methods and function descriptors that should be registered for direct upcalls"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "title": "JSON schema for the FFM API configuration used by GraalVM Native Image",
+      "description": "For a description and examples of writing an FFM API configuration, see: https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/FFM-API.md"
+    }
+  },
+  "required": [],
+  "additionalProperties": false,
+
+  "$defs": {
+    "className": {
+      "type": "string",
+      "pattern": "^[^.;\\[/]+(\\.[^.;\\[/]+)*$"
+    },
+    "typeName": {
+      "type": "string",
+      "pattern": "^[^.;\\[/]+(\\.[^.;\\[/]+)*(\\[])*$"
+    },
+    "reason": {
+      "title": "Reason(s) for including this element (e.g., needed for establishing connections, or needed by method X#Y for task Z)",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "default": ""
+    },
+    "condition": {
+      "title": "Condition used to determine if the element will be accessible at run time",
+      "type": "object",
+      "properties": {
+        "typeReached": {
+          "title": "Type descriptor of a class that must be reached in order to allow access to the element",
+          "$ref": "#/$defs/type"
+        }
+      },
+      "required": [
+        "typeReached"
+      ],
+      "additionalProperties": false
+    },
+    "type": {
+      "title": "Type descriptors used by GraalVM Native Image metadata files",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/typeName"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "proxy": {
+              "title": "A list of interfaces defining the proxy class",
+              "type": "array",
+              "items": {
+                "title": "Fully-qualified name of the interface defining the proxy class",
+                "$ref": "#/$defs/className"
+              }
+            },
+            "lambda": {
+              "title": "Lambda class descriptor",
+              "type": "object",
+              "properties": {
+                "declaringClass": {
+                  "title": "The class in which the lambda class is defined",
+                  "$ref": "#/$defs/className"
+                },
+                "declaringMethod": {
+                  "title": "The method in which the lambda class is defined",
+                  "$ref": "#/$defs/method"
+                },
+                "interfaces": {
+                  "title": "Non-empty list of interfaces implemented by the lambda class",
+                  "type": "array",
+                  "items": {
+                    "title": "Fully-qualified name of the interface implemented by the lambda class",
+                    "$ref": "#/$defs/className"
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "declaringClass",
+                "interfaces"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "proxy"
+              ]
+            },
+            {
+              "required": [
+                "lambda"
+              ]
+            }
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "method": {
+      "title": "Method descriptors used by GraalVM Native Image metadata files",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Method name that should be registered for this class",
+          "type": "string",
+          "pattern": "^[^.;\\[/]+$"
+        },
+        "parameterTypes": {
+          "items": {
+            "title": "List of the method's parameter types",
+            "$ref": "#/$defs/typeName"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "name", "parameterTypes"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

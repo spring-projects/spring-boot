@@ -1,0 +1,73 @@
+[appendix]
+[[appendix.deprecated-application-properties]]
+= Deprecated Application Properties
+
+The following deprecated properties can be specified inside your `application.properties` file, inside your `application.yaml` file, or as command line switches.
+Support for these properties will be removed in a future release and should you should migrate away from them.
+
+[TIP]
+====
+Spring Boot includes a useful `spring-boot-properties-migrator` tool to help you migrate away from deprecated properties.
+To use the property migrator tool, add the following dependency to your project:
+
+[tabs]
+======
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-properties-migrator</artifactId>
+	<scope>runtime</scope>
+</dependency>
+----
+Gradle::
++
+[source,gradle]
+----
+runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+----
+======
+
+Once added as a dependency to your project, the tool will not only analyze your application’s environment and print diagnostics at startup, but also temporarily migrate properties at runtime for you.
+
+Remember to remove the dependency when your migration is complete.
+====
+
+
+include::partial$deprecated-configuration-properties/actuator.adoc[]
+
+include::partial$deprecated-configuration-properties/cache.adoc[]
+
+include::partial$deprecated-configuration-properties/core.adoc[]
+
+include::partial$deprecated-configuration-properties/data-migration.adoc[]
+
+include::partial$deprecated-configuration-properties/data.adoc[]
+
+include::partial$deprecated-configuration-properties/devtools.adoc[]
+
+include::partial$deprecated-configuration-properties/docker-compose.adoc[]
+
+include::partial$deprecated-configuration-properties/integration.adoc[]
+
+include::partial$deprecated-configuration-properties/json.adoc[]
+
+include::partial$deprecated-configuration-properties/mail.adoc[]
+
+include::partial$deprecated-configuration-properties/rsocket.adoc[]
+
+include::partial$deprecated-configuration-properties/security.adoc[]
+
+include::partial$deprecated-configuration-properties/server.adoc[]
+
+include::partial$deprecated-configuration-properties/templating.adoc[]
+
+include::partial$deprecated-configuration-properties/testcontainers.adoc[]
+
+include::partial$deprecated-configuration-properties/testing.adoc[]
+
+include::partial$deprecated-configuration-properties/transaction.adoc[]
+
+include::partial$deprecated-configuration-properties/web.adoc[]

@@ -1,0 +1,3 @@
+org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration
+org.springframework.boot.cache.autoconfigure.CachesEndpointAutoConfiguration
+org.springframework.boot.cache.autoconfigure.metrics.CacheMetricsAutoConfiguration

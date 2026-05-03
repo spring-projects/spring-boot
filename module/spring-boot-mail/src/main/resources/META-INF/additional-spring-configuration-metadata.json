@@ -1,0 +1,18 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.health.mail.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Mail health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.mail.test-connection",
+      "description": "Whether to test that the mail server is available on startup.",
+      "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
+    }
+  ]
+}

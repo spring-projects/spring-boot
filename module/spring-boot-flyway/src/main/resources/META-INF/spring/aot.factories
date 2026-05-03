@@ -1,0 +1,2 @@
+org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
+org.springframework.boot.flyway.autoconfigure.ResourceProviderCustomizerBeanRegistrationAotProcessor

@@ -1,0 +1,2 @@
+org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration
+org.springframework.boot.kafka.autoconfigure.metrics.KafkaMetricsAutoConfiguration

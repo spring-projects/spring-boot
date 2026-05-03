@@ -1,0 +1,35 @@
+name: Trigger Docs Build
+on:
+  push:
+    branches: 'main'
+    paths: [ 'antora/*' ]
+  workflow_dispatch:
+    inputs:
+      build-version:
+        description: 'Version being build (e.g. 1.0.3-SNAPSHOT)'
+        required: false
+      build-sha:
+        description: Enter the SHA to build (e.g. 82c97891569821a7f91a77ca074232e0b54ca7a5)
+        required: false
+      build-refname:
+        description: 'Git refname to build (e.g., 1.0.x)'
+        required: false
+
+permissions:
+  contents: read
+jobs:
+  trigger-docs-build:
+    name: Trigger Docs Build
+    if: github.repository_owner == 'spring-projects'
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
+    permissions:
+      actions: write
+    steps:
+    - name: Check Out
+      uses: actions/checkout@v6
+      with:
+        ref: docs-build
+    - name: Trigger Workflow
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${{ github.event.inputs.build-refname }} -f build-sha=${{ github.event.inputs.build-sha }} -f build-version=${{ github.event.inputs.build-version }}

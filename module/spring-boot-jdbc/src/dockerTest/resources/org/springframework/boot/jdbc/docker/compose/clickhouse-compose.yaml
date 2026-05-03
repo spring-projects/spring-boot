@@ -1,0 +1,9 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '8123'
+    environment:
+      - 'CLICKHOUSE_USER=myuser'
+      - 'CLICKHOUSE_PASSWORD=secret'
+      - 'CLICKHOUSE_DB=mydatabase'

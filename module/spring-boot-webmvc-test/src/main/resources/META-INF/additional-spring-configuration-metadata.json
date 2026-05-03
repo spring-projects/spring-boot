@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "spring.test.mockmvc.htmlunit.url",
+      "type": "java.lang.Boolean",
+      "description": "URL to use when HtmlUnit expands relative paths.",
+      "defaultValue": "http://localhost"
+    },
+    {
+      "name": "spring.test.mockmvc.htmlunit.webclient.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether HTMLUnit's WebClient should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.mockmvc.htmlunit.webdriver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Selenium's WebDriver should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.mockmvc.webclient.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.test.mockmvc.htmlunit.webclient.enabled",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "spring.test.mockmvc.webdriver.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.test.mockmvc.htmlunit.webdriver.enabled",
+        "since": "4.0.0"
+      }
+    }
+  ]
+}

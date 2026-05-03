@@ -1,0 +1,21 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url = 'repository'
+	}
+}
+
+dependencies {
+	developmentOnly("commons-io-consumer:one:1.0")
+	implementation("commons-io-consumer:two:1.0")
+}
+
+bootJar {
+	includeTools = false
+	mainClass = 'com.example.Application'
+}

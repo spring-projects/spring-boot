@@ -1,0 +1,3 @@
+org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration
+org.springframework.boot.integration.autoconfigure.IntegrationGraphEndpointAutoConfiguration
+org.springframework.boot.integration.autoconfigure.metrics.IntegrationMetricsAutoConfiguration

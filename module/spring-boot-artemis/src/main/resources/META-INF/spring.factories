@@ -1,0 +1,4 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.artemis.docker.compose.ArtemisDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.artemis.testcontainers.ArtemisContainerConnectionDetailsFactory

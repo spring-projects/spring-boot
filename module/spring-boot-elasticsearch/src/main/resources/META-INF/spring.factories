@@ -1,0 +1,4 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.elasticsearch.docker.compose.ElasticsearchDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.elasticsearch.testcontainers.ElasticsearchContainerConnectionDetailsFactory

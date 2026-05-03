@@ -1,0 +1,4 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.zipkin.docker.compose.ZipkinDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.zipkin.testcontainers.ZipkinContainerConnectionDetailsFactory

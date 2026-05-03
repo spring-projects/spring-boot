@@ -1,0 +1,1 @@
+include::maven-plugin:partial$nav-maven-plugin.adoc[]

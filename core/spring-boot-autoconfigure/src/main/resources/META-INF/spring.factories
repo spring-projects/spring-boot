@@ -1,0 +1,28 @@
+# ApplicationContext Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer,\
+org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializingApplicationListener
+
+# Auto Configuration Import Listeners
+org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
+org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoConfigurationImportListener
+
+# Auto Configuration Import Filters
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+org.springframework.boot.autoconfigure.condition.OnBeanCondition,\
+org.springframework.boot.autoconfigure.condition.OnClassCondition,\
+org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
+
+# Background Preinitializers
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
+org.springframework.boot.autoconfigure.preinitialize.CharsetsBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.ConversionServiceBackgroundPreinitializer
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
+org.springframework.boot.autoconfigure.ssl.BundleContentNotWatchableFailureAnalyzer

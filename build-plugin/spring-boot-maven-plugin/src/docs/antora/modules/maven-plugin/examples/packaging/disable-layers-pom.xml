@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::disable-layers[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layers>
+						<enabled>false</enabled>
+					</layers>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::disable-layers[] -->
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hazelcast-client xmlns="http://www.hazelcast.com/schema/client-config"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-5.0.xsd">
+	<client-labels>
+		<label>explicit-xml</label>
+	</client-labels>
+	<connection-strategy>
+		<connection-retry>
+			<cluster-connect-timeout-millis>60000</cluster-connect-timeout-millis>
+		</connection-retry>
+	</connection-strategy>
+	<network>
+		<cluster-members>
+			<address>${address}</address>
+		</cluster-members>
+	</network>
+</hazelcast-client>

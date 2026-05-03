@@ -1,0 +1,5 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.kafka.testcontainers.ApacheKafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.kafka.testcontainers.ConfluentKafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.kafka.testcontainers.RedpandaContainerConnectionDetailsFactory

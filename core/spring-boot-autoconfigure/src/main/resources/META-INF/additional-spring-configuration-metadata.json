@@ -1,0 +1,312 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.aop.auto",
+      "type": "java.lang.Boolean",
+      "description": "Add @EnableAspectJAutoProxy.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.aop.proxy-target-class",
+      "type": "java.lang.Boolean",
+      "description": "Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.application.admin.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable admin features for the application.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.application.admin.jmx-name",
+      "type": "java.lang.String",
+      "description": "JMX name of the application admin MBean.",
+      "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
+    },
+    {
+      "name": "spring.autoconfigure.exclude",
+      "type": "java.util.List<java.lang.Class>",
+      "description": "Auto-configuration classes to exclude."
+    },
+    {
+      "name": "spring.git.properties",
+      "type": "java.lang.String",
+      "description": "Resource reference to a generated git info properties file.",
+      "deprecation": {
+        "replacement": "spring.info.git.location",
+        "level": "error",
+        "since": "1.4.0"
+      }
+    },
+    {
+      "name": "spring.info.build.location",
+      "defaultValue": "classpath:META-INF/build-info.properties"
+    },
+    {
+      "name": "spring.info.git.location",
+      "defaultValue": "classpath:git.properties"
+    },
+    {
+      "name": "spring.messages.basename",
+      "defaultValue": [
+        "messages"
+      ]
+    },
+     {
+      "name": "spring.resources.add-mappings",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.add-mappings",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.cache-private",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.cache-private",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.cache-public",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.cache-public",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.max-age",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.max-age",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.must-revalidate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.must-revalidate",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-cache",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-store",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-store",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-transform",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-transform",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.proxy-revalidate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.proxy-revalidate",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.s-max-age",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.s-max-age",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.stale-if-error",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.stale-if-error",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.stale-while-revalidate",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.stale-while-revalidate",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.period",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.period",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.cache.use-last-modified",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.use-last-modified",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.cache",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.compressed",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.compressed",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.enabled",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.gzipped",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.compressed",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.html-application-cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.content.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.content.enabled",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.content.paths",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.content.paths",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.enabled",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.paths",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.paths",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.version",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.version",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.resources.static-locations",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.static-locations",
+        "level": "error",
+        "since": "2.4.0"
+      }
+    },
+    {
+      "name": "spring.threads.virtual.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use virtual threads.",
+      "defaultValue": false
+    }
+  ],
+  "hints": [
+    {
+      "name": "server.servlet.jsp.class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "jakarta.servlet.http.HttpServlet"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.jmx.server",
+      "providers": [
+        {
+          "name": "spring-bean-reference",
+          "parameters": {
+            "target": "javax.management.MBeanServer"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "properties": [
+    {
+      "name": "spring.flyway.baseline-migration-prefix",
+      "defaultValue": "B",
+      "description": "Filename prefix for baseline migrations. Requires Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0"
+      }
+    },
+    {
+      "name": "spring.flyway.check-location",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.fail-on-missing-locations",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.cherry-pick",
+      "description": "Migrations that Flyway should consider when migrating or undoing. When empty all available migrations are considered. Requires Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 10"
+      }
+    },
+    {
+      "name": "spring.flyway.clean-on-validation-error",
+      "type": "java.lang.Boolean",
+      "description": "Whether to automatically call clean when a validation error occurs.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Deprecated in Flyway 10.18 and removed in Flyway 11.0",
+        "since": "3.4.0"
+      }
+    },
+    {
+      "name": "spring.flyway.community-db-support-enabled",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.flyway.dry-run-output",
+      "type": "java.io.OutputStream",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway Teams only."
+      }
+    },
+    {
+      "name": "spring.flyway.error-handlers",
+      "type": "org.flywaydb.core.api.errorhandler.ErrorHandler[]",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway Teams only."
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-future-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore future migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-ignored-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore ignored migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-missing-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore missing migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-pending-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore pending migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.license-key",
+      "description": "License key for Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 10"
+      }
+    },
+    {
+      "name": "spring.flyway.locations",
+      "sourceType": "org.springframework.boot.flyway.autoconfigure.FlywayProperties",
+      "defaultValue": [
+        "classpath:db/migration"
+      ]
+    },
+    {
+      "name": "spring.flyway.oracle-kerberos-cache-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.kerberos-cache-file",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-kerberos-config-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.kerberos-config-file",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-sqlplus",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.sqlplus",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-sqlplus-warn",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.sqlplus-warn",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-wallet-location",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.wallet-location",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-suffixes",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffixes",
+      "sourceType": "org.springframework.boot.flyway.autoconfigure.FlywayProperties",
+      "defaultValue": [
+        ".sql"
+      ]
+    },
+    {
+      "name": "spring.flyway.sql-server-kerberos-login-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sqlserver.kerberos-login-file",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.undo-sql-migration-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 10"
+      }
+    },
+    {
+      "name": "spring.flyway.vault-secrets",
+      "type": "java.util.List<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    },
+    {
+      "name": "spring.flyway.vault-token",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    },
+    {
+      "name": "spring.flyway.vault-url",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    }
+  ]
+}

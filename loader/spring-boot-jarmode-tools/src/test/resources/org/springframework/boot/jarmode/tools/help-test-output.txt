@@ -1,0 +1,8 @@
+Description of test
+
+Usage:
+  java -Djarmode=tools -jar test.jar test [options] parameter1 parameter2
+
+Options:
+  --option1 value1  Description of option1
+  --option2 value2  Description of option2

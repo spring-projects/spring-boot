@@ -1,0 +1,5 @@
+org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatReactiveManagementContextAutoConfiguration
+org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementContextAutoConfiguration
+org.springframework.boot.tomcat.autoconfigure.metrics.TomcatMetricsAutoConfiguration
+org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration
+org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration

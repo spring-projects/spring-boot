@@ -1,0 +1,7 @@
+spring:
+  ssl:
+    bundle:
+      pem:
+        server:
+          truststore:
+            certificate: "classpath:ca/test-ca.crt"

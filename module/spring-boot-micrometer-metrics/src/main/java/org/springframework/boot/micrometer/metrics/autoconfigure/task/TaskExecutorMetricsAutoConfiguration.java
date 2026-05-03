@@ -1,0 +1,101 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.micrometer.metrics.autoconfigure.task;
+
+import java.util.Collections;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
+import org.springframework.boot.LazyInitializationExcludeFilter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for metrics on all available
+ * {@link ThreadPoolTaskExecutor task executors} and {@link ThreadPoolTaskScheduler task
+ * schedulers}.
+ *
+ * @author Stephane Nicoll
+ * @author Scott Frederick
+ * @since 4.0.0
+ */
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
+		TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class })
+@ConditionalOnClass(ExecutorServiceMetrics.class)
+@ConditionalOnBean({ Executor.class, MeterRegistry.class })
+public final class TaskExecutorMetricsAutoConfiguration {
+
+	@Autowired
+	void bindTaskExecutorsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
+		SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, TaskExecutor.class)
+			.forEach((beanName, executor) -> {
+				if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+					monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskExecutor), beanName);
+				}
+				else if (executor instanceof ThreadPoolTaskScheduler threadPoolTaskScheduler) {
+					monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskScheduler), beanName);
+				}
+			});
+	}
+
+	@Bean
+	static LazyInitializationExcludeFilter eagerTaskExecutorMetrics() {
+		return LazyInitializationExcludeFilter.forBeanTypes(TaskExecutorMetricsAutoConfiguration.class);
+	}
+
+	private void monitor(MeterRegistry registry, @Nullable ThreadPoolExecutor threadPoolExecutor, String name) {
+		if (threadPoolExecutor != null) {
+			new ExecutorServiceMetrics(threadPoolExecutor, name, Collections.emptyList()).bindTo(registry);
+		}
+	}
+
+	private @Nullable ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskExecutor taskExecutor) {
+		try {
+			return taskExecutor.getThreadPoolExecutor();
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
+	}
+
+	private @Nullable ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskScheduler taskScheduler) {
+		try {
+			return taskScheduler.getScheduledThreadPoolExecutor();
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
+	}
+
+}

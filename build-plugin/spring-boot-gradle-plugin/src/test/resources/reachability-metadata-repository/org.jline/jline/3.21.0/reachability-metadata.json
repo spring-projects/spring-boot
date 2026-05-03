@@ -1,0 +1,380 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiNativePty"
+      },
+      "type": "java.io.FileDescriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.TerminalBuilder"
+      },
+      "type": "java.lang.ProcessHandle",
+      "methods": [
+        {
+          "name": "current",
+          "parameterTypes": []
+        },
+        {
+          "name": "info",
+          "parameterTypes": []
+        },
+        {
+          "name": "parent",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.TerminalBuilder"
+      },
+      "type": "java.lang.ProcessHandle$Info",
+      "methods": [
+        {
+          "name": "command",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiNativePty"
+      },
+      "type": "org.fusesource.jansi.internal.CLibrary",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "HAVE_ISATTY"
+        },
+        {
+          "name": "HAVE_TTYNAME"
+        },
+        {
+          "name": "TCSADRAIN"
+        },
+        {
+          "name": "TCSAFLUSH"
+        },
+        {
+          "name": "TCSANOW"
+        },
+        {
+          "name": "TIOCGETD"
+        },
+        {
+          "name": "TIOCGWINSZ"
+        },
+        {
+          "name": "TIOCSETD"
+        },
+        {
+          "name": "TIOCSWINSZ"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.CLibrary$Termios"
+      },
+      "type": "org.fusesource.jansi.internal.CLibrary$Termios",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.CLibrary$WinSize"
+      },
+      "type": "org.fusesource.jansi.internal.CLibrary$WinSize",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$CHAR_INFO"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$CHAR_INFO",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$CONSOLE_SCREEN_BUFFER_INFO"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$CONSOLE_SCREEN_BUFFER_INFO",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$COORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$COORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$FOCUS_EVENT_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$FOCUS_EVENT_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$INPUT_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$INPUT_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$KEY_EVENT_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$KEY_EVENT_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$MENU_EVENT_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$MENU_EVENT_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$MOUSE_EVENT_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$MOUSE_EVENT_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$SMALL_RECT"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$SMALL_RECT",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.fusesource.jansi.internal.Kernel32$WINDOW_BUFFER_SIZE_RECORD"
+      },
+      "type": "org.fusesource.jansi.internal.Kernel32$WINDOW_BUFFER_SIZE_RECORD",
+      "allDeclaredFields": true,
+      "jniAccessible": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.builtins.Styles"
+      },
+      "type": "org.jline.console.SystemRegistry",
+      "methods": [
+        {
+          "name": "get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.Signals"
+      },
+      "type": "sun.misc.Signal",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "handle",
+          "parameterTypes": [
+            "sun.misc.Signal",
+            "sun.misc.SignalHandler"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.TerminalBuilder"
+      },
+      "type": "sun.misc.SignalHandler",
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "allDeclaredConstructors": true,
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.Signals"
+      },
+      "type": "sun.misc.SignalHandler",
+      "fields": [
+        {
+          "name": "SIG_DFL"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.Signals"
+      },
+      "type": {
+        "proxy": [
+          "sun.misc.SignalHandler"
+        ]
+      }
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiNativePty"
+      },
+      "glob": "META-INF/native/windows64/jansi.dll"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.TerminalBuilder"
+      },
+      "glob": "META-INF/services/org.jline.terminal.spi.JansiSupport"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.TerminalBuilder"
+      },
+      "glob": "META-INF/services/org.jline.terminal.spi.JnaSupport"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiNativePty"
+      },
+      "glob": "org/fusesource/jansi/internal/native/Linux/x86_64/libjansi.so"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiNativePty"
+      },
+      "glob": "org/fusesource/jansi/jansi.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.jansi.JansiSupportImpl"
+      },
+      "glob": "org/fusesource/jansi/jansi.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/ansi.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/capabilities.txt"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.Colors"
+      },
+      "glob": "org/jline/utils/colors.txt"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.DumbTerminal"
+      },
+      "glob": "org/jline/utils/dumb-color.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.DumbTerminal"
+      },
+      "glob": "org/jline/utils/dumb.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/rxvt-basic.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/rxvt-unicode-256color.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/rxvt-unicode.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/rxvt.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/screen-256color.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/screen.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.AbstractWindowsTerminal"
+      },
+      "glob": "org/jline/utils/windows-256color.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.AbstractWindowsTerminal"
+      },
+      "glob": "org/jline/utils/windows-conemu.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.terminal.impl.AbstractWindowsTerminal"
+      },
+      "glob": "org/jline/utils/windows.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/xterm-256color.caps"
+    },
+    {
+      "condition": {
+        "typeReached": "org.jline.utils.InfoCmp"
+      },
+      "glob": "org/jline/utils/xterm.caps"
+    }
+  ]
+}

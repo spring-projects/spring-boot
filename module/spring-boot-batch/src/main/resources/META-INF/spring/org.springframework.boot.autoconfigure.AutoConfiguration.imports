@@ -1,0 +1,3 @@
+org.springframework.boot.batch.autoconfigure.BatchAutoConfiguration
+org.springframework.boot.batch.autoconfigure.BatchJobLauncherAutoConfiguration
+org.springframework.boot.batch.autoconfigure.observation.BatchObservationAutoConfiguration

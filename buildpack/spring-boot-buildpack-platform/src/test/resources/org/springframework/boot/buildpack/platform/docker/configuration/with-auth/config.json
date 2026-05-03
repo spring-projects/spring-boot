@@ -1,0 +1,21 @@
+{
+  "auths": {
+    "https://index.docker.io/v1/": {
+      "auth": "dXNlcm5hbWU6AABwYXNzAHdvcmQAAA==",
+      "email": "test@example.com"
+    },
+    "custom-registry.example.com": {
+      "auth": "Y3VzdG9tVXNlcjpjdXN0b21QYXNz"
+    },
+    "my-registry.example.com": {
+      "username": "user",
+      "password": "password"
+    }
+  },
+  "credsStore": "desktop",
+  "credHelpers": {
+    "gcr.io": "gcr",
+    "ecr.us-east-1.amazonaws.com": "ecr-login",
+    "azurecr.io": "acr-env"
+  }
+}

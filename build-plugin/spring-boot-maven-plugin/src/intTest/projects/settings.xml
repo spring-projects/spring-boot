@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<localRepository>@localRepositoryPath@</localRepository>
+	<servers>
+		<server>
+			<id>spring-commercial-release</id>
+			<username>${env.COMMERCIAL_REPO_USERNAME}</username>
+			<password>${env.COMMERCIAL_REPO_PASSWORD}</password>
+		</server>
+		<server>
+			<id>spring-commercial-snapshot</id>
+			<username>${env.COMMERCIAL_REPO_USERNAME}</username>
+			<password>${env.COMMERCIAL_REPO_PASSWORD}</password>
+		</server>
+	</servers>
+	<profiles>
+		<profile>
+			<id>it-repo</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
+					<id>local.central</id>
+					<url>@localCentralUrl@</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<!-- {spring.mavenRepositories} -->
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>local.central</id>
+					<url>@localCentralUrl@</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				<!-- {spring.mavenPluginRepositories} -->
+			</pluginRepositories>
+		</profile>
+	</profiles>
+</settings>

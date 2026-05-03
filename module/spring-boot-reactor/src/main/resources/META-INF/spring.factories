@@ -1,0 +1,3 @@
+# Environment Post Processors
+org.springframework.boot.EnvironmentPostProcessor=\
+org.springframework.boot.reactor.ReactorEnvironmentPostProcessor

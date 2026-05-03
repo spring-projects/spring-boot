@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+org.springframework.boot.mustache.autoconfigure.MustacheTemplateAvailabilityProvider

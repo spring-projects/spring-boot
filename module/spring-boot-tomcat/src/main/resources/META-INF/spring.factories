@@ -1,0 +1,7 @@
+# Background Preinitializers
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
+org.springframework.boot.tomcat.autoconfigure.TomcatBackgroundPreinitializer
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.tomcat.ConnectorStartFailureAnalyzer

@@ -1,0 +1,81 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java"
+	id "org.springframework.boot.integration-test"
+}
+
+description = "Spring Boot Server Integration Tests"
+
+configurations {
+	testRepository
+}
+
+dependencies {
+	intTestImplementation(project(":starter:spring-boot-starter-test"))
+	intTestImplementation(project(":test-support:spring-boot-test-support"))
+	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
+	intTestImplementation("org.springframework:spring-web")
+
+	testRepository(project(path: ":platform:spring-boot-dependencies", configuration: "mavenRepository"))
+	testRepository(project(path: ":build-plugin:spring-boot-gradle-plugin", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter-jetty", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter-jackson", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter-parent", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter-tomcat", configuration: "mavenRepository"))
+
+	testRuntimeOnly(project(":starter:spring-boot-starter-logging"))
+}
+
+tasks.register("syncTestRepository", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("test-repository"))
+	from {
+		configurations.testRepository
+	}
+}
+
+tasks.register("syncAppSource", org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-server-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-server-tests-app"))
+}
+
+tasks.register("buildApps", GradleBuild) {
+	dependsOn syncAppSource, syncTestRepository
+	dir = layout.buildDirectory.dir("spring-boot-server-tests-app")
+	startParameter.buildCacheEnabled = false
+	tasks = [
+		"jettyBootJar",
+		"jettyBootWar",
+		"tomcatBootJar",
+		"tomcatBootWar"
+	]
+}
+
+intTest {
+	inputs.files(
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war")
+	)
+		.withPropertyName("applicationArchives")
+		.withPathSensitivity(PathSensitivity.RELATIVE)
+		.withNormalizer(ClasspathNormalizer)
+	dependsOn buildApps
+}
