@@ -77,11 +77,11 @@ public class HttpRestartServer {
 	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		try {
 			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
-			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
-			objectInputStream.setObjectInputFilter(this.inputFilter);
-			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
-			objectInputStream.close();
-			this.server.updateAndRestart(files);
+			try (ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody())) {
+				objectInputStream.setObjectInputFilter(this.inputFilter);
+				ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
+				this.server.updateAndRestart(files);
+			}
 			response.setStatusCode(HttpStatus.OK);
 		}
 		catch (Exception ex) {
