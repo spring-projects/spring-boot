@@ -26,13 +26,15 @@ import org.gradle.api.specs.Spec;
 /**
  * A {@link Spec} for {@link FileCollection#filter(Spec) filtering} {@code FileCollection}
  * to remove jar files based on their {@code Spring-Boot-Jar-Type} as defined in the
- * manifest. Jars of type {@code dependencies-starter} are excluded.
+ * manifest. Jars of type {@code annotation-processor}, {@code dependencies-starter}, or
+ * {@code development-tool} are excluded.
  *
  * @author Andy Wilkinson
  */
 class JarTypeFileSpec implements Spec<File> {
 
-	private static final Set<String> EXCLUDED_JAR_TYPES = Set.of("dependencies-starter", "development-tool");
+	private static final Set<String> EXCLUDED_JAR_TYPES = Set.of("annotation-processor", "dependencies-starter",
+			"development-tool");
 
 	@Override
 	public boolean isSatisfiedBy(File file) {
