@@ -9,7 +9,7 @@
 		},
 		{
 			"name": "management.otlp.logging.compression",
-			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties$Compression",
+			"type": "org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingProperties$Compression",
 			"description": "Method used to compress the payload.",
 			"defaultValue": "none",
 			"deprecation": {
@@ -70,7 +70,7 @@
 		},
 		{
 			"name": "management.otlp.logging.transport",
-			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport",
+			"type": "org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport",
 			"description": "Transport used to send the logs.",
 			"defaultValue": "http",
 			"deprecation": {
