@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 
 	private final AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
-			new MockEnvironment());
+			new MockEnvironment(), new HealthEndpointProperties());
 
 	@Test
 	void postProcessHealthEndpointGroupsWhenGroupsAlreadyContainedReturnsOriginal() {
@@ -102,7 +102,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("management.endpoint.health.probes.add-additional-paths", "true");
 		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
-				environment);
+				environment, new HealthEndpointProperties());
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
 		assertThat(liveness).isNotNull();
@@ -120,7 +120,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 			.willReturn(List.of("/one", "/two", "/three"));
 		MockEnvironment environment = new MockEnvironment();
 		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
-				environment);
+				environment, new HealthEndpointProperties());
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		assertThat(postProcessed).isInstanceOf(AdditionalPathsMapper.class);
 		AdditionalPathsMapper additionalPathsMapper = (AdditionalPathsMapper) postProcessed;
@@ -137,7 +137,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("management.endpoint.health.probes.add-additional-paths", "true");
 		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
-				environment);
+				environment, new HealthEndpointProperties());
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		assertThat(postProcessed).isInstanceOf(AdditionalPathsMapper.class);
 		AdditionalPathsMapper additionalPathsMapper = (AdditionalPathsMapper) postProcessed;
@@ -149,7 +149,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("management.endpoint.health.probes.add-additional-paths", value);
 		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
-				environment);
+				environment, new HealthEndpointProperties());
 		HealthEndpointGroups groups = mock(HealthEndpointGroups.class);
 		return postProcessor.postProcessHealthEndpointGroups(groups);
 	}
