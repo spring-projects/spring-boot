@@ -63,13 +63,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 			this.migrationStrategy.migrate(this.flyway);
 		}
 		else {
-			try {
-				this.flyway.migrate();
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 7.0
-				this.flyway.getClass().getMethod("migrate").invoke(this.flyway);
-			}
+			this.flyway.migrate();
 		}
 	}
 

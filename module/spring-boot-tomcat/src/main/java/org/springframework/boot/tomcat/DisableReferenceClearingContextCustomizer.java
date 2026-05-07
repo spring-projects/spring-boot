@@ -33,14 +33,8 @@ public class DisableReferenceClearingContextCustomizer implements TomcatContextC
 		if (!(context instanceof StandardContext standardContext)) {
 			return;
 		}
-		try {
-			standardContext.setClearReferencesRmiTargets(false);
-			standardContext.setClearReferencesThreadLocals(false);
-		}
-		catch (NoSuchMethodError ex) {
-			// Earlier version of Tomcat (probably without
-			// setClearReferencesThreadLocals). Continue.
-		}
+		standardContext.setClearReferencesRmiTargets(false);
+		standardContext.setClearReferencesThreadLocals(false);
 	}
 
 }

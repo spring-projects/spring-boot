@@ -16,8 +16,6 @@
 
 package org.springframework.boot.jetty;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
@@ -30,7 +28,6 @@ import org.eclipse.jetty.server.Server;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Handles Jetty graceful shutdown.
@@ -56,44 +53,22 @@ final class GracefulShutdown {
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
-		boolean jetty10 = isJetty10();
 		for (Connector connector : this.server.getConnectors()) {
-			shutdown(connector, !jetty10);
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private void shutdown(Connector connector, boolean getResult) {
-		Future<Void> result;
-		try {
-			result = connector.shutdown();
-		}
-		catch (NoSuchMethodError ex) {
-			Method shutdown = ReflectionUtils.findMethod(connector.getClass(), "shutdown");
-			Assert.state(shutdown != null, "'shutdown' must not be null");
-			result = (Future<Void>) ReflectionUtils.invokeMethod(shutdown, connector);
-		}
-		if (getResult) {
-			try {
-				Assert.state(result != null, "'result' must not be null");
-				result.get();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			catch (ExecutionException ex) {
-				// Continue
-			}
+			shutdown(connector);
 		}
 	}
 
-	private boolean isJetty10() {
+	private void shutdown(Connector connector) {
 		try {
-			return CompletableFuture.class.equals(Connector.class.getMethod("shutdown").getReturnType());
+			Future<Void> result = connector.shutdown();
+			Assert.state(result != null, "'result' must not be null");
+			result.get();
 		}
-		catch (Exception ex) {
-			return false;
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		catch (ExecutionException ex) {
+			// Continue
 		}
 	}
 

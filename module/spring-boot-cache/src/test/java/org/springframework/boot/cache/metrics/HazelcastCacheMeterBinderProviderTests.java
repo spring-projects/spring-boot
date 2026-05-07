@@ -24,10 +24,6 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.cache.metrics.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -49,15 +45,6 @@ class HazelcastCacheMeterBinderProviderTests {
 		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider().getMeterBinder(cache,
 				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(HazelcastCacheMetrics.class);
-	}
-
-	@Test
-	void shouldRegisterHints() {
-		RuntimeHints runtimeHints = new RuntimeHints();
-		new HazelcastCacheMeterBinderProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(HazelcastCache.class, "getNativeCache"))
-			.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(HazelcastCacheMetrics.class)).accepts(runtimeHints);
 	}
 
 }
