@@ -84,8 +84,7 @@ class ContentTests {
 	void ofFileWhenFileTooLargeThrowsException() {
 		File file = mock(File.class);
 		given(file.length()).willReturn((long) Integer.MAX_VALUE + 1);
-		assertThatIllegalStateException().isThrownBy(() -> Content.of(file))
-			.withMessageContaining("too large");
+		assertThatIllegalStateException().isThrownBy(() -> Content.of(file)).withMessageContaining("too large");
 	}
 
 	private byte[] writeToAndGetBytes(Content writable) throws IOException {
