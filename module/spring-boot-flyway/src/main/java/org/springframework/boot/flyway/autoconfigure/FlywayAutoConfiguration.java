@@ -315,7 +315,12 @@ public final class FlywayAutoConfiguration {
 
 		private void configureExecuteInTransaction(FluentConfiguration configuration, FlywayProperties properties,
 				PropertyMapper map) {
-			map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
+			try {
+				map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 10.x/11.x compatibility
+			}
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
