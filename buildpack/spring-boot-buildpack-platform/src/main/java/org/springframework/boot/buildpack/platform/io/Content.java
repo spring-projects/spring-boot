@@ -75,7 +75,9 @@ public interface Content {
 	 */
 	static Content of(File file) {
 		Assert.notNull(file, "'file' must not be null");
-		return of((int) file.length(), () -> new FileInputStream(file));
+		long length = file.length();
+		Assert.state(length <= Integer.MAX_VALUE, () -> "'file' is too large (%d bytes) to be used as content".formatted(length));
+		return of((int) length, () -> new FileInputStream(file));
 	}
 
 	/**

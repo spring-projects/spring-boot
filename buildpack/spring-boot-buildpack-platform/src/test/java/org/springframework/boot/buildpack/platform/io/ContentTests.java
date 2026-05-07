@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +27,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Content}.
@@ -74,6 +78,14 @@ class ContentTests {
 		byte[] bytes = { 1, 2, 3, 4 };
 		Content writable = Content.of(bytes);
 		assertThat(writeToAndGetBytes(writable)).isEqualTo(bytes);
+	}
+
+	@Test
+	void ofFileWhenFileTooLargeThrowsException() {
+		File file = mock(File.class);
+		given(file.length()).willReturn((long) Integer.MAX_VALUE + 1);
+		assertThatIllegalStateException().isThrownBy(() -> Content.of(file))
+			.withMessageContaining("too large");
 	}
 
 	private byte[] writeToAndGetBytes(Content writable) throws IOException {

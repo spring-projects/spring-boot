@@ -16,6 +16,7 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,6 +59,19 @@ class LogUpdateEventTests {
 		List<LogUpdateEvent> events = readAll("log-update-event-invalid-stream-type.stream");
 		assertThat(events).hasSize(1);
 		assertThat(events.get(0)).hasToString("Stream type is out of bounds. Must be >= 0 and < 3, but was 3");
+	}
+
+	@Test
+	void readAllWhenPayloadSizeExceedsIntMaxReturnsErrorEvent() throws IOException {
+		// Docker multiplexed stream header: 1 byte stream type (1=STDOUT),
+		// 3 padding bytes, 4 bytes big-endian size (0xFFFFFFFF = 4294967295)
+		byte[] header = new byte[] { 1, 0, 0, 0, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+		List<LogUpdateEvent> events = new ArrayList<>();
+		try (InputStream inputStream = new ByteArrayInputStream(header)) {
+			LogUpdateEvent.readAll(inputStream, events::add);
+		}
+		assertThat(events).hasSize(1);
+		assertThat(events.get(0)).hasToString("Log update event data is too large (4294967295 bytes)");
 	}
 
 	private List<LogUpdateEvent> readAll(String name) throws IOException {
