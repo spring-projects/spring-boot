@@ -62,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Ivan Malutin
  * @author Dmytro Nosan
  * @author Stefano Cordio
+ * @author Venkata Naga Sai Srikanth Gollapudi
  */
 class ArchitectureCheckTests {
 
@@ -327,6 +328,41 @@ class ArchitectureCheckTests {
 	@Test
 	void whenMethodLevelConfigurationPropertiesContainsOnlyValueShouldSucceedAndWriteEmptyReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/methodvalueonly", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenConfigurationPropertiesUsesHashMapShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/hashmap", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN, "should be initialized with java.util.LinkedHashMap");
+	}
+
+	@Test
+	void whenConfigurationPropertiesUsesHashSetShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/hashset", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN, "should be initialized with java.util.LinkedHashSet");
+	}
+
+	@Test
+	void whenConfigurationPropertiesUsesLinkedHashMapShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/linkedhashmap", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenConfigurationPropertiesUsesEnumMapShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/enummap", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenConfigurationPropertiesUsesLinkedHashSetShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/linkedhashset", "annotations");
 		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
 				Task.CHECK_ARCHITECTURE_MAIN);
 	}

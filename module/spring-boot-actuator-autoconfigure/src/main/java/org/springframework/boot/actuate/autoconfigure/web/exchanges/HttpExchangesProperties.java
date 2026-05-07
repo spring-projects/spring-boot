@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.exchanges;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.web.exchanges.Include;
@@ -53,7 +53,7 @@ public class HttpExchangesProperties {
 		 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie),
 		 * and time taken.
 		 */
-		private Set<Include> include = new HashSet<>(Include.defaultIncludes());
+		private Set<Include> include = new LinkedHashSet<>(Include.defaultIncludes());
 
 		public Set<Include> getInclude() {
 			return this.include;

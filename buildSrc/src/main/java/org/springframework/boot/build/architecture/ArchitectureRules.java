@@ -37,7 +37,10 @@ import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaConstructor;
+import com.tngtech.archunit.core.domain.JavaConstructorCall;
 import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaFieldAccess;
+import com.tngtech.archunit.core.domain.JavaFieldAccess.AccessType;
 import com.tngtech.archunit.core.domain.JavaMember;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaModifier;
@@ -77,6 +80,7 @@ import org.springframework.util.ResourceUtils;
  * @author Ngoc Nhan
  * @author Moritz Halbritter
  * @author Stefano Cordio
+ * @author Venkata Naga Sai Srikanth Gollapudi
  */
 final class ArchitectureRules {
 
@@ -126,7 +130,11 @@ final class ArchitectureRules {
 
 	static List<ArchRule> configurationProperties(String annotationClass) {
 		return List.of(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(annotationClass),
-				methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(annotationClass));
+				methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(annotationClass),
+				initializedConfigurationPropertiesShouldUse("java.util.Set", "java.util.LinkedHashSet",
+						annotationClass),
+				initializedConfigurationPropertiesShouldUse("java.util.Map",
+						List.of("java.util.LinkedHashMap", "java.util.EnumMap"), annotationClass));
 	}
 
 	static List<ArchRule> configurationPropertiesBinding(String annotationClass) {
@@ -426,6 +434,60 @@ final class ArchitectureRules {
 				}
 			}))
 			.allowEmptyShould(true);
+	}
+
+	private static ArchRule initializedConfigurationPropertiesShouldUse(String propertyType, String implementationType,
+			String annotationClass) {
+		return initializedConfigurationPropertiesShouldUse(propertyType, List.of(implementationType), annotationClass);
+	}
+
+	private static ArchRule initializedConfigurationPropertiesShouldUse(String propertyType,
+			List<String> implementationTypes, String annotationClass) {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith(annotationClass)
+			.or(areNestedInConfigurationPropertiesClasses(annotationClass))
+			.should(useImplementationForInitializedProperties(propertyType, implementationTypes))
+			.because("@ConfigurationProperties classes should preserve the property type's expected implementation")
+			.allowEmptyShould(true);
+	}
+
+	private static ArchCondition<JavaClass> useImplementationForInitializedProperties(String propertyType,
+			List<String> implementationTypes) {
+		String description = implementationTypes.stream().collect(Collectors.joining(" or "));
+		return check("use %s for initialized %s properties".formatted(description, propertyType),
+				(javaClass, events) -> javaClass.getFields()
+					.stream()
+					.filter((field) -> propertyType.equals(field.getRawType().getName()))
+					.forEach((field) -> checkPropertyInitializer(field, implementationTypes, events)));
+	}
+
+	private static void checkPropertyInitializer(JavaField field, List<String> implementationTypes,
+			ConditionEvents events) {
+		String description = implementationTypes.stream().collect(Collectors.joining(" or "));
+		field.getAccessesToSelf()
+			.stream()
+			.filter((access) -> access.getAccessType() == AccessType.SET)
+			.flatMap((access) -> initializerConstructorCalls(access).stream())
+			.filter((call) -> !implementationTypes.contains(call.getTargetOwner().getName()))
+			.forEach((call) -> addViolation(events, field, "%s should be initialized with %s instead of %s"
+				.formatted(field.getDescription(), description, call.getTargetOwner().getName())));
+	}
+
+	private static List<JavaConstructorCall> initializerConstructorCalls(JavaFieldAccess fieldAccess) {
+		return fieldAccess.getOrigin()
+			.getConstructorCallsFromSelf()
+			.stream()
+			.filter((call) -> call.getLineNumber() == fieldAccess.getLineNumber())
+			.toList();
+	}
+
+	private static DescribedPredicate<JavaClass> areNestedInConfigurationPropertiesClasses(String annotationClass) {
+		return DescribedPredicate.describe("are nested in @ConfigurationProperties",
+				(javaClass) -> javaClass.getEnclosingClass()
+					.map((enclosing) -> enclosing.isAnnotatedWith(annotationClass)
+							|| areNestedInConfigurationPropertiesClasses(annotationClass).test(enclosing))
+					.orElse(false));
 	}
 
 	private static ArchRule autoConfigurationClassesShouldBePublicAndFinal() {

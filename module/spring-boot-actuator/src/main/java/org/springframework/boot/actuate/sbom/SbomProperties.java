@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.sbom;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -41,7 +41,7 @@ public class SbomProperties {
 	/**
 	 * Additional SBOMs.
 	 */
-	private Map<String, Sbom> additional = new HashMap<>();
+	private Map<String, Sbom> additional = new LinkedHashMap<>();
 
 	public Sbom getApplication() {
 		return this.application;

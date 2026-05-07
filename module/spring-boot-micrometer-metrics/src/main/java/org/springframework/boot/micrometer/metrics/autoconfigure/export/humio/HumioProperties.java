@@ -17,7 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.humio;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -50,7 +50,7 @@ public class HumioProperties extends StepRegistryProperties {
 	 * are a distinct concept from Micrometer's tags. Micrometer's tags are used to divide
 	 * metrics along dimensional boundaries.
 	 */
-	private Map<String, String> tags = new HashMap<>();
+	private Map<String, String> tags = new LinkedHashMap<>();
 
 	/**
 	 * URI to ship metrics to. If you need to publish metrics to an internal proxy
