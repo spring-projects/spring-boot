@@ -17,7 +17,7 @@
 package org.springframework.boot.hibernate.autoconfigure;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -85,7 +85,7 @@ public class HibernateProperties {
 	}
 
 	private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
-		Map<String, Object> result = new HashMap<>(existing);
+		Map<String, Object> result = new LinkedHashMap<>(existing);
 		applyScanner(result);
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);

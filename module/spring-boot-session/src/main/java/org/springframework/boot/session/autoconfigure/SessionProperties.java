@@ -19,7 +19,7 @@ package org.springframework.boot.session.autoconfigure;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -90,7 +90,7 @@ public class SessionProperties {
 		/**
 		 * Session repository filter dispatcher types.
 		 */
-		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(
+		private Set<DispatcherType> filterDispatcherTypes = new LinkedHashSet<>(
 				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getFilterOrder() {

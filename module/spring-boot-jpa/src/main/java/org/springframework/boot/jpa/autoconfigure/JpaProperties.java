@@ -17,7 +17,7 @@
 package org.springframework.boot.jpa.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class JpaProperties {
 	/**
 	 * Additional native properties to set on the JPA provider.
 	 */
-	private Map<String, String> properties = new HashMap<>();
+	private Map<String, String> properties = new LinkedHashMap<>();
 
 	/**
 	 * Mapping resources (equivalent to "mapping-file" entries in persistence.xml).

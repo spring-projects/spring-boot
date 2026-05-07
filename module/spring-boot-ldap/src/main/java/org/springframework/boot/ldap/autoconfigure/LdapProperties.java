@@ -16,7 +16,7 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -74,7 +74,7 @@ public class LdapProperties {
 	/**
 	 * LDAP specification settings.
 	 */
-	private final Map<String, String> baseEnvironment = new HashMap<>();
+	private final Map<String, String> baseEnvironment = new LinkedHashMap<>();
 
 	private final Template template = new Template();
 

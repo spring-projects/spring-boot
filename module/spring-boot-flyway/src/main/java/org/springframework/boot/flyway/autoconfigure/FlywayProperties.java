@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +137,7 @@ public class FlywayProperties {
 	/**
 	 * Placeholders and their replacements to apply to sql migration scripts.
 	 */
-	private Map<String, String> placeholders = new HashMap<>();
+	private Map<String, String> placeholders = new LinkedHashMap<>();
 
 	/**
 	 * Prefix of placeholders in migration scripts.
@@ -310,7 +310,7 @@ public class FlywayProperties {
 	/**
 	 * Properties to pass to the JDBC driver.
 	 */
-	private Map<String, String> jdbcProperties = new HashMap<>();
+	private Map<String, String> jdbcProperties = new LinkedHashMap<>();
 
 	/**
 	 * Path of the Kerberos config file. Requires Flyway Teams.
