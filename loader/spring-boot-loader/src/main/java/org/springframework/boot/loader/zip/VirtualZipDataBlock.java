@@ -60,12 +60,13 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			boolean hasDescriptorRecord = ZipDataDescriptorRecord.isPresentBasedOnFlag(centralRecord);
 			ZipDataDescriptorRecord dataDescriptorRecord = (!hasDescriptorRecord) ? null
 					: ZipDataDescriptorRecord.load(data, localRecordPos + localRecord.size() + content.size());
-			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name, (int) offset);
+			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name,
+					Math.toIntExact(offset));
 			offset += addToLocal(parts, centralRecord, localRecord, dataDescriptorRecord, name, content);
 		}
 		parts.addAll(centralParts);
 		ZipEndOfCentralDirectoryRecord eocd = new ZipEndOfCentralDirectoryRecord((short) centralRecords.length,
-				(int) sizeOfCentralDirectory, (int) offset);
+				Math.toIntExact(sizeOfCentralDirectory), Math.toIntExact(offset));
 		parts.add(new ByteArrayDataBlock(eocd.asByteArray()));
 		setParts(parts);
 	}
