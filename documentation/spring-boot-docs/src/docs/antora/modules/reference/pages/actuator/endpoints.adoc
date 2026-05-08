@@ -272,6 +272,41 @@ Since Spring Boot's security configuration backs off completely in the presence 
 
 
 
+[[actuator.endpoints.security.management-port]]
+=== Securing Actuator Endpoints on a Separate Management Port
+
+When you configure a separate management port using configprop:management.server.port[], the actuator endpoints run on a separate application context with its own port and security configuration.
+
+IMPORTANT: Requests made on the management port are processed by a separate child application context.
+However, by default, they still pass through the same javadoc:org.springframework.security.web.SecurityFilterChain[] beans as requests made on the main application port.
+This can cause issues if your main application security configuration expects certain pre-authenticated headers or redirects that are not available on the management port.
+
+To completely isolate the security filter chains between the main application and the management port, you can use javadoc:org.springframework.core.annotation.Order[] annotations and javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] to ensure that each chain only processes requests intended for it.
+
+The following example shows how to configure separate security filter chains for the management port and the main application:
+
+include-code::managementport/MySecurityConfiguration[]
+
+In this configuration:
+
+* The `managementSecurityFilterChain` (Order 1) matches only actuator endpoints using `EndpointRequest.toAnyEndpoint()`.
+Requests matching this chain are processed independently of the main application security.
+* The `applicationSecurityFilterChain` (Order 2) handles all other requests with the main application's security rules.
+
+This separation ensures that:
+
+* Requests to the management port do not leak into the main application's security filter chain
+* Management endpoints can have their own authentication and authorization rules
+* The main application's security configuration (such as pre-authenticated headers or custom redirects) does not interfere with management endpoint access
+
+TIP: If you want to allow unauthenticated access to management endpoints while keeping the main application secured, configure the management chain to use `permitAll()` and the application chain to require authentication, as shown in the example above.
+
+NOTE: When using a separate management port, the management context is a child of the main application context.
+This means that beans defined in the main context are available in the management context, but not vice versa.
+Be careful when injecting beans into your security configuration to ensure they are available in the correct context.
+
+
+
 [[actuator.endpoints.security.csrf]]
 === Cross Site Request Forgery Protection
 
