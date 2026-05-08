@@ -34,6 +34,7 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.NONE;
 		assertThat(options.getCiphers()).isNull();
 		assertThat(options.getEnabledProtocols()).isNull();
+		assertThat(options.getNamedGroups()).isNull();
 	}
 
 	@Test
@@ -43,6 +44,18 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
 		assertThat(options.getCiphers()).containsExactly(ciphers);
 		assertThat(options.getEnabledProtocols()).containsExactly(enabledProtocols);
+		assertThat(options.getNamedGroups()).isNull();
+	}
+
+	@Test
+	void ofWithArrayAndNamedGroupsCreatesSslOptions() {
+		String[] ciphers = { "a", "b", "c" };
+		String[] enabledProtocols = { "d", "e", "f" };
+		String[] namedGroups = { "x25519", "secp256r1" };
+		SslOptions options = SslOptions.of(ciphers, enabledProtocols, namedGroups);
+		assertThat(options.getCiphers()).containsExactly(ciphers);
+		assertThat(options.getEnabledProtocols()).containsExactly(enabledProtocols);
+		assertThat(options.getNamedGroups()).containsExactly(namedGroups);
 	}
 
 	@Test
@@ -52,6 +65,7 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
 		assertThat(options.getCiphers()).isNull();
 		assertThat(options.getEnabledProtocols()).isNull();
+		assertThat(options.getNamedGroups()).isNull();
 	}
 
 	@Test
@@ -61,6 +75,18 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
 		assertThat(options.getCiphers()).contains("a", "b", "c");
 		assertThat(options.getEnabledProtocols()).contains("d", "e", "f");
+		assertThat(options.getNamedGroups()).isNull();
+	}
+
+	@Test
+	void ofWithSetAndNamedGroupsCreatesSslOptions() {
+		Set<String> ciphers = Set.of("a", "b", "c");
+		Set<String> enabledProtocols = Set.of("d", "e", "f");
+		Set<String> namedGroups = Set.of("x25519", "secp256r1");
+		SslOptions options = SslOptions.of(ciphers, enabledProtocols, namedGroups);
+		assertThat(options.getCiphers()).contains("a", "b", "c");
+		assertThat(options.getEnabledProtocols()).contains("d", "e", "f");
+		assertThat(options.getNamedGroups()).contains("x25519", "secp256r1");
 	}
 
 	@Test
@@ -70,6 +96,7 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
 		assertThat(options.getCiphers()).isNull();
 		assertThat(options.getEnabledProtocols()).isNull();
+		assertThat(options.getNamedGroups()).isNull();
 	}
 
 	@Test
@@ -81,6 +108,12 @@ class SslOptionsTests {
 	@Test
 	void isSpecifiedWhenHasEnabledProtocols() {
 		SslOptions options = SslOptions.of(null, Set.of("d", "e", "f"));
+		assertThat(options.isSpecified()).isTrue();
+	}
+
+	@Test
+	void isSpecifiedWhenHasNamedGroups() {
+		SslOptions options = SslOptions.of(null, null, Set.of("x25519"));
 		assertThat(options.isSpecified()).isTrue();
 	}
 

@@ -52,6 +52,7 @@ class PropertiesSslBundleTests {
 		properties.getKey().setPassword("secret");
 		properties.getOptions().setCiphers(Set.of("cipher1", "cipher2", "cipher3"));
 		properties.getOptions().setEnabledProtocols(Set.of("protocol1", "protocol2"));
+		properties.getOptions().setNamedGroups(Set.of("group1", "group2"));
 		properties.getKeystore().setCertificate("classpath:org/springframework/boot/autoconfigure/ssl/rsa-cert.pem");
 		properties.getKeystore().setPrivateKey("classpath:org/springframework/boot/autoconfigure/ssl/rsa-key.pem");
 		properties.getKeystore().setPrivateKeyPassword(null);
@@ -67,6 +68,7 @@ class PropertiesSslBundleTests {
 		assertThat(sslBundle.getKey().getPassword()).isEqualTo("secret");
 		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");
 		assertThat(sslBundle.getOptions().getEnabledProtocols()).containsExactlyInAnyOrder("protocol1", "protocol2");
+		assertThat(sslBundle.getOptions().getNamedGroups()).containsExactlyInAnyOrder("group1", "group2");
 		assertThat(sslBundle.getStores()).isNotNull();
 		KeyStore keyStore = sslBundle.getStores().getKeyStore();
 		assertThat(keyStore).isNotNull();
@@ -90,6 +92,7 @@ class PropertiesSslBundleTests {
 		properties.getKey().setPassword("secret");
 		properties.getOptions().setCiphers(Set.of("cipher1", "cipher2", "cipher3"));
 		properties.getOptions().setEnabledProtocols(Set.of("protocol1", "protocol2"));
+		properties.getOptions().setNamedGroups(Set.of("group1", "group2"));
 		properties.getKeystore().setPassword("secret");
 		properties.getKeystore().setProvider("SUN");
 		properties.getKeystore().setType("JKS");
@@ -103,6 +106,7 @@ class PropertiesSslBundleTests {
 		assertThat(sslBundle.getKey().getPassword()).isEqualTo("secret");
 		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");
 		assertThat(sslBundle.getOptions().getEnabledProtocols()).containsExactlyInAnyOrder("protocol1", "protocol2");
+		assertThat(sslBundle.getOptions().getNamedGroups()).containsExactlyInAnyOrder("group1", "group2");
 		assertThat(sslBundle.getStores()).isNotNull();
 		assertThat(sslBundle.getStores()).extracting("keyStoreDetails")
 			.extracting("location", "password", "provider", "type")

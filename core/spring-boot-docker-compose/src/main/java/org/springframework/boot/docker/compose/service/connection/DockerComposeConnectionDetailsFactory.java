@@ -167,7 +167,8 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 					service.labels().get("org.springframework.boot.sslbundle.jks.key.password"));
 			SslOptions options = createSslOptions(
 					service.labels().get("org.springframework.boot.sslbundle.jks.options.ciphers"),
-					service.labels().get("org.springframework.boot.sslbundle.jks.options.enabled-protocols"));
+					service.labels().get("org.springframework.boot.sslbundle.jks.options.enabled-protocols"),
+					service.labels().get("org.springframework.boot.sslbundle.jks.options.named-groups"));
 			String protocol = service.labels().get("org.springframework.boot.sslbundle.jks.protocol");
 			Path workingDirectory = getWorkingDirectory(service);
 			return SslBundle.of(
@@ -203,7 +204,8 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			return composeFile.getFiles().get(0).toPath().getParent();
 		}
 
-		private SslOptions createSslOptions(@Nullable String ciphers, @Nullable String enabledProtocols) {
+		private SslOptions createSslOptions(@Nullable String ciphers, @Nullable String enabledProtocols,
+				@Nullable String namedGroups) {
 			Set<String> ciphersSet = null;
 			if (StringUtils.hasLength(ciphers)) {
 				ciphersSet = StringUtils.commaDelimitedListToSet(ciphers);
@@ -212,7 +214,11 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			if (StringUtils.hasLength(enabledProtocols)) {
 				enabledProtocolsSet = StringUtils.commaDelimitedListToSet(enabledProtocols);
 			}
-			return SslOptions.of(ciphersSet, enabledProtocolsSet);
+			Set<String> namedGroupsSet = null;
+			if (StringUtils.hasLength(namedGroups)) {
+				namedGroupsSet = StringUtils.commaDelimitedListToSet(namedGroups);
+			}
+			return SslOptions.of(ciphersSet, enabledProtocolsSet, namedGroupsSet);
 		}
 
 		private @Nullable SslBundle getPemSslBundle(RunningService service) {
@@ -225,7 +231,8 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 					service.labels().get("org.springframework.boot.sslbundle.pem.key.password"));
 			SslOptions options = createSslOptions(
 					service.labels().get("org.springframework.boot.sslbundle.pem.options.ciphers"),
-					service.labels().get("org.springframework.boot.sslbundle.pem.options.enabled-protocols"));
+					service.labels().get("org.springframework.boot.sslbundle.pem.options.enabled-protocols"),
+					service.labels().get("org.springframework.boot.sslbundle.pem.options.named-groups"));
 			String protocol = service.labels().get("org.springframework.boot.sslbundle.pem.protocol");
 			Path workingDirectory = getWorkingDirectory(service);
 			ResourceLoader resourceLoader = getResourceLoader(workingDirectory);

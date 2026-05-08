@@ -71,7 +71,9 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static SslOptions asSslOptions(SslBundleProperties.@Nullable Options options) {
-		return (options != null) ? SslOptions.of(options.getCiphers(), options.getEnabledProtocols()) : SslOptions.NONE;
+		return (options != null)
+				? SslOptions.of(options.getCiphers(), options.getEnabledProtocols(), options.getNamedGroups())
+				: SslOptions.NONE;
 	}
 
 	@Override

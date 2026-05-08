@@ -62,6 +62,11 @@ public class Ssl {
 	private String @Nullable [] enabledProtocols;
 
 	/**
+	 * Enabled key exchange named groups.
+	 */
+	private String @Nullable [] namedGroups;
+
+	/**
 	 * Alias that identifies the key in the key store.
 	 */
 	private @Nullable String keyAlias;
@@ -206,6 +211,19 @@ public class Ssl {
 
 	public void setEnabledProtocols(String @Nullable [] enabledProtocols) {
 		this.enabledProtocols = enabledProtocols;
+	}
+
+	/**
+	 * Return the enabled key exchange named groups.
+	 * @return the enabled key exchange named groups
+	 * @since 4.1.0
+	 */
+	public String @Nullable [] getNamedGroups() {
+		return this.namedGroups;
+	}
+
+	public void setNamedGroups(String @Nullable [] namedGroups) {
+		this.namedGroups = namedGroups;
 	}
 
 	/**

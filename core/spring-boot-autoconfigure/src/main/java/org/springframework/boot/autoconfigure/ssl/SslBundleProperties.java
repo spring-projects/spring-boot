@@ -88,6 +88,11 @@ public abstract class SslBundleProperties {
 		 */
 		private @Nullable Set<String> enabledProtocols;
 
+		/**
+		 * Enabled key exchange named groups.
+		 */
+		private @Nullable Set<String> namedGroups;
+
 		public @Nullable Set<String> getCiphers() {
 			return this.ciphers;
 		}
@@ -102,6 +107,14 @@ public abstract class SslBundleProperties {
 
 		public void setEnabledProtocols(@Nullable Set<String> enabledProtocols) {
 			this.enabledProtocols = enabledProtocols;
+		}
+
+		public @Nullable Set<String> getNamedGroups() {
+			return this.namedGroups;
+		}
+
+		public void setNamedGroups(@Nullable Set<String> namedGroups) {
+			this.namedGroups = namedGroups;
 		}
 
 	}

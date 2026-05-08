@@ -66,7 +66,8 @@ record SslBundleSource(@Nullable Ssl ssl, @Nullable PemKeyStore pemKeyStore, @Nu
 			return null;
 		}
 		Ssl ssl = (this.ssl != null) ? this.ssl : MergedAnnotation.of(Ssl.class).synthesize();
-		SslOptions options = SslOptions.of(nullIfEmpty(ssl.ciphers()), nullIfEmpty(ssl.enabledProtocols()));
+		SslOptions options = SslOptions.of(nullIfEmpty(ssl.ciphers()), nullIfEmpty(ssl.enabledProtocols()),
+				nullIfEmpty(ssl.namedGroups()));
 		SslBundleKey key = SslBundleKey.of(nullIfEmpty(ssl.keyPassword()), nullIfEmpty(ssl.keyAlias()));
 		String protocol = ssl.protocol();
 		return SslBundle.of(stores, key, options, protocol);

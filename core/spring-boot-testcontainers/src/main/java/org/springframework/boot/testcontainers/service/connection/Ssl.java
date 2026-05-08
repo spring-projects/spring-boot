@@ -62,6 +62,14 @@ public @interface Ssl {
 	String[] enabledProtocols() default {};
 
 	/**
+	 * The key exchange named groups that are enabled for the SSL connection.
+	 * @return the enabled key exchange named groups
+	 * @see SslOptions#getNamedGroups()
+	 * @since 4.1.0
+	 */
+	String[] namedGroups() default {};
+
+	/**
 	 * The password that should be used to access the key.
 	 * @return the key password
 	 * @see SslBundleKey#getPassword()

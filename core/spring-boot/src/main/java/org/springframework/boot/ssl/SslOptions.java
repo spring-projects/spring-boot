@@ -40,14 +40,14 @@ public interface SslOptions {
 	/**
 	 * {@link SslOptions} that returns {@code null} results.
 	 */
-	SslOptions NONE = of(null, (Set<String>) null);
+	SslOptions NONE = of(null, (Set<String>) null, null);
 
 	/**
 	 * Return if any SSL options have been specified.
 	 * @return {@code true} if SSL options have been specified
 	 */
 	default boolean isSpecified() {
-		return (getCiphers() != null) || (getEnabledProtocols() != null);
+		return (getCiphers() != null) || (getEnabledProtocols() != null) || (getNamedGroups() != null);
 	}
 
 	/**
@@ -67,12 +67,36 @@ public interface SslOptions {
 	String @Nullable [] getEnabledProtocols();
 
 	/**
+	 * Return the key exchange named groups that should be enabled or {@code null}. The
+	 * named group names should be those used in standard TLS key exchange algorithm
+	 * registries, for example {@code x25519} or {@code secp256r1}.
+	 * @return the named groups to enable or {@code null}
+	 * @since 4.1.0
+	 */
+	default String @Nullable [] getNamedGroups() {
+		return null;
+	}
+
+	/**
 	 * Factory method to create a new {@link SslOptions} instance.
 	 * @param ciphers the ciphers
 	 * @param enabledProtocols the enabled protocols
 	 * @return a new {@link SslOptions} instance
 	 */
 	static SslOptions of(String @Nullable [] ciphers, String @Nullable [] enabledProtocols) {
+		return of(ciphers, enabledProtocols, null);
+	}
+
+	/**
+	 * Factory method to create a new {@link SslOptions} instance.
+	 * @param ciphers the ciphers
+	 * @param enabledProtocols the enabled protocols
+	 * @param namedGroups the key exchange named groups
+	 * @return a new {@link SslOptions} instance
+	 * @since 4.1.0
+	 */
+	static SslOptions of(String @Nullable [] ciphers, String @Nullable [] enabledProtocols,
+			String @Nullable [] namedGroups) {
 		return new SslOptions() {
 
 			@Override
@@ -86,10 +110,16 @@ public interface SslOptions {
 			}
 
 			@Override
+			public String @Nullable [] getNamedGroups() {
+				return namedGroups;
+			}
+
+			@Override
 			public String toString() {
 				ToStringCreator creator = new ToStringCreator(this);
 				creator.append("ciphers", ciphers);
 				creator.append("enabledProtocols", enabledProtocols);
+				creator.append("namedGroups", namedGroups);
 				return creator.toString();
 			}
 
@@ -103,7 +133,20 @@ public interface SslOptions {
 	 * @return a new {@link SslOptions} instance
 	 */
 	static SslOptions of(@Nullable Set<String> ciphers, @Nullable Set<String> enabledProtocols) {
-		return of(toArray(ciphers), toArray(enabledProtocols));
+		return of(toArray(ciphers), toArray(enabledProtocols), null);
+	}
+
+	/**
+	 * Factory method to create a new {@link SslOptions} instance.
+	 * @param ciphers the ciphers
+	 * @param enabledProtocols the enabled protocols
+	 * @param namedGroups the key exchange named groups
+	 * @return a new {@link SslOptions} instance
+	 * @since 4.1.0
+	 */
+	static SslOptions of(@Nullable Set<String> ciphers, @Nullable Set<String> enabledProtocols,
+			@Nullable Set<String> namedGroups) {
+		return of(toArray(ciphers), toArray(enabledProtocols), toArray(namedGroups));
 	}
 
 	/**

@@ -119,6 +119,7 @@ public class SslConnectorCustomizer {
 		configureCiphers(options, sslHostConfig);
 		configureSslStores(sslHostConfig, certificate, stores);
 		configureEnabledProtocols(sslHostConfig, options);
+		configureNamedGroups(sslHostConfig, options);
 	}
 
 	private void configureCiphers(SslOptions options, SSLHostConfig sslHostConfig) {
@@ -138,6 +139,13 @@ public class SslConnectorCustomizer {
 		if (options.getEnabledProtocols() != null) {
 			String enabledProtocols = StringUtils.arrayToDelimitedString(options.getEnabledProtocols(), "+");
 			sslHostConfig.setProtocols(enabledProtocols);
+		}
+	}
+
+	private void configureNamedGroups(SSLHostConfig sslHostConfig, SslOptions options) {
+		if (options.getNamedGroups() != null) {
+			String namedGroups = StringUtils.arrayToDelimitedString(options.getNamedGroups(), ":");
+			sslHostConfig.setGroups(namedGroups);
 		}
 	}
 
