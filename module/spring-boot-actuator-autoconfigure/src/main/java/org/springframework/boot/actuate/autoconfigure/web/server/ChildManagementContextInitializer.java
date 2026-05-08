@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.web.server.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
@@ -167,6 +168,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 		if (managementContext instanceof DefaultResourceLoader resourceLoader) {
 			resourceLoader.setClassLoader(this.parentContext.getClassLoader());
 		}
+		new ConditionEvaluationReportLoggingListener().initialize(managementContext);
 		CloseManagementContextListener.addIfPossible(this.parentContext, managementContext);
 		return managementContext;
 	}
