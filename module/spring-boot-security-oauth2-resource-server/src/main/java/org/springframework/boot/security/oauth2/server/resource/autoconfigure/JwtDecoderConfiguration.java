@@ -40,6 +40,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -134,7 +135,7 @@ class JwtDecoderConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnJwkSetUriJwtDecoder
+	@Conditional(JwkSetUriCondition.class)
 	JwtDecoder jwtDecoderByJwkKeySetUri() {
 		String jwkSetUri = this.properties.getJwkSetUri();
 		Assert.state(jwkSetUri != null, "No JWK Set URI property specified");
