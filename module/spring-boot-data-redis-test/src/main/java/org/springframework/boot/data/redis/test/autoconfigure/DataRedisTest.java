@@ -38,14 +38,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * Annotation for a Data Redis test that focuses <strong>only</strong> on Redis
  * components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data Redis
- * tests. Similarly, component scanning is limited to Redis repositories and entities
- * ({@code @RedisHash}).
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Jayaram Pradhan
  * @author Artsiom Yudovin
  * @since 4.0.0

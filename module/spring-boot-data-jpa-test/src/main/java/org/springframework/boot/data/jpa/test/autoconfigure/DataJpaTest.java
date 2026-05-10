@@ -44,29 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Annotation for a JPA test that focuses <strong>only</strong> on JPA components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data JPA
- * tests. Similarly, component scanning is limited to JPA repositories and entities
- * ({@code @Entity}).
- * <p>
- * By default, tests annotated with {@code @DataJpaTest} are transactional and roll back
- * at the end of each test. They also use an embedded in-memory database (replacing any
- * explicit or usually auto-configured DataSource). The
- * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
- * override these settings.
- * <p>
- * SQL queries are logged by default by setting the {@code spring.jpa.show-sql} property
- * to {@code true}. This can be disabled using the {@link DataJpaTest#showSql() showSql}
- * attribute.
- * <p>
- * If you are looking to load your full application configuration, but use an embedded
- * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
- * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
- * annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Scott Frederick

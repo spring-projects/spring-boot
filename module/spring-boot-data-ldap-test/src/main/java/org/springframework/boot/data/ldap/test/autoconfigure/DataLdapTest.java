@@ -38,17 +38,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * Annotation that can be used for an LDAP test that focuses <strong>only</strong> on LDAP
  * components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data LDAP
- * tests. Similarly, component scanning is limited to LDAP repositories and entities
- * ({@code @Entry}).
- * <p>
- * By default, tests annotated with {@code @DataLdapTest} will use an embedded in-memory
- * LDAP process (if available).
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
  * @since 4.0.0

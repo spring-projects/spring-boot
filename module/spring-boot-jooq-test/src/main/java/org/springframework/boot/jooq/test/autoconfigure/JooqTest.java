@@ -39,19 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Annotation for a jOOQ test that focuses <strong>only</strong> on jOOQ-based components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to jOOQ tests.
- * Similarly, component scanning is configured to skip regular components and
- * configuration properties.
- * <p>
- * By default, tests annotated with {@code @JooqTest} use the configured database. If you
- * want to replace any explicit or usually auto-configured DataSource by an embedded
- * in-memory database, the {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase}
- * annotation can be used to override these settings.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Michael Simons
  * @author Stephane Nicoll
  * @author Artsiom Yudovin

@@ -43,45 +43,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 /**
  * Annotation that can be used for a Spring WebFlux test that focuses
  * <strong>only</strong> on Spring WebFlux components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to WebFlux
- * tests. Similarly, component scanning is limited to beans annotated with:
- * <ul>
- * <li>{@code @Controller}</li>
- * <li>{@code @ControllerAdvice}</li>
- * <li>{@code @JacksonComponent}</li>
- * <li>{@code @JsonComponent} (Jackson 2, deprecated)</li>
- * </ul>
- * <p>
- * as well as beans that implement:
- * <ul>
- * <li>{@code Converter}</li>
- * <li>{@code GenericConverter}</li>
- * <li>{@code IDialect}, if Thymeleaf is available</li>
- * <li>{@code JacksonModule}, if Jackson is available</li>
- * <li>{@code Module}, if Jackson 2 is available (deprecated)</li>
- * <li>{@code WebExceptionHandler}</li>
- * <li>{@code WebFluxConfigurer}</li>
- * <li>{@code WebFilter}</li>
- * </ul>
- * <p>
- * By default, tests annotated with {@code @WebFluxTest} will also auto-configure a
- * {@link WebTestClient}. For more fine-grained control of WebTestClient the
- * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} annotation can be used.
- * <p>
- * Typically {@code @WebFluxTest} is used in combination with
- * {@link org.springframework.test.context.bean.override.mockito.MockitoBean @MockitoBean}
- * or {@link Import @Import} to create any collaborators required by your
- * {@code @Controller} beans.
- * <p>
- * If you are looking to load your full application configuration and use WebTestClient,
- * you should consider {@link SpringBootTest @SpringBootTest} combined with
- * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} rather than this
- * annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  * @since 4.0.0

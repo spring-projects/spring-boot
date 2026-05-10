@@ -39,19 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Annotation that can be used for a Neo4j test that focuses <strong>only</strong> on
  * Neo4j components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data Neo4j
- * tests. Similarly, component scanning is limited to Neo4j repositories and entities
- * ({@code @Node} and {@code @RelationshipProperties}).
- * <p>
- * By default, tests annotated with {@code @DataNeo4jTest} are transactional with the
- * usual test-related semantics (i.e. rollback by default). This feature is not supported
- * with reactive access so this should be disabled by annotating the test class with
- * {@code @Transactional(propagation = Propagation.NOT_SUPPORTED)}.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Artsiom Yudovin

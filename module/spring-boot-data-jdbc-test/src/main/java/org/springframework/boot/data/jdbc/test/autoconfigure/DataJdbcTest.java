@@ -41,25 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Annotation that can be used for a Data JDBC test that focuses <strong>only</strong> on
  * Data JDBC components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data JDBC
- * tests. Similarly, component scanning is limited to JDBC repositories and entities
- * ({@code @Table}), as well as beans that implement {@code AbstractJdbcConfiguration}.
- * <p>
- * By default, tests annotated with {@code @DataJdbcTest} are transactional and roll back
- * at the end of each test. They also use an embedded in-memory database (replacing any
- * explicit or usually auto-configured DataSource). The
- * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
- * override these settings.
- * <p>
- * If you are looking to load your full application configuration, but use an embedded
- * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
- * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
- * annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Andy Wilkinson
  * @since 4.0.0
  */

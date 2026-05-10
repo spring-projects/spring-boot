@@ -43,14 +43,6 @@ import org.springframework.ws.test.client.MockWebServiceServer;
  * when a test focuses <strong>only</strong> on beans that use
  * {@link WebServiceTemplateBuilder}. By default, tests annotated with
  * {@code WebServiceClientTest} will also auto-configure a {@link MockWebServiceServer}.
- * <p>
- * If you are testing a bean that doesn't use {@link WebServiceTemplateBuilder} but
- * instead injects a {@link WebServiceTemplate} directly, you can add
- * {@code @AutoConfigureWebServiceClient(registerWebServiceTemplate=true)}.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Dmytro Nosan
  * @since 2.3.0
  */

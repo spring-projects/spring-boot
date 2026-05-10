@@ -41,28 +41,6 @@ import org.springframework.web.client.RestClient.Builder;
 /**
  * Annotation for a Spring rest client test that focuses <strong>only</strong> on beans
  * that use {@link RestTemplateBuilder} or {@link Builder RestClient.Builder}.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to rest client
- * tests. Similarly, component scanning is limited to beans annotated with:
- * <ul>
- * <li>{@code @JacksonComponent}</li>
- * <li>{@code @JsonComponent}(deprecated)</li>
- * </ul>
- * <p>
- * as well as beans that implement:
- * <ul>
- * <li>{@code JacksonModule}, if Jackson is available</li>
- * <li>{@code Module}, if Jackson 2 is available (deprecated)</li>
- * </ul>
- * <p>
- * By default, tests annotated with {@code RestClientTest} will also auto-configure a
- * {@link MockRestServiceServer}. For more fine-grained control the
- * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer}
- * annotation can be used.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Artsiom Yudovin

@@ -39,21 +39,6 @@ import org.springframework.web.client.RestClient.Builder;
 /**
  * Annotation for a Spring WebClient test that focuses <strong>only</strong> on beans that
  * use {@link Builder WebClient.Builder}.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to rest client
- * tests. Similarly, component scanning is limited to beans annotated with:
- * <ul>
- * <li>{@code @JacksonComponent}</li>
- * </ul>
- * <p>
- * as well as beans that implement:
- * <ul>
- * <li>{@code JacksonModule}, if Jackson is available</li>
- * </ul>
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Andy Wilkinson
  * @since 4.0.0
  */

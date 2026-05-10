@@ -38,14 +38,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * Annotation that can be used for a Data Couchbase test that focuses
  * <strong>only</strong> on Data Couchbase components.
- * <p>
- * Using this annotation only enables auto-configuration that is relevant to Data
- * Couchbase tests. Similarly, component scanning is limited to Couchbase repositories and
- * entities ({@code @Document}).
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
- *
  * @author Eddú Meléndez
  * @since 4.0.0
  */
