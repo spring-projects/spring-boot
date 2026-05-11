@@ -35,6 +35,7 @@ import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.util.CollectionUtils;
@@ -47,12 +48,14 @@ import org.springframework.util.CollectionUtils;
  */
 class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	LogstashStructuredLogFormatter(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+	LogstashStructuredLogFormatter(@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(stackTracePrinter, contextPairs, members), customizer);
+		super((members) -> jsonMembers(stackTracePrinter, hashFieldConfiguration, contextPairs, members), customizer);
 	}
 
-	private static void jsonMembers(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+	private static void jsonMembers(@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
@@ -72,6 +75,11 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 			.as(LogstashStructuredLogFormatter::getMarkers)
 			.whenNot(collectionIsEmpty);
 		members.add("stack_trace", LogEvent::getThrown).whenNotNull().as(extractor::stackTrace);
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), LogEvent::getThrown)
+				.whenNotNull()
+				.as(hashFieldConfiguration::computeHash);
+		}
 	}
 
 	private static String asTimestamp(Instant instant) {

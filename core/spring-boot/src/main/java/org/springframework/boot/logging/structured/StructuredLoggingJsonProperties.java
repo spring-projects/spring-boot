@@ -40,6 +40,7 @@ import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties that can be used to customize structured logging JSON.
@@ -96,11 +97,13 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 	 * @param maxLength the maximum length to print
 	 * @param maxThrowableDepth the maximum throwable depth to print
 	 * @param includeCommonFrames whether common frames should be included
-	 * @param includeHashes whether stack trace hashes should be included
+	 * @param includeHashes whether stack trace hashes should be included (deprecated, use
+	 * {@code hash} instead)
+	 * @param hash hash generation properties
 	 */
 	record StackTrace(@Nullable String printer, @Nullable Root root, @Nullable Integer maxLength,
-			@Nullable Integer maxThrowableDepth, @Nullable Boolean includeCommonFrames,
-			@Nullable Boolean includeHashes) {
+			@Nullable Integer maxThrowableDepth, @Nullable Boolean includeCommonFrames, @Nullable Boolean includeHashes,
+			@Nullable Hash hash) {
 
 		@Nullable StackTracePrinter createPrinter() {
 			String name = sanitizePrinter();
@@ -130,8 +133,37 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		}
 
 		private boolean hasAnyOtherProperty() {
-			return Stream.of(root(), maxLength(), maxThrowableDepth(), includeCommonFrames(), includeHashes())
+			return Stream.of(root(), maxLength(), maxThrowableDepth(), includeCommonFrames(), includeHashes(), hash())
 				.anyMatch(Objects::nonNull);
+		}
+
+		/**
+		 * Return the effective hash generate mode, considering both the deprecated
+		 * {@code includeHashes} property and the new {@code hash} property.
+		 * @return the effective {@link StackTraceHashGenerate} or {@code null} if no hash
+		 * generation is configured
+		 */
+		@Nullable StackTraceHashGenerate effectiveHashGenerate() {
+			if (hash() != null && hash().generate() != null) {
+				return hash().generate();
+			}
+			if (Boolean.TRUE.equals(includeHashes())) {
+				return StackTraceHashGenerate.INLINE;
+			}
+			return null;
+		}
+
+		/**
+		 * Return the effective hash field name considering the {@code hash} property.
+		 * @return the configured field name or {@code null} if not set
+		 */
+		@Nullable String effectiveHashFieldName() {
+			return (hash() != null) ? hash().fieldName() : null;
+		}
+
+		private boolean shouldIncludeInlineHashes() {
+			StackTraceHashGenerate generate = effectiveHashGenerate();
+			return generate == StackTraceHashGenerate.INLINE;
 		}
 
 		private StandardStackTracePrinter createStandardPrinter() {
@@ -143,7 +175,9 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 				.to(printer, StandardStackTracePrinter::withMaximumThrowableDepth);
 			printer = map.from(this::includeCommonFrames)
 				.to(printer, apply(StandardStackTracePrinter::withCommonFrames));
-			printer = map.from(this::includeHashes).to(printer, apply(StandardStackTracePrinter::withHashes));
+			if (shouldIncludeInlineHashes()) {
+				printer = printer.withHashes();
+			}
 			return printer;
 		}
 
@@ -158,6 +192,24 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		enum Root {
 
 			LAST, FIRST
+
+		}
+
+		/**
+		 * Properties to configure stack trace hash generation.
+		 *
+		 * @param generate the hash generation mode ({@code inline} or {@code as-field})
+		 * @param fieldName the name of the JSON field when using {@code as-field} mode.
+		 * If not set, a sensible default will be used for the selected logging format
+		 */
+		record Hash(@Nullable StackTraceHashGenerate generate, @Nullable String fieldName) {
+
+			@Nullable String resolveFieldName(@Nullable String defaultFieldName) {
+				if (StringUtils.hasText(this.fieldName)) {
+					return this.fieldName;
+				}
+				return defaultFieldName;
+			}
 
 		}
 

@@ -191,17 +191,17 @@ The following table shows how the `logging.*` properties can be used together:
 | Specific file (for example, `my.log`)
 | _(none)_
 | Writes to the location specified by `logging.file.name`.
-  The location can be absolute or relative to the current directory.
+The location can be absolute or relative to the current directory.
 
 | _(none)_
 | Specific directory (for example, `/var/log`)
 | Writes `spring.log` to the directory specified by `logging.file.path`.
-  The directory can be absolute or relative to the current directory.
+The directory can be absolute or relative to the current directory.
 
 | Specific file
 | Specific directory
 | Writes to the location specified by `logging.file.name` and ignores `logging.file.path`.
-  The location can be absolute or relative to the current directory.
+The location can be absolute or relative to the current directory.
 |===
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
@@ -737,11 +737,14 @@ To do this, you can use one or more of the following properties:
 | configprop:logging.structured.json.stacktrace.include-common-frames[]
 | If common frames should be included or removed
 
-| configprop:logging.structured.json.stacktrace.include-hashes[]
-| If a hash of the stack trace should be included
+| configprop:logging.structured.json.stacktrace.hash.generate[]
+| How stack trace hashes should be generated. Use `inline` to include the hash in the stack trace text or `as-field` to emit the hash as a separate structured JSON field.
+
+| configprop:logging.structured.json.stacktrace.hash.field-name[]
+| The name of the JSON field to use when the hash generate mode is `as-field`. Defaults to `stack_trace_hash` if not set.
 |===
 
-For example, the following will use root first stack traces, limit their length, and include hashes.
+For example, the following will use root first stack traces and limit their length:
 
 [configprops,yaml]
 ----
@@ -752,8 +755,59 @@ logging:
         root: first
         max-length: 1024
         include-common-frames: true
-        include-hashes: true
 ----
+
+
+
+[[features.logging.structured.customizing-stack-traces.hashes]]
+==== Stack Trace Hashes
+
+Stack trace hashes are useful for grouping common exceptions.
+You can configure how hashes are generated using the configprop:logging.structured.json.stacktrace.hash.generate[] property.
+
+When set to `inline`, the hash is prefixed to the stack trace text (e.g. `<#351b6441> java.lang.RuntimeException: ...`).
+When set to `as-field`, the hash is emitted as a separate structured JSON field, making it easy to filter and aggregate in log analysis tools.
+
+The following will include the hash inline within the stack trace text:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      stacktrace:
+        hash:
+          generate: inline
+----
+
+The following will emit the hash as a separate JSON field named `stack_trace_hash`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      stacktrace:
+        hash:
+          generate: as-field
+----
+
+You can also customize the field name:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      stacktrace:
+        hash:
+          generate: as-field
+          field-name: my_stack_hash
+----
+
+NOTE: The configprop:logging.structured.json.stacktrace.include-hashes[] property is deprecated.
+Use configprop:logging.structured.json.stacktrace.hash.generate[] instead.
+Setting `include-hashes: true` is equivalent to `hash.generate: inline`.
 
 [TIP]
 ====

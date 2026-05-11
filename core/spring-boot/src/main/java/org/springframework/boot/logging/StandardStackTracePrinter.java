@@ -278,6 +278,35 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				this.frameFilter, this.formatter, this.frameFormatter, frameHasher);
 	}
 
+	/**
+	 * Compute a hash for the given throwable using the default frame hasher and return it
+	 * as a zero-padded 8-character hex string.
+	 * @param throwable the throwable to hash
+	 * @return the hash as a hex string, or {@code null} if the throwable is {@code null}
+	 * @since 4.0.0
+	 */
+	public static @Nullable String hashAsHexString(@Nullable Throwable throwable) {
+		return hashAsHexString(throwable, DEFAULT_FRAME_HASHER);
+	}
+
+	/**
+	 * Compute a hash for the given throwable using the specified frame hasher and return
+	 * it as a zero-padded 8-character hex string.
+	 * @param throwable the throwable to hash
+	 * @param frameHasher the function used to hash individual stack trace elements
+	 * @return the hash as a hex string, or {@code null} if the throwable is {@code null}
+	 * @since 4.0.0
+	 */
+	public static @Nullable String hashAsHexString(@Nullable Throwable throwable,
+			ToIntFunction<StackTraceElement> frameHasher) {
+		if (throwable == null) {
+			return null;
+		}
+		StackTrace stackTrace = new StackTrace(throwable);
+		int hash = stackTrace.hash(new HashSet<>(), frameHasher);
+		return String.format("%08x", hash);
+	}
+
 	private StandardStackTracePrinter withOption(Option option) {
 		EnumSet<Option> options = EnumSet.copyOf(this.options);
 		options.add(option);

@@ -29,7 +29,9 @@ import org.apache.logging.log4j.message.MapMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.TestContextPairs;
+import org.springframework.boot.logging.structured.TestStackTraceHashFieldConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +49,7 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@BeforeEach
 	void setUp() {
-		this.formatter = new LogstashStructuredLogFormatter(null, TestContextPairs.include(), this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(null, null, TestContextPairs.include(), this.customizer);
 	}
 
 	@Test
@@ -91,8 +93,8 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@Test
 	void shouldFormatExceptionWithStackTracePrinter() {
-		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), TestContextPairs.include(),
-				this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), null,
+				TestContextPairs.include(), this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);
@@ -114,6 +116,31 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(
 				map("@timestamp", timestamp, "@version", "1", "message", expectedMessage, "logger_name",
 						"org.example.Test", "thread_name", "main", "level", "INFO", "level_value", 400));
+	}
+
+	@Test
+	void shouldFormatExceptionWithHashAsField() {
+		StackTraceHashFieldConfiguration hashConfig = TestStackTraceHashFieldConfiguration.of("my_stack_hash");
+		this.formatter = new LogstashStructuredLogFormatter(null, hashConfig, TestContextPairs.include(),
+				this.customizer);
+		MutableLogEvent event = createEvent();
+		event.setThrown(new RuntimeException("Boom"));
+		String json = this.formatter.format(event);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("my_stack_hash");
+		assertThat((String) deserialized.get("my_stack_hash")).matches("[0-9a-f]{8}");
+		assertThat(deserialized).containsKey("stack_trace");
+	}
+
+	@Test
+	void shouldNotIncludeHashFieldWhenNoException() {
+		StackTraceHashFieldConfiguration hashConfig = TestStackTraceHashFieldConfiguration.of("my_stack_hash");
+		this.formatter = new LogstashStructuredLogFormatter(null, hashConfig, TestContextPairs.include(),
+				this.customizer);
+		MutableLogEvent event = createEvent();
+		String json = this.formatter.format(event);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).doesNotContainKey("my_stack_hash");
 	}
 
 }

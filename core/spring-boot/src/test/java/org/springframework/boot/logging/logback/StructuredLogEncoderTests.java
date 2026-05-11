@@ -114,6 +114,88 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	}
 
 	@Test
+	void shouldSupportLogstashWithHashAsField() {
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.generate", "as-field");
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.field-name", "my_hash");
+		StructuredLogEncoder hashEncoder = new StructuredLogEncoder();
+		hashEncoder.setContext(this.loggerContext);
+		hashEncoder.setFormat("logstash");
+		hashEncoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = new String(hashEncoder.encode(event), StandardCharsets.UTF_8);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("my_hash");
+		assertThat(deserialized.get("my_hash")).isInstanceOf(String.class);
+		assertThat((String) deserialized.get("my_hash")).matches("[0-9a-f]{8}");
+		hashEncoder.stop();
+	}
+
+	@Test
+	void shouldSupportLogstashWithHashAsFieldDefaultFieldName() {
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.generate", "as-field");
+		StructuredLogEncoder hashEncoder = new StructuredLogEncoder();
+		hashEncoder.setContext(this.loggerContext);
+		hashEncoder.setFormat("logstash");
+		hashEncoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = new String(hashEncoder.encode(event), StandardCharsets.UTF_8);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("stack_trace_hash");
+		assertThat((String) deserialized.get("stack_trace_hash")).matches("[0-9a-f]{8}");
+		hashEncoder.stop();
+	}
+
+	@Test
+	void shouldNotIncludeHashFieldWhenNoException() {
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.generate", "as-field");
+		StructuredLogEncoder hashEncoder = new StructuredLogEncoder();
+		hashEncoder.setContext(this.loggerContext);
+		hashEncoder.setFormat("logstash");
+		hashEncoder.start();
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = new String(hashEncoder.encode(event), StandardCharsets.UTF_8);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).doesNotContainKey("stack_trace_hash");
+		hashEncoder.stop();
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void shouldSupportEcsWithHashAsField() {
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.generate", "as-field");
+		StructuredLogEncoder hashEncoder = new StructuredLogEncoder();
+		hashEncoder.setContext(this.loggerContext);
+		hashEncoder.setFormat("ecs");
+		hashEncoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = new String(hashEncoder.encode(event), StandardCharsets.UTF_8);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("stack_trace_hash");
+		assertThat((String) deserialized.get("stack_trace_hash")).matches("[0-9a-f]{8}");
+		hashEncoder.stop();
+	}
+
+	@Test
+	void shouldSupportGelfWithHashAsField() {
+		this.environment.setProperty("logging.structured.json.stacktrace.hash.generate", "as-field");
+		StructuredLogEncoder hashEncoder = new StructuredLogEncoder();
+		hashEncoder.setContext(this.loggerContext);
+		hashEncoder.setFormat("gelf");
+		hashEncoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = new String(hashEncoder.encode(event), StandardCharsets.UTF_8);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("stack_trace_hash");
+		assertThat((String) deserialized.get("stack_trace_hash")).matches("[0-9a-f]{8}");
+		hashEncoder.stop();
+	}
+
+	@Test
 	void shouldSupportGelfCommonFormat() {
 		this.encoder.setFormat("gelf");
 		this.encoder.start();

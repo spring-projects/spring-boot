@@ -41,6 +41,7 @@ import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.ContextPairs.Joiner;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
@@ -74,13 +75,16 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
 	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment,
-			@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members), customizer);
+		super((members) -> jsonMembers(environment, stackTracePrinter, hashFieldConfiguration, contextPairs, members),
+				customizer);
 	}
 
 	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, JsonWriter.Members<LogEvent> members) {
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("version", "1.1");
 		members.add("short_message", LogEvent::getMessage)
@@ -103,6 +107,11 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add()
 			.whenNotNull(getThrown)
 			.usingMembers((thrownMembers) -> throwableMembers(thrownMembers, extractor));
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), LogEvent::getThrown)
+				.whenNotNull()
+				.as(hashFieldConfiguration::computeHash);
+		}
 	}
 
 	private static String getMessageText(Message message) {

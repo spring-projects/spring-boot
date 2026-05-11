@@ -28,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.Context;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
@@ -94,6 +95,8 @@ public class StructuredLogFormatterFactory<E> {
 			allAvailableParameters.add(StructuredLoggingJsonMembersCustomizer.Builder.class,
 					new JsonMembersCustomizerBuilder(properties));
 			allAvailableParameters.add(StackTracePrinter.class, (type) -> getStackTracePrinter(properties));
+			allAvailableParameters.add(StackTraceHashFieldConfiguration.class,
+					(type) -> getStackTraceHashFieldConfiguration(properties));
 			allAvailableParameters.add(ContextPairs.class, (type) -> getContextPairs(properties));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
@@ -105,6 +108,23 @@ public class StructuredLogFormatterFactory<E> {
 
 	private @Nullable StackTracePrinter getStackTracePrinter(@Nullable StructuredLoggingJsonProperties properties) {
 		return (properties != null && properties.stackTrace() != null) ? properties.stackTrace().createPrinter() : null;
+	}
+
+	private @Nullable StackTraceHashFieldConfiguration getStackTraceHashFieldConfiguration(
+			@Nullable StructuredLoggingJsonProperties properties) {
+		if (properties == null || properties.stackTrace() == null) {
+			return null;
+		}
+		StackTrace stackTrace = properties.stackTrace();
+		StackTraceHashGenerate generate = stackTrace.effectiveHashGenerate();
+		if (generate != StackTraceHashGenerate.AS_FIELD) {
+			return null;
+		}
+		String fieldName = stackTrace.effectiveHashFieldName();
+		if (fieldName == null) {
+			fieldName = "stack_trace_hash";
+		}
+		return new StackTraceHashFieldConfiguration(fieldName);
 	}
 
 	private ContextPairs getContextPairs(@Nullable StructuredLoggingJsonProperties properties) {

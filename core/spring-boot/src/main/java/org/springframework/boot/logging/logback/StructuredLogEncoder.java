@@ -28,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
@@ -92,6 +93,8 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 	private StructuredLogFormatter<ILoggingEvent> createEcsFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+		StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+			.getArg(StackTraceHashFieldConfiguration.class);
 		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer.Builder<?> jsonMembersCustomizerBuilder = instantiator
@@ -100,13 +103,15 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		Assert.state(contextPairs != null, "'contextPairs' must not be null");
 		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
 		Assert.state(jsonMembersCustomizerBuilder != null, "'jsonMembersCustomizerBuilder' must not be null");
-		return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
-				throwableProxyConverter, jsonMembersCustomizerBuilder);
+		return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, hashFieldConfiguration,
+				contextPairs, throwableProxyConverter, jsonMembersCustomizerBuilder);
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createGraylogFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+		StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+			.getArg(StackTraceHashFieldConfiguration.class);
 		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
@@ -114,20 +119,22 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		Assert.state(environment != null, "'environment' must not be null");
 		Assert.state(contextPairs != null, "'contextPairs' must not be null");
 		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
-		return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
-				throwableProxyConverter, jsonMembersCustomizer);
+		return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter,
+				hashFieldConfiguration, contextPairs, throwableProxyConverter, jsonMembersCustomizer);
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createLogstashFormatter(Instantiator<?> instantiator) {
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+		StackTraceHashFieldConfiguration hashFieldConfiguration = instantiator
+			.getArg(StackTraceHashFieldConfiguration.class);
 		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 			.getArg(StructuredLoggingJsonMembersCustomizer.class);
 		Assert.state(contextPairs != null, "'contextPairs' must not be null");
 		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
-		return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, throwableProxyConverter,
-				jsonMembersCustomizer);
+		return new LogstashStructuredLogFormatter(stackTracePrinter, hashFieldConfiguration, contextPairs,
+				throwableProxyConverter, jsonMembersCustomizer);
 	}
 
 	@Override

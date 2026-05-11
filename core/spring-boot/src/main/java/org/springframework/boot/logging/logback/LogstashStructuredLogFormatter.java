@@ -39,6 +39,7 @@ import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
@@ -53,13 +54,16 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	LogstashStructuredLogFormatter(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+	LogstashStructuredLogFormatter(@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			ThrowableProxyConverter throwableProxyConverter,
 			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(stackTracePrinter, contextPairs, throwableProxyConverter, members), customizer);
+		super((members) -> jsonMembers(stackTracePrinter, hashFieldConfiguration, contextPairs, throwableProxyConverter,
+				members), customizer);
 	}
 
-	private static void jsonMembers(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+	private static void jsonMembers(@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
@@ -80,6 +84,18 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 		Function<@Nullable ILoggingEvent, @Nullable Object> getThrowableProxy = (event) -> (event != null)
 				? event.getThrowableProxy() : null;
 		members.add("stack_trace", (event) -> event).whenNotNull(getThrowableProxy).as(extractor::stackTrace);
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), (event) -> event)
+				.whenNotNull(getThrowableProxy)
+				.as((event) -> hashFieldConfiguration.computeHash(extractThrowable(event)));
+		}
+	}
+
+	private static @Nullable Throwable extractThrowable(ILoggingEvent event) {
+		if (event.getThrowableProxy() instanceof ch.qos.logback.classic.spi.ThrowableProxy throwableProxy) {
+			return throwableProxy.getThrowable();
+		}
+		return null;
 	}
 
 	private static String asTimestamp(Instant instant) {

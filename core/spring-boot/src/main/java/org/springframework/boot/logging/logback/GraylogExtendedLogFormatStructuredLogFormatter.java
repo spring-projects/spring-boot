@@ -40,6 +40,7 @@ import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.ContextPairs.Joiner;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StackTraceHashFieldConfiguration;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
@@ -75,16 +76,17 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
 	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment,
-			@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			@Nullable StackTracePrinter stackTracePrinter,
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
 			ThrowableProxyConverter throwableProxyConverter,
 			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
-				customizer);
+		super((members) -> jsonMembers(environment, stackTracePrinter, hashFieldConfiguration, contextPairs,
+				throwableProxyConverter, members), customizer);
 	}
 
 	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+			@Nullable StackTraceHashFieldConfiguration hashFieldConfiguration, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("version", "1.1");
 		members.add("short_message", ILoggingEvent::getFormattedMessage)
@@ -106,6 +108,18 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add()
 			.whenNotNull(getThrowableProxy)
 			.usingMembers((throwableMembers) -> throwableMembers(throwableMembers, extractor));
+		if (hashFieldConfiguration != null) {
+			members.add(hashFieldConfiguration.getFieldName(), (event) -> event)
+				.whenNotNull(getThrowableProxy)
+				.as((event) -> hashFieldConfiguration.computeHash(extractThrowable(event)));
+		}
+	}
+
+	private static @Nullable Throwable extractThrowable(ILoggingEvent event) {
+		if (event.getThrowableProxy() instanceof ch.qos.logback.classic.spi.ThrowableProxy throwableProxy) {
+			return throwableProxy.getThrowable();
+		}
+		return null;
 	}
 
 	private static String getMessageText(String formattedMessage) {

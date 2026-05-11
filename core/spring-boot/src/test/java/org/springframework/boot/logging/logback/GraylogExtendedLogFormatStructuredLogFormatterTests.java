@@ -56,7 +56,7 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		this.environment.setProperty("logging.structured.gelf.host", "name");
 		this.environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
 		this.environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null,
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null, null,
 				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
 	}
 
@@ -159,7 +159,7 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@Test
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment,
-				new SimpleStackTracePrinter(), TestContextPairs.include(), getThrowableProxyConverter(),
+				new SimpleStackTracePrinter(), null, TestContextPairs.include(), getThrowableProxyConverter(),
 				this.customizer);
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Collections.emptyMap());
