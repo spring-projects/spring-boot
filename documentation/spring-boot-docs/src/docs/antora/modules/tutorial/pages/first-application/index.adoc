@@ -156,13 +156,13 @@ Open your favorite text editor and add the following:
 [source,gradle,subs="verbatim,attributes"]
 ----
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '{version-spring-boot}'
-    id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
+	java
+	id("org.springframework.boot") version '{version-spring-boot}'
+    id("io.spring.dependency-management") version '{version-dependency-management-plugin}'
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+group = "com.example"
+version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
@@ -261,7 +261,7 @@ To add the necessary dependencies, edit your `build.gradle` and add the `spring-
 [source,gradle]
 ----
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 }
 ----
 
@@ -277,6 +277,13 @@ By default, Maven and Gradle compile sources from `src/main/java`, so you need t
 
 [chomp_package_replacement=com.example]
 include-code::MyApplication[]
+
+***Important*** do not forget to import dependencies
+```
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
+```
 
 Although there is not much code here, quite a lot is going on.
 We step through the important parts in the next few sections.
