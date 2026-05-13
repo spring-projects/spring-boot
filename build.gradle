@@ -25,7 +25,6 @@ defaultTasks 'build'
 allprojects {
 	group = "org.springframework.boot"
 }
-
 subprojects {
 	apply plugin: "org.springframework.boot.conventions"
 
