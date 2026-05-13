@@ -159,6 +159,16 @@ class CodecsAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void userProvidedCustomizerCanOverrideKotlinxJsonCodecCustomizer() {
+		this.contextRunner.withUserConfiguration(KotlinxJsonConfiguration.class, CodecCustomizerConfiguration.class)
+			.run((context) -> {
+				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
+				assertThat(codecCustomizers).hasSize(3);
+				assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
+			});
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T> T findEncoder(AssertableApplicationContext context, Class<T> encoderClass) {
 		ServerCodecConfigurer configurer = ServerCodecConfigurer.create();
