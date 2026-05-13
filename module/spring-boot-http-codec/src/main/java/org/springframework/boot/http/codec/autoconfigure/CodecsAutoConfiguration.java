@@ -103,6 +103,7 @@ public final class CodecsAutoConfiguration {
 	static class KotlinxSerializationJsonCodecConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnBean(Json.class)
 		CodecCustomizer kotlinxJsonCodecCustomizer(Json json, ResourceLoader resourceLoader) {
 			ClassLoader classLoader = resourceLoader.getClassLoader();
