@@ -101,6 +101,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
 			CleanupConfig cleanupConfig = new CleanupConfig(cleanup.isOnStartup(), cleanup.isOnShutdown());
 			factoryBean.setCleanupConfig(cleanupConfig);
+			factoryBean.setLeaveGroupOnClose(this.properties.getStreams().isLeaveGroupOnClose());
 		}
 
 		@Override

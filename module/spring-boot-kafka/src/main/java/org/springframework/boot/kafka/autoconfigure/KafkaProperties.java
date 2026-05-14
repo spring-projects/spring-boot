@@ -813,6 +813,11 @@ public class KafkaProperties {
 		private @Nullable String stateDir;
 
 		/**
+		 * Whether the consumer should leave the group when stopping Kafka Streams.
+		 */
+		private boolean leaveGroupOnClose;
+
+		/**
 		 * Additional Kafka properties used to configure the streams.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -883,6 +888,14 @@ public class KafkaProperties {
 
 		public void setStateDir(@Nullable String stateDir) {
 			this.stateDir = stateDir;
+		}
+
+		public boolean isLeaveGroupOnClose() {
+			return this.leaveGroupOnClose;
+		}
+
+		public void setLeaveGroupOnClose(boolean leaveGroupOnClose) {
+			this.leaveGroupOnClose = leaveGroupOnClose;
 		}
 
 		public Map<String, String> getProperties() {
