@@ -25,6 +25,8 @@ import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoDriverInformation;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.SpringBootVersion;
+
 /**
  * Base class for setup that is common to MongoDB client factories.
  *
@@ -60,6 +62,7 @@ public abstract class MongoClientFactorySupport<T> {
 	private MongoDriverInformation driverInformation() {
 		return MongoDriverInformation.builder(MongoDriverInformation.builder().build())
 			.driverName("spring-boot")
+			.driverVersion(SpringBootVersion.getVersion())
 			.build();
 	}
 
