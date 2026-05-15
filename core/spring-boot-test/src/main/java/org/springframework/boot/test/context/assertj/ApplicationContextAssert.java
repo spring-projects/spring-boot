@@ -20,7 +20,10 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractObjectArrayAssert;
@@ -474,6 +477,73 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> hasNotFailed() {
 		if (this.startupFailure != null) {
 			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure, "to have not failed"));
+		}
+		return this;
+	}
+
+	/**
+	 * Verifies that the application context satisfies all of the given assertion
+	 * consumers, where each consumer is invoked with this
+	 * {@code ApplicationContextAssert} instance (rather than the underlying
+	 * {@link ApplicationContext}). This enables the fluent context assertions to be
+	 * invoked from each consumer, including from within an
+	 * {@link org.assertj.core.api.SoftAssertions} block where
+	 * {@link org.assertj.core.api.SoftAssertions#assertThat(Object)
+	 * softly.assertThat(context)} would otherwise resolve to a plain
+	 * {@link AbstractObjectAssert}.
+	 * <p>
+	 * Example: <pre class="code">
+	 * assertThat(context).assertWith(
+	 *     (ctx) -&gt; ctx.hasBean("foo"),
+	 *     (ctx) -&gt; ctx.doesNotHaveBean(MyBean.class));
+	 * </pre>
+	 * <p>
+	 * All consumers are invoked even if one of them fails. A single failure is re-thrown
+	 * as-is; multiple failures are aggregated into a single {@code AssertionError} whose
+	 * suppressed exceptions carry the individual failures.
+	 * @param requirements the assertion consumers to run against this assertion
+	 * @return {@code this} assertion object.
+	 * @throws AssertionError if any of the consumers throw an assertion error
+	 * @since 4.0.0
+	 */
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	public final ApplicationContextAssert<C> assertWith(Consumer<? super ApplicationContextAssert<C>>... requirements) {
+		return assertWithForProxy(requirements);
+	}
+
+	/**
+	 * Variant of {@link #assertWith(Consumer[])} that is {@code protected} so that it can
+	 * be proxied for {@code SoftAssertions} and {@code Assumptions}. The public method is
+	 * marked {@code final} and annotated with {@link SafeVarargs} in order to avoid
+	 * unchecked warnings in user code.
+	 * @param requirements the assertion consumers
+	 * @return {@code this} assertion object.
+	 */
+	protected ApplicationContextAssert<C> assertWithForProxy(
+			Consumer<? super ApplicationContextAssert<C>>[] requirements) {
+		Assert.notNull(requirements, "'requirements' must not be null");
+		for (Consumer<? super ApplicationContextAssert<C>> requirement : requirements) {
+			Assert.notNull(requirement, "No assertion consumer should be null");
+		}
+		List<AssertionError> errors = new ArrayList<>();
+		for (Consumer<? super ApplicationContextAssert<C>> requirement : requirements) {
+			try {
+				requirement.accept(this);
+			}
+			catch (AssertionError ex) {
+				errors.add(ex);
+			}
+		}
+		if (errors.size() == 1) {
+			throw errors.get(0);
+		}
+		if (!errors.isEmpty()) {
+			AssertionError aggregated = new AssertionError("Multiple Failures (" + errors.size() + " failures)");
+			for (AssertionError error : errors) {
+				aggregated.addSuppressed(error);
+			}
+			throw aggregated;
 		}
 		return this;
 	}

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.test.context.assertj;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -396,6 +399,47 @@ class ApplicationContextAssertTests {
 	@Test
 	void hasNotFailedWhenNotFailedShouldPass() {
 		assertThat(getAssert(this.context)).hasNotFailed();
+	}
+
+	@Test
+	void assertWithAllPassingConsumersShouldPass() {
+		this.context.registerSingleton("foo", Foo.class);
+		assertThat(getAssert(this.context)).assertWith((ctx) -> ctx.hasBean("foo"),
+				(ctx) -> ctx.hasSingleBean(Foo.class), (ctx) -> ctx.doesNotHaveBean(Bar.class));
+	}
+
+	@Test
+	void assertWithSingleFailingConsumerShouldRethrowOriginalError() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(getAssert(this.context)).assertWith((ctx) -> ctx.hasBean("foo")))
+			.withMessageContaining("no such bean");
+	}
+
+	@Test
+	void assertWithMultipleFailingConsumersShouldAggregateErrors() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(getAssert(this.context)).assertWith((ctx) -> ctx.hasBean("foo"),
+					(ctx) -> ctx.hasSingleBean(Foo.class)))
+			.withMessageContaining("Multiple Failures")
+			.satisfies((ex) -> assertThat(ex.getSuppressed()).hasSize(2));
+	}
+
+	@Test
+	@SuppressWarnings("NullAway") // Test null check
+	void assertWithNullRequirementShouldThrowException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> assertThat(getAssert(this.context))
+				.assertWith((Consumer<? super ApplicationContextAssert<ConfigurableApplicationContext>>) null))
+			.withMessageContaining("No assertion consumer should be null");
+	}
+
+	@Test
+	void assertWithPassesThisAssertionRatherThanActualToConsumer() {
+		this.context.registerSingleton("foo", Foo.class);
+		AtomicReference<ApplicationContextAssert<?>> received = new AtomicReference<>();
+		ApplicationContextAssert<?> assertion = assertThat(getAssert(this.context));
+		assertion.assertWith(received::set);
+		assertThat(received.get()).isSameAs(assertion);
 	}
 
 	private AssertableApplicationContext getAssert(ConfigurableApplicationContext applicationContext) {
