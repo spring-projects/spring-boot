@@ -16,8 +16,12 @@
 
 package org.springframework.boot.data.mongodb.autoconfigure;
 
+import java.lang.reflect.Method;
+
+import com.mongodb.MongoDriverInformation;
 import com.mongodb.client.MongoClient;
 
+import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
@@ -43,15 +47,31 @@ import org.springframework.util.Assert;
 @ConditionalOnSingleCandidate(MongoClient.class)
 class MongoDatabaseFactoryConfiguration {
 
+	private static final MongoDriverInformation DRIVER_INFO = MongoDriverInformation.builder()
+		.driverName("spring-boot")
+		.driverVersion(SpringBootVersion.getVersion())
+		.build();
+
 	@Bean
 	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties,
 			MongoConnectionDetails connectionDetails) {
+		appendMetadata(mongoClient);
 		String database = properties.getDatabase();
 		if (database == null) {
 			database = connectionDetails.getConnectionString().getDatabase();
 		}
 		Assert.hasText(database, "Database name must not be empty");
 		return new SimpleMongoClientDatabaseFactory(mongoClient, database);
+	}
+
+	private static void appendMetadata(MongoClient mongoClient) {
+		try {
+			Method method = mongoClient.getClass().getMethod("appendMetadata", MongoDriverInformation.class);
+			method.invoke(mongoClient, DRIVER_INFO);
+		}
+		catch (Exception ex) {
+			// appendMetadata not available in this driver version — skip silently
+		}
 	}
 
 }

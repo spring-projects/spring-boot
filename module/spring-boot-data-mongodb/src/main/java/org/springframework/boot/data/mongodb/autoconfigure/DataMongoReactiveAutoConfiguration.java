@@ -16,9 +16,11 @@
 
 package org.springframework.boot.data.mongodb.autoconfigure;
 
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 import com.mongodb.ClientSessionOptions;
+import com.mongodb.MongoDriverInformation;
 import com.mongodb.reactivestreams.client.ClientSession;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoDatabase;
@@ -27,6 +29,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -76,16 +79,32 @@ import org.springframework.util.StringUtils;
 @Import(DataMongoConfiguration.class)
 public final class DataMongoReactiveAutoConfiguration {
 
+	private static final MongoDriverInformation DRIVER_INFO = MongoDriverInformation.builder()
+		.driverName("spring-boot")
+		.driverVersion(SpringBootVersion.getVersion())
+		.build();
+
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
 	SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoProperties properties, MongoClient mongo,
 			MongoConnectionDetails connectionDetails) {
+		appendMetadata(mongo);
 		String database = properties.getDatabase();
 		if (database == null) {
 			database = connectionDetails.getConnectionString().getDatabase();
 		}
 		Assert.hasText(database, "Database name must not be empty");
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
+	}
+
+	private static void appendMetadata(MongoClient mongoClient) {
+		try {
+			Method method = mongoClient.getClass().getMethod("appendMetadata", MongoDriverInformation.class);
+			method.invoke(mongoClient, DRIVER_INFO);
+		}
+		catch (Exception ex) {
+			// appendMetadata not available in this driver version — skip silently
+		}
 	}
 
 	@Bean
