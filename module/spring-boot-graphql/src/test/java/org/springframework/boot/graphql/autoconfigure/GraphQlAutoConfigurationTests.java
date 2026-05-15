@@ -35,6 +35,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.graphql.ExecutionGraphQlService;
+import org.springframework.graphql.data.GraphQlArgumentBinder;
 import org.springframework.graphql.data.method.HandlerMethodArgumentResolver;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.data.pagination.EncodingCursorStrategy;
@@ -280,6 +282,18 @@ class GraphQlAutoConfigurationTests {
 			AnnotatedControllerConfigurer annotatedControllerConfigurer = context
 				.getBean(AnnotatedControllerConfigurer.class);
 			assertThat(annotatedControllerConfigurer).extracting("executor").isNull();
+		});
+	}
+
+	@Test
+	void annotatedControllerConfigurerShouldUseApplicationConversionService() {
+		this.contextRunner.run((context) -> {
+			AnnotatedControllerConfigurer annotatedControllerConfigurer = context
+				.getBean(AnnotatedControllerConfigurer.class);
+			assertThat(annotatedControllerConfigurer).extracting("binderOptions")
+				.isInstanceOfSatisfying(GraphQlArgumentBinder.Options.class,
+						(options) -> assertThat(options.conversionService())
+							.isSameAs(ApplicationConversionService.getSharedInstance()));
 		});
 	}
 

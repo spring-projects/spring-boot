@@ -49,6 +49,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.log.LogMessage;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.graphql.ExecutionGraphQlService;
+import org.springframework.graphql.data.GraphQlArgumentBinder;
 import org.springframework.graphql.data.method.HandlerMethodArgumentResolver;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.data.pagination.ConnectionFieldTypeVisitor;
@@ -156,8 +157,8 @@ public final class GraphQlAutoConfiguration {
 			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider,
 			ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
-		controllerConfigurer
-			.configureBinder((options) -> options.conversionService(ApplicationConversionService.getSharedInstance()));
+		controllerConfigurer.setBinderOptions(GraphQlArgumentBinder.Options.create()
+			.conversionService(ApplicationConversionService.getSharedInstance()));
 		executorProvider.ifAvailable(controllerConfigurer::setExecutor);
 		argumentResolvers.orderedStream().forEach(controllerConfigurer::addCustomArgumentResolver);
 		return controllerConfigurer;
