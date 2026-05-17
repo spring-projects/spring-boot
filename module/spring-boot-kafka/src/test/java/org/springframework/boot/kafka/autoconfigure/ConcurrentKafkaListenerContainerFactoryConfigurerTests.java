@@ -17,6 +17,7 @@
 package org.springframework.boot.kafka.autoconfigure;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.support.micrometer.KafkaListenerObservation.DefaultKafkaListenerObservationConvention;
 
@@ -96,6 +100,29 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.configurer.setObservationConvention(convention);
 		this.configurer.configure(this.factory, this.consumerFactory);
 		assertThat(this.factory.getContainerProperties().getObservationConvention()).isSameAs(convention);
+	}
+
+	@Test
+	void shouldApplyKafkaAdmin() {
+		KafkaAdmin kafkaAdmin = new KafkaAdmin(Collections.emptyMap());
+		this.configurer.setKafkaAdmin(kafkaAdmin);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		ConcurrentMessageListenerContainer<Object, Object> container = this.factory.createContainer("test");
+		assertThat(container.getKafkaAdmin()).isSameAs(kafkaAdmin);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void shouldApplyKafkaAdminAndContainerCustomizer() {
+		KafkaAdmin kafkaAdmin = new KafkaAdmin(Collections.emptyMap());
+		ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> customizer = mock(
+				ContainerCustomizer.class);
+		this.configurer.setKafkaAdmin(kafkaAdmin);
+		this.configurer.setContainerCustomizer(customizer);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		ConcurrentMessageListenerContainer<Object, Object> container = this.factory.createContainer("test");
+		assertThat(container.getKafkaAdmin()).isSameAs(kafkaAdmin);
+		then(customizer).should().configure(container);
 	}
 
 }

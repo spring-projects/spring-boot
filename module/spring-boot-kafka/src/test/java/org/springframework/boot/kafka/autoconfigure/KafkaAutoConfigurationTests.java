@@ -773,6 +773,23 @@ class KafkaAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void templateAdminProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.template.admin.client-id=templateAdmin",
+					"spring.kafka.template.admin.operation-timeout=60s",
+					"spring.kafka.template.admin.properties.fiz.buz=fix.fox")
+			.run((context) -> {
+				KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
+				KafkaAdmin admin = kafkaTemplate.getKafkaAdmin();
+				assertThat(admin).isNotNull();
+				assertThat(admin.getConfigurationProperties())
+					.containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "templateAdmin")
+					.containsEntry("fiz.buz", "fix.fox");
+				assertThat(admin).hasFieldOrPropertyWithValue("operationTimeout", 60);
+			});
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	void listenerProperties() {
@@ -825,6 +842,25 @@ class KafkaAutoConfigurationTests {
 				assertThat(context.getBeansOfType(KafkaTransactionManager.class)).hasSize(1);
 				assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas, "options")))
 					.containsExactly(entry("useKeyTab", "true"));
+			});
+	}
+
+	@Test
+	void listenerAdminProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.listener.admin.client-id=listenerAdmin",
+					"spring.kafka.listener.admin.operation-timeout=60s",
+					"spring.kafka.listener.admin.properties.fiz.buz=fix.fox")
+			.run((context) -> {
+				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+				ConcurrentMessageListenerContainer<?, ?> container = factory.createContainer("someTopic");
+				KafkaAdmin admin = container.getKafkaAdmin();
+				assertThat(admin).isNotNull();
+				assertThat(admin.getConfigurationProperties())
+					.containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "listenerAdmin")
+					.containsEntry("fiz.buz", "fix.fox");
+				assertThat(admin).hasFieldOrPropertyWithValue("operationTimeout", 60);
 			});
 	}
 
@@ -1019,6 +1055,19 @@ class KafkaAutoConfigurationTests {
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
 				ConcurrentMessageListenerContainer<?, ?> container = factory.createContainer("someTopic");
 				assertThat(container.getContainerProperties().isObservationEnabled()).isEqualTo(true);
+			});
+	}
+
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomContainerCustomizerAndListenerAdminProperties() {
+		this.contextRunner.withUserConfiguration(ObservationEnabledContainerCustomizerConfiguration.class)
+			.withPropertyValues("spring.kafka.listener.admin.client-id=listenerAdmin")
+			.run((context) -> {
+				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+				ConcurrentMessageListenerContainer<?, ?> container = factory.createContainer("someTopic");
+				assertThat(container.getContainerProperties().isObservationEnabled()).isEqualTo(true);
+				assertThat(container.getKafkaAdmin()).isNotNull();
 			});
 	}
 

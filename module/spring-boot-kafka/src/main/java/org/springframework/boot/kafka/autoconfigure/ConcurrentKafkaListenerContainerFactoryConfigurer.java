@@ -25,11 +25,14 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Listener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.MessageListenerContainer;
@@ -84,6 +87,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private @Nullable SimpleAsyncTaskExecutor listenerTaskExecutor;
 
 	private @Nullable KafkaListenerObservationConvention observationConvention;
+
+	private @Nullable KafkaAdmin kafkaAdmin;
+
+	private @Nullable ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> containerCustomizer;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -197,6 +204,15 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		this.observationConvention = observationConvention;
 	}
 
+	void setKafkaAdmin(@Nullable KafkaAdmin kafkaAdmin) {
+		this.kafkaAdmin = kafkaAdmin;
+	}
+
+	void setContainerCustomizer(
+			@Nullable ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> containerCustomizer) {
+		this.containerCustomizer = containerCustomizer;
+	}
+
 	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
@@ -230,6 +246,20 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.batchInterceptor).to(factory::setBatchInterceptor);
 		map.from(this.threadNameSupplier).to(factory::setThreadNameSupplier);
 		map.from(properties::getChangeConsumerThreadName).to(factory::setChangeConsumerThreadName);
+		map.from(getContainerCustomizer()).to(factory::setContainerCustomizer);
+	}
+
+	private @Nullable ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> getContainerCustomizer() {
+		KafkaAdmin kafkaAdmin = this.kafkaAdmin;
+		if (kafkaAdmin == null) {
+			return this.containerCustomizer;
+		}
+		return (container) -> {
+			container.setKafkaAdmin(kafkaAdmin);
+			if (this.containerCustomizer != null) {
+				this.containerCustomizer.configure(container);
+			}
+		};
 	}
 
 	private void configureContainer(ContainerProperties container) {

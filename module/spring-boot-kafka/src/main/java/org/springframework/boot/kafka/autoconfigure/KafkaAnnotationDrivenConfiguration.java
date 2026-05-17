@@ -34,6 +34,7 @@ import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchInterceptor;
@@ -89,11 +90,14 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final @Nullable KafkaListenerObservationConvention observationConvention;
 
+	private final KafkaConnectionDetails connectionDetails;
+
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
+			ObjectProvider<KafkaConnectionDetails> connectionDetails,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
 			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener,
 			ObjectProvider<CommonErrorHandler> commonErrorHandler,
@@ -108,6 +112,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.batchMessageConverter = batchMessageConverter
 			.getIfUnique(() -> new BatchMessagingMessageConverter(this.recordMessageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
+		this.connectionDetails = connectionDetails.getObject();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
 		this.commonErrorHandler = commonErrorHandler.getIfUnique();
@@ -151,6 +156,12 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setBatchInterceptor(this.batchInterceptor);
 		configurer.setThreadNameSupplier(this.threadNameSupplier);
 		configurer.setObservationConvention(this.observationConvention);
+		KafkaProperties.Admin admin = this.properties.getListener().getAdmin();
+		if (admin != null) {
+			KafkaAdmin kafkaAdmin = KafkaAutoConfiguration.createKafkaAdmin(this.properties.buildAdminProperties(admin),
+					admin, this.connectionDetails);
+			configurer.setKafkaAdmin(kafkaAdmin);
+		}
 		return configurer;
 	}
 
@@ -161,9 +172,9 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
 			ObjectProvider<ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>>> kafkaContainerCustomizer) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		kafkaContainerCustomizer.ifAvailable(configurer::setContainerCustomizer);
 		configurer.configure(factory, kafkaConsumerFactory
 			.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
-		kafkaContainerCustomizer.ifAvailable(factory::setContainerCustomizer);
 		return factory;
 	}
 
