@@ -348,7 +348,7 @@ class GrpcServerHealthAutoConfigurationTests {
 		assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class);
 	}
 
-	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> R serviceBean(
+	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> R serviceBean(
 			R contextRunner) {
 		return contextRunner.withBean(BindableService.class, () -> this.service);
 	}

@@ -86,7 +86,7 @@ class GrpcServerAutoConfigurationTests {
 
 	private final ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations)
 		.with(this::noOpLifecycleBeans)
 		.with(this::serviceBean);
@@ -350,7 +350,7 @@ class GrpcServerAutoConfigurationTests {
 					"nettyGrpcServerLifecycle"));
 	}
 
-	private ContextConsumer<? super ApplicationContextAssertProvider<?>> assertThatServerIsConfigured(
+	private ContextConsumer<? super ApplicationContextAssertProvider<?, ?>> assertThatServerIsConfigured(
 			Class<?> expectedServerFactoryType, String expectedAddress, String expectedLifecycleBeanName) {
 		return (context) -> {
 			assertThat(context).getBean(GrpcServerFactory.class)
@@ -365,12 +365,12 @@ class GrpcServerAutoConfigurationTests {
 		};
 	}
 
-	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> R serviceBean(
+	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> R serviceBean(
 			R contextRunner) {
 		return contextRunner.withBean(BindableService.class, () -> this.service);
 	}
 
-	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> R noOpLifecycleBeans(
+	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> R noOpLifecycleBeans(
 			R contextRunner) {
 		return contextRunner.withBean("shadedNettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("nettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)

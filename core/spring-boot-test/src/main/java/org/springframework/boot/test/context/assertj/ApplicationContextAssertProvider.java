@@ -44,16 +44,18 @@ import org.springframework.util.ObjectUtils;
  * Any {@link ApplicationContext} method called on a context that has failed to start will
  * throw an {@link IllegalStateException}.
  *
- * @param <C> the application context type
+ * @param <SELF> the self class reference
+ * @param <C> the source application context type
  * @author Phillip Webb
+ * @author Stefano Cordio
  * @since 2.0.0
  * @see AssertableApplicationContext
  * @see AssertableWebApplicationContext
  * @see AssertableReactiveWebApplicationContext
  * @see ApplicationContextAssert
  */
-public interface ApplicationContextAssertProvider<C extends ApplicationContext>
-		extends ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
+public interface ApplicationContextAssertProvider<SELF extends ApplicationContextAssertProvider<SELF, C>, C extends ApplicationContext>
+		extends ApplicationContext, AssertProvider<ApplicationContextAssert<SELF>>, Closeable {
 
 	/**
 	 * Return an assert for AssertJ.
@@ -63,7 +65,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 */
 	@Deprecated(since = "2.0.0", forRemoval = false)
 	@Override
-	ApplicationContextAssert<C> assertThat();
+	ApplicationContextAssert<SELF> assertThat();
 
 	/**
 	 * Return the original source {@link ApplicationContext}.
@@ -104,7 +106,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 * {@link ApplicationContext} or throw an exception if the context fails to start.
 	 * @return a {@link ApplicationContextAssertProvider} instance
 	 */
-	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
+	static <T extends ApplicationContextAssertProvider<? super T, C>, C extends ApplicationContext> T get(Class<T> type,
 			Class<? extends C> contextType, Supplier<? extends C> contextSupplier) {
 		return get(type, contextType, contextSupplier, new Class<?>[0]);
 	}
@@ -125,7 +127,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 * @since 3.4.0
 	 */
 	@SuppressWarnings("unchecked")
-	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
+	static <T extends ApplicationContextAssertProvider<? super T, C>, C extends ApplicationContext> T get(Class<T> type,
 			Class<? extends C> contextType, Supplier<? extends C> contextSupplier,
 			Class<?>... additionalContextInterfaces) {
 		Assert.notNull(type, "'type' must not be null");

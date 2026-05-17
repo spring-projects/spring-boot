@@ -33,8 +33,8 @@ import org.springframework.boot.web.context.reactive.ReactiveWebApplicationConte
  * @see ReactiveWebApplicationContext
  * @see ReactiveWebApplicationContext
  */
-public interface AssertableReactiveWebApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableReactiveWebApplicationContext>,
+public interface AssertableReactiveWebApplicationContext extends
+		ApplicationContextAssertProvider<AssertableReactiveWebApplicationContext, ConfigurableReactiveWebApplicationContext>,
 		ConfigurableReactiveWebApplicationContext {
 
 	/**

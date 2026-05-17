@@ -62,7 +62,7 @@ class GrpcServerOAuth2ResourceServerAutoConfigurationTests {
 	private static final AutoConfigurations autoConfigurations = AutoConfigurations
 		.of(OAuth2ResourceServerAutoConfiguration.class, GrpcServerOAuth2ResourceServerAutoConfiguration.class);
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations)
 		.withUserConfiguration(GrpcSecurityConfiguration.class)
 		.with(this::serviceBean)
@@ -115,7 +115,7 @@ class GrpcServerOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(AuthenticationProcessInterceptor.class));
 	}
 
-	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> R serviceBean(
+	private <R extends AbstractApplicationContextRunner<R, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> R serviceBean(
 			R contextRunner) {
 		BindableService service = mock();
 		ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
