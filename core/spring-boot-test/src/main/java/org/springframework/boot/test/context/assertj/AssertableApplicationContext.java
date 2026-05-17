@@ -35,7 +35,8 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @see ApplicationContext
  */
 public interface AssertableApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableApplicationContext>, ConfigurableApplicationContext {
+		extends ApplicationContextAssertProvider<AssertableApplicationContext, ConfigurableApplicationContext>,
+		ConfigurableApplicationContext {
 
 	/**
 	 * Factory method to create a new {@link AssertableApplicationContext} instance.
