@@ -16,6 +16,9 @@
 
 package org.springframework.boot.web.server.context;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.context.event.PortBound;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationEvent;
 
@@ -28,10 +31,28 @@ import org.springframework.context.ApplicationEvent;
  * @since 4.0.0
  */
 @SuppressWarnings("serial")
-public abstract class WebServerInitializedEvent extends ApplicationEvent {
+public abstract class WebServerInitializedEvent extends ApplicationEvent implements PortBound {
 
 	protected WebServerInitializedEvent(WebServer webServer) {
 		super(webServer);
+	}
+
+	/**
+	 * Return the port that the {@link WebServer} bound to.
+	 * @return the bound port
+	 */
+	@Override
+	public int getPort() {
+		return getWebServer().getPort();
+	}
+
+	/**
+	 * Return the namespace of the underlying web server, if available.
+	 * @return the server namespace or {@code null}
+	 */
+	@Override
+	public @Nullable String getNamespace() {
+		return getApplicationContext().getServerNamespace();
 	}
 
 	/**
