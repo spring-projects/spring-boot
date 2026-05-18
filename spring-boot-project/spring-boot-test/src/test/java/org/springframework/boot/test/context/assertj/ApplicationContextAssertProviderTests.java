@@ -20,9 +20,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ApplicationContextAssertProvider} and
@@ -39,11 +37,9 @@ import static org.mockito.BDDMockito.then;
  *
  * @author Phillip Webb
  */
-@ExtendWith(MockitoExtension.class)
 class ApplicationContextAssertProviderTests {
 
-	@Mock
-	private ConfigurableApplicationContext mockContext;
+	private final ConfigurableApplicationContext mockContext = mock();
 
 	private RuntimeException startupFailure;
 
@@ -69,13 +65,6 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getWhenTypeIsClassShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
-			.withMessageContaining("'type' must not be null");
-	}
-
-	@Test
-	void getWhenContextTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContextClass.class,
 					ApplicationContext.class, this.mockContextSupplier))
@@ -83,7 +72,7 @@ class ApplicationContextAssertProviderTests {
 	}
 
 	@Test
-	void getWhenContextTypeIsClassShouldThrowException() {
+	void getWhenContextTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class, null,
 					this.mockContextSupplier))
@@ -91,11 +80,19 @@ class ApplicationContextAssertProviderTests {
 	}
 
 	@Test
-	void getWhenSupplierIsNullShouldThrowException() {
+	void getWhenContextTypeIsClassShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 					StaticApplicationContext.class, this.mockContextSupplier))
 			.withMessageContaining("'contextType' must be an interface");
+	}
+
+	@Test
+	void getWhenSupplierIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
+					ApplicationContext.class, null))
+			.withMessageContaining("'contextSupplier' must not be null");
 	}
 
 	@Test

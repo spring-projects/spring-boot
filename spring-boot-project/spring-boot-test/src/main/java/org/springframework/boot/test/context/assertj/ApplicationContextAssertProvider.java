@@ -55,8 +55,8 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 		extends ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
 
 	/**
-	 * Return an assert for AspectJ.
-	 * @return an AspectJ assert
+	 * Return an assert for AssertJ.
+	 * @return an AssertJ assert
 	 * @deprecated to prevent accidental use. Prefer standard AssertJ
 	 * {@code assertThat(context)...} calls instead.
 	 */
@@ -131,6 +131,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 		Assert.isTrue(type.isInterface(), "'type' must be an interface");
 		Assert.notNull(contextType, "'contextType' must not be null");
 		Assert.isTrue(contextType.isInterface(), "'contextType' must be an interface");
+		Assert.notNull(contextSupplier, "'contextSupplier' must not be null");
 		Class<?>[] interfaces = merge(new Class<?>[] { type, contextType }, additionalContextInterfaces);
 		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
 				new AssertProviderApplicationContextInvocationHandler(contextType, contextSupplier));
