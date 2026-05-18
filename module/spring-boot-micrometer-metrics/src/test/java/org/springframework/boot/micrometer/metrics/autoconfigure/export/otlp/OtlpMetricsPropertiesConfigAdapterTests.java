@@ -16,6 +16,7 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +46,8 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 
 	private OtlpMetricsProperties properties;
 
+	private OtlpProperties otlpProperties;
+
 	private OpenTelemetryProperties openTelemetryProperties;
 
 	private MockEnvironment environment;
@@ -53,9 +57,10 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	@BeforeEach
 	void setUp() {
 		this.properties = new OtlpMetricsProperties();
+		this.otlpProperties = new OtlpProperties();
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
-		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties, null);
+		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties, this.otlpProperties, null);
 	}
 
 	@Test
@@ -238,8 +243,36 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	private OtlpMetricsPropertiesConfigAdapter createAdapter() {
-		return new OtlpMetricsPropertiesConfigAdapter(this.properties, this.openTelemetryProperties,
-				this.connectionDetails, this.environment);
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, this.otlpProperties,
+				this.openTelemetryProperties, this.connectionDetails, this.environment);
+	}
+
+	@Test
+	void whenPropertiesHeadersIsNotSetThenUseOtlpPropertiesHeadersAsFallback() {
+		this.otlpProperties.getHeaders().put("common-header", "common-value");
+		assertThat(createAdapter().headers()).containsEntry("common-header", "common-value");
+	}
+
+	@Test
+	void whenPropertiesHeadersIsSetThenMergeWithOtlpPropertiesHeaders() {
+		this.otlpProperties.getHeaders().put("common-header", "common-value");
+		this.properties.setHeaders(Map.of("signal-header", "signal-value"));
+		assertThat(createAdapter().headers()).containsEntry("common-header", "common-value")
+			.containsEntry("signal-header", "signal-value");
+	}
+
+	@Test
+	void whenPropertiesTimeoutIsSetItOverridesOtlpPropertiesTimeout() {
+		this.otlpProperties.setTimeout(Duration.ofSeconds(10));
+		this.properties.setReadTimeout(Duration.ofSeconds(3));
+		assertThat(createAdapter().readTimeout()).isEqualTo(Duration.ofSeconds(3));
+	}
+
+	@Test
+	void whenPropertiesConnectTimeoutIsSetItOverridesOtlpPropertiesConnectTimeout() {
+		this.otlpProperties.setConnectTimeout(Duration.ofSeconds(10));
+		this.properties.setConnectTimeout(Duration.ofSeconds(3));
+		assertThat(createAdapter().connectTimeout()).isEqualTo(Duration.ofSeconds(3));
 	}
 
 }

@@ -39,6 +39,7 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConf
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.thread.Threading;
@@ -61,7 +62,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass({ OtlpMeterRegistry.class, OpenTelemetryProperties.class })
 @ConditionalOnEnabledMetricsExport("otlp")
-@EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
+@EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class, OtlpProperties.class })
 public final class OtlpMetricsExportAutoConfiguration {
 
 	private final OtlpMetricsProperties properties;
@@ -72,23 +73,26 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
-		return new PropertiesOtlpMetricsConnectionDetails(this.properties, sslBundles.getIfAvailable());
+	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails(OtlpProperties otlpProperties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesOtlpMetricsConnectionDetails(this.properties, otlpProperties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
+	OtlpConfig otlpConfig(OtlpProperties otlpProperties, OpenTelemetryProperties openTelemetryProperties,
 			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
-		return new OtlpMetricsPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
-				environment);
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, otlpProperties, openTelemetryProperties,
+				connectionDetails, environment);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(OtlpMetricsSender.class)
-	OtlpHttpMetricsSender otlpMetricsSender(OtlpMetricsConnectionDetails connectionDetails) {
+	OtlpHttpMetricsSender otlpMetricsSender(OtlpMetricsConnectionDetails connectionDetails,
+			OtlpProperties otlpProperties) {
 		Duration connectTimeout = this.properties.getConnectTimeout();
-		Duration timeout = connectTimeout.plus(this.properties.getReadTimeout());
+		Duration readTimeout = this.properties.getReadTimeout();
+		Duration timeout = connectTimeout.plus(readTimeout);
 		JdkClientHttpSender httpSender = new JdkClientHttpSender(connectTimeout, timeout,
 				connectionDetails.getSslBundle());
 		return new OtlpHttpMetricsSender(httpSender);
@@ -129,16 +133,27 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 		private final OtlpMetricsProperties properties;
 
+		private final OtlpProperties otlpProperties;
+
 		private final @Nullable SslBundles sslBundles;
 
-		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties, @Nullable SslBundles sslBundles) {
+		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties, OtlpProperties otlpProperties,
+				@Nullable SslBundles sslBundles) {
 			this.properties = properties;
+			this.otlpProperties = otlpProperties;
 			this.sslBundles = sslBundles;
 		}
 
 		@Override
 		public @Nullable String getUrl() {
-			return this.properties.getUrl();
+			if (StringUtils.hasLength(this.properties.getUrl())) {
+				return this.properties.getUrl();
+			}
+			String endpoint = this.otlpProperties.getEndpoint();
+			if (StringUtils.hasLength(endpoint)) {
+				return endpoint.endsWith("/") ? endpoint + "v1/metrics" : endpoint + "/v1/metrics";
+			}
+			return null;
 		}
 
 		@Override
