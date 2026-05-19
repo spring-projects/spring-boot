@@ -93,6 +93,7 @@ class OAuth2ClientPropertiesMapperTests {
 		assertThat(adapted.getRedirectUri()).isEqualTo("https://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("user");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
+		assertThat(adaptedProvider.getConfigurationMetadata()).containsOnly(Map.entry("end_session_endpoint", "https://example.com/end-session"));
 	}
 
 	@Test
@@ -276,6 +277,7 @@ class OAuth2ClientPropertiesMapperTests {
 	private Provider createProvider() {
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("https://example.com/auth");
+		provider.setEndSessionUri("https://example.com/end-session");
 		provider.setTokenUri("https://example.com/token");
 		provider.setUserInfoUri("https://example.com/info");
 		provider.setUserNameAttribute("sub");

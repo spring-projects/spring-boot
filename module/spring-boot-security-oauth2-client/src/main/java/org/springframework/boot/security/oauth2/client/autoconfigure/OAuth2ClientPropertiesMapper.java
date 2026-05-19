@@ -17,6 +17,7 @@
 package org.springframework.boot.security.oauth2.client.autoconfigure;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -133,6 +134,10 @@ public final class OAuth2ClientPropertiesMapper {
 			.to(builder::userInfoAuthenticationMethod);
 		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
 		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
+
+		Map<String, Object> configurationMetadata = new LinkedHashMap<>();
+		map.from(provider::getEndSessionUri).to(value -> configurationMetadata.put("end_session_endpoint", value));
+		builder.providerConfigurationMetadata(configurationMetadata);
 		return builder;
 	}
 

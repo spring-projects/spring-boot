@@ -197,6 +197,11 @@ public class OAuth2ClientProperties implements InitializingBean {
 		private @Nullable String authorizationUri;
 
 		/**
+		 * End-Session URI for the provider.
+		 */
+		private @Nullable String endSessionUri;
+
+		/**
 		 * Token URI for the provider.
 		 */
 		private @Nullable String tokenUri;
@@ -234,6 +239,14 @@ public class OAuth2ClientProperties implements InitializingBean {
 
 		public void setAuthorizationUri(@Nullable String authorizationUri) {
 			this.authorizationUri = authorizationUri;
+		}
+
+		public @Nullable String getEndSessionUri() {
+			return this.endSessionUri;
+		}
+
+		public void setEndSessionUri(@Nullable String endSessionUri) {
+			this.endSessionUri = endSessionUri;
 		}
 
 		public @Nullable String getTokenUri() {
