@@ -192,6 +192,21 @@ class RestarterTests {
 	}
 
 	@Test
+	void startThrowsExceptionWhenFailureHandlerAbortsWithException() {
+		Restarter.clearInstance();
+		TestableRestarter restarter = new TestableRestarter() {
+			@Override
+			protected @Nullable Throwable relaunch(ClassLoader classLoader) {
+				return new RuntimeException("app failed to start");
+			}
+		};
+		Restarter.setInstance(restarter);
+		assertThatIllegalStateException().isThrownBy(() -> restarter.restart(FailureHandler.NONE))
+			.withCauseInstanceOf(RuntimeException.class)
+			.withMessageContaining("app failed to start");
+	}
+
+	@Test
 	void getInitialUrls() throws Exception {
 		Restarter.clearInstance();
 		RestartInitializer initializer = mock(RestartInitializer.class);
