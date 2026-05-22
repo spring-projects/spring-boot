@@ -4,7 +4,8 @@
 Class Data Sharing (CDS) is a https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
 
 In Java 24, CDS is succeeded by the AOT Cache via https://openjdk.org/jeps/483[JEP 483].
-Spring Boot supports both CDS and AOT cache, and it is recommended that you use the latter if it is available in the JVM version you are using (Java 24+).
+Spring Boot supports both CDS and AOT cache.
+As Java 24 is no longer supported, Java 25 is the minimum supported version where AOT cache can be used.
 
 [[packaging.class-data-sharing.cds]]
 == CDS
