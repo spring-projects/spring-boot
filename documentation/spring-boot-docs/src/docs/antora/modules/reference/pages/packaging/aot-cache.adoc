@@ -4,16 +4,18 @@
 
 AOT cache is a https://openjdk.org/jeps/483[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
 
-If you're using Java < 24, you should read the sections about CDS.
+If you are not yet using Java 25 or above, you should read the sections about CDS.
 CDS is the predecessor of AOT cache, but works similarly.
 
-Spring Boot supports both CDS and AOT cache, and it is recommended that you use AOT cache if it is available in the JVM version you are using (Java 24 or later).
+NOTE: Spring Boot supports both CDS and AOT cache, however, we recommend using the AOT cache whenever possible.
+
+
 
 [[packaging.aot-cache.aot-cache]]
 == AOT Cache
 
-NOTE: If you're using Java < 24, AOT cache is not available.
-You have to use CDS instead.
+NOTE: Spring Boot supports the AOT cache for Java 25 and above.
+If you're using an earlier version of Java, you have to use CDS instead.
 
 To use the AOT cache feature, you should first perform a training run on your application in extracted form:
 
@@ -40,7 +42,7 @@ NOTE: You have to use the cache file with the extracted form of the application,
 [[packaging.aot-cache.cds]]
 == CDS
 
-NOTE: If you're using Java 24 or later, please use AOT cache instead of CDS.
+NOTE: If you're using Java 25 or above, please use AOT cache instead of CDS.
 
 To use CDS, you should first perform a training run on your application in extracted form:
 
