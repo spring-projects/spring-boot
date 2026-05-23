@@ -24,6 +24,7 @@ When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a proje
 10. Creates a configuration named `productionRuntimeClasspath`. It is equivalent to `runtimeClasspath` minus any dependencies that only appear in the `developmentOnly` or `testDevelopmentOnly` configurations.
 11. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
 12. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
+13. Configures any `JavaCompile` tasks that use `spring-boot-configuration-processor` to preserve property descriptions across incremental compilations by caching the previously generated metadata in the task's temporary directory.
 
 
 
