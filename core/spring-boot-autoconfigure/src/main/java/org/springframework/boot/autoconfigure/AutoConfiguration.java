@@ -42,6 +42,15 @@ import org.springframework.core.annotation.AliasFor;
  * {@link Conditional @Conditional} (most often using
  * {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
+ * <p>
+ * {@link Conditional @Conditional} annotations declared on this auto-configuration class
+ * are not automatically inherited by nested {@link Configuration @Configuration} classes.
+ * The outer's conditions transitively gate nested classes only via the configuration
+ * parser's recursion, which is bypassed when a nested class is discovered independently
+ * through component scanning or registered directly with the application context. When
+ * the same gating is intended for every nested {@link Configuration @Configuration},
+ * redeclare the relevant conditions on each, or extract them into a composed
+ * meta-annotation applied to both the outer and the inner classes.
  *
  * @author Moritz Halbritter
  * @see EnableAutoConfiguration

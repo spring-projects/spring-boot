@@ -91,6 +91,13 @@ These annotations include:
 * xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.web-application-conditions[]
 * xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.spel-conditions[]
 
+[NOTE]
+====
+A javadoc:org.springframework.context.annotation.Conditional[format=annotation] declared on an javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] class is not automatically inherited by nested javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes.
+The outer's conditions transitively gate nested classes only via the configuration parser's recursion, which is bypassed when a nested class is discovered independently through javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] or registered directly with the application context.
+When the same gating is intended for every nested javadoc:org.springframework.context.annotation.Configuration[format=annotation], redeclare the relevant conditions on each, or extract them into a composed meta-annotation applied to both.
+====
+
 
 
 [[features.developing-auto-configuration.condition-annotations.class-conditions]]
