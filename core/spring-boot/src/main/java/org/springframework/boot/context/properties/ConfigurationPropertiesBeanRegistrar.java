@@ -20,7 +20,9 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.properties.bind.BindMethod;
@@ -117,6 +119,29 @@ final class ConfigurationPropertiesBeanRegistrar {
 			return ScopedProxyUtils.createScopedProxy(definition, registry, mode == ScopedProxyMode.TARGET_CLASS);
 		}
 		return definition;
+	}
+
+	/**
+	 * Enrich an already-registered {@link BeanDefinition} for a
+	 * {@link ConfigurationProperties @ConfigurationProperties} class by stamping the
+	 * {@link BindMethodAttribute} and, for {@link BindMethod#VALUE_OBJECT} types, setting
+	 * an {@code instanceSupplier} that performs constructor-based binding via
+	 * {@link ConstructorBound}. This avoids the need to create a new bean definition and
+	 * is intended for beans registered programmatically (for example, via
+	 * {@code BeanRegistrar}) that bypass the standard
+	 * {@link ConfigurationPropertiesBeanRegistrar} path.
+	 * @param beanName the name of the bean
+	 * @param definition the existing bean definition to enrich
+	 * @param type the configuration properties class
+	 * @param beanFactory the bean factory, used to resolve the binder for VALUE_OBJECT types
+	 */
+	static void enrichBeanDefinition(String beanName, BeanDefinition definition, Class<?> type,
+			BeanFactory beanFactory) {
+		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
+		BindMethodAttribute.set(definition, bindMethod);
+		if (bindMethod == BindMethod.VALUE_OBJECT && definition instanceof AbstractBeanDefinition abstractDefinition) {
+			abstractDefinition.setInstanceSupplier(() -> ConstructorBound.from(beanFactory, beanName, type));
+		}
 	}
 
 }

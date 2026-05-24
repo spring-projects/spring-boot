@@ -120,6 +120,13 @@ public class ConfigurationPropertiesBindingPostProcessor
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
+		if (!registry.containsBeanDefinition(ConfigurationPropertiesBeanDefinitionPostProcessor.BEAN_NAME)) {
+			BeanDefinition definition = BeanDefinitionBuilder
+				.rootBeanDefinition(ConfigurationPropertiesBeanDefinitionPostProcessor.class)
+				.getBeanDefinition();
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(ConfigurationPropertiesBeanDefinitionPostProcessor.BEAN_NAME, definition);
+		}
 		ConfigurationPropertiesBinder.register(registry);
 	}
 

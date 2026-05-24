@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -135,5 +136,23 @@ class KotlinConfigurationPropertiesTests {
 		@Name("var")
 		var bar: String = ""
 	}
+
+	@Test
+	fun `programmatically registered Kotlin data class configuration properties can be bound`() {
+		AnnotationConfigApplicationContext().use { context ->
+			ConfigurationPropertiesBindingPostProcessor.register(context)
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, "my-prefix.my-property=hello")
+			val beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(MyProperties::class.java).getBeanDefinition()
+			context.registerBeanDefinition("myProperties", beanDefinition)
+			context.refresh()
+			val myProperties = context.getBean(MyProperties::class.java)
+			assertThat(myProperties.myProperty).isEqualTo("hello")
+		}
+	}
+
+	@ConfigurationProperties("my-prefix")
+	data class MyProperties(
+		val myProperty: String = ""
+	)
 
 }
