@@ -92,7 +92,7 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void doesntWarnIfUsingHttps(CapturedOutput output) {
+	void doesNotWarnIfUsingHttps(CapturedOutput output) {
 		configure("https://localhost", true);
 		assertThat(output).doesNotContain("is insecure");
 	}
