@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +38,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -151,44 +154,63 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@Test
 	void asyncTaskExecutorBeanIsSelectedForInboundChannel() {
-		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor expectedExecutor = new RecordingAsyncTaskExecutor();
 		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.registerBean(AsyncTaskExecutor.class, () -> expectedExecutor);
 		this.context.refresh();
-		assertThat(this.context.getBean("clientInboundChannelExecutor", Executor.class)).isSameAs(expectedExecutor);
+		assertThat(this.context.getBean("clientInboundChannelExecutor", Executor.class))
+			.satisfies((executor) -> assertThatExecutorDelegatesTo(executor, expectedExecutor));
 	}
 
 	@Test
 	void asyncTaskExecutorBeanIsSelectedForOutboundChannel() {
-		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor expectedExecutor = new RecordingAsyncTaskExecutor();
 		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.registerBean(AsyncTaskExecutor.class, () -> expectedExecutor);
 		this.context.refresh();
-		assertThat(this.context.getBean("clientOutboundChannelExecutor", Executor.class)).isSameAs(expectedExecutor);
+		assertThat(this.context.getBean("clientOutboundChannelExecutor", Executor.class))
+			.satisfies((executor) -> assertThatExecutorDelegatesTo(executor, expectedExecutor));
 	}
 
 	@Test
 	void withMultipleAsyncTaskExecutorBeansApplicationTaskExecutorIsSelectedForInboundChannel() {
-		AsyncTaskExecutor applicationTaskExecutor = new SimpleAsyncTaskExecutor();
-		AsyncTaskExecutor additionalTaskExecutor = new SimpleAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor applicationTaskExecutor = new RecordingAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor additionalTaskExecutor = new RecordingAsyncTaskExecutor();
 		this.context.registerBean("applicationTaskExecutor", AsyncTaskExecutor.class, () -> applicationTaskExecutor);
 		this.context.registerBean(AsyncTaskExecutor.class, () -> additionalTaskExecutor);
 		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean("clientInboundChannelExecutor", Executor.class))
-			.isSameAs(applicationTaskExecutor);
+			.satisfies((executor) -> assertThatExecutorDelegatesTo(executor, applicationTaskExecutor));
+		assertThat(additionalTaskExecutor.executionCount.get()).isZero();
 	}
 
 	@Test
 	void withMultipleAsyncTaskExecutorBeansApplicationTaskExecutorIsSelectedForOutboundChannel() {
-		AsyncTaskExecutor applicationTaskExecutor = new SimpleAsyncTaskExecutor();
-		AsyncTaskExecutor additionalTaskExecutor = new SimpleAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor applicationTaskExecutor = new RecordingAsyncTaskExecutor();
+		RecordingAsyncTaskExecutor additionalTaskExecutor = new RecordingAsyncTaskExecutor();
 		this.context.registerBean("applicationTaskExecutor", AsyncTaskExecutor.class, () -> applicationTaskExecutor);
 		this.context.registerBean(AsyncTaskExecutor.class, () -> additionalTaskExecutor);
 		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean("clientOutboundChannelExecutor", Executor.class))
-			.isSameAs(applicationTaskExecutor);
+			.satisfies((executor) -> assertThatExecutorDelegatesTo(executor, applicationTaskExecutor));
+		assertThat(additionalTaskExecutor.executionCount.get()).isZero();
+	}
+
+	@Test
+	void applicationTaskExecutorIsNotRegisteredAsClientChannelExecutors() {
+		AsyncTaskExecutor applicationTaskExecutor = new SimpleAsyncTaskExecutor();
+		this.context.registerBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+				AsyncTaskExecutor.class, () -> applicationTaskExecutor);
+		this.context.register(WebSocketMessagingConfiguration.class);
+		this.context.refresh();
+		AsyncTaskExecutor actualApplicationTaskExecutor = this.context
+			.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, AsyncTaskExecutor.class);
+		assertThat(this.context.getBean("clientInboundChannelExecutor", Executor.class))
+			.isNotSameAs(actualApplicationTaskExecutor);
+		assertThat(this.context.getBean("clientOutboundChannelExecutor", Executor.class))
+			.isNotSameAs(actualApplicationTaskExecutor);
 	}
 
 	@Test
@@ -268,6 +290,14 @@ class WebSocketMessagingAutoConfigurationTests {
 	private List<MessageConverter> getConverters(DelegatingWebSocketMessageBrokerConfiguration configuration) {
 		CompositeMessageConverter compositeDefaultConverter = configuration.brokerMessageConverter();
 		return compositeDefaultConverter.getConverters();
+	}
+
+	private void assertThatExecutorDelegatesTo(Executor executor, RecordingAsyncTaskExecutor expectedExecutor) {
+		AtomicBoolean taskExecuted = new AtomicBoolean();
+		assertThat(executor).isNotSameAs(expectedExecutor);
+		executor.execute(() -> taskExecuted.set(true));
+		assertThat(taskExecuted).isTrue();
+		assertThat(expectedExecutor.executionCount.get()).isOne();
 	}
 
 	private @Nullable Object performStompSubscription(String topic) throws Throwable {
@@ -378,6 +408,18 @@ class WebSocketMessagingAutoConfigurationTests {
 	@Component
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class CustomLowWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer {
+
+	}
+
+	static class RecordingAsyncTaskExecutor implements AsyncTaskExecutor {
+
+		private final AtomicInteger executionCount = new AtomicInteger();
+
+		@Override
+		public void execute(Runnable task) {
+			this.executionCount.incrementAndGet();
+			task.run();
+		}
 
 	}
 

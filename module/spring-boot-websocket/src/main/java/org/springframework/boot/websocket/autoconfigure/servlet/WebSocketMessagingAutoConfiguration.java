@@ -18,6 +18,9 @@ package org.springframework.boot.websocket.autoconfigure.servlet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
@@ -174,20 +177,61 @@ public final class WebSocketMessagingAutoConfiguration {
 		@Override
 		public void configureClientInboundChannel(ChannelRegistration registration) {
 			if (this.executor != null) {
-				registration.executor(this.executor);
+				registration.executor(new DelegatingAsyncTaskExecutor(this.executor));
 			}
 		}
 
 		@Override
 		public void configureClientOutboundChannel(ChannelRegistration registration) {
 			if (this.executor != null) {
-				registration.executor(this.executor);
+				registration.executor(new DelegatingAsyncTaskExecutor(this.executor));
 			}
 		}
 
 		@Override
 		public int getOrder() {
 			return 0;
+		}
+
+	}
+
+	static class DelegatingAsyncTaskExecutor implements AsyncTaskExecutor {
+
+		private final AsyncTaskExecutor delegate;
+
+		DelegatingAsyncTaskExecutor(AsyncTaskExecutor delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void execute(Runnable task) {
+			this.delegate.execute(task);
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void execute(Runnable task, long startTimeout) {
+			this.delegate.execute(task, startTimeout);
+		}
+
+		@Override
+		public Future<?> submit(Runnable task) {
+			return this.delegate.submit(task);
+		}
+
+		@Override
+		public <T> Future<T> submit(Callable<T> task) {
+			return this.delegate.submit(task);
+		}
+
+		@Override
+		public CompletableFuture<Void> submitCompletable(Runnable task) {
+			return this.delegate.submitCompletable(task);
+		}
+
+		@Override
+		public <T> CompletableFuture<T> submitCompletable(Callable<T> task) {
+			return this.delegate.submitCompletable(task);
 		}
 
 	}
