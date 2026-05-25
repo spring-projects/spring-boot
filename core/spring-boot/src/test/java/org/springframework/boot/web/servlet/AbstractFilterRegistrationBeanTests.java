@@ -234,7 +234,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	void doesntFailIfDoubleRegistrationIsIgnored() {
+	void doesNotFailIfDoubleRegistrationIsIgnored() {
 		assertThatCode(() -> {
 			AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 			bean.setName("double-registration");
