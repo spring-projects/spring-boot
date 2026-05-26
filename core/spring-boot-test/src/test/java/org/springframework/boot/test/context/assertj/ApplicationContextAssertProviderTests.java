@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,7 +39,6 @@ import static org.mockito.Mockito.mock;
  */
 class ApplicationContextAssertProviderTests {
 
-	@Mock
 	private final ConfigurableApplicationContext mockContext = mock();
 
 	private RuntimeException startupFailure;

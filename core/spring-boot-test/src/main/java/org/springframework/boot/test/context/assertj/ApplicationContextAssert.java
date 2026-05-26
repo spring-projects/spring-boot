@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * AssertJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
+ * AssertJ {@linkplain org.assertj.core.api.Assert assertions} that can be applied to an
  * {@link ApplicationContext}.
  *
  * @param <C> the application context type
