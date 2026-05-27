@@ -373,8 +373,8 @@ class ExtractCommand extends Command {
 		return file;
 	}
 
-	private static boolean isFileContainedInDirectory(Path canonicalOutputPath, Path canonicalFilePath) {
-		return !canonicalFilePath.equals(canonicalOutputPath) && canonicalFilePath.startsWith(canonicalOutputPath);
+	private static boolean isFileContainedInDirectory(Path directory, Path file) {
+		return !file.equals(directory) && file.startsWith(directory);
 	}
 
 	@FunctionalInterface
