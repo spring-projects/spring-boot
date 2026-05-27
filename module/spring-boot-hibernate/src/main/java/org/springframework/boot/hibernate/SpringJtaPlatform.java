@@ -21,6 +21,7 @@ import jakarta.transaction.UserTransaction;
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.Assert;
 
@@ -32,7 +33,11 @@ import org.springframework.util.Assert;
  * @author Josh Long
  * @author Phillip Webb
  * @since 4.0.0
+ * @deprecated since 4.1.0 for removal in 4.3.0 in favor of @link
+ * {@link HibernateJpaVendorAdapter#setJtaTransactionManager(Object)} and
+ * {@link org.springframework.orm.jpa.hibernate.ConfigurableJtaPlatform}
  */
+@Deprecated(since = "4.1.0", forRemoval = true)
 public class SpringJtaPlatform extends AbstractJtaPlatform {
 
 	private static final long serialVersionUID = 1L;
