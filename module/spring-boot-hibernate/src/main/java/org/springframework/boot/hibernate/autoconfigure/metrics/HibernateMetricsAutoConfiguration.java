@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.SessionFactory;
-import org.hibernate.stat.HibernateMetrics;
+import org.hibernate.orm.micrometer.HibernateMetrics;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
