@@ -76,6 +76,7 @@ jobs:
           RVT_RELEASE_TYPE: ${{ vars.COMMERCIAL && 'commercial' || 'oss' }}
           RVT_STAGING: ${{ inputs.staging }}
           RVT_VERSION: ${{ inputs.version }}
+          HOMEBREW_NO_SANDBOX_LINUX: "1"
         run: ./gradlew spring-boot-release-verification-tests:test
       - name: Upload Build Reports on Failure
         if: failure()
