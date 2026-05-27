@@ -2590,7 +2590,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring gRPC", "1.1.0-RC1") {
+	library("Spring gRPC", "1.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.grpc") {
 			modules = [
