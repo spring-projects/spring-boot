@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * The {@code 'extract'} tools command.
  *
  * @author Moritz Halbritter
+ * @author Dongliang Xie
  */
 class ExtractCommand extends Command {
 
@@ -363,12 +365,16 @@ class ExtractCommand extends Command {
 	}
 
 	private static File assertFileIsContainedInDirectory(File directory, File file, String name) throws IOException {
-		String canonicalOutputPath = directory.getCanonicalPath() + File.separator;
-		String canonicalEntryPath = file.getCanonicalPath();
-		Assert.state(canonicalEntryPath.startsWith(canonicalOutputPath),
+		Path canonicalOutputPath = directory.getCanonicalFile().toPath();
+		Path canonicalEntryPath = file.getCanonicalFile().toPath();
+		Assert.state(isFileContainedInDirectory(canonicalOutputPath, canonicalEntryPath),
 				() -> "Entry '%s' would be written to '%s'. This is outside the output location of '%s'. Verify the contents of your archive."
 					.formatted(name, canonicalEntryPath, canonicalOutputPath));
 		return file;
+	}
+
+	private static boolean isFileContainedInDirectory(Path directory, Path file) {
+		return !file.equals(directory) && file.startsWith(directory);
 	}
 
 	@FunctionalInterface
@@ -515,9 +521,9 @@ class ExtractCommand extends Command {
 		}
 
 		private File assertLayerDirectoryLocation(File layerDirectory, String layerName) throws IOException {
-			String canonicalOutputPath = this.directory.getCanonicalPath() + File.separator;
-			String canonicalLayerPath = layerDirectory.getCanonicalPath();
-			Assert.state(canonicalLayerPath.startsWith(canonicalOutputPath),
+			Path canonicalOutputPath = this.directory.getCanonicalFile().toPath();
+			Path canonicalLayerPath = layerDirectory.getCanonicalFile().toPath();
+			Assert.state(isFileContainedInDirectory(canonicalOutputPath, canonicalLayerPath),
 					() -> "Layer '%s' would be written to '%s'. This is outside the output location of '%s'. Verify the contents of your archive."
 						.formatted(layerName, canonicalLayerPath, canonicalOutputPath));
 			return layerDirectory;

@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
@@ -45,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ExtractCommand}.
  *
  * @author Moritz Halbritter
+ * @author Dongliang Xie
  */
 class ExtractCommandTests extends AbstractJarModeTests {
 
@@ -368,6 +371,38 @@ class ExtractCommandTests extends AbstractJarModeTests {
 				.doesNotContain("test/snapshot-dependencies/BOOT-INF/lib/dependency-3-SNAPSHOT.jar")
 				.doesNotContain("test/application/BOOT-INF/classes/application.properties")
 				.doesNotContain("test/spring-boot-loader/org/springframework/boot/loader/launch/JarLauncher.class");
+		}
+
+		@Test
+		void extractWhenDestinationIsFileSystemRoot() throws IOException {
+			Path layerDirectory = ExtractCommandTests.this.tempDir.toPath()
+				.resolve("root-output")
+				.resolve("dependencies")
+				.toAbsolutePath()
+				.normalize();
+			Path outputRoot = layerDirectory.getRoot();
+			String layerName = outputRoot.relativize(layerDirectory).toString().replace(File.separatorChar, '/');
+			Layers layers = new Layers() {
+
+				@Override
+				public Iterator<String> iterator() {
+					return List.of(layerName).iterator();
+				}
+
+				@Override
+				public String getLayer(String entryName) {
+					return layerName;
+				}
+
+				@Override
+				public String getApplicationLayerName() {
+					return layerName;
+				}
+
+			};
+			runCommand((context) -> new ExtractCommand(context, layers), ExtractCommandTests.this.archive,
+					"--destination", outputRoot.toString(), "--force", "--launcher", "--layers");
+			assertThat(layerDirectory.resolve("BOOT-INF/lib/dependency-1.jar")).exists();
 		}
 
 	}
