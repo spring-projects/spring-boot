@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.tracing.brave.autoconfigure;
 import java.util.List;
 
 import brave.baggage.BaggageField;
+import brave.baggage.BaggageFields;
 import brave.baggage.BaggagePropagation;
 import brave.baggage.BaggagePropagation.FactoryBuilder;
 import brave.baggage.BaggagePropagationConfig;
@@ -40,6 +41,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Baggage.Correlation;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Mdc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -138,7 +140,13 @@ class BravePropagationConfigurations {
 		@ConditionalOnMissingBean
 		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder(
 				ObjectProvider<CorrelationScopeCustomizer> correlationScopeCustomizers) {
-			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+			Mdc mdc = this.tracingProperties.getMdc();
+			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder()
+				// Clear existing traceId/spanId backage field mappings
+				// so the MDC key names can be customized below.
+				.clear()
+				.add(SingleCorrelationField.newBuilder(BaggageFields.TRACE_ID).name(mdc.getTraceIdKey()).build())
+				.add(SingleCorrelationField.newBuilder(BaggageFields.SPAN_ID).name(mdc.getSpanIdKey()).build());
 			correlationScopeCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
