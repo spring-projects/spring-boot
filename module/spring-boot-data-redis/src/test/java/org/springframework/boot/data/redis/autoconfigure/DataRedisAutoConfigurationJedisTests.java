@@ -50,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class DataRedisAutoConfigurationJedisTests {
@@ -207,13 +208,19 @@ class DataRedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithClientName() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.client-name:spring-boot")
-			.run((context) -> {
-				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("foo");
-				assertThat(cf.getClientName()).isEqualTo("spring-boot");
-			});
+	void testRedisConfigurationWithImplicitClientName() {
+		this.contextRunner.withPropertyValues("spring.application.name:spring-boot").run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.getClientName()).isEqualTo("spring-boot");
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithExplicitClientName() {
+		this.contextRunner.withPropertyValues("spring.data.redis.client-name:spring-boot").run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.getClientName()).isEqualTo("spring-boot");
+		});
 	}
 
 	@Test

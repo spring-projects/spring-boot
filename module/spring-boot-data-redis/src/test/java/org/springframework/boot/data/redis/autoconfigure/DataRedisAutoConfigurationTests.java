@@ -94,6 +94,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class DataRedisAutoConfigurationTests {
 
@@ -341,13 +342,19 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithClientName() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.client-name:spring-boot")
-			.run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("foo");
-				assertThat(cf.getClientName()).isEqualTo("spring-boot");
-			});
+	void testRedisConfigurationWithImplicitClientName() {
+		this.contextRunner.withPropertyValues("spring.application.name:spring-boot").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getClientName()).isEqualTo("spring-boot");
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithExplicitClientName() {
+		this.contextRunner.withPropertyValues("spring.data.redis.client-name:spring-boot").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getClientName()).isEqualTo("spring-boot");
+		});
 	}
 
 	@Test

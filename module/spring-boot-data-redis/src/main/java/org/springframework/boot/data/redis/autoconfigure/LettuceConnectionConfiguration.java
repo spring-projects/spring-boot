@@ -44,6 +44,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -65,20 +66,21 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
 @ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
 class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 
-	LettuceConnectionConfiguration(DataRedisProperties properties,
+	LettuceConnectionConfiguration(Environment environment, DataRedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
 			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
 			DataRedisConnectionDetails connectionDetails) {
-		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider, masterReplicaConfiguration);
+		super(environment, properties, connectionDetails, standaloneConfigurationProvider,
+				sentinelConfigurationProvider, clusterConfigurationProvider, masterReplicaConfiguration);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -183,8 +185,9 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 				builder.readFrom(getReadFrom(readFrom));
 			}
 		}
-		if (StringUtils.hasText(getProperties().getClientName())) {
-			builder.clientName(getProperties().getClientName());
+		String clientName = determineClientName();
+		if (StringUtils.hasText(clientName)) {
+			builder.clientName(clientName);
 		}
 	}
 

@@ -33,6 +33,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -56,6 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -63,13 +65,13 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "jedis", matchIfMissing = true)
 class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 
-	JedisConnectionConfiguration(DataRedisProperties properties,
+	JedisConnectionConfiguration(Environment environment, DataRedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
 			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
 			DataRedisConnectionDetails connectionDetails) {
-		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
+		super(environment, properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
 				clusterConfiguration, masterReplicaConfiguration);
 	}
 
@@ -130,7 +132,7 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
-		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
+		map.from(determineClientName()).whenHasText().to(builder::clientName);
 		return builder;
 	}
 

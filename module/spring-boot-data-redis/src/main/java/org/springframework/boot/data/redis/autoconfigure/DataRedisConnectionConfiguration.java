@@ -28,6 +28,7 @@ import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDeta
 import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.Standalone;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Pool;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
@@ -36,6 +37,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base Redis connection configuration.
@@ -55,6 +57,8 @@ abstract class DataRedisConnectionConfiguration {
 	private static final boolean COMMONS_POOL2_AVAILABLE = ClassUtils.isPresent("org.apache.commons.pool2.ObjectPool",
 			DataRedisConnectionConfiguration.class.getClassLoader());
 
+	private final Environment environment;
+
 	private final DataRedisProperties properties;
 
 	private final @Nullable RedisStandaloneConfiguration standaloneConfiguration;
@@ -69,12 +73,13 @@ abstract class DataRedisConnectionConfiguration {
 
 	protected final Mode mode;
 
-	protected DataRedisConnectionConfiguration(DataRedisProperties properties,
+	protected DataRedisConnectionConfiguration(Environment environment, DataRedisProperties properties,
 			DataRedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
 			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration) {
+		this.environment = environment;
 		this.properties = properties;
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
@@ -178,6 +183,17 @@ abstract class DataRedisConnectionConfiguration {
 
 	protected final DataRedisProperties getProperties() {
 		return this.properties;
+	}
+
+	protected @Nullable String determineClientName() {
+		String clientName = getProperties().getClientName();
+		if (!StringUtils.hasText(clientName)) {
+			String applicationName = this.environment.getProperty("spring.application.name");
+			if (StringUtils.hasText(applicationName)) {
+				clientName = applicationName;
+			}
+		}
+		return clientName;
 	}
 
 	protected @Nullable SslBundle getSslBundle() {
