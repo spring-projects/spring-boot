@@ -155,15 +155,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().getTimeout() != null) {
 			builder.commandTimeout(getProperties().getTimeout());
 		}
-		if (getProperties().getLettuce() != null) {
-			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
-			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
-				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
-			}
-			String readFrom = lettuce.getReadFrom();
-			if (readFrom != null) {
-				builder.readFrom(getReadFrom(readFrom));
-			}
+		RedisProperties.Lettuce lettuce = getProperties().getLettuce();
+		if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
+			builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
+		}
+		String readFrom = lettuce.getReadFrom();
+		if (readFrom != null) {
+			builder.readFrom(getReadFrom(readFrom));
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
