@@ -1271,7 +1271,7 @@ bom {
 			releaseNotes("https://github.com/redis/lettuce/releases/tag/{version}")
 		}
 	}
-	library("Liquibase", "5.0.2") {
+	library("Liquibase", "5.0.3") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
