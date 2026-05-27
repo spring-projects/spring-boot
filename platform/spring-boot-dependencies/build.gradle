@@ -2512,7 +2512,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.1.0-RC1") {
+	library("Spring AMQP", "4.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
