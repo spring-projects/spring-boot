@@ -1842,7 +1842,7 @@ bom {
 			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
 		}
 	}
-	library("Protobuf Maven Plugin", "5.1.3") {
+	library("Protobuf Maven Plugin", "5.1.4") {
 		group("io.github.ascopes") {
 			plugins = [
 				"protobuf-maven-plugin"
