@@ -33,6 +33,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 public final class Metadata {
 
@@ -125,6 +126,9 @@ public final class Metadata {
 			if (this.defaultValue != null) {
 				description.append(" with defaultValue:").append(this.defaultValue);
 			}
+			else {
+				description.append(" with no defaultValue");
+			}
 			if (this.description != null) {
 				description.append(" with description:").append(this.description);
 			}
@@ -193,6 +197,11 @@ public final class Metadata {
 		public MetadataItemCondition withDefaultValue(Object defaultValue) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type, this.sourceType, this.sourceMethod,
 					this.description, defaultValue, this.deprecation);
+		}
+
+		public MetadataItemCondition withNoDefaultValue() {
+			return new MetadataItemCondition(this.itemType, this.name, this.type, this.sourceType, this.sourceMethod,
+					this.description, null, this.deprecation);
 		}
 
 		public MetadataItemCondition withDeprecation() {

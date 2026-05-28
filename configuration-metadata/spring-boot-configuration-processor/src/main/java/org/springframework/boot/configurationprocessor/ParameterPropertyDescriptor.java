@@ -35,6 +35,7 @@ import javax.tools.Diagnostic.Kind;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 abstract class ParameterPropertyDescriptor extends PropertyDescriptor {
 
@@ -61,6 +62,11 @@ abstract class ParameterPropertyDescriptor extends PropertyDescriptor {
 		Object defaultValue = getDefaultValueFromAnnotation(environment, getParameter());
 		return (defaultValue != null) ? defaultValue
 				: getParameter().asType().accept(DefaultPrimitiveTypeVisitor.INSTANCE, null);
+	}
+
+	@Override
+	protected boolean isInitializedToNull(MetadataGenerationEnvironment environment) {
+		return false;
 	}
 
 	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Element element) {

@@ -34,6 +34,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 abstract class PropertyDescriptor {
 
@@ -225,6 +226,17 @@ abstract class PropertyDescriptor {
 	 * @return the default value or {@code null}
 	 */
 	protected abstract Object resolveDefaultValue(MetadataGenerationEnvironment environment);
+
+	/**
+	 * Return true if the backing field is initialized to {@code null}.
+	 * <p>
+	 * Note: {@link #resolveDefaultValue(MetadataGenerationEnvironment)} returns
+	 * {@code null} does not mean the backing field is initialized to {@code null}, it may
+	 * be initialized to a domain object.
+	 * @param environment the metadata generation environment
+	 * @return true if the backing field is initialized to {@code null}
+	 */
+	protected abstract boolean isInitializedToNull(MetadataGenerationEnvironment environment);
 
 	/**
 	 * Resolve the {@link ItemDeprecation} for this property.

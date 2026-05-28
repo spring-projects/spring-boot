@@ -52,6 +52,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class MetadataGenerationEnvironment {
 
@@ -151,6 +152,21 @@ class MetadataGenerationEnvironment {
 	Object getFieldDefaultValue(TypeElement type, VariableElement field) {
 		return (field != null) ? this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
 			.get(field.getSimpleName().toString()) : null;
+	}
+
+	/**
+	 * Return true if the given {@code field} is initialized to {@code null}.
+	 * @param type the type to consider
+	 * @param field the field or {@code null} if it is not available
+	 * @return true if the given {@code field} is initialized to {@code null}
+	 */
+	boolean isInitializedToNull(TypeElement type, VariableElement field) {
+		if (field != null) {
+			Map<String, Object> map = this.defaultValues.computeIfAbsent(type, this::resolveFieldValues);
+			String key = field.getSimpleName().toString();
+			return map.containsKey(key) && map.get(key) == null;
+		}
+		return false;
 	}
 
 	/**

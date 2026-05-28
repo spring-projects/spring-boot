@@ -39,6 +39,7 @@ import org.springframework.boot.configurationprocessor.support.ConventionUtils;
  * Resolve source configuration metadata for arbitrary types.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class ConfigurationPropertiesSourceResolver {
 
@@ -173,6 +174,11 @@ class ConfigurationPropertiesSourceResolver {
 		protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
 			Object defaultValue = this.delegate.resolveDefaultValue(environment);
 			return (defaultValue != null) ? defaultValue : this.sourceItemMetadata.getDefaultValue();
+		}
+
+		@Override
+		protected boolean isInitializedToNull(MetadataGenerationEnvironment environment) {
+			return this.delegate.isInitializedToNull(environment);
 		}
 
 		@Override

@@ -61,6 +61,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @author Jonas Keßler
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
@@ -287,10 +288,21 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
 			Deque<TypeElement> seen) {
+		processTypeElement(prefix, element, source, seen, new ArrayDeque<>());
+	}
+
+	private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
+			Deque<TypeElement> seen, Deque<Boolean> initializedToNullDeque) {
 		if (!seen.contains(element)) {
 			seen.push(element);
 			new PropertyDescriptorResolver(this.metadataEnv).resolve(element, source).forEach((descriptor) -> {
-				this.metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
+				ItemMetadata metadata = descriptor.resolveItemMetadata(prefix, this.metadataEnv);
+				if (metadata != null && initializedToNullDeque.contains(Boolean.TRUE)) {
+					// clear resolved default value because the group is initialized to
+					// null
+					metadata.setDefaultValue(null);
+				}
+				this.metadataCollector.add(metadata);
 				ItemHint itemHint = descriptor.resolveItemHint(prefix, this.metadataEnv);
 				if (itemHint != null) {
 					this.metadataCollector.add(itemHint);
@@ -299,7 +311,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
 						.asElement(descriptor.getType());
 					String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, descriptor.getName());
-					processTypeElement(nestedPrefix, nestedTypeElement, source, seen);
+					initializedToNullDeque.push(descriptor.isInitializedToNull(this.metadataEnv));
+					processTypeElement(nestedPrefix, nestedTypeElement, source, seen, initializedToNullDeque);
+					initializedToNullDeque.pop();
 				}
 			});
 			seen.pop();

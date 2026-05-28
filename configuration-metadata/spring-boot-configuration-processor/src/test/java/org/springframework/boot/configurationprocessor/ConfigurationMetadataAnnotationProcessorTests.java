@@ -97,6 +97,7 @@ import org.springframework.boot.configurationsample.specific.InvalidDefaultValue
 import org.springframework.boot.configurationsample.specific.InvalidDefaultValueFloatingPointProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDefaultValueNumberProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
+import org.springframework.boot.configurationsample.specific.NestedProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.boot.configurationsample.specific.StaticAccessor;
 import org.springframework.core.test.tools.CompilationException;
@@ -119,6 +120,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -448,6 +450,17 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
 			.fromSource(ClassWithNestedProperties.NestedChildClass.class)
 			.withDefaultValue(10));
+	}
+
+	@Test
+	void nestedProperties() {
+		ConfigurationMetadata metadata = compile(NestedProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("config.foo1.enabled").withDefaultValue(true));
+		assertThat(metadata).has(Metadata.withProperty("config.foo2.enabled").withNoDefaultValue());
+		assertThat(metadata).has(Metadata.withProperty("config.foo1.bar1.enabled").withDefaultValue(true));
+		assertThat(metadata).has(Metadata.withProperty("config.foo1.bar2.enabled").withNoDefaultValue());
+		assertThat(metadata).has(Metadata.withProperty("config.foo2.bar1.enabled").withNoDefaultValue());
+		assertThat(metadata).has(Metadata.withProperty("config.foo2.bar2.enabled").withNoDefaultValue());
 	}
 
 	@Test

@@ -33,6 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class LombokPropertyDescriptor extends PropertyDescriptor {
 
@@ -82,6 +83,11 @@ class LombokPropertyDescriptor extends PropertyDescriptor {
 	@Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
 		return environment.getFieldDefaultValue(getDeclaringElement(), this.field);
+	}
+
+	@Override
+	protected boolean isInitializedToNull(MetadataGenerationEnvironment environment) {
+		return environment.isInitializedToNull(getDeclaringElement(), this.field);
 	}
 
 	@Override
