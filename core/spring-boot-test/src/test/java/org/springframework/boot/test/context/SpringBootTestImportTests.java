@@ -24,6 +24,8 @@ import org.springframework.boot.test.context.SpringBootTestImportTests.ImportedB
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +66,38 @@ class SpringBootTestImportTests {
 		@Test
 		void containingClassTestPropertySourceIsHonored() {
 			assertThat(this.environment.getProperty("a")).isEqualTo("alpha");
+		}
+
+	}
+
+	@Nested
+	@SpringBootTest(classes = Config.class)
+	@Import(ImportedByNestedTests.class)
+	@NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+	class OverrideNestedTests {
+
+		@Autowired(required = false)
+		private ImportedByContainingTests importedByContainingTests;
+
+		@Autowired(required = false)
+		private ImportedByNestedTests importedByNestedTests;
+
+		@Autowired
+		private Environment environment;
+
+		@Test
+		void sameClassImportIsHonored() {
+			assertThat(this.importedByNestedTests).isNotNull();
+		}
+
+		@Test
+		void containingClassImportIsNotInherited() {
+			assertThat(this.importedByContainingTests).isNull();
+		}
+
+		@Test
+		void containingClassTestPropertySourceIsNotInherited() {
+			assertThat(this.environment.getProperty("a")).isNull();
 		}
 
 	}
