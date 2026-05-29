@@ -6,7 +6,7 @@ To get started with the plugin it needs to be applied to your project.
 ifeval::["{build-type}" == "commercial"]
 The plugin is published to the Spring Commercial repository.
 You will have to configure your build to access this repository.
-This is usual done through a local artifact repository that mirrors the content of the Spring Commercial repository.
+This is usually done through a local artifact repository that mirrors the content of the Spring Commercial repository.
 Alternatively, while it is not recommended, the Spring Commercial repository can also be accessed directly.
 In either case, see https://docs.vmware.com/en/Tanzu-Spring-Runtime/Commercial/Tanzu-Spring-Runtime/spring-enterprise-subscription.html[the Tanzu Spring Runtime documentation] for further details.
 
