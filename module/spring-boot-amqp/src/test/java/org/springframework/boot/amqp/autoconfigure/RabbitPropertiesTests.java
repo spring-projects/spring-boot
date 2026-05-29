@@ -337,6 +337,12 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determineSslEnabledIsFalseWhenBundleIsEmpty() {
+		this.properties.getSsl().setBundle("");
+		assertThat(this.properties.getSsl().determineEnabled()).isFalse();
+	}
+
+	@Test
 	void propertiesUseConsistentDefaultValues() {
 		ConnectionFactory connectionFactory = new ConnectionFactory();
 		assertThat(connectionFactory).hasFieldOrPropertyWithValue("maxInboundMessageBodySize",
@@ -397,6 +403,12 @@ class RabbitPropertiesTests {
 	void streamSslIsEnabledWhenBundleIsSet() {
 		this.properties.getStream().getSsl().setBundle("test-bundle");
 		assertThat(this.properties.getStream().getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void streamSslIsDisabledWhenBundleIsEmpty() {
+		this.properties.getStream().getSsl().setBundle("");
+		assertThat(this.properties.getStream().getSsl().determineEnabled()).isFalse();
 	}
 
 	@Test

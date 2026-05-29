@@ -479,7 +479,7 @@ public class RabbitProperties {
 		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
-			boolean defaultEnabled = Boolean.TRUE.equals(getEnabled()) || this.bundle != null;
+			boolean defaultEnabled = Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
 				return defaultEnabled;
 			}
@@ -1387,7 +1387,7 @@ public class RabbitProperties {
 			}
 
 			public boolean determineEnabled() {
-				return Boolean.TRUE.equals(getEnabled()) || this.bundle != null;
+				return Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 			}
 
 			public void setEnabled(@Nullable Boolean enabled) {
