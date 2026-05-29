@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -42,16 +43,13 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.supplier.RepositorySystemSupplier;
 
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -241,42 +239,49 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static List<URL> resolveCoordinates(String[] coordinates) {
-		Exception latestFailure = null;
-		RepositorySystem repositorySystem = createRepositorySystem();
-		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-		session.setSystemProperties(System.getProperties());
-		LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
-		RemoteRepository remoteRepository = new RemoteRepository.Builder("central", "default",
-				"https://repo.maven.apache.org/maven2")
-			.build();
-		session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
-		for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
-			CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
-			collectRequest.setDependencies(createDependencies(coordinates));
-			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
-			try {
-				DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
-				List<URL> resolvedArtifacts = new ArrayList<>();
-				for (ArtifactResult artifact : result.getArtifactResults()) {
-					resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+		return doWithRepositorySystem((repositorySystem) -> {
+			Exception latestFailure = null;
+			DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+			session.setSystemProperties(System.getProperties());
+			LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
+			RemoteRepository remoteRepository = new RemoteRepository.Builder("central", "default",
+					"https://repo.maven.apache.org/maven2")
+				.build();
+			session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
+			for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
+				CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
+				collectRequest.setDependencies(createDependencies(coordinates));
+				DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+				try {
+					DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
+					List<URL> resolvedArtifacts = new ArrayList<>();
+					for (ArtifactResult artifact : result.getArtifactResults()) {
+						resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+					}
+					return resolvedArtifacts;
 				}
-				return resolvedArtifacts;
+				catch (Exception ex) {
+					latestFailure = ex;
+				}
 			}
-			catch (Exception ex) {
-				latestFailure = ex;
-			}
-		}
-		throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
-				latestFailure);
+			throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
+					latestFailure);
+		});
 	}
 
-	@SuppressWarnings("deprecation")
-	private static RepositorySystem createRepositorySystem() {
-		org.eclipse.aether.impl.DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
-		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-		RepositorySystem repositorySystem = serviceLocator.getService(RepositorySystem.class);
-		return repositorySystem;
+	private static <T> T doWithRepositorySystem(Function<RepositorySystem, T> repositorySystem) {
+		RepositorySystem rs = new RepositorySystemSupplier().get();
+		try {
+			return repositorySystem.apply(rs);
+		}
+		finally {
+			try {
+				rs.shutdown();
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
+		}
 	}
 
 	private static List<Dependency> createDependencies(String[] allCoordinates) {
