@@ -47,12 +47,7 @@ dependencies {
 	compileOnly("org.springframework.data:spring-data-redis")
 
 	implementation("jakarta.inject:jakarta.inject-api")
-	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
-	implementation("org.apache.maven.resolver:maven-resolver-impl")
-	implementation("org.apache.maven:maven-resolver-provider") {
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
-	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
+	implementation("org.apache.maven.resolver:maven-resolver-supplier") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 
