@@ -75,11 +75,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private void applySecurity(SslContextSpec spec) {
-		spec.sslContext(this.sslProvider.getSslContext()).setSniAsyncMappings((serverName, promise) -> {
-			SslProvider provider = (serverName != null) ? this.serverNameSslProviders.get(serverName)
-					: this.sslProvider;
-			return promise.setSuccess(provider);
-		});
+		spec.sslContext(this.sslProvider.getSslContext())
+			.setSniAsyncMappings((serverName, promise) -> promise.setSuccess(getSslProvider(serverName)));
+	}
+
+	SslProvider getSslProvider(String serverName) {
+		return (serverName != null) ? this.serverNameSslProviders.getOrDefault(serverName, this.sslProvider)
+				: this.sslProvider;
 	}
 
 	void updateSslBundle(String serverName, SslBundle sslBundle) {
