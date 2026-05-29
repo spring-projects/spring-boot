@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -238,9 +239,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static List<URL> resolveCoordinates(String[] coordinates) {
-		Exception latestFailure = null;
-		RepositorySystem repositorySystem = new RepositorySystemSupplier().get();
-		try {
+		return doWithRepositorySystem((repositorySystem) -> {
+			Exception latestFailure = null;
 			DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 			session.setSystemProperties(System.getProperties());
 			LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
@@ -266,10 +266,17 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 			}
 			throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
 					latestFailure);
+		});
+	}
+
+	private static <T> T doWithRepositorySystem(Function<RepositorySystem, T> repositorySystem) {
+		RepositorySystem rs = new RepositorySystemSupplier().get();
+		try {
+			return repositorySystem.apply(rs);
 		}
 		finally {
 			try {
-				repositorySystem.shutdown();
+				rs.shutdown();
 			}
 			catch (Exception ex) {
 				// Ignore
