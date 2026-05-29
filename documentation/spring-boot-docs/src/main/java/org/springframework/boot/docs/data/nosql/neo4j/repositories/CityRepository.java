@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docs.data.nosql.neo4j.repositories;
 
-import java.util.Optional;
-
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 public interface CityRepository extends Neo4jRepository<City, Long> {
 
-	Optional<City> findOneByNameAndState(String name, String state);
+	City findOneByNameAndState(String name, String state);
 
 }
