@@ -80,10 +80,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	SslProvider getSslProvider(String serverName) {
-		if (serverName == null) {
-			return this.sslProvider;
-		}
-		return this.serverNameSslProviders.getOrDefault(serverName, this.sslProvider);
+		return (serverName != null) ? this.serverNameSslProviders.getOrDefault(serverName, this.sslProvider)
+				: this.sslProvider;
 	}
 
 	void updateSslBundle(String serverName, SslBundle sslBundle) {
