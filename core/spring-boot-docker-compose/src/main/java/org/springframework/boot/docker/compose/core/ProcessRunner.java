@@ -123,7 +123,8 @@ class ProcessRunner {
 			return process.waitFor();
 		}
 		catch (InterruptedException ex) {
-			throw new IllegalStateException("Interrupted waiting for %s".formatted(process));
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException("Interrupted waiting for %s".formatted(process), ex);
 		}
 	}
 
@@ -175,6 +176,7 @@ class ProcessRunner {
 				return this.output.toString();
 			}
 			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 				return "";
 			}
 		}
