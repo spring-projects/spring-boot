@@ -132,7 +132,7 @@ endif::[]
 
 ifeval::["{build-type}" == "commercial"]
 You will also have to configure your build to access the Spring Commercial repository.
-This is usual done through a local artifact repository that mirrors the content of the Spring Commercial repository.
+This is usually done through a local artifact repository that mirrors the content of the Spring Commercial repository.
 Alternatively, while it is not recommended, the Spring Commercial repository can also be accessed directly.
 In either case, see https://docs.vmware.com/en/Tanzu-Spring-Runtime/Commercial/Tanzu-Spring-Runtime/spring-enterprise-subscription.html[the Tanzu Spring Runtime documentation] for further details.
 
