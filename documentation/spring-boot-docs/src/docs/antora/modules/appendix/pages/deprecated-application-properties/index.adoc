@@ -3,7 +3,7 @@
 = Deprecated Application Properties
 
 The following deprecated properties can be specified inside your `application.properties` file, inside your `application.yaml` file, or as command line switches.
-Support for these properties will be removed in a future release and should you should migrate away from them.
+Support for these properties will be removed in a future release and you should migrate away from them.
 
 [TIP]
 ====
