@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
@@ -150,7 +151,7 @@ class CodecsAutoConfigurationTests {
 	@Test
 	void kotlinSerializationUsesUnrestrictedPredicateWhenNoOtherJsonConverterIsAvailable() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
-				ObjectMapper.class.getPackage().getName());
+				ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName());
 		this.contextRunner.withClassLoader(classLoader)
 			.withUserConfiguration(KotlinxJsonConfiguration.class)
 			.run((context) -> {
