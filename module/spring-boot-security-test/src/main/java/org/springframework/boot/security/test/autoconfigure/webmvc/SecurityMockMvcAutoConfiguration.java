@@ -60,6 +60,7 @@ public final class SecurityMockMvcAutoConfiguration {
 	@ConditionalOnClass(HtmlUnitDriver.class)
 	static class SecurityMockMvcHtmlUnitDriverConfiguration {
 
+		@Bean
 		MockMvcHtmlUnitDriverCustomizer securityDelegateMockMvcHtmlUnitDriverCustomizer() {
 			return (driver) -> driver
 				.setExecutor(new DelegatingSecurityContextExecutor(Executors.newSingleThreadExecutor()));
