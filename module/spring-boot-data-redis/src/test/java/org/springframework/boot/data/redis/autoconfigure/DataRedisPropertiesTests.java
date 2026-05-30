@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-class RedisPropertiesTests {
+class DataRedisPropertiesTests {
 
 	@Test
 	void lettuceDefaultsAreConsistent() {
@@ -37,6 +37,13 @@ class RedisPropertiesTests {
 			.build();
 		assertThat(lettuce.getCluster().getRefresh().isDynamicRefreshSources())
 			.isEqualTo(defaultClusterTopologyRefreshOptions.useDynamicRefreshSources());
+	}
+
+	@Test
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		DataRedisProperties properties = new DataRedisProperties();
+		properties.getSsl().setBundle("");
+		assertThat(properties.getSsl().isEnabled()).isFalse();
 	}
 
 }
