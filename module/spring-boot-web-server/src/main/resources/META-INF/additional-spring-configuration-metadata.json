@@ -72,7 +72,7 @@
     {
       "name": "server.error.whitelabel.enabled",
       "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
-      "defaultValue": true ,
+      "defaultValue": true,
       "deprecation": {
         "level": "error",
         "replacement": "spring.web.error.whitelabel.enabled",

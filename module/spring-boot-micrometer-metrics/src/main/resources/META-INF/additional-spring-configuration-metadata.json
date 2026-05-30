@@ -62,7 +62,7 @@
         "since": "2.1.0"
       }
     },
-        {
+    {
       "name": "management.metrics.export.appoptics.api-token",
       "type": "java.lang.String",
       "deprecation": {
@@ -1756,7 +1756,7 @@
         "since": "3.0.0"
       }
     },
-        {
+    {
       "name": "management.metrics.web.server.auto-time-requests",
       "type": "java.lang.Boolean",
       "deprecation": {

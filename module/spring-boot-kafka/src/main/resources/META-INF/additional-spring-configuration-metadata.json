@@ -1,6 +1,6 @@
 {
   "properties": [
-     {
+    {
       "name": "spring.kafka.admin.ssl.keystore-location",
       "type": "org.springframework.core.io.Resource",
       "description": "Location of the key store file.",

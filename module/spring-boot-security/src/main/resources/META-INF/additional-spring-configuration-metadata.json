@@ -1,7 +1,7 @@
 {
   "groups": [],
   "properties": [
-  	{
+    {
       "name": "spring.security.filter.dispatcher-types",
       "defaultValue": [
         "async",
