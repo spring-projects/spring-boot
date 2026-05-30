@@ -246,6 +246,21 @@ class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.bundle: ",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties().get("mail.smtp.ssl.socketFactory")).isNull();
+			});
+	}
+
+	@Test
 	void smtpSslEnabled() {
 		this.contextRunner.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.enabled:true")
 			.run((context) -> {
