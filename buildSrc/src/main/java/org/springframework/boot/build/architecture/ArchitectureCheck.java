@@ -141,17 +141,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	private void withCompileClasspath(Callable<?> callable) throws Exception {
 		ClassLoader previous = Thread.currentThread().getContextClassLoader();
-		try {
-			List<URL> urls = new ArrayList<>();
-			for (File file : getCompileClasspath().getFiles()) {
-				urls.add(file.toURI().toURL());
-			}
-			ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
-			Thread.currentThread().setContextClassLoader(classLoader);
-			callable.call();
+		List<URL> urls = new ArrayList<>();
+		for (File file : getCompileClasspath().getFiles()) {
+			urls.add(file.toURI().toURL());
 		}
-		finally {
-			Thread.currentThread().setContextClassLoader(previous);
+		try (URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader())) {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			try {
+				callable.call();
+			}
+			finally {
+				Thread.currentThread().setContextClassLoader(previous);
+			}
 		}
 	}
 
