@@ -1393,7 +1393,7 @@
     },
     {
       "name": "management.metrics.export.prometheus.pushgateway.shutdown-operation",
-      "type": "org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager$ShutdownOperation",
+      "type": "org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager$ShutdownOperation",
       "deprecation": {
         "level": "error",
         "replacement": "management.prometheus.metrics.export.pushgateway.shutdown-operation",

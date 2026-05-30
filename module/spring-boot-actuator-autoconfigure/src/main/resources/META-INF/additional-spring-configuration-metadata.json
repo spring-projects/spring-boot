@@ -201,7 +201,7 @@
     },
     {
       "name": "management.wavefront.api-token-type",
-      "type": "org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties$TokenType",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "reason": "Wavefront is end-of-life.",

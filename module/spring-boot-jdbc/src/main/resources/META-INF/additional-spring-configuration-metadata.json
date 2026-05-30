@@ -44,7 +44,7 @@
     },
     {
       "name": "spring.datasource.initialization-mode",
-      "type": "org.springframework.boot.jdbc.DataSourceInitializationMode",
+      "type": "org.springframework.boot.sql.init.DatabaseInitializationMode",
       "deprecation": {
         "level": "error",
         "replacement": "spring.sql.init.mode",
