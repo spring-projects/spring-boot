@@ -39,4 +39,11 @@ class RedisPropertiesTests {
 			.isEqualTo(defaultClusterTopologyRefreshOptions.useDynamicRefreshSources());
 	}
 
+	@Test
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		RedisProperties properties = new RedisProperties();
+		properties.getSsl().setBundle("");
+		assertThat(properties.getSsl().isEnabled()).isFalse();
+	}
+
 }

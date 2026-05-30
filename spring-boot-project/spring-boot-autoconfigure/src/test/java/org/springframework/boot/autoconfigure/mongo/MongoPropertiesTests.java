@@ -37,6 +37,13 @@ class MongoPropertiesTests {
 		assertThat(springBootDefault).isEqualTo(springDataDefault);
 	}
 
+	@Test
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		MongoProperties properties = new MongoProperties();
+		properties.getSsl().setBundle("");
+		assertThat(properties.getSsl().isEnabled()).isFalse();
+	}
+
 	private UuidRepresentation springDataDefaultUuidRepresentation() {
 		return new MongoConfigurationSupport() {
 

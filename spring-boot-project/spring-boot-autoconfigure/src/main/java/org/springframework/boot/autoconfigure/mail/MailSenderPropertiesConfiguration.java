@@ -69,7 +69,7 @@ class MailSenderPropertiesConfiguration {
 		if (ssl.isEnabled()) {
 			javaMailProperties.setProperty("mail." + protocol + ".ssl.enable", "true");
 		}
-		if (ssl.getBundle() != null) {
+		if (StringUtils.hasLength(ssl.getBundle())) {
 			SslBundle sslBundle = sslBundles.getBundle(ssl.getBundle());
 			javaMailProperties.put("mail." + protocol + ".ssl.socketFactory",
 					sslBundle.createSslContext().getSocketFactory());

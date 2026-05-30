@@ -58,4 +58,11 @@ class CassandraPropertiesTests {
 		assertThat(driverDefaults.get(TypedDriverOption.HEARTBEAT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
 	}
 
+	@Test
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		CassandraProperties properties = new CassandraProperties();
+		properties.getSsl().setBundle("");
+		assertThat(properties.getSsl().isEnabled()).isFalse();
+	}
+
 }

@@ -22,6 +22,7 @@ import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Mongo.
@@ -289,7 +290,7 @@ public class MongoProperties {
 		private String bundle;
 
 		public boolean isEnabled() {
-			return (this.enabled != null) ? this.enabled : this.bundle != null;
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(boolean enabled) {
