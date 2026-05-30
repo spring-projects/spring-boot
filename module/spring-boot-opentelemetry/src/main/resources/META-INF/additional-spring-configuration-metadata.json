@@ -15,7 +15,7 @@
     },
     {
       "name": "management.otlp.logging.compression",
-      "type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties$Compression",
+      "type": "org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingProperties$Compression",
       "description": "Method used to compress the payload.",
       "defaultValue": "none",
       "deprecation": {
