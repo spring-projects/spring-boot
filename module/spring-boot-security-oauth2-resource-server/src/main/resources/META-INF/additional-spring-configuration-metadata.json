@@ -1,7 +1,7 @@
 {
   "groups": [],
   "properties": [
-  	{
+    {
       "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
       "type": "java.lang.String",
       "deprecation": {

@@ -66,8 +66,8 @@
     }
   ],
   "hints": [
-  {
-    "name": "spring.graphql.cors.allowed-headers",
+    {
+      "name": "spring.graphql.cors.allowed-headers",
       "values": [
         {
           "value": "*"

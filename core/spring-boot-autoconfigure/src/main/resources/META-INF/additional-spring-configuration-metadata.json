@@ -54,7 +54,7 @@
         "messages"
       ]
     },
-     {
+    {
       "name": "spring.resources.add-mappings",
       "type": "java.lang.Boolean",
       "deprecation": {

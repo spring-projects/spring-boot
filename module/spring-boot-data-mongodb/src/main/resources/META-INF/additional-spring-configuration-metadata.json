@@ -1,6 +1,6 @@
 {
   "properties": [
-  	{
+    {
       "name": "management.health.mongo.enabled",
       "deprecation": {
         "level": "error",

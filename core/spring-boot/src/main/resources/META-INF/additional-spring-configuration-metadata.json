@@ -807,7 +807,7 @@
         }
       ]
     },
- 	{
+    {
       "name": "logging.structured.json.stacktrace.printer",
       "values": [
         {

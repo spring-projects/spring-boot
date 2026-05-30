@@ -31,6 +31,5 @@
       "description": "Whether to enable CSRF protection.",
       "defaultValue": false
     }
-
   ]
 }

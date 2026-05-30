@@ -1,4 +1,4 @@
-{ 
+{
   "properties": [
     {
       "name": "spring.http.codecs.preferred-json-mapper",
