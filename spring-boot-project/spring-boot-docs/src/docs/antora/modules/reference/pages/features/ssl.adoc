@@ -185,7 +185,9 @@ You can configure the quiet period (to make sure that there are no more changes)
 [[features.ssl.reloading.lets-encrypt]]
 === Reloading SSL Bundles With Let's Encrypt
 
-If you use certificates issued by https://letsencrypt.org/[Let's Encrypt] and renewed by an external tool, such as https://certbot.eff.org/[Certbot], you can configure a PEM bundle to use the files from the `live` directory and enable reloading:
+If you use certificates issued by https://letsencrypt.org/[Let's Encrypt] and renewed by an external tool, such as https://certbot.eff.org/[Certbot], you can configure a PEM bundle to use the generated files and enable reloading.
+Certbot typically stores these in `/etc/letsencrypt/live/` under a directory named after your domain.
+The following example shows how to configure a PEM bundle for `example.com`:
 
 [configprops,yaml]
 ----
@@ -193,14 +195,14 @@ If you use certificates issued by https://letsencrypt.org/[Let's Encrypt] and re
       ssl:
         bundle:
           pem:
-            web-server:
+            webserver:
               reload-on-update: true
               keystore:
                 certificate: "file:/etc/letsencrypt/live/example.com/fullchain.pem"
                 private-key: "file:/etc/letsencrypt/live/example.com/privkey.pem"
     server:
       ssl:
-        bundle: "web-server"
+        bundle: "webserver"
 ----
 
 Spring Boot does not request or renew Let's Encrypt certificates.
