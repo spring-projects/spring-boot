@@ -149,6 +149,11 @@ public class InspectedContent implements Content {
 		}
 
 		@Override
+		public void close() throws IOException {
+			this.delegate.close();
+		}
+
+		@Override
 		public void write(int b) throws IOException {
 			this.singleByteBuffer[0] = (byte) (b & 0xFF);
 			write(this.singleByteBuffer);
