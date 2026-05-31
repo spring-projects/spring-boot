@@ -153,7 +153,7 @@ The following example shows how to set up the starters in Maven:
 ----
 
 Gradle provides a few different ways to set up the starters.
-One way is to use a {url-gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement].
+One way is to use a {url-gradle-docs}/resolution_rules.html#sec:module-replacement[module replacement].
 To do so, declare a dependency on the Log4j 2 starter and tell Gradle that any occurrences of the default logging starter should be replaced by the Log4j 2 starter, as shown in the following example:
 
 [source,gradle]
