@@ -269,13 +269,13 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	}
 
-	private static final class HttpServerSslCustomizer extends SslCustomizer {
+	static final class HttpServerSslCustomizer extends SslCustomizer {
 
 		private final SslProvider sslProvider;
 
 		private final Map<String, SslProvider> serverNameSslProviders;
 
-		private HttpServerSslCustomizer(Ssl.@Nullable ClientAuth clientAuth, SslBundle sslBundle,
+		HttpServerSslCustomizer(Ssl.@Nullable ClientAuth clientAuth, SslBundle sslBundle,
 				Map<String, SslBundle> serverNameSslBundles) {
 			super(Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 			this.sslProvider = createSslProvider(sslBundle);
@@ -287,11 +287,13 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		}
 
 		private void applySecurity(SslContextSpec spec) {
-			spec.sslContext(this.sslProvider.getSslContext()).setSniAsyncMappings((serverName, promise) -> {
-				SslProvider provider = (serverName != null) ? this.serverNameSslProviders.get(serverName)
-						: this.sslProvider;
-				return promise.setSuccess(provider);
-			});
+			spec.sslContext(this.sslProvider.getSslContext())
+				.setSniAsyncMappings((serverName, promise) -> promise.setSuccess(getSslProvider(serverName)));
+		}
+
+		SslProvider getSslProvider(@Nullable String serverName) {
+			return (serverName != null) ? this.serverNameSslProviders.getOrDefault(serverName, this.sslProvider)
+					: this.sslProvider;
 		}
 
 		private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {

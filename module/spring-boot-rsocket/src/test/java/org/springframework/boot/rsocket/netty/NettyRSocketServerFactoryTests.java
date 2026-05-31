@@ -20,6 +20,8 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
@@ -267,6 +269,26 @@ class NettyRSocketServerFactoryTests {
 		testBasicSslWithPemCertificateFromBundle(testCert, testKey, testCert, Transport.WEBSOCKET);
 	}
 
+	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem" })
+	void websocketTransportSslProviderFallsBackToDefaultWhenServerNameIsUnmapped() {
+		SslBundle defaultBundle = createBundle("test-cert.pem", "test-key.pem");
+		SslBundle mappedBundle = createBundle("test-cert.pem", "test-key.pem");
+		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(
+				Ssl.ClientAuth.NONE, defaultBundle, Map.of("mapped.example", mappedBundle));
+		assertThat(customizer.getSslProvider("unmapped.example")).isSameAs(customizer.getSslProvider(null));
+	}
+
+	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem" })
+	@SuppressWarnings("NullAway") // Test null check
+	void websocketTransportSslProviderReturnsDefaultWhenServerNameIsNull() {
+		SslBundle defaultBundle = createBundle("test-cert.pem", "test-key.pem");
+		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(
+				Ssl.ClientAuth.NONE, defaultBundle, Collections.emptyMap());
+		assertThat(customizer.getSslProvider(null)).isNotNull();
+	}
+
 	private void checkEchoRequest() {
 		String payload = "test payload";
 		assertThat(this.requester).isNotNull();
@@ -336,6 +358,12 @@ class NettyRSocketServerFactoryTests {
 		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
 				: createSecureRSocketWebSocketClient();
 		checkEchoRequest();
+	}
+
+	private static SslBundle createBundle(String certificate, String certificatePrivateKey) {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:" + certificate)
+			.withPrivateKey("classpath:" + certificatePrivateKey);
+		return SslBundle.of(new PemSslStoreBundle(keyStoreDetails, null));
 	}
 
 	@Test
