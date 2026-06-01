@@ -55,8 +55,10 @@ class W3CHeaderParserTests {
 
 	@Test
 	void shouldPercentDecodeValues() {
-		Map<String, String> result = W3CHeaderParser.parse("serverNode=DF%2028,userId=Am%C3%A9lie");
-		assertThat(result).containsExactly(Map.entry("serverNode", "DF 28"), Map.entry("userId", "Amélie"));
+		Map<String, String> result = W3CHeaderParser
+			.parse("serverNode=DF%2028,userId=Am%C3%A9lie,application=%20spring+boot%20");
+		assertThat(result).containsExactly(Map.entry("serverNode", "DF 28"), Map.entry("userId", "Amélie"),
+				Map.entry("application", " spring+boot "));
 	}
 
 	@Test
