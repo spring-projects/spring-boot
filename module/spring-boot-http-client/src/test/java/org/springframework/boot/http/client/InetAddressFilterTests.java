@@ -327,6 +327,65 @@ class InetAddressFilterTests {
 			assertThat(filter).doesNotMatch("::");
 		}
 
+		@Test
+		void ipv4CurrentLocalThisNetwork() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("0.0.0.4");
+		}
+
+		@Test
+		void ipv4Subnet() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("169.254.0.1");
+			assertThat(filter).doesNotMatch("255.255.255.255");
+		}
+
+		@Test
+		void ipv4Documentation() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("192.0.2.1");
+			assertThat(filter).doesNotMatch("203.0.113.1");
+		}
+
+		@Test
+		void ipv4Multicast() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("224.0.0.1");
+		}
+
+		@Test
+		void ipv4ReservedForFutureUse() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("240.0.0.1");
+		}
+
+		@Test
+		void ipv4SharedAddressSpace() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("100.64.0.1");
+			assertThat(filter).doesNotMatch("100.127.255.254");
+		}
+
+		@Test
+		void ipv4PerformanceBenchmarking() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("198.18.0.1");
+			assertThat(filter).doesNotMatch("198.19.255.255");
+		}
+
+		@Test
+		void ipv4AllHostsMulticastGroup() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("224.0.0.1");
+			assertThat(filter).doesNotMatch("239.255.255.250");
+		}
+
+		@Test
+		void ipv6NodeLinkMulticastAddress() {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			assertThat(filter).doesNotMatch("ff02::1");
+		}
+
 	}
 
 	@Nested
@@ -517,6 +576,163 @@ class InetAddressFilterTests {
 			InetAddressFilter filter = InetAddressFilter.routable();
 			assertThat(filter).matches("0.0.0.1");
 			assertThat(filter).matches("0000:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+	}
+
+	@Nested
+	class Multicast {
+
+		@Test
+		void multicast() {
+			InetAddressFilter filter = InetAddressFilter.multicast();
+			assertThat(filter).matches("239.255.255.255");
+			assertThat(filter).matches("FF00:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+	}
+
+	@Nested
+	class SpecialPurpose {
+
+		@Test
+		void publicAddress() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).doesNotMatch("8.8.8.8");
+		}
+
+		@Test
+		void thisHostNetwork() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("0.0.0.1");
+		}
+
+		@Test
+		void privateUseNetwork() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("10.0.0.1");
+			assertThat(filter).matches("172.16.0.1");
+			assertThat(filter).matches("192.168.0.1");
+		}
+
+		@Test
+		void sharedAddressSpace() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("100.64.0.1");
+		}
+
+		@Test
+		void loopback() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("127.0.0.0");
+			assertThat(filter).matches("::1");
+		}
+
+		@Test
+		void linkLocal() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("169.254.0.1");
+		}
+
+		@Test
+		void protocolAssignments() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("192.0.0.1");
+			assertThat(filter).matches("2001:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void dsLite() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("192.0.0.1");
+		}
+
+		@Test
+		void documentation() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("192.0.2.1");
+			assertThat(filter).matches("198.51.100.1");
+			assertThat(filter).matches("203.0.113.1");
+			assertThat(filter).matches("2001:0db8:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void SixToFourRelay() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("192.88.99.1");
+		}
+
+		@Test
+		void deviceBenchmarking() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("198.18.0.1");
+			assertThat(filter).matches("2001:0002:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void futureUse() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("240.0.0.1");
+		}
+
+		@Test
+		void limitedBroadcast() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("255.255.255.255");
+		}
+
+		@Test
+		void unspecifiedAddress() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("0000:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void ipv4ToIpv6AddressTranslation() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("0064:ff9b:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void ipv4MappedAddress() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("0000:0000:0000:0000:0000:ffff:0000:0001");
+		}
+
+		@Test
+		void discardOnly() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("0100:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void teredo() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("2001:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void orchid() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("2001:10:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void sixToFour() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("2002:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void uniqueLocal() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("fc00:0000:0000:0000:0000:0000:0000:0001");
+		}
+
+		@Test
+		void linkedScopedUnicast() {
+			InetAddressFilter filter = InetAddressFilter.specialPurpose();
+			assertThat(filter).matches("fe80:0000:0000:0000:0000:0000:0000:0001");
 		}
 
 	}

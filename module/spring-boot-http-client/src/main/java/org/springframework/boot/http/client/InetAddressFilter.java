@@ -185,12 +185,16 @@ public interface InetAddressFilter {
 
 	/**
 	 * Return a filter that will match external (non-private) IP addresses. External
-	 * addresses are all non-{@link #internalAddresses() internal addresses}
+	 * addresses are all {@link #routable() routable} addresses that are not:
+	 * <ul>
+	 * <li>{@link #multicast() multicast}</li>
+	 * <li>{@link #specialPurpose() special purpose}</li>
+	 * </ul>
 	 * @return a filter for external IP addresses
 	 * @see #internalAddresses()
 	 */
 	static InetAddressFilter externalAddresses() {
-		return routable().andNot(InternalInetAddressFilter.instance);
+		return routable().andNot(multicast(), specialPurpose());
 	}
 
 	/**
@@ -222,6 +226,27 @@ public interface InetAddressFilter {
 			}
 			return false;
 		};
+	}
+
+	/**
+	 * Returns a filter that will match all multicast addresses.
+	 * @return a filter for multicast IP addresses
+	 */
+	static InetAddressFilter multicast() {
+		return InetAddress::isMulticastAddress;
+	}
+
+	/**
+	 * Returns a filter that will match special purpose IP addresses as defined by
+	 * <a href="https://www.rfc-editor.org/info/rfc6890">RFC 6890</a>.
+	 * @return a filter for this network
+	 */
+	static InetAddressFilter specialPurpose() {
+		return of("0.0.0.0/8", "100.64.0.0/10", "127.0.0.0/8", "169.254.0.0/16", "192.0.0.0/24", "192.0.0.0/29",
+				"192.0.2.0/24", "192.88.99.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4",
+				"255.255.255.255/32", "::1/128", "::/128", "64:ff9b::/96", "100::/64", "2001::/23", "2001::/32",
+				"2001:2::/48", "2001:db8::/32", "2001:10::/28", "2002::/16", "fc00::/7", "fe80::/10")
+			.or(InternalInetAddressFilter.instance);
 	}
 
 	/**
