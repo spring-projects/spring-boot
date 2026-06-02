@@ -21,6 +21,7 @@ import java.time.Duration;
 
 import javax.sql.DataSource;
 
+import oracle.ucp.config.PoolPropertiesException;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import oracle.ucp.util.OpaqueString;
@@ -123,13 +124,20 @@ class OracleUcpDataSourceConfigurationTests {
 				assertThat(dataSource).isInstanceOf(PoolDataSourceImpl.class);
 				PoolDataSourceImpl oracleUcp = (PoolDataSourceImpl) dataSource;
 				assertThat(oracleUcp.getUser()).isEqualTo("user-1");
-				assertThat(oracleUcp).extracting("password")
-					.extracting((o) -> ((OpaqueString) o).get())
-					.isEqualTo("password-1");
+				assertThat(oracleUcp).extracting(this::getPassword).isEqualTo("password-1");
 				assertThat(oracleUcp.getConnectionFactoryClassName())
 					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 				assertThat(oracleUcp.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
+	}
+
+	private String getPassword(PoolDataSource target) {
+		try {
+			return ((OpaqueString) target.getPoolProperties().getPoolProperty("password")).get();
+		}
+		catch (PoolPropertiesException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }
