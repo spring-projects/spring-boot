@@ -785,7 +785,7 @@ bom {
 			releaseNotes("https://github.com/jakartaee/jsonp-api/releases/tag/{version}-RELEASE")
 		}
 	}
-	library("Jakarta Json Bind", "3.0.1") {
+	library("Jakarta Json Bind", "3.0.2") {
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
