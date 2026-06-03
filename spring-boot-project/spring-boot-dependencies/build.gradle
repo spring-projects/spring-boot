@@ -988,7 +988,7 @@ bom {
 			]
 		}
 	}
-	library("Jaxen", "2.0.3") {
+	library("Jaxen", "2.0.5") {
 		group("jaxen") {
 			modules = [
 				"jaxen"
