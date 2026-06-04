@@ -90,3 +90,9 @@ tasks.named("compileTestJava") {
 tasks.named("compileDockerTestJava") {
 	options.nullability.checking = "tests"
 }
+
+tasks.named("dockerTest") {
+	systemProperties = [
+		"io.netty.handler.ssl.defaultEndpointVerificationAlgorithm" : "NONE"
+	]
+}
