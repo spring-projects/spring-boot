@@ -30,12 +30,14 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.catalina.webresources.WarResourceSet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link TomcatEmbeddedWebappClassLoader}.
@@ -105,6 +107,30 @@ class TomcatEmbeddedWebappClassLoaderTests {
 			out.putNextEntry(new ZipEntry(name));
 			out.closeEntry();
 		}
+	}
+
+	@Test
+	void checkStateForResourceLoadingDoesNotRecursivelyLoop() throws Exception {
+		URLClassLoader parent = new URLClassLoader(new URL[0], null);
+		try (TomcatEmbeddedWebappClassLoader classLoader = new TomcatEmbeddedWebappClassLoader(parent) {
+			@Override
+			public @Nullable URL findResource(String name) {
+				checkStateForResourceLoading(name);
+				return null;
+			}
+		}) {
+			StandardContext context = new StandardContext();
+			context.setName("test");
+			StandardRoot resources = new StandardRoot();
+			resources.setContext(context);
+			resources.start();
+			classLoader.setResources(resources);
+			classLoader.start();
+			classLoader.stop();
+			assertThatIllegalStateException().isThrownBy(() -> classLoader.getResource("test.properties"));
+			resources.stop();
+		}
+		parent.close();
 	}
 
 	interface ClassLoaderConsumer {

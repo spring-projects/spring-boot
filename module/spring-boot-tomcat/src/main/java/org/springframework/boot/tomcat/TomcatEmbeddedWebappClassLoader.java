@@ -127,4 +127,27 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		}
 	}
 
+	private static final ThreadLocal<Boolean> checkingState = ThreadLocal.withInitial(() -> false);
+
+	@Override
+	protected void checkStateForResourceLoading(String name) throws IllegalStateException {
+		// 1. If this thread is already executing this method, break the recursive loop
+		// immediately!
+		if (checkingState.get()) {
+			return;
+		}
+		try {
+			// 2. Mark this thread as "actively checking"
+			checkingState.set(true);
+
+			// 3. Forward the execution to Tomcat's original lifecycle behavior
+			super.checkStateForResourceLoading(name);
+		}
+		finally {
+			// 4. Always clear the flag when leaving so the thread can reuse it safely
+			// later
+			checkingState.remove();
+		}
+	}
+
 }
