@@ -269,7 +269,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @throws AssertionError if the application context contains multiple beans of the
 	 * given type
 	 */
-	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type, Scope scope) {
+	public <T> AbstractObjectAssert<?, @Nullable T> getBean(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
 			throwAssertionError(
@@ -329,7 +329,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * is found
 	 * @throws AssertionError if the application context did not start
 	 */
-	public AbstractObjectAssert<?, Object> getBean(String name) {
+	public AbstractObjectAssert<?, @Nullable Object> getBean(String name) {
 		if (this.startupFailure != null) {
 			throwAssertionError(
 					contextFailedToStartWhenExpecting(this.startupFailure, "to contain a bean of name:%n <%s>", name));
@@ -356,7 +356,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * name but a different type
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
+	public <T> AbstractObjectAssert<?, @Nullable T> getBean(String name, Class<T> type) {
 		if (this.startupFailure != null) {
 			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
 					"to contain a bean of name:%n <%s> (%s)", name, type));
