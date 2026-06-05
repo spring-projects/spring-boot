@@ -30,6 +30,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.util.Timeout;
 import org.assertj.core.extractor.Extractors;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -41,19 +42,24 @@ import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientPropertiesAutoConfiguration;
+import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
@@ -64,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -79,6 +86,12 @@ class HttpServiceClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HttpServiceClientPropertiesAutoConfiguration.class,
+				HttpServiceClientAutoConfiguration.class, ImperativeHttpClientAutoConfiguration.class,
+				RestClientAutoConfiguration.class));
+
+	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, HttpServiceClientPropertiesAutoConfiguration.class,
 				HttpServiceClientAutoConfiguration.class, ImperativeHttpClientAutoConfiguration.class,
 				RestClientAutoConfiguration.class));
 
@@ -108,6 +121,24 @@ class HttpServiceClientAutoConfigurationTests {
 					.andRespond(withSuccess().body("boot!"));
 				TestClientTwo clientTwo = context.getBean(TestClientTwo.class);
 				assertThat(clientTwo.there()).isEqualTo("boot!");
+			});
+	}
+
+	@Test // gh-50695
+	void configuresClientMessageConvertersInReactiveWebApplication() {
+		this.reactiveContextRunner
+			.withPropertyValues("spring.jackson.default-property-inclusion=non_empty",
+					"spring.http.serviceclient.one.base-url=https://example.com")
+			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class)
+			.run((context) -> {
+				MockRestServiceServerConfiguration mockServers = context
+					.getBean(MockRestServiceServerConfiguration.class);
+				MockRestServiceServer serverOne = mockServers.getMock("one");
+				serverOne.expect(requestTo("https://example.com/items"))
+					.andExpect(content().string("{\"name\":\"spring\"}"))
+					.andRespond(withSuccess());
+				TestClientOne clientOne = context.getBean(TestClientOne.class);
+				clientOne.create(new TestPayload("spring", null, new String[0]));
 			});
 	}
 
@@ -308,6 +339,9 @@ class HttpServiceClientAutoConfigurationTests {
 		@GetExchange("/hello")
 		String hello();
 
+		@PostExchange("/items")
+		void create(@RequestBody TestPayload payload);
+
 	}
 
 	interface TestClientTwo {
@@ -315,6 +349,9 @@ class HttpServiceClientAutoConfigurationTests {
 		@GetExchange("/there")
 		String there();
 
+	}
+
+	record TestPayload(String name, @Nullable String description, String[] tags) {
 	}
 
 }
