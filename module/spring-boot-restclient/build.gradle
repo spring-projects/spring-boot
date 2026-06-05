@@ -30,6 +30,7 @@ dependencies {
 	implementation(project(":module:spring-boot-http-converter"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("org.apache.httpcomponents.client5:httpclient5")

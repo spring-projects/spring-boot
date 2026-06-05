@@ -16,6 +16,8 @@
 
 package org.springframework.boot.restclient.autoconfigure;
 
+import tools.jackson.databind.json.JsonMapper;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -39,6 +41,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -55,7 +58,8 @@ import org.springframework.web.client.RestClient.Builder;
  * @since 4.0.0
  */
 @AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class,
-		SslAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		SslAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class },
+		afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass(RestClient.class)
 public final class RestClientAutoConfiguration {
 
@@ -90,6 +94,21 @@ public final class RestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		return restClientBuilderConfigurer.configure(RestClient.builder());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JsonMapper.class)
+	static class JacksonConfiguration {
+
+		@Bean
+		@ConditionalOnBean(JsonMapper.class)
+		@ConditionalOnMissingBean(ClientHttpMessageConvertersCustomizer.class)
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		RestClientCustomizer jacksonRestClientCustomizer(JsonMapper jsonMapper) {
+			return (builder) -> builder.configureMessageConverters(
+					(converters) -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(jsonMapper)));
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
