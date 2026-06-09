@@ -72,10 +72,6 @@ tasks.register("syncJdkDownloads", Sync) {
 	into layout.buildDirectory.dir("downloads/jdk/bellsoft/")
 }
 
-tasks.named("processDockerTestResources").configure {
-	dependsOn syncJdkDownloads
-}
-
 tasks.named("dockerTest").configure {
-	dependsOn buildApp
+	dependsOn buildApp, syncJdkDownloads
 }
