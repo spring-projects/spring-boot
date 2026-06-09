@@ -411,6 +411,13 @@ class EmbeddedLdapAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void sslIsNotEnabledWhenBundleIsEmpty() {
+		EmbeddedLdapProperties properties = new EmbeddedLdapProperties();
+		properties.getSsl().setBundle("");
+		assertThat(properties.getSsl().isEnabled()).isFalse();
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class LdapClientConfiguration {
 
