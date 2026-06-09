@@ -2321,7 +2321,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 		}
 	}
-	library("SAAJ Impl", "3.0.5") {
+	library("SAAJ Impl", "3.0.6") {
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
