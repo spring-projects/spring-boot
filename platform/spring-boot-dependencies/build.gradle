@@ -2603,7 +2603,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-grpc/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "3.1.0-SNAPSHOT") {
+	library("Spring HATEOAS", "3.1.1") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
