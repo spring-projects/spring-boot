@@ -27,10 +27,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * Service details for Graylog Extended Log Format structured logging.
+ * Properties for Graylog Extended Log Format structured logging.
  *
  * @param host the application name
- * @param service the version of the application
+ * @param service service details
  * @author Samuel Lissner
  * @author Phillip Webb
  * @since 3.4.0
