@@ -1065,7 +1065,7 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
 		}
 	}
-	library("Jetty Reactive HTTPClient", "4.0.13") {
+	library("Jetty Reactive HTTPClient", "4.0.14") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
