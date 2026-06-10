@@ -16,8 +16,6 @@
 
 package org.springframework.boot.artemis.autoconfigure;
 
-import java.io.File;
-
 import org.apache.activemq.artemis.api.core.QueueConfiguration;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.SimpleString;
@@ -30,6 +28,8 @@ import org.apache.activemq.artemis.core.server.JournalType;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.boot.system.ApplicationTemp;
 
 /**
  * Configuration used to create the embedded Artemis server.
@@ -84,8 +84,7 @@ class ArtemisEmbeddedConfigurationFactory {
 		if (this.properties.getDataDirectory() != null) {
 			return this.properties.getDataDirectory();
 		}
-		String tempDirectory = System.getProperty("java.io.tmpdir");
-		return new File(tempDirectory, "artemis-data").getAbsolutePath();
+		return new ApplicationTemp().getDir("artemis-data").getAbsolutePath();
 	}
 
 }
