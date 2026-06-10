@@ -156,6 +156,11 @@ public class MailProperties {
 		private boolean enabled;
 
 		/**
+		 * Whether to enable hostname verification.
+		 */
+		private boolean verifyHostname = true;
+
+		/**
 		 * SSL bundle name. If set, 'mail.(protocol).ssl.socketFactory' property is set to
 		 * an SSLSocketFactory obtained from the corresponding SSL bundle.
 		 * <p>
@@ -170,6 +175,14 @@ public class MailProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		public boolean isVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 		public @Nullable String getBundle() {
