@@ -30,12 +30,10 @@ site:
 content:
   sources:
   - url: .
-    branches:
-    - '3.5.x'
     tags:
     - 'v3.3.13'
     - 'v3.4.13'
-    - 'v3.5.*'
+    - 'v3.5.15'
     start_paths:
     - spring-boot-project/spring-boot-docs/src/docs/antora
     - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
