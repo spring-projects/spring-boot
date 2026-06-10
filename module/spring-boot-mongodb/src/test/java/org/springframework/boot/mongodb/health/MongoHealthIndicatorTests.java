@@ -35,12 +35,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Seonwoo Jung
  */
 class MongoHealthIndicatorTests {
 
@@ -52,19 +54,45 @@ class MongoHealthIndicatorTests {
 		MongoClient mongoClient = mock(MongoClient.class);
 		MongoIterable<String> databaseNames = mock(MongoIterable.class);
 		willAnswer((invocation) -> {
-			((Consumer<String>) invocation.getArgument(0)).accept("db");
+			((Consumer<String>) invocation.getArgument(0)).accept("test");
+			((Consumer<String>) invocation.getArgument(0)).accept("admin");
 			return null;
 		}).given(databaseNames).forEach(any());
 		given(mongoClient.listDatabaseNames()).willReturn(databaseNames);
-		MongoDatabase mongoDatabase = mock(MongoDatabase.class);
-		given(mongoClient.getDatabase("db")).willReturn(mongoDatabase);
-		given(mongoDatabase.runCommand(Document.parse("{ hello: 1 }"))).willReturn(commandResult);
+		MongoDatabase adminDatabase = mock(MongoDatabase.class);
+		given(mongoClient.getDatabase("admin")).willReturn(adminDatabase);
+		given(adminDatabase.runCommand(Document.parse("{ hello: 1 }"))).willReturn(commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("maxWireVersion", 10);
-		assertThat(health.getDetails()).containsEntry("databases", List.of("db"));
+		assertThat(health.getDetails()).containsEntry("databases", List.of("test", "admin"));
 		then(commandResult).should().getInteger("maxWireVersion");
+		// the hello command must only be run once, never per listed database
+		then(mongoClient).should(never()).getDatabase("test");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void mongoUsesFirstDatabaseWhenAdminIsNotVisible() {
+		Document commandResult = mock(Document.class);
+		given(commandResult.getInteger("maxWireVersion")).willReturn(10);
+		MongoClient mongoClient = mock(MongoClient.class);
+		MongoIterable<String> databaseNames = mock(MongoIterable.class);
+		willAnswer((invocation) -> {
+			((Consumer<String>) invocation.getArgument(0)).accept("test");
+			return null;
+		}).given(databaseNames).forEach(any());
+		given(mongoClient.listDatabaseNames()).willReturn(databaseNames);
+		MongoDatabase database = mock(MongoDatabase.class);
+		given(mongoClient.getDatabase("test")).willReturn(database);
+		given(database.runCommand(Document.parse("{ hello: 1 }"))).willReturn(commandResult);
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("maxWireVersion", 10);
+		assertThat(health.getDetails()).containsEntry("databases", List.of("test"));
+		then(mongoClient).should(never()).getDatabase("admin");
 	}
 
 	@Test
