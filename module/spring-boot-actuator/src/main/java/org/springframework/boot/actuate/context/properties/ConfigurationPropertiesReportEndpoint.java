@@ -337,7 +337,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
 			return value;
 		}
-		if (CharSequence.class.isAssignableFrom(value.getClass())) {
+		if (value instanceof CharSequence) {
 			return value.toString();
 		}
 		return "Complex property value " + value.getClass().getName();

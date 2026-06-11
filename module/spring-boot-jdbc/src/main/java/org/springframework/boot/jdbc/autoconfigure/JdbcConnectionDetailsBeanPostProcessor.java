@@ -49,7 +49,7 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProc
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (this.dataSourceClass.isAssignableFrom(bean.getClass()) && "dataSource".equals(beanName)) {
+		if (this.dataSourceClass.isInstance(bean) && "dataSource".equals(beanName)) {
 			JdbcConnectionDetails connectionDetails = this.connectionDetailsProvider.getObject();
 			if (!(connectionDetails instanceof PropertiesJdbcConnectionDetails)) {
 				return processDataSource((T) bean, connectionDetails);

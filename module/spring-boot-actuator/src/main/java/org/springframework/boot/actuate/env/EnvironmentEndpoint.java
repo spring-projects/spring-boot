@@ -208,11 +208,10 @@ public class EnvironmentEndpoint {
 	}
 
 	protected @Nullable Object stringifyIfNecessary(@Nullable Object value) {
-		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass())
-				|| Number.class.isAssignableFrom(value.getClass())) {
+		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof Number) {
 			return value;
 		}
-		if (CharSequence.class.isAssignableFrom(value.getClass())) {
+		if (value instanceof CharSequence) {
 			return value.toString();
 		}
 		return "Complex property type " + value.getClass().getName();

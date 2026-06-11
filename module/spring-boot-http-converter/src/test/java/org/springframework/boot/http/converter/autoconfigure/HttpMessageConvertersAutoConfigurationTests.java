@@ -465,18 +465,14 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	private void assertConverterIsRegistered(AssertableApplicationContext context,
 			Class<? extends HttpMessageConverter<?>> converterType) {
-		assertThat(getClientConverters(context)).filteredOn((c) -> converterType.isAssignableFrom(c.getClass()))
-			.hasSize(1);
-		assertThat(getServerConverters(context)).filteredOn((c) -> converterType.isAssignableFrom(c.getClass()))
-			.hasSize(1);
+		assertThat(getClientConverters(context)).filteredOn(converterType::isInstance).hasSize(1);
+		assertThat(getServerConverters(context)).filteredOn(converterType::isInstance).hasSize(1);
 	}
 
 	private void assertConverterIsNotRegistered(AssertableApplicationContext context,
 			Class<? extends HttpMessageConverter<?>> converterType) {
-		assertThat(getClientConverters(context)).filteredOn((c) -> converterType.isAssignableFrom(c.getClass()))
-			.isEmpty();
-		assertThat(getServerConverters(context)).filteredOn((c) -> converterType.isAssignableFrom(c.getClass()))
-			.isEmpty();
+		assertThat(getClientConverters(context)).filteredOn(converterType::isInstance).isEmpty();
+		assertThat(getServerConverters(context)).filteredOn(converterType::isInstance).isEmpty();
 	}
 
 	private void assertBeanExists(AssertableApplicationContext context, Class<?> type, String beanName) {
@@ -504,7 +500,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	private <T extends HttpMessageConverter<?>> T findConverter(HttpMessageConverters converters,
 			Class<? extends HttpMessageConverter<?>> type) {
 		for (HttpMessageConverter<?> converter : converters) {
-			if (type.isAssignableFrom(converter.getClass())) {
+			if (type.isInstance(converter)) {
 				return (T) converter;
 			}
 		}
@@ -589,8 +585,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 		@Bean
 		JacksonJsonHttpMessageConverter customJacksonMessageConverter(JsonMapper jsonMapperMapper) {
-			JacksonJsonHttpMessageConverter converter = new JacksonJsonHttpMessageConverter(jsonMapperMapper);
-			return converter;
+			return new JacksonJsonHttpMessageConverter(jsonMapperMapper);
 		}
 
 	}

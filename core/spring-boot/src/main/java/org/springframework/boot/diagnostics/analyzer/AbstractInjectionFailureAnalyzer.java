@@ -64,7 +64,7 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 		Throwable candidate = root;
 		C result = null;
 		while (candidate != null) {
-			if (type.isAssignableFrom(candidate.getClass())) {
+			if (type.isInstance(candidate)) {
 				result = (C) candidate;
 			}
 			candidate = candidate.getCause();
