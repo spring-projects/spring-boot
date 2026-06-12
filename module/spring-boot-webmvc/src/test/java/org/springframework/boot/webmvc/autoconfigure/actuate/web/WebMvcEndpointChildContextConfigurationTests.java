@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,6 +68,16 @@ class WebMvcEndpointChildContextConfigurationTests {
 	void contextShouldConfigureDispatcherServletPathWithRootPath() {
 		this.contextRunner.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
 			.run((context) -> assertThat(context.getBean(DispatcherServletPath.class).getPath()).isEqualTo("/"));
+	}
+
+	@Test // gh-4929
+	void contextShouldUseManagementChildDelegatingWebMvcConfiguration() {
+		this.contextRunner.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DelegatingWebMvcConfiguration.class);
+				assertThat(context.getBean(DelegatingWebMvcConfiguration.class))
+					.isInstanceOf(ManagementChildDelegatingWebMvcConfiguration.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

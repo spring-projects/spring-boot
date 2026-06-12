@@ -37,12 +37,18 @@ import org.springframework.core.Ordered;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
  * infrastructure when a separate management context with a web server running on a
  * different port is required.
+ * <p>
+ * Uses {@link ManagementChildDelegatingWebMvcConfiguration} rather than
+ * {@code @EnableWebMvc}/{@code DelegatingWebMvcConfiguration} to prevent
+ * {@code WebMvcConfigurer} beans from the parent (main) application context from being
+ * applied to the management context. This avoids duplicate execution of callback methods
+ * such as {@code addResourceHandlers} and {@code addViewControllers}.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
@@ -51,7 +57,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
-@EnableWebMvc
+@Import(ManagementChildDelegatingWebMvcConfiguration.class)
 class WebMvcEndpointChildContextConfiguration {
 
 	/*
