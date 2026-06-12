@@ -874,7 +874,7 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 
 NOTE: The use of javadoc:java.util.Optional[] with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
-For consistency with properties of other types, if you do declare an javadoc:java.util.Optional[] property and it has no value, `null` rather than an empty javadoc:java.util.Optional[] will be bound.
+If you do declare an javadoc:java.util.Optional[] constructor-bound property and it has no value, an empty javadoc:java.util.Optional[] will be bound.
 
 TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the javadoc:org.springframework.boot.context.properties.bind.Name[format=annotation] annotation on the constructor parameter.
 
