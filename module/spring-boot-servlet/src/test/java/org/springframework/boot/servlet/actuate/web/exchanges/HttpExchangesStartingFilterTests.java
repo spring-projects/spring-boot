@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
-import org.springframework.boot.actuate.web.exchanges.HttpExchange.Session;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.mock.web.MockFilterChain;
@@ -40,60 +39,69 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link HttpExchangesFilter}.
+ * Tests for {@link HttpExchangesStartingFilter}.
  *
- * @author Dave Syer
- * @author Wallace Wadge
- * @author Phillip Webb
- * @author Andy Wilkinson
- * @author Venil Noronha
- * @author Stephane Nicoll
- * @author Madhura Bhave
+ * @author Spring Boot Team
  */
-class HttpExchangesFilterTests {
+class HttpExchangesStartingFilterTests {
 
 	private final InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 
-	private final HttpExchangesFilter filter = new HttpExchangesFilter(this.repository, EnumSet.allOf(Include.class));
+	private final HttpExchangesStartingFilter filter = new HttpExchangesStartingFilter(this.repository,
+			EnumSet.allOf(Include.class));
 
 	@Test
-	void filterRecordsExchange() throws ServletException, IOException {
+	void filterRecordsExchangeWhenChainCompletesNormally() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
-	void filterRecordsSessionId() throws ServletException, IOException {
-		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
-				new MockFilterChain(new HttpServlet() {
-
-					@Override
-					protected void service(HttpServletRequest req, HttpServletResponse resp)
-							throws ServletException, IOException {
-						req.getSession(true);
-					}
-
-				}));
-		assertThat(this.repository.findAll()).hasSize(1);
-		Session session = this.repository.findAll().get(0).getSession();
-		assertThat(session).isNotNull();
-		assertThat(session.getId()).isNotNull();
+	void filterSetsStartedAttributeOnRequest() throws ServletException, IOException {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain(new HttpServlet() {
+			@Override
+			protected void service(HttpServletRequest req, HttpServletResponse resp)
+					throws ServletException, IOException {
+				// attribute must be set before the chain runs
+				assertThat(req.getAttribute(HttpExchangesStartingFilter.ATTRIBUTE_STARTED))
+					.isInstanceOf(HttpExchange.Started.class);
+			}
+		}));
 	}
 
 	@Test
-	void filterRecordsPrincipal() throws ServletException, IOException {
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		Principal principal = mock(Principal.class);
-		given(principal.getName()).willReturn("alice");
-		request.setUserPrincipal(principal);
-		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
+	void filterDoesNotRecordWhenFinishedAttributeIsSet() throws ServletException, IOException {
+		// Simulate HttpExchangesFilter having already recorded (sets ATTRIBUTE_FINISHED)
+		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
+				new MockFilterChain(new HttpServlet() {
+					@Override
+					protected void service(HttpServletRequest req, HttpServletResponse resp)
+							throws ServletException, IOException {
+						req.setAttribute(HttpExchangesStartingFilter.ATTRIBUTE_FINISHED, Boolean.TRUE);
+					}
+				}));
+		// Starting filter must NOT add a second record
+		assertThat(this.repository.findAll()).isEmpty();
+	}
+
+	@Test
+	void filterRecordsWhenChainTerminatesEarly() throws ServletException, IOException {
+		// Simulate Spring Security short-circuiting: chain does not call the next filter,
+		// ATTRIBUTE_FINISHED is never set, so the starting filter records the exchange.
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.setStatus(401);
+		this.filter.doFilter(new MockHttpServletRequest(), response, new MockFilterChain(new HttpServlet() {
+			@Override
+			protected void service(HttpServletRequest req, HttpServletResponse resp)
+					throws ServletException, IOException {
+				resp.setStatus(401);
+				// Intentionally does NOT call filterChain.doFilter() —
+				// simulates security filter short-circuiting.
+			}
+		}));
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal recordedPrincipal = this.repository
-			.findAll()
-			.get(0)
-			.getPrincipal();
-		assertThat(recordedPrincipal).isNotNull();
-		assertThat(recordedPrincipal.getName()).isEqualTo("alice");
+		assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(401);
 	}
 
 	@Test
@@ -115,6 +123,19 @@ class HttpExchangesFilterTests {
 	}
 
 	@Test
+	void filterRecordsPrincipal() throws ServletException, IOException {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		Principal principal = mock(Principal.class);
+		given(principal.getName()).willReturn("alice");
+		request.setUserPrincipal(principal);
+		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
+		assertThat(this.repository.findAll()).hasSize(1);
+		HttpExchange.Principal recordedPrincipal = this.repository.findAll().get(0).getPrincipal();
+		assertThat(recordedPrincipal).isNotNull();
+		assertThat(recordedPrincipal.getName()).isEqualTo("alice");
+	}
+
+	@Test
 	void filterRejectsInvalidRequests() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName("<script>alert(document.domain)</script>");
@@ -123,42 +144,8 @@ class HttpExchangesFilterTests {
 	}
 
 	@Test
-	void filterReusesStartedExchangeFromStartingFilter() throws ServletException, IOException {
-		// Simulate HttpExchangesStartingFilter having set the ATTRIBUTE_STARTED
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		HttpExchange.Started preStarted = HttpExchange.start(new RecordableServletHttpRequest(request));
-		request.setAttribute(HttpExchangesStartingFilter.ATTRIBUTE_STARTED, preStarted);
-
-		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
-
-		// Exchange is recorded exactly once
-		assertThat(this.repository.findAll()).hasSize(1);
-	}
-
-	@Test
-	void filterSetsFinishedAttributeAfterRecording() throws ServletException, IOException {
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
-
-		// ATTRIBUTE_FINISHED must be set so HttpExchangesStartingFilter won't
-		// double-record
-		assertThat(request.getAttribute(HttpExchangesStartingFilter.ATTRIBUTE_FINISHED)).isEqualTo(Boolean.TRUE);
-	}
-
-	@Test
-	void twoFiltersCombinedRecordExchangeOnce() throws ServletException, IOException {
-		HttpExchangesStartingFilter startingFilter = new HttpExchangesStartingFilter(this.repository,
-				EnumSet.allOf(Include.class));
-
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		MockHttpServletResponse response = new MockHttpServletResponse();
-
-		// Execute the starting filter; its chain delegate calls the finishing filter.
-		startingFilter.doFilter(request, response,
-				(req, resp) -> this.filter.doFilter(req, resp, new MockFilterChain()));
-
-		// Only one exchange should be recorded despite two filters running.
-		assertThat(this.repository.findAll()).hasSize(1);
+	void filterOrderIsHighestPrecedencePlusOne() {
+		assertThat(this.filter.getOrder()).isEqualTo(Integer.MIN_VALUE + 1);
 	}
 
 }
