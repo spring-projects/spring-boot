@@ -53,6 +53,7 @@ import org.springframework.boot.security.oauth2.server.resource.autoconfigure.Jw
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -429,6 +430,18 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
 				assertSpringReactiveOpaqueTokenIntrospectorBuilderCustomization(context);
 			});
+	}
+
+	@Test
+	@ClassPathExclusions("spring-webflux-*.jar")
+	void withoutWebFluxWhenIntrospectionUriIsAvailableNoTokenIntrospectorIsConfigured() {
+		new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
+			.withPropertyValues(
+					"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOpaqueTokenIntrospector.class));
 	}
 
 	private void assertSpringReactiveOpaqueTokenIntrospectorBuilderCustomization(

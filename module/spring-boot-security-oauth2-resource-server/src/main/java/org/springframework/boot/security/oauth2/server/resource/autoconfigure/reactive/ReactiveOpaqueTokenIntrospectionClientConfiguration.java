@@ -17,6 +17,7 @@
 package org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerProperties;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringReactiveOpaqueTokenIntrospector;
 import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configures an {@link ReactiveOpaqueTokenIntrospector} when a token introspection
@@ -34,6 +36,7 @@ import org.springframework.util.Assert;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(ReactiveOpaqueTokenIntrospector.class)
+@ConditionalOnClass(WebClient.class)
 class ReactiveOpaqueTokenIntrospectionClientConfiguration {
 
 	@Bean
