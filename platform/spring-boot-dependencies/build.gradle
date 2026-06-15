@@ -1915,17 +1915,6 @@ bom {
 			releaseNotes("https://qpid.apache.org/releases/qpid-protonj2-{version}/release-notes.html")
 		}
 	}
-	library("Protobuf Common Protos", "2.70.0") {
-		group("com.google.api.grpc") {
-			modules = [
-				"proto-google-common-protos"
-			]
-		}
-		links {
-			github("https://github.com/googleapis/sdk-platform-java")
-			releaseNotes("https://github.com/googleapis/sdk-platform-java/releases/tag/v-{version}")
-		}
-	}
 	library("Protobuf Java", "4.34.2") {
 		group("com.google.protobuf") {
 			bom("protobuf-bom")
