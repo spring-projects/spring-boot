@@ -562,6 +562,12 @@ bom {
 		group("io.grpc") {
 			bom("grpc-bom")
 		}
+		alignWith {
+			version {
+				of "io.grpc:grpc-core"
+				from "org.springframework.grpc:spring-grpc-core"
+			}
+		}
 		links {
 			github("https://github.com/grpc/grpc-java")
 			docs("https://grpc.io/docs/languages/java/")
@@ -1919,6 +1925,12 @@ bom {
 		group("com.google.protobuf") {
 			bom("protobuf-bom")
 		}
+		alignWith {
+			property {
+				name "protobuf-java.version"
+				of "org.springframework.grpc:spring-grpc-dependencies:$springGrpcVersion"
+			}
+		}
 		links {
 			site("https://protobuf.dev")
 			github("https://github.com/protocolbuffers/protobuf")
@@ -2575,7 +2587,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring gRPC", "1.1.0") {
+	library("Spring gRPC", "${springGrpcVersion}") {
 		considerSnapshots()
 		group("org.springframework.grpc") {
 			modules = [

@@ -664,6 +664,9 @@ public class Library {
 		}
 
 		private List<Dependency> getBomDependencies(Library manager) {
+			if (manager == null) {
+				return Collections.emptyList();
+			}
 			return manager.getGroups()
 				.stream()
 				.flatMap((group) -> group.getBoms()
