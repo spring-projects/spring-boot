@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link AggregateBinder} for Maps.
@@ -64,6 +65,9 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				if (property != null) {
 					getContext().setConfigurationProperty(property);
 					Object result = getContext().getPlaceholdersResolver().resolvePlaceholders(property.getValue());
+					if (ObjectUtils.isEmpty(result)) {
+						return createMap(target);
+					}
 					return getContext().getConverter().convert(result, target);
 				}
 			}

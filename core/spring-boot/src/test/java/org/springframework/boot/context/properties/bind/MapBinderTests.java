@@ -275,6 +275,15 @@ class MapBinderTests {
 	}
 
 	@Test
+	void bindToMapWhenEmptyStringShouldReturnEmptyMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "");
+		this.sources.add(source);
+		Map<String, String> result = this.binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(result).isEmpty();
+	}
+
+	@Test
 	void bindToMapShouldConvertKey() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
@@ -508,6 +517,17 @@ class MapBinderTests {
 		NestableFoo foo2 = foo.get().getFoos().get("foo2");
 		assertThat(foo2).isNotNull();
 		assertThat(foo2.getValue()).isEqualTo("three");
+	}
+
+	@Test
+	void nestedMapsWhenEmptyStringShouldReturnEmptyMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "one");
+		source.put("foo.foos", "");
+		this.sources.add(source);
+		BindResult<NestableFoo> foo = this.binder.bind("foo", NestableFoo.class);
+		assertThat(foo.get().getValue()).isEqualTo("one");
+		assertThat(foo.get().getFoos()).isEmpty();
 	}
 
 	@Test
