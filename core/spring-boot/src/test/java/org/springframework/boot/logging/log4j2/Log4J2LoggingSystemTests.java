@@ -96,6 +96,7 @@ import static org.mockito.Mockito.times;
  * @author Madhura Bhave
  * @author Piotr P. Karwasz
  * @author Stephane Nicoll
+ * @author Dhruv Rastogi
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -420,6 +421,27 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(logger.getLevel()).isNull();
 		loggingSystem.setLogLevel(Log4J2LoggingSystemTests.class.getName(), LogLevel.DEBUG);
 		assertThat(logger.getLevel()).isEqualTo(Level.FINE);
+	}
+
+	@Test
+	void cleanUpLeavesBridgeHandlerInstalledByTheApplicationInPlace() {
+		// gh-33697: the application manages its own JUL-to-Log4j bridge, so Spring Boot
+		// must not uninstall a bridge handler that it did not install itself.
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		Log4jBridgeHandler.install(false, null, true);
+		try {
+			assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+			this.loggingSystem.beforeInitialize();
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+		}
+		finally {
+			for (Handler handler : rootLogger.getHandlers()) {
+				if (handler instanceof Log4jBridgeHandler) {
+					rootLogger.removeHandler(handler);
+				}
+			}
+		}
 	}
 
 	@Test
