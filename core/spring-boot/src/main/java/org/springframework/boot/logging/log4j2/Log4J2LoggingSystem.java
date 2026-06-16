@@ -76,6 +76,7 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  * @author Ralph Goers
  * @author Piotr P. Karwasz
+ * @author Dhruv Rastogi
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
@@ -117,6 +118,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private static final org.apache.logging.log4j.Logger statusLogger = StatusLogger.getLogger();
 
 	private final LoggerContext loggerContext;
+
+	private boolean bridgeHandlerInstalled;
 
 	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance.
@@ -189,6 +192,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 					&& isLog4jBridgeHandlerAvailable()) {
 				removeDefaultRootHandler();
 				Log4jBridgeHandler.install(false, null, true);
+				this.bridgeHandlerInstalled = true;
 				return true;
 			}
 		}
@@ -454,8 +458,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		if (isLog4jBridgeHandlerAvailable()) {
+		if (this.bridgeHandlerInstalled) {
 			removeLog4jBridgeHandler();
+			this.bridgeHandlerInstalled = false;
 		}
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();

@@ -88,6 +88,7 @@ import static org.mockito.Mockito.times;
  * @author Ben Hale
  * @author Madhura Bhave
  * @author Piotr P. Karwasz
+ * @author Dhruv Rastogi
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -404,6 +405,25 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(logger.getLevel()).isNull();
 		loggingSystem.setLogLevel(Log4J2LoggingSystemTests.class.getName(), LogLevel.DEBUG);
 		assertThat(logger.getLevel()).isEqualTo(Level.FINE);
+	}
+
+	@Test
+	void cleanUpLeavesBridgeHandlerInstalledByTheApplicationInPlace() {
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		Log4jBridgeHandler.install(false, null, true);
+		try {
+			assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+			this.loggingSystem.beforeInitialize();
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+		}
+		finally {
+			for (Handler handler : rootLogger.getHandlers()) {
+				if (handler instanceof Log4jBridgeHandler) {
+					rootLogger.removeHandler(handler);
+				}
+			}
+		}
 	}
 
 	@Test
