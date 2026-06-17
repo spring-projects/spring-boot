@@ -50,6 +50,8 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
@@ -109,6 +111,22 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			+ "uLvolxsDncc2UrhyMBY6DVQVgMSVYaPCTgW76iYEKGgzTEw5IBRQL9w3SRJWd3VJTZZQjkXef48Ocz06PGF3lhbz4t5UEZtd"
 			+ "F4rIe7u-977QwHuh7yRPBQ3sII-cVoOUMgaXB9SHcGF2iZCtPzL_IffDUcfhLQteGebhW8A6eUHgpD5A1PQ-JCw_G7UOzZAj"
 			+ "jDjtNM2eqm8j-Ms_gqnm4MiCZ4E-9pDN77CAAPVN7kuX6ejs9KBXpk01z48i9fORYk9u7rAkh1HuQw\"}]}";
+
+	@Test
+	void autoConfigurationShouldNotApplyToReactiveWebApplication() {
+		new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.run((context) -> assertThat(context).doesNotHaveBean(JwtDecoder.class));
+	}
+
+	@Test
+	void autoConfigurationShouldApplyToNonWebApplication() {
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.run((context) -> assertThat(context).hasSingleBean(JwtDecoder.class));
+	}
 
 	@AfterEach
 	void cleanup() throws Exception {

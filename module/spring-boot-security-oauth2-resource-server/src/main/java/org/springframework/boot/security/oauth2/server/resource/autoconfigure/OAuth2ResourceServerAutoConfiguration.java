@@ -18,10 +18,15 @@ package org.springframework.boot.security.oauth2.server.resource.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 
@@ -34,7 +39,26 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 @AutoConfiguration(before = { SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass(BearerTokenAuthenticationToken.class)
+@Conditional(OAuth2ResourceServerAutoConfiguration.NotReactiveWebApplicationCondition.class)
 @Import({ JwtConverterConfiguration.class, JwtDecoderConfiguration.class, OpaqueTokenIntrospectionConfiguration.class })
 public final class OAuth2ResourceServerAutoConfiguration {
+
+	static class NotReactiveWebApplicationCondition extends AnyNestedCondition {
+
+		NotReactiveWebApplicationCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnWebApplication(type = Type.SERVLET)
+		static class ServletWebApplication {
+
+		}
+
+		@ConditionalOnNotWebApplication
+		static class NonWebApplication {
+
+		}
+
+	}
 
 }
