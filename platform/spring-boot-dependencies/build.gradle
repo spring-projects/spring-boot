@@ -1877,9 +1877,16 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "1.5.1") {
+	library("Prometheus Client", "1.7.0") {
 		group("io.prometheus") {
 			bom("prometheus-metrics-bom")
+		}
+		alignWith {
+			version {
+				of "io.prometheus:prometheus-metrics-core"
+				from "io.micrometer:micrometer-registry-prometheus"
+				managedBy "Micrometer"
+			}
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
