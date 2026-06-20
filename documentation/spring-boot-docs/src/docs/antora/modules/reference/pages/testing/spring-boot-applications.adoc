@@ -740,11 +740,11 @@ TIP: A list of the auto-configuration settings that are enabled by javadoc:org.s
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation].
 
-When using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] in the beans under test and `RestTemplateBuilder.rootUri(String rootUri)` has been called when building the javadoc:org.springframework.web.client.RestTemplate[], then the root URI should be omitted from the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
+When using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] in the beans under test and `RestTemplateBuilder.baseUri(String baseUri)` has been called when building the javadoc:org.springframework.web.client.RestTemplate[], then the base URI should be omitted from the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
 
 include-code::MyRestTemplateServiceTests[]
 
-When using a javadoc:org.springframework.web.client.RestClient$Builder[] in the beans under test, or when using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] without calling `rootUri(String rootURI)`, the full URI must be used in the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
+When using a javadoc:org.springframework.web.client.RestClient$Builder[] in the beans under test, or when using a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] without calling `baseUri(String baseUri)`, the full URI must be used in the javadoc:org.springframework.test.web.client.MockRestServiceServer[] expectations as shown in the following example:
 
 include-code::MyRestClientServiceTests[]
 

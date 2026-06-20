@@ -129,7 +129,7 @@ The following service connections are currently supported:
 | Containers named "rabbitmq" with container port 5672 mapped
 
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
-| Containers named "rabbitmq" with container port 5552 mapped
+| Containers named "rabbitmq" with container port 5552 mapped, or port 5551 mapped when SSL is configured
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
 | Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"

@@ -124,8 +124,8 @@ For production environments, consider using a javadoc:org.springframework.securi
 [[security.oauth2.client.common-providers]]
 === OAuth2 Client Registration for Common Providers
 
-For common OAuth2 and OpenID providers (Google, Github, Facebook, and Okta), we provide a set of provider defaults.
-The IDs of these common providers are `google`, `github`, `facebook`, and `okta`, respectively.
+For common OAuth2 and OpenID providers (Google, Github, Facebook, X, and Okta), we provide a set of provider defaults.
+The IDs of these common providers are `google`, `github`, `facebook`, `x`, and `okta`, respectively.
 
 If you do not need to customize these providers, set the registration's `provider` property to the ID of one of the common providers.
 Alternatively, you can xref:security/oauth2.adoc#security.oauth2.client[use a registration ID that matches the ID of the provider].
