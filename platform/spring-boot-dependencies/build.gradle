@@ -1159,7 +1159,7 @@ bom {
 			releaseNotes("https://github.com/jOOQ/jOOQ/releases/tag/version-{version}")
 		}
 	}
-	library("Json Path", "2.10.0") {
+	library("Json Path", "3.0.0") {
 		group("com.jayway.jsonpath") {
 			modules = [
 				"json-path",
