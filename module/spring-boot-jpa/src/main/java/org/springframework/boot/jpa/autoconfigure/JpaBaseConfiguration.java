@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -123,11 +124,10 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
-			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers,
-			Map<String, AsyncTaskExecutor> taskExecutors) {
-		AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
+			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers, ListableBeanFactory beanFactory) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
-				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
+				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null,
+				() -> determineBootstrapExecutor(beanFactory));
 		if (this.properties.getBootstrap() == Bootstrap.ASYNC) {
 			builder.requireBootstrapExecutor(
 					() -> BootstrapExecutorRequiredException.ofProperty("spring.jpa.bootstrap", "async"));
@@ -136,7 +136,8 @@ public abstract class JpaBaseConfiguration {
 		return builder;
 	}
 
-	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(ListableBeanFactory beanFactory) {
+		Map<String, AsyncTaskExecutor> taskExecutors = beanFactory.getBeansOfType(AsyncTaskExecutor.class);
 		return (taskExecutors.size() == 1) ? taskExecutors.values().iterator().next()
 				: taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 	}
