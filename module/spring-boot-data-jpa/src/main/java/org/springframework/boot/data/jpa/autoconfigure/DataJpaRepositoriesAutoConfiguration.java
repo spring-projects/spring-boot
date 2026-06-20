@@ -16,11 +16,7 @@
 
 package org.springframework.boot.data.jpa.autoconfigure;
 
-import java.util.Map;
-
 import javax.sql.DataSource;
-
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -38,7 +34,6 @@ import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCus
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
@@ -83,8 +78,7 @@ public final class DataJpaRepositoriesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
-	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
-			Map<String, AsyncTaskExecutor> taskExecutors) {
+	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer() {
 		return (builder) -> builder.requireBootstrapExecutor(() -> BootstrapExecutorRequiredException
 			.ofProperty("spring.data.jpa.repositories.bootstrap-mode", "deferred"));
 	}
@@ -92,13 +86,6 @@ public final class DataJpaRepositoriesAutoConfiguration {
 	@Bean
 	static LazyInitializationExcludeFilter eagerJpaMetamodelCacheCleanup() {
 		return (name, definition, type) -> "org.springframework.data.jpa.util.JpaMetamodelCacheCleanup".equals(name);
-	}
-
-	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
-		if (taskExecutors.size() == 1) {
-			return taskExecutors.values().iterator().next();
-		}
-		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 	}
 
 	static class JpaRepositoriesImportSelector implements ImportSelector {

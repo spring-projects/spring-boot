@@ -18,7 +18,9 @@ package org.springframework.boot.jpa;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -125,6 +127,26 @@ class EntityManagerFactoryBuilderTests {
 			.withMessage("A bootstrap executor is required");
 	}
 
+	@Test
+	void requireBootstrapExecutorWhenFallbackExecutorSupplierProvidesExecutorDoesNotThrow() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilderWithFallbackSupplier(SimpleAsyncTaskExecutor::new);
+		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
+		DataSource dataSource = mock();
+		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
+	}
+
+	@Test
+	void fallbackExecutorSupplierIsNotInvokedWhenBootstrapExecutorNotRequired() {
+		AtomicBoolean invoked = new AtomicBoolean();
+		EntityManagerFactoryBuilder builder = createEmptyBuilderWithFallbackSupplier(() -> {
+			invoked.set(true);
+			return new SimpleAsyncTaskExecutor();
+		});
+		DataSource dataSource = mock();
+		builder.dataSource(dataSource).build();
+		assertThat(invoked).isFalse();
+	}
+
 	private EntityManagerFactoryBuilder createEmptyBuilder() {
 		return createEmptyBuilder(null);
 	}
@@ -133,6 +155,13 @@ class EntityManagerFactoryBuilderTests {
 		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
 		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null, null,
 				fallbackBootstrapExecutor);
+	}
+
+	private EntityManagerFactoryBuilder createEmptyBuilderWithFallbackSupplier(
+			Supplier<? extends @Nullable AsyncTaskExecutor> fallbackBootstrapExecutorSupplier) {
+		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
+		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null, null,
+				fallbackBootstrapExecutorSupplier);
 	}
 
 	static class TestJpaVendorAdapter extends AbstractJpaVendorAdapter {
