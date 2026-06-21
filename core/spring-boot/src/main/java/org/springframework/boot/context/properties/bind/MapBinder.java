@@ -39,6 +39,7 @@ import org.springframework.core.ResolvableType;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Ahmed El Amraouiyine
  */
 class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
@@ -64,6 +65,9 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				if (property != null) {
 					getContext().setConfigurationProperty(property);
 					Object result = getContext().getPlaceholdersResolver().resolvePlaceholders(property.getValue());
+					if (result instanceof CharSequence charSequence && charSequence.isEmpty()) {
+						return createMap(target);
+					}
 					return getContext().getConverter().convert(result, target);
 				}
 			}
