@@ -484,7 +484,7 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromOverridenUrl() {
+	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromOverriddenUrl() {
 		NoDriverClassNameDataSource dataSource = new NoDriverClassNameDataSource();
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
