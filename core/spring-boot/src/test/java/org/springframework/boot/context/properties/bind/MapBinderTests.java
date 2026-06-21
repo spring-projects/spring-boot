@@ -65,6 +65,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Ahmed El Amraouiyine
  */
 class MapBinderTests {
 
