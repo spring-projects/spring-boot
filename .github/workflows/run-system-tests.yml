@@ -24,7 +24,7 @@ jobs:
           echo '{"storage-driver":"overlay2"}' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
       - name: Check Out Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Prepare Gradle Build
         uses: ./.github/actions/prepare-gradle-build
         with:
