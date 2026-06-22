@@ -29,6 +29,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -124,8 +125,9 @@ public abstract class JpaBaseConfiguration {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
 			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers,
-			Map<String, AsyncTaskExecutor> taskExecutors) {
-		@Nullable AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
+			ObjectProvider<AsyncTaskExecutor> taskExecutors,
+			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<AsyncTaskExecutor> applicationTaskExecutor) {
+		@Nullable AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors, applicationTaskExecutor);
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
 		if (this.properties.getBootstrap() == Bootstrap.ASYNC) {
@@ -136,9 +138,10 @@ public abstract class JpaBaseConfiguration {
 		return builder;
 	}
 
-	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
-		return (taskExecutors.size() == 1) ? taskExecutors.values().iterator().next()
-				: taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(ObjectProvider<AsyncTaskExecutor> taskExecutors,
+			ObjectProvider<AsyncTaskExecutor> applicationTaskExecutor) {
+		@Nullable AsyncTaskExecutor asyncTaskExecutor = taskExecutors.getIfUnique();
+		return (asyncTaskExecutor != null) ? asyncTaskExecutor : applicationTaskExecutor.getIfAvailable();
 	}
 
 	private Map<String, ?> buildJpaProperties(DataSource dataSource) {

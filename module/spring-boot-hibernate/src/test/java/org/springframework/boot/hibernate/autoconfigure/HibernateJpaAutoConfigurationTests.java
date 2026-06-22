@@ -1017,6 +1017,15 @@ class HibernateJpaAutoConfigurationTests {
 			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
 	}
 
+	@Test // GH-50797
+	void circularReference() {
+		this.contextRunner.withUserConfiguration(CircularReferenceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(DataSource.class);
+			assertThat(context).hasSingleBean(JpaTransactionManager.class);
+			assertThat(context).hasSingleBean(EntityManagerFactory.class);
+		});
+	}
+
 	private List<String> tablesFrom(AssertableApplicationContext context) {
 		DataSource dataSource = context.getBean(DataSource.class);
 		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
@@ -1470,6 +1479,15 @@ class HibernateJpaAutoConfigurationTests {
 		@Bean
 		SimpleAsyncTaskExecutor applicationTaskExecutor() {
 			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration
+	static class CircularReferenceConfiguration extends MultipleAsyncTaskExecutorsConfiguration {
+
+		CircularReferenceConfiguration(PlatformTransactionManager transactionManager) {
+
 		}
 
 	}
