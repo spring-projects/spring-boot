@@ -60,8 +60,7 @@ class GrpcPortInfoApplicationContextInitializer
 
 	private static class Listener implements ApplicationListener<ApplicationEvent> {
 
-		private static final String GRPC_SERVER_STARTED_EVENT_CLASS_NAME =
-				"org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent";
+		private static final String GRPC_SERVER_STARTED_EVENT_CLASS_NAME = "org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent";
 
 		private static final String PROPERTY_NAME = "local.grpc.server.port";
 
