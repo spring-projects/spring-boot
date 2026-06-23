@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.test.autoconfigure;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import io.grpc.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -33,7 +35,8 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
-import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
+import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
@@ -55,7 +58,10 @@ class GrpcPortInfoApplicationContextInitializer
 		applicationContext.addApplicationListener(new Listener(applicationContext));
 	}
 
-	private static class Listener implements ApplicationListener<GrpcServerStartedEvent> {
+	private static class Listener implements ApplicationListener<ApplicationEvent> {
+
+		private static final String GRPC_SERVER_STARTED_EVENT_CLASS_NAME =
+				"org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent";
 
 		private static final String PROPERTY_NAME = "local.grpc.server.port";
 
@@ -68,13 +74,29 @@ class GrpcPortInfoApplicationContextInitializer
 		}
 
 		@Override
-		public void onApplicationEvent(GrpcServerStartedEvent event) {
-			GrpcServerFactory factory = event.getSource().getFactory();
-			if (factory instanceof InProcessGrpcServerFactory || factory instanceof TestGrpcServerFactory
-					|| event.getPort() == -1) {
+		public void onApplicationEvent(ApplicationEvent event) {
+			if (!GRPC_SERVER_STARTED_EVENT_CLASS_NAME.equals(event.getClass().getName())) {
 				return;
 			}
-			setPortProperty(this.applicationContext, event.getPort());
+			GrpcServerFactory factory = ((GrpcServerLifecycle) event.getSource()).getFactory();
+			int port = getPort(event);
+			if (factory instanceof InProcessGrpcServerFactory || factory instanceof TestGrpcServerFactory
+					|| port == -1) {
+				return;
+			}
+			setPortProperty(this.applicationContext, port);
+		}
+
+		private int getPort(ApplicationEvent event) {
+			Method getPort = ReflectionUtils.findMethod(event.getClass(), "getPort");
+			if (getPort == null) {
+				throw new IllegalStateException("No getPort method found on gRPC server started event");
+			}
+			Object port = ReflectionUtils.invokeMethod(getPort, event);
+			if (!(port instanceof Integer portValue)) {
+				throw new IllegalStateException("gRPC server started event getPort method did not return an integer");
+			}
+			return portValue;
 		}
 
 		private void setPortProperty(ApplicationContext context, int port) {

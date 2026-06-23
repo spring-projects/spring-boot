@@ -16,10 +16,15 @@
 
 package org.springframework.boot.grpc.test.autoconfigure;
 
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import io.grpc.Server;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +36,7 @@ import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -65,6 +71,29 @@ class GrpcPortInfoApplicationContextInitializerTests {
 	void whenTestGrpcServerFactorySetsNoPortProperty() {
 		TestGrpcServerFactory factory = mock();
 		testListener(factory, 65535, null);
+	}
+
+	@Test
+	void whenGrpcServerStartedEventIsNotPresentInitializerDoesNotFailOnRefresh() throws Exception {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(GrpcServerStartedEvent.class);
+				ConfigurableApplicationContext context = new AnnotationConfigApplicationContext()) {
+			Class<?> initializerClass = defineClass(classLoader, GrpcPortInfoApplicationContextInitializer.class.getName());
+			defineClass(classLoader, GrpcPortInfoApplicationContextInitializer.class.getName() + "$Listener");
+			Constructor<?> constructor = initializerClass.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			Object initializer = constructor.newInstance();
+			Method initialize = initializerClass.getDeclaredMethod("initialize", ConfigurableApplicationContext.class);
+			initialize.setAccessible(true);
+			initialize.invoke(initializer, context);
+			assertThatNoException().isThrownBy(context::refresh);
+		}
+	}
+
+	private Class<?> defineClass(FilteredClassLoader classLoader, String name) throws Exception {
+		String resourceName = name.replace('.', '/') + ".class";
+		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+			return classLoader.publicDefineClass(name, inputStream.readAllBytes(), getClass().getProtectionDomain());
+		}
 	}
 
 	private void testListener(GrpcServerFactory factory, int port, @Nullable String expected) {
