@@ -30,6 +30,7 @@ import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencyResolveDetails;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
@@ -62,11 +63,27 @@ final class ProtobufPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		ProtobufExtension protobuf = project.getExtensions().getByType(ProtobufExtension.class);
 		protobuf.protoc(this::configureProtoc);
-		protobuf.plugins(this::configurePlugins);
-		protobuf.generateProtoTasks(this::configureGenerateProtoTasks);
 		project.getConfigurations()
 			.named(this::isProtobufToolsLocator)
 			.configureEach((configuration) -> configureProtobufToolsLocator(project, configuration));
+		// gRPC plugin configuration is deferred so we can check if gRPC is actually
+		// declared as a dependency before registering the protoc-gen-grpc-java artifact.
+		// Without this guard, Gradle would try to resolve io.grpc:protoc-gen-grpc-java:null
+		// for projects that use protobuf but not gRPC.
+		project.afterEvaluate((p) -> {
+			if (hasGrpcDependency(p)) {
+				protobuf.plugins(this::configurePlugins);
+				protobuf.generateProtoTasks(this::configureGenerateProtoTasks);
+			}
+		});
+	}
+
+	private boolean hasGrpcDependency(Project project) {
+		return project.getConfigurations()
+			.stream()
+			.flatMap((configuration) -> configuration.getDependencies().stream())
+			.map(Dependency::getGroup)
+			.anyMatch("io.grpc"::equals);
 	}
 
 	private void configureProtoc(ExecutableLocator protoc) {

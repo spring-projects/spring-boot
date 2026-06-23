@@ -94,7 +94,12 @@ class ProtobufPluginActionIntegrationTests {
 	void usesVersionOfGrpcPluginDependencyWhenSpecified() {
 		assertThat(this.gradleBuild.build("dependencies", "--configuration", "protobufToolsLocator_grpc").getOutput())
 			.contains("io.grpc:protoc-gen-grpc-java:1.78.0");
+	}
 
+	@TestTemplate
+	void doesNotConfigureGrpcWhenGrpcIsNotPresent() {
+		assertThat(this.gradleBuild.build("grpcNotConfigured").getOutput())
+			.contains("grpc tools locator present: false");
 	}
 
 }
