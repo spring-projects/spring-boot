@@ -77,7 +77,8 @@ class GrpcPortInfoApplicationContextInitializerTests {
 	void whenGrpcServerStartedEventIsNotPresentInitializerDoesNotFailOnRefresh() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(GrpcServerStartedEvent.class);
 				ConfigurableApplicationContext context = new AnnotationConfigApplicationContext()) {
-			Class<?> initializerClass = defineClass(classLoader, GrpcPortInfoApplicationContextInitializer.class.getName());
+			Class<?> initializerClass = defineClass(classLoader,
+					GrpcPortInfoApplicationContextInitializer.class.getName());
 			defineClass(classLoader, GrpcPortInfoApplicationContextInitializer.class.getName() + "$Listener");
 			Constructor<?> constructor = initializerClass.getDeclaredConstructor();
 			constructor.setAccessible(true);
