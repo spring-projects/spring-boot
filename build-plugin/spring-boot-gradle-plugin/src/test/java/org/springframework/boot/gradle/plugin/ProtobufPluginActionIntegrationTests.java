@@ -79,6 +79,20 @@ class ProtobufPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
+	void generatesProtoSourcesWhenGrpcIsNotOnTheClasspath() throws IOException {
+		File proto = new File(this.gradleBuild.getProjectDir(), "src/main/proto/example.proto");
+		proto.getParentFile().mkdirs();
+		Files.writeString(proto.toPath(), """
+				syntax = "proto3";
+				option java_package = "com.example";
+				message Example {
+				  string name = 1;
+				}
+				""");
+		this.gradleBuild.build("generateProto");
+	}
+
+	@TestTemplate
 	void alignsVersionOfGrpcDependency() {
 		assertThat(this.gradleBuild.build("dependencies", "--configuration", "protobufToolsLocator_grpc").getOutput())
 			.contains("io.grpc:protoc-gen-grpc-java:null -> 1.79.0");

@@ -63,7 +63,7 @@ final class ProtobufPluginAction implements PluginApplicationAction {
 		ProtobufExtension protobuf = project.getExtensions().getByType(ProtobufExtension.class);
 		protobuf.protoc(this::configureProtoc);
 		protobuf.plugins(this::configurePlugins);
-		protobuf.generateProtoTasks(this::configureGenerateProtoTasks);
+		protobuf.generateProtoTasks((tasks) -> configureGenerateProtoTasks(project, tasks));
 		project.getConfigurations()
 			.named(this::isProtobufToolsLocator)
 			.configureEach((configuration) -> configureProtobufToolsLocator(project, configuration));
@@ -77,12 +77,30 @@ final class ProtobufPluginAction implements PluginApplicationAction {
 		return plugins.create("grpc", (grpc) -> grpc.setArtifact(grpcDependency.asDependencySpec()));
 	}
 
-	private void configureGenerateProtoTasks(GenerateProtoTaskCollection tasks) {
-		tasks.all().configureEach(this::configureGenerateProtoTask);
+	private void configureGenerateProtoTasks(Project project, GenerateProtoTaskCollection tasks) {
+		tasks.all().configureEach((task) -> configureGenerateProtoTask(project, task));
 	}
 
-	private void configureGenerateProtoTask(GenerateProtoTask task) {
-		task.plugins((plugins) -> plugins.create("grpc", this::configureGrpcOptions));
+	private boolean hasGrpcDependency(Project project) {
+		return project.getConfigurations()
+			.getByName("runtimeClasspath")
+			.getAllDependencies()
+			.stream()
+			.anyMatch(this::isGrpcDependency);
+	}
+
+	private boolean isGrpcDependency(org.gradle.api.artifacts.Dependency dependency) {
+		String group = dependency.getGroup();
+		String name = dependency.getName();
+		return "io.grpc".equals(group) || "org.springframework.grpc".equals(group)
+				|| ("org.springframework.boot".equals(group) && name.startsWith("spring-boot-grpc"))
+				|| ("org.springframework.boot".equals(group) && name.startsWith("spring-boot-starter-grpc"));
+	}
+
+	private void configureGenerateProtoTask(Project project, GenerateProtoTask task) {
+		if (hasGrpcDependency(project)) {
+			task.plugins((plugins) -> plugins.create("grpc", this::configureGrpcOptions));
+		}
 	}
 
 	private void configureGrpcOptions(PluginOptions grpc) {
