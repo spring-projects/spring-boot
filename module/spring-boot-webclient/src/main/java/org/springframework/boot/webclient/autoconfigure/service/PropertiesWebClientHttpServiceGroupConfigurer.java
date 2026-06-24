@@ -47,6 +47,11 @@ import org.springframework.web.service.registry.HttpServiceGroup;
  */
 class PropertiesWebClientHttpServiceGroupConfigurer implements WebClientHttpServiceGroupConfigurer {
 
+	/**
+	 * The default order for the PropertiesWebClientHttpServiceGroupConfigurer.
+	 */
+	private static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+
 	private final HttpServiceClientProperties properties;
 
 	private final HttpClientSettingsPropertyMapper clientSettingsPropertyMapper;
@@ -65,7 +70,7 @@ class PropertiesWebClientHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
+		return DEFAULT_ORDER;
 	}
 
 	@Override
