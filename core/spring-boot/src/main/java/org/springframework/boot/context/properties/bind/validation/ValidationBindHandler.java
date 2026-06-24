@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -115,8 +114,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		if (this.exception == null) {
 			Object validationTarget = getValidationTarget(target, context, result);
 			Class<?> validationType = target.getBoxedType().resolve();
-			if (validationTarget != null) {
-				Assert.state(validationType != null, "'validationType' must not be null");
+			if (validationTarget != null && validationType != null) {
 				validateAndPush(name, validationTarget, validationType);
 			}
 		}
