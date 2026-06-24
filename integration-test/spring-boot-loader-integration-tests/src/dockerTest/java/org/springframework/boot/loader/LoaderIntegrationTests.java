@@ -65,6 +65,21 @@ class LoaderIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
+	void runWarWithTldScanning(JavaRuntime javaRuntime) {
+		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-war", null,
+				"war")) {
+			container.start();
+			System.out.println(this.output.toUtf8String());
+			assertThat(this.output.toUtf8String()).contains("Started LoaderWarTestApplication")
+				.doesNotContain("no entry name specified")
+				.doesNotContain("Failed to scan")
+				.doesNotContain("ZipException")
+				.doesNotContain("WARNING:");
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("javaRuntimes")
 	void runSignedJar(JavaRuntime javaRuntime) {
 		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-signed-jar",
 				null)) {
@@ -97,31 +112,37 @@ class LoaderIntegrationTests {
 	}
 
 	private GenericContainer<?> createContainer(JavaRuntime javaRuntime, String name, String classifier) {
-		return javaRuntime.getContainer()
-			.withLogConsumer(this.output)
-			.withCopyFileToContainer(findApplication(name, classifier), "/app.jar")
-			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
-			.withCommand(command());
+		return createContainer(javaRuntime, name, classifier, "jar");
 	}
 
-	private String[] command() {
+	private GenericContainer<?> createContainer(JavaRuntime javaRuntime, String name, String classifier,
+			String extension) {
+		String application = "app." + extension;
+		return javaRuntime.getContainer()
+			.withLogConsumer(this.output)
+			.withCopyFileToContainer(findApplication(name, classifier, extension), "/" + application)
+			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
+			.withCommand(command(application));
+	}
+
+	private String[] command(String application) {
 		List<String> command = new ArrayList<>();
 		command.add("java");
 		command.add("-jar");
-		command.add("app.jar");
+		command.add(application);
 		return command.toArray(new String[0]);
 	}
 
-	private MountableFile findApplication(String name, String classifier) {
-		return MountableFile.forHostPath(findJarFile(name, classifier).toPath());
+	private MountableFile findApplication(String name, String classifier, String extension) {
+		return MountableFile.forHostPath(findArchiveFile(name, classifier, extension).toPath());
 	}
 
-	private File findJarFile(String name, String classifier) {
+	private File findArchiveFile(String name, String classifier, String extension) {
 		classifier = (classifier != null) ? "-" + classifier : "";
-		String path = String.format("build/%1$s/build/libs/%1$s%2$s.jar", name, classifier);
-		File jar = new File(path);
-		Assert.state(jar.isFile(), () -> "Could not find " + path + ". Have you built it?");
-		return jar;
+		String path = String.format("build/%1$s/build/libs/%1$s%2$s.%3$s", name, classifier, extension);
+		File archive = new File(path);
+		Assert.state(archive.isFile(), () -> "Could not find " + path + ". Have you built it?");
+		return archive;
 	}
 
 	static Stream<JavaRuntime> javaRuntimes() {
