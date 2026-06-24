@@ -364,6 +364,18 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationWhenIssuerUriPresentAndJwkSetUriEmptyShouldUseIssuerUri() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				assertThat(context.containsBean("jwtDecoderByJwkKeySetUri")).isFalse();
+				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+			});
+	}
+
+	@Test
 	void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
