@@ -26,9 +26,11 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * OAuth 2.0 resource server properties.
@@ -61,6 +63,8 @@ public class OAuth2ResourceServerProperties {
 		 * JSON Web Key URI to use to verify the JWT token.
 		 */
 		private @Nullable String jwkSetUri;
+
+		private final Jwkset jwkset = new Jwkset();
 
 		/**
 		 * JSON Web Algorithms used for verifying the digital signatures.
@@ -111,12 +115,19 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private @Nullable String principalClaimName;
 
+		@DeprecatedConfigurationProperty(replacement = "spring.security.oauth2.resourceserver.jwt.jwkset.uri",
+				since = "4.1.0")
 		public @Nullable String getJwkSetUri() {
-			return this.jwkSetUri;
+			String jwksetUri = this.jwkset.getUri();
+			return StringUtils.hasText(jwksetUri) ? jwksetUri : this.jwkSetUri;
 		}
 
 		public void setJwkSetUri(@Nullable String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
+		}
+
+		public Jwkset getJwkset() {
+			return this.jwkset;
 		}
 
 		public List<String> getJwsAlgorithms() {
@@ -204,6 +215,60 @@ public class OAuth2ResourceServerProperties {
 			try (InputStream inputStream = this.publicKeyLocation.getInputStream()) {
 				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 			}
+		}
+
+	}
+
+	public static class Jwkset {
+
+		/**
+		 * JSON Web Key URI to use to verify the JWT token.
+		 */
+		private @Nullable String uri;
+
+		private final Ssl ssl = new Ssl();
+
+		public @Nullable String getUri() {
+			return this.uri;
+		}
+
+		public void setUri(@Nullable String uri) {
+			this.uri = uri;
+		}
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public static class Ssl {
+
+			/**
+			 * Whether to enable SSL support. Enabled automatically if "bundle" is
+			 * provided unless specified otherwise.
+			 */
+			private @Nullable Boolean enabled;
+
+			/**
+			 * SSL bundle name.
+			 */
+			private @Nullable String bundle;
+
+			public boolean isEnabled() {
+				return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public @Nullable String getBundle() {
+				return this.bundle;
+			}
+
+			public void setBundle(@Nullable String bundle) {
+				this.bundle = bundle;
+			}
+
 		}
 
 	}

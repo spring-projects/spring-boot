@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.oauth2.server.resource.autoconfigure;
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -22,29 +24,37 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Condition for creating {@link JwtDecoder} by oidc issuer location.
+ * Condition for creating
+ * {@link org.springframework.security.oauth2.jwt.ReactiveJwtDecoder} by JWK Set URI.
  *
- * @author Artsiom Yudovin
+ * @author Hyeonseok Lee
  */
-class IssuerUriCondition extends SpringBootCondition {
+class JwkSetUriCondition extends SpringBootCondition {
+
+	private static final String JWK_SET_URI_PROPERTY = "spring.security.oauth2.resourceserver.jwt.jwkset.uri";
+
+	private static final String DEPRECATED_JWK_SET_URI_PROPERTY = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition("OpenID Connect Issuer URI Condition");
+		ConditionMessage.Builder message = ConditionMessage.forCondition("JWK Set URI Condition");
 		Environment environment = context.getEnvironment();
-		String issuerUri = environment.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
-		if (!StringUtils.hasText(issuerUri)) {
-			return ConditionOutcome.noMatch(message.didNotFind("issuer-uri property").atAll());
+		String jwkSetUri = getJwkSetUri(environment);
+		if (!StringUtils.hasText(jwkSetUri)) {
+			return ConditionOutcome.noMatch(message.didNotFind("JWK Set URI property").atAll());
 		}
-		String jwkSetUri = JwkSetUriProperty.get(environment);
+		return ConditionOutcome.match(message.foundExactly("JWK Set URI property"));
+	}
+
+	private @Nullable String getJwkSetUri(Environment environment) {
+		String jwkSetUri = environment.getProperty(JWK_SET_URI_PROPERTY);
 		if (StringUtils.hasText(jwkSetUri)) {
-			return ConditionOutcome.noMatch(message.found("JWK Set URI property").items(jwkSetUri));
+			return jwkSetUri;
 		}
-		return ConditionOutcome.match(message.foundExactly("issuer-uri property"));
+		return environment.getProperty(DEPRECATED_JWK_SET_URI_PROPERTY);
 	}
 
 }

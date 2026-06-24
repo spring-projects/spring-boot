@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLContext;
+
 import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -48,6 +50,9 @@ import tools.jackson.databind.json.JsonMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -83,8 +88,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link OAuth2ResourceServerAutoConfiguration}.
@@ -125,6 +133,99 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JwtDecoder.class);
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
+	}
+
+	@Test
+	void autoConfigurationShouldConfigureResourceServerUsingJwksetUri() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwkset.uri=https://jwk-set-uri.com")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				assertThat(context.containsBean("jwtDecoderByJwkKeySetUri")).isTrue();
+			});
+	}
+
+	@Test
+	void autoConfigurationWhenJwksetUriAndJwkSetUriAreConfiguredShouldUseJwksetUri() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.uri=https://new-jwk-set-uri.com")
+			.run((context) -> assertThat(context.getBean(OAuth2ResourceServerProperties.class).getJwt().getJwkSetUri())
+				.isEqualTo("https://new-jwk-set-uri.com"));
+	}
+
+	@Test
+	void autoConfigurationShouldConfigureJwkSetUriSslBundle() throws Exception {
+		SslBundles sslBundles = mock(SslBundles.class);
+		SslBundle sslBundle = mockSslBundle();
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwkset.uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				then(sslBundles).should().getBundle("test-bundle");
+			});
+	}
+
+	@Test
+	void autoConfigurationShouldConfigureJwkSetUriSslBundleWithDeprecatedJwkSetUri() throws Exception {
+		SslBundles sslBundles = mock(SslBundles.class);
+		SslBundle sslBundle = mockSslBundle();
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				then(sslBundles).should().getBundle("test-bundle");
+			});
+	}
+
+	@Test
+	void autoConfigurationWhenJwkSetUriSslDisabledShouldNotUseSslBundle() {
+		SslBundles sslBundles = mock(SslBundles.class);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwkset.uri=https://jwk-set-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.ssl.enabled=false",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				then(sslBundles).should(never()).getBundle(any());
+			});
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void autoConfigurationWhenIssuerUriAndJwkSetUriSslBundleAreConfiguredShouldNotUseSslBundle() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		SslBundles sslBundles = mock(SslBundles.class);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
+			.withPropertyValues(
+					"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://" + this.server.getHostName() + ":"
+							+ this.server.getPort() + "/" + path,
+					"spring.security.oauth2.resourceserver.jwt.jwkset.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
+				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
+				jwtDecoderSupplier.get();
+				then(sslBundles).should(never()).getBundle(any());
+			});
+	}
+
+	private SslBundle mockSslBundle() throws Exception {
+		SslBundle sslBundle = mock(SslBundle.class);
+		given(sslBundle.createSslContext()).willReturn(SSLContext.getDefault());
+		given(sslBundle.getOptions()).willReturn(SslOptions.NONE);
+		return sslBundle;
 	}
 
 	private void assertJwkSetUriJwtDecoderBuilderCustomization(AssertableWebApplicationContext context) {
@@ -340,6 +441,19 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
 					"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
 					"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JwtDecoder.class);
+				assertThat(context.containsBean("jwtDecoderByJwkKeySetUri")).isTrue();
+				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isFalse();
+			});
+	}
+
+	@Test
+	void autoConfigurationWhenJwksetUriKeyLocationAndIssuerUriPresentShouldUseJwksetUri() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+					"spring.security.oauth2.resourceserver.jwt.jwkset.uri=https://jwk-set-uri.com")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JwtDecoder.class);
 				assertThat(context.containsBean("jwtDecoderByJwkKeySetUri")).isTrue();

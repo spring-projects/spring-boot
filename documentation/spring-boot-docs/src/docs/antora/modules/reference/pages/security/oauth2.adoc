@@ -162,7 +162,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
+          jwkset:
+            uri: "https://example.com/oauth2/default/v1/keys"
 ----
 
 [configprops,yaml]
@@ -194,6 +195,8 @@ spring:
 
 The same properties are applicable for both servlet and reactive applications.
 Alternatively, you can define your own javadoc:org.springframework.security.oauth2.jwt.JwtDecoder[] bean for servlet applications or a javadoc:org.springframework.security.oauth2.jwt.ReactiveJwtDecoder[] for reactive applications.
+
+If the JWK Set URI uses SSL configuration that differs from the JVM defaults, the SSL bundle to use for JWK Set requests can be configured using the configprop:spring.security.oauth2.resourceserver.jwt.jwkset.ssl.bundle[] property.
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
 

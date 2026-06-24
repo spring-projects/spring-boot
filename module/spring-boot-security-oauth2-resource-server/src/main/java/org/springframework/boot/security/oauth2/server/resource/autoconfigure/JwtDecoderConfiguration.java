@@ -16,24 +16,33 @@
 
 package org.springframework.boot.security.oauth2.server.resource.autoconfigure;
 
+import java.net.http.HttpClient;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.net.ssl.SSLParameters;
+
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -49,6 +58,8 @@ import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link Configuration @Configuration} for JWT decoder beans.
@@ -66,18 +77,27 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(JwtDecoder.class)
 class JwtDecoderConfiguration {
 
+	private static final Duration JWK_SET_CONNECT_TIMEOUT = Duration
+		.ofMillis(JWKSourceBuilder.DEFAULT_HTTP_CONNECT_TIMEOUT);
+
+	private static final Duration JWK_SET_READ_TIMEOUT = Duration.ofMillis(JWKSourceBuilder.DEFAULT_HTTP_READ_TIMEOUT);
+
 	private final OAuth2ResourceServerProperties.Jwt properties;
 
 	private final List<OAuth2TokenValidator<Jwt>> additionalValidators;
 
 	private final ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> jwkSetUriJwtDecoderBuilderCustomizers;
 
+	private final @Nullable SslBundles sslBundles;
+
 	JwtDecoderConfiguration(OAuth2ResourceServerProperties properties,
 			ObjectProvider<OAuth2TokenValidator<Jwt>> additionalValidators,
-			ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> jwkSetUriJwtDecoderBuilderCustomizers) {
+			ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> jwkSetUriJwtDecoderBuilderCustomizers,
+			ObjectProvider<SslBundles> sslBundles) {
 		this.properties = properties.getJwt();
 		this.additionalValidators = additionalValidators.orderedStream().toList();
 		this.jwkSetUriJwtDecoderBuilderCustomizers = jwkSetUriJwtDecoderBuilderCustomizers;
+		this.sslBundles = sslBundles.getIfAvailable();
 	}
 
 	@Bean
@@ -115,12 +135,13 @@ class JwtDecoderConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
+	@Conditional(JwkSetUriCondition.class)
 	JwtDecoder jwtDecoderByJwkKeySetUri() {
 		String jwkSetUri = this.properties.getJwkSetUri();
 		Assert.state(jwkSetUri != null, "No JWK Set URI property specified");
 		JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri);
 		builder.jwsAlgorithms(this::jwsAlgorithms);
+		configureSsl(builder);
 		return buildJwkSetUriJwtDecoder(builder);
 	}
 
@@ -154,6 +175,48 @@ class JwtDecoderConfiguration {
 		NimbusJwtDecoder decoder = builder.build();
 		decoder.setJwtValidator(getValidator());
 		return decoder;
+	}
+
+	private void configureSsl(JwkSetUriJwtDecoderBuilder builder) {
+		SslBundle sslBundle = getSslBundle();
+		if (sslBundle != null) {
+			builder.restOperations(restOperations(sslBundle));
+		}
+	}
+
+	private @Nullable SslBundle getSslBundle() {
+		OAuth2ResourceServerProperties.Jwkset.Ssl ssl = this.properties.getJwkset().getSsl();
+		if (!ssl.isEnabled()) {
+			return null;
+		}
+		String bundleName = ssl.getBundle();
+		if (StringUtils.hasLength(bundleName)) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(bundleName);
+		}
+		return SslBundle.systemDefault();
+	}
+
+	private RestOperations restOperations(SslBundle sslBundle) {
+		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(createHttpClient(sslBundle));
+		requestFactory.setReadTimeout(JWK_SET_READ_TIMEOUT);
+		return new RestTemplate(requestFactory);
+	}
+
+	private HttpClient createHttpClient(SslBundle sslBundle) {
+		return HttpClient.newBuilder()
+			.connectTimeout(JWK_SET_CONNECT_TIMEOUT)
+			.sslContext(sslBundle.createSslContext())
+			.sslParameters(asSslParameters(sslBundle))
+			.build();
+	}
+
+	private SSLParameters asSslParameters(SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
+		SSLParameters parameters = new SSLParameters();
+		parameters.setCipherSuites(options.getCiphers());
+		parameters.setProtocols(options.getEnabledProtocols());
+		return parameters;
 	}
 
 	private OAuth2TokenValidator<Jwt> getValidator() {
