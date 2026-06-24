@@ -33,6 +33,12 @@ dependencies {
 	implementation("io.grpc:grpc-util:1.79.0")
 }
 
+protobuf {
+	plugins {
+		grpc {}
+	}
+}
+
 tasks.register("protocArtifact") {
 	doFirst {
 		protobuf {

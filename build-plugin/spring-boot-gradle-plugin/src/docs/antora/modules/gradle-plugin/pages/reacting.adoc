@@ -113,5 +113,8 @@ When the {url-cyclonedx-docs-gradle-plugin}[CycloneDX plugin] is applied to a pr
 When the {url-protobuf-docs-gradle-plugin}[Protobuf plugin] is applied to a project, the Spring Boot plugin:
 
 . Configures `protoc` to use the artifact `com.google.protobuf:protoc`, aligning its version with that of Protobuf dependencies on the runtime classpath.
-. Configures the `grpc` plugin to use the artifact `io.grpc:protoc-gen-grpc-java`, aligning its version with that of gRPC dependencies on the runtime classpath.
+
+Additionally, when the Protobuf `grpc` plugin is configured, the Spring Boot plugin:
+
+. Configures it to use the artifact `io.grpc:protoc-gen-grpc-java`, aligning its version with that of gRPC dependencies on the runtime classpath.
 . Configures the `grpc` plugin of all generate proto tasks with the option `@generated=omit`.
