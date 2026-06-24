@@ -248,7 +248,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * @throws AssertionError if the application context contains multiple beans of the
 	 * given type
 	 */
-	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type) {
+	public <T> AbstractObjectAssert<?, @Nullable T> getBean(Class<T> type) {
 		return getBean(type, Scope.INCLUDE_ANCESTORS);
 	}
 
