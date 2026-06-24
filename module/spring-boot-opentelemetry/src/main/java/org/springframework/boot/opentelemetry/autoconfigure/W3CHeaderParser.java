@@ -16,7 +16,6 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure;
 
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -71,7 +70,7 @@ final class W3CHeaderParser {
 		if (value.indexOf('%') == -1) {
 			return value;
 		}
-		return URLDecoder.decode(value, StandardCharsets.UTF_8);
+		return StringUtils.uriDecode(value, StandardCharsets.UTF_8);
 	}
 
 }
