@@ -25,6 +25,8 @@ include::partial$configuration-properties/devtools.adoc[]
 
 include::partial$configuration-properties/docker-compose.adoc[]
 
+include::partial$configuration-properties/grpc.adoc[]
+
 include::partial$configuration-properties/integration.adoc[]
 
 include::partial$configuration-properties/json.adoc[]
