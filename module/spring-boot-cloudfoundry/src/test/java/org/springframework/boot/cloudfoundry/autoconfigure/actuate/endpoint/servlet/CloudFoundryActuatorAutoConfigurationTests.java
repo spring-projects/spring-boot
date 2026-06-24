@@ -47,6 +47,7 @@ import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSec
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -91,6 +92,15 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				/* RestTemplateAutoConfiguration.class, */ ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
+
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
+	void refreshSucceedsWithoutHealth() {
+		this.contextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> assertThat(context).hasNotFailed());
+	}
 
 	@Test
 	void cloudFoundryPlatformActive() {
