@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration.NonReactiveWebApplicationCondition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
 /**
@@ -36,7 +37,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  */
 @AutoConfiguration
 @Conditional(NonReactiveWebApplicationCondition.class)
-@ConditionalOnClass(ClientRegistration.class)
+@ConditionalOnClass({ ClientRegistration.class, CommonOAuth2Provider.class })
 @Import({ OAuth2ClientConfigurations.ClientRegistrationRepositoryConfiguration.class,
 		OAuth2ClientConfigurations.OAuth2AuthorizedClientServiceConfiguration.class })
 public final class OAuth2ClientAutoConfiguration {

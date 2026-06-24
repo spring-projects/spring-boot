@@ -19,7 +19,9 @@ package org.springframework.boot.security.oauth2.client.autoconfigure;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -80,6 +82,24 @@ class OAuth2ClientAutoConfigurationTests {
 			.withBean(ClientRegistrationRepository.class,
 					() -> new InMemoryClientRegistrationRepository(getClientRegistration("test", "test")))
 			.run((context) -> assertThat(context).hasSingleBean(OAuth2AuthorizedClientService.class));
+	}
+
+	@Test
+	void autoConfigurationConditionalOnClassClientRegistration() {
+		assertWhenClassNotPresent(ClientRegistration.class);
+	}
+
+	@Test
+	void autoConfigurationConditionalOnClassCommonOAuth2Provider() {
+		assertWhenClassNotPresent(CommonOAuth2Provider.class);
+	}
+
+	private void assertWhenClassNotPresent(Class<?> classToFilter) {
+		FilteredClassLoader classLoader = new FilteredClassLoader(classToFilter);
+		this.contextRunner.withClassLoader(classLoader)
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.run((context) -> assertThat(context).doesNotHaveBean(OAuth2ClientAutoConfiguration.class));
 	}
 
 	private ClientRegistration getClientRegistration(String id, String userInfoUri) {

@@ -26,6 +26,7 @@ import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebS
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
@@ -105,6 +106,11 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	@Test
 	void autoConfigurationConditionalOnClassClientRegistration() {
 		assertWhenClassNotPresent(ClientRegistration.class);
+	}
+
+	@Test
+	void autoConfigurationConditionalOnClassCommonOAuth2Provider() {
+		assertWhenClassNotPresent(CommonOAuth2Provider.class);
 	}
 
 	private void assertWhenClassNotPresent(Class<?> classToFilter) {
