@@ -16,10 +16,7 @@
 
 package org.springframework.boot.mongodb.health;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.bson.Document;
@@ -35,9 +32,12 @@ import org.springframework.util.Assert;
  * A {@link ReactiveHealthIndicator} for Mongo.
  *
  * @author Yulin Qin
+ * @author Seonwoo Jung
  * @since 4.0.0
  */
 public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
+
+	private static final String ADMIN_DATABASE = "admin";
 
 	private static final Document HELLO_COMMAND = Document.parse("{ hello: 1 }");
 
@@ -51,24 +51,20 @@ public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		Mono<Map<String, Object>> healthDetails = Flux.from(this.mongoClient.listDatabaseNames())
-			.flatMap((database) -> Mono.from(this.mongoClient.getDatabase(database).runCommand(HELLO_COMMAND))
-				.map((document) -> new HelloResponse(database, document)))
-			.collectList()
-			.map((responses) -> {
-				Map<String, Object> databaseDetails = new LinkedHashMap<>();
-				List<String> databases = new ArrayList<>();
-				databaseDetails.put("databases", databases);
-				for (HelloResponse response : responses) {
-					databases.add(response.database());
-					databaseDetails.putIfAbsent("maxWireVersion", response.document().getInteger("maxWireVersion"));
-				}
-				return databaseDetails;
-			});
-		return healthDetails.map((details) -> builder.up().withDetails(details).build());
+		Mono<List<String>> databases = Flux.from(this.mongoClient.listDatabaseNames()).collectList();
+		return databases.flatMap((databaseNames) -> Mono
+			.from(this.mongoClient.getDatabase(getDatabaseName(databaseNames)).runCommand(HELLO_COMMAND))
+			.map((result) -> builder.up()
+				.withDetail("databases", databaseNames)
+				.withDetail("maxWireVersion", result.getInteger("maxWireVersion"))
+				.build()));
 	}
 
-	private record HelloResponse(String database, Document document) {
+	private static String getDatabaseName(List<String> databases) {
+		if (databases.contains(ADMIN_DATABASE)) {
+			return ADMIN_DATABASE;
+		}
+		return (!databases.isEmpty()) ? databases.get(0) : ADMIN_DATABASE;
 	}
 
 }
