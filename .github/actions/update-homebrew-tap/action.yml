@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
     - name: Check Out Homebrew Tap Repo
-      uses: actions/checkout@v6
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         path: updated-homebrew-tap-repo
         repository: spring-io/homebrew-tap
