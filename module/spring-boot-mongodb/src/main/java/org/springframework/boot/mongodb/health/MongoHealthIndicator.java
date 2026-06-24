@@ -17,9 +17,7 @@
 package org.springframework.boot.mongodb.health;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.mongodb.client.MongoClient;
 import org.bson.Document;
@@ -34,9 +32,12 @@ import org.springframework.util.Assert;
  * MongoDB.
  *
  * @author Christian Dupuis
+ * @author Seonwoo Jung
  * @since 4.0.0
  */
 public class MongoHealthIndicator extends AbstractHealthIndicator {
+
+	private static final String ADMIN_DATABASE = "admin";
 
 	private static final Document HELLO_COMMAND = Document.parse("{ hello: 1 }");
 
@@ -50,15 +51,19 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Map<String, Object> details = new LinkedHashMap<>();
 		List<String> databases = new ArrayList<>();
-		details.put("databases", databases);
-		this.mongoClient.listDatabaseNames().forEach((database) -> {
-			Document result = this.mongoClient.getDatabase(database).runCommand(HELLO_COMMAND);
-			databases.add(database);
-			details.putIfAbsent("maxWireVersion", result.getInteger("maxWireVersion"));
-		});
-		builder.up().withDetails(details);
+		this.mongoClient.listDatabaseNames().forEach(databases::add);
+		Document result = this.mongoClient.getDatabase(getDatabaseName(databases)).runCommand(HELLO_COMMAND);
+		builder.up()
+			.withDetail("databases", databases)
+			.withDetail("maxWireVersion", result.getInteger("maxWireVersion"));
+	}
+
+	private static String getDatabaseName(List<String> databases) {
+		if (databases.contains(ADMIN_DATABASE)) {
+			return ADMIN_DATABASE;
+		}
+		return (!databases.isEmpty()) ? databases.get(0) : ADMIN_DATABASE;
 	}
 
 }
