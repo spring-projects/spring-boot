@@ -472,6 +472,18 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationWhenIssuerUriPresentAndJwkSetUriEmptyShouldUseIssuerUri() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
+					"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
+				assertThat(context.containsBean("reactiveJwtDecoderByJwkKeySetUri")).isFalse();
+				assertThat(context.containsBean("reactiveJwtDecoderByIssuerUri")).isTrue();
+			});
+	}
+
+	@Test
 	void opaqueTokenIntrospectorIsConditionalOnMissingBean() {
 		this.contextRunner
 			.withPropertyValues(

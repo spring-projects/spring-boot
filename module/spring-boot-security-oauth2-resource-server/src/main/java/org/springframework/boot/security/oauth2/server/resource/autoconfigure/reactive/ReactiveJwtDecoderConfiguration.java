@@ -33,9 +33,9 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.ConditionalOnIssuerLocationJwtDecoder;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.ConditionalOnJwkSetUriJwtDecoder;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
@@ -122,7 +122,7 @@ class ReactiveJwtDecoderConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
+	@ConditionalOnJwkSetUriJwtDecoder
 	ReactiveJwtDecoder reactiveJwtDecoderByJwkKeySetUri() {
 		String jwkSetUri = this.properties.getJwkSetUri();
 		Assert.notNull(jwkSetUri, "No JWK Set URI specified");
