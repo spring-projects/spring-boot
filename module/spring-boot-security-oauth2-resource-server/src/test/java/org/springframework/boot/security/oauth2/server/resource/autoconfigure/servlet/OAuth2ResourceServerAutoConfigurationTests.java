@@ -362,7 +362,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isFalse();
 			});
 	}
-	
+
 	@Test
 	void autoConfigurationWhenIssuerUriPresentAndJwkSetUriEmptyShouldUseIssuerUri() {
 		this.contextRunner
