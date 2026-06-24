@@ -200,7 +200,7 @@ For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainer
 If you want to create only a subset of the applicable types, you can use the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
 
 To create a javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[] bean from a javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[], you must opt in using the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
-The container must also expose port 5552, the RabbitMQ streams port.
+The container must also expose port 5552, or port 5551 when SSL is configured, for RabbitMQ Streams.
 ====
 
 By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.

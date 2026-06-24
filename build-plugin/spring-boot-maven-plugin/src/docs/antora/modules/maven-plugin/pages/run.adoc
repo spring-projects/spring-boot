@@ -26,8 +26,6 @@ include::example$running/devtools-pom.xml[tags=devtools]
 
 When `devtools` is running, it detects changes when you recompile your application and automatically refreshes it.
 This works for not only resources but code as well.
-It also provides a LiveReload server so that it can automatically trigger a browser refresh whenever things change.
-
 Devtools can also be configured to only refresh the browser whenever a static resource has changed (and ignore any change in the code).
 Just include the following property in your project:
 
