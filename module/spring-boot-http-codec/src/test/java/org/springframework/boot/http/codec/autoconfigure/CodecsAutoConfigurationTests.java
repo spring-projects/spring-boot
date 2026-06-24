@@ -169,7 +169,7 @@ class CodecsAutoConfigurationTests {
 			.filter((writer) -> writer instanceof EncoderHttpMessageWriter<?>)
 			.map((writer) -> (EncoderHttpMessageWriter<?>) writer)
 			.map(EncoderHttpMessageWriter::getEncoder)
-			.filter((encoder) -> encoderClass.isAssignableFrom(encoder.getClass()))
+			.filter(encoderClass::isInstance)
 			.findFirst()
 			.orElseThrow();
 	}

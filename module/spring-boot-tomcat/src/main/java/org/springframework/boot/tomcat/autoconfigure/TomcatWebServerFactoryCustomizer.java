@@ -314,7 +314,7 @@ public class TomcatWebServerFactoryCustomizer
 			Class<T> type, ObjIntConsumer<T> consumer) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (type.isAssignableFrom(handler.getClass())) {
+			if (type.isInstance(handler)) {
 				consumer.accept(type.cast(handler), value);
 			}
 		});

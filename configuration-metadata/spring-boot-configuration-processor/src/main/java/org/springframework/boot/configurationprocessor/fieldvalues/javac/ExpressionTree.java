@@ -55,14 +55,14 @@ class ExpressionTree extends ReflectionWrapper {
 	}
 
 	Object getLiteralValue() throws Exception {
-		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
+		if (this.literalTreeType.isInstance(getInstance())) {
 			return this.literalValueMethod.invoke(getInstance());
 		}
 		return null;
 	}
 
 	Object getFactoryValue() throws Exception {
-		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
+		if (this.methodInvocationTreeType.isInstance(getInstance())) {
 			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
 			if (arguments.size() == 1) {
 				return new ExpressionTree(arguments.get(0)).getLiteralValue();
@@ -72,7 +72,7 @@ class ExpressionTree extends ReflectionWrapper {
 	}
 
 	Member getSelectedMember() throws Exception {
-		if (this.memberSelectTreeType.isAssignableFrom(getInstance().getClass())) {
+		if (this.memberSelectTreeType.isInstance(getInstance())) {
 			String expression = this.memberSelectTreeExpressionMethod.invoke(getInstance()).toString();
 			String identifier = this.memberSelectTreeIdentifierMethod.invoke(getInstance()).toString();
 			if (expression != null && identifier != null) {
@@ -83,7 +83,7 @@ class ExpressionTree extends ReflectionWrapper {
 	}
 
 	List<? extends ExpressionTree> getArrayExpression() throws Exception {
-		if (this.newArrayTreeType.isAssignableFrom(getInstance().getClass())) {
+		if (this.newArrayTreeType.isInstance(getInstance())) {
 			List<?> elements = (List<?>) this.arrayValueMethod.invoke(getInstance());
 			List<ExpressionTree> result = new ArrayList<>();
 			if (elements == null) {
