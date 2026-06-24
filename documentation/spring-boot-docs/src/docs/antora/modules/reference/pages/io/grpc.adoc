@@ -59,7 +59,7 @@ Spring Boot supports for both Maven and Gradle protobuf plugins, but you are fre
 ==== Using the Maven Plugin
 
 Spring Boot include dependency management for the `io.github.ascopes:protobuf-maven-plugin` Maven plugin.
-If you are using the the `spring-boot-starter-parent` POM, you'll also get sensible out-of-the-box configuration.
+If you are using the `spring-boot-starter-parent` POM, you'll also get sensible out-of-the-box configuration.
 
 The following shows a typical Maven POM file that uses the plugin:
 

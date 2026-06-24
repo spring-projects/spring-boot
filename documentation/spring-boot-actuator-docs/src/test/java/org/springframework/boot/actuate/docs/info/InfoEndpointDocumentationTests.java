@@ -131,7 +131,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("memory.nonHeap.max")
 					.description("Maximum number of bytes that can be used by the JVM (or -1)."),
 				fieldWithPath("memory.garbageCollectors").description("Details for garbage collectors."),
-				fieldWithPath("memory.garbageCollectors[].name").description("Name of of the garbage collector."),
+				fieldWithPath("memory.garbageCollectors[].name").description("Name of the garbage collector."),
 				fieldWithPath("memory.garbageCollectors[].collectionCount")
 					.description("Total number of collections that have occurred."),
 				fieldWithPath("virtualThreads")
