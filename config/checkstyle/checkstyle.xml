@@ -88,6 +88,18 @@
 				value="Please use static AssertJ imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="\.isAssignableFrom\(.+\.getClass\(\)\)" />
+			<property name="message" value="Please use type.isInstance(object) instead." />
+			<property name="ignoreComments" value="true" />
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="\w+\.class\.isInstance\(.+\)" />
+			<property name="message" value="Please use object instanceof type instead." />
+			<property name="ignoreComments" value="true" />
+		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
 			<property name="publicOnlySinceTags" value="true" />
 			<property name="requireSinceTag" value="true" />

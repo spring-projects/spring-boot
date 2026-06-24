@@ -233,7 +233,7 @@ public class StartMojo extends AbstractRunMojo {
 		}
 
 		private boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
-			return type.isAssignableFrom(t.getClass()) || t.getCause() != null && hasCauseWithType(t.getCause(), type);
+			return type.isInstance(t) || t.getCause() != null && hasCauseWithType(t.getCause(), type);
 		}
 
 	}

@@ -47,7 +47,7 @@ class TracingAndMeterObservationHandlerGroup implements ObservationHandlerGroup 
 
 	@Override
 	public boolean isMember(ObservationHandler<?> handler) {
-		return MeterObservationHandler.class.isInstance(handler) || TracingObservationHandler.class.isInstance(handler);
+		return handler instanceof MeterObservationHandler || handler instanceof TracingObservationHandler;
 	}
 
 	@Override
