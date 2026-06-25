@@ -104,4 +104,12 @@ class TestGrpcTransportAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(TestGrpcChannelFactory.class));
 	}
 
+	@Test
+	void createsDifferentInProcessServerNamesForDifferentApplicationContexts() {
+		this.contextRunner.run((firstContext) -> {
+			assertThat(firstContext).hasNotFailed();
+			this.contextRunner.run((secondContext) -> assertThat(secondContext).hasNotFailed());
+		});
+	}
+
 }
