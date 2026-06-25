@@ -2,16 +2,16 @@
 = gRPC
 
 Google Remote Procedure Call (gRPC) is a high-performance RPC framework that enables client-server communication using binary messages.
-Spring Boot include support for developing and testing both client and server gRPC applications.
+Spring Boot includes support for developing and testing both client and server gRPC applications.
 
-The underling message format used by gRPC is Protocol Buffers which allow messages to be created and consumed by a wide variety of programming languages.
+The underlying message format used by gRPC is Protocol Buffers, which allow messages to be created and consumed by a wide variety of programming languages.
 
 
 
 [[io.grpc.servicedefinitions]]
 == Service Definitions
 
-To develop a gRPC application you first need a Protocol Buffers service definition file.
+To develop a gRPC application, you first need a Protocol Buffers service definition file.
 A `.proto` file defines the services and messages that your application can consume or provide.
 
 Here's an example of a typical `.proto` file that uses https://protobuf.dev/programming-guides/proto3/[the `proto3` revision] of the protocol buffers language:
@@ -36,11 +36,11 @@ message HelloReply {
 }
 ----
 
-This file defines a `HelloWorld` service with a single method that accepts a `HelloReqest` message and return a `HelloReply` message.
-The `HelloReqest` message contains a `name` string field.
+This file defines a `HelloWorld` service with a single method that accepts a `HelloRequest` message and returns a `HelloReply` message.
+The `HelloRequest` message contains a `name` string field.
 The `HelloReply` message contains a `message` string field.
 
-With the exception of a the `java_package` and `java_multiple_files` options, there is nothing in the `.proto` file that is specific to the Java programming langage.
+With the exception of the `java_package` and `java_multiple_files` options, there is nothing in the `.proto` file that is specific to the Java programming language.
 
 
 
@@ -48,17 +48,17 @@ With the exception of a the `java_package` and `java_multiple_files` options, th
 === Generating Java Code
 
 Since `.proto` files are language agnostic, we need a process to convert them into usable Java code.
-We can then use the generated code to either make a remote procedure call to running service, or implement the service ourselves so that others may call it.
+We can then use the generated code to either make a remote procedure call to a running service or implement the service ourselves so that others may call it.
 
 The exact process you use to generate code will depend on your build system.
-Spring Boot supports for both Maven and Gradle protobuf plugins, but you are free to use whatever solution works best for you.
+Spring Boot supports both Maven and Gradle protobuf plugins, but you are free to use whatever solution works best for you.
 
 
 
 [[io.grpc.servicedefinitions.generatingjavacode.maven]]
 ==== Using the Maven Plugin
 
-Spring Boot include dependency management for the `io.github.ascopes:protobuf-maven-plugin` Maven plugin.
+Spring Boot includes dependency management for the `io.github.ascopes:protobuf-maven-plugin` Maven plugin.
 If you are using the `spring-boot-starter-parent` POM, you'll also get sensible out-of-the-box configuration.
 
 The following shows a typical Maven POM file that uses the plugin:
@@ -131,7 +131,7 @@ If you use Spring Boot's dependency management the `${protobuf-java.version}` an
 [[io.grpc.servicedefinitions.generatingjavacode.gradle]]
 ==== Using the Gradle Plugin
 
-Spring Boot include dependency management for the `com.google.protobuf:protobuf-gradle-plugin` Gradle plugin.
+Spring Boot includes dependency management for the `com.google.protobuf:protobuf-gradle-plugin` Gradle plugin.
 In addition, the `spring-boot-gradle-plugin` will react to the presence of the protobuf plugin and configure it appropriately.
 
 The following shows a typical Gradle file that uses the plugin:
@@ -163,7 +163,7 @@ endif::[]
 }
 ----
 
-Since this gradle file uses both the `org.springframework.boot` and `com.google.protobuf` plugins, you'll get the following:
+Since this Gradle file uses both the `org.springframework.boot` and `com.google.protobuf` plugins, you'll get the following:
 
 * Configuration of the `protoc` version.
 * Configuration of the `protoc-gen-grpc-java` version.
@@ -179,11 +179,11 @@ TIP: If you don't use `org.springframework.boot` plugin, or you want to configur
 
 Spring Boot provides a `spring-boot-grpc-server` module and a `spring-boot-starter-grpc-server` starter POM that you can use for server applications.
 
-In order to write the actual server code, you'll need to extended one or more of base classes generated from your `.proto` file and expose them as Spring beans.
+In order to write the actual server code, you'll need to extend one or more of the base classes generated from your `.proto` file and expose them as Spring beans.
 Spring gRPC will automatically expose any bean that implements javadoc:io.grpc.BindableService[] as a gRPC server.
 Since all `.proto` generated classes implement javadoc:io.grpc.BindableService[], adding them as beans is enough to expose them over gRPC.
 
-TIP: For more details see {url-spring-grpc-docs}/server.html#_create_a_grpc_service[the Spring gRPC documentation].
+TIP: For more details, see {url-spring-grpc-docs}/server.html#_create_a_grpc_service[the Spring gRPC documentation].
 
 The following example shows how the `HelloWorld` service from the `.proto` file above could be implemented.
 In this example, we're using the javadoc:org.springframework.grpc.server.service.GrpcService[format=annotation] annotation and assuming that the code is in a package that will be picked up by component scanning:
@@ -213,7 +213,7 @@ $ grpcurl -d '{"name":"Spring"}' -plaintext localhost:9090 HelloWorld.SayHello
 
 If you find that the version of Netty provided by the `spring-boot-starter-grpc-server` starter POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
 
-To switch, you can excluded `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
+To switch, you can exclude `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
 For example:
 
 
@@ -317,10 +317,10 @@ dependencies {
 +
 ======
 
-TIP: Remember to include a Servlet Container dependency, for example using `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
+TIP: Remember to include a Servlet Container dependency, for example, using `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
 
 NOTE: When using a servlet container, certain gRPC server configuration properties are not relevant and will be ignored.
-For example, configprop:spring.grpc.server.port[] is ignored since configprop:server.port[] used used to set a web server port.
+For example, configprop:spring.grpc.server.port[] is ignored since configprop:server.port[] is used to set a web server port.
 
 
 
@@ -343,7 +343,7 @@ spring:
 
 Client authentication can also be configured by setting configprop:spring.grpc.server.ssl.client-auth[] to `optional` or `require`.
 
-TIP: To temporarily disable server SSL support, for example to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
+TIP: To temporarily disable server SSL support, for example, to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
 
 
 
@@ -604,7 +604,7 @@ You can configure gRPC connections to use standard one-way-TLS, or mutual TLS
 ==== Standard one-way TLS
 
 To use standard one-way TLS, you can set the `ssl.enabled` property to `true` in your channel properties.
-For example, the following will enabled an SSL/TLS connection for the `myservice` channel:
+For example, the following will enable an SSL/TLS connection for the `myservice` channel:
 
 [configprops,yaml]
 ----
@@ -643,7 +643,7 @@ spring:
 
 [TIP]
 ====
-To temporarily disable client SSL support, for example to aid with testing, you can set `bypass-certificate-validation` to `true` on your channel config:
+To temporarily disable client SSL support, for example, to aid with testing, you can set `bypass-certificate-validation` to `true` on your channel config:
 
 [configprops,yaml]
 ----
@@ -667,7 +667,7 @@ In this mode, the in-process channel factory is auto-configured in addition to t
 To prevent users from having to deal with multiple channel factories, a composite channel factory is configured as the primary channel factory bean.
 The composite consults its composed factories to find the first one that supports the channel target.
 
-To use the in-process server the channel target must be set to `in-process:<name>`
+To use the in-process server, the channel target must be set to `in-process:<name>`
 
 TIP: To disable the in-process channel factory, you can set the configprop:spring.grpc.client.inprocess.enabled[] property to `false`.
 
@@ -700,14 +700,14 @@ include-code::MyGrpcConfiguration[]
 [[io.grpc.testing]]
 == Testing gRPC Applications
 
-To help test your gRPC client and server applications you can use the `spring-boot-grpc-test` module or the `spring-boot-starter-grpc-client-test` / `spring-boot-starter-grpc-server-test` starter POMs.
+To help test your gRPC client and server applications, you can use the `spring-boot-grpc-test` module or the `spring-boot-starter-grpc-client-test` / `spring-boot-starter-grpc-server-test` starter POMs.
 
 
 [[io.grpc.testing.test-transport]]
 === Using In-Process Test Transport
 
 The javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] annotation allows you to quickly replace gRPC communication channels with in-process channels specifically designed for testing.
-Unlike regular in-process channels, these test channels to not require any configuration.
+Unlike regular in-process channels, these test channels do not require any configuration.
 
 Using test gRPC transport means that you don't need to actually listen on a network port to start your application.
 This allows your tests to run quickly, whilst still ensuring that your application works as expected.
