@@ -16,20 +16,26 @@
 
 package org.springframework.boot.test.context.filter.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collections;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.context.filter.annotation.TypeExcludeFiltersContextCustomizerFactoryTests.EnclosingClass.WithEnclosingClassExcludeFilters;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -63,9 +69,16 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	@Test
 	void getContextCustomizerWhenEnclosingClassHasAnnotationShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithEnclosingClassExcludeFilters.class,
-				Collections.emptyList());
+		ContextCustomizer customizer = this.factory
+			.createContextCustomizer(EnclosingClass.WithEnclosingClassExcludeFilters.class, Collections.emptyList());
 		assertThat(customizer).isNotNull();
+	}
+
+	@Test
+	void getContextCustomizerWhenEnclosingClassHasAnnotationButNestedConfigurationIsOverrideShouldReturnNull() {
+		ContextCustomizer customizer = this.factory
+			.createContextCustomizer(EnclosingWithOverride.InnerWithOverride.class, Collections.emptyList());
+		assertThat(customizer).isNull();
 	}
 
 	@Test
@@ -82,19 +95,54 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	@Test
 	void getContextCustomizerShouldAddExcludeFilters() throws Exception {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class,
+		typeExcludeFiltersFor(WithExcludeFilters.class).doesNotMatch(NoAnnotation.class)
+			.matches(SimpleExclude.class, TestClassAwareExclude.class);
+	}
+
+	@Test
+	void getContextCustomizerWhenEnclosingClassHasAnnotationShouldAddExcludeFilters() throws Exception {
+		typeExcludeFiltersFor(EnclosingClass.WithEnclosingClassExcludeFilters.class).matches(SimpleExclude.class,
+				TestClassAwareExclude.class);
+	}
+
+	@Test
+	void getContextCustomizerWhenHasDuplicateSliceExcludeFilterShouldInstantiateItOnce() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithDuplicateSliceExclude.class,
 				Collections.emptyList());
+		assertThat(customizer).extracting("filters", InstanceOfAssertFactories.collection(TypeExcludeFilter.class))
+			.hasSize(1);
+	}
+
+	@Test
+	void getContextCustomizerWhenEnclosingClassHasAnnotationsTypeExcludeFilters() throws Exception {
+		typeExcludeFiltersFor(WithMultipleExcludeFilterAnnotations.WithEnclosingClassExcludeFilters.class)
+			.matches(FirstSliceExclude.class, SecondSliceExclude.class);
+
+	}
+
+	@Test
+	void getContextCustomizerWhenSuperclassHasAnnotationShouldIncludeTypeExcludeFilters() throws Exception {
+		typeExcludeFiltersFor(WithMixedInheritance.class).matches(TestClassAwareExclude.class, FirstSliceExclude.class,
+				SecondSliceExclude.class, ThirdSliceExclude.class);
+	}
+
+	@Test
+	void getContextCustomizerWhenHasNestedComposedAnnotationShouldIncludeTypeExcludeFilters() throws Exception {
+		typeExcludeFiltersFor(WithComposedAnnotation.class).matches(FirstSliceExclude.class);
+	}
+
+	@Test
+	void getContextCustomizerWhenDeeplyNestedShouldIncludeAllEnclosingExcludeFilters() throws Exception {
+		typeExcludeFiltersFor(GrandparentEnclosing.ParentEnclosing.DeepInnerClass.class)
+			.matches(FirstSliceExclude.class, SecondSliceExclude.class, ThirdSliceExclude.class);
+	}
+
+	private TypeExcludeFilterAssert typeExcludeFiltersFor(Class<?> testClass) {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(testClass, Collections.emptyList());
 		assertThat(customizer).isNotNull();
 		customizer.customizeContext(this.context, this.mergedContextConfiguration);
 		this.context.refresh();
-		TypeExcludeFilter filter = this.context.getBean(TypeExcludeFilter.class);
-		MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
-		MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(NoAnnotation.class.getName());
-		assertThat(filter.match(metadataReader, metadataReaderFactory)).isFalse();
-		metadataReader = metadataReaderFactory.getMetadataReader(SimpleExclude.class.getName());
-		assertThat(filter.match(metadataReader, metadataReaderFactory)).isTrue();
-		metadataReader = metadataReaderFactory.getMetadataReader(TestClassAwareExclude.class.getName());
-		assertThat(filter.match(metadataReader, metadataReaderFactory)).isTrue();
+		return new TypeExcludeFilterAssert(this.context.getBean(TypeExcludeFilter.class));
 	}
 
 	static class NoAnnotation {
@@ -148,6 +196,149 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 		TestClassAwareExclude(Class<?> testClass) {
 			assertThat(testClass).isNotNull();
+		}
+
+	}
+
+	@FirstTestSlice
+	@TypeExcludeFilters(SecondSliceExclude.class)
+	static class WithMultipleExcludeFilterAnnotations {
+
+		class WithEnclosingClassExcludeFilters {
+
+		}
+
+	}
+
+	@TypeExcludeFilters(TestClassAwareExclude.class)
+	static class WithMixedInheritance extends WithFirstTestSliceExclude {
+
+	}
+
+	@FirstTestSlice
+	static class WithFirstTestSliceExclude implements WithSecondTestSliceExclude {
+
+	}
+
+	@SecondTestSlice
+	interface WithSecondTestSliceExclude extends WithThirdTestSliceExclude {
+
+	}
+
+	@TypeExcludeFilters(ThirdSliceExclude.class)
+	interface WithThirdTestSliceExclude {
+
+	}
+
+	@ComposedFirstTestSlice
+	static class WithComposedAnnotation {
+
+	}
+
+	@FirstTestSlice
+	@TypeExcludeFilters(FirstSliceExclude.class)
+	static class WithDuplicateSliceExclude {
+
+	}
+
+	@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	@TypeExcludeFilters(FirstSliceExclude.class)
+	@interface FirstTestSlice {
+
+	}
+
+	@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	@TypeExcludeFilters(SecondSliceExclude.class)
+	@interface SecondTestSlice {
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@FirstTestSlice
+	@interface ComposedFirstTestSlice {
+
+	}
+
+	@TypeExcludeFilters(FirstSliceExclude.class)
+	static class EnclosingWithOverride {
+
+		@NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
+		class InnerWithOverride {
+
+		}
+
+	}
+
+	@TypeExcludeFilters(FirstSliceExclude.class)
+	static class GrandparentEnclosing {
+
+		@TypeExcludeFilters(SecondSliceExclude.class)
+		class ParentEnclosing {
+
+			@TypeExcludeFilters(ThirdSliceExclude.class)
+			class DeepInnerClass {
+
+			}
+
+		}
+
+	}
+
+	static class FirstSliceExclude extends TestClassAwareExclude {
+
+		FirstSliceExclude(Class<?> testClass) {
+			super(testClass);
+		}
+
+	}
+
+	static class SecondSliceExclude extends TestClassAwareExclude {
+
+		SecondSliceExclude(Class<?> testClass) {
+			super(testClass);
+		}
+
+	}
+
+	static class ThirdSliceExclude extends TestClassAwareExclude {
+
+		ThirdSliceExclude(Class<?> testClass) {
+			super(testClass);
+		}
+
+	}
+
+	private static final class TypeExcludeFilterAssert {
+
+		private final TypeExcludeFilter filter;
+
+		private final MetadataReaderFactory metadataReaderFactory = MetadataReaderFactory
+			.create(new DefaultResourceLoader());
+
+		private TypeExcludeFilterAssert(TypeExcludeFilter filter) {
+			this.filter = filter;
+		}
+
+		TypeExcludeFilterAssert matches(Class<?>... types) throws Exception {
+			for (Class<?> type : types) {
+				assertThat(matches(type)).as("Filter should match %s", type.getName()).isTrue();
+			}
+			return this;
+		}
+
+		TypeExcludeFilterAssert doesNotMatch(Class<?>... types) throws Exception {
+			for (Class<?> type : types) {
+				assertThat(matches(type)).as("Filter should not match %s", type.getName()).isFalse();
+			}
+			return this;
+		}
+
+		private boolean matches(Class<?> type) throws Exception {
+			MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(type.getName());
+			return this.filter.match(metadataReader, this.metadataReaderFactory);
 		}
 
 	}
