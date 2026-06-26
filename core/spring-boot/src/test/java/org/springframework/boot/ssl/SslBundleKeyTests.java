@@ -72,7 +72,7 @@ class SslBundleKeyTests {
 		given(keyStore.containsAlias("alias")).willThrow(KeyStoreException.class);
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
 		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
-			.withMessage("Could not determine if keystore contains alias 'alias'");
+			.withMessage("Could not validate keystore alias 'alias'");
 	}
 
 	@Test

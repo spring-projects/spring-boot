@@ -67,13 +67,13 @@ public interface SslBundleKey {
 						() -> String.format("Keystore does not contain alias '%s'", alias));
 				Assert.state(keyStore.isKeyEntry(alias),
 						() -> String.format("Keystore alias '%s' is not a key entry", alias));
-				Assert.state(keyStore.getCertificateChain(alias) != null
-							&& keyStore.getCertificateChain(alias).length > 0,
+				var chain = keyStore.getCertificateChain(alias);
+				Assert.state(chain != null && chain.length > 0,
 						() -> String.format("Keystore alias '%s' does not have a certificate chain", alias));
 			}
 			catch (KeyStoreException ex) {
 				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+						String.format("Could not validate keystore alias '%s'", alias), ex);
 			}
 		}
 	}
