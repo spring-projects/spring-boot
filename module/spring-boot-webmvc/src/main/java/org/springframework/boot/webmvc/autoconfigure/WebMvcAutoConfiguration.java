@@ -221,6 +221,8 @@ public final class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler;
 
+		private final ObjectProvider<WebMvcResourceHandlerRegistryCustomizer> webMvcResourceHandlerRegistryCustomizer;
+
 		WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory,
 				ObjectProvider<ServerHttpMessageConvertersCustomizer> httpMessageConvertersCustomizerProvider,
@@ -229,7 +231,8 @@ public final class WebMvcAutoConfiguration {
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations,
 				ObjectProvider<ApiVersionResolver> apiVersionResolvers,
 				ObjectProvider<ApiVersionParser<?>> apiVersionParser,
-				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler) {
+				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler,
+				ObjectProvider<WebMvcResourceHandlerRegistryCustomizer> webMvcResourceHandlerRegistryCustomizer) {
 			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
@@ -240,6 +243,7 @@ public final class WebMvcAutoConfiguration {
 			this.apiVersionResolvers = apiVersionResolvers;
 			this.apiVersionParser = apiVersionParser;
 			this.apiVersionDeprecationHandler = apiVersionDeprecationHandler;
+			this.webMvcResourceHandlerRegistryCustomizer = webMvcResourceHandlerRegistryCustomizer;
 		}
 
 		@Override
@@ -358,6 +362,8 @@ public final class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
+			customizeResourceHandlerRegistry(registry);
+
 			addResourceHandler(registry, this.mvcProperties.getWebjarsPathPattern(),
 					"classpath:/META-INF/resources/webjars/");
 			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
@@ -390,6 +396,12 @@ public final class WebMvcAutoConfiguration {
 			}
 			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 			customizeResourceHandlerRegistration(registration);
+		}
+
+		private void customizeResourceHandlerRegistry(ResourceHandlerRegistry registry) {
+			this.webMvcResourceHandlerRegistryCustomizer
+					.orderedStream()
+					.forEach(customizer -> customizer.customize(registry));
 		}
 
 		@Contract("!null -> !null")
