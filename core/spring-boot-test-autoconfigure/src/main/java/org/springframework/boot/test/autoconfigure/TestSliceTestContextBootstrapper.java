@@ -23,9 +23,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.util.Assert;
 
@@ -53,11 +52,13 @@ public abstract class TestSliceTestContextBootstrapper<T extends Annotation> ext
 
 	@Override
 	protected String @Nullable [] getProperties(Class<?> testClass) {
-		MergedAnnotation<T> annotation = MergedAnnotations.search(SearchStrategy.TYPE_HIERARCHY)
-			.withEnclosingClasses(TestContextAnnotationUtils::searchEnclosingClass)
-			.from(testClass)
-			.get(this.annotationType);
-		return annotation.isPresent() ? annotation.getStringArray("properties") : null;
+		AnnotationDescriptor<T> descriptor = TestContextAnnotationUtils.findAnnotationDescriptor(testClass,
+				this.annotationType);
+		if (descriptor == null) {
+			return null;
+		}
+		MergedAnnotation<T> annotation = MergedAnnotation.from(descriptor.getAnnotation());
+		return annotation.getStringArray("properties");
 	}
 
 }

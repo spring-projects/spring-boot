@@ -25,8 +25,8 @@ import java.util.Set;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -55,8 +55,10 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 	private final MergedAnnotation<A> annotation;
 
 	protected StandardAnnotationCustomizableTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(getAnnotationType());
+		AnnotationDescriptor<A> descriptor = TestContextAnnotationUtils.findAnnotationDescriptor(testClass,
+				getAnnotationType());
+		Assert.state(descriptor != null, "No " + getAnnotationType().getSimpleName() + " found");
+		this.annotation = MergedAnnotation.from(descriptor.getAnnotation());
 	}
 
 	protected final MergedAnnotation<A> getAnnotation() {

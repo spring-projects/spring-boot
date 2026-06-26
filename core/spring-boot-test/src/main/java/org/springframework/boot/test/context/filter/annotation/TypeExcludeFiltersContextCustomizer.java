@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -44,16 +45,17 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 
 	private final Set<TypeExcludeFilter> filters;
 
-	TypeExcludeFiltersContextCustomizer(Class<?> testClass, Set<Class<? extends TypeExcludeFilter>> filterClasses) {
-		this.filters = instantiateTypeExcludeFilters(testClass, filterClasses);
+	TypeExcludeFiltersContextCustomizer(Map<Class<?>, Set<Class<? extends TypeExcludeFilter>>> filtersByTestClass) {
+		this.filters = instantiateTypeExcludeFilters(filtersByTestClass);
 	}
 
-	private Set<TypeExcludeFilter> instantiateTypeExcludeFilters(Class<?> testClass,
-			Set<Class<? extends TypeExcludeFilter>> filterClasses) {
+	private Set<TypeExcludeFilter> instantiateTypeExcludeFilters(
+			Map<Class<?>, Set<Class<? extends TypeExcludeFilter>>> filtersByTestClass) {
 		Set<TypeExcludeFilter> filters = new LinkedHashSet<>();
-		for (Class<? extends TypeExcludeFilter> filterClass : filterClasses) {
-			filters.add(instantiateTypeExcludeFilter(testClass, filterClass));
-		}
+		filtersByTestClass.forEach((testClass,
+				filterClasses) -> filters.addAll(filterClasses.stream()
+					.map((filterClass) -> instantiateTypeExcludeFilter(testClass, filterClass))
+					.toList()));
 		return Collections.unmodifiableSet(filters);
 	}
 

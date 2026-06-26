@@ -17,13 +17,18 @@
 package org.springframework.boot.test.context.filter.annotation;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
@@ -47,17 +52,24 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 		}
 		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
 			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
-		if (descriptor == null) {
+		Map<Class<?>, Set<Class<? extends TypeExcludeFilter>>> filtersByTestClass = new LinkedHashMap<>();
+		while (descriptor != null) {
+			filtersByTestClass.put(descriptor.getRootDeclaringClass(),
+					getTypeExcludeFilterClasses(descriptor.findAllLocalMergedAnnotations()));
+			descriptor = descriptor.next();
+		}
+		if (filtersByTestClass.isEmpty()) {
 			return null;
 		}
-		Class<?>[] filterClasses = descriptor.getAnnotation().value();
-		return createContextCustomizer(descriptor.getRootDeclaringClass(), filterClasses);
+		return new TypeExcludeFiltersContextCustomizer(filtersByTestClass);
 	}
 
-	@SuppressWarnings("unchecked")
-	private ContextCustomizer createContextCustomizer(Class<?> testClass, Class<?>[] filterClasses) {
-		return new TypeExcludeFiltersContextCustomizer(testClass,
-				new LinkedHashSet<>(Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));
+	private Set<Class<? extends TypeExcludeFilter>> getTypeExcludeFilterClasses(Set<TypeExcludeFilters> annotations) {
+		return annotations.stream()
+			.map(MergedAnnotation::from)
+			.map(MergedAnnotation::synthesize)
+			.flatMap((annotation) -> Arrays.stream(annotation.value()))
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 }
