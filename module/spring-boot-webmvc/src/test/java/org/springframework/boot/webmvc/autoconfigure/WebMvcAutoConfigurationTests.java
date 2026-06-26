@@ -70,6 +70,7 @@ import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration.Mvc
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfigurationTests.WebMcvResourceHandlerCustomizersConfiguration.TestWebMcvResourceHandlerRegistryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -1196,6 +1197,18 @@ class WebMvcAutoConfigurationTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(ValidatorAdapter.class)).accepts(hints);
 	}
 
+	@Test
+	void resourceHandlerRegistryCustomizerIsInvoked() {
+		this.contextRunner
+				.withUserConfiguration(WebMcvResourceHandlerCustomizersConfiguration.class)
+				.run((context) -> {
+					WebMvcResourceHandlerRegistryCustomizer customizer =
+							context.getBean(WebMvcResourceHandlerRegistryCustomizer.class);
+
+					assertThat(((TestWebMcvResourceHandlerRegistryCustomizer) customizer).invoked).isTrue();
+				});
+	}
+
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
@@ -1803,6 +1816,25 @@ class WebMvcAutoConfigurationTests {
 			return mock(ServerHttpMessageConvertersCustomizer.class);
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebMcvResourceHandlerCustomizersConfiguration {
+
+		@Bean
+		WebMvcResourceHandlerRegistryCustomizer customizer() {
+			return new WebMvcAutoConfigurationTests.WebMcvResourceHandlerCustomizersConfiguration.TestWebMcvResourceHandlerRegistryCustomizer();
+		}
+
+		static class TestWebMcvResourceHandlerRegistryCustomizer implements WebMvcResourceHandlerRegistryCustomizer {
+
+			public boolean invoked;
+
+			@Override
+			public void customize(ResourceHandlerRegistry registry) {
+				this.invoked = true;
+			}
+		}
 	}
 
 	static class FormattedDate {
