@@ -19,7 +19,6 @@ package org.springframework.boot.jackson.autoconfigure.jsontest.app;
 import java.util.Date;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
@@ -45,11 +44,11 @@ public class ExampleJacksonComponent {
 		@Override
 		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializationContext context) {
 			jgen.writeStringProperty("value", value.value());
-			@Nullable Date date = value.date();
+			Date date = value.date();
 			if (date != null) {
 				jgen.writeNumberProperty("date", date.getTime());
 			}
-			@Nullable UUID uuid = value.uuid();
+			UUID uuid = value.uuid();
 			if (uuid != null) {
 				jgen.writeStringProperty("uuid", uuid.toString());
 			}
