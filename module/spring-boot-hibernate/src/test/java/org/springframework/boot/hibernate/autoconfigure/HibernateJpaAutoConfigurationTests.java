@@ -304,6 +304,15 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
+	void whenAsyncTaskExecutorIsDefinedInJpaDependentConfigurationDoesNotTriggerABeanCurrentlyInCreationException() {
+		this.contextRunner.withUserConfiguration(AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(EntityManagerFactory.class);
+			});
+	}
+
+	@Test
 	void customJpaProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d")
@@ -1469,6 +1478,19 @@ class HibernateJpaAutoConfigurationTests {
 
 		@Bean
 		SimpleAsyncTaskExecutor applicationTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration {
+
+		AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration(EntityManagerFactory entityManagerFactory) {
+		}
+
+		@Bean
+		SimpleAsyncTaskExecutor exampleTaskExecutor() {
 			return new SimpleAsyncTaskExecutor();
 		}
 
