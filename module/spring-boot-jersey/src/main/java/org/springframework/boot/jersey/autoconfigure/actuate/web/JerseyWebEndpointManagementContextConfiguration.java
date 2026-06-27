@@ -58,6 +58,7 @@ import org.springframework.boot.jersey.actuate.endpoint.web.JerseyEndpointResour
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyHealthEndpointAdditionalPathResourceFactory;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -93,21 +94,6 @@ class JerseyWebEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
-	JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar jerseyDifferentPortAdditionalHealthEndpointPathsResourcesRegistrar(
-			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
-			.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID))
-			.findFirst()
-			.orElse(null);
-		return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(healthEndpoint,
-				healthEndpointGroups);
-	}
-
-	@Bean
 	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
 	@SuppressWarnings("removal")
 	ResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
@@ -120,6 +106,27 @@ class JerseyWebEndpointManagementContextConfiguration {
 			String basePath) {
 		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HealthEndpoint.class)
+	static class HealthConfiguration {
+
+		@Bean
+		@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+		@ConditionalOnBean(HealthEndpoint.class)
+		@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
+		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar jerseyDifferentPortAdditionalHealthEndpointPathsResourcesRegistrar(
+				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
+			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+			ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
+				.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID))
+				.findFirst()
+				.orElse(null);
+			return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(healthEndpoint,
+					healthEndpointGroups);
+		}
+
 	}
 
 	/**
@@ -178,7 +185,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	}
 
-	class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
+	static class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
 			implements ManagementContextResourceConfigCustomizer {
 
 		private final @Nullable ExposableWebEndpoint healthEndpoint;
