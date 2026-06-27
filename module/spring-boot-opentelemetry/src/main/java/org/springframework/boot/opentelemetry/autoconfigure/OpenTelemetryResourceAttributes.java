@@ -86,10 +86,11 @@ public class OpenTelemetryResourceAttributes {
 	 * If a key exists in both environment variables and user-defined resources, the value
 	 * from the user-defined resource takes precedence, even if it is empty.
 	 * <p>
-	 * Additionally, {@code spring.application.name} or {@code unknown_service} will be
-	 * used as the default for {@code service.name}, and {@code spring.application.group}
-	 * will serve as the default for {@code service.group} and {@code service.namespace}.
-	 * @param consumer the {@link BiConsumer} to apply
+	 * Additionally, {@code spring.application.name}, or {@code unknown_service} if it is
+	 * not set, will be used as the default value for {@code service.name}, and
+	 * {@code spring.application.group} will serve as the default value for
+	 * {@code service.namespace}.
+	 * @param consumer the consumer to apply resource attributes to
 	 */
 	public void applyTo(BiConsumer<String, String> consumer) {
 		Assert.notNull(consumer, "'consumer' must not be null");
