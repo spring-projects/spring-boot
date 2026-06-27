@@ -30,6 +30,7 @@ import org.springframework.boot.jersey.autoconfigure.actuate.web.JerseyWebEndpoi
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,6 +51,12 @@ class JerseyWebEndpointManagementContextConfigurationTests {
 	@Test
 	void jerseyWebEndpointsResourcesRegistrarForEndpointsIsAutoConfigured() {
 		this.runner.run((context) -> assertThat(context).hasSingleBean(JerseyWebEndpointsResourcesRegistrar.class));
+	}
+
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
+	void refreshSucceedsWithoutHealth() {
+		this.runner.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
