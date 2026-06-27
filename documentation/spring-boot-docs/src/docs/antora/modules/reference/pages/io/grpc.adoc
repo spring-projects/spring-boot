@@ -317,7 +317,7 @@ dependencies {
 +
 ======
 
-TIP: Remember to include a Servlet Container dependency, for example, using `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
+TIP: Remember to include a Servlet Container dependency – `spring-boot-starter-tomcat`, for example – and to set configprop:server.http2.enabled[] to `true`.
 
 NOTE: When using a servlet container, certain gRPC server configuration properties are not relevant and will be ignored.
 For example, configprop:spring.grpc.server.port[] is ignored since configprop:server.port[] is used to set a web server port.
@@ -343,7 +343,7 @@ spring:
 
 Client authentication can also be configured by setting configprop:spring.grpc.server.ssl.client-auth[] to `optional` or `require`.
 
-TIP: To temporarily disable server SSL support, for example, to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
+TIP: To temporarily disable server SSL support – to aid with testing, for example – set configprop:spring.grpc.server.ssl.enabled[] to `false`.
 
 
 
@@ -643,7 +643,7 @@ spring:
 
 [TIP]
 ====
-To temporarily disable client SSL support, for example, to aid with testing, you can set `bypass-certificate-validation` to `true` on your channel config:
+To temporarily disable client SSL support – to aid with testing, for example – set `bypass-certificate-validation` to `true` on your channel config:
 
 [configprops,yaml]
 ----
