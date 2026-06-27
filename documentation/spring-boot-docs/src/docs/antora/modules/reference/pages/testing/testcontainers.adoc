@@ -241,6 +241,7 @@ The SSL annotations are supported for the following service connections:
 * Elasticsearch
 * Kafka
 * MongoDB
+* OpenTelemetry (OTLP logging, metrics, and tracing)
 * RabbitMQ
 * RabbitMQ Streams
 * Redis
