@@ -107,7 +107,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 					.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
-		@Nullable Saml2MessageBinding binding = properties.getSinglelogout().getBinding();
+		Saml2MessageBinding binding = properties.getSinglelogout().getBinding();
 		if (binding != null) {
 			builder.singleLogoutServiceBinding(binding);
 		}

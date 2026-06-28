@@ -125,7 +125,7 @@ public abstract class JpaBaseConfiguration {
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
 			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers,
 			Map<String, AsyncTaskExecutor> taskExecutors) {
-		@Nullable AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
+		AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
 		if (this.properties.getBootstrap() == Bootstrap.ASYNC) {

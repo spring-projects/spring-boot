@@ -125,7 +125,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
-		@Nullable T result = doLookup(values, id);
+		T result = doLookup(values, id);
 		return (result != null) ? result : values.getOrDefault("all", defaultValue);
 	}
 

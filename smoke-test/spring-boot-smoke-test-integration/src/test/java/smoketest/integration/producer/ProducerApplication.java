@@ -19,7 +19,6 @@ package smoketest.integration.producer;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.jspecify.annotations.Nullable;
 import smoketest.integration.ServiceProperties;
 
 import org.springframework.boot.ApplicationArguments;
@@ -41,7 +40,7 @@ public class ProducerApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		@Nullable File inputDir = this.serviceProperties.getInputDir();
+		File inputDir = this.serviceProperties.getInputDir();
 		Assert.notNull(inputDir, "No inputDir configured");
 		inputDir.mkdirs();
 		if (!args.getNonOptionArgs().isEmpty()) {
