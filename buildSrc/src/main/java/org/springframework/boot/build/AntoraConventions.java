@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.gradle.node.NodeExtension;
-import com.github.gradle.node.NodePlugin;
 import com.github.gradle.node.npm.task.NpmInstallTask;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
 import io.spring.gradle.antora.GenerateAntoraYmlTask;
@@ -121,9 +120,6 @@ public class AntoraConventions {
 			});
 			checkAntoraJavadocMacros.configure((macrosTask) -> macrosTask.setClasspath(javadocMacros));
 		});
-		project.getPlugins()
-			.withType(NodePlugin.class,
-					(node) -> project.getExtensions().getByType(NodeExtension.class).getVersion().set("24.14.1"));
 	}
 
 	private void configureGenerateAntoraPlaybookTask(Project project,
