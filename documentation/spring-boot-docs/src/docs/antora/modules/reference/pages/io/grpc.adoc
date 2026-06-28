@@ -161,12 +161,16 @@ ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }
+
+protobuf {
+	plugins {
+		grpc {}
+	}
+}
 ----
 
-Since this Gradle file uses both the `org.springframework.boot` and `com.google.protobuf` plugins, you'll get the following:
-
-* Configuration of the `protoc` version.
-* Configuration of the `protoc-gen-grpc-java` version.
+The `org.springframework.boot` reacts to the `com.google.protobuf` plugin and configures `protoc` and its version.
+Additionally, because the `protobuf` extension has been configured to use the `grpc` plugin, the `org.springframework.boot` plugin also configures `protoc-gen-grpc-java` and its version.
 
 The `.proto` files should be added to `src/main/proto`.
 
