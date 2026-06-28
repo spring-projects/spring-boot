@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistra
  * Callback interface that can be used to customize {@link ResourceHandlerRegistration}.
  *
  * @author Brian Clozel
- * @since 4.1.1
+ * @since 4.2.0
  */
 @FunctionalInterface
 public interface ResourceHandlerRegistrationCustomizer {
