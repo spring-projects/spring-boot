@@ -56,6 +56,11 @@ public final class RetryPolicySettings {
 	 */
 	public static final Duration DEFAULT_MAX_DELAY = Duration.ofMillis(RetryPolicy.Builder.DEFAULT_MAX_DELAY);
 
+	/**
+	 * Default maximum elapsed time (infinite).
+	 */
+	public static final Duration DEFAULT_TIMEOUT = RetryPolicy.withDefaults().getTimeout();
+
 	private List<Class<? extends Throwable>> exceptionIncludes = new ArrayList<>();
 
 	private List<Class<? extends Throwable>> exceptionExcludes = new ArrayList<>();
@@ -71,6 +76,8 @@ public final class RetryPolicySettings {
 	private Double multiplier = DEFAULT_MULTIPLIER;
 
 	private Duration maxDelay = DEFAULT_MAX_DELAY;
+
+	private Duration timeout = DEFAULT_TIMEOUT;
 
 	private @Nullable Function<Builder, RetryPolicy> factory;
 
@@ -89,6 +96,7 @@ public final class RetryPolicySettings {
 		map.from(this::getJitter).to(builder::jitter);
 		map.from(this::getMultiplier).to(builder::multiplier);
 		map.from(this::getMaxDelay).to(builder::maxDelay);
+		map.from(this::getTimeout).to(builder::timeout);
 		return (this.factory != null) ? this.factory.apply(builder) : builder.build();
 	}
 
@@ -248,6 +256,29 @@ public final class RetryPolicySettings {
 	 */
 	public void setMaxDelay(Duration maxDelay) {
 		this.maxDelay = maxDelay;
+	}
+
+	/**
+	 * Return the timeout for the maximum amount of elapsed time allowed for the initial
+	 * invocation and any subsequent retry attempts, including delays.
+	 * @return the maximum duration the request can take
+	 */
+	public Duration getTimeout() {
+		return this.timeout;
+	}
+
+	/**
+	 * Specify a timeout for the maximum amount of elapsed time allowed for the initial
+	 * invocation and any subsequent retry attempts, including delays.
+	 * <p>
+	 * The default is {@link Duration#ZERO}, which signals that no timeout should be
+	 * applied.
+	 * @param timeout the timeout, typically in milliseconds or seconds; must be greater
+	 * than or equal to zero
+	 * @see #DEFAULT_TIMEOUT
+	 */
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
 	}
 
 	/**

@@ -99,6 +99,11 @@ class RetryPolicySettingsTests {
 	}
 
 	@Test
+	void getDefaultTimeout() {
+		assertThat(new RetryPolicySettings().getTimeout()).isEqualTo(RetryPolicy.withDefaults().getTimeout());
+	}
+
+	@Test
 	void createRetryPolicyWithExceptionPredicate() {
 		IllegalArgumentException exception = new IllegalArgumentException("test");
 		Predicate<Throwable> exceptionPredicate = mock();
