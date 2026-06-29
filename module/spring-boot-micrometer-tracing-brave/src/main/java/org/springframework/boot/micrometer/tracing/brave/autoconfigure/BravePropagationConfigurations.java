@@ -17,6 +17,7 @@
 package org.springframework.boot.micrometer.tracing.brave.autoconfigure;
 
 import java.util.List;
+import java.util.Set;
 
 import brave.baggage.BaggageField;
 import brave.baggage.BaggageFields;
@@ -24,6 +25,7 @@ import brave.baggage.BaggagePropagation;
 import brave.baggage.BaggagePropagation.FactoryBuilder;
 import brave.baggage.BaggagePropagationConfig;
 import brave.baggage.BaggagePropagationCustomizer;
+import brave.baggage.CorrelationScopeConfig;
 import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
@@ -141,12 +143,41 @@ class BravePropagationConfigurations {
 		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder(
 				ObjectProvider<CorrelationScopeCustomizer> correlationScopeCustomizers) {
 			Mdc mdc = this.tracingProperties.getMdc();
-			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder()
-				// Clear existing traceId/spanId backage field mappings
-				// so the MDC key names can be customized below.
+
+			// Implementation note:
+			// CorrelationScopeDecorator.Builder does not allow overriding fields.
+			// Therefore, to "override" the default traceId and spanId fields,
+			// the code below will:
+			// 1. create a builder
+			// 2. clear all the default configs from the builder
+			// 3. add configs for traceId and spanId fields
+			// 4. add back any other default configs (other than traceId/spanId)
+
+			// 1. create a builder
+			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+
+			// save default configs to potentially add back later
+			Set<CorrelationScopeConfig> defaultConfigs = builder.configs();
+
+			builder
+				// 2. clear all the default configs from the builder
 				.clear()
+				// 3. add configs for traceId and spanId fields
 				.add(SingleCorrelationField.newBuilder(BaggageFields.TRACE_ID).name(mdc.getTraceIdKey()).build())
 				.add(SingleCorrelationField.newBuilder(BaggageFields.SPAN_ID).name(mdc.getSpanIdKey()).build());
+
+			// 4. add back any other default configs (other than traceId/spanId)
+			for (CorrelationScopeConfig defaultConfig : defaultConfigs) {
+				if (defaultConfig instanceof SingleCorrelationField singleCorrelationField
+						&& (BaggageFields.TRACE_ID.name().equals(singleCorrelationField.baggageField().name())
+								|| BaggageFields.SPAN_ID.name().equals(singleCorrelationField.baggageField().name()))) {
+					// don't add traceId or spanId
+					continue;
+				}
+				// add other (not traceId or spanId) default fields
+				builder.add(defaultConfig);
+			}
+
 			correlationScopeCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
