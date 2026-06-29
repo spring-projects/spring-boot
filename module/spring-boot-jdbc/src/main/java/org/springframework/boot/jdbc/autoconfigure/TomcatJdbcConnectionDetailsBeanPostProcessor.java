@@ -27,11 +27,12 @@ import org.springframework.beans.factory.ObjectProvider;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class TomcatJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<DataSource> {
 
 	TomcatJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
-		super(DataSource.class, connectionDetailsProvider);
+		super(connectionDetailsProvider);
 	}
 
 	@Override

@@ -29,12 +29,13 @@ import org.springframework.beans.factory.ObjectProvider;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class OracleUcpJdbcConnectionDetailsBeanPostProcessor
 		extends JdbcConnectionDetailsBeanPostProcessor<PoolDataSourceImpl> {
 
 	OracleUcpJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
-		super(PoolDataSourceImpl.class, connectionDetailsProvider);
+		super(connectionDetailsProvider);
 	}
 
 	@Override

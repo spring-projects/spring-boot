@@ -16,11 +16,14 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import java.util.Objects;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.ResolvableType;
 
 /**
  * Abstract base class for DataSource bean post processors which apply values from
@@ -33,6 +36,7 @@ import org.springframework.core.PriorityOrdered;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProcessor, PriorityOrdered {
 
@@ -40,9 +44,12 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProc
 
 	private final ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider;
 
-	JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass,
-			ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
-		this.dataSourceClass = dataSourceClass;
+	@SuppressWarnings("unchecked")
+	JdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+		Class<?> generic = ResolvableType.forClass(getClass())
+			.as(JdbcConnectionDetailsBeanPostProcessor.class)
+			.resolveGeneric();
+		this.dataSourceClass = (Class<T>) Objects.requireNonNull(generic);
 		this.connectionDetailsProvider = connectionDetailsProvider;
 	}
 

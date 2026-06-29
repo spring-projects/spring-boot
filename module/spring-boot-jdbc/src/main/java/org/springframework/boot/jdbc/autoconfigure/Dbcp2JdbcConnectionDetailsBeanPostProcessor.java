@@ -27,11 +27,12 @@ import org.springframework.beans.factory.ObjectProvider;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class Dbcp2JdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<BasicDataSource> {
 
 	Dbcp2JdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
-		super(BasicDataSource.class, connectionDetailsProvider);
+		super(connectionDetailsProvider);
 	}
 
 	@Override

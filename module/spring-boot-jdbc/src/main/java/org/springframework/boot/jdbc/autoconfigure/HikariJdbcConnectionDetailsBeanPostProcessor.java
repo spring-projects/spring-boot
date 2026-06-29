@@ -27,11 +27,12 @@ import org.springframework.beans.factory.ObjectProvider;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
 
 	HikariJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
-		super(HikariDataSource.class, connectionDetailsProvider);
+		super(connectionDetailsProvider);
 	}
 
 	@Override
