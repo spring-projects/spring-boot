@@ -16,6 +16,9 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -65,9 +68,10 @@ public final class MetricsAutoConfiguration {
 	static MeterRegistryPostProcessor meterRegistryPostProcessor(ApplicationContext applicationContext,
 			ObjectProvider<MetricsProperties> metricsProperties,
 			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
-			ObjectProvider<MeterFilter> meterFilters, ObjectProvider<MeterBinder> meterBinders) {
+			ObjectProvider<MeterFilter> meterFilters, ObjectProvider<MeterBinder> meterBinders,
+			ObjectProvider<MeterRegistryCloser> meterRegistryCloser) {
 		return new MeterRegistryPostProcessor(applicationContext, metricsProperties, meterRegistryCustomizers,
-				meterFilters, meterBinders);
+				meterFilters, meterBinders, meterRegistryCloser);
 	}
 
 	@Bean
@@ -102,20 +106,25 @@ public final class MetricsAutoConfiguration {
 
 		private final ApplicationContext context;
 
-		private final Iterable<MeterRegistry> meterRegistries;
-
 		private final boolean useGlobalRegistry;
 
+		private final Set<MeterRegistry> trackedRegistries = new LinkedHashSet<>();
+
 		MeterRegistryCloser(ApplicationContext context, boolean useGlobalRegistry) {
-			this.meterRegistries = context.getBeansOfType(MeterRegistry.class).values();
 			this.context = context;
 			this.useGlobalRegistry = useGlobalRegistry;
+		}
+
+		void track(MeterRegistry meterRegistry) {
+			this.trackedRegistries.add(meterRegistry);
 		}
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			if (this.context.equals(event.getApplicationContext())) {
-				for (MeterRegistry meterRegistry : this.meterRegistries) {
+				Set<MeterRegistry> meterRegistries = new LinkedHashSet<>(this.trackedRegistries);
+				meterRegistries.addAll(this.context.getBeansOfType(MeterRegistry.class).values());
+				for (MeterRegistry meterRegistry : meterRegistries) {
 					if (this.useGlobalRegistry) {
 						Metrics.globalRegistry.remove(meterRegistry);
 					}
