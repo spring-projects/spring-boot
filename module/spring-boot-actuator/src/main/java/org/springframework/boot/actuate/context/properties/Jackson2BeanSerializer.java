@@ -222,7 +222,7 @@ class Jackson2BeanSerializer implements BeanSerializer {
 				@Nullable Constructor<?> constructor) {
 			if (constructor != null) {
 				Parameter[] parameters = constructor.getParameters();
-				@Nullable String @Nullable [] names = parameterNameDiscoverer.getParameterNames(constructor);
+				@Nullable String[] names = parameterNameDiscoverer.getParameterNames(constructor);
 				if (names == null) {
 					names = new String[parameters.length];
 				}
