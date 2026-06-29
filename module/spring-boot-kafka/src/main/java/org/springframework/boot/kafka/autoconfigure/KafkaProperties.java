@@ -214,8 +214,12 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildAdminProperties() {
+		return buildAdminProperties(this.admin);
+	}
+
+	Map<String, Object> buildAdminProperties(Admin admin) {
 		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.admin.buildProperties());
+		properties.putAll(admin.buildProperties());
 		return properties;
 	}
 
@@ -908,6 +912,11 @@ public class KafkaProperties {
 	public static class Template {
 
 		/**
+		 * Admin properties used to look up the Kafka cluster id for observation.
+		 */
+		private @Nullable Admin admin;
+
+		/**
 		 * Default topic to which messages are sent.
 		 */
 		private @Nullable String defaultTopic;
@@ -932,6 +941,14 @@ public class KafkaProperties {
 		 * Whether to enable observation.
 		 */
 		private boolean observationEnabled;
+
+		public @Nullable Admin getAdmin() {
+			return this.admin;
+		}
+
+		public void setAdmin(@Nullable Admin admin) {
+			this.admin = admin;
+		}
 
 		public @Nullable String getDefaultTopic() {
 			return this.defaultTopic;
@@ -976,6 +993,11 @@ public class KafkaProperties {
 	}
 
 	public static class Listener {
+
+		/**
+		 * Admin properties used to look up the Kafka cluster id for observation.
+		 */
+		private @Nullable Admin admin;
 
 		public enum Type {
 
@@ -1099,6 +1121,14 @@ public class KafkaProperties {
 		 * Time between retries after authentication exceptions.
 		 */
 		private @Nullable Duration authExceptionRetryInterval;
+
+		public @Nullable Admin getAdmin() {
+			return this.admin;
+		}
+
+		public void setAdmin(@Nullable Admin admin) {
+			this.admin = admin;
+		}
 
 		public Type getType() {
 			return this.type;
