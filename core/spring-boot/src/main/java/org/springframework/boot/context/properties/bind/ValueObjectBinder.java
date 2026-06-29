@@ -339,7 +339,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		@SuppressWarnings("unchecked")
 		static <T> @Nullable ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type,
 				ParameterNameDiscoverer parameterNameDiscoverer) {
-			@Nullable String @Nullable [] names = parameterNameDiscoverer.getParameterNames(bindConstructor);
+			@Nullable String[] names = parameterNameDiscoverer.getParameterNames(bindConstructor);
 			if (names == null) {
 				return null;
 			}
@@ -428,7 +428,7 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		@Override
 		public @Nullable String @Nullable [] getParameterNames(Constructor<?> constructor) {
-			@Nullable String @Nullable [] names = this.delegate.getParameterNames(constructor);
+			@Nullable String[] names = this.delegate.getParameterNames(constructor);
 			if (names != null) {
 				return names;
 			}
