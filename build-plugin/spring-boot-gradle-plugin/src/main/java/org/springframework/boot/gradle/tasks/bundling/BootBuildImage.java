@@ -17,10 +17,13 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
@@ -108,6 +111,20 @@ public abstract class BootBuildImage extends DefaultTask {
 		getSecurityOptions().convention((Iterable<? extends String>) null);
 		getEffectiveEnvironment().putAll(getEnvironment());
 		getEffectiveEnvironment().putAll(getEnvironmentFromCommandLine().map(BootBuildImage::asMap));
+		getEffectiveBindings().set(getBindings().zip(getBindingsFromCommandLine(), BootBuildImage::mergeBindings));
+	}
+
+	private static List<String> mergeBindings(List<String> bindings, List<String> bindingsFromCommandLine) {
+		Set<String> commandLineContainerDestinationPaths = bindingsFromCommandLine.stream()
+			.map((binding) -> Binding.of(binding).getContainerDestinationPath())
+			.collect(Collectors.toSet());
+		List<String> merged = new ArrayList<>();
+		bindings.stream()
+			.filter((binding) -> !commandLineContainerDestinationPaths
+				.contains(Binding.of(binding).getContainerDestinationPath()))
+			.forEach(merged::add);
+		merged.addAll(bindingsFromCommandLine);
+		return merged;
 	}
 
 	private static Map<String, String> asMap(List<String> variables) {
@@ -252,9 +269,23 @@ public abstract class BootBuildImage extends DefaultTask {
 	 * image.
 	 * @return the bindings
 	 */
+	@Internal
+	public abstract ListProperty<String> getBindings();
+
+	/**
+	 * Returns the volume bindings contributed from the command line. Added bindings take
+	 * precedence over configured bindings that share the same container destination path.
+	 * @return the bindings from the command line
+	 * @since 4.1.1
+	 */
+	@Internal
+	@Option(option = "bindings", description = "Volume bind mounts that will be mounted to the builder container. "
+			+ "Can be specified multiple times.")
+	abstract ListProperty<String> getBindingsFromCommandLine();
+
 	@Input
 	@Optional
-	public abstract ListProperty<String> getBindings();
+	abstract ListProperty<String> getEffectiveBindings();
 
 	/**
 	 * Returns the tags that will be created for the built image.
@@ -479,7 +510,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeBindings(BuildRequest request) {
-		List<String> bindings = getBindings().getOrNull();
+		List<String> bindings = getEffectiveBindings().getOrNull();
 		if (!CollectionUtils.isEmpty(bindings)) {
 			return request.withBindings(bindings.stream().map(Binding::of).toList());
 		}

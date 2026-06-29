@@ -292,6 +292,30 @@ class BootBuildImageTests {
 	}
 
 	@Test
+	void whenBindingsAreSetOnTheCommandLineAndNoneAreConfiguredThenRequestHasCommandLineBindings() {
+		this.buildImage.getBindingsFromCommandLine().add("host-src:container-a:ro");
+		this.buildImage.getBindingsFromCommandLine().add("volume-name:container-b:rw");
+		assertThat(this.buildImage.createRequest().getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("volume-name:container-b:rw"));
+	}
+
+	@Test
+	void whenBindingsAreSetOnTheCommandLineThenTheyAreAddedToConfiguredBindings() {
+		this.buildImage.getBindings().set(Arrays.asList("host-src:container-a:ro"));
+		this.buildImage.getBindingsFromCommandLine().add("volume-name:container-b:rw");
+		assertThat(this.buildImage.createRequest().getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("volume-name:container-b:rw"));
+	}
+
+	@Test
+	void whenBindingsFromTheCommandLineShareContainerPathWithConfiguredBindingThenCommandLineTakesPrecedence() {
+		this.buildImage.getBindings().set(Arrays.asList("host-src:container-a:ro", "volume-name:container-b:ro"));
+		this.buildImage.getBindingsFromCommandLine().add("other-volume:container-b:rw");
+		assertThat(this.buildImage.createRequest().getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("other-volume:container-b:rw"));
+	}
+
+	@Test
 	void whenNetworkIsConfiguredThenRequestHasNetwork() {
 		this.buildImage.getNetwork().set("test");
 		assertThat(this.buildImage.createRequest().getNetwork()).isEqualTo("test");
