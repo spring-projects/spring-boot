@@ -39,10 +39,7 @@ class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetails
 		dataSource.setJdbcUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());
 		dataSource.setPassword(connectionDetails.getPassword());
-		String driverClassName = connectionDetails.getDriverClassName();
-		if (driverClassName != null) {
-			dataSource.setDriverClassName(driverClassName);
-		}
+		dataSource.setDriverClassName(connectionDetails.getDriverClassName());
 		return dataSource;
 	}
 

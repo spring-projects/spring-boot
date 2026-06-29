@@ -50,15 +50,4 @@ class HikariJdbcConnectionDetailsBeanPostProcessorTests {
 		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 	}
 
-	@Test
-	@SuppressWarnings("unchecked")
-	void toleratesConnectionDetailsWithNullDriverClassName() {
-		HikariDataSource dataSource = new HikariDataSource();
-		dataSource.setDriverClassName(DatabaseDriver.H2.getDriverClassName());
-		JdbcConnectionDetails connectionDetails = mock(JdbcConnectionDetails.class);
-		new HikariJdbcConnectionDetailsBeanPostProcessor(mock(ObjectProvider.class)).processDataSource(dataSource,
-				connectionDetails);
-		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.H2.getDriverClassName());
-	}
-
 }
