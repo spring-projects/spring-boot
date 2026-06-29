@@ -60,6 +60,15 @@ class AutoConfiguredHealthCheckedGrpcComponentsTests {
 	}
 
 	@Test
+	void getServerWhenIncludeOverallHealthIsFalseReturnsNull() {
+		this.contextRunner.withPropertyValues("spring.grpc.server.health.include-overall-health=false")
+			.run((context) -> {
+				HealthCheckedGrpcComponents components = context.getBean(HealthCheckedGrpcComponents.class);
+				assertThat(components.getServer()).isNull();
+			});
+	}
+
+	@Test
 	void getServiceNamesReturnsServiceNames() {
 		this.contextRunner
 			.withPropertyValues("spring.grpc.server.health.service.a.include=*",
