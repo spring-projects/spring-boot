@@ -9,8 +9,6 @@
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
 		<property name="avoidStaticImportExcludes"
 			value="org.springframework.boot.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration" />
-	</module>
-	<module name="io.spring.javaformat.checkstyle.check.SpringHeaderCheck">
 		<property name="headerFile" value="${config_loc}/checkstyle-header.txt"/>
 	</module>
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
