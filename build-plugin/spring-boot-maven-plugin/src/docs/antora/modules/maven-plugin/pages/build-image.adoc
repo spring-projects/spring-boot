@@ -494,6 +494,13 @@ The caches and the build workspace can be configured to use bind mounts instead 
 include::example$packaging-oci-image/bind-caches-pom.xml[tags=caches]
 ----
 
+The build cache can also be stored in an image instead of a named volume, which allows the cache to be shared between hosts by pushing and pulling it from an image registry, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/image-caches-pom.xml[tags=caches]
+----
+
 
 
 [[build-image.examples.docker]]

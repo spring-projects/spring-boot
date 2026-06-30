@@ -423,6 +423,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withLaunchCache(Cache launchCache) {
 		Assert.notNull(launchCache, "'launchCache' must not be null");
+		Assert.isNull(launchCache.getImage(), "Launch cache must not be an image cache");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
