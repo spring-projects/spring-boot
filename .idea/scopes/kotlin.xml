@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="kotlin" pattern="file:*.kt" />
+</component>
