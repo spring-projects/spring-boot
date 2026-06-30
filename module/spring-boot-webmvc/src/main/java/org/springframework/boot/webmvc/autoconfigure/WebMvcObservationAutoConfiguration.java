@@ -21,12 +21,13 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.servlet.DispatcherType;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.OpenTelemetryServerRequestObservationConvention;
 import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -64,13 +66,26 @@ import org.springframework.web.servlet.DispatcherServlet;
 public final class WebMvcObservationAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingFilterBean
-	FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
-			ObjectProvider<ServerRequestObservationConvention> customConvention,
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	@ConditionalOnProperty(name = "management.observations.conventions", havingValue = "micrometer",
+			matchIfMissing = true)
+	DefaultServerRequestObservationConvention micrometerServerRequestObservationConvention(
 			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getServer().getRequests().getName();
-		ServerRequestObservationConvention convention = customConvention
-			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
+		return new DefaultServerRequestObservationConvention(name);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	@ConditionalOnProperty(name = "management.observations.conventions", havingValue = "opentelemetry")
+	OpenTelemetryServerRequestObservationConvention openTelemetryServerRequestObservationConvention() {
+		return new OpenTelemetryServerRequestObservationConvention();
+	}
+
+	@Bean
+	@ConditionalOnMissingFilterBean
+	FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
+			ServerRequestObservationConvention convention) {
 		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
 		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
