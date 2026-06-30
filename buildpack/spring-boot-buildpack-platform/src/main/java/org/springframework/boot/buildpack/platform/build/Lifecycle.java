@@ -195,7 +195,7 @@ class Lifecycle implements Closeable {
 		Assert.state(runImage != null, "'runImage' must not be null");
 		phase.withRunImage(runImage);
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		configureDaemonAccess(phase);
@@ -215,6 +215,10 @@ class Lifecycle implements Closeable {
 	private Phase analyzePhase() {
 		Phase phase = new Phase("analyzer", isVerboseLogging());
 		configureDaemonAccess(phase);
+		Cache.Image buildCacheImage = this.buildCache.getImage();
+		if (buildCacheImage != null) {
+			phase.withBuildCache(buildCacheImage.getName());
+		}
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
@@ -239,7 +243,7 @@ class Lifecycle implements Closeable {
 	private Phase restorePhase() {
 		Phase phase = new Phase("restorer", isVerboseLogging());
 		configureDaemonAccess(phase);
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
 		configureOptions(phase);
 		return phase;
@@ -260,7 +264,7 @@ class Lifecycle implements Closeable {
 		configureDaemonAccess(phase);
 		phase.withApp(this.applicationDirectory,
 				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
@@ -340,6 +344,17 @@ class Lifecycle implements Closeable {
 		}
 		if (this.securityOptions != null) {
 			this.securityOptions.forEach(phase::withSecurityOption);
+		}
+	}
+
+	private void configureBuildCache(Phase phase) {
+		Cache.Image image = this.buildCache.getImage();
+		if (image != null) {
+			phase.withBuildCache(image.getName());
+		}
+		else {
+			phase.withBuildCache(Directory.CACHE,
+					Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
 		}
 	}
 

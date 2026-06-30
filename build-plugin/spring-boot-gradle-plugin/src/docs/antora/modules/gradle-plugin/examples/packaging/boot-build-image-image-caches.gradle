@@ -1,0 +1,24 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::caches[]
+tasks.named("bootBuildImage") {
+	buildCache {
+		image {
+			name = "docker.io/library/${rootProject.name}:build"
+		}
+	}
+}
+// end::caches[]
+
+tasks.register("bootBuildImageCaches") {
+	doFirst {
+		bootBuildImage.buildCache.asCache().with { println "buildCache=$name" }
+	}
+}

@@ -350,6 +350,14 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void withLaunchImageCacheThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> request.withLaunchCache(Cache.image("launch-cache-image")))
+			.withMessage("Launch cache must not be an image cache");
+	}
+
+	@Test
 	@SuppressWarnings("NullAway") // Test null check
 	void withLaunchVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));

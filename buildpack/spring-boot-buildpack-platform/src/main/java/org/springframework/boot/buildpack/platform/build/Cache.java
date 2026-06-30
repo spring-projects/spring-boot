@@ -45,7 +45,12 @@ public class Cache {
 		/**
 		 * A cache stored as a bind mount.
 		 */
-		BIND("bind mount");
+		BIND("bind mount"),
+
+		/**
+		 * A cache stored as an image.
+		 */
+		IMAGE("image");
 
 		private final String description;
 
@@ -82,6 +87,14 @@ public class Cache {
 	}
 
 	/**
+	 * Return the details of the cache if it is an image cache.
+	 * @return the cache, or {@code null} if it is not an image cache
+	 */
+	public @Nullable Image getImage() {
+		return (this.format.equals(Format.IMAGE)) ? (Image) this : null;
+	}
+
+	/**
 	 * Create a new {@code Cache} that uses a volume with the provided name.
 	 * @param name the cache volume name
 	 * @return a new cache instance
@@ -109,6 +122,16 @@ public class Cache {
 	public static Cache bind(String source) {
 		Assert.notNull(source, "'source' must not be null");
 		return new Bind(source);
+	}
+
+	/**
+	 * Create a new {@code Cache} that uses an image with the provided name.
+	 * @param name the cache image name
+	 * @return a new cache instance
+	 */
+	public static Cache image(String name) {
+		Assert.notNull(name, "'name' must not be null");
+		return new Image(name);
 	}
 
 	@Override
@@ -218,6 +241,51 @@ public class Cache {
 		@Override
 		public String toString() {
 			return this.format.getDescription() + " '" + this.source + "'";
+		}
+
+	}
+
+	/**
+	 * Details of a cache stored in an image.
+	 */
+	public static class Image extends Cache {
+
+		private final String name;
+
+		Image(String name) {
+			super(Format.IMAGE);
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public boolean equals(@Nullable Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			if (!super.equals(obj)) {
+				return false;
+			}
+			Image other = (Image) obj;
+			return Objects.equals(this.name, other.name);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = super.hashCode();
+			result = 31 * result + ObjectUtils.nullSafeHashCode(this.name);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return this.format.getDescription() + " '" + this.name + "'";
 		}
 
 	}
