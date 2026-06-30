@@ -660,6 +660,9 @@ bom {
 				"hibernate-testing",
 				"hibernate-vector",
 			]
+			plugins = [
+					"hibernate-maven-plugin"
+			]
 		}
 		links {
 			site("https://hibernate.org/orm")
