@@ -573,6 +573,24 @@ include::example$packaging/boot-build-image-bind-caches.gradle.kts[tags=caches]
 ----
 ======
 
+The build cache can also be stored in an image instead of a named volume, which allows the cache to be shared between hosts by pushing and pulling it from an image registry, as shown in the following example:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-build-image-image-caches.gradle[tags=caches]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-build-image-image-caches.gradle.kts[tags=caches]
+----
+======
+
 
 
 [[build-image.examples.docker]]

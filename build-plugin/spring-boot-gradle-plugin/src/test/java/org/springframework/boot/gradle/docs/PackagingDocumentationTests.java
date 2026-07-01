@@ -324,6 +324,13 @@ class PackagingDocumentationTests {
 			.containsPattern("launchCache=/tmp/cache-gradle-[\\d]+.launch");
 	}
 
+	@TestTemplate
+	void bootBuildImageWithImageCaches() {
+		BuildResult result = this.gradleBuild.script(Examples.DIR + "packaging/boot-build-image-image-caches")
+			.build("bootBuildImageCaches");
+		assertThat(result.getOutput()).containsPattern("buildCache=docker.io/library/gradle-[\\d]+:build");
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));

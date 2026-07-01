@@ -37,9 +37,11 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.maven.CacheInfo.BindCacheInfo;
+import org.springframework.boot.maven.CacheInfo.ImageCacheInfo;
 import org.springframework.boot.maven.CacheInfo.VolumeCacheInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
@@ -243,6 +245,23 @@ class ImageTests {
 		image.launchCache = CacheInfo.fromBind(new BindCacheInfo("launch-cache-dir"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getLaunchCache()).isEqualTo(Cache.bind("launch-cache-dir"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasBuildCacheImageUsesCache() {
+		Image image = new Image();
+		image.buildCache = CacheInfo.fromImage(new ImageCacheInfo("build-cache-image"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuildCache()).isEqualTo(Cache.image("build-cache-image"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasLaunchCacheImageThrowsException() {
+		Image image = new Image();
+		image.launchCache = CacheInfo.fromImage(new ImageCacheInfo("launch-cache-image"));
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> image.getBuildRequest(createArtifact(), mockApplicationContent()))
+			.withMessage("Launch cache must not be an image cache");
 	}
 
 	@Test

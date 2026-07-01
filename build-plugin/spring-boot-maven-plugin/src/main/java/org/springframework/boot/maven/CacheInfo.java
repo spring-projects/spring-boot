@@ -52,6 +52,13 @@ public class CacheInfo {
 		this.cache = Cache.bind(source);
 	}
 
+	public void setImage(ImageCacheInfo info) {
+		Assert.state(this.cache == null, "Each image building cache can be configured only once");
+		String name = info.getName();
+		Assert.state(name != null, "'name' must not be null");
+		this.cache = Cache.image(name);
+	}
+
 	@Nullable Cache asCache() {
 		return this.cache;
 	}
@@ -66,6 +73,12 @@ public class CacheInfo {
 		String source = cacheInfo.getSource();
 		Assert.state(source != null, "'source' must not be null");
 		return new CacheInfo(Cache.bind(source));
+	}
+
+	static CacheInfo fromImage(ImageCacheInfo cacheInfo) {
+		String name = cacheInfo.getName();
+		Assert.state(name != null, "'name' must not be null");
+		return new CacheInfo(Cache.image(name));
 	}
 
 	/**
@@ -112,6 +125,30 @@ public class CacheInfo {
 
 		void setSource(@Nullable String source) {
 			this.source = source;
+		}
+
+	}
+
+	/**
+	 * Encapsulates configuration of an image building cache stored in an image.
+	 */
+	public static class ImageCacheInfo {
+
+		private @Nullable String name;
+
+		public ImageCacheInfo() {
+		}
+
+		ImageCacheInfo(String name) {
+			this.name = name;
+		}
+
+		public @Nullable String getName() {
+			return this.name;
+		}
+
+		void setName(@Nullable String name) {
+			this.name = name;
 		}
 
 	}
