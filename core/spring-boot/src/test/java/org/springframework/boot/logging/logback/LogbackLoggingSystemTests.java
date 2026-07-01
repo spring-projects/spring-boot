@@ -107,6 +107,7 @@ import static org.mockito.Mockito.times;
  * @author Scott Frederick
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
+ * @author Dhruv Rastogi
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
@@ -338,6 +339,22 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(bridgeHandlerInstalled()).isTrue();
 		this.loggingSystem.cleanUp();
 		assertThat(bridgeHandlerInstalled()).isFalse();
+	}
+
+	@Test
+	void cleanUpLeavesBridgeHandlerInstalledByTheApplicationInPlace() {
+		// gh-33697: the application manages its own JUL-to-SLF4J bridge, so Spring Boot
+		// must not uninstall a bridge handler that it did not install itself.
+		SLF4JBridgeHandler.install();
+		try {
+			assertThat(bridgeHandlerInstalled()).isTrue();
+			this.loggingSystem.beforeInitialize();
+			this.loggingSystem.cleanUp();
+			assertThat(bridgeHandlerInstalled()).isTrue();
+		}
+		finally {
+			SLF4JBridgeHandler.uninstall();
+		}
 	}
 
 	@Test
