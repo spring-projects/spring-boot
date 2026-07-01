@@ -87,6 +87,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONDITIONAL_ON_MISSING_BEAN))));
 		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotation
 			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_SOURCE))));
 		getRules().addAll(whenMainSources(
 				() -> ArchitectureRules.configurationPropertiesBinding(ArchitectureCheckAnnotation.classFor(
 						getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_BINDING))));

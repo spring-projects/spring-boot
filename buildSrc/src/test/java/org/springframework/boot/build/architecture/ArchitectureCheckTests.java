@@ -47,6 +47,7 @@ import org.springframework.boot.build.architecture.annotations.TestConditionalOn
 import org.springframework.boot.build.architecture.annotations.TestConditionalOnMissingBean;
 import org.springframework.boot.build.architecture.annotations.TestConfigurationProperties;
 import org.springframework.boot.build.architecture.annotations.TestConfigurationPropertiesBinding;
+import org.springframework.boot.build.architecture.annotations.TestConfigurationPropertiesSource;
 import org.springframework.boot.build.architecture.annotations.TestDeprecatedConfigurationProperty;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileSystemUtils;
@@ -340,9 +341,23 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
+	void whenConfigurationPropertiesSourceUsesHashMapShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationpropertiessource/hashmap", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesSourceAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN, "should be initialized with java.util.LinkedHashMap");
+	}
+
+	@Test
 	void whenConfigurationPropertiesUsesHashSetShouldFailAndWriteReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/hashset", "annotations");
 		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN, "should be initialized with java.util.LinkedHashSet");
+	}
+
+	@Test
+	void whenConfigurationPropertiesSourceUsesHashSetShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationpropertiessource/hashset", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesSourceAnnotation(),
 				Task.CHECK_ARCHITECTURE_MAIN, "should be initialized with java.util.LinkedHashSet");
 	}
 
@@ -354,6 +369,13 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
+	void whenConfigurationPropertiesSourceUsesLinkedHashMapShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationpropertiessource/linkedhashmap", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesSourceAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
 	void whenConfigurationPropertiesUsesEnumMapShouldSucceedAndWriteEmptyReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/enummap", "annotations");
 		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
@@ -361,9 +383,23 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
+	void whenConfigurationPropertiesSourceUsesEnumMapShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationpropertiessource/enummap", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesSourceAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
 	void whenConfigurationPropertiesUsesLinkedHashSetShouldSucceedAndWriteEmptyReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/linkedhashset", "annotations");
 		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenConfigurationPropertiesSourceUsesLinkedHashSetShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationpropertiessource/linkedhashset", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesSourceAnnotation(),
 				Task.CHECK_ARCHITECTURE_MAIN);
 	}
 
@@ -601,6 +637,12 @@ class ArchitectureCheckTests {
 		GradleBuild withConfigurationPropertiesAnnotation() {
 			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES.name(),
 					TestConfigurationProperties.class.getName());
+			return this;
+		}
+
+		GradleBuild withConfigurationPropertiesSourceAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_SOURCE.name(),
+					TestConfigurationPropertiesSource.class.getName());
 			return this;
 		}
 

@@ -59,7 +59,6 @@ import org.springframework.util.unit.DataSize;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Yanming Zhou
- * @author Venkata Naga Sai Srikanth Gollapudi
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.kafka")
