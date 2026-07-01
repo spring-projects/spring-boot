@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.actuate.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ConditionalOnDefaultReactiveWebSecurity;
 import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
@@ -51,7 +51,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				ReactiveUserDetailsServiceAutoConfiguration.class },
 		after = ReactiveOAuth2ResourceServerAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnDefaultWebSecurity
+@ConditionalOnDefaultReactiveWebSecurity
 @ConditionalOnClass({ EnableWebFluxSecurity.class })
 public final class ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration {
 
