@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class KafkaProperties {
 	 * Additional properties, common to producers and consumers, used to configure the
 	 * client.
 	 */
-	private final Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new LinkedHashMap<>();
 
 	private final Consumer consumer = new Consumer();
 
@@ -162,7 +162,7 @@ public class KafkaProperties {
 	}
 
 	private Map<String, Object> buildCommonProperties() {
-		Map<String, Object> properties = new HashMap<>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
 		}
@@ -318,7 +318,7 @@ public class KafkaProperties {
 		/**
 		 * Additional consumer-specific properties used to configure the client.
 		 */
-		private final Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new LinkedHashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -540,7 +540,7 @@ public class KafkaProperties {
 		/**
 		 * Additional producer-specific properties used to configure the client.
 		 */
-		private final Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new LinkedHashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -667,7 +667,7 @@ public class KafkaProperties {
 		/**
 		 * Additional admin-specific properties used to configure the client.
 		 */
-		private final Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new LinkedHashMap<>();
 
 		/**
 		 * Close timeout.
@@ -815,7 +815,7 @@ public class KafkaProperties {
 		/**
 		 * Additional Kafka properties used to configure the streams.
 		 */
-		private final Map<String, String> properties = new HashMap<>();
+		private final Map<String, String> properties = new LinkedHashMap<>();
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -1510,7 +1510,7 @@ public class KafkaProperties {
 		/**
 		 * Additional JAAS options.
 		 */
-		private final Map<String, String> options = new HashMap<>();
+		private final Map<String, String> options = new LinkedHashMap<>();
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -1741,7 +1741,7 @@ public class KafkaProperties {
 	}
 
 	@SuppressWarnings("serial")
-	private static final class Properties extends HashMap<String, Object> {
+	private static final class Properties extends LinkedHashMap<String, Object> {
 
 		<V> java.util.function.Consumer<V> in(String key) {
 			return (value) -> put(key, value);

@@ -43,6 +43,11 @@ public enum ArchitectureCheckAnnotation {
 	CONFIGURATION_PROPERTIES,
 
 	/**
+	 * Configuration properties source.
+	 */
+	CONFIGURATION_PROPERTIES_SOURCE,
+
+	/**
 	 * Deprecated configuration property.
 	 */
 	DEPRECATED_CONFIGURATION_PROPERTY,
@@ -56,6 +61,8 @@ public enum ArchitectureCheckAnnotation {
 			"org.springframework.boot.autoconfigure.condition.ConditionalOnClass", CONDITIONAL_ON_MISSING_BEAN.name(),
 			"org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
 			CONFIGURATION_PROPERTIES.name(), "org.springframework.boot.context.properties.ConfigurationProperties",
+			CONFIGURATION_PROPERTIES_SOURCE.name(),
+			"org.springframework.boot.context.properties.ConfigurationPropertiesSource",
 			DEPRECATED_CONFIGURATION_PROPERTY.name(),
 			"org.springframework.boot.context.properties.DeprecatedConfigurationProperty",
 			CONFIGURATION_PROPERTIES_BINDING.name(),

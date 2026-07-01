@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.relaxedbinding.mapsfromenvironmentvariables
+package org.springframework.boot.build.architecture.configurationproperties.hashset;
 
-import org.springframework.boot.context.properties.ConfigurationProperties
+import java.util.HashSet;
+import java.util.Set;
 
-@ConfigurationProperties("my.props")
-class MyMapsProperties {
+import org.springframework.boot.build.architecture.annotations.TestConfigurationProperties;
 
-	val values: Map<String, String> = LinkedHashMap()
+/**
+ * Test {@link TestConfigurationProperties} using {@link HashSet}.
+ *
+ * @author Venkata Naga Sai Srikanth Gollapudi
+ */
+@TestConfigurationProperties("testing")
+public class ConfigurationPropertiesWithHashSet {
+
+	private Set<String> items = new HashSet<>();
+
+	public Set<String> getItems() {
+		return this.items;
+	}
+
+	public void setItems(Set<String> items) {
+		this.items = items;
+	}
 
 }
-

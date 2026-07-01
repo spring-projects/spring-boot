@@ -17,8 +17,8 @@
 package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,7 +55,7 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	/**
 	 * Registered clients of the Authorization Server.
 	 */
-	private final Map<String, Client> client = new HashMap<>();
+	private final Map<String, Client> client = new LinkedHashMap<>();
 
 	/**
 	 * Authorization Server endpoints.
@@ -380,27 +380,27 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		/**
 		 * Client authentication method(s) that the client may use.
 		 */
-		private Set<String> clientAuthenticationMethods = new HashSet<>();
+		private Set<String> clientAuthenticationMethods = new LinkedHashSet<>();
 
 		/**
 		 * Authorization grant type(s) that the client may use.
 		 */
-		private Set<String> authorizationGrantTypes = new HashSet<>();
+		private Set<String> authorizationGrantTypes = new LinkedHashSet<>();
 
 		/**
 		 * Redirect URI(s) that the client may use in redirect-based flows.
 		 */
-		private Set<String> redirectUris = new HashSet<>();
+		private Set<String> redirectUris = new LinkedHashSet<>();
 
 		/**
 		 * Redirect URI(s) that the client may use for logout.
 		 */
-		private Set<String> postLogoutRedirectUris = new HashSet<>();
+		private Set<String> postLogoutRedirectUris = new LinkedHashSet<>();
 
 		/**
 		 * Scope(s) that the client may use.
 		 */
-		private Set<String> scopes = new HashSet<>();
+		private Set<String> scopes = new LinkedHashSet<>();
 
 		public @Nullable String getClientId() {
 			return this.clientId;

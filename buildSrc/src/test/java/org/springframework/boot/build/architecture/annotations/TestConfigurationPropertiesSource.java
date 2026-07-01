@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.relaxedbinding.mapsfromenvironmentvariables
+package org.springframework.boot.build.architecture.annotations;
 
-import org.springframework.boot.context.properties.ConfigurationProperties
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@ConfigurationProperties("my.props")
-class MyMapsProperties {
-
-	val values: Map<String, String> = LinkedHashMap()
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TestConfigurationPropertiesSource {
 
 }
-

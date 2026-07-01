@@ -18,7 +18,7 @@ package org.springframework.boot.mail.autoconfigure;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -71,7 +71,7 @@ public class MailProperties {
 	/**
 	 * Additional JavaMail Session properties.
 	 */
-	private final Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new LinkedHashMap<>();
 
 	/**
 	 * Session JNDI name. When set, takes precedence over other Session settings.
