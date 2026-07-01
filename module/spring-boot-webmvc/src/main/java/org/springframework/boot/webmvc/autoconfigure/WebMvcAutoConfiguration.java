@@ -676,13 +676,6 @@ public final class WebMvcAutoConfiguration {
 
 	}
 
-	@FunctionalInterface
-	interface ResourceHandlerRegistrationCustomizer {
-
-		void customize(ResourceHandlerRegistration registration);
-
-	}
-
 	static class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHandlerRegistrationCustomizer {
 
 		private final Resources resourceProperties;
