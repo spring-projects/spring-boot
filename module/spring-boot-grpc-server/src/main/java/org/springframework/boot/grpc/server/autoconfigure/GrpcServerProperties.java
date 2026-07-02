@@ -380,6 +380,11 @@ public class GrpcServerProperties {
 		 */
 		private boolean secure = true;
 
+		/**
+		 * Whether to reload the key manager when the SSL bundle is updated.
+		 */
+		private boolean reloadOnUpdate;
+
 		public @Nullable Boolean getEnabled() {
 			return this.enabled;
 		}
@@ -410,6 +415,14 @@ public class GrpcServerProperties {
 
 		public boolean isSecure() {
 			return this.secure;
+		}
+
+		public boolean isReloadOnUpdate() {
+			return this.reloadOnUpdate;
+		}
+
+		public void setReloadOnUpdate(boolean reloadOnUpdate) {
+			this.reloadOnUpdate = reloadOnUpdate;
 		}
 
 	}
