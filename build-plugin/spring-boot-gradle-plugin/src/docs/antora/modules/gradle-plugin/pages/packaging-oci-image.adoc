@@ -179,7 +179,7 @@ Buildpack references must be in one of the following forms:
 | None, indicating the builder should use the buildpacks included in it.
 
 | `bindings`
-|
+| `--bindings`
 a|https://docs.docker.com/storage/bind-mounts/[Volume bind mounts] that should be mounted to the builder container when building the image.
 The bindings will be passed unparsed and unvalidated to Docker when creating the builder container.
 Bindings must be in one of the following forms:
@@ -192,6 +192,9 @@ Where `<options>` can contain:
 * `ro` to mount the volume as read-only in the container
 * `rw` to mount the volume as readable and writable in the container
 * `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
+
+Bindings provided using the `--bindings` command-line option are added to those configured in the build script.
+When a command-line binding shares its container destination path with a configured binding, the command-line binding takes precedence.
 |
 
 | `network`

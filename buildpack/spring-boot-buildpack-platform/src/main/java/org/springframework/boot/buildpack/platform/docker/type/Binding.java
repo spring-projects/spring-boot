@@ -77,8 +77,9 @@ public final class Binding {
 	/**
 	 * Returns the container destination path.
 	 * @return the container destination path
+	 * @since 4.1.1
 	 */
-	String getContainerDestinationPath() {
+	public String getContainerDestinationPath() {
 		List<String> parts = getParts();
 		Assert.state(parts.size() >= 2, () -> "Expected 2 or more parts, but found %d".formatted(parts.size()));
 		return parts.get(1);
