@@ -57,7 +57,13 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @ConditionalOnClass({ InProcessServerBuilder.class, InProcessGrpcServerFactory.class })
 public final class TestGrpcTransportAutoConfiguration {
 
-	private static final String address = InProcessServerBuilder.generateName();
+	record TestGrpcTransportAddress(String value) {
+	}
+
+	@Bean
+	TestGrpcTransportAddress testGrpcTransportAddress() {
+		return new TestGrpcTransportAddress(InProcessServerBuilder.generateName());
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(GrpcServerFactory.class)
@@ -67,8 +73,9 @@ public final class TestGrpcTransportAutoConfiguration {
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		TestGrpcServerFactory testGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
-				GrpcServiceConfigurer serviceConfigurer, ObjectProvider<ServerServiceDefinitionFilter> serviceFilter) {
-			TestGrpcServerFactory factory = new TestGrpcServerFactory(address);
+				GrpcServiceConfigurer serviceConfigurer, ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
+				TestGrpcTransportAddress address) {
+			TestGrpcServerFactory factory = new TestGrpcServerFactory(address.value());
 			serviceFilter.ifAvailable(factory::setServiceFilter);
 			serviceDiscoverer.findServices()
 				.stream()
@@ -99,8 +106,9 @@ public final class TestGrpcTransportAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		TestGrpcChannelFactory testGrpcChannelFactory(ClientInterceptorsConfigurer interceptorsConfigurer) {
-			return new TestGrpcChannelFactory(address, interceptorsConfigurer);
+		TestGrpcChannelFactory testGrpcChannelFactory(ClientInterceptorsConfigurer interceptorsConfigurer,
+				TestGrpcTransportAddress address) {
+			return new TestGrpcChannelFactory(address.value(), interceptorsConfigurer);
 		}
 
 	}
