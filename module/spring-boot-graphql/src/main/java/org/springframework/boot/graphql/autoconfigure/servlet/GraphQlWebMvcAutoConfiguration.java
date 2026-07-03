@@ -203,7 +203,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 		private HttpMessageConverter<Object> getJsonConverter(
 				ObjectProvider<ServerHttpMessageConvertersCustomizer> customizers) {
 			ServerBuilder serverBuilder = HttpMessageConverters.forServer().registerDefaults();
-			customizers.forEach((customizer) -> customizer.customize(serverBuilder));
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(serverBuilder));
 			for (HttpMessageConverter<?> converter : serverBuilder.build()) {
 				if (canReadJsonMap(converter)) {
 					return asObjectHttpMessageConverter(converter);
