@@ -24,6 +24,7 @@ import graphql.schema.idl.TypeRuntimeWiring;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -31,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.boot.graphql.autoconfigure.GraphQlTestDataFetchers;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -56,6 +58,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -241,6 +246,22 @@ class GraphQlWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldApplyJsonCustomizersInOrderB() {
+		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws")
+			.withUserConfiguration(CustomJsonConverterConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class);
+				ServerHttpMessageConvertersCustomizer before = context.getBean("before",
+						ServerHttpMessageConvertersCustomizer.class);
+				ServerHttpMessageConvertersCustomizer after = context.getBean("after",
+						ServerHttpMessageConvertersCustomizer.class);
+				InOrder ordered = inOrder(before, after);
+				ordered.verify(before).customize(any());
+				ordered.verify(after).customize(any());
+			});
+	}
+
+	@Test
 	void shouldConfigureWebSocketProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.graphql.websocket.path=/ws",
@@ -310,6 +331,23 @@ class GraphQlWebMvcAutoConfigurationTests {
 		WebGraphQlInterceptor customWebGraphQlInterceptor() {
 			return (webInput, interceptorChain) -> interceptorChain.next(webInput)
 				.doOnNext((output) -> output.getResponseHeaders().add("X-Custom-Header", "42"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJsonConverterConfiguration {
+
+		@Bean
+		@Order(1)
+		ServerHttpMessageConvertersCustomizer after() {
+			return mock();
+		}
+
+		@Bean
+		@Order(-1)
+		ServerHttpMessageConvertersCustomizer before() {
+			return mock();
 		}
 
 	}
