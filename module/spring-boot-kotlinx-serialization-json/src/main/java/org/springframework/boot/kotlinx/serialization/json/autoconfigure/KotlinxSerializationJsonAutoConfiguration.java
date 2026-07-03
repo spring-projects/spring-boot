@@ -16,7 +16,6 @@
 
 package org.springframework.boot.kotlinx.serialization.json.autoconfigure;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import kotlin.Unit;
@@ -26,6 +25,7 @@ import kotlinx.serialization.json.JsonBuilder;
 import kotlinx.serialization.json.JsonKt;
 import kotlinx.serialization.json.JsonNamingStrategy;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,9 +48,9 @@ public final class KotlinxSerializationJsonAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Json kotlinSerializationJson(List<KotlinxSerializationJsonBuilderCustomizer> customizers) {
+	Json kotlinSerializationJson(ObjectProvider<KotlinxSerializationJsonBuilderCustomizer> customizers) {
 		Function1<JsonBuilder, Unit> builderAction = (jsonBuilder) -> {
-			customizers.forEach((c) -> c.customize(jsonBuilder));
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(jsonBuilder));
 			return Unit.INSTANCE;
 		};
 		return JsonKt.Json(Json.Default, builderAction);

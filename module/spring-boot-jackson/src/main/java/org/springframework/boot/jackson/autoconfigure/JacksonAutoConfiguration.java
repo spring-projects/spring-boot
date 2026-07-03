@@ -99,16 +99,10 @@ public final class JacksonAutoConfiguration {
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	JsonMapper.Builder jsonMapperBuilder(List<JsonMapperBuilderCustomizer> customizers) {
+	JsonMapper.Builder jsonMapperBuilder(ObjectProvider<JsonMapperBuilderCustomizer> customizers) {
 		JsonMapper.Builder builder = JsonMapper.builder();
-		customize(builder, customizers);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
-	}
-
-	private void customize(JsonMapper.Builder builder, List<JsonMapperBuilderCustomizer> customizers) {
-		for (JsonMapperBuilderCustomizer customizer : customizers) {
-			customizer.customize(builder);
-		}
 	}
 
 	@Bean
@@ -200,16 +194,10 @@ public final class JacksonAutoConfiguration {
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		CBORMapper.Builder cborMapperBuilder(List<CborMapperBuilderCustomizer> customizers) {
+		CBORMapper.Builder cborMapperBuilder(ObjectProvider<CborMapperBuilderCustomizer> customizers) {
 			CBORMapper.Builder builder = CBORMapper.builder();
-			customize(builder, customizers);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private void customize(CBORMapper.Builder builder, List<CborMapperBuilderCustomizer> customizers) {
-			for (CborMapperBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
 		}
 
 		@Bean
@@ -255,16 +243,10 @@ public final class JacksonAutoConfiguration {
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		XmlMapper.Builder xmlMapperBuilder(List<XmlMapperBuilderCustomizer> customizers) {
+		XmlMapper.Builder xmlMapperBuilder(ObjectProvider<XmlMapperBuilderCustomizer> customizers) {
 			XmlMapper.Builder builder = XmlMapper.builder();
-			customize(builder, customizers);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private void customize(XmlMapper.Builder builder, List<XmlMapperBuilderCustomizer> customizers) {
-			for (XmlMapperBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
 		}
 
 		@Bean

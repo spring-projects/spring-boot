@@ -16,8 +16,6 @@
 
 package org.springframework.boot.resttestclient.autoconfigure;
 
-import java.util.List;
-
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -53,9 +51,9 @@ final class RestTestClientTestAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	RestTestClient restTestClient(WebApplicationContext applicationContext,
-			List<RestTestClientBuilderCustomizer> customizers) {
+			ObjectProvider<RestTestClientBuilderCustomizer> customizers) {
 		RestTestClient.Builder<?> builder = getBuilder(applicationContext);
-		customizers.forEach((customizer) -> customizer.customize(builder));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 

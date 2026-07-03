@@ -100,7 +100,7 @@ public final class BraveAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Tracing braveTracing(Environment environment, List<SpanHandler> spanHandlers,
-			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
+			ObjectProvider<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
 		if (this.braveTracingProperties.isSpanJoiningSupported()) {
 			if (this.tracingProperties.getPropagation().getType() != null
@@ -128,9 +128,7 @@ public final class BraveAutoConfiguration {
 			.sampler(sampler)
 			.localServiceName(applicationName);
 		spanHandlers.forEach(builder::addSpanHandler);
-		for (TracingCustomizer tracingCustomizer : tracingCustomizers) {
-			tracingCustomizer.customize(builder);
-		}
+		tracingCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
@@ -143,12 +141,10 @@ public final class BraveAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
-			List<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
+			ObjectProvider<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
 		ThreadLocalCurrentTraceContext.Builder builder = ThreadLocalCurrentTraceContext.newBuilder();
 		scopeDecorators.forEach(builder::addScopeDecorator);
-		for (CurrentTraceContextCustomizer currentTraceContextCustomizer : currentTraceContextCustomizers) {
-			currentTraceContextCustomizer.customize(builder);
-		}
+		currentTraceContextCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
