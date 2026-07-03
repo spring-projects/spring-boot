@@ -81,7 +81,6 @@ import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
  * Spring MVC.
  *
  * @author Brian Clozel
- * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
