@@ -79,6 +79,7 @@ public final class MongoReactiveAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
 				MongoConnectionDetails connectionDetails) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails,

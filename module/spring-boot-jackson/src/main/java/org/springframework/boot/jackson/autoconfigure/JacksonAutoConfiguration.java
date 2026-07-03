@@ -82,6 +82,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
 import org.springframework.http.converter.json.ProblemDetailJacksonXmlMixin;
@@ -173,11 +174,13 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		StandardJsonFactoryBuilderCustomizer standardJsonFactoryBuilderCustomizer() {
 			return new StandardJsonFactoryBuilderCustomizer(this.jacksonProperties);
 		}
 
 		@Bean
+		@Order(0)
 		StandardJsonMapperBuilderCustomizer standardJsonMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
 				AutowireCapableBeanFactory beanFactory) {
 			return new StandardJsonMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
@@ -280,11 +283,13 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		StandardCborFactoryBuilderCustomizer standardCborFactoryBuilderCustomizer() {
 			return new StandardCborFactoryBuilderCustomizer(this.jacksonProperties);
 		}
 
 		@Bean
+		@Order(0)
 		StandardCborMapperBuilderCustomizer standardCborMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
 				JacksonCborProperties cborProperties, AutowireCapableBeanFactory beanFactory) {
 			return new StandardCborMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),
@@ -370,11 +375,13 @@ public final class JacksonAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		StandardXmlFactoryBuilderCustomizer standardXmlFactoryBuilderCustomizer() {
 			return new StandardXmlFactoryBuilderCustomizer(this.jacksonProperties);
 		}
 
 		@Bean
+		@Order(0)
 		StandardXmlMapperBuilderCustomizer standardXmlMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules,
 				JacksonXmlProperties xmlProperties, AutowireCapableBeanFactory beanFactory) {
 			return new StandardXmlMapperBuilderCustomizer(this.jacksonProperties, modules.stream().toList(),

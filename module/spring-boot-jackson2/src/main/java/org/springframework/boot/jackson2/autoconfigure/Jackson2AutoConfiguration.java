@@ -59,7 +59,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -82,6 +82,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Ralf Ueberfuhr
+ * @author Yanming Zhou
  * @since 4.0.0
  * @deprecated since 4.0.0 for removal in 4.3.0 in favor of Jackson 3.
  */
@@ -179,13 +180,14 @@ public final class Jackson2AutoConfiguration {
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {
 
 		@Bean
+		@Order(0)
 		StandardJackson2ObjectMapperBuilderCustomizer standardJackson2ObjectMapperBuilderCustomizer(
 				Jackson2Properties jacksonProperties, ObjectProvider<Module> modules) {
 			return new StandardJackson2ObjectMapperBuilderCustomizer(jacksonProperties, modules.stream().toList());
 		}
 
 		static final class StandardJackson2ObjectMapperBuilderCustomizer
-				implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
+				implements Jackson2ObjectMapperBuilderCustomizer {
 
 			private final Jackson2Properties jacksonProperties;
 
@@ -195,11 +197,6 @@ public final class Jackson2AutoConfiguration {
 					Collection<Module> modules) {
 				this.jacksonProperties = jacksonProperties;
 				this.modules = modules;
-			}
-
-			@Override
-			public int getOrder() {
-				return 0;
 			}
 
 			@Override

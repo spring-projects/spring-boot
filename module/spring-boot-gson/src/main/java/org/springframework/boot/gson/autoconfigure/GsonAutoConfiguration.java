@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -38,6 +38,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author David Liu
  * @author Ivan Golovko
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -60,21 +61,17 @@ public final class GsonAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	StandardGsonBuilderCustomizer standardGsonBuilderCustomizer(GsonProperties gsonProperties) {
 		return new StandardGsonBuilderCustomizer(gsonProperties);
 	}
 
-	static final class StandardGsonBuilderCustomizer implements GsonBuilderCustomizer, Ordered {
+	static final class StandardGsonBuilderCustomizer implements GsonBuilderCustomizer {
 
 		private final GsonProperties properties;
 
 		StandardGsonBuilderCustomizer(GsonProperties properties) {
 			this.properties = properties;
-		}
-
-		@Override
-		public int getOrder() {
-			return 0;
 		}
 
 		@Override

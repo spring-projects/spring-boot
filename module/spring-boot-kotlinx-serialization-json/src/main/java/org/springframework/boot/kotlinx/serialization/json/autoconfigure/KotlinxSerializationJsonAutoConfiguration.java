@@ -33,12 +33,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Kotlinx Serialization JSON.
  *
  * @author Dmitry Sulman
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -57,23 +58,19 @@ public final class KotlinxSerializationJsonAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	StandardKotlinSerializationJsonBuilderCustomizer standardKotlinSerializationJsonBuilderCustomizer(
 			KotlinxSerializationJsonProperties kotlinSerializationProperties) {
 		return new StandardKotlinSerializationJsonBuilderCustomizer(kotlinSerializationProperties);
 	}
 
 	static final class StandardKotlinSerializationJsonBuilderCustomizer
-			implements KotlinxSerializationJsonBuilderCustomizer, Ordered {
+			implements KotlinxSerializationJsonBuilderCustomizer {
 
 		private final KotlinxSerializationJsonProperties properties;
 
 		StandardKotlinSerializationJsonBuilderCustomizer(KotlinxSerializationJsonProperties properties) {
 			this.properties = properties;
-		}
-
-		@Override
-		public int getOrder() {
-			return 0;
 		}
 
 		@Override
