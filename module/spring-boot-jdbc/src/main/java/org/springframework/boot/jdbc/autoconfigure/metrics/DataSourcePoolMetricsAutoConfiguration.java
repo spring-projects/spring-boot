@@ -88,7 +88,8 @@ public final class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream().toList();
+				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.orderedStream()
+					.toList();
 				this.dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name, dataSource,
 						metadataProvidersList, registry));
 			}
