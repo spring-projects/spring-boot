@@ -38,6 +38,7 @@ import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCus
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
@@ -70,6 +71,7 @@ import org.springframework.util.ClassUtils;
  * @author Josh Long
  * @author Scott Frederick
  * @author Stefano Cordio
+ * @author Yanming Zhou
  * @since 4.0.0
  * @see EnableJpaRepositories
  */
@@ -82,6 +84,7 @@ import org.springframework.util.ClassUtils;
 public final class DataJpaRepositoriesAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
 	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {

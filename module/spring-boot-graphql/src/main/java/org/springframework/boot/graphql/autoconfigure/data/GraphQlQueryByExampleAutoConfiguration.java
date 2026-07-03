@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.graphql.data.query.QueryByExampleDataFetcher;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -41,6 +42,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
  * matching return type.
  *
  * @author Rossen Stoyanchev
+ * @author Yanming Zhou
  * @since 4.0.0
  * @see QueryByExampleDataFetcher#autoRegistrationConfigurer(List, List)
  */
@@ -50,6 +52,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 public final class GraphQlQueryByExampleAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	GraphQlSourceBuilderCustomizer queryByExampleRegistrar(ObjectProvider<QueryByExampleExecutor<?>> executors) {
 		RuntimeWiringConfigurer configurer = QueryByExampleDataFetcher
 			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
 import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.web.client.ExpectedCount;
@@ -54,12 +55,14 @@ import org.springframework.web.client.RestTemplate;
 public final class MockRestServiceServerAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean
 	MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
 		return new MockServerRestTemplateCustomizer();
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean
 	MockServerRestClientCustomizer mockServerRestClientCustomizer() {
 		return new MockServerRestClientCustomizer();

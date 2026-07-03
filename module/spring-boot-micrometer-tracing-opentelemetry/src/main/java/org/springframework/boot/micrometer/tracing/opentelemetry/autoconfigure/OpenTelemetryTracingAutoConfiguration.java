@@ -67,6 +67,7 @@ import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.O
 import org.springframework.boot.opentelemetry.autoconfigure.ConditionalOnEnabledOpenTelemetry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -223,6 +224,7 @@ public final class OpenTelemetryTracingAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	OtelSpanCustomizer otelSpanCustomizer() {
 		return new OtelSpanCustomizer();

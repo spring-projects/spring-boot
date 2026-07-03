@@ -42,12 +42,14 @@ import org.springframework.boot.web.server.autoconfigure.servlet.ServletWebServe
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a Tomcat-based servlet web
  * server.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -83,6 +85,7 @@ public final class TomcatServletWebServerAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
 		return (filter) -> filter.setRelativeRedirects(this.tomcatProperties.isUseRelativeRedirects());

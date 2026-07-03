@@ -50,6 +50,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Eddú Meléndez
  * @author Dmitry Sulman
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @SuppressWarnings("removal")
@@ -92,6 +93,7 @@ public final class HttpMessageConvertersAutoConfiguration {
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnMissingBean(StringHttpMessageConverter.class)
 		StringHttpMessageConvertersCustomizer stringHttpMessageConvertersCustomizer(
 				HttpMessageConvertersProperties properties) {

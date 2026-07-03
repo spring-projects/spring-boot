@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.Assert;
@@ -71,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Evgeniy Cheban
  * @author Moritz Halbritter
  * @author Ahmed Ashour
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
@@ -193,6 +195,7 @@ public final class LiquibaseAutoConfiguration {
 	static class CustomizerConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnBean(Customizer.class)
 		SpringLiquibaseCustomizer springLiquibaseCustomizer(Customizer<Liquibase> customizer) {
 			return (springLiquibase) -> springLiquibase.setCustomizer(customizer);

@@ -27,6 +27,7 @@ import org.springframework.boot.micrometer.observation.autoconfigure.Observation
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
@@ -35,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
  * Configure the instrumentation of {@link RestTemplate}.
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -45,6 +47,7 @@ import org.springframework.web.client.RestTemplate;
 public final class RestTemplateObservationAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {

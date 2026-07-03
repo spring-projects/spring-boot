@@ -27,6 +27,7 @@ import org.springframework.boot.micrometer.observation.autoconfigure.Observation
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.observation.ObservationRestClientCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestClient;
@@ -35,6 +36,7 @@ import org.springframework.web.client.RestClient;
  * Configure the instrumentation of {@link RestClient}.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -45,6 +47,7 @@ import org.springframework.web.client.RestClient;
 public final class RestClientObservationAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	RestClientCustomizer observationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {

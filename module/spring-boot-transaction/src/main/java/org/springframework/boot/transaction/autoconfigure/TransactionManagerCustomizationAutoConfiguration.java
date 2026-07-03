@@ -30,6 +30,7 @@ import org.springframework.transaction.TransactionManager;
  * Auto-configuration for the customization of a {@link TransactionManager}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
@@ -45,6 +46,7 @@ public final class TransactionManagerCustomizationAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	ExecutionListenersTransactionManagerCustomizer transactionExecutionListeners(
 			ObjectProvider<TransactionExecutionListener> listeners) {
 		return new ExecutionListenersTransactionManagerCustomizer(listeners.orderedStream().toList());

@@ -35,12 +35,14 @@ import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo metrics.
  *
  * @author Chris Bono
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(before = MongoAutoConfiguration.class,
@@ -68,6 +70,7 @@ public final class MongoMetricsAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		MongoClientSettingsBuilderCustomizer mongoMetricsCommandListenerClientSettingsBuilderCustomizer(
 				MongoMetricsCommandListener mongoMetricsCommandListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder.addCommandListener(mongoMetricsCommandListener);
@@ -94,6 +97,7 @@ public final class MongoMetricsAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		MongoClientSettingsBuilderCustomizer mongoMetricsConnectionPoolListenerClientSettingsBuilderCustomizer(
 				MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder

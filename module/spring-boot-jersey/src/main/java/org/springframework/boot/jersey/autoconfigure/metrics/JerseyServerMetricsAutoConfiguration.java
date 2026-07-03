@@ -43,6 +43,7 @@ import org.springframework.core.annotation.Order;
  * @author Michael Simons
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(
@@ -60,6 +61,7 @@ public final class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	ResourceConfigCustomizer jerseyServerObservationResourceConfigCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<JerseyObservationConvention> jerseyObservationConvention) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();

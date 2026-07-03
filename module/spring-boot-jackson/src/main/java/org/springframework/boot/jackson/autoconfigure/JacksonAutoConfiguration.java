@@ -82,6 +82,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
 import org.springframework.http.converter.json.ProblemDetailJacksonXmlMixin;
@@ -100,6 +101,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Ralf Ueberfuhr
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -221,6 +223,7 @@ public final class JacksonAutoConfiguration {
 	@ConditionalOnClass(ProblemDetail.class)
 	static class JsonProblemDetailsConfiguration {
 
+		@Order(0)
 		@Bean
 		ProblemDetailJsonMapperBuilderCustomizer problemDetailJsonMapperBuilderCustomizer() {
 			return new ProblemDetailJsonMapperBuilderCustomizer();
@@ -386,6 +389,7 @@ public final class JacksonAutoConfiguration {
 		static class XmlProblemDetailsConfiguration {
 
 			@Bean
+			@Order(0)
 			ProblemDetailXmlMapperBuilderCustomizer problemDetailXmlMapperBuilderCustomizer() {
 				return new ProblemDetailXmlMapperBuilderCustomizer();
 			}

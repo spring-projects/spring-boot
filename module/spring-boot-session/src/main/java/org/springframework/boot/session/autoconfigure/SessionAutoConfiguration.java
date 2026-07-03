@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.Session;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
@@ -61,6 +62,7 @@ import org.springframework.web.context.ServletContextAware;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Weix Sun
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -84,6 +86,7 @@ public final class SessionAutoConfiguration {
 		static class RememberMeServicesConfiguration {
 
 			@Bean
+			@Order(0)
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
 					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);

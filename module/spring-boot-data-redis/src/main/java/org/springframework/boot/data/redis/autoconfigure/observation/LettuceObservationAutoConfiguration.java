@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 
 /**
  * Auto-configuration for Lettuce observability.
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Bean;
  * @author Antonin Arquey
  * @author Yanming Zhou
  * @author Dũng Đăng Minh
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(before = DataRedisAutoConfiguration.class,
@@ -42,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 public final class LettuceObservationAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	ClientResourcesBuilderCustomizer lettuceObservation(ObservationRegistry observationRegistry) {
 		return (client) -> client.tracing(new MicrometerTracing(observationRegistry, "Redis"));
 	}

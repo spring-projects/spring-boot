@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.webclient.observation.ObservationWebClientCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +34,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Configure the instrumentation of {@link WebClient}.
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(
@@ -43,6 +45,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public final class WebClientObservationAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {

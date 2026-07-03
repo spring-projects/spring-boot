@@ -121,6 +121,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Artsiom Yudovin
  * @author Chris Bono
  * @author Weix Sun
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(
@@ -426,6 +427,7 @@ public final class WebFluxAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
+		@Order(0)
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());

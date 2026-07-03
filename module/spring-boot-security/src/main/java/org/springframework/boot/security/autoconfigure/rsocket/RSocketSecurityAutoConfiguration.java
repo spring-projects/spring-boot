@@ -23,6 +23,7 @@ import org.springframework.boot.rsocket.autoconfigure.RSocketMessageHandlerCusto
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.rsocket.EnableRSocketSecurity;
 import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
@@ -34,6 +35,7 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Guirong Hu
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -42,6 +44,7 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
 public final class RSocketSecurityAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	RSocketServerCustomizer springSecurityRSocketSecurity(SecuritySocketAcceptorInterceptor interceptor) {
 		return (server) -> server.interceptors((registry) -> registry.forSocketAcceptor(interceptor));
 	}
@@ -51,6 +54,7 @@ public final class RSocketSecurityAutoConfiguration {
 	static class RSocketSecurityMessageHandlerConfiguration {
 
 		@Bean
+		@Order(0)
 		RSocketMessageHandlerCustomizer rSocketAuthenticationPrincipalMessageHandlerCustomizer() {
 			return (messageHandler) -> messageHandler.getArgumentResolverConfigurer()
 				.addCustomResolver(new AuthenticationPrincipalArgumentResolver());

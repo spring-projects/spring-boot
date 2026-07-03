@@ -44,6 +44,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.log.LogMessage;
@@ -72,6 +73,7 @@ import org.springframework.graphql.execution.SubscriptionExceptionResolver;
  * infrastructure.
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -180,6 +182,7 @@ public final class GraphQlAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		@SuppressWarnings("unchecked")
 		GraphQlSourceBuilderCustomizer cursorStrategyCustomizer(CursorStrategy<?> cursorStrategy) {
 			if (cursorStrategy.supports(ScrollPosition.class)) {

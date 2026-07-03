@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -63,6 +64,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
@@ -128,6 +130,7 @@ public final class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		RSocketServerCustomizer frameDecoderRSocketServerCustomizer(RSocketMessageHandler rSocketMessageHandler) {
 			return (server) -> {
 				if (rSocketMessageHandler.getRSocketStrategies()

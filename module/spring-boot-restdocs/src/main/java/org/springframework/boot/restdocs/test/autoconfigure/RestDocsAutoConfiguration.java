@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
@@ -40,6 +41,7 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Roman Zaynetdinov
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -65,6 +67,7 @@ public final class RestDocsAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
@@ -92,6 +95,7 @@ public final class RestDocsAutoConfiguration {
 		}
 
 		@Bean
+		@Order(0)
 		RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				WebTestClientRestDocumentationConfigurer configurer) {
 			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);

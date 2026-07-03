@@ -29,6 +29,7 @@ import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.web.reactive.server.MockServerConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.MockServerSpec;
@@ -45,6 +46,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = CodecsAutoConfiguration.class)
@@ -55,6 +57,7 @@ public final class WebTestClientAutoConfiguration {
 	private static final String WEB_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
 	@Bean
+	@Order(0)
 	@ConfigurationProperties("spring.test.webtestclient")
 	SpringBootWebTestClientBuilderCustomizer springBootWebTestClientBuilderCustomizer(
 			ObjectProvider<CodecCustomizer> codecCustomizers) {

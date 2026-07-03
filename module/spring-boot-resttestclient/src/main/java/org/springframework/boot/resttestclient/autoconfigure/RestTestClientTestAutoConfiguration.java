@@ -27,6 +27,7 @@ import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageCo
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.client.RestClient;
@@ -38,6 +39,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @see AutoConfigureRestTestClient
  */
 @AutoConfiguration
@@ -45,6 +47,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class RestTestClientTestAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	SpringBootRestTestClientBuilderCustomizer springBootRestTestClientBuilderCustomizer(
 			ObjectProvider<ClientHttpMessageConvertersCustomizer> httpMessageConverterCustomizers) {
 		return new SpringBootRestTestClientBuilderCustomizer(httpMessageConverterCustomizers.orderedStream().toList());

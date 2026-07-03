@@ -28,6 +28,7 @@ import org.springframework.boot.kafka.autoconfigure.DefaultKafkaProducerFactoryC
 import org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -43,6 +44,7 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(before = KafkaAutoConfiguration.class,
@@ -53,11 +55,13 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
 public final class KafkaMetricsAutoConfiguration {
 
 	@Bean
+	@Order(0)
 	DefaultKafkaProducerFactoryCustomizer kafkaProducerMetrics(MeterRegistry meterRegistry) {
 		return (producerFactory) -> addListener(producerFactory, meterRegistry);
 	}
 
 	@Bean
+	@Order(0)
 	DefaultKafkaConsumerFactoryCustomizer kafkaConsumerMetrics(MeterRegistry meterRegistry) {
 		return (consumerFactory) -> addListener(consumerFactory, meterRegistry);
 	}

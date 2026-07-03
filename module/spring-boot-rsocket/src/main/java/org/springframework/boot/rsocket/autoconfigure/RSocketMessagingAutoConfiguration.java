@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.messaging.handler.MessagingAdviceBean;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -40,6 +41,7 @@ import org.springframework.web.method.ControllerAdviceBean;
  * @author Brian Clozel
  * @author Dmitry Sulman
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
@@ -62,6 +64,7 @@ public final class RSocketMessagingAutoConfiguration {
 	static class MessagingAdviceConfiguration {
 
 		@Bean
+		@Order(0)
 		MessagingAdviceRSocketMessageHandlerCustomizer messagingAdviceRSocketMessageHandlerCustomizer(
 				ApplicationContext applicationContext) {
 			return new MessagingAdviceRSocketMessageHandlerCustomizer(applicationContext);

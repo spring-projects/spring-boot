@@ -152,6 +152,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = { DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class },
@@ -661,6 +662,7 @@ public final class WebMvcAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
+		@Order(0)
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());

@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.data.autoconfigure.web.DataWebProperties.Pageable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -60,6 +61,7 @@ public final class DataWebAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean
 	PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
 		return (resolver) -> {
@@ -75,6 +77,7 @@ public final class DataWebAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean
 	SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
 		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());

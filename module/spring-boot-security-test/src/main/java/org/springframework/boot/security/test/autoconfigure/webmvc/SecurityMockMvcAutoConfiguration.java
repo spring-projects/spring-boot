@@ -28,6 +28,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.MockMvcBuilderCustomiz
 import org.springframework.boot.webmvc.test.autoconfigure.MockMvcHtmlUnitDriverCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -42,6 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
  * Auto-configuration for Spring Security's MockMvc integration.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = ServletWebSecurityAutoConfiguration.class)
@@ -51,6 +53,7 @@ public final class SecurityMockMvcAutoConfiguration {
 	private static final String DEFAULT_SECURITY_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;
 
 	@Bean
+	@Order(0)
 	@ConditionalOnBean(name = DEFAULT_SECURITY_FILTER_NAME)
 	SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
 		return new SecurityMockMvcBuilderCustomizer();
@@ -61,6 +64,7 @@ public final class SecurityMockMvcAutoConfiguration {
 	static class SecurityMockMvcHtmlUnitDriverConfiguration {
 
 		@Bean
+		@Order(0)
 		MockMvcHtmlUnitDriverCustomizer securityDelegateMockMvcHtmlUnitDriverCustomizer() {
 			return (driver) -> driver
 				.setExecutor(new DelegatingSecurityContextExecutor(Executors.newSingleThreadExecutor()));

@@ -66,6 +66,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
@@ -181,6 +182,7 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 	static class Jackson2ResourceConfigCustomizerConfiguration {
 
 		@Bean
+		@Order(0)
 		ResourceConfigCustomizer jacksonResourceConfigCustomizer(
 				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {

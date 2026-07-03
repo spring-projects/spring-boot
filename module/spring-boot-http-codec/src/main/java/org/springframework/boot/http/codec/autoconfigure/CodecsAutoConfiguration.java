@@ -52,6 +52,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * {@link org.springframework.core.codec.Decoder Decoders}.
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
@@ -103,6 +104,7 @@ public final class CodecsAutoConfiguration {
 	static class KotlinxSerializationJsonCodecConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnBean(Json.class)
 		CodecCustomizer kotlinxJsonCodecCustomizer(Json json, ResourceLoader resourceLoader) {
 			ClassLoader classLoader = resourceLoader.getClassLoader();

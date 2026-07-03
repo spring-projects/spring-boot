@@ -64,6 +64,7 @@ import org.springframework.core.env.Environment;
  * @author Moritz Halbritter
  * @author Marcin Grzejszczak
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(before = { MicrometerTracingAutoConfiguration.class, NoopTracerAutoConfiguration.class })
@@ -173,12 +174,14 @@ public final class BraveAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean(SpanCustomizer.class)
 	CurrentSpanCustomizer currentSpanCustomizer(Tracing tracing) {
 		return CurrentSpanCustomizer.create(tracing);
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnMissingBean(io.micrometer.tracing.SpanCustomizer.class)
 	BraveSpanCustomizer braveSpanCustomizer(SpanCustomizer spanCustomizer) {
 		return new BraveSpanCustomizer(spanCustomizer);
