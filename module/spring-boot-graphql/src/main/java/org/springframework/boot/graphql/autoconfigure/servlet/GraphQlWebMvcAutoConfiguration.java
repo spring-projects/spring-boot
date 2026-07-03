@@ -81,6 +81,7 @@ import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
  * Spring MVC.
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
@@ -203,7 +204,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 		private HttpMessageConverter<Object> getJsonConverter(
 				ObjectProvider<ServerHttpMessageConvertersCustomizer> customizers) {
 			ServerBuilder serverBuilder = HttpMessageConverters.forServer().registerDefaults();
-			customizers.forEach((customizer) -> customizer.customize(serverBuilder));
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(serverBuilder));
 			for (HttpMessageConverter<?> converter : serverBuilder.build()) {
 				if (canReadJsonMap(converter)) {
 					return asObjectHttpMessageConverter(converter);
