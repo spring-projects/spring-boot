@@ -24,8 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -195,6 +198,42 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1");
 		assertThatIllegalStateException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
 			.withMessage("Malformed zip entry name '../cnb/'");
+	}
+
+	@Test
+	void resolveDeletesIntermediateSourceTarTempFiles() throws Exception {
+		File tempDir = new File(System.getProperty("java.io.tmpdir"));
+		Set<String> tempsBefore = listTempFileNames(tempDir, "create-builder-scratch-");
+		Image image = Image.of(getContent("buildpack-image.json"));
+		ImageReference imageReference = ImageReference.of("example/buildpack1:1.0.0");
+		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
+		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
+		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
+		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
+		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack).isNotNull();
+		Set<String> createdOnResolve = new HashSet<>(listTempFileNames(tempDir, "create-builder-scratch-"));
+		createdOnResolve.removeAll(tempsBefore);
+		assertThat(createdOnResolve).as("intermediate source tar temp files must be deleted after createLayerFile")
+			.noneMatch((name) -> name.startsWith("create-builder-scratch-source-"));
+		assertThat(createdOnResolve).isNotEmpty();
+		assertAppliesExpectedLayers(buildpack);
+		Set<String> remainingCreated = new HashSet<>(listTempFileNames(tempDir, "create-builder-scratch-"));
+		remainingCreated.retainAll(createdOnResolve);
+		assertThat(remainingCreated).as("layer temp files created on resolve must be deleted after apply").isEmpty();
+	}
+
+	private Set<String> listTempFileNames(File tempDir, String prefix) {
+		File[] files = tempDir.listFiles((dir, name) -> name.startsWith(prefix));
+		if (files == null) {
+			return Collections.emptySet();
+		}
+		Set<String> names = new HashSet<>();
+		for (File file : files) {
+			names.add(file.getName());
+		}
+		return names;
 	}
 
 	private @Nullable Object withMockLayers(InvocationOnMock invocation) {
