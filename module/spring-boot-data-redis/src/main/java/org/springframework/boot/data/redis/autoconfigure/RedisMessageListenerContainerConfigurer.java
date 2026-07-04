@@ -23,8 +23,10 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Listener;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Recovery;
 import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.lang.Nullable;
 import org.springframework.util.backoff.BackOff;
 
 /**
@@ -42,8 +44,19 @@ public class RedisMessageListenerContainerConfigurer {
 
 	private final DataRedisProperties properties;
 
+	@Nullable
+	private TaskExecutor taskExecutor;
+
 	public RedisMessageListenerContainerConfigurer(DataRedisProperties properties) {
 		this.properties = properties;
+	}
+
+	/**
+	 * Set the {@link TaskExecutor} used to run listener callbacks.
+	 * @param taskExecutor the task executor
+	 */
+	public void setTaskExecutor(@Nullable TaskExecutor taskExecutor) {
+		this.taskExecutor = taskExecutor;
 	}
 
 	/**
@@ -54,6 +67,9 @@ public class RedisMessageListenerContainerConfigurer {
 	 */
 	public void configure(RedisMessageListenerContainer container, RedisConnectionFactory connectionFactory) {
 		container.setConnectionFactory(connectionFactory);
+		if (this.taskExecutor != null) {
+			container.setTaskExecutor(this.taskExecutor);
+		}
 		PropertyMapper map = PropertyMapper.get();
 		Listener listenerProperties = this.properties.getListener();
 		map.from(listenerProperties::isAutoStartup).to(container::setAutoStartup);

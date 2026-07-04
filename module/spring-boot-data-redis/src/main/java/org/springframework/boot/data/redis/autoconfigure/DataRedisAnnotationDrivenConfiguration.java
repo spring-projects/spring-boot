@@ -19,8 +19,11 @@ package org.springframework.boot.data.redis.autoconfigure;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.annotation.EnableRedisListeners;
 import org.springframework.data.redis.config.RedisListenerConfigUtils;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -46,8 +49,21 @@ class DataRedisAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.PLATFORM)
 	RedisMessageListenerContainerConfigurer redisMessageListenerContainerConfigurer() {
 		return new RedisMessageListenerContainerConfigurer(this.properties);
+	}
+
+	@Bean(name = "redisMessageListenerContainerConfigurer")
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	RedisMessageListenerContainerConfigurer redisMessageListenerContainerConfigurerVirtualThreads() {
+		RedisMessageListenerContainerConfigurer configurer = new RedisMessageListenerContainerConfigurer(
+				this.properties);
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("redis-");
+		executor.setVirtualThreads(true);
+		configurer.setTaskExecutor(executor);
+		return configurer;
 	}
 
 	@Bean(name = DEFAULT_MESSAGE_LISTENER_BEAN_NAME)
