@@ -59,6 +59,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webclient.WebClientCustomizer;
@@ -108,11 +109,31 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 				ProjectInfoAutoConfiguration.class, CloudFoundryReactiveActuatorAutoConfiguration.class))
 		.withUserConfiguration(UserDetailsServiceConfiguration.class);
 
+	private final ReactiveWebApplicationContextRunner withoutHealthContextRunner = new ReactiveWebApplicationContextRunner()
+		.withConfiguration(
+				AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class,
+						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
+						WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+						ProjectInfoAutoConfiguration.class, CloudFoundryReactiveActuatorAutoConfiguration.class))
+		.withUserConfiguration(UserDetailsServiceConfiguration.class);
+
 	private static final String BASE_PATH = "/cloudfoundryapplication";
 
 	@AfterEach
 	void close() {
 		HttpResources.reset();
+	}
+
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
+	void refreshSucceedsWithoutHealth() {
+		this.withoutHealthContextRunner
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
