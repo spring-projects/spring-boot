@@ -5,5 +5,6 @@
 <module name="com.puppycrawl.tools.checkstyle.Checker">
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
 		<property name="excludes" value="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck" />
+		<property name="headerFile" value="${config_loc}/checkstyle-header.txt" />
 	</module>
 </module>
