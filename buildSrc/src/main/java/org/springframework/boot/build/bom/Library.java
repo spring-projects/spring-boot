@@ -73,7 +73,7 @@ public class Library {
 
 	private final List<ProhibitedVersion> prohibitedVersions;
 
-	private final boolean considerSnapshots;
+	private final FirstParty firstParty;
 
 	private final VersionAlignment versionAlignment;
 
@@ -94,7 +94,7 @@ public class Library {
 	 * @param upgradePolicy the upgrade policy of the library, or {@code null} to use the
 	 * containing bom's policy
 	 * @param prohibitedVersions version of the library that are prohibited
-	 * @param considerSnapshots whether to consider snapshots
+	 * @param firstParty configuration for a first-party library
 	 * @param versionAlignment version alignment, if any, for the library
 	 * @param bomAlignment the bom, if any, that this library should align with
 	 * @param linkRootName the root name to use when generating link variable or
@@ -102,7 +102,7 @@ public class Library {
 	 * @param links a list of HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
-			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots,
+			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
 			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName,
 			Map<String, List<Link>> links) {
 		this.name = name;
@@ -113,7 +113,7 @@ public class Library {
 				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
 		this.upgradePolicy = upgradePolicy;
 		this.prohibitedVersions = prohibitedVersions;
-		this.considerSnapshots = considerSnapshots;
+		this.firstParty = firstParty;
 		this.versionAlignment = versionAlignment;
 		this.bomAlignment = bomAlignment;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
@@ -152,8 +152,12 @@ public class Library {
 		return this.prohibitedVersions;
 	}
 
-	public boolean isConsiderSnapshots() {
-		return this.considerSnapshots;
+	public FirstParty getFirstParty() {
+		return this.firstParty;
+	}
+
+	public boolean isFirstParty() {
+		return this.firstParty != null;
 	}
 
 	public VersionAlignment getVersionAlignment() {
@@ -193,8 +197,8 @@ public class Library {
 
 	public Library withVersion(LibraryVersion version) {
 		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
-				this.prohibitedVersions, this.considerSnapshots, this.versionAlignment, this.bomAlignment,
-				this.linkRootName, this.links);
+				this.prohibitedVersions, this.firstParty, this.versionAlignment, this.bomAlignment, this.linkRootName,
+				this.links);
 	}
 
 	/**
@@ -691,6 +695,20 @@ public class Library {
 				result += " that is managed by " + this.managedBy;
 			}
 			return result;
+		}
+
+	}
+
+	public static class FirstParty {
+
+		private final String releaseTrainId;
+
+		public FirstParty(String releaseTrainId) {
+			this.releaseTrainId = releaseTrainId;
+		}
+
+		public String getReleaseTrainId() {
+			return this.releaseTrainId;
 		}
 
 	}

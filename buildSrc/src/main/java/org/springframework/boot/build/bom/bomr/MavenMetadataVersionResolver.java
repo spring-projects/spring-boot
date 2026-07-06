@@ -34,6 +34,7 @@ import org.gradle.internal.artifacts.repositories.AuthenticationSupportedInterna
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.xml.XmlDocument;
 import org.springframework.http.HttpStatus;
@@ -67,7 +68,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 	}
 
 	@Override
-	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId) {
+	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId, Library library) {
 		Set<String> versions = new HashSet<>();
 		for (MavenArtifactRepository repository : this.repositories) {
 			versions.addAll(resolveVersions(groupId, artifactId, repository));

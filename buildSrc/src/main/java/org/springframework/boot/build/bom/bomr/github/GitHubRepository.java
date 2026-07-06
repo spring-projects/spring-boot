@@ -58,4 +58,12 @@ public interface GitHubRepository {
 	 */
 	List<Issue> findIssues(List<String> labels, Milestone milestone);
 
+	/**
+	 * Returns the content of the repository at the given {@code path} and {@code ref}.
+	 * @param path the path in the repository
+	 * @param ref the ref in the repository, typically a branch name
+	 * @return the content, possibly {@code null}
+	 */
+	String getContent(String path, String ref);
+
 }

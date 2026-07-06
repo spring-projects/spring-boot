@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.Library.BomAlignment;
+import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
@@ -46,12 +47,12 @@ class LibraryTests {
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
-		boolean considerSnapshots = false;
+		FirstParty firstParty = null;
 		VersionAlignment versionAlignment = null;
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Map<String, List<Link>> links = Collections.emptyMap();
-		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
 	}
@@ -63,12 +64,12 @@ class LibraryTests {
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
-		boolean considerSnapshots = false;
+		FirstParty firstParty = null;
 		VersionAlignment versionAlignment = null;
 		BomAlignment alignsWithBom = null;
 		String linkRootName = "spring-data";
 		Map<String, List<Link>> links = Collections.emptyMap();
-		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.BomAlignment;
+import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
@@ -234,11 +235,11 @@ class AntoraAsciidocAttributesTests {
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
-		boolean considerSnapshots = false;
+		FirstParty firstParty = null;
 		VersionAlignment versionAlignment = null;
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
-		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		return library;
 	}

@@ -66,14 +66,17 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 	}
 
 	@Override
-	protected String commitMessage(Upgrade upgrade, int issueNumber) {
-		return "Start building against " + upgrade.toRelease().getNameAndVersion() + " snapshots" + "\n\nSee gh-"
-				+ issueNumber;
+	protected String commitMessage(Upgrade upgrade, Integer issueNumber) {
+		String message = "Start building against " + upgrade.toRelease().getNameAndVersion() + " snapshots";
+		if (issueNumber != null) {
+			message += "\n\nSee gh-" + issueNumber;
+		}
+		return message;
 	}
 
 	@Override
 	protected boolean eligible(Library library) {
-		return library.isConsiderSnapshots() && super.eligible(library);
+		return library.isFirstParty() && super.eligible(library);
 	}
 
 	@Override
