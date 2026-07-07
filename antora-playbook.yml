@@ -34,7 +34,7 @@ content:
     tags:
     - 'v3.3.13'
     - 'v3.4.13'
-    - 'v3.5.15'
+    - 'v3.5.16'
     start_paths:
     - spring-boot-project/spring-boot-docs/src/docs/antora
     - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
