@@ -45,6 +45,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.DisconnectedClientHelper;
 import org.springframework.web.util.HtmlUtils;
@@ -55,6 +56,7 @@ import org.springframework.web.util.HtmlUtils;
  * @author Brian Clozel
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author US JUN
  * @since 4.0.0
  * @see ErrorAttributes
  */
@@ -296,7 +298,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			.switchIfEmpty(Mono.error(throwable))
 			.flatMap((handler) -> handler.handle(request))
 			.doOnNext((response) -> logError(request, response, throwable))
-			.flatMap((response) -> write(exchange, response));
+			.flatMap((response) -> write(exchange, response, throwable));
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {
@@ -333,7 +335,12 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		return "HTTP " + request.method() + " \"" + request.path() + query + "\"";
 	}
 
-	private Mono<? extends Void> write(ServerWebExchange exchange, ServerResponse response) {
+	private Mono<? extends Void> write(ServerWebExchange exchange, ServerResponse response, Throwable throwable) {
+		if (throwable instanceof ResponseStatusException responseStatusException) {
+			responseStatusException.getHeaders()
+				.forEach((name, values) -> values
+					.forEach((value) -> exchange.getResponse().getHeaders().add(name, value)));
+		}
 		// force content-type since writeTo won't overwrite response header values
 		exchange.getResponse().getHeaders().setContentType(response.headers().getContentType());
 		return response.writeTo(exchange, new ResponseContext());
