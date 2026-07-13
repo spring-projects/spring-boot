@@ -660,7 +660,7 @@ with the `key` listed in the following table:
 | javadoc:org.springframework.boot.mail.health.MailHealthIndicator[]
 | Checks that a mail server is up.
 
-| `mongo`
+| `mongodb`
 | javadoc:org.springframework.boot.mongodb.health.MongoHealthIndicator[]
 | Checks that a Mongo database is up.
 
