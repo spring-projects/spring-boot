@@ -62,8 +62,6 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
-import org.springframework.boot.webclient.WebClientCustomizer;
-import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -83,7 +81,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CloudFoundryReactiveActuatorAutoConfiguration}.
@@ -100,8 +97,8 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	private static final AutoConfigurations MANDATORY_AUTO_CONFIGURATIONS = AutoConfigurations.of(
 			ReactiveWebSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-			WebClientCustomizerConfig.class, WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class, InfoContributorAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+			WebEndpointAutoConfiguration.class, InfoContributorAutoConfiguration.class,
 			InfoEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
 			CloudFoundryReactiveActuatorAutoConfiguration.class);
 
@@ -388,16 +385,6 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 		@ReadOperation
 		String hello() {
 			return "hello world";
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class WebClientCustomizerConfig {
-
-		@Bean
-		WebClientCustomizer webClientCustomizer() {
-			return mock(WebClientCustomizer.class);
 		}
 
 	}

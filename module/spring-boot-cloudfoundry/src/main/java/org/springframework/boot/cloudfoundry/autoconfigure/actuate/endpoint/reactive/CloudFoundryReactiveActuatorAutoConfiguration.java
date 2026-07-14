@@ -100,14 +100,14 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 	@SuppressWarnings("removal")
 	CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-			WebClient.Builder webClientBuilder,
+			ObjectProvider<WebClient.Builder> webClientBuilder,
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
 			ApplicationContext applicationContext) {
 		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
 				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList(),
 				Collections.emptyList());
-		SecurityInterceptor securityInterceptor = getSecurityInterceptor(webClientBuilder,
-				applicationContext.getEnvironment());
+		SecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				webClientBuilder.getIfAvailable(WebClient::builder), applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = endpointDiscoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpoints);
