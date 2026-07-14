@@ -104,6 +104,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
@@ -301,6 +302,15 @@ class HibernateJpaAutoConfigurationTests {
 
 	private EntityManagerFactoryBuilderCustomizer bootstrapExecutorCustomizer() {
 		return (builder) -> builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor());
+	}
+
+	@Test
+	void whenAsyncTaskExecutorIsDefinedInJpaDependentConfigurationDoesNotFail() {
+		this.contextRunner.withUserConfiguration(TaskExecutorDependingOnEntityManagerFactoryConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(EntityManagerFactory.class).hasSingleBean(AsyncTaskExecutor.class);
+			});
 	}
 
 	@Test
@@ -1469,6 +1479,19 @@ class HibernateJpaAutoConfigurationTests {
 
 		@Bean
 		SimpleAsyncTaskExecutor applicationTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TaskExecutorDependingOnEntityManagerFactoryConfiguration {
+
+		TaskExecutorDependingOnEntityManagerFactoryConfiguration(EntityManagerFactory entityManagerFactory) {
+		}
+
+		@Bean
+		SimpleAsyncTaskExecutor exampleTaskExecutor() {
 			return new SimpleAsyncTaskExecutor();
 		}
 

@@ -18,7 +18,9 @@ package org.springframework.boot.jpa;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -102,7 +104,7 @@ class EntityManagerFactoryBuilderTests {
 
 	@Test
 	void requireBootstrapExecutorWhenFallbackExecutorProvidesExecutorDoesNotThrow() {
-		EntityManagerFactoryBuilder builder = createEmptyBuilder(new SimpleAsyncTaskExecutor());
+		EntityManagerFactoryBuilder builder = createEmptyBuilder(SimpleAsyncTaskExecutor::new);
 		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
 		DataSource dataSource = mock();
 		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
@@ -125,14 +127,35 @@ class EntityManagerFactoryBuilderTests {
 			.withMessage("A bootstrap executor is required");
 	}
 
-	private EntityManagerFactoryBuilder createEmptyBuilder() {
-		return createEmptyBuilder(null);
+	@Test
+	void requireBootstrapExecutorWhenFallbackExecutorSupplierProvidesExecutorDoesNotThrow() {
+		EntityManagerFactoryBuilder builder = createEmptyBuilder(SimpleAsyncTaskExecutor::new);
+		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
+		DataSource dataSource = mock();
+		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
 	}
 
-	private EntityManagerFactoryBuilder createEmptyBuilder(@Nullable AsyncTaskExecutor fallbackBootstrapExecutor) {
+	@Test
+	void fallbackExecutorSupplierIsNotInvokedWhenBootstrapExecutorNotRequired() {
+		AtomicBoolean invoked = new AtomicBoolean();
+		EntityManagerFactoryBuilder builder = createEmptyBuilder(() -> {
+			invoked.set(true);
+			return new SimpleAsyncTaskExecutor();
+		});
+		DataSource dataSource = mock();
+		builder.dataSource(dataSource).build();
+		assertThat(invoked).isFalse();
+	}
+
+	private EntityManagerFactoryBuilder createEmptyBuilder() {
+		return createEmptyBuilder(() -> null);
+	}
+
+	private EntityManagerFactoryBuilder createEmptyBuilder(
+			Supplier<? extends @Nullable AsyncTaskExecutor> fallbackBootstrapExecutorSupplier) {
 		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
 		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null, null,
-				fallbackBootstrapExecutor);
+				fallbackBootstrapExecutorSupplier);
 	}
 
 	static class TestJpaVendorAdapter extends AbstractJpaVendorAdapter {

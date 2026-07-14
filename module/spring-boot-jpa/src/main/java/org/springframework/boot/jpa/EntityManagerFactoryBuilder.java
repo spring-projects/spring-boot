@@ -68,7 +68,7 @@ public class EntityManagerFactoryBuilder {
 
 	private final @Nullable URL persistenceUnitRootLocation;
 
-	private final @Nullable AsyncTaskExecutor fallbackBootstrapExecutor;
+	private final Supplier<? extends @Nullable AsyncTaskExecutor> fallbackBootstrapExecutor;
 
 	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
@@ -105,7 +105,7 @@ public class EntityManagerFactoryBuilder {
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
 			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation) {
-		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, persistenceUnitRootLocation, null);
+		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, persistenceUnitRootLocation, () -> null);
 	}
 
 	/**
@@ -121,11 +121,36 @@ public class EntityManagerFactoryBuilder {
 	 * @param fallbackBootstrapExecutor the fallback executor to use when background
 	 * bootstrapping is required but no explicit executor has been set
 	 * @since 4.1.0
+	 * @deprecated since 4.1.1 for removal in 4.3.0 in favor of
+	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL, Supplier)}
 	 */
+	@Deprecated(since = "4.1.1", forRemoval = true)
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
 			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation,
 			@Nullable AsyncTaskExecutor fallbackBootstrapExecutor) {
+		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, persistenceUnitRootLocation,
+				() -> fallbackBootstrapExecutor);
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaPropertiesFactory the JPA properties to be passed to the persistence
+	 * provider, based on the {@linkplain #dataSource(DataSource) configured data source}
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
+	 * fallback or {@code null}
+	 * @param fallbackBootstrapExecutor a supplier of the fallback executor to use when
+	 * background bootstrapping is required, but no explicit executor has been set.
+	 * @since 4.1.1
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation,
+			Supplier<? extends @Nullable AsyncTaskExecutor> fallbackBootstrapExecutor) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaPropertiesFactory = jpaPropertiesFactory;
@@ -343,8 +368,9 @@ public class EntityManagerFactoryBuilder {
 				return EntityManagerFactoryBuilder.this.bootstrapExecutor;
 			}
 			if (EntityManagerFactoryBuilder.this.requireBootstrapExecutorExceptionSupplier != null) {
-				if (EntityManagerFactoryBuilder.this.fallbackBootstrapExecutor != null) {
-					return EntityManagerFactoryBuilder.this.fallbackBootstrapExecutor;
+				@Nullable AsyncTaskExecutor fallback = EntityManagerFactoryBuilder.this.fallbackBootstrapExecutor.get();
+				if (fallback != null) {
+					return fallback;
 				}
 				RuntimeException ex = EntityManagerFactoryBuilder.this.requireBootstrapExecutorExceptionSupplier.get();
 				throw (ex != null) ? ex : new IllegalStateException("A bootstrap executor is required");
