@@ -132,35 +132,41 @@ final class ImageBuildpack implements Buildpack {
 
 		private Path createLayerFile(TarArchive tarArchive) throws IOException {
 			Path sourceTarFile = Files.createTempFile("create-builder-scratch-source-", null);
-			try (OutputStream out = Files.newOutputStream(sourceTarFile)) {
-				tarArchive.writeTo(out);
-			}
-			Path layerFile = Files.createTempFile("create-builder-scratch-", null);
-			try (TarArchiveOutputStream out = new TarArchiveOutputStream(Files.newOutputStream(layerFile))) {
-				try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(sourceTarFile))) {
-					out.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-					TarArchiveEntry entry = in.getNextEntry();
-					while (entry != null) {
-						String entryName = entry.getName();
-						Path entryPath = Path.of(entryName);
-						Assert.state(entryPath.toAbsolutePath().equals(entryPath.toAbsolutePath().normalize()),
-								() -> "Malformed zip entry name '%s'".formatted(entryName));
-						out.putArchiveEntry(entry);
-						StreamUtils.copy(in, out);
-						out.closeArchiveEntry();
-						entry = in.getNextEntry();
-					}
-					out.finish();
+			try {
+				try (OutputStream out = Files.newOutputStream(sourceTarFile)) {
+					tarArchive.writeTo(out);
 				}
+				Path layerFile = Files.createTempFile("create-builder-scratch-", null);
+				try (TarArchiveOutputStream out = new TarArchiveOutputStream(Files.newOutputStream(layerFile))) {
+					try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(sourceTarFile))) {
+						out.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+						TarArchiveEntry entry = in.getNextEntry();
+						while (entry != null) {
+							String entryName = entry.getName();
+							Path entryPath = Path.of(entryName);
+							Assert.state(entryPath.toAbsolutePath().equals(entryPath.toAbsolutePath().normalize()),
+									() -> "Malformed zip entry name '%s'".formatted(entryName));
+							out.putArchiveEntry(entry);
+							StreamUtils.copy(in, out);
+							out.closeArchiveEntry();
+							entry = in.getNextEntry();
+						}
+						out.finish();
+					}
+				}
+				return layerFile;
 			}
-			return layerFile;
+			finally {
+				Files.deleteIfExists(sourceTarFile);
+			}
 		}
 
 		void apply(IOConsumer<Layer> layers) throws IOException {
 			for (Path path : this.layerFiles) {
 				layers.accept(Layer.fromTarArchive((out) -> {
-					InputStream in = Files.newInputStream(path);
-					StreamUtils.copy(in, out);
+					try (InputStream in = Files.newInputStream(path)) {
+						StreamUtils.copy(in, out);
+					}
 				}));
 				Files.delete(path);
 			}
