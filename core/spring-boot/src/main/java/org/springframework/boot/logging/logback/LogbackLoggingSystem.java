@@ -75,6 +75,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @author Dhruv Rastogi
  * @since 1.0.0
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
@@ -111,6 +112,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private final StatusPrinter2 statusPrinter = new StatusPrinter2();
 
+	private boolean bridgeHandlerInstalled;
+
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
@@ -141,6 +144,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (isBridgeJulIntoSlf4j()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
+				this.bridgeHandlerInstalled = true;
 			}
 		}
 		catch (Throwable ex) {
@@ -334,8 +338,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext context = getLoggerContext();
 		markAsUninitialized(context);
 		super.cleanUp();
-		if (isBridgeHandlerAvailable()) {
+		if (this.bridgeHandlerInstalled) {
 			removeJdkLoggingBridgeHandler();
+			this.bridgeHandlerInstalled = false;
 		}
 		context.getStatusManager().clear();
 		context.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
