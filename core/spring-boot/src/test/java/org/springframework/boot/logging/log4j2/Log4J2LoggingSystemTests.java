@@ -408,6 +408,16 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void cleanUpCleansBridgeHandlerInstalledByTheLoggingSystem() {
+		this.loggingSystem.beforeInitialize();
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+		this.loggingSystem.cleanUp();
+		java.util.logging.Logger rootLoggerAfterCleanUp = java.util.logging.Logger.getLogger("");
+		assertThat(rootLoggerAfterCleanUp.getHandlers()).doesNotHaveAnyElementsOfTypes(Log4jBridgeHandler.class);
+	}
+
+	@Test
 	void cleanUpLeavesBridgeHandlerInstalledByTheApplicationInPlace() {
 		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
 		Log4jBridgeHandler.install(false, null, true);
