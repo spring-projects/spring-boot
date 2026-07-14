@@ -113,27 +113,20 @@ public final class JacksonAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	JsonFactory jsonFactory(List<JsonFactoryBuilderCustomizer> customizers) {
+	JsonFactory jsonFactory(ObjectProvider<JsonFactoryBuilderCustomizer> customizers) {
 		JsonFactoryBuilder builder = JsonFactory.builder();
-		for (JsonFactoryBuilderCustomizer customizer : customizers) {
-			customizer.customize(builder);
-		}
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	JsonMapper.Builder jsonMapperBuilder(List<JsonMapperBuilderCustomizer> customizers, JsonFactory jsonFactory) {
+	JsonMapper.Builder jsonMapperBuilder(ObjectProvider<JsonMapperBuilderCustomizer> customizers,
+			JsonFactory jsonFactory) {
 		JsonMapper.Builder builder = JsonMapper.builder(jsonFactory);
-		customize(builder, customizers);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
-	}
-
-	private void customize(JsonMapper.Builder builder, List<JsonMapperBuilderCustomizer> customizers) {
-		for (JsonMapperBuilderCustomizer customizer : customizers) {
-			customizer.customize(builder);
-		}
 	}
 
 	@Bean
@@ -250,27 +243,20 @@ public final class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		CBORFactory cborFactory(List<CborFactoryBuilderCustomizer> customizers) {
+		CBORFactory cborFactory(ObjectProvider<CborFactoryBuilderCustomizer> customizers) {
 			CBORFactoryBuilder builder = CBORFactory.builder();
-			for (CborFactoryBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		CBORMapper.Builder cborMapperBuilder(CBORFactory factory, List<CborMapperBuilderCustomizer> customizers) {
+		CBORMapper.Builder cborMapperBuilder(CBORFactory factory,
+				ObjectProvider<CborMapperBuilderCustomizer> customizers) {
 			CBORMapper.Builder builder = CBORMapper.builder(factory);
-			customize(builder, customizers);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private void customize(CBORMapper.Builder builder, List<CborMapperBuilderCustomizer> customizers) {
-			for (CborMapperBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
 		}
 
 		@Bean
@@ -340,27 +326,20 @@ public final class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		XmlFactory xmlFactory(List<XmlFactoryBuilderCustomizer> customizers) {
+		XmlFactory xmlFactory(ObjectProvider<XmlFactoryBuilderCustomizer> customizers) {
 			XmlFactoryBuilder builder = XmlFactory.builder();
-			for (XmlFactoryBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		XmlMapper.Builder xmlMapperBuilder(XmlFactory xmlFactory, List<XmlMapperBuilderCustomizer> customizers) {
+		XmlMapper.Builder xmlMapperBuilder(XmlFactory xmlFactory,
+				ObjectProvider<XmlMapperBuilderCustomizer> customizers) {
 			XmlMapper.Builder builder = XmlMapper.builder(xmlFactory);
-			customize(builder, customizers);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private void customize(XmlMapper.Builder builder, List<XmlMapperBuilderCustomizer> customizers) {
-			for (XmlMapperBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
 		}
 
 		@Bean

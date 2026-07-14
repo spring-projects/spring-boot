@@ -16,13 +16,13 @@
 
 package org.springframework.boot.gson.autoconfigure;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Strictness;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,9 +47,9 @@ public final class GsonAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	GsonBuilder gsonBuilder(List<GsonBuilderCustomizer> customizers) {
+	GsonBuilder gsonBuilder(ObjectProvider<GsonBuilderCustomizer> customizers) {
 		GsonBuilder builder = new GsonBuilder();
-		customizers.forEach((c) -> c.customize(builder));
+		customizers.orderedStream().forEach((c) -> c.customize(builder));
 		return builder;
 	}
 

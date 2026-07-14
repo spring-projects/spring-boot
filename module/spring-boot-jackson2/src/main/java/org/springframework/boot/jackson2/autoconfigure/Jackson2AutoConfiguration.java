@@ -157,18 +157,12 @@ public final class Jackson2AutoConfiguration {
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
 		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder(
-				ApplicationContext applicationContext, List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
+				ApplicationContext applicationContext,
+				ObjectProvider<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder = new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
 			builder.applicationContext(applicationContext);
-			customize(builder, customizers);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private void customize(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder,
-				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
-			for (Jackson2ObjectMapperBuilderCustomizer customizer : customizers) {
-				customizer.customize(builder);
-			}
 		}
 
 	}

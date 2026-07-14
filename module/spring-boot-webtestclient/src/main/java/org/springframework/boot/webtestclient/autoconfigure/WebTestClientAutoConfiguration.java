@@ -63,10 +63,10 @@ public final class WebTestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	WebTestClient webTestClient(ApplicationContext applicationContext, List<WebTestClientBuilderCustomizer> customizers,
-			List<MockServerConfigurer> configurers) {
+	WebTestClient webTestClient(ApplicationContext applicationContext,
+			ObjectProvider<WebTestClientBuilderCustomizer> customizers, List<MockServerConfigurer> configurers) {
 		WebTestClient.Builder builder = getBuilder(applicationContext, configurers);
-		customizers.forEach((customizer) -> customizer.customize(builder));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
