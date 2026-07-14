@@ -86,15 +86,6 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	@ConditionalOnBean({ HealthEndpoint.class, ReactiveHealthEndpointWebExtension.class })
-	CloudFoundryReactiveHealthEndpointWebExtension cloudFoundryReactiveHealthEndpointWebExtension(
-			ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension) {
-		return new CloudFoundryReactiveHealthEndpointWebExtension(reactiveHealthEndpointWebExtension);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ InfoEndpoint.class, GitProperties.class })
 	CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
 			ObjectProvider<InfoContributor> infoContributors) {
@@ -149,6 +140,21 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 		corsConfiguration
 			.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
 		return corsConfiguration;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HealthEndpoint.class)
+	static class HealthConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnAvailableEndpoint
+		@ConditionalOnBean({ HealthEndpoint.class, ReactiveHealthEndpointWebExtension.class })
+		CloudFoundryReactiveHealthEndpointWebExtension cloudFoundryReactiveHealthEndpointWebExtension(
+				ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension) {
+			return new CloudFoundryReactiveHealthEndpointWebExtension(reactiveHealthEndpointWebExtension);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
