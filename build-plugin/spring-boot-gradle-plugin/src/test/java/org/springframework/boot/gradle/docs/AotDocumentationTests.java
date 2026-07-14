@@ -37,9 +37,11 @@ class AotDocumentationTests {
 
 	@TestTemplate
 	void applyNativeImagePlugin() {
-		assertThat(this.gradleBuild.script(Examples.DIR + "aot/apply-native-image-plugin").build("tasks").getOutput())
-			.contains("nativeCompile")
-			.contains("aotClasses");
+		assertThat(this.gradleBuild.script(Examples.DIR + "aot/apply-native-image-plugin")
+			.expectDeprecationMessages("nativeBuild - Deprecated alias for nativeCompile.",
+					"nativeTestBuild - Deprecated alias for nativeTestCompile.")
+			.build("tasks")
+			.getOutput()).contains("nativeCompile").contains("aotClasses");
 	}
 
 	@TestTemplate
