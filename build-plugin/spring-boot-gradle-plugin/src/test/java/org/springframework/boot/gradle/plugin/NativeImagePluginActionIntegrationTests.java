@@ -47,19 +47,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility(minimumVersion = "8.3")
 class NativeImagePluginActionIntegrationTests {
 
+	private static final String NATIVE_BUILD_TOOLS_DEPRECATION = "Using a Project object as a dependency notation has been deprecated";
+
 	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
 	void applyingNativeImagePluginAppliesAotPlugin() {
-		assertThat(this.gradleBuild.build("aotPluginApplied").getOutput())
-			.contains("org.springframework.boot.aot applied = true");
+		assertThat(this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("aotPluginApplied")
+			.getOutput()).contains("org.springframework.boot.aot applied = true");
 	}
 
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("bootJar");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("bootJar");
 		BuildTask task = result.task(":bootJar");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -79,7 +83,8 @@ class NativeImagePluginActionIntegrationTests {
 		writeDummySpringApplicationAotProcessorMainClass();
 		FileSystemUtils.copyRecursively(new File("src/test/resources/reachability-metadata-repository"),
 				new File(this.gradleBuild.getProjectDir(), "reachability-metadata-repository"));
-		BuildResult result = this.gradleBuild.build("bootJar");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("bootJar");
 		BuildTask task = result.task(":bootJar");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -97,20 +102,23 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
 	void testAndDevelopmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
 	void classesGeneratedDuringAotProcessingAreOnTheNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aot"),
 				projectPath("build/resources/aot"), projectPath("build/generated/aotClasses"));
 	}
@@ -119,6 +127,7 @@ class NativeImagePluginActionIntegrationTests {
 	void classesGeneratedDuringAotTestProcessingAreOnTheTestNativeImageClasspath() {
 		BuildResult result = this.gradleBuild
 			.scriptProperty("junitVersion", TestTemplate.class.getPackage().getImplementationVersion())
+			.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
 			.build("checkTestNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
@@ -127,7 +136,8 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void nativeEntryIsAddedToManifest() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("bootJar");
+		BuildResult result = this.gradleBuild.expectDeprecationMessages(NATIVE_BUILD_TOOLS_DEPRECATION)
+			.build("bootJar");
 		BuildTask task = result.task(":bootJar");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
