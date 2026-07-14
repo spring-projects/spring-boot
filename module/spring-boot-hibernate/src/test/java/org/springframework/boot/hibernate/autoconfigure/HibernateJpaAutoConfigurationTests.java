@@ -104,6 +104,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
@@ -304,11 +305,11 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenAsyncTaskExecutorIsDefinedInJpaDependentConfigurationDoesNotTriggerABeanCurrentlyInCreationException() {
-		this.contextRunner.withUserConfiguration(AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration.class)
+	void whenAsyncTaskExecutorIsDefinedInJpaDependentConfigurationDoesNotFail() {
+		this.contextRunner.withUserConfiguration(TaskExecutorDependingOnEntityManagerFactoryConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(EntityManagerFactory.class);
+				assertThat(context).hasSingleBean(EntityManagerFactory.class).hasSingleBean(AsyncTaskExecutor.class);
 			});
 	}
 
@@ -1484,9 +1485,9 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration {
+	static class TaskExecutorDependingOnEntityManagerFactoryConfiguration {
 
-		AsyncTaskExecutorDependingOnEntityManagerFactoryConfiguration(EntityManagerFactory entityManagerFactory) {
+		TaskExecutorDependingOnEntityManagerFactoryConfiguration(EntityManagerFactory entityManagerFactory) {
 		}
 
 		@Bean

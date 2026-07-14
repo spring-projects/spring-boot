@@ -121,7 +121,10 @@ public class EntityManagerFactoryBuilder {
 	 * @param fallbackBootstrapExecutor the fallback executor to use when background
 	 * bootstrapping is required but no explicit executor has been set
 	 * @since 4.1.0
+	 * @deprecated since 4.1.1 for removal in 4.3.0 in favor of
+	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL, Supplier)}
 	 */
+	@Deprecated(since = "4.1.1", forRemoval = true)
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
 			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation,
@@ -141,8 +144,7 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
 	 * fallback or {@code null}
 	 * @param fallbackBootstrapExecutor a supplier of the fallback executor to use when
-	 * background bootstrapping is required but no explicit executor has been set. The
-	 * supplier is only invoked when background bootstrapping is actually required.
+	 * background bootstrapping is required, but no explicit executor has been set.
 	 * @since 4.1.1
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
