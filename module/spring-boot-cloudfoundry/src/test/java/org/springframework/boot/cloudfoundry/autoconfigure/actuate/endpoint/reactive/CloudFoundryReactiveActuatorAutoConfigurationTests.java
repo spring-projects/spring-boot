@@ -97,27 +97,18 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
-	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class,
-				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-				ProjectInfoAutoConfiguration.class, CloudFoundryReactiveActuatorAutoConfiguration.class))
-		.withUserConfiguration(UserDetailsServiceConfiguration.class);
+	private static final AutoConfigurations MANDATORY_AUTO_CONFIGURATIONS = AutoConfigurations.of(
+			ReactiveWebSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			WebClientCustomizerConfig.class, WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class, InfoContributorAutoConfiguration.class,
+			InfoEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
+			CloudFoundryReactiveActuatorAutoConfiguration.class);
 
-	private final ReactiveWebApplicationContextRunner withoutHealthContextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(
-				AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class,
-						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
-						WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-						ProjectInfoAutoConfiguration.class, CloudFoundryReactiveActuatorAutoConfiguration.class))
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+		.withConfiguration(MANDATORY_AUTO_CONFIGURATIONS)
+		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class))
 		.withUserConfiguration(UserDetailsServiceConfiguration.class);
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";
@@ -130,7 +121,8 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	@Test
 	@ClassPathExclusions(packages = "org.springframework.boot.health.actuate.endpoint")
 	void refreshSucceedsWithoutHealth() {
-		this.withoutHealthContextRunner
+		new ReactiveWebApplicationContextRunner().withConfiguration(MANDATORY_AUTO_CONFIGURATIONS)
+			.withUserConfiguration(UserDetailsServiceConfiguration.class)
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 					"vcap.application.cf_api:https://my-cloud-controller.com")
 			.run((context) -> assertThat(context).hasNotFailed());
