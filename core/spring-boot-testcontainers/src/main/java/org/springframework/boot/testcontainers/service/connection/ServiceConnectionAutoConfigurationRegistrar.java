@@ -16,7 +16,9 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
@@ -44,6 +47,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Daeho Kwon
+ * @author Goutam Adwant
  */
 class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -64,18 +68,24 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
 				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
-			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			MergedAnnotations annotations = getAnnotations(beanDefinition);
-			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
-				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
-						serviceConnection);
+			for (ContainerConnectionSource<?> source : getSources(beanFactory, beanName)) {
 				registrar.registerBeanDefinitions(registry, source);
 			}
 		}
 	}
 
-	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
-			@Nullable MergedAnnotations annotations) {
+	static List<ContainerConnectionSource<?>> getSources(ConfigurableListableBeanFactory beanFactory, String beanName) {
+		BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
+		MergedAnnotations annotations = getAnnotations(beanDefinition);
+		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
+		for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
+			sources.add(createSource(beanFactory, beanName, beanDefinition, annotations, serviceConnection));
+		}
+		return List.copyOf(sources);
+	}
+
+	private static Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory,
+			String beanName, @Nullable MergedAnnotations annotations) {
 		Set<ServiceConnection> serviceConnections = beanFactory.findAllAnnotationsOnBean(beanName,
 				ServiceConnection.class, false);
 		if (annotations != null) {
@@ -87,7 +97,8 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		return serviceConnections;
 	}
 
-	private @Nullable BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	private static @Nullable BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory,
+			String beanName) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
@@ -96,9 +107,13 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		}
 	}
 
-	private @Nullable MergedAnnotations getAnnotations(@Nullable BeanDefinition beanDefinition) {
+	private static @Nullable MergedAnnotations getAnnotations(@Nullable BeanDefinition beanDefinition) {
 		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
 			return testcontainerBeanDefinition.getAnnotations();
+		}
+		if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition
+				&& rootBeanDefinition.getResolvedFactoryMethod() != null) {
+			return MergedAnnotations.from(rootBeanDefinition.getResolvedFactoryMethod());
 		}
 		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
 			MethodMetadata metadata = annotatedBeanDefinition.getFactoryMethodMetadata();
@@ -108,7 +123,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 	}
 
 	@SuppressWarnings("unchecked")
-	private <C extends Container<?>> ContainerConnectionSource<C> createSource(
+	private static <C extends Container<?>> ContainerConnectionSource<C> createSource(
 			ConfigurableListableBeanFactory beanFactory, String beanName, @Nullable BeanDefinition beanDefinition,
 			@Nullable MergedAnnotations annotations, ServiceConnection serviceConnection) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);
