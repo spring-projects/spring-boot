@@ -189,12 +189,7 @@ final class ArchitectureRules {
 	}
 
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {
-		return SlicesRuleDefinition.slices()
-			.matching("(**)")
-			.should()
-			.beFreeOfCycles()
-			.ignoreDependency("org.springframework.boot.env.EnvironmentPostProcessor",
-					"org.springframework.boot.SpringApplication");
+		return SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
 	}
 
 	private static ArchRule allBeanPostProcessorBeanMethodsShouldBeStaticAndNotCausePrematureInitialization() {

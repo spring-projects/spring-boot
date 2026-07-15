@@ -125,24 +125,6 @@ The customizers take precedence over anything applied by the auto-configuration.
 
 
 
-[[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
-=== OpenTelemetry With Zipkin
-
-WARNING: OpenTelemetry has https://opentelemetry.io/docs/specs/otel/trace/sdk_exporters/zipkin/[deprecated their Zipkin support].
-The auto-configuration for it will be removed in Spring Boot 4.2.
-Either switch to Brave or consider using https://github.com/openzipkin-contrib/zipkin-otel[the Zipkin OTel module] for ingesting OTLP directly.
-
-Tracing with OpenTelemetry and reporting to Zipkin requires the following dependencies:
-
-* `org.springframework.boot:spring-boot-micrometer-tracing-opentelemetry` - Spring Boot's support for Micrometer Tracing over OpenTelemetry.
-* `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
-* `org.springframework.boot:spring-boot-zipkin` - Spring Boot's support for Zipkin.
-* `io.opentelemetry:opentelemetry-exporter-zipkin` - OpenTelemetry exporter that reports traces to Zipkin.
-
-Use the `management.tracing.export.zipkin.*` configuration properties to configure reporting to Zipkin.
-
-
-
 [[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
 === OpenZipkin Brave With Zipkin
 

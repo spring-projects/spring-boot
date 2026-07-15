@@ -1200,7 +1200,6 @@
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tests[#actuator.micrometer-tracing.tests]
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tracer-implementations.brave-zipkin[#actuator.micrometer-tracing.tracer-implementations.brave-zipkin]
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tracer-implementations.otel-otlp[#actuator.micrometer-tracing.tracer-implementations.otel-otlp]
-* xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tracer-implementations.otel-zipkin[#actuator.micrometer-tracing.tracer-implementations.otel-zipkin]
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tracer-implementations[#actuator.micrometer-tracing.tracer-implementations]
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.tracers[#actuator.micrometer-tracing.tracers]
 * xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing[#actuator.micrometer-tracing]

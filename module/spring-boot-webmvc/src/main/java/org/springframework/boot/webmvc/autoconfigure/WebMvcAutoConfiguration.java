@@ -84,7 +84,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.lang.Contract;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -116,7 +115,6 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -137,7 +135,6 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -266,30 +263,6 @@ public final class WebMvcAutoConfiguration {
 			if (timeout != null) {
 				configurer.setDefaultTimeout(timeout.toMillis());
 			}
-		}
-
-		@Override
-		@SuppressWarnings("removal")
-		public void configurePathMatch(PathMatchConfigurer configurer) {
-			if (this.mvcProperties.getPathmatch()
-				.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
-				configurer.setPathMatcher(new AntPathMatcher());
-				this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
-					String servletUrlMapping = dispatcherPath.getServletUrlMapping();
-					if (servletUrlMapping.equals("/") && singleDispatcherServlet()) {
-						UrlPathHelper urlPathHelper = new UrlPathHelper();
-						urlPathHelper.setAlwaysUseFullPath(true);
-						configurer.setUrlPathHelper(urlPathHelper);
-					}
-				});
-			}
-		}
-
-		private boolean singleDispatcherServlet() {
-			return this.servletRegistrations.stream()
-				.map(ServletRegistrationBean::getServlet)
-				.filter(DispatcherServlet.class::isInstance)
-				.count() == 1;
 		}
 
 		@Override

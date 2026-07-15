@@ -25,6 +25,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -96,6 +97,7 @@ public class WebMvcProperties {
 
 	private final Contentnegotiation contentnegotiation = new Contentnegotiation();
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	private final Pathmatch pathmatch = new Pathmatch();
 
 	private final Problemdetails problemdetails = new Problemdetails();
@@ -186,6 +188,7 @@ public class WebMvcProperties {
 		return this.contentnegotiation;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public Pathmatch getPathmatch() {
 		return this.pathmatch;
 	}
@@ -368,6 +371,7 @@ public class WebMvcProperties {
 
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public static class Pathmatch {
 
 		/**
@@ -375,6 +379,7 @@ public class WebMvcProperties {
 		 */
 		private MatchingStrategy matchingStrategy = MatchingStrategy.PATH_PATTERN_PARSER;
 
+		@DeprecatedConfigurationProperty(reason = "Path matching is no longer configurable", since = "4.2.0")
 		public MatchingStrategy getMatchingStrategy() {
 			return this.matchingStrategy;
 		}
@@ -435,14 +440,6 @@ public class WebMvcProperties {
 	 * Matching strategy options.
 	 */
 	public enum MatchingStrategy {
-
-		/**
-		 * Use the {@code AntPathMatcher} implementation.
-		 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
-		 * {@link #PATH_PATTERN_PARSER}
-		 */
-		@Deprecated(since = "4.0.0", forRemoval = true)
-		ANT_PATH_MATCHER,
 
 		/**
 		 * Use the {@code PathPatternParser} implementation.

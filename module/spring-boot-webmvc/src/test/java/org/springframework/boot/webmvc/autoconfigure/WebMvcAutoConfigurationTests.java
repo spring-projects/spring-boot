@@ -948,25 +948,6 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void urlPathHelperUsesFullPathByDefaultWhenAntPathMatchingIsUsed() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:ant-path-matcher")
-			.run((context) -> {
-				UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
-				assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(true);
-			});
-	}
-
-	@Test
-	void urlPathHelperDoesNotUseFullPathWithServletMapping() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:ant-path-matcher")
-			.withPropertyValues("spring.mvc.servlet.path=/test/")
-			.run((context) -> {
-				UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
-				assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
-			});
-	}
-
-	@Test
 	void urlPathHelperDoesNotUseFullPathWithAdditionalDispatcherServlet() {
 		this.contextRunner.withUserConfiguration(AdditionalDispatcherServletConfiguration.class).run((context) -> {
 			UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
