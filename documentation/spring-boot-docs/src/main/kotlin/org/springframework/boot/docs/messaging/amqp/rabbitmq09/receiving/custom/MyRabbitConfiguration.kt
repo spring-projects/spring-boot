@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.messaging.amqp.rabbitmq.receiving.custom
+package org.springframework.boot.docs.messaging.amqp.rabbitmq09.receiving.custom
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory

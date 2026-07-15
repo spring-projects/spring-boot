@@ -16,26 +16,22 @@
 
 package org.springframework.boot.docs.messaging.amqp.rabbitmq.receiving.custom;
 
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.boot.rabbitmq.autoconfigure.SimpleRabbitListenerContainerFactoryConfigurer;
+import org.springframework.amqp.rabbitmq.client.AmqpConnectionFactory;
+import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory;
+import org.springframework.boot.amqp.rabbitmq.autoconfigure.RabbitAmqpListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-public class MyRabbitConfiguration {
+public class MyRabbitAmqpConfiguration {
 
 	@Bean
-	public SimpleRabbitListenerContainerFactory myFactory(SimpleRabbitListenerContainerFactoryConfigurer configurer) {
-		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-		ConnectionFactory connectionFactory = getCustomConnectionFactory();
-		configurer.configure(factory, connectionFactory);
+	public RabbitAmqpListenerContainerFactory myFactory(RabbitAmqpListenerContainerFactoryConfigurer configurer,
+			AmqpConnectionFactory connectionFactory) {
+		RabbitAmqpListenerContainerFactory factory = new RabbitAmqpListenerContainerFactory(connectionFactory);
+		configurer.configure(factory);
 		factory.setMessageConverter(new MyMessageConverter());
 		return factory;
-	}
-
-	private ConnectionFactory getCustomConnectionFactory() {
-		return /**/ null;
 	}
 
 }

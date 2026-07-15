@@ -31,4 +31,3 @@ internal class MyMessageConverter : MessageConverter {
 	}
 
 }
-

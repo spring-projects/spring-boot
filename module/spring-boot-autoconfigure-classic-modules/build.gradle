@@ -31,6 +31,9 @@ dependencies {
 	api(project(":module:spring-boot-amqp")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-amqp-rabbitmq")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-artemis")) {
 		transitive = false
 	}
