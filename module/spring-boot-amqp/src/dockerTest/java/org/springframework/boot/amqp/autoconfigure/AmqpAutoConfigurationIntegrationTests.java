@@ -28,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.amqp.client.AmqpClient;
 import org.springframework.amqp.client.annotation.AmqpListener;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -63,13 +64,16 @@ class AmqpAutoConfigurationIntegrationTests {
 	@Test
 	void sendAndReceiveUsingJson() {
 		String queue = container.createRandomQueue();
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
-			AmqpClient amqpClient = context.getBean(AmqpClient.class);
-			assertThat(amqpClient.to(queue).body(new TestMessage("hello", 42)).send().get(1, TimeUnit.SECONDS))
-				.isTrue();
-			assertThat(amqpClient.from(queue).receiveAndConvert().get(1, TimeUnit.SECONDS))
-				.isEqualTo(new TestMessage("hello", 42));
-		});
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withBean(JacksonJsonMessageConverter.class,
+					() -> new JacksonJsonMessageConverter(getClass().getPackageName()))
+			.run((context) -> {
+				AmqpClient amqpClient = context.getBean(AmqpClient.class);
+				assertThat(amqpClient.to(queue).body(new TestMessage("hello", 42)).send().get(1, TimeUnit.SECONDS))
+					.isTrue();
+				assertThat(amqpClient.from(queue).receiveAndConvert().get(1, TimeUnit.SECONDS))
+					.isEqualTo(new TestMessage("hello", 42));
+			});
 	}
 
 	@Test
