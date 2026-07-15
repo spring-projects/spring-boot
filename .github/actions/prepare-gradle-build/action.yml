@@ -56,15 +56,14 @@ runs:
     - name: Configure Gradle Properties
       shell: bash
       run: |
-        mkdir -p $HOME/.gradle
-        echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
-        echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
-        echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
+        echo 'systemProp.user.name=spring-builds+github' >> $GRADLE_USER_HOME/gradle.properties
+        echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $GRADLE_USER_HOME/gradle.properties
+        echo 'org.gradle.daemon=false' >> $GRADLE_USER_HOME/gradle.properties
     - name: Configure Toolchain Properties
       if: ${{ inputs.java-toolchain == 'true' }}
       shell: bash
       run: |
-        echo toolchainVersion=${{ inputs.java-version }} >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.auto-detect=false >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', inputs.java-version) }} >> $HOME/.gradle/gradle.properties
+        echo toolchainVersion=${{ inputs.java-version }} >> $GRADLE_USER_HOME/gradle.properties
+        echo systemProp.org.gradle.java.installations.auto-detect=false >> $GRADLE_USER_HOME/gradle.properties
+        echo systemProp.org.gradle.java.installations.auto-download=false >> $GRADLE_USER_HOME/gradle.properties
+        echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', inputs.java-version) }} >> $GRADLE_USER_HOME/gradle.properties
