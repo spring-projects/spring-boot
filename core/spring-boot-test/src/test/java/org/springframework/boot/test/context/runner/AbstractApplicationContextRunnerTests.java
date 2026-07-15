@@ -123,7 +123,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	}
 
 	@Test
-	void runWithMultiplePropertyValuesShouldAllAllValues() {
+	void runWithMultiplePropertyValuesShouldAddAllValues() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2").run((context) -> {
 			Environment environment = context.getEnvironment();
 			assertThat(environment.getProperty("test.foo")).isEqualTo("1");
