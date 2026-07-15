@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,6 +29,8 @@ import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Lis
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.data.redis.config.RedisListenerConfigUtils;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -106,6 +110,36 @@ class DataRedisAnnotationDrivenConfigurationTests {
 						assertThat(backOff.getJitter()).isEqualTo(500);
 					});
 			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenVirtualThreadsAreDisableContainerDoesNotUseVirtualThreads() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RedisMessageListenerContainer.class);
+			assertThat(context.getBean(RedisMessageListenerContainer.class)).extracting("taskExecutor")
+				.isInstanceOf(SimpleAsyncTaskExecutor.class);
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenVirtualThreadsAreEnabledOnJava21AndLaterContainerUsesVirtualThreads() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(RedisMessageListenerContainer.class);
+			assertThat(context.getBean(RedisMessageListenerContainer.class)).extracting("taskExecutor")
+				.isInstanceOf(VirtualThreadTaskExecutor.class);
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(max = JRE.JAVA_20)
+	void whenVirtualThreadsAreEnabledOnJava20AndEarlierContainerDoesNotUseVirtualThreads() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(RedisMessageListenerContainer.class);
+			assertThat(context.getBean(RedisMessageListenerContainer.class)).extracting("taskExecutor")
+				.isInstanceOf(SimpleAsyncTaskExecutor.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

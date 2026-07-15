@@ -19,8 +19,11 @@ package org.springframework.boot.data.redis.autoconfigure;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.data.redis.annotation.EnableRedisListeners;
 import org.springframework.data.redis.config.RedisListenerConfigUtils;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -53,8 +56,26 @@ class DataRedisAnnotationDrivenConfiguration {
 	@Bean(name = DEFAULT_MESSAGE_LISTENER_BEAN_NAME)
 	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
 	@ConditionalOnMissingBean(name = DEFAULT_MESSAGE_LISTENER_BEAN_NAME)
+	@ConditionalOnThreading(Threading.PLATFORM)
 	RedisMessageListenerContainer redisMessageListenerContainer(RedisMessageListenerContainerConfigurer configurer,
 			RedisConnectionFactory redisConnectionFactory) {
+		return defaultMessageListenerContainer(configurer, redisConnectionFactory);
+	}
+
+	@Bean(name = DEFAULT_MESSAGE_LISTENER_BEAN_NAME)
+	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+	@ConditionalOnMissingBean(name = DEFAULT_MESSAGE_LISTENER_BEAN_NAME)
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	RedisMessageListenerContainer redisMessageListenerContainerVirtualThreads(
+			RedisMessageListenerContainerConfigurer configurer, RedisConnectionFactory redisConnectionFactory) {
+		RedisMessageListenerContainer container = defaultMessageListenerContainer(configurer, redisConnectionFactory);
+		container
+			.setTaskExecutor(new VirtualThreadTaskExecutor(RedisMessageListenerContainer.DEFAULT_THREAD_NAME_PREFIX));
+		return container;
+	}
+
+	private static RedisMessageListenerContainer defaultMessageListenerContainer(
+			RedisMessageListenerContainerConfigurer configurer, RedisConnectionFactory redisConnectionFactory) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		configurer.configure(container, redisConnectionFactory);
 		return container;
