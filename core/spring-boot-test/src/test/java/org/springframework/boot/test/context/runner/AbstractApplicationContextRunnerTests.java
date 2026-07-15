@@ -67,12 +67,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> {
 
 	@Test
-	void runContextShouldWorkWithSatisfiesAssertion() {
-		get().run((context) -> assertThat(context).satisfies((ctx) -> assertThat(ctx).hasNotFailed(),
-				(ctx) -> assertThat(ctx).doesNotHaveBean("foo")));
-	}
-
-	@Test
 	void runWithInitializerShouldInitialize() {
 		AtomicBoolean called = new AtomicBoolean();
 		get().withInitializer((context) -> called.set(true)).run((context) -> {
@@ -130,7 +124,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	}
 
 	@Test
-	void runWithMultiplePropertyValuesShouldHaveAllValues() {
+	void runWithMultiplePropertyValuesShouldAllAllValues() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2").run((context) -> {
 			Environment environment = context.getEnvironment();
 			assertThat(environment.getProperty("test.foo")).isEqualTo("1");
@@ -283,6 +277,12 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 				assertThat(context).hasBean("foo");
 				assertThat(context.getBean("foo")).isEqualTo("overridden");
 			});
+	}
+
+	@Test
+	void runShouldWorkWithSatisfiesAssertion() {
+		get().run((context) -> assertThat(context).satisfies((ctx) -> assertThat(ctx).hasNotFailed(),
+				(ctx) -> assertThat(ctx).doesNotHaveBean("foo")));
 	}
 
 	@Test

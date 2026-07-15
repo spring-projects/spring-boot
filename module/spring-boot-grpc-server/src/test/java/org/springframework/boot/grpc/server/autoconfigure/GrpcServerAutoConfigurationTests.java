@@ -86,7 +86,7 @@ class GrpcServerAutoConfigurationTests {
 
 	private final ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations)
 		.with(this::noOpLifecycleBeans)
 		.with(this::serviceBean);

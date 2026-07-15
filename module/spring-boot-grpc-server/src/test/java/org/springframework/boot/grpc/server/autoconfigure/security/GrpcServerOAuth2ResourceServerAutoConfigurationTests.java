@@ -62,7 +62,7 @@ class GrpcServerOAuth2ResourceServerAutoConfigurationTests {
 	private static final AutoConfigurations autoConfigurations = AutoConfigurations
 		.of(OAuth2ResourceServerAutoConfiguration.class, GrpcServerOAuth2ResourceServerAutoConfiguration.class);
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations)
 		.withUserConfiguration(GrpcSecurityConfiguration.class)
 		.with(this::serviceBean)

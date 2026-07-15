@@ -100,8 +100,7 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getWhenContextStartsShouldReturnProxyThatCallsRealMethods() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat((Object) context).isNotNull();
 		context.getBean("foo");
 		then(this.mockContext).should().getBean("foo");
@@ -109,8 +108,7 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getWhenContextFailsShouldReturnProxyThatThrowsExceptions() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat((Object) context).isNotNull();
 		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo"))
 			.withCause(this.startupFailure)
@@ -119,15 +117,13 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getSourceContextWhenContextStartsShouldReturnSourceContext() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat(context.getSourceApplicationContext()).isSameAs(this.mockContext);
 	}
 
 	@Test
 	void getSourceContextWhenContextFailsShouldThrowException() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException().isThrownBy(context::getSourceApplicationContext)
 			.withCause(this.startupFailure)
 			.withMessageContaining("failed to start");
@@ -135,15 +131,13 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getSourceContextOfTypeWhenContextStartsShouldReturnSourceContext() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat(context.getSourceApplicationContext(ApplicationContext.class)).isSameAs(this.mockContext);
 	}
 
 	@Test
 	void getSourceContextOfTypeWhenContextFailsToStartShouldThrowException() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException()
 			.isThrownBy(() -> context.getSourceApplicationContext(ApplicationContext.class))
 			.withCause(this.startupFailure)
@@ -152,62 +146,54 @@ class ApplicationContextAssertProviderTests {
 
 	@Test
 	void getStartupFailureWhenContextStartsShouldReturnNull() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat(context.getStartupFailure()).isNull();
 	}
 
 	@Test
 	void getStartupFailureWhenContextFailsToStartShouldReturnException() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat(context.getStartupFailure()).isEqualTo(this.startupFailure);
 	}
 
 	@Test
 	void assertThatWhenContextStartsShouldReturnAssertions() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
-		ApplicationContextAssert<TestAssertProviderApplicationContext> contextAssert = assertThat(context);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
+		ApplicationContextAssert<?> contextAssert = assertThat(context);
 		assertThat(contextAssert.getApplicationContext()).isSameAs(context);
 		assertThat(contextAssert.getStartupFailure()).isNull();
 	}
 
 	@Test
 	void assertThatWhenContextFailsShouldReturnAssertions() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
-		ApplicationContextAssert<TestAssertProviderApplicationContext> contextAssert = assertThat(context);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
+		ApplicationContextAssert<?> contextAssert = assertThat(context);
 		assertThat(contextAssert.getApplicationContext()).isSameAs(context);
 		assertThat(contextAssert.getStartupFailure()).isSameAs(this.startupFailure);
 	}
 
 	@Test
 	void toStringWhenContextStartsShouldReturnSimpleString() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat(context.toString()).startsWith("Started application [ConfigurableApplicationContext.MockitoMock")
 			.endsWith("id = [null], applicationName = [null], beanDefinitionCount = 0]");
 	}
 
 	@Test
 	void toStringWhenContextFailsToStartShouldReturnSimpleString() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.startupFailureSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat(context).hasToString("Unstarted application context "
 				+ "org.springframework.context.ApplicationContext[startupFailure=java.lang.RuntimeException]");
 	}
 
 	@Test
 	void closeShouldCloseContext() {
-		ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> context = get(
-				this.mockContextSupplier);
+		ApplicationContextAssertProvider<?, ApplicationContext> context = get(this.mockContextSupplier);
 		context.close();
 		then(this.mockContext).should().close();
 	}
 
-	private ApplicationContextAssertProvider<TestAssertProviderApplicationContext, ApplicationContext> get(
-			Supplier<ApplicationContext> contextSupplier) {
+	private ApplicationContextAssertProvider<?, ApplicationContext> get(Supplier<ApplicationContext> contextSupplier) {
 		return ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 				ApplicationContext.class, contextSupplier);
 	}
