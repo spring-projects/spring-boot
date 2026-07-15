@@ -19,9 +19,8 @@ plugins {
 }
 
 tasks.register("kotlinVersion") {
-	def properties = project.properties
+	def kotlinVersion = project.findProperty('kotlin.version') ?: 'none'
 	doLast {
-		def kotlinVersion = properties.getOrDefault('kotlin.version', 'none')
 		println "Kotlin version: ${kotlinVersion}"
 	}
 }
