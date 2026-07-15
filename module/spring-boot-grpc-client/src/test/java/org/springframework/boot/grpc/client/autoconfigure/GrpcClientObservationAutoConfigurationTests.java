@@ -41,7 +41,7 @@ class GrpcClientObservationAutoConfigurationTests {
 	private static final AutoConfigurations autoConfigurations = AutoConfigurations
 		.of(GrpcClientObservationAutoConfiguration.class);
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations)
 		.withBean("observationRegistry", ObservationRegistry.class, Mockito::mock);
 
