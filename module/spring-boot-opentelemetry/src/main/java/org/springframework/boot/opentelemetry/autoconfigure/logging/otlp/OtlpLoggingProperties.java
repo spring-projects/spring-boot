@@ -17,7 +17,7 @@
 package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -64,7 +64,7 @@ public class OtlpLoggingProperties {
 	/**
 	 * Custom HTTP headers you want to pass to the collector, for example auth headers.
 	 */
-	private final Map<String, String> headers = new HashMap<>();
+	private final Map<String, String> headers = new LinkedHashMap<>();
 
 	private final Ssl ssl = new Ssl();
 

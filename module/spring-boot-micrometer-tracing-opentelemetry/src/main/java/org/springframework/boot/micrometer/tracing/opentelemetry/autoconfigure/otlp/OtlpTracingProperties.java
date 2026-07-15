@@ -17,7 +17,7 @@
 package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -64,7 +64,7 @@ public class OtlpTracingProperties {
 	/**
 	 * Custom HTTP headers you want to pass to the collector, for example auth headers.
 	 */
-	private Map<String, String> headers = new HashMap<>();
+	private Map<String, String> headers = new LinkedHashMap<>();
 
 	private final Ssl ssl = new Ssl();
 

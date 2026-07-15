@@ -18,7 +18,6 @@ package org.springframework.boot.freemarker.autoconfigure;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -123,7 +122,7 @@ public class FreeMarkerProperties {
 	/**
 	 * Well-known FreeMarker keys which are passed to FreeMarker's Configuration.
 	 */
-	private Map<String, String> settings = new HashMap<>();
+	private Map<String, String> settings = new LinkedHashMap<>();
 
 	/**
 	 * List of template paths.

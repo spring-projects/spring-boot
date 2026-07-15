@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -212,7 +212,7 @@ public class ServerProperties {
 		/**
 		 * Servlet context init parameters.
 		 */
-		private final Map<String, String> contextParameters = new HashMap<>();
+		private final Map<String, String> contextParameters = new LinkedHashMap<>();
 
 		/**
 		 * Context path of the application.

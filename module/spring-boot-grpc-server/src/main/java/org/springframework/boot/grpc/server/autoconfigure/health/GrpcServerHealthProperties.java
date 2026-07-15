@@ -19,7 +19,6 @@ package org.springframework.boot.grpc.server.autoconfigure.health;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +176,7 @@ public class GrpcServerHealthProperties {
 		 * Mapping of health statuses to gRPC service status. By default, registered
 		 * health statuses map to sensible defaults (for example, UP maps to SERVING).
 		 */
-		private final Map<String, ServingStatus> mapping = new HashMap<>();
+		private final Map<String, ServingStatus> mapping = new LinkedHashMap<>();
 
 		public List<String> getOrder() {
 			return this.order;
