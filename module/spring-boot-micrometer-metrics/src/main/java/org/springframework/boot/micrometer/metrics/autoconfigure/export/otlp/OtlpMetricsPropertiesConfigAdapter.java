@@ -101,19 +101,13 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	@Override
 	@SuppressWarnings("deprecation")
 	public Duration connectTimeout() {
-		return obtain(OtlpMetricsProperties::getConnectTimeout, () -> {
-			Duration commonConnectTimeout = this.otlpProperties.getConnectTimeout();
-			return (commonConnectTimeout != null) ? commonConnectTimeout : OtlpConfig.super.connectTimeout();
-		});
+		return obtain(OtlpMetricsProperties::getConnectTimeout, OtlpConfig.super::connectTimeout);
 	}
 
 	@Override
 	@SuppressWarnings("deprecation")
 	public Duration readTimeout() {
-		return obtain(OtlpMetricsProperties::getReadTimeout, () -> {
-			Duration commonTimeout = this.otlpProperties.getTimeout();
-			return (commonTimeout != null) ? commonTimeout : OtlpConfig.super.readTimeout();
-		});
+		return obtain(OtlpMetricsProperties::getReadTimeout, OtlpConfig.super::readTimeout);
 	}
 
 	@Override

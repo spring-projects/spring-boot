@@ -49,7 +49,6 @@ import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.resources.Resource;
@@ -528,85 +527,6 @@ class OpenTelemetryTracingAutoConfigurationTests {
 				finally {
 					span.end();
 				}
-			});
-	}
-
-	@Test
-	void shouldFallbackToCommonTransportForTracing() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.transport=grpc",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class);
-				assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class);
-			});
-	}
-
-	@Test
-	void shouldFallbackToCommonTimeoutForTracingExporter() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.timeout=10s",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldFallbackToCommonCompressionForTracingExporter() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.compression=gzip",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificTimeoutOverCommonTimeoutForTracing() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.timeout=10s",
-					"management.opentelemetry.tracing.export.otlp.timeout=3s",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificCompressionOverCommonCompressionForTracing() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.compression=gzip",
-					"management.opentelemetry.tracing.export.otlp.compression=none",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificConnectTimeoutOverCommonConnectTimeoutForTracing() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.connect-timeout=10s",
-					"management.opentelemetry.tracing.export.otlp.connect-timeout=3s",
-					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
 			});
 	}
 

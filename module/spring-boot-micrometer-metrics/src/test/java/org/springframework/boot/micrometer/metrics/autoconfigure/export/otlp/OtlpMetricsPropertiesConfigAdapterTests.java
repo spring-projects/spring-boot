@@ -16,7 +16,6 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -259,20 +258,6 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		this.properties.setHeaders(Map.of("signal-header", "signal-value"));
 		assertThat(createAdapter().headers()).containsEntry("common-header", "common-value")
 			.containsEntry("signal-header", "signal-value");
-	}
-
-	@Test
-	void whenPropertiesTimeoutIsSetItOverridesOtlpPropertiesTimeout() {
-		this.otlpProperties.setTimeout(Duration.ofSeconds(10));
-		this.properties.setReadTimeout(Duration.ofSeconds(3));
-		assertThat(createAdapter().readTimeout()).isEqualTo(Duration.ofSeconds(3));
-	}
-
-	@Test
-	void whenPropertiesConnectTimeoutIsSetItOverridesOtlpPropertiesConnectTimeout() {
-		this.otlpProperties.setConnectTimeout(Duration.ofSeconds(10));
-		this.properties.setConnectTimeout(Duration.ofSeconds(3));
-		assertThat(createAdapter().connectTimeout()).isEqualTo(Duration.ofSeconds(3));
 	}
 
 }

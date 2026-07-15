@@ -16,7 +16,6 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,26 +42,6 @@ public class OtlpProperties {
 	 */
 	private final Map<String, String> headers = new LinkedHashMap<>();
 
-	/**
-	 * Timeout for executing requests.
-	 */
-	private @Nullable Duration timeout;
-
-	/**
-	 * Connection timeout.
-	 */
-	private @Nullable Duration connectTimeout;
-
-	/**
-	 * Transport to use.
-	 */
-	private @Nullable Transport transport;
-
-	/**
-	 * Compression to use.
-	 */
-	private @Nullable Compression compression;
-
 	public @Nullable String getEndpoint() {
 		return this.endpoint;
 	}
@@ -73,66 +52,6 @@ public class OtlpProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
-	}
-
-	public @Nullable Duration getTimeout() {
-		return this.timeout;
-	}
-
-	public void setTimeout(@Nullable Duration timeout) {
-		this.timeout = timeout;
-	}
-
-	public @Nullable Duration getConnectTimeout() {
-		return this.connectTimeout;
-	}
-
-	public void setConnectTimeout(@Nullable Duration connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	public @Nullable Transport getTransport() {
-		return this.transport;
-	}
-
-	public void setTransport(@Nullable Transport transport) {
-		this.transport = transport;
-	}
-
-	public @Nullable Compression getCompression() {
-		return this.compression;
-	}
-
-	public void setCompression(@Nullable Compression compression) {
-		this.compression = compression;
-	}
-
-	public enum Transport {
-
-		/**
-		 * HTTP transport.
-		 */
-		HTTP,
-
-		/**
-		 * gRPC transport.
-		 */
-		GRPC
-
-	}
-
-	public enum Compression {
-
-		/**
-		 * No compression.
-		 */
-		NONE,
-
-		/**
-		 * GZIP compression.
-		 */
-		GZIP
-
 	}
 
 }

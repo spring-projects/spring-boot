@@ -237,10 +237,7 @@ final class OtlpLoggingConfigurations {
 			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 				String loggingTransport = context.getEnvironment()
 					.getProperty("management.opentelemetry.logging.export.otlp.transport");
-				String commonTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.otlp.transport");
-				String activeTransport = (loggingTransport != null) ? loggingTransport
-						: (commonTransport != null) ? commonTransport : "http";
+				String activeTransport = (loggingTransport != null) ? loggingTransport : "http";
 				return new ConditionOutcome("http".equalsIgnoreCase(activeTransport),
 						"Transport is " + activeTransport);
 			}
@@ -253,10 +250,7 @@ final class OtlpLoggingConfigurations {
 			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 				String loggingTransport = context.getEnvironment()
 					.getProperty("management.opentelemetry.logging.export.otlp.transport");
-				String commonTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.otlp.transport");
-				String activeTransport = (loggingTransport != null) ? loggingTransport
-						: (commonTransport != null) ? commonTransport : "http";
+				String activeTransport = (loggingTransport != null) ? loggingTransport : "http";
 				return new ConditionOutcome("grpc".equalsIgnoreCase(activeTransport),
 						"Transport is " + activeTransport);
 			}

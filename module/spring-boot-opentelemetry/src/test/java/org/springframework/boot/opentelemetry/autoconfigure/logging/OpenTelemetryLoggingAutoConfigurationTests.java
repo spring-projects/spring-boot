@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
-import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.logs.LogLimits;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
@@ -178,85 +177,6 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 					.extracting("queue")
 					.isInstanceOfSatisfying(ArrayBlockingQueue.class,
 							(queue) -> assertThat(queue.remainingCapacity()).isEqualTo(4096));
-			});
-	}
-
-	@Test
-	void shouldFallbackToCommonTransportForLogging() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.transport=grpc",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpGrpcLogRecordExporter.class);
-				assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
-			});
-	}
-
-	@Test
-	void shouldFallbackToCommonTimeoutForLoggingExporter() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.timeout=5s",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
-				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificTransportOverCommonTransportForLogging() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.transport=grpc",
-					"management.opentelemetry.logging.export.otlp.transport=http",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
-				assertThat(context).doesNotHaveBean(OtlpGrpcLogRecordExporter.class);
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificTimeoutOverCommonTimeoutForLogging() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.timeout=10s",
-					"management.opentelemetry.logging.export.otlp.timeout=3s",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
-				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificCompressionOverCommonCompressionForLogging() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.compression=gzip",
-					"management.opentelemetry.logging.export.otlp.compression=none",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
-				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
-				assertThat(exporter).isNotNull();
-			});
-	}
-
-	@Test
-	void shouldPreferSignalSpecificConnectTimeoutOverCommonConnectTimeoutForLogging() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
-			.withPropertyValues("management.opentelemetry.otlp.connect-timeout=10s",
-					"management.opentelemetry.logging.export.otlp.connect-timeout=3s",
-					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4317")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
-				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
-				assertThat(exporter).isNotNull();
 			});
 	}
 
