@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -130,11 +132,23 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private void applyUpgrades(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
 			List<Upgrade> upgrades) {
-		List<Issue> existingUpgradeIssues = repository.findIssues(issueLabels, milestone);
+		List<Issue> existingUpgradeIssuesList = repository.findIssues(issueLabels, milestone);
+
+		Map<String, Issue> existingUpgradeIssues = new HashMap<>(existingUpgradeIssuesList.size());
+		for (Issue issue : existingUpgradeIssuesList) {
+			String title = issue.getTitle();
+			int lastSpaceIndex = title.lastIndexOf(' ');
+			if (lastSpaceIndex > -1) {
+				title = title.substring(0, lastSpaceIndex);
+			}
+			existingUpgradeIssues.put(title, issue);
+		}
+
 		System.out.println("Applying upgrades...");
 		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
 			System.out.println(upgrade.to().getNameAndVersion());
+			// Agora passa o Dicionário em vez da Lista
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
 				Path modified = this.upgradeApplicator.apply(upgrade);
@@ -222,19 +236,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		return matchingMilestone.get();
 	}
 
-	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
+	private Issue findExistingUpgradeIssue(Map<String, Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.toRelease().getName();
-		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
-			String title = existingUpgradeIssue.getTitle();
-			int lastSpaceIndex = title.lastIndexOf(' ');
-			if (lastSpaceIndex > -1) {
-				title = title.substring(0, lastSpaceIndex);
-			}
-			if (title.equals(toMatch)) {
-				return existingUpgradeIssue;
-			}
-		}
-		return null;
+		return existingUpgradeIssues.get(toMatch);
 	}
 
 	@SuppressWarnings("deprecation")
