@@ -47,25 +47,25 @@ class JmsHealthIndicatorTests {
 
 	@Test
 	@SuppressWarnings("NullAway") // Test null check
-	void createWhenTimeoutIsNullThrowsException() {
+	void createWhenStartTimeoutIsNullThrowsException() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> new JmsHealthIndicator(connectionFactory, null))
-			.withMessage("'timeout' must not be null");
+			.withMessage("'startTimeout' must not be null");
 	}
 
 	@Test
-	void createWhenTimeoutIsZeroThrowsException() {
+	void createWhenStartTimeoutIsZeroThrowsException() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> new JmsHealthIndicator(connectionFactory, Duration.ZERO))
-			.withMessage("'timeout' must be greater than 0");
+			.withMessage("'startTimeout' must be greater than 0");
 	}
 
 	@Test
-	void createWhenTimeoutIsNegativeThrowsException() {
+	void createWhenStartTimeoutIsNegativeThrowsException() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JmsHealthIndicator(connectionFactory, Duration.ofMillis(-1)))
-			.withMessage("'timeout' must be greater than 0");
+			.withMessage("'startTimeout' must be greater than 0");
 	}
 
 	@Test
@@ -131,13 +131,13 @@ class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	void whenConnectionStartIsUnresponsiveUsesConfiguredTimeout() throws JMSException {
+	void whenConnectionStartIsUnresponsiveUsesConfiguredStartTimeout() throws JMSException {
 		Health health = healthWhenConnectionStartIsUnresponsive(Duration.ofMillis(10));
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection closed");
 	}
 
-	private Health healthWhenConnectionStartIsUnresponsive(Duration timeout) throws JMSException {
+	private Health healthWhenConnectionStartIsUnresponsive(Duration startTimeout) throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
@@ -149,7 +149,7 @@ class JmsHealthIndicatorTests {
 		}).given(connection).close();
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willReturn(connection);
-		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, timeout);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory, startTimeout);
 		return indicator.health();
 	}
 

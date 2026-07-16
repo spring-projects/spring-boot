@@ -48,7 +48,7 @@ public final class JmsHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
 	JmsHealthContributorAutoConfiguration(JmsHealthIndicatorProperties properties) {
-		super((connectionFactory) -> new JmsHealthIndicator(connectionFactory, properties.getTimeout()));
+		super((connectionFactory) -> new JmsHealthIndicator(connectionFactory, properties.getStartTimeout()));
 	}
 
 	@Bean

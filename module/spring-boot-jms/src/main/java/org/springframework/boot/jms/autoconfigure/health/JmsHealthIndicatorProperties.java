@@ -20,13 +20,13 @@ import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jms.health.JmsHealthIndicator;
-import org.springframework.util.Assert;
 
 /**
- * External configuration properties for {@link JmsHealthIndicator}.
+ * Configuration properties for {@link JmsHealthIndicator}.
  *
  * @author Venkata Naga Sai Srikanth Gollapudi
- * @since 4.x
+ * @author Stephane Nicoll
+ * @since 4.2.0
  */
 @ConfigurationProperties("management.health.jms")
 public class JmsHealthIndicatorProperties {
@@ -34,16 +34,14 @@ public class JmsHealthIndicatorProperties {
 	/**
 	 * Timeout to use when starting a connection for the health check.
 	 */
-	private Duration timeout = Duration.ofSeconds(5);
+	private Duration startTimeout = JmsHealthIndicator.DEFAULT_START_TIMEOUT;
 
-	public Duration getTimeout() {
-		return this.timeout;
+	public Duration getStartTimeout() {
+		return this.startTimeout;
 	}
 
-	public void setTimeout(Duration timeout) {
-		Assert.notNull(timeout, "'timeout' must not be null");
-		Assert.isTrue(timeout.compareTo(Duration.ZERO) > 0, "'timeout' must be greater than 0");
-		this.timeout = timeout;
+	public void setStartTimeout(Duration startTimeout) {
+		this.startTimeout = startTimeout;
 	}
 
 }
