@@ -475,6 +475,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(factoryBean.isAutoStartup()).isFalse();
 				assertThat(factoryBean).extracting("cleanupConfig.onStart").isEqualTo(true);
 				assertThat(factoryBean).extracting("cleanupConfig.onStop").isEqualTo(true);
+				assertThat(factoryBean).extracting("leaveGroupOnClose").isEqualTo(false);
 				factoryBean.addListener(listener);
 			})
 			.withPropertyValues("spring.kafka.client-id=cid",
@@ -693,6 +694,19 @@ class KafkaAutoConfigurationTests {
 						assertThat(cleanupConfig.cleanupOnStart()).isTrue();
 						assertThat(cleanupConfig.cleanupOnStop()).isFalse();
 					});
+			});
+	}
+
+	@Test
+	void streamsWithLeaveGroupOnClose() {
+		this.contextRunner
+			.withUserConfiguration(EnableKafkaStreamsConfiguration.class, TestKafkaStreamsConfiguration.class)
+			.withPropertyValues("spring.application.name=my-test-app",
+					"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+					"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.leave-group-on-close=true")
+			.run((context) -> {
+				StreamsBuilderFactoryBean streamsBuilderFactoryBean = context.getBean(StreamsBuilderFactoryBean.class);
+				assertThat(streamsBuilderFactoryBean).extracting("leaveGroupOnClose").isEqualTo(true);
 			});
 	}
 
