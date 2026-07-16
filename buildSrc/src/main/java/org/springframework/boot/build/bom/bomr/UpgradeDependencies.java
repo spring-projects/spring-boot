@@ -148,7 +148,6 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
 			System.out.println(upgrade.to().getNameAndVersion());
-			// Agora passa o Dicionário em vez da Lista
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
 				Path modified = this.upgradeApplicator.apply(upgrade);
