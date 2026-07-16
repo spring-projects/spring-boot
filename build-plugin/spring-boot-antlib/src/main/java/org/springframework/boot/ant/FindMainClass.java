@@ -71,8 +71,9 @@ public class FindMainClass extends Task {
 			if (this.classesRoot.isDirectory()) {
 				return MainClassFinder.findSingleMainClass(this.classesRoot, SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
-			return MainClassFinder.findSingleMainClass(new JarFile(this.classesRoot), "/",
-					SPRING_BOOT_APPLICATION_CLASS_NAME);
+			try (JarFile jarFile = new JarFile(this.classesRoot)) {
+				return MainClassFinder.findSingleMainClass(jarFile, "/", SPRING_BOOT_APPLICATION_CLASS_NAME);
+			}
 		}
 		catch (IOException ex) {
 			throw new BuildException(ex);
