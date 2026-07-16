@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jms.health;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -25,25 +26,40 @@ import jakarta.jms.JMSException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} for a JMS {@link ConnectionFactory}.
  *
  * @author Stephane Nicoll
+ * @author Venkata Naga Sai Srikanth Gollapudi
  * @since 4.0.0
  */
 public class JmsHealthIndicator extends AbstractHealthIndicator {
+
+	private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
 	private final Log logger = LogFactory.getLog(JmsHealthIndicator.class);
 
 	private final ConnectionFactory connectionFactory;
 
+	private final Duration timeout;
+
 	public JmsHealthIndicator(ConnectionFactory connectionFactory) {
+		this(connectionFactory, DEFAULT_TIMEOUT);
+	}
+
+	public JmsHealthIndicator(ConnectionFactory connectionFactory, Duration timeout) {
 		super("JMS health check failed");
+		Assert.notNull(timeout, "'timeout' must not be null");
+		Assert.isTrue(timeout.compareTo(Duration.ZERO) > 0, "'timeout' must be greater than 0");
 		this.connectionFactory = connectionFactory;
+		this.timeout = timeout;
 	}
 
 	@Override
@@ -67,9 +83,10 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 		void start() throws JMSException {
 			new Thread(() -> {
 				try {
-					if (!this.latch.await(5, TimeUnit.SECONDS)) {
+					if (!this.latch.await(JmsHealthIndicator.this.timeout.toNanos(), TimeUnit.NANOSECONDS)) {
 						JmsHealthIndicator.this.logger
-							.warn("Connection failed to start within 5 seconds and will be closed.");
+							.warn(LogMessage.format("Connection failed to start within %s and will be closed.",
+									DurationStyle.SIMPLE.print(JmsHealthIndicator.this.timeout)));
 						closeConnection();
 					}
 				}
