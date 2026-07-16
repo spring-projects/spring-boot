@@ -38,6 +38,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.util.PathMatcher;
 
 /**
  * A Flyway {@link ResourceProvider} which supports GraalVM native-image.
@@ -46,6 +47,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * {@link PathMatchingResourcePatternResolver} to find migration files in a native image.
  *
  * @author Moritz Halbritter
+ * @author Dongliang Xie
+ * @author Stephane Nicoll
  */
 class NativeImageResourceProvider implements ResourceProvider {
 
@@ -106,9 +109,8 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	private ClassPathResource asClassPathResource(LocatedResource locatedResource) {
-		Location location = locatedResource.location();
-		String fileNameWithAbsolutePath = location.getRootPath() + "/" + locatedResource.resource().getFilename();
-		return new ClassPathResource(location, fileNameWithAbsolutePath, this.classLoader, this.encoding);
+		return new ClassPathResource(locatedResource.location(), locatedResource.path(), this.classLoader,
+				this.encoding);
 	}
 
 	private void ensureInitialized() {
@@ -140,8 +142,25 @@ class NativeImageResourceProvider implements ResourceProvider {
 			}
 			Resource[] resources = getResources(resolver, location, root);
 			for (Resource resource : resources) {
-				this.locatedResources.add(new LocatedResource(resource, location));
+				this.locatedResources.add(new LocatedResource(resource, location,
+						getClassPathResourcePath(resolver.getPathMatcher(), location, root, resource)));
 			}
+		}
+	}
+
+	private String getClassPathResourcePath(PathMatcher pathMatcher, Location location, Resource root,
+			Resource resource) {
+		if (resource instanceof org.springframework.core.io.ClassPathResource classPathResource) {
+			return classPathResource.getPath();
+		}
+		try {
+			String rootPath = location.getRootPath();
+			String relativePath = pathMatcher.extractPathWithinPattern(root.getURI() + "/**/*",
+					resource.getURI().toString());
+			return (rootPath.isEmpty()) ? relativePath : rootPath + "/" + relativePath;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to determine path for " + resource, ex);
 		}
 	}
 
@@ -154,7 +173,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 		}
 	}
 
-	private record LocatedResource(Resource resource, Location location) {
+	private record LocatedResource(Resource resource, Location location, String path) {
 
 	}
 
