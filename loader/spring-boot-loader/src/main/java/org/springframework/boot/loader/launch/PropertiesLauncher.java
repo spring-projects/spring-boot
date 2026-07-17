@@ -136,8 +136,6 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File homeDirectory;
 
-	private final List<String> paths;
-
 	private final Properties properties = new Properties();
 
 	public PropertiesLauncher() throws Exception {
@@ -148,7 +146,6 @@ public class PropertiesLauncher extends Launcher {
 		this.archive = archive;
 		this.homeDirectory = getHomeDirectory();
 		initializeProperties();
-		this.paths = getPaths();
 		this.classPathIndex = getClassPathIndex(this.archive);
 	}
 
@@ -295,7 +292,7 @@ public class PropertiesLauncher extends Launcher {
 	private List<String> getPaths() throws Exception {
 		String path = getProperty(PATH);
 		List<String> paths = (path != null) ? parsePathsProperty(path) : Collections.emptyList();
-		debug.log("Nested archive paths: %s", this.paths);
+		debug.log("Nested archive paths: %s", paths);
 		return paths;
 	}
 
