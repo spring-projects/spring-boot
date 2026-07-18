@@ -43,10 +43,14 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 
 	private final @Nullable ClassPathRestartStrategy restartStrategy;
 
+	private final Object lifecycleMonitor = new Object();
+
 	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
 	private boolean stopWatcherOnRestart;
+
+	private @Nullable Thread startupThread;
 
 	/**
 	 * Create a new {@link ClassPathFileSystemWatcher} instance.
@@ -87,12 +91,38 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 			this.fileSystemWatcher.addListener(
 					new ClassPathFileChangeListener(this.applicationContext, this.restartStrategy, watcherToStop));
 		}
-		this.fileSystemWatcher.start();
+		synchronized (this.lifecycleMonitor) {
+			this.startupThread = new Thread(this::startFileSystemWatcher);
+			this.startupThread.setName("File Watcher Startup");
+			this.startupThread.setDaemon(true);
+			this.startupThread.start();
+		}
 	}
 
 	@Override
 	public void destroy() throws Exception {
+		Thread startupThread;
+		synchronized (this.lifecycleMonitor) {
+			startupThread = this.startupThread;
+			if (startupThread != null) {
+				startupThread.interrupt();
+			}
+		}
+		if (startupThread != null) {
+			startupThread.join();
+		}
 		this.fileSystemWatcher.stop();
+	}
+
+	private void startFileSystemWatcher() {
+		try {
+			this.fileSystemWatcher.start();
+		}
+		finally {
+			synchronized (this.lifecycleMonitor) {
+				this.startupThread = null;
+			}
+		}
 	}
 
 }

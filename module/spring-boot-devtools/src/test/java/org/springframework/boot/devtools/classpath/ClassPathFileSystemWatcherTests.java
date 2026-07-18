@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -86,6 +89,41 @@ class ClassPathFileSystemWatcherTests {
 		assertThat(events.get(0).getChangeSet().iterator().next()).extracting(ChangedFile::getFile)
 			.containsExactly(classFile);
 		context.close();
+	}
+
+	@Test
+	void fileSystemWatcherStartupDoesNotBlockContextRefresh() throws Exception {
+		CountDownLatch startupStarted = new CountDownLatch(1);
+		CountDownLatch continueStartup = new CountDownLatch(1);
+		FileSystemWatcher fileSystemWatcher = new FileSystemWatcher() {
+
+			@Override
+			public void start() {
+				startupStarted.countDown();
+				try {
+					continueStartup.await();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				super.start();
+			}
+
+		};
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.registerBean(ClassPathFileSystemWatcher.class,
+				() -> new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(fileSystemWatcher), null,
+						new URL[0]));
+		CompletableFuture<Void> refresh = CompletableFuture.runAsync(context::refresh);
+		try {
+			assertThat(startupStarted.await(5, TimeUnit.SECONDS)).isTrue();
+			assertThat(refresh).succeedsWithin(Duration.ofSeconds(1));
+		}
+		finally {
+			continueStartup.countDown();
+			refresh.join();
+			context.close();
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
