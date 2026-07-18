@@ -27,4 +27,4 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
-      run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md ${{ inputs.pre-release == 'true' && '--prerelease' || '' }}
+      run: gh api --method POST repos/${GITHUB_REPOSITORY}/releases -f tag_name=${{ format('v{0}', inputs.milestone) }} -F body=@changelog.md -F prerelease=${{ inputs.pre-release }} -f make_latest=legacy
