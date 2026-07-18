@@ -314,6 +314,32 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenJsonbConverterIsAvailable() {
+		allOptionsRunner()
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.run((context) -> {
+				assertConverterIsRegistered(context, JsonbHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+			});
+	}
+
+	@Test
+	void kotlinSerializationUsesUnrestrictedPredicateWhenJsonbBeanIsNotAvailable() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.withBean(Json.class, () -> Json.Default)
+			.run((context) -> {
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isTrue();
+			});
+	}
+
+	@Test
 	void stringDefaultConverter() {
 		this.contextRunner.run((context) -> assertConverterIsRegistered(context, StringHttpMessageConverter.class));
 	}

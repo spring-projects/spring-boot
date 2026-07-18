@@ -18,10 +18,13 @@ package org.springframework.boot.http.converter.autoconfigure;
 
 import kotlinx.serialization.Serializable;
 import kotlinx.serialization.json.Json;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.http.converter.autoconfigure.JsonbHttpMessageConvertersConfiguration.JsonbHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -46,8 +49,8 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 	@Order(0)
 	@ConditionalOnMissingBean(KotlinSerializationJsonHttpMessageConverter.class)
 	KotlinSerializationJsonConvertersCustomizer kotlinSerializationJsonConvertersCustomizer(Json json,
-			ResourceLoader resourceLoader) {
-		return new KotlinSerializationJsonConvertersCustomizer(json, resourceLoader);
+			ResourceLoader resourceLoader, ObjectProvider<JsonbHttpMessageConvertersCustomizer> jsonbCustomizer) {
+		return new KotlinSerializationJsonConvertersCustomizer(json, resourceLoader, jsonbCustomizer.getIfAvailable());
 	}
 
 	static class KotlinSerializationJsonConvertersCustomizer
@@ -55,11 +58,12 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 
 		private final KotlinSerializationJsonHttpMessageConverter converter;
 
-		KotlinSerializationJsonConvertersCustomizer(Json json, ResourceLoader resourceLoader) {
+		KotlinSerializationJsonConvertersCustomizer(Json json, ResourceLoader resourceLoader,
+				@Nullable JsonbHttpMessageConvertersCustomizer jsonbCustomizer) {
 			ClassLoader classLoader = resourceLoader.getClassLoader();
 			boolean hasAnyJsonSupport = ClassUtils.isPresent("tools.jackson.databind.json.JsonMapper", classLoader)
 					|| ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", classLoader)
-					|| ClassUtils.isPresent("com.google.gson.Gson", classLoader);
+					|| ClassUtils.isPresent("com.google.gson.Gson", classLoader) || jsonbCustomizer != null;
 			this.converter = hasAnyJsonSupport ? new KotlinSerializationJsonHttpMessageConverter(json)
 					: new KotlinSerializationJsonHttpMessageConverter(json, (type) -> true);
 		}
