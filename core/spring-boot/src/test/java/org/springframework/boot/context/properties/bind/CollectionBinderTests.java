@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -196,6 +197,14 @@ class CollectionBinderTests {
 		this.sources.add(source.nonIterable());
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
+	}
+
+	@Test
+	void bindToCollectionOfBeansWithOptionalPropertyWhenNonIterableSourceHasNoValueShouldNotBind() {
+		this.sources.add(new MockConfigurationPropertySource().nonIterable());
+		BindResult<List<BeanWithOptionalProperty>> result = this.binder.bind("foo",
+				Bindable.listOf(BeanWithOptionalProperty.class));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
@@ -647,6 +656,20 @@ class CollectionBinderTests {
 
 		@Nullable List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
+		}
+
+	}
+
+	static class BeanWithOptionalProperty {
+
+		private Optional<String> value = Optional.empty();
+
+		Optional<String> getValue() {
+			return this.value;
+		}
+
+		void setValue(Optional<String> value) {
+			this.value = value;
 		}
 
 	}

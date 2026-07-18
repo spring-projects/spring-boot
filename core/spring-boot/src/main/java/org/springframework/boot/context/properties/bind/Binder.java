@@ -403,6 +403,9 @@ public class Binder {
 			result = context.getConverter().convert(result, target);
 		}
 		handler.onFinish(name, target, context, result);
+		if (result == null && context.depth != 0) {
+			return null;
+		}
 		return context.getConverter().convert(result, target);
 	}
 
