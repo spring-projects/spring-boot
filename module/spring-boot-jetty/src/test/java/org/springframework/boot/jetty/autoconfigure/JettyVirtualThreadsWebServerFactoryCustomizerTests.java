@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jetty.autoconfigure;
 
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.VirtualThreadPool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -45,8 +46,11 @@ class JettyVirtualThreadsWebServerFactoryCustomizerTests {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		customizer.customize(factory);
 		then(factory).should().setThreadPool(assertArg((threadPool) -> {
-			assertThat(threadPool).isInstanceOf(VirtualThreadPool.class);
-			VirtualThreadPool virtualThreadPool = (VirtualThreadPool) threadPool;
+			assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
+			QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
+			assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(100);
+			assertThat(queuedThreadPool.getVirtualThreadsExecutor()).isInstanceOf(VirtualThreadPool.class);
+			VirtualThreadPool virtualThreadPool = (VirtualThreadPool) queuedThreadPool.getVirtualThreadsExecutor();
 			assertThat(virtualThreadPool.getName()).isEqualTo("jetty-");
 			assertThat(virtualThreadPool.getMaxConcurrentTasks()).isEqualTo(100);
 		}));
