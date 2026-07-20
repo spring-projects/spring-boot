@@ -763,7 +763,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "16.1.4") {
+	library("Infinispan", "16.2.1") {
 		group("org.infinispan") {
 			bom("infinispan-bom")
 		}
