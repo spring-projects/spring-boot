@@ -1145,7 +1145,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.21.5") {
+	library("jOOQ", "3.21.6") {
 		group("org.jooq") {
 			bom("jooq-bom")
 			plugins = [
