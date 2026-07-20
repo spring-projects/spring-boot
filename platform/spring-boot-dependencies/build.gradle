@@ -1872,7 +1872,7 @@ bom {
 			releaseNotes("https://github.com/mariadb-corporation/mariadb-connector-r2dbc/releases/tag/{version}")
 		}
 	}
-	library("R2DBC MSSQL", "1.0.4.RELEASE") {
+	library("R2DBC MSSQL", "1.0.5.RELEASE") {
 		group ("io.r2dbc") {
 			modules = [
 				"r2dbc-mssql"
