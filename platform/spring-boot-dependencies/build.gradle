@@ -2967,7 +2967,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/xml-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("XmlUnit2", "2.11.0") {
+	library("XmlUnit2", "2.12.0") {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
