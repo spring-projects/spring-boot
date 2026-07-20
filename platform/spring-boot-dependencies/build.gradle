@@ -1534,7 +1534,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-install-plugin/releases/tag/maven-install-plugin-{version}")
 		}
 	}
-	library("Maven Invoker Plugin", "3.9.1") {
+	library("Maven Invoker Plugin", "3.10.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-invoker-plugin"
