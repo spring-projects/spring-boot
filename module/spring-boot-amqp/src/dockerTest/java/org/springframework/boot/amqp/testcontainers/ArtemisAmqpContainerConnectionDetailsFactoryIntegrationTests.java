@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -41,14 +41,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ArtemisAmqpContainerConnectionDetailsFactory}.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
 class ArtemisAmqpContainerConnectionDetailsFactoryIntegrationTests {
 
+	private static final String QUEUE_NAME = UUID.randomUUID().toString();
+
 	@Container
 	@ServiceConnection
-	static final ArtemisLegacyContainer container = TestImage.container(ArtemisLegacyContainer.class);
+	static final ArtemisContainer container = TestImage.container(ArtemisLegacyContainer.class)
+		.withEnv("EXTRA_ARGS", "--queues %s:anycast".formatted(QUEUE_NAME));
 
 	@Autowired(required = false)
 	private AmqpConnectionDetails connectionDetails;
@@ -59,30 +63,9 @@ class ArtemisAmqpContainerConnectionDetailsFactoryIntegrationTests {
 	@Test
 	void connectionCanBeMadeToArtemisContainer() throws Exception {
 		assertThat(this.connectionDetails).isNotNull();
-		String address = createRandomQueue();
-		this.amqpClient.to(address).body("test message").send();
-		Object message = this.amqpClient.from(address).receiveAndConvert().get(4, TimeUnit.MINUTES);
+		this.amqpClient.to(QUEUE_NAME).body("test message").send();
+		Object message = this.amqpClient.from(QUEUE_NAME).receiveAndConvert().get(4, TimeUnit.MINUTES);
 		assertThat(message).isEqualTo("test message");
-	}
-
-	private String createRandomQueue() {
-		String name = UUID.randomUUID().toString();
-		createQueue(name);
-		return name;
-	}
-
-	private void createQueue(String name) {
-		try {
-			ExecResult execResult = container.execInContainer("/var/lib/artemis-instance/bin/artemis", "queue",
-					"create", "--name=" + name, "--auto-create-address", "--anycast", "--silent",
-					"--user=" + container.getUser(), "--password=" + container.getPassword());
-			if (execResult.getExitCode() != 0) {
-				throw new IllegalStateException("Failed to create queue: " + execResult);
-			}
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to create queue " + name, ex);
-		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
