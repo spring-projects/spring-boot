@@ -798,6 +798,10 @@ bom {
 		}
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
+		prohibit {
+			versionRange "[3.2.0,3.3.0)"
+			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.2)"
+		}
 		group("tools.jackson") {
 			bom("jackson-bom") {
 				permit("com.fasterxml.jackson.core:jackson-annotations")
