@@ -37,6 +37,8 @@ $ java -XX:AOTCache=app.aot -jar my-app.jar
 
 NOTE: You have to use the cache file with the extracted form of the application, otherwise it has no effect.
 
+If you want to know how to leverage AOT Cache with Buildpacks, take a look at the xref:how-to:aot-cache.adoc[AOT Cache How-to guide].
+
 
 
 [[packaging.aot-cache.cds]]
