@@ -786,6 +786,10 @@ bom {
 		}
 	}
 	library("Jackson 2 Bom", "${jackson2Version}") {
+		prohibit {
+			versionRange "[2.22.0,2.23.0)"
+			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.22)"
+		}
 		group("com.fasterxml.jackson") {
 			bom("jackson-bom")
 		}
