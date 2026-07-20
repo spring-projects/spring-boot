@@ -1502,7 +1502,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-surefire/releases/tag/surefire-{version}")
 		}
 	}
-	library("Maven Help Plugin", "3.5.1") {
+	library("Maven Help Plugin", "3.5.2") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-help-plugin"
