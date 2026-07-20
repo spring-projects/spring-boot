@@ -75,6 +75,7 @@ class PaketoBuilderTests {
 		this.gradleBuild.expectDeprecationMessages("BPL_SPRING_CLOUD_BINDINGS_ENABLED.*true.*Deprecated");
 		this.gradleBuild.expectDeprecationMessages("Command \"packages\" is deprecated, use `syft scan` instead");
 		this.gradleBuild.expectDeprecationMessages("BP_ENABLE_RUNTIME_CERT_BINDING.*true.*Deprecated");
+		this.gradleBuild.expectDeprecationMessages("Warning: BOM table is deprecated in this buildpack api version");
 		this.gradleBuild.gradleVersion(GradleVersions.maximumCompatible());
 	}
 
