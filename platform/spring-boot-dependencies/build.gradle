@@ -2090,7 +2090,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-amqp-java-client/releases/tag/v{version}")
 		}
 	}
-	library("RabbitMQ Stream Client", "1.6.0") {
+	library("RabbitMQ Stream Client", "1.8.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
