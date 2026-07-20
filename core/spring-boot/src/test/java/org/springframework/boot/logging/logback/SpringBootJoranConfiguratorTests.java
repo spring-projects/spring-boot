@@ -339,7 +339,8 @@ class SpringBootJoranConfiguratorTests {
 			<configuration>
 				<include resource="org/springframework/boot/logging/logback/base.xml"/>
 				<springProperty scope="context" name="MINE" source="my.example-property"/>
-				<if condition='property("MINE").contains("true")'>
+				<condition class="org.springframework.boot.logging.logback.TestPropertyCondition"/>
+				<if>
 					<then>
 						<variable scope="context" name="MYCHECK" value="i-was-included"/>
 					</then>
