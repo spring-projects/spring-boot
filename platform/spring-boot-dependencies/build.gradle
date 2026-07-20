@@ -588,7 +588,7 @@ bom {
 			releaseNotes("https://github.com/grpc/grpc-kotlin/releases/tag/v{version}")
 		}
 	}
-	library("Gson", "2.13.2") {
+	library("Gson", "2.14.0") {
 		group("com.google.code.gson") {
 			modules = [
 				"gson"
