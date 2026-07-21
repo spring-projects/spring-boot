@@ -47,7 +47,7 @@ public class RestartScopeInitializer implements ApplicationContextInitializer<Co
 		}
 
 		@Override
-		public Object remove(String name) {
+		public @Nullable Object remove(String name) {
 			return Restarter.getInstance().removeAttribute(name);
 		}
 
