@@ -68,7 +68,7 @@ public class WebDriverScope implements Scope {
 	}
 
 	@Override
-	public Object remove(String name) {
+	public @Nullable Object remove(String name) {
 		synchronized (this.instances) {
 			return this.instances.remove(name);
 		}
