@@ -127,7 +127,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.config.name", "foo");
 		this.launcher = new PropertiesLauncher();
 		assertThat(this.launcher.getMainClass()).isEqualTo("my.Application");
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[etc/]");
+		assertThat(resolvedPaths()).containsExactly("etc/");
 	}
 
 	@Test
@@ -141,14 +141,14 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 	void testUserSpecifiedDotPath() throws Exception {
 		System.setProperty("loader.path", ".");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[.]");
+		assertThat(resolvedPaths()).containsExactly(".");
 	}
 
 	@Test
 	void testUserSpecifiedSlashPath() throws Exception {
 		System.setProperty("loader.path", "jars/");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[jars/]");
+		assertThat(resolvedPaths()).containsExactly("jars/");
 		Set<URL> urls = this.launcher.getClassPathUrls();
 		assertThat(urls).areExactly(1, endingWith("app.jar"));
 	}
@@ -158,7 +158,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "jars/*");
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[jars/]");
+		assertThat(resolvedPaths()).containsExactly("jars/");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -168,7 +168,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[jars/app.jar]");
+		assertThat(resolvedPaths()).containsExactly("jars/app.jar");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -177,8 +177,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 	void testUserSpecifiedRootOfJarPath() throws Exception {
 		System.setProperty("loader.path", "jar:file:./src/test/resources/nested-jars/app.jar!/");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths"))
-			.hasToString("[jar:file:./src/test/resources/nested-jars/app.jar!/]");
+		assertThat(resolvedPaths()).containsExactly("jar:file:./src/test/resources/nested-jars/app.jar!/");
 		Set<URL> urls = this.launcher.getClassPathUrls();
 		assertThat(urls).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(urls).areExactly(1, endingWith("app.jar!/"));
@@ -216,8 +215,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "nested-jars/nested-jar-app.jar!/BOOT-INF/classes/");
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths"))
-			.hasToString("[nested-jars/nested-jar-app.jar!/BOOT-INF/classes/]");
+		assertThat(resolvedPaths()).containsExactly("nested-jars/nested-jar-app.jar!/BOOT-INF/classes/");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -236,7 +234,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "./jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[jars/app.jar]");
+		assertThat(resolvedPaths()).containsExactly("jars/app.jar");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -246,7 +244,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "jars/app.jar");
 		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths")).hasToString("[jars/app.jar]");
+		assertThat(resolvedPaths()).containsExactly("jars/app.jar");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -256,8 +254,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		System.setProperty("loader.path", "more-jars/app.jar,jars/app.jar");
 		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
 		this.launcher = new PropertiesLauncher();
-		assertThat(ReflectionTestUtils.getField(this.launcher, "paths"))
-			.hasToString("[more-jars/app.jar, jars/app.jar]");
+		assertThat(resolvedPaths()).containsExactly("more-jars/app.jar", "jars/app.jar");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello Other World");
 	}
@@ -309,7 +306,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 	void testArgsEnhanced() throws Exception {
 		System.setProperty("loader.args", "foo");
 		this.launcher = new PropertiesLauncher();
-		assertThat(Arrays.asList(this.launcher.getArgs("bar"))).hasToString("[foo, bar]");
+		assertThat(Arrays.asList(this.launcher.getArgs("bar"))).containsExactly("foo", "bar");
 	}
 
 	@Test
@@ -325,8 +322,7 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 			manifest.write(manifestStream);
 		}
 		this.launcher = new PropertiesLauncher();
-		assertThat((List<String>) ReflectionTestUtils.getField(this.launcher, "paths")).containsExactly("/foo.jar",
-				"/bar/");
+		assertThat(resolvedPaths()).containsExactly("/foo.jar", "/bar/");
 	}
 
 	@Test
@@ -445,6 +441,10 @@ class PropertiesLauncherTests extends AbstractLauncherTests {
 		expected.add(new File(parent, "BOOT-INF/lib/bar.jar"));
 		expected.add(new File(parent, "BOOT-INF/lib/baz.jar"));
 		return expected;
+	}
+
+	private List<String> resolvedPaths() {
+		return ReflectionTestUtils.invokeMethod(this.launcher, "resolvePaths");
 	}
 
 	private Condition<URL> endingWith(String value) {
