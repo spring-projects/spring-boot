@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Common configuration properties for OpenTelemetry Protocol (OTLP) exporters.
  *
  * @author Somil Jain
- * @since 4.0.0
+ * @since 4.2.0
  */
 @ConfigurationProperties("management.opentelemetry.otlp")
 public class OtlpProperties {

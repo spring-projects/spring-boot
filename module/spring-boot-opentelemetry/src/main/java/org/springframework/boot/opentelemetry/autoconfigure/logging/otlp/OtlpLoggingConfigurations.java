@@ -119,6 +119,9 @@ final class OtlpLoggingConfigurations {
 				String endpoint = this.properties.getEndpoint();
 				if (!StringUtils.hasLength(endpoint)) {
 					endpoint = this.otlpProperties.getEndpoint();
+					if (endpoint != null && transport == Transport.HTTP) {
+						endpoint = endpoint.endsWith("/") ? endpoint + "v1/logs" : endpoint + "/v1/logs";
+					}
 				}
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
@@ -146,13 +149,16 @@ final class OtlpLoggingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@Conditional(HttpTransportCondition.class)
+		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "http",
+				matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpProperties otlpProperties, OtlpLoggingConnectionDetails connectionDetails,
 				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getUrl(Transport.HTTP));
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
+			properties.getHeaders().forEach(builder::addHeader);
 
 			Duration timeout = properties.getTimeout();
 			builder.setTimeout(timeout);
@@ -177,7 +183,7 @@ final class OtlpLoggingConfigurations {
 		}
 
 		@Bean
-		@Conditional(GrpcTransportCondition.class)
+		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "grpc")
 		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpProperties otlpProperties, OtlpLoggingConnectionDetails connectionDetails,
 				ObjectProvider<MeterProvider> meterProvider,

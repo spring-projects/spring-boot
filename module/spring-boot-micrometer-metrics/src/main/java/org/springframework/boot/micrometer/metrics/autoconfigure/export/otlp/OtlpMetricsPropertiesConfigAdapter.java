@@ -16,7 +16,6 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -96,18 +95,6 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 		Map<String, String> headers = new LinkedHashMap<>(this.otlpProperties.getHeaders());
 		headers.putAll(obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers));
 		return Collections.unmodifiableMap(headers);
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public Duration connectTimeout() {
-		return obtain(OtlpMetricsProperties::getConnectTimeout, OtlpConfig.super::connectTimeout);
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public Duration readTimeout() {
-		return obtain(OtlpMetricsProperties::getReadTimeout, OtlpConfig.super::readTimeout);
 	}
 
 	@Override

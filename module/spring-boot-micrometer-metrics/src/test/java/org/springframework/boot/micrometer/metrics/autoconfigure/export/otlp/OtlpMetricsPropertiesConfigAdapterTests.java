@@ -260,4 +260,23 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 			.containsEntry("signal-header", "signal-value");
 	}
 
+	@Test
+	void whenPropertiesUrlIsNotSetThenUseOtlpPropertiesEndpointAsFallbackWithAppendix() {
+		this.otlpProperties.setEndpoint("http://common-endpoint:4318");
+		assertThat(createAdapter().url()).isEqualTo("http://common-endpoint:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetThenUseOtlpPropertiesEndpointAsFallbackWithAppendixAndTrailingSlash() {
+		this.otlpProperties.setEndpoint("http://common-endpoint:4318/");
+		assertThat(createAdapter().url()).isEqualTo("http://common-endpoint:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesUrlIsSetThenItOverridesOtlpPropertiesEndpoint() {
+		this.otlpProperties.setEndpoint("http://common-endpoint:4318");
+		this.properties.setUrl("http://signal-endpoint:4318/custom/metrics");
+		assertThat(createAdapter().url()).isEqualTo("http://signal-endpoint:4318/custom/metrics");
+	}
+
 }

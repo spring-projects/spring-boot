@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.SdkLoggerProviderBuilderCustomizer;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
@@ -319,6 +320,43 @@ class OtlpLoggingAutoConfigurationTests {
 				assertThat(exporter).extracting("delegate.httpSender.client.x509TrustManager")
 					.isInstanceOf(X509TrustManager.class);
 			});
+	}
+
+	@Test
+	void shouldAppendLogsPathToCommonEndpoint() {
+		OtlpLoggingProperties properties = new OtlpLoggingProperties();
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318");
+		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
+				properties, otlpProperties, null);
+
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
+		assertThat(connectionDetails.getUrl(Transport.GRPC)).isEqualTo("http://localhost:4318");
+	}
+
+	@Test
+	void shouldNotAppendLogsPathToLoggingSpecificEndpoint() {
+		OtlpLoggingProperties properties = new OtlpLoggingProperties();
+		properties.setEndpoint("http://localhost:4318/custom/logs");
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318");
+		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
+				properties, otlpProperties, null);
+
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/custom/logs");
+	}
+
+	@Test
+	void shouldAppendLogsPathToCommonEndpointWithTrailingSlash() {
+		OtlpLoggingProperties properties = new OtlpLoggingProperties();
+
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318/");
+
+		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
+				properties, otlpProperties, null);
+
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 	}
 
 	@Configuration(proxyBeanMethods = false)

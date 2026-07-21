@@ -18,8 +18,10 @@ package org.springframework.boot.opentelemetry.autoconfigure.logging;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
@@ -32,6 +34,7 @@ import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
 import io.opentelemetry.sdk.logs.data.LogRecordData;
 import io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -203,7 +206,24 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
 				OtlpHttpLogRecordExporter exporter = context.getBean(OtlpHttpLogRecordExporter.class);
-				assertThat(exporter).isNotNull();
+				assertThat(exporter).extracting("delegate.httpSender.headerSupplier")
+					.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((headerSupplier) -> assertThat(headerSupplier.get())
+						.asInstanceOf(InstanceOfAssertFactories.map(String.class, List.class))
+						.containsEntry("common-header", List.of("common-value"))
+						.containsEntry("logging-header", List.of("logging-value"))
+						.containsEntry("shared-header", List.of("logging-wins")));
+			});
+	}
+
+	@Test
+	void shouldFallbackToCommonEndpointAndAppendPathForLogging() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://common-host:4318")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
+				assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://common-host:4318/v1/logs");
 			});
 	}
 

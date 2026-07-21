@@ -88,11 +88,9 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(OtlpMetricsSender.class)
-	OtlpHttpMetricsSender otlpMetricsSender(OtlpMetricsConnectionDetails connectionDetails,
-			OtlpProperties otlpProperties) {
+	OtlpHttpMetricsSender otlpMetricsSender(OtlpMetricsConnectionDetails connectionDetails) {
 		Duration connectTimeout = this.properties.getConnectTimeout();
-		Duration readTimeout = this.properties.getReadTimeout();
-		Duration timeout = connectTimeout.plus(readTimeout);
+		Duration timeout = connectTimeout.plus(this.properties.getReadTimeout());
 		JdkClientHttpSender httpSender = new JdkClientHttpSender(connectTimeout, timeout,
 				connectionDetails.getSslBundle());
 		return new OtlpHttpMetricsSender(httpSender);

@@ -74,7 +74,6 @@ final class OtlpTracingConfigurations {
 		 * Condition to check if either the tracing-specific endpoint or the common OTLP
 		 * endpoint is set.
 		 */
-		@SuppressWarnings("unused")
 		static class OtlpEndpointCondition extends AnyNestedCondition {
 
 			OtlpEndpointCondition() {
@@ -82,11 +81,13 @@ final class OtlpTracingConfigurations {
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.tracing.export.otlp.endpoint")
+			@SuppressWarnings("unused")
 			static class TracingEndpoint {
 
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.otlp.endpoint")
+			@SuppressWarnings("unused")
 			static class CommonEndpoint {
 
 			}
@@ -117,6 +118,9 @@ final class OtlpTracingConfigurations {
 				String endpoint = this.properties.getEndpoint();
 				if (!StringUtils.hasLength(endpoint)) {
 					endpoint = this.otlpProperties.getEndpoint();
+					if (endpoint != null && transport == Transport.HTTP) {
+						endpoint = endpoint.endsWith("/") ? endpoint + "v1/traces" : endpoint + "/v1/traces";
+					}
 				}
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
@@ -143,109 +147,62 @@ final class OtlpTracingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@Conditional(HttpTransportCondition.class)
+		@ConditionalOnProperty(name = "management.opentelemetry.tracing.export.otlp.transport", havingValue = "http",
+				matchIfMissing = true)
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties, OtlpProperties otlpProperties,
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpSpanExporterBuilderCustomizer> customizers) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP));
 
-			applyCommonConfiguration(properties, otlpProperties, connectionDetails, meterProvider,
-					new ExporterBuilderDelegate() {
-						@Override
-						public void setTimeout(Duration timeout) {
-							builder.setTimeout(timeout);
-						}
+			Duration timeout = properties.getTimeout();
+			builder.setTimeout(timeout);
 
-						@Override
-						public void setConnectTimeout(Duration connectTimeout) {
-							builder.setConnectTimeout(connectTimeout);
-						}
+			Duration connectTimeout = properties.getConnectTimeout();
+			builder.setConnectTimeout(connectTimeout);
 
-						@Override
-						public void setCompression(String compression) {
-							builder.setCompression(compression);
-						}
+			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
+			if (StringUtils.hasLength(compression)) {
+				builder.setCompression(compression);
+			}
 
-						@Override
-						public void addHeader(String key, String value) {
-							builder.addHeader(key, value);
-						}
+			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
+			headers.putAll(properties.getHeaders());
+			headers.forEach(builder::addHeader);
 
-						@Override
-						public void setMeterProvider(MeterProvider meterProvider) {
-							builder.setMeterProvider(meterProvider);
-						}
-
-						@Override
-						public void configure(SSLContext sslContext, X509TrustManager trustManager) {
-							builder.setSslContext(sslContext, trustManager);
-						}
-					});
-
+			meterProvider.ifAvailable(builder::setMeterProvider);
+			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
 		@Bean
-		@Conditional(GrpcTransportCondition.class)
+		@ConditionalOnProperty(name = "management.opentelemetry.tracing.export.otlp.transport", havingValue = "grpc")
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties, OtlpProperties otlpProperties,
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpGrpcSpanExporterBuilderCustomizer> customizers) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC));
 
-			applyCommonConfiguration(properties, otlpProperties, connectionDetails, meterProvider,
-					new ExporterBuilderDelegate() {
-						@Override
-						public void setTimeout(Duration timeout) {
-							builder.setTimeout(timeout);
-						}
+			Duration timeout = properties.getTimeout();
+			builder.setTimeout(timeout);
 
-						@Override
-						public void setConnectTimeout(Duration connectTimeout) {
-							builder.setConnectTimeout(connectTimeout);
-						}
+			Duration connectTimeout = properties.getConnectTimeout();
+			builder.setConnectTimeout(connectTimeout);
 
-						@Override
-						public void setCompression(String compression) {
-							builder.setCompression(compression);
-						}
-
-						@Override
-						public void addHeader(String key, String value) {
-							builder.addHeader(key, value);
-						}
-
-						@Override
-						public void setMeterProvider(MeterProvider meterProvider) {
-							builder.setMeterProvider(meterProvider);
-						}
-
-						@Override
-						public void configure(SSLContext sslContext, X509TrustManager trustManager) {
-							builder.setSslContext(sslContext, trustManager);
-						}
-					});
-
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return builder.build();
-		}
-
-		private void applyCommonConfiguration(OtlpTracingProperties properties, OtlpProperties otlpProperties,
-				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
-				ExporterBuilderDelegate delegate) {
-			delegate.setTimeout(properties.getTimeout());
-			delegate.setConnectTimeout(properties.getConnectTimeout());
 			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
 			if (StringUtils.hasLength(compression)) {
-				delegate.setCompression(compression);
+				builder.setCompression(compression);
 			}
+
 			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
 			headers.putAll(properties.getHeaders());
-			headers.forEach(delegate::addHeader);
-			meterProvider.ifAvailable(delegate::setMeterProvider);
-			configureSsl(connectionDetails, delegate);
+			headers.forEach(builder::addHeader);
+
+			meterProvider.ifAvailable(builder::setMeterProvider);
+			configureSsl(connectionDetails, builder::setSslContext);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			return builder.build();
 		}
 
 		private void configureSsl(OtlpTracingConnectionDetails connectionDetails,
@@ -270,20 +227,6 @@ final class OtlpTracingConfigurations {
 		private interface SslContextConfigurer {
 
 			void configure(SSLContext sslContext, X509TrustManager trustManager);
-
-		}
-
-		private interface ExporterBuilderDelegate extends SslContextConfigurer {
-
-			void setTimeout(Duration timeout);
-
-			void setConnectTimeout(Duration connectTimeout);
-
-			void setCompression(String compression);
-
-			void addHeader(String key, String value);
-
-			void setMeterProvider(MeterProvider meterProvider);
 
 		}
 

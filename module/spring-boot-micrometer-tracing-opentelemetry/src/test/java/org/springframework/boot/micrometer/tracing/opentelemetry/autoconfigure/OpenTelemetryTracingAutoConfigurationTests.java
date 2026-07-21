@@ -542,7 +542,42 @@ class OpenTelemetryTracingAutoConfigurationTests {
 				assertThat(context).hasNotFailed();
 				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
 				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
-				assertThat(exporter).isNotNull();
+				assertThat(exporter).extracting("delegate.httpSender.headerSupplier")
+					.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((headerSupplier) -> assertThat(headerSupplier.get())
+						.asInstanceOf(InstanceOfAssertFactories.map(String.class, List.class))
+						.containsEntry("common-header", List.of("common-value"))
+						.containsEntry("tracing-header", List.of("tracing-value"))
+						.containsEntry("shared-header", List.of("tracing-wins")));
+			});
+	}
+
+	@Test
+	void shouldAppendTracesPathToCommonEndpoint() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://localhost:4318")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.url")
+					.extracting(Object::toString)
+					.isEqualTo("http://localhost:4318/v1/traces");
+			});
+	}
+
+	@Test
+	void shouldNotAppendTracesPathToTracingSpecificEndpoint() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://localhost:4318",
+					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4318/custom/traces")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.url")
+					.extracting(Object::toString)
+					.isEqualTo("http://localhost:4318/custom/traces");
 			});
 	}
 

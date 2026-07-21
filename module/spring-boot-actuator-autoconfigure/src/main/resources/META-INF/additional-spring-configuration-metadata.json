@@ -152,11 +152,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.opentelemetry.otlp.connect-timeout",
-      "type": "java.time.Duration",
-      "description": "Connection timeout for the OTLP exporters."
-    },
-    {
       "name": "management.opentelemetry.otlp.endpoint",
       "type": "java.lang.String",
       "description": "OTLP target endpoint URL."
@@ -165,11 +160,6 @@
       "name": "management.opentelemetry.otlp.headers",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Custom headers to be appended to OTLP requests."
-    },
-    {
-      "name": "management.opentelemetry.otlp.timeout",
-      "type": "java.time.Duration",
-      "description": "Read timeout for the OTLP exporters."
     },
     {
       "name": "management.server.add-application-context-header",
