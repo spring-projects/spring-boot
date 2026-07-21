@@ -289,11 +289,9 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private List<String> getPaths() throws Exception {
+	private List<String> resolvePaths() throws Exception {
 		String path = getProperty(PATH);
-		List<String> paths = (path != null) ? parsePathsProperty(path) : Collections.emptyList();
-		debug.log("Nested archive paths: %s", paths);
-		return paths;
+		return (path != null) ? parsePathsProperty(path) : Collections.emptyList();
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -467,7 +465,9 @@ public class PropertiesLauncher extends Launcher {
 	@Override
 	protected Set<URL> getClassPathUrls() throws Exception {
 		Set<URL> urls = new LinkedHashSet<>();
-		for (String path : getPaths()) {
+		List<String> paths = resolvePaths();
+		debug.log("Nested archive paths: %s", paths);
+		for (String path : paths) {
 			path = cleanupPath(handleUrl(path));
 			urls.addAll(getClassPathUrlsForPath(path));
 		}
