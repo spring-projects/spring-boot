@@ -164,7 +164,7 @@ class TestcontainersLifecycleOrderWithScopeIntegrationTests {
 		}
 
 		@Override
-		public Object remove(String name) {
+		public @Nullable Object remove(String name) {
 			synchronized (this) {
 				Object removed = this.instances.remove(name);
 				List<Runnable> destructor = this.destructors.get(name);
