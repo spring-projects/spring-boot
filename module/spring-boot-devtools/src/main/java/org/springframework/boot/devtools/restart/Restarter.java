@@ -450,7 +450,7 @@ public class Restarter {
 		return value;
 	}
 
-	public Object removeAttribute(String name) {
+	public @Nullable Object removeAttribute(String name) {
 		return this.attributes.remove(name);
 	}
 
