@@ -329,6 +329,19 @@ public enum TestImage {
 		return createContainer(GenericContainer.class);
 	}
 
+	/**
+	 * Create and customize a {@link Container} for this test image.
+	 * @param <C> the container type
+	 * @param containerSetup the container customizer
+	 * @return a configured container instance
+	 */
+	@SuppressWarnings("unchecked")
+	public <C extends Container<?>> C customize(Consumer<C> containerSetup) {
+		C container = createContainer((Class<C>) this.containerClass);
+		containerSetup.accept(container);
+		return container;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private <C extends Container<?>> C createContainer(Class<C> containerClass) {
 		DockerImageName dockerImageName = DockerImageName.parse(toString());
