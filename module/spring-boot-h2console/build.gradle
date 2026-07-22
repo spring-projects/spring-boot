@@ -26,8 +26,9 @@ description = "Spring Boot H2"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("jakarta.servlet:jakarta.servlet-api")
 	api("com.h2database:h2")
+
+	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
