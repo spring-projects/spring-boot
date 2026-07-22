@@ -48,7 +48,8 @@ class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 
 	@Override
 	protected boolean isMarkedAsNested(MetadataGenerationEnvironment environment) {
-		return environment.getNestedConfigurationPropertyAnnotation(this.recordComponent) != null;
+		return environment.getNestedConfigurationPropertyAnnotation(this.recordComponent) != null
+				|| environment.getNestedConfigurationPropertyAnnotation(getGetter()) != null;
 	}
 
 	@Override
