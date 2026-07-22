@@ -34,21 +34,17 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.ConditionalOnEnabledLoggingExport;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -156,18 +152,12 @@ final class OtlpLoggingConfigurations {
 				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setConnectTimeout(properties.getConnectTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
-			properties.getHeaders().forEach(builder::addHeader);
+				.setEndpoint(connectionDetails.getUrl(Transport.HTTP));
 
 			Duration timeout = properties.getTimeout();
 			builder.setTimeout(timeout);
 
-			Duration connectTimeout = properties.getConnectTimeout();
-			builder.setConnectTimeout(connectTimeout);
-
 			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
-
 			if (StringUtils.hasLength(compression)) {
 				builder.setCompression(compression);
 			}
@@ -194,10 +184,7 @@ final class OtlpLoggingConfigurations {
 			Duration timeout = properties.getTimeout();
 			builder.setTimeout(timeout);
 
-			Duration connectTimeout = properties.getConnectTimeout();
-			builder.setConnectTimeout(connectTimeout);
-
-			String compression = properties.getCompression().name().toLowerCase(Locale.US);
+			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
 			if (StringUtils.hasLength(compression)) {
 				builder.setCompression(compression);
 			}
@@ -234,32 +221,6 @@ final class OtlpLoggingConfigurations {
 		private interface SslContextConfigurer {
 
 			void configure(SSLContext sslContext, X509TrustManager trustManager);
-
-		}
-
-		static class HttpTransportCondition extends SpringBootCondition {
-
-			@Override
-			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-				String loggingTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.logging.export.otlp.transport");
-				String activeTransport = (loggingTransport != null) ? loggingTransport : "http";
-				return new ConditionOutcome("http".equalsIgnoreCase(activeTransport),
-						"Transport is " + activeTransport);
-			}
-
-		}
-
-		static class GrpcTransportCondition extends SpringBootCondition {
-
-			@Override
-			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-				String loggingTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.logging.export.otlp.transport");
-				String activeTransport = (loggingTransport != null) ? loggingTransport : "http";
-				return new ConditionOutcome("grpc".equalsIgnoreCase(activeTransport),
-						"Transport is " + activeTransport);
-			}
 
 		}
 
