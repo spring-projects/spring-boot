@@ -35,6 +35,7 @@ import org.springframework.boot.configurationsample.deprecation.Dbcp2Configurati
 import org.springframework.boot.configurationsample.method.NestedPropertiesMethod;
 import org.springframework.boot.configurationsample.method.NestedPropertiesMethodImmutable;
 import org.springframework.boot.configurationsample.record.ExampleRecord;
+import org.springframework.boot.configurationsample.record.NestedPropertiesOnMethodRecord;
 import org.springframework.boot.configurationsample.record.NestedPropertiesRecord;
 import org.springframework.boot.configurationsample.record.RecordWithGetter;
 import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
@@ -593,6 +594,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void recordNested() {
 		ConfigurationMetadata metadata = compile(NestedPropertiesRecord.class);
+		assertThat(metadata).has(Metadata.withGroup("record-nested.nested"));
+		assertThat(metadata).has(Metadata.withProperty("record-nested.nested.my-nested-property"));
+		assertThat(metadata).has(Metadata.withGroup("record-nested.inner.nested"));
+		assertThat(metadata).has(Metadata.withProperty("record-nested.inner.nested.my-nested-property"));
+	}
+
+	@Test
+	void recordNestedMethod() {
+		ConfigurationMetadata metadata = compile(NestedPropertiesOnMethodRecord.class);
 		assertThat(metadata).has(Metadata.withGroup("record-nested.nested"));
 		assertThat(metadata).has(Metadata.withProperty("record-nested.nested.my-nested-property"));
 		assertThat(metadata).has(Metadata.withGroup("record-nested.inner.nested"));
