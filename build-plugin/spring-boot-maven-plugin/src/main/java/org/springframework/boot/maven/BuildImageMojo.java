@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -305,6 +306,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.imagePlatform == null && this.imagePlatform != null) {
 			image.setImagePlatform(this.imagePlatform);
+		}
+		if (Boolean.TRUE.equals(image.getAotCacheRecord())) {
+			image.cacheDirectory = Path.of(this.project.getBuild().getDirectory(), "aot-cache");
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}

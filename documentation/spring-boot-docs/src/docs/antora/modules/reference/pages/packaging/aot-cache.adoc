@@ -39,6 +39,54 @@ NOTE: You have to use the cache file with the extracted form of the application,
 
 If you want to know how to leverage AOT Cache with Buildpacks, take a look at the xref:how-to:aot-cache.adoc[AOT Cache How-to guide].
 
+[[packaging.aot-cache.integration-tests]]
+== Generating AOT Cache from Integration Tests
+
+Spring Boot provides Maven and Gradle integration to generate the AOT cache from your integration test suite.
+This approach leverages existing tests as the training workload, avoiding the need for a separate training run.
+
+NOTE: This feature requires Java 25 or above.
+
+To enable AOT cache recording, set the `spring-boot.aot-cache-record` property (Maven) or the `aotCacheRecord` option (Gradle):
+
+[tabs]
+======
+Maven::
++
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<properties>
+    <spring-boot.aot-cache-record>true</spring-boot.aot-cache-record>
+</properties>
+----
+
+Gradle::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+bootBuildImage {
+    aotCacheRecord = true
+}
+----
+======
+
+Cache recording only activates when the image build goals or tasks are in the execution plan.
+See the Maven plugin and Gradle plugin documentation for the exact invocation details.
+
+When enabled, the build plugin:
+
+* Injects `-XX:AOTCacheOutput=<path>` into the test JVM arguments
+* Writes the cache file to `target/aot-cache/application.aot` (Maven) or `build/aot-cache/application.aot` (Gradle)
+* Bundles the cache file into the built image when it is present
+
+The cache file can then be used in production:
+
+[source,shell]
+----
+$ java -XX:AOTCache=application.aot -jar my-app.jar
+----
+
+NOTE: You have to use the cache file with the extracted form of the application, otherwise it has no effect.
 
 
 [[packaging.aot-cache.cds]]

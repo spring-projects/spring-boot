@@ -16,6 +16,8 @@
 
 package org.springframework.boot.maven;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -87,6 +89,10 @@ public class Image {
 	@Nullable List<String> securityOptions;
 
 	@Nullable String imagePlatform;
+
+	@Nullable private Boolean aotCacheRecord;
+
+	@Nullable Path cacheDirectory;
 
 	/**
 	 * The name of the created image.
@@ -238,6 +244,20 @@ public class Image {
 		this.imagePlatform = imagePlatform;
 	}
 
+	/**
+	 * If AOT cache should be recorded from integration tests during the image build. When
+	 * enabled, the build will bundle the cache file from {@code target/aot-cache} into
+	 * the image.
+	 * @return {@code true} if AOT cache recording is enabled
+	 */
+	public @Nullable Boolean getAotCacheRecord() {
+		return this.aotCacheRecord;
+	}
+
+	public void setAotCacheRecord(@Nullable Boolean aotCacheRecord) {
+		this.aotCacheRecord = aotCacheRecord;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -309,6 +329,14 @@ public class Image {
 		}
 		if (StringUtils.hasText(this.imagePlatform)) {
 			request = request.withImagePlatform(this.imagePlatform);
+		}
+		if (Boolean.TRUE.equals(this.aotCacheRecord)) {
+			Path cacheDir = (this.cacheDirectory != null) ? this.cacheDirectory
+					: Path.of("target", "aot-cache").toAbsolutePath();
+			if (Files.isDirectory(cacheDir)) {
+				request = request.withEnv("BP_JVM_AOTCACHE_ENABLED", "true");
+				request = request.withAdditionalContent(cacheDir, "aot-cache");
+			}
 		}
 		return request;
 	}

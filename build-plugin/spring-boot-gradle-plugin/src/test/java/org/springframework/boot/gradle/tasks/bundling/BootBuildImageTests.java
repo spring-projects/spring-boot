@@ -17,10 +17,16 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.gradle.api.Project;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +39,9 @@ import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.buildpack.platform.io.CompositeTarArchive;
+import org.springframework.boot.buildpack.platform.io.Owner;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -355,6 +364,32 @@ class BootBuildImageTests {
 	void whenImagePlatformIsConfiguredThenRequestHasImagePlatform() {
 		this.buildImage.getImagePlatform().set("linux/arm64/v1");
 		assertThat(this.buildImage.createRequest().getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64/v1"));
+	}
+
+	@Test
+	void aotCacheRecordSetsBPJvmAotcacheEnabledWhenCacheDirExists() throws IOException {
+		this.buildImage.getAotCacheRecord().set(true);
+		Path cacheDir = this.project.getLayout().getBuildDirectory().dir("aot-cache").get().getAsFile().toPath();
+		Files.createDirectories(cacheDir);
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getEnv()).containsEntry("BP_JVM_AOTCACHE_ENABLED", "true");
+	}
+
+	@Test
+	void aotCacheRecordIncludesCacheFiles() throws IOException {
+		this.buildImage.getAotCacheRecord().set(true);
+		Path cacheDir = this.project.getLayout().getBuildDirectory().dir("aot-cache").get().getAsFile().toPath();
+		Files.createDirectories(cacheDir);
+		Files.writeString(cacheDir.resolve("application.aot"), "cache-data");
+		File jarFile = new File(this.project.getLayout().getBuildDirectory().get().getAsFile(), "test-app.jar");
+		try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(jarFile))) {
+			zip.putNextEntry(new ZipEntry("META-INF/"));
+			zip.closeEntry();
+		}
+		this.buildImage.getArchiveFile().set(jarFile);
+		BuildRequest request = this.buildImage.createRequest();
+		TarArchive content = request.getApplicationContent(Owner.ROOT);
+		assertThat(content).isInstanceOf(CompositeTarArchive.class);
 	}
 
 }

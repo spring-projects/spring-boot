@@ -122,3 +122,37 @@ $ mvn test -PnativeTest
 NOTE: As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
 
 include::partial$goals/process-test-aot.adoc[leveloffset=+1]
+
+
+[[aot.aot-cache-recording]]
+== Recording AOT Cache from Integration Tests
+
+The `aot-cache-record` goal configures the Maven Surefire Plugin to generate a Leyden AOT cache during integration test execution.
+The cache file is written by the JVM on clean exit.
+
+To enable AOT cache recording, set the `spring-boot.aot-cache-record` property:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<properties>
+    <spring-boot.aot-cache-record>true</spring-boot.aot-cache-record>
+</properties>
+----
+
+The cache is only recorded when the `spring-boot:build-image` or
+`spring-boot:build-image-no-fork` goal is in the execution plan:
+
+* `mvn spring-boot:build-image` — tests run with `-XX:AOTCacheOutput`, producing the
+  cache file, which is then bundled into the image
+* `mvn spring-boot:build-image-no-fork` — same effect, using a non-forked lifecycle
+* `mvn verify` — tests do not run, no cache is produced
+* `mvn test` — no cache is produced (`build-image` is not in the execution plan)
+
+When enabled, the goal injects `-XX:AOTCacheOutput=<path>` into the Surefire `argLine`,
+and the cache file is bundled into the image when built with `spring-boot:build-image`:
+
+* Injects `-XX:AOTCacheOutput=<path>` into the Surefire `argLine`
+* Writes the cache file to `target/aot-cache/application.aot`
+* Bundles the cache file into the built image when it is present
+
+NOTE: This feature requires Java 25 or above.

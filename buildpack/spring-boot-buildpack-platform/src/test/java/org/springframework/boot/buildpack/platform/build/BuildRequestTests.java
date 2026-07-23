@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -41,6 +43,7 @@ import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.buildpack.platform.io.CompositeTarArchive;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
@@ -407,6 +410,24 @@ class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		BuildRequest withAppDir = request.withImagePlatform("linux/arm64");
 		assertThat(withAppDir.getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64"));
+	}
+
+	@Test
+	void withAdditionalContentMergesArchives() throws IOException {
+		Path additionalDir = this.tempDir.toPath().resolve("aot-cache");
+		Files.createDirectories(additionalDir);
+		Files.writeString(additionalDir.resolve("cache-data.bin"), "cached");
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withAdditionalContent(additionalDir, "aot-cache");
+		TarArchive content = request.getApplicationContent(Owner.ROOT);
+		assertThat(content).isInstanceOf(CompositeTarArchive.class);
+	}
+
+	@Test
+	void withoutAdditionalContentReturnsOriginalArchive() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		TarArchive content = request.getApplicationContent(Owner.ROOT);
+		assertThat(content).isNotInstanceOf(CompositeTarArchive.class);
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

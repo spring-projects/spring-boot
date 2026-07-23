@@ -17,6 +17,8 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -100,6 +102,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		getCleanCache().convention(false);
 		getVerboseLogging().convention(false);
 		getPublish().convention(false);
+		getAotCacheRecord().convention(false);
 		this.buildWorkspace = getProject().getObjects().newInstance(CacheSpec.class);
 		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
@@ -238,6 +241,17 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Input
 	@Option(option = "publishImage", description = "Publish the built image to a registry")
 	public abstract Property<Boolean> getPublish();
+
+	/**
+	 * Returns whether AOT cache should be recorded from integration tests during the
+	 * image build. When enabled, the build will run tests with {@code -XX:AOTCacheOutput}
+	 * to produce the cache file, which is then bundled into the image.
+	 * @return whether AOT cache recording is enabled
+	 */
+	@Input
+	@Optional
+	@Option(option = "aotCacheRecord", description = "Record AOT cache from integration tests")
+	public abstract Property<Boolean> getAotCacheRecord();
 
 	/**
 	 * Returns the buildpacks that will be used when building the image.
@@ -427,6 +441,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		if (getImagePlatform().isPresent()) {
 			request = request.withImagePlatform(getImagePlatform().get());
 		}
+		request = customizeAotCache(request);
 		return request;
 	}
 
@@ -532,6 +547,18 @@ public abstract class BootBuildImage extends DefaultTask {
 			if (securityOptions != null) {
 				return request.withSecurityOptions(securityOptions);
 			}
+		}
+		return request;
+	}
+
+	private BuildRequest customizeAotCache(BuildRequest request) {
+		if (!getAotCacheRecord().getOrElse(false)) {
+			return request;
+		}
+		Path cacheDir = getProject().getLayout().getBuildDirectory().dir("aot-cache").get().getAsFile().toPath();
+		if (Files.isDirectory(cacheDir)) {
+			request = request.withEnv("BP_JVM_AOTCACHE_ENABLED", "true");
+			request = request.withAdditionalContent(cacheDir, "aot-cache");
 		}
 		return request;
 	}

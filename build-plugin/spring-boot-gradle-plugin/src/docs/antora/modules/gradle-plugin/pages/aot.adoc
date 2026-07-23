@@ -68,3 +68,35 @@ As with application AOT processing, the `BeanFactory` is fully prepared at build
 As with `processAot`, the `processTestAot` task is `JavaExec` subclass and can be configured as needed to influence this processing.
 
 The `nativeTest` task of the GraalVM Native Image plugin is automatically configured to use the output of the `processAot` and `processTestAot` tasks.
+
+
+[[aot.aot-cache-recording]]
+== Recording AOT Cache from Integration Tests
+
+The Spring Boot Gradle plugin can configure test tasks to generate a Leyden AOT cache during integration test execution.
+The cache file is written by the JVM on clean exit.
+
+To enable AOT cache recording, set the `aotCacheRecord` option on the `bootBuildImage` task:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+bootBuildImage {
+    aotCacheRecord = true
+}
+----
+
+Cache recording is tied to the `bootBuildImage` task. Tests produce the cache only
+when `bootBuildImage` is included in the execution:
+
+* `./gradlew test bootBuildImage` — tests run with `-XX:AOTCacheOutput`, producing the
+  cache file, which is then bundled into the image
+* `./gradlew bootBuildImage` — tests do not run, no cache is produced
+* `./gradlew test` — no cache is produced (`bootBuildImage` is not in the execution plan)
+
+When enabled, the plugin:
+
+* Injects `-XX:AOTCacheOutput=<path>` into all test task JVM arguments
+* Writes the cache file to `build/aot-cache/application.aot`
+* Bundles the cache file into the built image when it is present
+
+NOTE: This feature requires Java 25 or above.

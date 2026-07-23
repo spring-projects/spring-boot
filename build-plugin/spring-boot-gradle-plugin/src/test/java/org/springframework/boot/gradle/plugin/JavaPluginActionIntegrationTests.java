@@ -243,6 +243,18 @@ class JavaPluginActionIntegrationTests {
 		}
 	}
 
+	@TestTemplate
+	void aotCacheRecordingConfiguresTestJvmArgs() {
+		// Gradle build succeeds only if the assert passes (jvmArgs contain AOTCacheOutput)
+		this.gradleBuild.build("verifyAotCache");
+	}
+
+	@TestTemplate
+	void aotCacheRecordingDoesNotConfigureTestJvmArgsByDefault() {
+		String output = this.gradleBuild.build("help").getOutput();
+		assertThat(output).doesNotContain("-XX:AOTCacheOutput=");
+	}
+
 	private void createMinimalMainSource() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();

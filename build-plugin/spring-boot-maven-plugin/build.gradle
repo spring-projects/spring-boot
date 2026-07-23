@@ -146,6 +146,7 @@ prepareMavenBinaries {
 
 tasks.named("documentPluginGoals") {
 	goalSections = [
+		"aot-cache-record": "aot",
 		"build-image": "build-image",
 		"build-image-no-fork": "build-image",
 		"build-info": "build-info",

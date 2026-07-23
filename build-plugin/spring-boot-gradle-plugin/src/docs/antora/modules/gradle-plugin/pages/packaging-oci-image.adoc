@@ -285,6 +285,14 @@ Some examples:
 * `example.com/my-repository/my-image:1.0.0` will be used as is
 
 
+[[build-image.aot-cache-recording]]
+== AOT Cache Recording
+
+The `bootBuildImage` task can record a Leyden AOT cache during integration test execution.
+When enabled, the cache file is bundled into the built image automatically.
+See xref:aot.adoc#aot.aot-cache-recording[Recording AOT Cache from Integration Tests] for details.
+
+
 
 [[build-image.examples]]
 == Examples

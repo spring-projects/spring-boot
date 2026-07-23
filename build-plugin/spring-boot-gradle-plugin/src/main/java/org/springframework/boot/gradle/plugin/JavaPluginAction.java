@@ -42,6 +42,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
 import org.jspecify.annotations.Nullable;
@@ -92,6 +93,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureParametersCompilerArg(project);
 		configureAdditionalMetadataLocations(project);
 		configureSpringBootStarterTestToDependOnJUnitPlatformLauncher(project);
+		configureTestAotCacheRecording(project);
 	}
 
 	private void classifyJarTask(Project project) {
@@ -238,6 +240,31 @@ final class JavaPluginAction implements PluginApplicationAction {
 		JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
 		JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
 		run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
+	}
+
+	private void configureTestAotCacheRecording(Project project) {
+		TaskProvider<BootBuildImage> buildImage = project.getTasks()
+			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class);
+		project.afterEvaluate((p) -> {
+			Boolean record = buildImage.flatMap(BootBuildImage::getAotCacheRecord).getOrElse(false);
+			if (!record) {
+				return;
+			}
+			p.getGradle().getTaskGraph().whenReady((graph) -> {
+				if (graph.getAllTasks().stream().noneMatch((t) -> t.getName().equals(buildImage.getName()))) {
+					return;
+				}
+				String outputPath = p.getLayout()
+					.getBuildDirectory()
+					.file("aot-cache/application.aot")
+					.get()
+					.getAsFile()
+					.getAbsolutePath();
+				p.getTasks()
+					.withType(Test.class)
+					.configureEach((test) -> test.jvmArgs("-XX:AOTCacheOutput=" + outputPath));
+			});
+		});
 	}
 
 	private JavaPluginExtension javaPluginExtension(Project project) {

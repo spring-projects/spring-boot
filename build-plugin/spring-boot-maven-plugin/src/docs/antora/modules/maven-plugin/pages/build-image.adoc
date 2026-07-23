@@ -274,6 +274,15 @@ You can override this behaviour as shown in the xref:build-image.adoc#build-imag
 For more details, see also xref:build-image.adoc#build-image.examples[examples].
 
 
+[[build-image.aot-cache-recording]]
+== AOT Cache Recording
+
+The `aot-cache-record` goal can be used to record a Leyden AOT cache during integration test execution.
+When enabled, the cache file is bundled into the built image automatically.
+See xref:aot.adoc#aot.aot-cache-recording[Recording AOT Cache from Integration Tests] for details.
+
+
+
 
 [[build-image.customization.tags]]
 === Tags Format
