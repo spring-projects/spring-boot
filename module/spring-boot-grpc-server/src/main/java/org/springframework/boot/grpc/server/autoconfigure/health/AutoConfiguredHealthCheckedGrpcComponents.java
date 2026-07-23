@@ -51,7 +51,7 @@ import org.springframework.util.ObjectUtils;
  */
 class AutoConfiguredHealthCheckedGrpcComponents implements HealthCheckedGrpcComponents {
 
-	private final HealthCheckedGrpcComponent server;
+	private final @Nullable HealthCheckedGrpcComponent server;
 
 	private final Map<String, HealthCheckedGrpcComponent> services;
 
@@ -68,8 +68,8 @@ class AutoConfiguredHealthCheckedGrpcComponents implements HealthCheckedGrpcComp
 				() -> StatusAggregator.of(properties.getStatus().getOrder()));
 		StatusMapper statusMapper = getNonQualifiedBean(beanFactory, StatusMapper.class,
 				() -> StatusMapper.of(properties.getStatus().getMapping()));
-		this.server = new AutoConfiguredHealthCheckedGrpcComponent(HealthContributorMembership.always(),
-				statusAggregator, statusMapper);
+		this.server = (properties.isIncludeOverallHealth()) ? new AutoConfiguredHealthCheckedGrpcComponent(
+				HealthContributorMembership.always(), statusAggregator, statusMapper) : null;
 		this.services = createServices(properties.getService(), beanFactory, statusAggregator, statusMapper);
 	}
 
