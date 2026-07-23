@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -123,16 +123,16 @@ final class ClassPath {
 
 	/**
 	 * Factory method to create a {@link ClassPath} of the given URLs.
-	 * @param getSystemProperty {@link UnaryOperator} allowing access to system properties
+	 * @param getSystemProperty {@link Function} allowing access to system properties
 	 * @param urls the class path URLs
 	 * @return a new {@link ClassPath} instance
 	 */
-	static ClassPath of(UnaryOperator<@Nullable String> getSystemProperty, List<URL> urls) {
+	static ClassPath of(Function<String, @Nullable String> getSystemProperty, List<URL> urls) {
 		boolean preferArgFile = urls.size() > 1 && isWindows(getSystemProperty);
 		return new ClassPath(preferArgFile, urls.stream().map(ClassPath::toPathString).collect(JOIN_BY_PATH_SEPARATOR));
 	}
 
-	private static boolean isWindows(UnaryOperator<@Nullable String> getSystemProperty) {
+	private static boolean isWindows(Function<String, @Nullable String> getSystemProperty) {
 		String os = getSystemProperty.apply("os.name");
 		return StringUtils.hasText(os) && os.toLowerCase(Locale.ROOT).contains("win");
 	}

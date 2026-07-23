@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -94,11 +94,11 @@ class ClassPathTests {
 		assertThat(classPath.toString()).isEqualTo(path1 + File.pathSeparator + path2);
 	}
 
-	private UnaryOperator<@Nullable String> onWindows() {
+	private Function<String, @Nullable String> onWindows() {
 		return Map.of("os.name", "windows")::get;
 	}
 
-	private UnaryOperator<@Nullable String> onLinux() {
+	private Function<String, @Nullable String> onLinux() {
 		return Map.of("os.name", "linux")::get;
 	}
 
