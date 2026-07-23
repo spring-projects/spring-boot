@@ -45,7 +45,7 @@ class ZipkinContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> zipkin = TestImage.container(ZipkinContainer.class);
+	static final GenericContainer<?> zipkin = TestImage.forContainer(ZipkinContainer.class);
 
 	@Autowired(required = false)
 	private ZipkinConnectionDetails connectionDetails;

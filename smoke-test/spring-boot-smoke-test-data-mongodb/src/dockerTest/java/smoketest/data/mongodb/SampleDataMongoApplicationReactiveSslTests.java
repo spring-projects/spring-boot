@@ -46,7 +46,7 @@ class SampleDataMongoApplicationReactiveSslTests {
 	@ServiceConnection
 	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
 	@PemTrustStore("classpath:ssl/test-ca.crt")
-	static final MongoDBContainer mongoDb = TestImage.container(SecureMongoContainer.class);
+	static final MongoDBContainer mongoDb = TestImage.forContainer(SecureMongoContainer.class);
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;

@@ -77,7 +77,7 @@ class TestcontainersLifecycleOrderWithScopeIntegrationTests {
 		@Scope("custom")
 		@ServiceConnection
 		RedisContainer redisContainer() {
-			return TestImage.container(EventRecordingRedisContainer.class);
+			return TestImage.forContainer(EventRecordingRedisContainer.class);
 		}
 
 	}

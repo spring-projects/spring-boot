@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataCassandraAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer cassandra = TestImage.forContainer(CassandraContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(

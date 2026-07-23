@@ -46,7 +46,8 @@ class DataLdapTestDockerTests {
 
 	@Container
 	@ServiceConnection
-	static final OpenLdapContainer openLdap = TestImage.container(OpenLdapContainer.class).withEnv("LDAP_TLS", "false");
+	static final OpenLdapContainer openLdap = TestImage.forContainer(OpenLdapContainer.class)
+		.withEnv("LDAP_TLS", "false");
 
 	@Autowired
 	private ApplicationContext applicationContext;

@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisCacheMetricsTests {
 
 	@Container
-	static final RedisContainer redis = TestImage.container(RedisContainer.class);
+	static final RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	private static final Tags TAGS = Tags.of("app", "test").and("cache", "test");
 

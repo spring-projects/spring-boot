@@ -51,7 +51,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	static final CouchbaseContainer couchbase = TestImage.container(CouchbaseContainer.class)
+	static final CouchbaseContainer couchbase = TestImage.forContainer(CouchbaseContainer.class)
 		.withEnabledServices(CouchbaseService.KV)
 		.withCredentials("spring", "password")
 		.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));

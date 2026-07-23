@@ -49,7 +49,7 @@ class SampleAmqpSimpleApplicationSslTests {
 	@ServiceConnection
 	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
 	@PemTrustStore("classpath:ssl/test-ca.crt")
-	static final SecureRabbitMqContainer rabbit = TestImage.container(SecureRabbitMqContainer.class);
+	static final SecureRabbitMqContainer rabbit = TestImage.forContainer(SecureRabbitMqContainer.class);
 
 	@Autowired
 	private Sender sender;

@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataRedisRepositoriesAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = TestImage.container(RedisContainer.class);
+	public static RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

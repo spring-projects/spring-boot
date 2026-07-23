@@ -33,7 +33,7 @@ public class TestServiceConnectionImportSampleSessionRedisApplication {
 	static class ContainerConfiguration {
 
 		@ServiceConnection // We don't need a name here because we have the container
-		static RedisContainer redisContainer = TestImage.container(RedisContainer.class);
+		static RedisContainer redisContainer = TestImage.forContainer(RedisContainer.class);
 
 	}
 

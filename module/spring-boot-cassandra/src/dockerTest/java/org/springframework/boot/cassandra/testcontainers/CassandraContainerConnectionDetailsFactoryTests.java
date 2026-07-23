@@ -44,7 +44,7 @@ class CassandraContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer cassandra = TestImage.forContainer(CassandraContainer.class);
 
 	@Autowired(required = false)
 	private CassandraConnectionDetails connectionDetails;

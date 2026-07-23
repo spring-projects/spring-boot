@@ -42,7 +42,7 @@ class MongoDbAtlasLocalContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final MongoDBAtlasLocalContainer mongoDb = TestImage.container(MongoDBAtlasLocalContainer.class);
+	static final MongoDBAtlasLocalContainer mongoDb = TestImage.forContainer(MongoDBAtlasLocalContainer.class);
 
 	@Autowired(required = false)
 	private MongoConnectionDetails connectionDetails;

@@ -33,7 +33,7 @@ public class TestPropertiesImportSampleSessionRedisApplication {
 	@ImportTestcontainers
 	static class ContainerConfiguration {
 
-		static RedisContainer container = TestImage.container(RedisContainer.class);
+		static RedisContainer container = TestImage.forContainer(RedisContainer.class);
 
 		@DynamicPropertySource
 		static void containerProperties(DynamicPropertyRegistry properties) {

@@ -44,7 +44,7 @@ class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class).withoutAuthentication();
+	static final Neo4jContainer neo4j = TestImage.forContainer(Neo4jContainer.class).withoutAuthentication();
 
 	@Autowired
 	private ExampleService service;

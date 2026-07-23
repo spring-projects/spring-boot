@@ -44,8 +44,8 @@ class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OTEL_COLLECTOR.genericContainer()
-		.withExposedPorts(4317, 4318);
+	static final GenericContainer<?> container = TestImage.OTEL_COLLECTOR
+		.container((setup) -> setup.withExposedPorts(4317, 4318));
 
 	@Autowired
 	private OtlpTracingConnectionDetails connectionDetails;

@@ -52,13 +52,13 @@ class TestcontainersParallelStartupWithImportTestcontainersIntegrationTests {
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer container1 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container1 = TestImage.forContainer(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer container2 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container2 = TestImage.forContainer(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer container3 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container3 = TestImage.forContainer(PostgreSQLContainer.class);
 
 	}
 

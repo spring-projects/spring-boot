@@ -44,7 +44,7 @@ class CityRepositoryTests {
 
 	@Container
 	@ServiceConnection
-	static PostgreSQLContainer postgresql = TestImage.container(PostgreSQLContainer.class)
+	static PostgreSQLContainer postgresql = TestImage.forContainer(PostgreSQLContainer.class)
 		.withDatabaseName("test_liquibase");
 
 	@Autowired

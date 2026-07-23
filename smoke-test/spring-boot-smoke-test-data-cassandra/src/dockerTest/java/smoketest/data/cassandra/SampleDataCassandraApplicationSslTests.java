@@ -52,7 +52,7 @@ class SampleDataCassandraApplicationSslTests {
 	@ServiceConnection
 	@JksTrustStore(location = "classpath:ssl/test-ca.p12", password = "password")
 	@JksKeyStore(location = "classpath:ssl/test-client.p12", password = "password")
-	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
+	static final SecureCassandraContainer cassandra = TestImage.forContainer(SecureCassandraContainer.class);
 
 	@Autowired
 	private CassandraTemplate cassandraTemplate;

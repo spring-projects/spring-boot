@@ -46,7 +46,7 @@ class RedisStackServerContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final RedisStackServerContainer redis = TestImage.container(RedisStackServerContainer.class);
+	static final RedisStackServerContainer redis = TestImage.forContainer(RedisStackServerContainer.class);
 
 	@Autowired(required = false)
 	private DataRedisConnectionDetails connectionDetails;

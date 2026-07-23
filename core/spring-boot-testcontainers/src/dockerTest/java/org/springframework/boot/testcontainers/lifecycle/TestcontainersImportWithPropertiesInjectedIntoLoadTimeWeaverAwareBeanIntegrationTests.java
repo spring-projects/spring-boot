@@ -90,7 +90,7 @@ class TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanInteg
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.forContainer(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void setConnectionProperties(DynamicPropertyRegistry registry) {

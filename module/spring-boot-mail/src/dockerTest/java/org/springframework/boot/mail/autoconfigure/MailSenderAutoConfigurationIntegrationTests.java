@@ -92,7 +92,7 @@ class MailSenderAutoConfigurationIntegrationTests {
 	class ImplicitTlsTests {
 
 		@Container
-		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
+		private static final MailpitContainer mailpit = TestImage.forContainer(MailpitContainer.class)
 			.withSmtpRequireTls(true)
 			.withSmtpTlsCert(MountableFile
 				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.crt"))
@@ -153,7 +153,7 @@ class MailSenderAutoConfigurationIntegrationTests {
 	class StarttlsTests {
 
 		@Container
-		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
+		private static final MailpitContainer mailpit = TestImage.forContainer(MailpitContainer.class)
 			.withSmtpRequireStarttls(true)
 			.withSmtpTlsCert(MountableFile
 				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.crt"))
