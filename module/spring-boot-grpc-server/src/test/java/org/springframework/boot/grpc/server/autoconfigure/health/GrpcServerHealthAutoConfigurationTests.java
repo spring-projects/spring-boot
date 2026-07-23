@@ -304,12 +304,13 @@ class GrpcServerHealthAutoConfigurationTests {
 
 	@Test
 	void whenIncludeOverallHealthIsFalseDoesNotReportOverallHealth() {
-		this.contextRunner.withPropertyValues("spring.grpc.server.health.include-overall-health=false").run((context) -> {
-			GrpcServerHealth serverHealth = context.getBean(GrpcServerHealth.class);
-			Map<String, ServingStatus> result = new LinkedHashMap<>();
-			serverHealth.update(result::put);
-			assertThat(result).isEmpty();
-		});
+		this.contextRunner.withPropertyValues("spring.grpc.server.health.include-overall-health=false")
+			.run((context) -> {
+				GrpcServerHealth serverHealth = context.getBean(GrpcServerHealth.class);
+				Map<String, ServingStatus> result = new LinkedHashMap<>();
+				serverHealth.update(result::put);
+				assertThat(result).isEmpty();
+			});
 	}
 
 	@Test

@@ -68,10 +68,8 @@ class AutoConfiguredHealthCheckedGrpcComponents implements HealthCheckedGrpcComp
 				() -> StatusAggregator.of(properties.getStatus().getOrder()));
 		StatusMapper statusMapper = getNonQualifiedBean(beanFactory, StatusMapper.class,
 				() -> StatusMapper.of(properties.getStatus().getMapping()));
-		this.server = (properties.isIncludeOverallHealth())
-				? new AutoConfiguredHealthCheckedGrpcComponent(HealthContributorMembership.always(), statusAggregator,
-						statusMapper)
-				: null;
+		this.server = (properties.isIncludeOverallHealth()) ? new AutoConfiguredHealthCheckedGrpcComponent(
+				HealthContributorMembership.always(), statusAggregator, statusMapper) : null;
 		this.services = createServices(properties.getService(), beanFactory, statusAggregator, statusMapper);
 	}
 
