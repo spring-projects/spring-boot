@@ -174,5 +174,6 @@ jobs:
         uses: ./.github/actions/create-github-release
         with:
           commercial: ${{ vars.COMMERCIAL }}
+          latest: true
           milestone: ${{ needs.build-and-stage-release.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
