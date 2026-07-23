@@ -90,10 +90,14 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	/**
-	 * Flag to include the test classpath when running.
+	 * Test classpath to use when running. Valid values are {@code OFF} (no test
+	 * classpath), {@code DEPENDENCIES} (test dependencies only), and {@code ALL} (test
+	 * dependencies, classes, and resources). For backwards compatibility, {@code false}
+	 * is equivalent to {@code OFF} and {@code true} is equivalent to
+	 * {@code DEPENDENCIES}.
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private boolean useTestClasspath;
+	private String useTestClasspath = "false";
 
 	@Inject
 	public StartMojo(ToolchainManager toolchainManager) {
@@ -206,7 +210,12 @@ public class StartMojo extends AbstractRunMojo {
 
 	@Override
 	protected boolean isUseTestClasspath() {
-		return this.useTestClasspath;
+		return TestClasspath.of(this.useTestClasspath).isUseTestDependencies();
+	}
+
+	@Override
+	protected boolean isUseTestClasses() {
+		return TestClasspath.of(this.useTestClasspath).isUseTestClasses();
 	}
 
 	private class CreateJmxConnector implements Callable<@Nullable JMXConnector> {

@@ -17,7 +17,6 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,24 +56,14 @@ public class TestRunMojo extends AbstractRunMojo {
 	@Parameter(property = "spring-boot.test-run.optimizedLaunch", defaultValue = "true")
 	private boolean optimizedLaunch;
 
-	/**
-	 * Directory containing the test classes and resource files that should be used to run
-	 * the application.
-	 */
-	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
-	@SuppressWarnings("NullAway.Init")
-	private File testClassesDirectory;
-
 	@Inject
 	public TestRunMojo(ToolchainManager toolchainManager) {
 		super(toolchainManager);
 	}
 
 	@Override
-	protected List<File> getClassesDirectories() {
-		ArrayList<File> classesDirectories = new ArrayList<>(super.getClassesDirectories());
-		classesDirectories.add(0, this.testClassesDirectory);
-		return classesDirectories;
+	protected boolean isUseTestClasses() {
+		return true;
 	}
 
 	@Override

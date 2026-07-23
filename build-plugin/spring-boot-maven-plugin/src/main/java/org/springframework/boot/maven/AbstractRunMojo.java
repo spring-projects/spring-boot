@@ -51,6 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Daniel Young
  * @author Dmytro Nosan
  * @author Moritz Halbritter
+ * @author Henrique (henriquejsza)
  * @since 1.3.0
  * @see RunMojo
  * @see StartMojo
@@ -206,6 +207,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
+	 * Directory containing the test classes and resource files that should be used to run
+	 * the application.
+	 */
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
+	private File testClassesDirectory;
+
+	/**
 	 * Skip the execution.
 	 *
 	 * @since 1.3.2
@@ -241,10 +250,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 3.1.0
 	 */
 	protected List<File> getClassesDirectories() {
-		return List.of(this.classesDirectory);
+		List<File> classesDirectories = new ArrayList<>();
+		if (isUseTestClasses()) {
+			classesDirectories.add(this.testClassesDirectory);
+		}
+		classesDirectories.add(this.classesDirectory);
+		return classesDirectories;
 	}
 
 	protected abstract boolean isUseTestClasspath();
+
+	protected boolean isUseTestClasses() {
+		return false;
+	}
 
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();

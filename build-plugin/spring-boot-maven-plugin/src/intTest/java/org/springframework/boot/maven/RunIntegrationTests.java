@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -102,6 +103,19 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenUseTestClasspathIsAllTheApplicationRunsWithTestClassesAndDependencies(MavenBuild mavenBuild) {
+		mavenBuild.project("test-run")
+			.goals("spring-boot:run", "-X")
+			.systemProperty("spring-boot.run.useTestClasspath", "ALL")
+			.execute((project) -> assertThat(buildLog(project))
+				.contains("Main class name = org.test.TestSampleApplication")
+				.contains("1. " + canonicalPathOf(project, "target/test-classes"))
+				.contains("2. " + canonicalPathOf(project, "target/classes"))
+				.containsPattern("3\\. .*spring-core")
+				.containsPattern("4\\. .*commons-logging"));
+	}
+
+	@TestTemplate
 	void whenAWorkingDirectoryIsConfiguredTheApplicationIsRunFromThatDirectory(MavenBuild mavenBuild) {
 		mavenBuild.project("run-working-directory")
 			.goals("spring-boot:run")
@@ -161,6 +175,10 @@ class RunIntegrationTests {
 
 	private String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
+	}
+
+	private String canonicalPathOf(File project, String path) throws IOException {
+		return new File(project, path).getCanonicalPath();
 	}
 
 }

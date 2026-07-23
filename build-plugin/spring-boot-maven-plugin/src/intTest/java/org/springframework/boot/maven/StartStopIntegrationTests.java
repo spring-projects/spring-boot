@@ -36,7 +36,18 @@ class StartStopIntegrationTests {
 	void startStopWaitsForApplicationToBeReadyAndThenRequestsShutdown(MavenBuild mavenBuild) {
 		mavenBuild.project("start-stop")
 			.goals("verify")
-			.execute((project) -> assertThat(buildLog(project)).contains("isReady: true")
+			.execute((project) -> assertThat(buildLog(project)).doesNotContain("Running application from test classes")
+				.contains("isReady: true")
+				.contains("Shutdown requested"));
+	}
+
+	@TestTemplate
+	void startStopWithAllTestClasspathRunsApplicationFromTestClasses(MavenBuild mavenBuild) {
+		mavenBuild.project("start-stop")
+			.goals("verify")
+			.systemProperty("use-test-classpath", "ALL")
+			.execute((project) -> assertThat(buildLog(project)).contains("Running application from test classes")
+				.contains("isReady: true")
 				.contains("Shutdown requested"));
 	}
 

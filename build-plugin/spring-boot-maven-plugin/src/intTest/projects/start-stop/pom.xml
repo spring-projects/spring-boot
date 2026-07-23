@@ -9,6 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>@java.version@</maven.compiler.source>
 		<maven.compiler.target>@java.version@</maven.compiler.target>
+		<use-test-classpath>false</use-test-classpath>
 	</properties>
 	<build>
 		<plugins>
@@ -51,6 +52,7 @@
 				</executions>
 				<configuration>
 					<jmxPort>${jmx.port}</jmxPort>
+					<useTestClasspath>${use-test-classpath}</useTestClasspath>
 				</configuration>
 			</plugin>
 		</plugins>
