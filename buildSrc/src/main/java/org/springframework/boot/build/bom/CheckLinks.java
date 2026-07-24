@@ -28,11 +28,10 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.impldep.org.apache.http.client.config.CookieSpecs;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.NoOpResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
 
 /**
  * Task to check that links are working.
@@ -41,6 +40,9 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  */
 public abstract class CheckLinks extends DefaultTask {
+
+	private static final ErrorHandler NOOP_ERROR_HANDLER = (request, response) -> {
+	};
 
 	private final BomExtension bom;
 
@@ -54,14 +56,16 @@ public abstract class CheckLinks extends DefaultTask {
 		RequestConfig config = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
 		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(config).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
-		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+		RestClient restClient = RestClient.builder()
+			.requestFactory(requestFactory)
+			.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
+			.build();
 		for (Library library : this.bom.getLibraries()) {
 			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
 				URI uri;
 				try {
 					uri = new URI(link.url(library));
-					ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.HEAD, null, String.class);
+					ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
 					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), name,
 							uri);
 				}

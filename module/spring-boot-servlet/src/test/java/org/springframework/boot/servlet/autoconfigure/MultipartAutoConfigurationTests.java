@@ -48,7 +48,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -214,11 +214,11 @@ class MultipartAutoConfigurationTests {
 	}
 
 	private void verifyServletWorks(AnnotationConfigServletWebServerApplicationContext context) {
-		RestTemplate restTemplate = new RestTemplate();
+		RestClient restClient = RestClient.create();
 		WebServer webServer = context.getWebServer();
 		assertThat(webServer).isNotNull();
 		String url = "http://localhost:" + webServer.getPort() + "/";
-		assertThat(restTemplate.getForObject(url, String.class)).isEqualTo("Hello");
+		assertThat(restClient.get().uri(url).retrieve().body(String.class)).isEqualTo("Hello");
 	}
 
 	@Configuration(proxyBeanMethods = false)

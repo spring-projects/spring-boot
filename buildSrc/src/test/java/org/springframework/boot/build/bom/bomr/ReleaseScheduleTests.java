@@ -26,7 +26,7 @@ import org.springframework.boot.build.bom.bomr.ReleaseSchedule.Release;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -39,11 +39,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 class ReleaseScheduleTests {
 
-	private final RestTemplate rest = new RestTemplate();
+	private final RestClient.Builder restBuilder = RestClient.builder();
 
-	private final ReleaseSchedule releaseSchedule = new ReleaseSchedule(this.rest);
+	private final MockRestServiceServer server = MockRestServiceServer.bindTo(this.restBuilder).build();
 
-	private final MockRestServiceServer server = MockRestServiceServer.bindTo(this.rest).build();
+	private final ReleaseSchedule releaseSchedule = new ReleaseSchedule(this.restBuilder.build());
 
 	@Test
 	void releasesBetween() {

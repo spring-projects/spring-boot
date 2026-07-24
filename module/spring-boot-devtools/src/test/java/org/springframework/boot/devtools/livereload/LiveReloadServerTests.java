@@ -55,7 +55,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.PongMessage;
@@ -107,9 +107,9 @@ class LiveReloadServerTests {
 	@Test
 	@Disabled
 	void servesLivereloadJs() throws Exception {
-		RestTemplate template = new RestTemplate();
+		RestClient restClient = RestClient.create();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");
-		String script = template.getForObject(uri, String.class);
+		String script = restClient.get().uri(uri).retrieve().body(String.class);
 		assertThat(script).contains("livereload.com/protocols/official-7");
 	}
 
