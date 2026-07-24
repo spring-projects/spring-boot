@@ -18,7 +18,6 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,13 +36,10 @@ import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.xml.XmlDocument;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -54,16 +50,19 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 final class MavenMetadataVersionResolver implements VersionResolver {
 
-	private final RestTemplate rest;
+	private final RestClient rest;
 
 	private final Collection<MavenArtifactRepository> repositories;
 
 	MavenMetadataVersionResolver(Collection<MavenArtifactRepository> repositories) {
-		this(new RestTemplate(Collections.singletonList(new StringHttpMessageConverter())), repositories);
+		this(RestClient.builder()
+			.configureMessageConverters(
+					(converters) -> converters.disableDefaults().withStringConverter(new StringHttpMessageConverter()))
+			.build(), repositories);
 	}
 
-	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<MavenArtifactRepository> repositories) {
-		this.rest = restTemplate;
+	MavenMetadataVersionResolver(RestClient restClient, Collection<MavenArtifactRepository> repositories) {
+		this.rest = restClient;
 		this.repositories = repositories;
 	}
 
@@ -83,14 +82,13 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 			.build()
 			.toUri();
 		try {
-			HttpHeaders headers = new HttpHeaders();
-			PasswordCredentials credentials = credentialsOf(repository);
-			String username = (credentials != null) ? credentials.getUsername() : null;
-			if (username != null) {
-				headers.setBasicAuth(username, credentials.getPassword());
-			}
-			HttpEntity<Void> request = new HttpEntity<>(headers);
-			String metadata = this.rest.exchange(url, HttpMethod.GET, request, String.class).getBody();
+			String metadata = this.rest.get().uri(url).headers((headers) -> {
+				PasswordCredentials credentials = credentialsOf(repository);
+				String username = (credentials != null) ? credentials.getUsername() : null;
+				if (username != null) {
+					headers.setBasicAuth(username, credentials.getPassword());
+				}
+			}).retrieve().body(String.class);
 			Document metadataDocument = XmlDocument.parseContent(metadata);
 			NodeList versionNodes = (NodeList) XPathFactory.newInstance()
 				.newXPath()

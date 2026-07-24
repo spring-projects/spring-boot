@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -49,9 +48,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.NoOpResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplateHandler;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
 
 /**
  * {@link TestTemplateInvocationContextProvider} for templated
@@ -152,7 +152,7 @@ class EmbeddedServerContainerInvocationContextProvider
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			return Arrays.asList(this.launcher, new RestTemplateParameterResolver(this.launcher));
+			return Arrays.asList(this.launcher, new RestClientParameterResolver(this.launcher));
 		}
 
 		@Override
@@ -165,7 +165,7 @@ class EmbeddedServerContainerInvocationContextProvider
 			if (parameterContext.getParameter().getType().equals(AbstractApplicationLauncher.class)) {
 				return true;
 			}
-			return parameterContext.getParameter().getType().equals(RestTemplate.class);
+			return parameterContext.getParameter().getType().equals(RestClient.class);
 		}
 
 		@Override
@@ -178,41 +178,35 @@ class EmbeddedServerContainerInvocationContextProvider
 
 	}
 
-	private static final class RestTemplateParameterResolver implements ParameterResolver {
+	private static final class RestClientParameterResolver implements ParameterResolver {
+
+		private static final ErrorHandler NOOP_ERROR_HANDLER = (request, response) -> {
+		};
 
 		private final AbstractApplicationLauncher launcher;
 
-		private RestTemplateParameterResolver(AbstractApplicationLauncher launcher) {
+		private RestClientParameterResolver(AbstractApplicationLauncher launcher) {
 			this.launcher = launcher;
 		}
 
 		@Override
 		public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-			return parameterContext.getParameter().getType().equals(RestTemplate.class);
+			return parameterContext.getParameter().getType().equals(RestClient.class);
 		}
 
 		@Override
 		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
-				.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
-				.build()));
-			rest.setErrorHandler(new NoOpResponseErrorHandler());
-			rest.setUriTemplateHandler(new UriTemplateHandler() {
-
-				@Override
-				public URI expand(String uriTemplate, Object... uriVariables) {
-					return URI.create("http://localhost:" + RestTemplateParameterResolver.this.launcher.getHttpPort()
-							+ uriTemplate);
-				}
-
-				@Override
-				public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-					return URI.create("http://localhost:" + RestTemplateParameterResolver.this.launcher.getHttpPort()
-							+ uriTemplate);
-				}
-
-			});
-			return rest;
+			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
+					"http://localhost:" + this.launcher.getHttpPort());
+			// Do not double encode test paths
+			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
+			return RestClient.builder()
+				.uriBuilderFactory(uriBuilderFactory)
+				.requestFactory(new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+					.build()))
+				.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
+				.build();
 		}
 
 	}

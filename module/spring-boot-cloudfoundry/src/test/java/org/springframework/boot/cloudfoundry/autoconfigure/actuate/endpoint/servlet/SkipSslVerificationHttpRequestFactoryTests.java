@@ -31,7 +31,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,12 +55,12 @@ class SkipSslVerificationHttpRequestFactoryTests {
 	void restCallToSelfSignedServerShouldNotThrowSslException() {
 		String httpsUrl = getHttpsUrl();
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
-		RestTemplate otherRestTemplate = new RestTemplate();
-		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl, String.class);
+		RestClient restClient = RestClient.builder().requestFactory(requestFactory).build();
+		RestClient otherRestClient = RestClient.create();
+		ResponseEntity<String> responseEntity = restClient.get().uri(httpsUrl).retrieve().toEntity(String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThatExceptionOfType(ResourceAccessException.class)
-			.isThrownBy(() -> otherRestTemplate.getForEntity(httpsUrl, String.class))
+			.isThrownBy(() -> otherRestClient.get().uri(httpsUrl).retrieve().toEntity(String.class))
 			.withCauseInstanceOf(SSLHandshakeException.class);
 	}
 

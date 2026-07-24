@@ -47,7 +47,7 @@ import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebSer
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -112,8 +112,8 @@ class JerseyServerMetricsAutoConfigurationTests {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 			.getWebServer()
 			.getPort();
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getForEntity(URI.create("http://localhost:" + port + "/users/3"), String.class);
+		RestClient restClient = RestClient.create();
+		restClient.get().uri(URI.create("http://localhost:" + port + "/users/3")).retrieve().toEntity(String.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

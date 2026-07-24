@@ -50,10 +50,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.RequestHeadersSpec;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,15 +166,15 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 				WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext())
 					.getWebServer();
 				int port = webServer.getPort();
-				RestTemplate rest = new RestTemplate();
-				RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port)
+				RestClient rest = RestClient.create();
+				RequestHeadersSpec<?> requestSpec = rest.get()
+					.uri("http://localhost:" + port)
 					.header("Upgrade", "websocket")
 					.header("Connection", "upgrade")
 					.header("Sec-WebSocket-Version", "13")
-					.header("Sec-WebSocket-Key", "key")
-					.build();
+					.header("Sec-WebSocket-Key", "key");
 				assertThatExceptionOfType(HttpClientErrorException.Unauthorized.class)
-					.isThrownBy(() -> rest.exchange(request, Void.class));
+					.isThrownBy(() -> requestSpec.retrieve().toBodilessEntity());
 			});
 	}
 

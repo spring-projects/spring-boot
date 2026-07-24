@@ -18,7 +18,6 @@ package smoketest.session;
 
 import java.net.URI;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,24 +25,24 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,9 +60,6 @@ class SampleSessionJdbcApplicationTests {
 
 	private static final HttpClientSettings DONT_FOLLOW_REDIRECTS = HttpClientSettings.defaults()
 		.withRedirects(HttpRedirects.DONT_FOLLOW);
-
-	@Autowired
-	private RestTemplateBuilder restTemplateBuilder;
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -86,15 +82,18 @@ class SampleSessionJdbcApplicationTests {
 	}
 
 	private @Nullable String performLogin() {
-		RestTemplate restTemplate = this.restTemplateBuilder.clientSettings(DONT_FOLLOW_REDIRECTS).build();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.detect().build(DONT_FOLLOW_REDIRECTS);
+		RestClient restClient = RestClient.builder().requestFactory(requestFactory).build();
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		ResponseEntity<String> entity = restTemplate.exchange("http://localhost:" + this.port + "/login",
-				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		ResponseEntity<String> entity = restClient.post()
+			.uri("http://localhost:" + this.port + "/login")
+			.accept(MediaType.TEXT_HTML)
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.body(form)
+			.retrieve()
+			.toEntity(String.class);
 		return entity.getHeaders().getFirst("Set-Cookie");
 	}
 
