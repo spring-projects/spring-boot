@@ -1,3 +1,7 @@
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.grpc.test.autoconfigure.GrpcPortInfoApplicationContextInitializer
+
+# Spring Test Context Customizer Factories
+org.springframework.test.context.ContextCustomizerFactory=\
+org.springframework.boot.grpc.test.autoconfigure.TestGrpcTransportContextCustomizerFactory

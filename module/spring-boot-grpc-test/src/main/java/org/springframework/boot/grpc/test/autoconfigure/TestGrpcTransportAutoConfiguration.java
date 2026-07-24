@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
@@ -42,6 +43,7 @@ import org.springframework.grpc.server.ServerServiceDefinitionFilter;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
+import org.springframework.util.StringUtils;
 
 /**
  * Auto-configuration for an in-process test gRPC transport.
@@ -50,14 +52,34 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
  * @author Dave Syer
  * @author Andrey Litvitski
  * @author Phillip Webb
+ * @author xing
  * @since 4.1.0
  * @see AutoConfigureTestGrpcTransport
+ * @see TestGrpcTransportContextCustomizer
  */
 @AutoConfiguration(before = { GrpcServerAutoConfiguration.class, GrpcClientAutoConfiguration.class })
 @ConditionalOnClass({ InProcessServerBuilder.class, InProcessGrpcServerFactory.class })
 public final class TestGrpcTransportAutoConfiguration {
 
-	private static final String address = InProcessServerBuilder.generateName();
+	/**
+	 * In-process address shared by the test server and channel factories within a single
+	 * application context.
+	 * <p>
+	 * Prefer the test-only property written by {@link TestGrpcTransportContextCustomizer};
+	 * otherwise generate a name for this context. Intentionally does not read
+	 * {@code spring.grpc.server.inprocess.name}.
+	 */
+	record TestGrpcTransportAddress(String value) {
+	}
+
+	@Bean
+	TestGrpcTransportAddress testGrpcTransportAddress(Environment environment) {
+		String configured = environment.getProperty(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY);
+		if (StringUtils.hasText(configured)) {
+			return new TestGrpcTransportAddress(configured);
+		}
+		return new TestGrpcTransportAddress(InProcessServerBuilder.generateName());
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(GrpcServerFactory.class)
@@ -66,9 +88,10 @@ public final class TestGrpcTransportAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		TestGrpcServerFactory testGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
-				GrpcServiceConfigurer serviceConfigurer, ObjectProvider<ServerServiceDefinitionFilter> serviceFilter) {
-			TestGrpcServerFactory factory = new TestGrpcServerFactory(address);
+		TestGrpcServerFactory testGrpcServerFactory(TestGrpcTransportAddress address,
+				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
+				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter) {
+			TestGrpcServerFactory factory = new TestGrpcServerFactory(address.value());
 			serviceFilter.ifAvailable(factory::setServiceFilter);
 			serviceDiscoverer.findServices()
 				.stream()
@@ -99,8 +122,9 @@ public final class TestGrpcTransportAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		TestGrpcChannelFactory testGrpcChannelFactory(ClientInterceptorsConfigurer interceptorsConfigurer) {
-			return new TestGrpcChannelFactory(address, interceptorsConfigurer);
+		TestGrpcChannelFactory testGrpcChannelFactory(TestGrpcTransportAddress address,
+				ClientInterceptorsConfigurer interceptorsConfigurer) {
+			return new TestGrpcChannelFactory(address.value(), interceptorsConfigurer);
 		}
 
 	}

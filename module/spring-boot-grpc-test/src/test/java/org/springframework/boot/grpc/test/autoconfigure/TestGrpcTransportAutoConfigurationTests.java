@@ -104,4 +104,41 @@ class TestGrpcTransportAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(TestGrpcChannelFactory.class));
 	}
 
+	@Test
+	void usesTestOnlyInProcessNameWhenConfigured() {
+		String expected = "test-context-name-one";
+		this.contextRunner
+			.withPropertyValues(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY + "=" + expected)
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(TestGrpcServerFactory.class);
+				assertThat(context.getBean(TestGrpcTransportAutoConfiguration.TestGrpcTransportAddress.class)
+					.value()).isEqualTo(expected);
+			});
+	}
+
+	@Test
+	void createsDistinctInProcessServersForConcurrentApplicationContexts() {
+		// Regression for #50860: nested / multi-context tests must not share a static
+		// in-process name and fail with "name already registered".
+		this.contextRunner
+			.withPropertyValues(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY + "=nested-a")
+			.run((firstContext) -> {
+				assertThat(firstContext).hasNotFailed();
+				this.contextRunner
+					.withPropertyValues(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY + "=nested-b")
+					.run((secondContext) -> {
+						assertThat(secondContext).hasNotFailed();
+						String first = firstContext
+							.getBean(TestGrpcTransportAutoConfiguration.TestGrpcTransportAddress.class)
+							.value();
+						String second = secondContext
+							.getBean(TestGrpcTransportAutoConfiguration.TestGrpcTransportAddress.class)
+							.value();
+						assertThat(first).isEqualTo("nested-a");
+						assertThat(second).isEqualTo("nested-b");
+					});
+			});
+	}
+
 }

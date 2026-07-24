@@ -41,4 +41,11 @@ class AutoConfigureTestGrpcTransportTests {
 		assertThat(environment.getProperty("spring.grpc.client.channelfactory.enabled", Boolean.class)).isFalse();
 	}
 
+	@Test
+	void assignsTestOnlyInProcessName(@Autowired Environment environment) {
+		assertThat(environment.getProperty(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY)).isNotBlank();
+		assertThat(environment.getProperty("spring.grpc.server.inprocess.name")).isNull();
+	}
+
 }
+
