@@ -109,7 +109,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 			return CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor.preHandle(exchange, "")
 				.map((securityResponse) -> {
 					if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-						return new ResponseEntity<>(securityResponse.getStatus());
+						return new ResponseEntity<>(securityResponse.getMessage(), securityResponse.getStatus());
 					}
 					AccessLevel accessLevel = exchange.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
 					String requestUri = UriComponentsBuilder.fromUri(request.getURI()).replaceQuery(null).toUriString();
@@ -164,7 +164,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 		private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange,
 				@Nullable Map<String, String> body, SecurityResponse securityResponse) {
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-				return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
+				return Mono.just(new ResponseEntity<>(securityResponse.getMessage(), securityResponse.getStatus()));
 			}
 			return this.delegate.handle(exchange, body);
 		}
