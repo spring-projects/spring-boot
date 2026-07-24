@@ -16,7 +16,16 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
 
@@ -29,19 +38,21 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Sebastien Tardif
  */
-@DisabledIfProcessUnavailable("docker")
 class ProcessRunnerTests {
 
-	private ProcessRunner processRunner = new ProcessRunner();
+	private final ProcessRunner processRunner = new ProcessRunner();
 
 	@Test
+	@DisabledIfProcessUnavailable("docker")
 	void run() {
 		String out = this.processRunner.run("docker", "--version");
 		assertThat(out).isNotEmpty();
 	}
 
 	@Test
+	@DisabledIfProcessUnavailable("docker")
 	void runWhenHasOutputConsumer() {
 		StringBuilder output = new StringBuilder();
 		this.processRunner.run(output::append, "docker", "--version");
@@ -55,6 +66,7 @@ class ProcessRunnerTests {
 	}
 
 	@Test
+	@DisabledIfProcessUnavailable("docker")
 	void runWhenProcessReturnsNonZeroExitCode() {
 		assertThatExceptionOfType(ProcessExitException.class)
 			.isThrownBy(() -> this.processRunner.run("docker", "-thisdoesntwork"))
@@ -63,6 +75,45 @@ class ProcessRunnerTests {
 				assertThat(ex.getStdOut()).isEmpty();
 				assertThat(ex.getStdErr()).isNotEmpty();
 			});
+	}
+
+	@Test
+	@DisabledOnOs(OS.WINDOWS)
+	@Timeout(value = 5, threadMode = ThreadMode.SEPARATE_THREAD)
+	void runWhenOutputConsumerThrowsDoesNotHang() {
+		this.processRunner.run((line) -> {
+			throw new IllegalStateException("boom");
+		}, "echo", "hello");
+	}
+
+	@Test
+	@DisabledOnOs(OS.WINDOWS)
+	@Timeout(value = 10, threadMode = ThreadMode.SEPARATE_THREAD)
+	void runWhenInterruptedDestroysChildProcess() throws Exception {
+		Path pidFile = Files.createTempFile("process-runner-", ".pid");
+		Files.delete(pidFile);
+		AtomicReference<Throwable> error = new AtomicReference<>();
+		Thread runner = new Thread(() -> {
+			try {
+				this.processRunner.run("sh", "-c", "echo $$ > '" + pidFile + "'; exec sleep 60");
+			}
+			catch (Throwable ex) {
+				error.set(ex);
+			}
+		}, "process-runner-interrupt-test");
+		runner.start();
+		long deadline = System.currentTimeMillis() + 5000;
+		while (!Files.exists(pidFile) && System.currentTimeMillis() < deadline) {
+			Thread.sleep(50);
+		}
+		assertThat(pidFile).exists();
+		long pid = Long.parseLong(Files.readString(pidFile).trim());
+		assertThat(ProcessHandle.of(pid)).isPresent().get().matches(ProcessHandle::isAlive);
+		runner.interrupt();
+		runner.join(Duration.ofSeconds(5).toMillis());
+		assertThat(runner.isAlive()).isFalse();
+		assertThat(error.get()).isInstanceOf(IllegalStateException.class);
+		assertThat(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false)).isFalse();
 	}
 
 }
