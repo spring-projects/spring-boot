@@ -16,9 +16,12 @@
 
 package org.springframework.boot.maven;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.jspecify.annotations.Nullable;
@@ -186,6 +189,26 @@ public class Image {
 
 	void setPublish(@Nullable Boolean publish) {
 		this.publish = publish;
+	}
+
+	/**
+	 * Adds the given bindings to the existing bindings, with the added bindings taking
+	 * precedence over existing bindings that share the same container destination path.
+	 * @param bindings the bindings to add
+	 */
+	void addBindings(List<String> bindings) {
+		List<String> merged = new ArrayList<>();
+		if (this.bindings != null) {
+			Set<String> addedContainerDestinationPaths = bindings.stream()
+				.map((binding) -> Binding.of(binding).getContainerDestinationPath())
+				.collect(Collectors.toSet());
+			this.bindings.stream()
+				.filter((binding) -> !addedContainerDestinationPaths
+					.contains(Binding.of(binding).getContainerDestinationPath()))
+				.forEach(merged::add);
+		}
+		merged.addAll(bindings);
+		this.bindings = merged;
 	}
 
 	/**

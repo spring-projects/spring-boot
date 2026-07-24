@@ -181,6 +181,35 @@ class ImageTests {
 	}
 
 	@Test
+	void getBuildRequestWhenAddBindingsAndHasNoBindingsUsesAddedBindings() {
+		Image image = new Image();
+		image.addBindings(Arrays.asList("host-src:container-a:ro", "volume-name:container-b:rw"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("volume-name:container-b:rw"));
+	}
+
+	@Test
+	void getBuildRequestWhenAddBindingsAddsToExistingBindings() {
+		Image image = new Image();
+		image.bindings = Arrays.asList("host-src:container-a:ro");
+		image.addBindings(Arrays.asList("volume-name:container-b:rw"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("volume-name:container-b:rw"));
+	}
+
+	@Test
+	void getBuildRequestWhenAddBindingsWithMatchingContainerPathOverridesExistingBinding() {
+		Image image = new Image();
+		image.bindings = Arrays.asList("host-src:container-a:ro", "volume-name:container-b:ro");
+		image.addBindings(Arrays.asList("other-volume:container-b:rw"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-a:ro"),
+				Binding.of("other-volume:container-b:rw"));
+	}
+
+	@Test
 	void getBuildRequestWhenNetworkUsesNetwork() {
 		Image image = new Image();
 		image.network = "test";
