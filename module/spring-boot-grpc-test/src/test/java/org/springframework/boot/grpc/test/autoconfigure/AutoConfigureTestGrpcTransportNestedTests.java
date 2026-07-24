@@ -16,6 +16,9 @@
 
 package org.springframework.boot.grpc.test.autoconfigure;
 
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -49,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(OrderAnnotation.class)
 class AutoConfigureTestGrpcTransportNestedTests {
 
-	private static String topLevelName;
+	private static final AtomicReference<String> topLevelName = new AtomicReference<>();
 
 	@Autowired
 	private Environment environment;
@@ -57,8 +60,9 @@ class AutoConfigureTestGrpcTransportNestedTests {
 	@Test
 	@Order(1)
 	void topLevelContextReceivesTestOnlyInProcessName() {
-		topLevelName = this.environment.getProperty(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY);
-		assertThat(topLevelName).isNotBlank();
+		String name = this.environment.getProperty(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY);
+		assertThat(name).isNotBlank();
+		topLevelName.set(Objects.requireNonNull(name));
 		assertThat(this.environment.getProperty("spring.grpc.server.inprocess.name")).isNull();
 	}
 
@@ -78,8 +82,8 @@ class AutoConfigureTestGrpcTransportNestedTests {
 				.getProperty(TestGrpcTransportContextCustomizer.INPROCESS_NAME_PROPERTY);
 			assertThat(nestedName).isNotBlank();
 			assertThat(this.environment.getProperty("spring.grpc.server.inprocess.name")).isNull();
-			assertThat(topLevelName).as("top-level name should already have been captured").isNotBlank();
-			assertThat(nestedName).isNotEqualTo(topLevelName);
+			assertThat(topLevelName.get()).as("top-level name should already have been captured").isNotBlank();
+			assertThat(nestedName).isNotEqualTo(topLevelName.get());
 		}
 
 	}
