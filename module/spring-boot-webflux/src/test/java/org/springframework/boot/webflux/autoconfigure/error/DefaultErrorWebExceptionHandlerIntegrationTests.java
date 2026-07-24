@@ -50,6 +50,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -75,6 +77,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author US JUN
  */
 @ExtendWith(OutputCaptureExtension.class)
 class DefaultErrorWebExceptionHandlerIntegrationTests {
@@ -378,6 +381,20 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.isEqualTo(ResponseStatusException.class.getName())
 				.jsonPath("requestId")
 				.isEqualTo(this.logIdFilter.getLogId());
+		});
+	}
+
+	@Test // gh-18831
+	void responseStatusExceptionHeaders() {
+		this.contextRunner.run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.post()
+				.uri("/badRequest")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+				.expectHeader()
+				.valueEquals(HttpHeaders.ALLOW, HttpMethod.GET.name());
 		});
 	}
 
