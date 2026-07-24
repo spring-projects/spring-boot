@@ -53,6 +53,11 @@ public class TracingProperties {
 	 */
 	private final Exemplars exemplars = new Exemplars();
 
+	/**
+	 * {@code org.slf4j.MDC} key configuration for trace and span IDs.
+	 */
+	private final Mdc mdc = new Mdc();
+
 	public Sampling getSampling() {
 		return this.sampling;
 	}
@@ -67,6 +72,10 @@ public class TracingProperties {
 
 	public Exemplars getExemplars() {
 		return this.exemplars;
+	}
+
+	public Mdc getMdc() {
+		return this.mdc;
 	}
 
 	public static class Sampling {
@@ -254,6 +263,39 @@ public class TracingProperties {
 			 */
 			B3_MULTI
 
+		}
+
+	}
+
+	/**
+	 * {@code org.slf4j.MDC} key configuration for trace and span IDs.
+	 */
+	public static class Mdc {
+
+		/**
+		 * Key under which the trace ID is added to the {@code org.slf4j.MDC}.
+		 */
+		private String traceIdKey = "traceId";
+
+		/**
+		 * Key under which the span ID is added to the {@code org.slf4j.MDC}.
+		 */
+		private String spanIdKey = "spanId";
+
+		public String getTraceIdKey() {
+			return this.traceIdKey;
+		}
+
+		public void setTraceIdKey(String traceIdKey) {
+			this.traceIdKey = traceIdKey;
+		}
+
+		public String getSpanIdKey() {
+			return this.spanIdKey;
+		}
+
+		public void setSpanIdKey(String spanIdKey) {
+			this.spanIdKey = spanIdKey;
 		}
 
 	}
