@@ -55,11 +55,15 @@ public class RunMojo extends AbstractRunMojo {
 	private boolean optimizedLaunch;
 
 	/**
-	 * Flag to include the test classpath when running.
+	 * Test classpath to use when running. Valid values are {@code OFF} (no test
+	 * classpath), {@code DEPENDENCIES} (test dependencies only), and {@code ALL} (test
+	 * dependencies, classes, and resources). For backwards compatibility, {@code false}
+	 * is equivalent to {@code OFF} and {@code true} is equivalent to
+	 * {@code DEPENDENCIES}.
 	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private boolean useTestClasspath;
+	private String useTestClasspath = "false";
 
 	@Inject
 	public RunMojo(ToolchainManager toolchainManager) {
@@ -86,7 +90,12 @@ public class RunMojo extends AbstractRunMojo {
 
 	@Override
 	protected boolean isUseTestClasspath() {
-		return this.useTestClasspath;
+		return TestClasspath.of(this.useTestClasspath).isUseTestDependencies();
+	}
+
+	@Override
+	protected boolean isUseTestClasses() {
+		return TestClasspath.of(this.useTestClasspath).isUseTestClasses();
 	}
 
 	private static final class RunProcessKiller implements Runnable {
