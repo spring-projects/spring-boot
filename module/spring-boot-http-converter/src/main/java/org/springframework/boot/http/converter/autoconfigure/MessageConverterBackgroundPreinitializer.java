@@ -18,7 +18,7 @@ package org.springframework.boot.http.converter.autoconfigure;
 
 import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.http.converter.multipart.MultipartHttpMessageConverter;
 
 /**
  * {@link BackgroundPreinitializer} Spring's {@link HttpMessageConverter} implementations.
@@ -29,7 +29,7 @@ final class MessageConverterBackgroundPreinitializer implements BackgroundPreini
 
 	@Override
 	public void preinitialize() throws Exception {
-		new AllEncompassingFormHttpMessageConverter();
+		new MultipartHttpMessageConverter();
 	}
 
 }

@@ -178,6 +178,7 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 	static class ForwardedHeaderTransformerConfiguration {
 
 		@Bean
+		@SuppressWarnings("removal") // gh-51030
 		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
 			return new ForwardedHeaderTransformer();
 		}

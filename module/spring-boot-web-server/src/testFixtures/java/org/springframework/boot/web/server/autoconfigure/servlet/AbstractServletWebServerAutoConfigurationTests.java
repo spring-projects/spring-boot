@@ -212,6 +212,7 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 	static class ForwardedHeaderFilterConfiguration {
 
 		@Bean
+		@SuppressWarnings("removal") // gh-51030
 		FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
 			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
 			return new FilterRegistrationBean<>(filter);

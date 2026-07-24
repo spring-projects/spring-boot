@@ -72,6 +72,7 @@ public class ServletWebServerConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+	@SuppressWarnings("removal") // gh-51030
 	FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
 			ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
 		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();

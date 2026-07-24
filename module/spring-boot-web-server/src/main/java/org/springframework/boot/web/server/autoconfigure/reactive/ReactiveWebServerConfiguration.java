@@ -60,6 +60,7 @@ public class ReactiveWebServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
+	@SuppressWarnings("removal") // gh-51030
 	ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
 	}
