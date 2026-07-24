@@ -48,6 +48,7 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.resources.Resource;
@@ -67,6 +68,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.brave.autoconfigure.BraveAutoConfiguration;
+import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -525,6 +527,57 @@ class OpenTelemetryTracingAutoConfigurationTests {
 				finally {
 					span.end();
 				}
+			});
+	}
+
+	@Test
+	void shouldMergeCommonAndSignalSpecificHeadersForTracing() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://localhost:4318",
+					"management.opentelemetry.otlp.headers.common-header=common-value",
+					"management.opentelemetry.otlp.headers.shared-header=common-wins",
+					"management.opentelemetry.tracing.export.otlp.headers.tracing-header=tracing-value",
+					"management.opentelemetry.tracing.export.otlp.headers.shared-header=tracing-wins")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.headerSupplier")
+					.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((headerSupplier) -> assertThat(headerSupplier.get())
+						.asInstanceOf(InstanceOfAssertFactories.map(String.class, List.class))
+						.containsEntry("common-header", List.of("common-value"))
+						.containsEntry("tracing-header", List.of("tracing-value"))
+						.containsEntry("shared-header", List.of("tracing-wins")));
+			});
+	}
+
+	@Test
+	void shouldAppendTracesPathToCommonEndpoint() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://localhost:4318")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.url")
+					.extracting(Object::toString)
+					.isEqualTo("http://localhost:4318/v1/traces");
+			});
+	}
+
+	@Test
+	void shouldNotAppendTracesPathToTracingSpecificEndpoint() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class))
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://localhost:4318",
+					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4318/custom/traces")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.url")
+					.extracting(Object::toString)
+					.isEqualTo("http://localhost:4318/custom/traces");
 			});
 	}
 
