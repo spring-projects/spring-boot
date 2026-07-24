@@ -25,9 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
-import org.springframework.batch.core.converter.DefaultJobParametersConverter;
-import org.springframework.batch.core.converter.JobParametersConverter;
-import org.springframework.batch.core.converter.JsonJobParametersConverter;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
@@ -133,28 +130,6 @@ class BatchAutoConfigurationTests {
 		runner.setJobName("three");
 		assertThatIllegalStateException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
-	}
-
-	@Test
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void customJobParametersConverterIsUsed() {
-		this.contextRunner.withBean(JobParametersConverter.class, JsonJobParametersConverter::new).run((context) -> {
-			assertThat(context).hasSingleBean(JsonJobParametersConverter.class);
-			assertThat(context.getBean(SpringBootBatchDefaultConfiguration.class).getJobParametersConverter())
-				.isInstanceOf(JsonJobParametersConverter.class);
-		});
-	}
-
-	@Test
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void defaultJobParametersConverterIsUsed() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(JobParametersConverter.class);
-			assertThat(context.getBean(SpringBootBatchDefaultConfiguration.class).getJobParametersConverter())
-				.isInstanceOf(DefaultJobParametersConverter.class);
-		});
 	}
 
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {

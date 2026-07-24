@@ -69,22 +69,16 @@ public final class HttpMessageConvertersAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	@SuppressWarnings("deprecation")
 	ClientHttpMessageConvertersCustomizer clientConvertersCustomizer(
-			ObjectProvider<HttpMessageConverters> legacyConverters,
 			ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new DefaultClientHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
-				converters.orderedStream().toList());
+		return new DefaultClientHttpMessageConvertersCustomizer(converters.orderedStream().toList());
 	}
 
 	@Bean
 	@Order(0)
-	@SuppressWarnings("deprecation")
 	ServerHttpMessageConvertersCustomizer serverConvertersCustomizer(
-			ObjectProvider<HttpMessageConverters> legacyConverters,
 			ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new DefaultServerHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
-				converters.orderedStream().toList());
+		return new DefaultServerHttpMessageConvertersCustomizer(converters.orderedStream().toList());
 	}
 
 	@Configuration(proxyBeanMethods = false)

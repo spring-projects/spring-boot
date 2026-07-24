@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -35,8 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OperationMethodParameterTests {
 
 	private final Method example = findMethod("example", String.class, String.class);
-
-	private final Method exampleSpringNullable = findMethod("exampleSpringNullable", String.class, String.class);
 
 	private final Method exampleAnnotation = findMethod("exampleAnnotation", String.class);
 
@@ -65,14 +64,6 @@ class OperationMethodParameterTests {
 	}
 
 	@Test
-	@Deprecated(since = "4.0.0")
-	void isMandatoryWhenSpringNullableAnnotationShouldReturnFalse() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.exampleSpringNullable.getParameters()[1]);
-		assertThat(parameter.isMandatory()).isFalse();
-	}
-
-	@Test
 	void getAnnotationShouldReturnAnnotation() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name",
 				this.exampleAnnotation.getParameters()[0]);
@@ -87,11 +78,7 @@ class OperationMethodParameterTests {
 		return method;
 	}
 
-	void example(String one, @org.jspecify.annotations.Nullable String two) {
-	}
-
-	@Deprecated(since = "4.0.0")
-	void exampleSpringNullable(String one, @org.springframework.lang.Nullable String two) {
+	void example(String one, @Nullable String two) {
 	}
 
 	void exampleAnnotation(@Selector(match = Match.ALL_REMAINING) String allRemaining) {

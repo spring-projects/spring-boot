@@ -27,15 +27,6 @@ import org.springframework.context.SmartLifecycle;
  */
 public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
 
-	/**
-	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which graceful shutdown
-	 * of the web server is performed.
-	 * @deprecated as of 4.0.0 in favor of
-	 * {@link WebServerApplicationContext#GRACEFUL_SHUTDOWN_PHASE}
-	 */
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	public static final int SMART_LIFECYCLE_PHASE = SmartLifecycle.DEFAULT_PHASE - 1024;
-
 	private final WebServer webServer;
 
 	private volatile boolean running;

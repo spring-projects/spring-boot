@@ -25,7 +25,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
-import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.beans.factory.ObjectProvider;
@@ -91,23 +90,19 @@ public final class BatchJdbcAutoConfiguration {
 
 		private final @Nullable ExecutionContextSerializer executionContextSerializer;
 
-		private final @Nullable JobParametersConverter jobParametersConverter;
-
 		SpringBootBatchJdbcConfiguration(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor, BatchJdbcProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
-				ObjectProvider<ExecutionContextSerializer> executionContextSerializer,
-				ObjectProvider<JobParametersConverter> jobParametersConverter) {
+				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
-			this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 		}
 
 		@Override
@@ -150,14 +145,6 @@ public final class BatchJdbcAutoConfiguration {
 		protected ExecutionContextSerializer getExecutionContextSerializer() {
 			return (this.executionContextSerializer != null) ? this.executionContextSerializer
 					: super.getExecutionContextSerializer();
-		}
-
-		@Override
-		@Deprecated(since = "4.0.0", forRemoval = true)
-		@SuppressWarnings("removal")
-		protected JobParametersConverter getJobParametersConverter() {
-			return (this.jobParametersConverter != null) ? this.jobParametersConverter
-					: super.getJobParametersConverter();
 		}
 
 		@Override
