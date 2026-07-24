@@ -75,6 +75,19 @@ public class CacheSpec {
 	}
 
 	/**
+	 * Configures an image cache using the given {@code action}.
+	 * @param action the action
+	 */
+	public void image(Action<ImageCacheSpec> action) {
+		if (this.cache != null) {
+			throw new GradleException("Each image building cache can be configured only once");
+		}
+		ImageCacheSpec spec = this.objectFactory.newInstance(ImageCacheSpec.class);
+		action.execute(spec);
+		this.cache = Cache.image(spec.getName().get());
+	}
+
+	/**
 	 * Configuration for an image building cache stored in a Docker volume.
 	 */
 	public abstract static class VolumeCacheSpec {
@@ -99,6 +112,20 @@ public class CacheSpec {
 		 */
 		@Input
 		public abstract Property<String> getSource();
+
+	}
+
+	/**
+	 * Configuration for an image building cache stored in an image.
+	 */
+	public abstract static class ImageCacheSpec {
+
+		/**
+		 * Returns the name of the cache image.
+		 * @return the cache image name
+		 */
+		@Input
+		public abstract Property<String> getName();
 
 	}
 

@@ -75,6 +75,10 @@ class Phase {
 		withBinding(binding);
 	}
 
+	void withBuildCache(String image) {
+		withArgs("-cache-image", image);
+	}
+
 	/**
 	 * Update this phase with Docker daemon access.
 	 */
