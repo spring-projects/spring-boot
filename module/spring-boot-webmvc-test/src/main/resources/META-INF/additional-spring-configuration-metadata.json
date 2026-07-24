@@ -2,7 +2,7 @@
   "properties": [
     {
       "name": "spring.test.mockmvc.htmlunit.url",
-      "type": "java.lang.Boolean",
+      "type": "java.lang.String",
       "description": "URL to use when HtmlUnit expands relative paths.",
       "defaultValue": "http://localhost"
     },
