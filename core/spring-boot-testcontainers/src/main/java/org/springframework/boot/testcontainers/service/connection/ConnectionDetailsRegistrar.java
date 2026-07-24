@@ -49,10 +49,13 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Goutam Adwant
  */
 class ConnectionDetailsRegistrar {
 
 	private static final Log logger = LogFactory.getLog(ConnectionDetailsRegistrar.class);
+
+	private static final String CONNECTION_DETAILS_BEAN_FACTORY = ConnectionDetailsBeanFactory.class.getName();
 
 	private final ListableBeanFactory beanFactory;
 
@@ -104,12 +107,31 @@ class ConnectionDetailsRegistrar {
 		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(source.getContainerImageName());
 		String beanName = getBeanName(source, connectionDetails);
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
-		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		logger.debug(LogMessage.of(() -> "Registering '%s' for %s".formatted(beanName, source)));
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
-		beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
+		RootBeanDefinition beanDefinition;
+		if (source.getOrigin() instanceof BeanOrigin) {
+			registerConnectionDetailsBeanFactory(registry);
+			beanDefinition = new RootBeanDefinition();
+			beanDefinition.setTargetType(beanType);
+			beanDefinition.setFactoryBeanName(CONNECTION_DETAILS_BEAN_FACTORY);
+			beanDefinition.setFactoryMethodName("getConnectionDetails");
+			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, source.getBeanNameSuffix());
+			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, connectionDetailsType);
+		}
+		else {
+			Supplier<T> beanSupplier = () -> (T) connectionDetails;
+			beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+			beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
+		}
 		containerMetadata.addTo(beanDefinition);
 		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
+
+	private void registerConnectionDetailsBeanFactory(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(CONNECTION_DETAILS_BEAN_FACTORY)) {
+			registry.registerBeanDefinition(CONNECTION_DETAILS_BEAN_FACTORY,
+					new RootBeanDefinition(ConnectionDetailsBeanFactory.class));
+		}
 	}
 
 	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
