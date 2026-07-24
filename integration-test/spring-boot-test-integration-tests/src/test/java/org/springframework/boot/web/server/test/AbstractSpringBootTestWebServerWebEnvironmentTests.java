@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.test.web.servlet.client.RestTestClient.ResponseSpec;
 import org.springframework.test.web.servlet.client.assertj.RestTestClientResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -81,7 +81,11 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	@Test
 	void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotZero();
-		String body = new RestTemplate().getForObject("http://localhost:" + this.port + "/", String.class);
+		String body = RestClient.create()
+			.get()
+			.uri("http://localhost:" + this.port + "/")
+			.retrieve()
+			.body(String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 

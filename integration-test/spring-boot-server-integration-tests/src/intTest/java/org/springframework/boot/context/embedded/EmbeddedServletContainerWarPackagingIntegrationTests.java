@@ -28,7 +28,7 @@ import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,68 +43,85 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedServletContainerWarPackagingIntegrationTests {
 
 	@TestTemplate
-	void nestedMetaInfResourceIsAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
+	void nestedMetaInfResourceIsAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/nested-meta-inf-resource.txt")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
 	@DisabledOnOs(OS.WINDOWS)
-	void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity(
-				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
-				String.class);
+	void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("encoded-name");
 	}
 
 	@TestTemplate
-	void nestedMetaInfResourceIsAvailableViaServletContext(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
-				String.class);
+	void nestedMetaInfResourceIsAvailableViaServletContext(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/servletContext?/nested-meta-inf-resource.txt")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	void nestedJarIsNotAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/WEB-INF/lib/resources-1.0.jar", String.class);
+	void nestedJarIsNotAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/WEB-INF/lib/resources-1.0.jar")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@TestTemplate
-	void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest
-			.getForEntity("/WEB-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
+	void applicationClassesAreNotAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/WEB-INF/classes/com/example/ResourceHandlingApplication.class")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@TestTemplate
-	void webappResourcesAreAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/webapp-resource.txt", String.class);
+	void webappResourcesAreAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get().uri("/webapp-resource.txt").retrieve().toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	void loaderClassesAreNotAvailableViaHttp(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/org/springframework/boot/loader/Launcher.class",
-				String.class);
+	void loaderClassesAreNotAvailableViaHttp(RestClient rest) {
+		ResponseEntity<String> entity = rest.get()
+			.uri("/org/springframework/boot/loader/Launcher.class")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		entity = rest.getForEntity("/org/springframework/../springframework/boot/loader/Launcher.class", String.class);
+		entity = rest.get()
+			.uri("/org/springframework/../springframework/boot/loader/Launcher.class")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@TestTemplate
-	void loaderClassesAreNotAvailableViaResourcePaths(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
+	void loaderClassesAreNotAvailableViaResourcePaths(RestClient rest) {
+		ResponseEntity<String> entity = rest.get().uri("/resourcePaths").retrieve().toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
 			.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
 	}
 
 	@TestTemplate
-	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
-		assertThat(rest.getForEntity("/always", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(rest.getForEntity("/conditionalOnWar", String.class).getStatusCode())
+	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestClient rest) {
+		assertThat(rest.get().uri("/always").retrieve().toEntity(String.class).getStatusCode())
+			.isEqualTo(HttpStatus.OK);
+		assertThat(rest.get().uri("/conditionalOnWar").retrieve().toEntity(String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
  * Minimal representation of a GitHub issue.
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class Issue {
 
-	private final RestTemplate rest;
+	private final RestClient rest;
 
 	private final int number;
 
@@ -37,7 +37,7 @@ public class Issue {
 
 	private final State state;
 
-	Issue(RestTemplate rest, int number, String title, State state) {
+	Issue(RestClient rest, int number, String title, State state) {
 		this.rest = rest;
 		this.number = number;
 		this.title = title;
@@ -62,7 +62,7 @@ public class Issue {
 	 */
 	public void label(List<String> labels) {
 		Map<String, List<String>> body = Collections.singletonMap("labels", labels);
-		this.rest.put("issues/" + this.number + "/labels", body);
+		this.rest.put().uri("issues/" + this.number + "/labels").body(body).retrieve().toBodilessEntity();
 	}
 
 	public enum State {

@@ -28,8 +28,7 @@ import java.util.regex.Pattern;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
  * Release schedule for Spring projects, retrieved from
@@ -41,20 +40,22 @@ class ReleaseSchedule {
 
 	private static final Pattern LIBRARY_AND_VERSION = Pattern.compile("([A-Za-z0-9 ]+) ([0-9A-Za-z.-]+)");
 
-	private final RestOperations rest;
+	private final RestClient rest;
 
 	ReleaseSchedule() {
-		this(new RestTemplate());
+		this(RestClient.create());
 	}
 
-	ReleaseSchedule(RestOperations rest) {
+	ReleaseSchedule(RestClient rest) {
 		this.rest = rest;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	Map<String, List<Release>> releasesBetween(OffsetDateTime start, OffsetDateTime end) {
-		ResponseEntity<List> response = this.rest
-			.getForEntity("https://calendar.spring.io/releases?start=" + start + "&end=" + end, List.class);
+		ResponseEntity<List> response = this.rest.get()
+			.uri("https://calendar.spring.io/releases?start=" + start + "&end=" + end)
+			.retrieve()
+			.toEntity(List.class);
 		List<Map<String, String>> body = response.getBody();
 		Map<String, List<Release>> releasesByLibrary = new LinkedCaseInsensitiveMap<>();
 		body.stream()

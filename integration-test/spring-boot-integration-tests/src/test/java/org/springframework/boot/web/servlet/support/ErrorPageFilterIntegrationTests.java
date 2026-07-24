@@ -45,7 +45,7 @@ import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -93,9 +93,11 @@ class ErrorPageFilterIntegrationTests {
 	private void doTest(AnnotationConfigServletWebServerApplicationContext context, String resourcePath,
 			HttpStatus status) throws Exception {
 		int port = context.getWebServer().getPort();
-		RestTemplate template = new RestTemplate();
-		ResponseEntity<String> entity = template.getForEntity(new URI("http://localhost:" + port + resourcePath),
-				String.class);
+		RestClient restClient = RestClient.create();
+		ResponseEntity<String> entity = restClient.get()
+			.uri(new URI("http://localhost:" + port + resourcePath))
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 		assertThat(entity.getStatusCode()).isEqualTo(status);
 	}
