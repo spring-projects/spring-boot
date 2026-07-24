@@ -76,7 +76,7 @@
     },
     {
       "name": "management.otlp.logging.transport",
-      "type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport",
+      "type": "org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport",
       "description": "Transport used to send the logs.",
       "defaultValue": "http",
       "deprecation": {
