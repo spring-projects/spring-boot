@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeReposi
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.servlet.actuate.web.exchanges.HttpExchangesFilter;
+import org.springframework.boot.servlet.actuate.web.exchanges.HttpExchangesStartingFilter;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,22 +45,30 @@ class ServletHttpExchangesAutoConfigurationTests {
 	void whenRecordingIsDisabledThenFilterIsNotCreated() {
 		this.contextRunner.withBean(InMemoryHttpExchangeRepository.class)
 			.withPropertyValues("management.httpexchanges.recording.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(HttpExchangesFilter.class));
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(HttpExchangesFilter.class);
+				assertThat(context).doesNotHaveBean(HttpExchangesStartingFilter.class);
+			});
 	}
 
 	@Test
 	void whenNoRepositoryIsDefinedThenFilterIsNotCreated() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HttpExchangesFilter.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(HttpExchangesFilter.class);
+			assertThat(context).doesNotHaveBean(HttpExchangesStartingFilter.class);
+		});
 	}
 
 	@Test
-	void filterIsCreated() {
-		this.contextRunner.withBean(InMemoryHttpExchangeRepository.class)
-			.run((context) -> assertThat(context).hasSingleBean(HttpExchangesFilter.class));
+	void bothFiltersAreCreated() {
+		this.contextRunner.withBean(InMemoryHttpExchangeRepository.class).run((context) -> {
+			assertThat(context).hasSingleBean(HttpExchangesFilter.class);
+			assertThat(context).hasSingleBean(HttpExchangesStartingFilter.class);
+		});
 	}
 
 	@Test
-	void usesUserProvidedWebFilter() {
+	void usesUserProvidedHttpExchangesFilter() {
 		InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 		this.contextRunner.withBean(InMemoryHttpExchangeRepository.class, () -> repository)
 			.withBean(CustomHttpExchangesFilter.class,
@@ -67,12 +76,37 @@ class ServletHttpExchangesAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(HttpExchangesFilter.class);
 				assertThat(context.getBean(HttpExchangesFilter.class)).isInstanceOf(CustomHttpExchangesFilter.class);
+				// Starting filter is still auto-created
+				assertThat(context).hasSingleBean(HttpExchangesStartingFilter.class);
+			});
+	}
+
+	@Test
+	void usesUserProvidedHttpExchangesStartingFilter() {
+		InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
+		this.contextRunner.withBean(InMemoryHttpExchangeRepository.class, () -> repository)
+			.withBean(CustomHttpExchangesStartingFilter.class,
+					() -> new CustomHttpExchangesStartingFilter(repository, EnumSet.allOf(Include.class)))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpExchangesStartingFilter.class);
+				assertThat(context.getBean(HttpExchangesStartingFilter.class))
+					.isInstanceOf(CustomHttpExchangesStartingFilter.class);
+				// Finishing filter is still auto-created
+				assertThat(context).hasSingleBean(HttpExchangesFilter.class);
 			});
 	}
 
 	private static final class CustomHttpExchangesFilter extends HttpExchangesFilter {
 
 		private CustomHttpExchangesFilter(HttpExchangeRepository repository, Set<Include> includes) {
+			super(repository, includes);
+		}
+
+	}
+
+	private static final class CustomHttpExchangesStartingFilter extends HttpExchangesStartingFilter {
+
+		private CustomHttpExchangesStartingFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			super(repository, includes);
 		}
 

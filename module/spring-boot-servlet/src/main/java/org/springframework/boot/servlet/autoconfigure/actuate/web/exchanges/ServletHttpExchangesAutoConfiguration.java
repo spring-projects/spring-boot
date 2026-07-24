@@ -28,11 +28,22 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.servlet.actuate.web.exchanges.HttpExchangesFilter;
+import org.springframework.boot.servlet.actuate.web.exchanges.HttpExchangesStartingFilter;
 import org.springframework.context.annotation.Bean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to record {@link HttpExchange HTTP
  * exchanges}.
+ *
+ * <p>
+ * Registers two filters that work together to ensure all requests — including those
+ * rejected by high-priority filters such as Spring Security — are captured:
+ * <ul>
+ * <li>{@link HttpExchangesStartingFilter}: high-priority filter that starts recording at
+ * the beginning of the filter chain.</li>
+ * <li>{@link HttpExchangesFilter}: low-priority filter that finishes recording after all
+ * other filters have run (capturing enriched headers).</li>
+ * </ul>
  *
  * @author Dave Syer
  * @since 4.0.0
@@ -48,6 +59,13 @@ public final class ServletHttpExchangesAutoConfiguration {
 	@ConditionalOnMissingBean
 	HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository, HttpExchangesProperties properties) {
 		return new HttpExchangesFilter(repository, properties.getRecording().getInclude());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	HttpExchangesStartingFilter httpExchangesStartingFilter(HttpExchangeRepository repository,
+			HttpExchangesProperties properties) {
+		return new HttpExchangesStartingFilter(repository, properties.getRecording().getInclude());
 	}
 
 }
