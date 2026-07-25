@@ -508,11 +508,50 @@ With this option, the Web servers themselves natively support this feature; you 
 If this is not enough, Spring Framework provides a {url-spring-framework-docs}/web/webmvc/filters.html#filters-forwarded-headers[ForwardedHeaderFilter] for the servlet stack and a {url-spring-framework-docs}/web/webflux/reactive-spring.html#webflux-forwarded-headers[ForwardedHeaderTransformer] for the reactive stack.
 You can use them in your application by setting configprop:server.forward-headers-strategy[] to `FRAMEWORK`.
 
+When using the `FRAMEWORK` strategy, you must also configure which type of forwarded headers your proxy sends by setting configprop:server.forwarded.header-type[].
+Set it to `FORWARDED` to use the RFC 7239 standard `Forwarded` header, or to `X_FORWARDED` (the default) to use the non-standard `X-Forwarded-Host`, `X-Forwarded-Port`, `X-Forwarded-Proto`, and `X-Forwarded-For` headers.
+
+For example, if your proxy sends `X-Forwarded-*` headers:
+
+[configprops,yaml]
+----
+server:
+  forward-headers-strategy: "framework"
+  forwarded:
+    header-type: "x-forwarded"
+----
+
+Or if your proxy sends the RFC 7239 `Forwarded` header:
+
+[configprops,yaml]
+----
+server:
+  forward-headers-strategy: "framework"
+  forwarded:
+    header-type: "forwarded"
+----
+
+NOTE: For security, ensure that your proxy is configured to strip the chosen forwarded headers from incoming client requests before forwarding them to your application, so that clients cannot inject or spoof them.
+
+If your proxy also sends the less common `X-Forwarded-Ssl` or `X-Forwarded-Prefix` headers, you can opt in to those separately with configprop:server.forwarded.x-forwarded-ssl-enabled[] and configprop:server.forwarded.x-forwarded-prefix-enabled[]:
+
+[configprops,yaml]
+----
+server:
+  forward-headers-strategy: "framework"
+  forwarded:
+    header-type: "x-forwarded"
+    x-forwarded-ssl-enabled: true
+    x-forwarded-prefix-enabled: true
+----
+
 TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 
 NOTE: If your application runs javadoc:org.springframework.boot.cloud.CloudPlatform#enum-constant-summary[in a supported Cloud Platform], the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
+
+
 
 
 

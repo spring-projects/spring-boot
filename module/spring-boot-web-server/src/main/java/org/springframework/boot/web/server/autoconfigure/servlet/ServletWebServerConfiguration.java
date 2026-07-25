@@ -72,14 +72,24 @@ public class ServletWebServerConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
-	FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
+	FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(ServerProperties serverProperties,
 			ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
 		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
+		configureForwardedHeaderFilter(filter, serverProperties.getForwarded());
 		customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
 		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return registration;
+	}
+
+	private void configureForwardedHeaderFilter(ForwardedHeaderFilter filter, ServerProperties.Forwarded forwarded) {
+		// TODO: When Spring Framework 7.1 ships setForwardedHeadersOnly(boolean),
+		// wire it here based on forwarded.getHeaderType():
+		// - ForwardedHeaderType.FORWARDED -> filter.setForwardedHeadersOnly(true)
+		// - ForwardedHeaderType.X_FORWARDED -> filter.setForwardedHeadersOnly(false)
+		// Also wire forwarded.isXForwardedSslEnabled() and
+		// forwarded.isXForwardedPrefixEnabled() once those API hooks are available.
 	}
 
 	/**

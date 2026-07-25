@@ -126,6 +126,28 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 	}
 
 	@Test
+	void forwardedHeaderFilterWithXForwardedHeaderTypeShouldBeConfigured() {
+		this.mockServerRunner
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.forwarded.header-type=x_forwarded")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+			});
+	}
+
+	@Test
+	void forwardedHeaderFilterWithForwardedHeaderTypeShouldBeConfigured() {
+		this.mockServerRunner
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.forwarded.header-type=forwarded")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+			});
+	}
+
+	@Test
 	void forwardedHeaderFilterWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.mockServerRunner.withPropertyValues("server.forward-headers-strategy=native")
 			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));

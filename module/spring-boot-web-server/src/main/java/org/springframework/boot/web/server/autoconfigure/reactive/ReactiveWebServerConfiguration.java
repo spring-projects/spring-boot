@@ -60,8 +60,20 @@ public class ReactiveWebServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	ForwardedHeaderTransformer forwardedHeaderTransformer() {
-		return new ForwardedHeaderTransformer();
+	ForwardedHeaderTransformer forwardedHeaderTransformer(ServerProperties serverProperties) {
+		ForwardedHeaderTransformer transformer = new ForwardedHeaderTransformer();
+		configureForwardedHeaderTransformer(transformer, serverProperties.getForwarded());
+		return transformer;
+	}
+
+	private void configureForwardedHeaderTransformer(ForwardedHeaderTransformer transformer,
+			ServerProperties.Forwarded forwarded) {
+		// TODO: When Spring Framework 7.1 ships the header-type selection API on
+		// ForwardedHeaderTransformer, wire it here based on forwarded.getHeaderType():
+		// - ForwardedHeaderType.FORWARDED -> transformer.setForwardedHeadersOnly(true)
+		// - ForwardedHeaderType.X_FORWARDED -> transformer.setForwardedHeadersOnly(false)
+		// Also wire forwarded.isXForwardedSslEnabled() and
+		// forwarded.isXForwardedPrefixEnabled() once those API hooks are available.
 	}
 
 	/**

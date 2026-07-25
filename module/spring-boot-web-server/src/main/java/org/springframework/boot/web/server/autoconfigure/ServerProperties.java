@@ -83,9 +83,14 @@ public class ServerProperties {
 	private @Nullable InetAddress address;
 
 	/**
-	 * Strategy for handling X-Forwarded-* headers.
+	 * Strategy for handling X-Forwarded-* headers. When set to {@code FRAMEWORK}, also
+	 * configure the {@link Forwarded} properties to specify which type of forwarded
+	 * headers your proxy uses.
 	 */
 	private @Nullable ForwardHeadersStrategy forwardHeadersStrategy;
+
+	@NestedConfigurationProperty
+	private final Forwarded forwarded = new Forwarded();
 
 	/**
 	 * Value to use for the Server response header (if empty, no header is sent).
@@ -202,6 +207,10 @@ public class ServerProperties {
 
 	public void setForwardHeadersStrategy(@Nullable ForwardHeadersStrategy forwardHeadersStrategy) {
 		this.forwardHeadersStrategy = forwardHeadersStrategy;
+	}
+
+	public Forwarded getForwarded() {
+		return this.forwarded;
 	}
 
 	/**
@@ -353,7 +362,9 @@ public class ServerProperties {
 		NATIVE,
 
 		/**
-		 * Use Spring's support for handling forwarded headers.
+		 * Use Spring's support for handling forwarded headers. When using this strategy,
+		 * also configure the {@link Forwarded} properties to specify which type of
+		 * forwarded headers your proxy uses.
 		 */
 		FRAMEWORK,
 
@@ -361,6 +372,77 @@ public class ServerProperties {
 		 * Ignore X-Forwarded-* headers.
 		 */
 		NONE
+
+	}
+
+	/**
+	 * Configuration for forwarded header processing when using the
+	 * {@link ForwardHeadersStrategy#FRAMEWORK FRAMEWORK} strategy.
+	 */
+	public static class Forwarded {
+
+		/**
+		 * Type of forwarded headers to accept. Set to {@code FORWARDED} for the RFC 7239
+		 * standard {@code Forwarded} header, or {@code X_FORWARDED} (the default) for the
+		 * non-standard {@code X-Forwarded-Host}, {@code X-Forwarded-Port},
+		 * {@code X-Forwarded-Proto}, and {@code X-Forwarded-For} headers.
+		 */
+		private ForwardedHeaderType headerType = ForwardedHeaderType.X_FORWARDED;
+
+		/**
+		 * Whether to accept the {@code X-Forwarded-Ssl} header. Only applies when the
+		 * header type is {@link ForwardedHeaderType#X_FORWARDED X_FORWARDED}.
+		 */
+		private boolean xForwardedSslEnabled;
+
+		/**
+		 * Whether to accept the {@code X-Forwarded-Prefix} header. Only applies when the
+		 * header type is {@link ForwardedHeaderType#X_FORWARDED X_FORWARDED}.
+		 */
+		private boolean xForwardedPrefixEnabled;
+
+		public ForwardedHeaderType getHeaderType() {
+			return this.headerType;
+		}
+
+		public void setHeaderType(ForwardedHeaderType headerType) {
+			this.headerType = headerType;
+		}
+
+		public boolean isXForwardedSslEnabled() {
+			return this.xForwardedSslEnabled;
+		}
+
+		public void setXForwardedSslEnabled(boolean xForwardedSslEnabled) {
+			this.xForwardedSslEnabled = xForwardedSslEnabled;
+		}
+
+		public boolean isXForwardedPrefixEnabled() {
+			return this.xForwardedPrefixEnabled;
+		}
+
+		public void setXForwardedPrefixEnabled(boolean xForwardedPrefixEnabled) {
+			this.xForwardedPrefixEnabled = xForwardedPrefixEnabled;
+		}
+
+	}
+
+	/**
+	 * Types of forwarded headers supported by the {@link ForwardHeadersStrategy#FRAMEWORK
+	 * FRAMEWORK} strategy.
+	 */
+	public enum ForwardedHeaderType {
+
+		/**
+		 * The RFC 7239 standard {@code Forwarded} header.
+		 */
+		FORWARDED,
+
+		/**
+		 * The non-standard {@code X-Forwarded-Host}, {@code X-Forwarded-Port},
+		 * {@code X-Forwarded-Proto}, and {@code X-Forwarded-For} headers.
+		 */
+		X_FORWARDED
 
 	}
 

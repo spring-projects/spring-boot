@@ -120,6 +120,22 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 	}
 
 	@Test
+	void forwardedHeaderTransformerWithXForwardedHeaderTypeShouldBeConfigured() {
+		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0",
+					"server.forwarded.header-type=x_forwarded")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerWithForwardedHeaderTypeShouldBeConfigured() {
+		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0",
+					"server.forwarded.header-type=forwarded")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
 	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 			.withPropertyValues("server.forward-headers-strategy=native", "server.port=0")

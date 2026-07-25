@@ -144,6 +144,18 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 			});
 	}
 
+	@Test
+	void whenUsingFrameworkStrategyWithXForwardedHeaderTypeAndRelativeRedirectsThenFilterIsCorrectlyConfigured() {
+		this.serverRunner
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.forwarded.header-type=x_forwarded",
+					"server.tomcat.use-relative-redirects=true", "server.port=0")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				assertThat(filter).extracting("relativeRedirects").isEqualTo(true);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TomcatConnectorCustomizerConfiguration {
 
