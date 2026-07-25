@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	private final TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder()

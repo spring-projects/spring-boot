@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 class CorsSampleActuatorApplicationTests {
 
 	private TestRestTemplate testRestTemplate;

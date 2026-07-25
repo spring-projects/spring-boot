@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 class MySpringBootTests {
 
 	@Autowired

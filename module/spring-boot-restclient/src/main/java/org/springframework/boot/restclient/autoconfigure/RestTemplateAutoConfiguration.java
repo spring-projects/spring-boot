@@ -41,10 +41,14 @@ import org.springframework.web.client.RestTemplate;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link RestClientAutoConfiguration}
  */
 @AutoConfiguration(after = HttpClientAutoConfiguration.class)
 @ConditionalOnClass({ RestTemplate.class, HttpMessageConverters.class })
 @Conditional(NotReactiveWebApplicationCondition.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class RestTemplateAutoConfiguration {
 
 	@Bean

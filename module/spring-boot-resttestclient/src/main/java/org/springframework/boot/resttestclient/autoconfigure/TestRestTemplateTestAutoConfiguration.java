@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
  * @see AutoConfigureTestRestTemplate
  */
 @AutoConfiguration
+@SuppressWarnings("removal")
 final class TestRestTemplateTestAutoConfiguration {
 
 	@Bean(name = "org.springframework.boot.resttestclient.TestRestTemplate")

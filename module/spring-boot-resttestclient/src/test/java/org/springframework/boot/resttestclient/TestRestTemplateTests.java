@@ -81,6 +81,7 @@ import static org.mockito.Mockito.mock;
  * @author Kristine Jetzke
  * @author Yanming Zhou
  */
+@SuppressWarnings("removal")
 class TestRestTemplateTests {
 
 	@Test

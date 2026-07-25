@@ -36,7 +36,6 @@ import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
@@ -55,15 +54,14 @@ class CloudFoundryHealthEndpointWebExtensionTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withPropertyValues("VCAP_APPLICATION={}")
-		.withConfiguration(
-				AutoConfigurations.of(SecurityAutoConfiguration.class, ServletWebSecurityAutoConfiguration.class,
-						WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-						DispatcherServletAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						HealthContributorAutoConfiguration.class, HealthContributorRegistryAutoConfiguration.class,
-						HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+				ServletWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class, HealthContributorRegistryAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class))
 		.withUserConfiguration(TestHealthIndicator.class);
 
 	@Test

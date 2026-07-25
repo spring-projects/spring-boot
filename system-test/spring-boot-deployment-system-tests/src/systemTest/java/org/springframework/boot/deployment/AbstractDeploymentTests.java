@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Abstract class for deployment tests.
  */
+@SuppressWarnings("removal")
 abstract class AbstractDeploymentTests {
 
 	protected static final int DEFAULT_PORT = 8080;

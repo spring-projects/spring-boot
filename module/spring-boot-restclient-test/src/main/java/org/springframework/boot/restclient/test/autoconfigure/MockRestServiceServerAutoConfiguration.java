@@ -51,10 +51,12 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfiguration
 @ConditionalOnClass(MockServerRestTemplateCustomizer.class)
 @ConditionalOnBooleanProperty("spring.test.restclient.mockrestserviceserver.enabled")
+@SuppressWarnings("removal")
 public final class MockRestServiceServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
 		return new MockServerRestTemplateCustomizer();
 	}

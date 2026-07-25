@@ -45,6 +45,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
@@ -71,7 +72,10 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Scott Frederick
  * @author Yanming Zhou
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link RestClient.Builder}
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class RestTemplateBuilder {
 
 	private final HttpClientSettings clientSettings;

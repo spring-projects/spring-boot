@@ -36,6 +36,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Scott Frederick
  */
 @RestClientTest({ ExampleRestTemplateService.class, ExampleRestClientService.class })
+@SuppressWarnings("removal")
 class RestClientTestRestTemplateAndRestClientTogetherIntegrationTests {
 
 	@Autowired

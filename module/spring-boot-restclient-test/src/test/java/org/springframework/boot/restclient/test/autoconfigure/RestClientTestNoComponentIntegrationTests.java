@@ -34,8 +34,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link RestClientTest @RestClientTest} with no specific client.
  *
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @RestClientTest
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestClientTestNoComponentIntegrationTests {
 
 	@Autowired

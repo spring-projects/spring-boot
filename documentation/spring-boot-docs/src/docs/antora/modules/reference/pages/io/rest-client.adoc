@@ -3,7 +3,7 @@
 
 Spring Boot provides various convenient ways to call remote REST services.
 If you are developing a non-blocking reactive application and you're using Spring WebFlux, then you can use javadoc:org.springframework.web.reactive.function.client.WebClient[].
-If you prefer imperative APIs then you can use javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[].
+If you prefer imperative APIs then you can use javadoc:org.springframework.web.client.RestClient[].
 
 
 
@@ -159,67 +159,10 @@ include-code::settings/MyService[]
 
 
 
-[[io.rest-client.resttemplate]]
-== RestTemplate
-
-Spring Framework's javadoc:org.springframework.web.client.RestTemplate[] class predates javadoc:org.springframework.web.client.RestClient[] and is the classic way that many applications use to call remote REST services.
-You might choose to use javadoc:org.springframework.web.client.RestTemplate[] when you have existing code that you don't want to migrate to javadoc:org.springframework.web.client.RestClient[], or because you're already familiar with the javadoc:org.springframework.web.client.RestTemplate[] API.
-
-Since javadoc:org.springframework.web.client.RestTemplate[] instances often need to be customized before being used, Spring Boot does not provide any single auto-configured javadoc:org.springframework.web.client.RestTemplate[] bean.
-It does, however, auto-configure a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[], which can be used to create javadoc:org.springframework.web.client.RestTemplate[] instances when needed.
-The auto-configured javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] ensures that sensible javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[] are applied to javadoc:org.springframework.web.client.RestTemplate[] instances.
-
-The following code shows a typical example:
-
-include-code::MyService[]
-
-javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] includes a number of useful methods that can be used to quickly configure a javadoc:org.springframework.web.client.RestTemplate[].
-For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
-
-
-
-[[io.rest-client.resttemplate.customization]]
-=== RestTemplate Customization
-
-There are three main approaches to javadoc:org.springframework.web.client.RestTemplate[] customization, depending on how broadly you want the customizations to apply.
-
-To make the scope of any customizations as narrow as possible, inject the auto-configured javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] and then call its methods as required.
-Each method call returns a new javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] instance, so the customizations only affect this use of the builder.
-
-To make an application-wide, additive customization, use a javadoc:org.springframework.boot.restclient.RestTemplateCustomizer[] bean.
-All such beans are automatically registered with the auto-configured javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] and are applied to any templates that are built with it.
-
-The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
-
-include-code::MyRestTemplateCustomizer[]
-
-Finally, you can define your own javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] bean.
-Doing so will replace the auto-configured builder.
-If you want any javadoc:org.springframework.boot.restclient.RestTemplateCustomizer[] beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a javadoc:org.springframework.boot.restclient.autoconfigure.RestTemplateBuilderConfigurer[].
-The following example exposes a javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
-
-include-code::MyRestTemplateBuilderConfiguration[]
-
-The most extreme (and rarely used) option is to create your own javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] bean without using a configurer.
-In addition to replacing the auto-configured builder, this also prevents any javadoc:org.springframework.boot.restclient.RestTemplateCustomizer[] beans from being used.
-
-TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global HTTP client configuration].
-
-
-
-[[io.rest-client.resttemplate.ssl]]
-=== RestTemplate SSL Support
-
-If you need custom SSL configuration on the javadoc:org.springframework.web.client.RestTemplate[], you can apply an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to the javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] as shown in this example:
-
-include-code::MyService[]
-
-
-
 [[io.rest-client.clienthttprequestfactory]]
-== HTTP Client Detection for RestClient and RestTemplate
+== HTTP Client Detection for RestClient
 
-Spring Boot will auto-detect which HTTP client to use with javadoc:org.springframework.web.client.RestClient[] and javadoc:org.springframework.web.client.RestTemplate[] depending on the libraries available on the application classpath.
+Spring Boot will auto-detect which HTTP client to use with javadoc:org.springframework.web.client.RestClient[] depending on the libraries available on the application classpath.
 In order of preference, the following clients are supported:
 
 . Apache HttpClient

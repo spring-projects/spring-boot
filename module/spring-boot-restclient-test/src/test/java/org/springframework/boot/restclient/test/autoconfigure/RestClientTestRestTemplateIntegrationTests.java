@@ -31,8 +31,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link RestClientTest @RestClientTest} gets reset after test methods.
  *
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @RestClientTest(ExampleRestTemplateService.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestClientTestRestTemplateIntegrationTests {
 
 	@Autowired

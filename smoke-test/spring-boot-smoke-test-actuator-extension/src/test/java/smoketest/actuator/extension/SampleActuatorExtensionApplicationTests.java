@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "spring.web.error.include-message=always" })
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 class SampleActuatorExtensionApplicationTests {
 
 	@Autowired

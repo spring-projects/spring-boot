@@ -62,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 class SampleTomcatApplicationTests {
 
 	@Autowired

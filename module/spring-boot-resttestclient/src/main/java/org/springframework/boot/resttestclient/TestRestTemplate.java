@@ -91,6 +91,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Yanming Zhou
  * @since 4.0.0
  */
+@SuppressWarnings("removal")
 public class TestRestTemplate {
 
 	private final RestTemplateBuilder builder;

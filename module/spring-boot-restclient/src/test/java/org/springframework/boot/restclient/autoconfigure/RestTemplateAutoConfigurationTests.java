@@ -59,7 +59,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

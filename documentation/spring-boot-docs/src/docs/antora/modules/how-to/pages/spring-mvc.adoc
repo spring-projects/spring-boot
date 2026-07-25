@@ -135,7 +135,7 @@ Spring uses javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMe
 You can contribute additional converters by adding beans of the appropriate type in a Spring Boot context.
 If a bean you add is of a type that would have been included by default anyway (such as javadoc:org.springframework.http.converter.json.JacksonJsonHttpMessageConverter[] for JSON conversions), it replaces the default value.
 A convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided and is always available if you use the default MVC configuration.
-It has some useful methods to access the default and user-enhanced message converters (For example, it can be useful if you want to manually inject them into a custom javadoc:org.springframework.web.client.RestTemplate[]).
+It has some useful methods to access the default and user-enhanced message converters (For example, it can be useful if you want to manually inject them into a custom javadoc:org.springframework.web.client.RestClient[]).
 
 As in normal MVC usage, any javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] beans that you provide can also contribute converters by overriding the `configureMessageConverters` method.
 However, unlike with normal MVC, you can supply only additional converters that you need (because Spring Boot uses the same mechanism to contribute its defaults).
