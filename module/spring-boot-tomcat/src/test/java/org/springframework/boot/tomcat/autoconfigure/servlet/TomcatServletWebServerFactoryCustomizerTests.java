@@ -80,6 +80,13 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void useRelativeRedirectsDefaultsToTrue() {
+		TomcatWebServer server = customizeAndGetServer();
+		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
+		assertThat(context.getUseRelativeRedirects()).isTrue();
+	}
+
+	@Test
 	void useRelativeRedirectsCanBeConfigured() {
 		bind("server.tomcat.use-relative-redirects=true");
 		assertThat(this.tomcatProperties.isUseRelativeRedirects()).isTrue();

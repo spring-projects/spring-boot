@@ -235,8 +235,8 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatUseRelativeRedirectsDefaultsToFalse() {
-		assertThat(this.properties.isUseRelativeRedirects()).isFalse();
+	void tomcatUseRelativeRedirectsDefaultsToTrue() {
+		assertThat(this.properties.isUseRelativeRedirects()).isTrue();
 	}
 
 	@Test

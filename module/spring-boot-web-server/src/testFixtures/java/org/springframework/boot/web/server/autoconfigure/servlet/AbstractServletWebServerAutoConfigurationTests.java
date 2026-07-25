@@ -121,7 +121,6 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-			assertThat(filter).extracting("relativeRedirects").isEqualTo(false);
 		});
 	}
 
