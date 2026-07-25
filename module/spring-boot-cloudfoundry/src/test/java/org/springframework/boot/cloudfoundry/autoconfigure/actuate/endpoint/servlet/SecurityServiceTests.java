@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.AccessLevel;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -60,24 +58,21 @@ class SecurityServiceTests {
 
 	@BeforeEach
 	void setup() {
-		MockServerRestTemplateCustomizer mockServerCustomizer = new MockServerRestTemplateCustomizer();
-		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
-		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, false);
-		this.server = mockServerCustomizer.getServer();
+		RestClient.Builder builder = RestClient.builder();
+		this.server = MockRestServiceServer.bindTo(builder).build();
+		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, false);
 	}
 
 	@Test
 	void skipSslValidationWhenTrue() {
-		RestTemplateBuilder builder = new RestTemplateBuilder();
-		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, true);
+		this.securityService = new SecurityService(RestClient.builder(), CLOUD_CONTROLLER, true);
 		assertThat(this.securityService).extracting("restClient.clientRequestFactory")
 			.isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
 	@Test
 	void doNotSkipSslValidationWhenFalse() {
-		RestTemplateBuilder builder = new RestTemplateBuilder();
-		this.securityService = new SecurityService(RestClient.builder(builder.build()), CLOUD_CONTROLLER, false);
+		this.securityService = new SecurityService(RestClient.builder(), CLOUD_CONTROLLER, false);
 		assertThat(this.securityService).extracting("restClient.clientRequestFactory")
 			.isNotInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
