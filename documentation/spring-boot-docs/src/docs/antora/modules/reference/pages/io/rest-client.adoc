@@ -116,7 +116,7 @@ The javadoc:org.springframework.web.client.RestClient[] interface provides a fun
 
 Spring Boot creates and pre-configures a prototype javadoc:org.springframework.web.client.RestClient$Builder[] bean for you.
 It is strongly advised to inject it in your components and use it to create javadoc:org.springframework.web.client.RestClient[] instances.
-Spring Boot is configuring that builder with javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[].
+Spring Boot is configuring that builder with javadoc:org.springframework.http.converter.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[].
 
 The following code shows a typical example:
 
