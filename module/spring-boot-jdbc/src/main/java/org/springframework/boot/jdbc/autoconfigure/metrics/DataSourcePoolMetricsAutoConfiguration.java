@@ -16,8 +16,12 @@
 
 package org.springframework.boot.jdbc.autoconfigure.metrics;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +32,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,6 +47,7 @@ import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metrics.DataSourcePoolMetrics;
+import org.springframework.boot.jdbc.metrics.OracleUcpStatisticsMeterBinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.log.LogMessage;
@@ -53,6 +59,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Yanming Zhou
+ * @author Fabio Grassi
  * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class,
@@ -155,6 +162,51 @@ public final class DataSourcePoolMetricsAutoConfiguration {
 					catch (Exception ex) {
 						logger.warn(LogMessage.format("Failed to bind Hikari metrics: %s", ex.getMessage()));
 					}
+				}
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(PoolDataSourceImpl.class)
+	static class OracleUcpPoolDataSourceMetricConfiguration {
+
+		@Bean
+		OracleUcpPoolDataSourceMeterBinder oracleUCPDataSourceMeterBinder(ObjectProvider<DataSource> dataSources) {
+			return new OracleUcpPoolDataSourceMeterBinder(dataSources);
+		}
+
+		static class OracleUcpPoolDataSourceMeterBinder implements MeterBinder, Closeable {
+
+			private final ObjectProvider<DataSource> dataSources;
+
+			private final Collection<OracleUcpStatisticsMeterBinder> statisticsBinders;
+
+			OracleUcpPoolDataSourceMeterBinder(final ObjectProvider<DataSource> dataSources) {
+				this.dataSources = dataSources;
+				this.statisticsBinders = new LinkedList<>();
+			}
+
+			@Override
+			public void bindTo(final MeterRegistry registry) {
+				this.dataSources.stream(ObjectProvider.UNFILTERED, false).forEach((ds) -> {
+					final PoolDataSourceImpl pds = DataSourceUnwrapper.unwrap(ds, PoolDataSourceImpl.class);
+					if (pds != null) {
+						final OracleUcpStatisticsMeterBinder binder = OracleUcpStatisticsMeterBinder.of(pds);
+						binder.bindTo(registry);
+						this.statisticsBinders.add(binder);
+					}
+				});
+			}
+
+			@Override
+			public void close() throws IOException {
+				final Iterator<OracleUcpStatisticsMeterBinder> iterator = this.statisticsBinders.iterator();
+				while (iterator.hasNext()) {
+					iterator.next().close();
+					iterator.remove();
 				}
 			}
 

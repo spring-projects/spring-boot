@@ -920,7 +920,7 @@ TIP: By default, Spring Boot provides metadata for all supported data sources.
 You can add additional javadoc:org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider[] beans if your favorite data source is not supported.
 See javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourcePoolMetadataProvidersConfiguration[] for examples.
 
-Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
+Also, Hikari-specific metrics are exposed with a `hikaricp` prefix and Oracle UCP-specific metrics are exposed with a `oraclucp` prefix.
 Each metric is tagged by the name of the pool (you can control it with `spring.datasource.name`).
 
 
