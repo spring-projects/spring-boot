@@ -31,8 +31,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Andy Wilkinson
  * @see AutoConfigureTestRestTemplate
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link RestTestClientTestAutoConfiguration}
  */
 @AutoConfiguration
+@Deprecated(since = "4.2.0", forRemoval = true)
 @SuppressWarnings("removal")
 final class TestRestTemplateTestAutoConfiguration {
 

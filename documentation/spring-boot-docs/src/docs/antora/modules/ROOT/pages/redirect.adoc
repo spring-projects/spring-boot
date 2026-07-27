@@ -1939,8 +1939,6 @@
 * xref:reference:testing/test-utilities.adoc#testing.utilities.output-capture[#features.testing.utilities.output-capture]
 * xref:reference:testing/test-utilities.adoc#testing.utilities.test-property-values[#boot-features-test-property-values]
 * xref:reference:testing/test-utilities.adoc#testing.utilities.test-property-values[#features.testing.utilities.test-property-values]
-* xref:reference:testing/test-utilities.adoc#testing.utilities.test-rest-template[#boot-features-rest-templates-test-utility]
-* xref:reference:testing/test-utilities.adoc#testing.utilities.test-rest-template[#features.testing.utilities.test-rest-template]
 * xref:reference:testing/test-utilities.adoc#testing.utilities[#boot-features-test-utilities]
 * xref:reference:testing/test-utilities.adoc#testing.utilities[#features.testing.utilities]
 * xref:reference:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[#features.testing.testcontainers.dynamic-properties]

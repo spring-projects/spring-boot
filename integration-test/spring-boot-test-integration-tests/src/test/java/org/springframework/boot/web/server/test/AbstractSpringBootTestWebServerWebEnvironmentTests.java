@@ -75,6 +75,7 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 		return this.context;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}

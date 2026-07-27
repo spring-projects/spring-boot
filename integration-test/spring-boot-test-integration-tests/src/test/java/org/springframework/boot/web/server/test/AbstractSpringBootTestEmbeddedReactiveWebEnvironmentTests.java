@@ -91,6 +91,7 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void injectTestRestTemplate() {
 		String body = this.restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");
