@@ -19,24 +19,24 @@ package org.springframework.boot.maven;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
-import org.springframework.boot.maven.LocalCacheInfo.BindCacheInfo;
-import org.springframework.boot.maven.LocalCacheInfo.VolumeCacheInfo;
+import org.springframework.boot.buildpack.platform.build.LocalCache;
 import org.springframework.util.Assert;
 
 /**
- * Encapsulates configuration of an image building cache.
+ * Encapsulates configuration of a local image building cache.
  *
  * @author Scott Frederick
- * @since 2.6.0
+ * @author Stephane Nicoll
+ * @since 4.2.0
  */
-public class CacheInfo {
+public class LocalCacheInfo {
 
-	private @Nullable Cache cache;
+	private @Nullable LocalCache cache;
 
-	public CacheInfo() {
+	public LocalCacheInfo() {
 	}
 
-	private CacheInfo(Cache cache) {
+	LocalCacheInfo(LocalCache cache) {
 		this.cache = cache;
 	}
 
@@ -54,46 +54,33 @@ public class CacheInfo {
 		this.cache = Cache.bind(source);
 	}
 
-	public void setImage(ImageCacheInfo info) {
-		Assert.state(this.cache == null, "Each image building cache can be configured only once");
-		String name = info.getName();
-		Assert.state(name != null, "'name' must not be null");
-		this.cache = Cache.image(name);
-	}
-
-	@Nullable Cache asCache() {
+	@Nullable LocalCache asCache() {
 		return this.cache;
 	}
 
-	static CacheInfo fromVolume(VolumeCacheInfo cacheInfo) {
+	static LocalCacheInfo fromVolume(VolumeCacheInfo cacheInfo) {
 		String name = cacheInfo.getName();
 		Assert.state(name != null, "'name' must not be null");
-		return new CacheInfo(Cache.volume(name));
+		return new LocalCacheInfo(Cache.volume(name));
 	}
 
-	static CacheInfo fromBind(BindCacheInfo cacheInfo) {
+	static LocalCacheInfo fromBind(BindCacheInfo cacheInfo) {
 		String source = cacheInfo.getSource();
 		Assert.state(source != null, "'source' must not be null");
-		return new CacheInfo(Cache.bind(source));
-	}
-
-	static CacheInfo fromImage(ImageCacheInfo cacheInfo) {
-		String name = cacheInfo.getName();
-		Assert.state(name != null, "'name' must not be null");
-		return new CacheInfo(Cache.image(name));
+		return new LocalCacheInfo(Cache.bind(source));
 	}
 
 	/**
-	 * Encapsulates configuration of an image building cache stored in an image.
+	 * Encapsulates configuration of an image building cache stored in a volume.
 	 */
-	public static class ImageCacheInfo {
+	public static class VolumeCacheInfo {
 
 		private @Nullable String name;
 
-		public ImageCacheInfo() {
+		public VolumeCacheInfo() {
 		}
 
-		ImageCacheInfo(String name) {
+		VolumeCacheInfo(String name) {
 			this.name = name;
 		}
 
@@ -103,6 +90,30 @@ public class CacheInfo {
 
 		void setName(@Nullable String name) {
 			this.name = name;
+		}
+
+	}
+
+	/**
+	 * Encapsulates configuration of an image building cache stored in a bind mount.
+	 */
+	public static class BindCacheInfo {
+
+		private @Nullable String source;
+
+		public BindCacheInfo() {
+		}
+
+		BindCacheInfo(String name) {
+			this.source = name;
+		}
+
+		public @Nullable String getSource() {
+			return this.source;
+		}
+
+		void setSource(@Nullable String source) {
+			this.source = source;
 		}
 
 	}

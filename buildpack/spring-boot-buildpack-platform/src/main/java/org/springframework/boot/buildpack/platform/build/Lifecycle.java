@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import com.sun.jna.Platform;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.buildpack.platform.build.Cache.Bind;
 import org.springframework.boot.buildpack.platform.docker.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
@@ -78,13 +77,13 @@ class Lifecycle implements Closeable {
 
 	private final ApiVersion platformVersion;
 
-	private final Cache layers;
+	private final LocalCache layers;
 
-	private final Cache application;
+	private final LocalCache application;
 
 	private final Cache buildCache;
 
-	private final Cache launchCache;
+	private final LocalCache launchCache;
 
 	private final String applicationDirectory;
 
@@ -130,7 +129,7 @@ class Lifecycle implements Closeable {
 		return createVolumeCache(request, "build");
 	}
 
-	private Cache getLaunchCache(BuildRequest request) {
+	private LocalCache getLaunchCache(BuildRequest request) {
 		if (request.getLaunchCache() != null) {
 			return request.getLaunchCache();
 		}
@@ -195,7 +194,7 @@ class Lifecycle implements Closeable {
 		Assert.state(runImage != null, "'runImage' must not be null");
 		phase.withRunImage(runImage);
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		configureDaemonAccess(phase);
@@ -215,6 +214,9 @@ class Lifecycle implements Closeable {
 	private Phase analyzePhase() {
 		Phase phase = new Phase("analyzer", isVerboseLogging());
 		configureDaemonAccess(phase);
+		if (this.buildCache instanceof ImageCache imageBuildCache) {
+			phase.withBuildCache(imageBuildCache.getName());
+		}
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
@@ -239,7 +241,7 @@ class Lifecycle implements Closeable {
 	private Phase restorePhase() {
 		Phase phase = new Phase("restorer", isVerboseLogging());
 		configureDaemonAccess(phase);
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
 		configureOptions(phase);
 		return phase;
@@ -260,7 +262,7 @@ class Lifecycle implements Closeable {
 		configureDaemonAccess(phase);
 		phase.withApp(this.applicationDirectory,
 				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
-		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		configureBuildCache(phase);
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
@@ -273,44 +275,43 @@ class Lifecycle implements Closeable {
 		return phase;
 	}
 
-	private Cache getLayersBindingSource(BuildRequest request) {
+	private LocalCache getLayersBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "layers");
 		}
 		return createVolumeCache("pack-layers-");
 	}
 
-	private Cache getApplicationBindingSource(BuildRequest request) {
+	private LocalCache getApplicationBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "app");
 		}
 		return createVolumeCache("pack-app-");
 	}
 
-	private Cache getBuildWorkspaceBindingSource(Cache buildWorkspace, String suffix) {
+	private LocalCache getBuildWorkspaceBindingSource(LocalCache buildWorkspace, String suffix) {
 		if (buildWorkspace.getVolume() != null) {
 			return Cache.volume(buildWorkspace.getVolume().getName() + "-" + suffix);
 		}
-
-		Bind bind = buildWorkspace.getBind();
+		LocalCache.Bind bind = buildWorkspace.getBind();
 		Assert.state(bind != null, "'bind' must not be null");
 		return Cache.bind(bind.getSource() + "-" + suffix);
 	}
 
-	private String getCacheBindingSource(Cache cache) {
+	private String getCacheBindingSource(LocalCache cache) {
 		if (cache.getVolume() != null) {
 			return cache.getVolume().getName();
 		}
-		Bind bind = cache.getBind();
+		LocalCache.Bind bind = cache.getBind();
 		Assert.state(bind != null, "'bind' must not be null");
 		return bind.getSource();
 	}
 
-	private Cache createVolumeCache(String prefix) {
+	private LocalCache createVolumeCache(String prefix) {
 		return Cache.volume(createRandomVolumeName(prefix));
 	}
 
-	private Cache createVolumeCache(BuildRequest request, String suffix) {
+	private LocalCache createVolumeCache(BuildRequest request, String suffix) {
 		return Cache.volume(
 				VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6));
 	}
@@ -340,6 +341,15 @@ class Lifecycle implements Closeable {
 		}
 		if (this.securityOptions != null) {
 			this.securityOptions.forEach(phase::withSecurityOption);
+		}
+	}
+
+	private void configureBuildCache(Phase phase) {
+		if (this.buildCache instanceof ImageCache image) {
+			phase.withBuildCache(image.getName());
+		}
+		else if (this.buildCache instanceof LocalCache localCache) {
+			phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(localCache), Directory.CACHE));
 		}
 	}
 
@@ -421,7 +431,7 @@ class Lifecycle implements Closeable {
 		this.docker.volume().delete(name, true);
 	}
 
-	private void deleteBind(Cache.Bind bind) {
+	private void deleteBind(LocalCache.Bind bind) {
 		try {
 			FileSystemUtils.deleteRecursively(Path.of(bind.getSource()));
 		}

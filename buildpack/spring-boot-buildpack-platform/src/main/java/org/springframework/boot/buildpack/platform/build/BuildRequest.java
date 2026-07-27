@@ -95,11 +95,11 @@ public class BuildRequest {
 
 	private final List<ImageReference> tags;
 
-	private final @Nullable Cache buildWorkspace;
+	private final @Nullable LocalCache buildWorkspace;
 
 	private final @Nullable Cache buildCache;
 
-	private final @Nullable Cache launchCache;
+	private final @Nullable LocalCache launchCache;
 
 	private final @Nullable Instant createdDate;
 
@@ -140,8 +140,8 @@ public class BuildRequest {
 			@Nullable Boolean trustBuilder, @Nullable ImageReference runImage, Creator creator, Map<String, String> env,
 			boolean cleanCache, boolean verboseLogging, PullPolicy pullPolicy, boolean publish,
 			List<BuildpackReference> buildpacks, List<Binding> bindings, @Nullable String network,
-			List<ImageReference> tags, @Nullable Cache buildWorkspace, @Nullable Cache buildCache,
-			@Nullable Cache launchCache, @Nullable Instant createdDate, @Nullable String applicationDirectory,
+			List<ImageReference> tags, @Nullable LocalCache buildWorkspace, @Nullable Cache buildCache,
+			@Nullable LocalCache launchCache, @Nullable Instant createdDate, @Nullable String applicationDirectory,
 			@Nullable List<String> securityOptions, @Nullable ImagePlatform platform) {
 		this.name = name;
 		this.applicationContent = applicationContent;
@@ -395,7 +395,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 * @since 3.2.0
 	 */
-	public BuildRequest withBuildWorkspace(Cache buildWorkspace) {
+	public BuildRequest withBuildWorkspace(LocalCache buildWorkspace) {
 		Assert.notNull(buildWorkspace, "'buildWorkspace' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
@@ -421,7 +421,7 @@ public class BuildRequest {
 	 * @param launchCache the cache
 	 * @return an updated build request
 	 */
-	public BuildRequest withLaunchCache(Cache launchCache) {
+	public BuildRequest withLaunchCache(LocalCache launchCache) {
 		Assert.notNull(launchCache, "'launchCache' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
@@ -632,7 +632,7 @@ public class BuildRequest {
 	 * @return the build workspace or {@code null}
 	 * @since 3.2.0
 	 */
-	public @Nullable Cache getBuildWorkspace() {
+	public @Nullable LocalCache getBuildWorkspace() {
 		return this.buildWorkspace;
 	}
 
@@ -648,7 +648,7 @@ public class BuildRequest {
 	 * Return the custom launch cache that should be used by the lifecycle.
 	 * @return the launch cache
 	 */
-	public @Nullable Cache getLaunchCache() {
+	public @Nullable LocalCache getLaunchCache() {
 		return this.launchCache;
 	}
 

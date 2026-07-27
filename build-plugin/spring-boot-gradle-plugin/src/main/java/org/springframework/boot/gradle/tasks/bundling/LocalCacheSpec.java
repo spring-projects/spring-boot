@@ -26,27 +26,27 @@ import org.gradle.api.tasks.Input;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
-import org.springframework.boot.gradle.tasks.bundling.LocalCacheSpec.BindCacheSpec;
-import org.springframework.boot.gradle.tasks.bundling.LocalCacheSpec.VolumeCacheSpec;
+import org.springframework.boot.buildpack.platform.build.LocalCache;
 
 /**
- * Configuration for an image building cache.
+ * Configuration for a local image building cache stored in a volume or bind mount.
  *
  * @author Scott Frederick
- * @since 2.6.0
+ * @author Stephane Nicoll
+ * @since 4.2.0
  */
-public class CacheSpec {
+public class LocalCacheSpec {
 
 	private final ObjectFactory objectFactory;
 
-	private @Nullable Cache cache;
+	private @Nullable LocalCache cache;
 
 	@Inject
-	public CacheSpec(ObjectFactory objectFactory) {
+	public LocalCacheSpec(ObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
 	}
 
-	public @Nullable Cache asCache() {
+	public @Nullable LocalCache asCache() {
 		return this.cache;
 	}
 
@@ -77,30 +77,30 @@ public class CacheSpec {
 	}
 
 	/**
-	 * Configures an image cache using the given {@code action}.
-	 * @param action the action
-	 * @since 4.2.0
+	 * Configuration for an image building cache stored in a Docker volume.
 	 */
-	public void image(Action<ImageCacheSpec> action) {
-		if (this.cache != null) {
-			throw new GradleException("Each image building cache can be configured only once");
-		}
-		ImageCacheSpec spec = this.objectFactory.newInstance(ImageCacheSpec.class);
-		action.execute(spec);
-		this.cache = Cache.image(spec.getName().get());
-	}
-
-	/**
-	 * Configuration for an image building cache stored in an image.
-	 */
-	public abstract static class ImageCacheSpec {
+	public abstract static class VolumeCacheSpec {
 
 		/**
-		 * Returns the name of the cache image.
-		 * @return the cache image name
+		 * Returns the name of the cache.
+		 * @return the cache name
 		 */
 		@Input
 		public abstract Property<String> getName();
+
+	}
+
+	/**
+	 * Configuration for an image building cache stored in a bind mount.
+	 */
+	public abstract static class BindCacheSpec {
+
+		/**
+		 * Returns the source of the cache.
+		 * @return the cache source
+		 */
+		@Input
+		public abstract Property<String> getSource();
 
 	}
 

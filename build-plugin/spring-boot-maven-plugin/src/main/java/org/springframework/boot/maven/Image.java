@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Cache;
+import org.springframework.boot.buildpack.platform.build.LocalCache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
@@ -74,11 +75,11 @@ public class Image {
 
 	@Nullable List<String> tags;
 
-	@Nullable CacheInfo buildWorkspace;
+	@Nullable LocalCacheInfo buildWorkspace;
 
 	@Nullable CacheInfo buildCache;
 
-	@Nullable CacheInfo launchCache;
+	@Nullable LocalCacheInfo launchCache;
 
 	@Nullable String createdDate;
 
@@ -284,7 +285,7 @@ public class Image {
 			request = request.withTags(this.tags.stream().map(ImageReference::of).toList());
 		}
 		if (this.buildWorkspace != null) {
-			Cache cache = this.buildWorkspace.asCache();
+			LocalCache cache = this.buildWorkspace.asCache();
 			Assert.state(cache != null, "'cache' must not be null");
 			request = request.withBuildWorkspace(cache);
 		}
@@ -294,7 +295,7 @@ public class Image {
 			request = request.withBuildCache(cache);
 		}
 		if (this.launchCache != null) {
-			Cache cache = this.launchCache.asCache();
+			LocalCache cache = this.launchCache.asCache();
 			Assert.state(cache != null, "'cache' must not be null");
 			request = request.withLaunchCache(cache);
 		}
