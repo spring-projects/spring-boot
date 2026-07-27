@@ -31,7 +31,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.eclipse.jetty.server.handler.GracefulHandler;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory;
@@ -94,23 +94,26 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private @Nullable GracefulShutdown createGracefulShutdown(Server server) {
-		StatisticsHandler statisticsHandler = findStatisticsHandler(server);
-		if (statisticsHandler == null) {
+		GracefulHandler gracefulHandler = findGracefulHandler(server);
+		if (gracefulHandler == null) {
 			return null;
 		}
-		return new GracefulShutdown(server, statisticsHandler::getRequestsActive);
+		return new GracefulShutdown(server,
+				() -> (int) Math.min(
+						gracefulHandler.getCurrentRequestCount() + gracefulHandler.getCurrentStreamWrapperCount(),
+						Integer.MAX_VALUE));
 	}
 
-	private @Nullable StatisticsHandler findStatisticsHandler(Server server) {
-		return findStatisticsHandler(server.getHandler());
+	private @Nullable GracefulHandler findGracefulHandler(Server server) {
+		return findGracefulHandler(server.getHandler());
 	}
 
-	private @Nullable StatisticsHandler findStatisticsHandler(Handler handler) {
-		if (handler instanceof StatisticsHandler statisticsHandler) {
-			return statisticsHandler;
+	private @Nullable GracefulHandler findGracefulHandler(Handler handler) {
+		if (handler instanceof GracefulHandler gracefulHandler) {
+			return gracefulHandler;
 		}
 		if (handler instanceof Handler.Wrapper handlerWrapper) {
-			return findStatisticsHandler(handlerWrapper.getHandler());
+			return findGracefulHandler(handlerWrapper.getHandler());
 		}
 		return null;
 	}
