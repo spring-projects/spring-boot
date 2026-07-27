@@ -22,24 +22,22 @@ import java.util.Map;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.mustache.servlet.view.MustacheView;
 import org.springframework.boot.mustache.servlet.view.MustacheViewResolver;
-import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
-import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -54,19 +52,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
 class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Autowired
-	private ServletWebServerApplicationContext context;
-
-	private int port;
-
-	@BeforeEach
-	void init() {
-		WebServer webServer = this.context.getWebServer();
-		assertThat(webServer).isNotNull();
-		this.port = webServer.getPort();
-	}
+	private RestTestClient restTestClient;
 
 	@Test
 	void shouldRenderTemplate() {
@@ -79,14 +69,20 @@ class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Test
 	void testHomePage() {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
-		assertThat(body).contains("Hello World");
+		this.restTestClient.get()
+			.uri("/")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("Hello World"));
 	}
 
 	@Test
 	void testPartialPage() {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
-		assertThat(body).contains("Hello World");
+		this.restTestClient.get()
+			.uri("/partial")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("Hello World"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

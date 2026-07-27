@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -51,6 +50,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,7 +82,12 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			int port = webServer.getPort();
 			Matcher password = PASSWORD_PATTERN.matcher(output);
 			assertThat(password.find()).isTrue();
-			new TestRestTemplate("user", password.group(1)).getForEntity("http://localhost:" + port, Object.class);
+			RestTestClient.bindToServer()
+				.defaultHeaders((headers) -> headers.setBasicAuth("user", password.group(1)))
+				.build()
+				.get()
+				.uri("http://localhost:" + port)
+				.exchange();
 			// If early initialization occurred a ConverterNotFoundException is thrown
 		}
 	}
