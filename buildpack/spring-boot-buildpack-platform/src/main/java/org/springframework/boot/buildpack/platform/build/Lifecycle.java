@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import com.sun.jna.Platform;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.buildpack.platform.build.Cache.Bind;
 import org.springframework.boot.buildpack.platform.docker.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
@@ -78,13 +77,13 @@ class Lifecycle implements Closeable {
 
 	private final ApiVersion platformVersion;
 
-	private final Cache layers;
+	private final LocalCache layers;
 
-	private final Cache application;
+	private final LocalCache application;
 
 	private final Cache buildCache;
 
-	private final Cache launchCache;
+	private final LocalCache launchCache;
 
 	private final String applicationDirectory;
 
@@ -130,7 +129,7 @@ class Lifecycle implements Closeable {
 		return createVolumeCache(request, "build");
 	}
 
-	private Cache getLaunchCache(BuildRequest request) {
+	private LocalCache getLaunchCache(BuildRequest request) {
 		if (request.getLaunchCache() != null) {
 			return request.getLaunchCache();
 		}
@@ -215,9 +214,8 @@ class Lifecycle implements Closeable {
 	private Phase analyzePhase() {
 		Phase phase = new Phase("analyzer", isVerboseLogging());
 		configureDaemonAccess(phase);
-		Cache.Image buildCacheImage = this.buildCache.getImage();
-		if (buildCacheImage != null) {
-			phase.withBuildCache(buildCacheImage.getName());
+		if (this.buildCache instanceof ImageCache imageBuildCache) {
+			phase.withBuildCache(imageBuildCache.getName());
 		}
 		phase.withLaunchCache(Directory.LAUNCH_CACHE,
 				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
@@ -277,44 +275,43 @@ class Lifecycle implements Closeable {
 		return phase;
 	}
 
-	private Cache getLayersBindingSource(BuildRequest request) {
+	private LocalCache getLayersBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "layers");
 		}
 		return createVolumeCache("pack-layers-");
 	}
 
-	private Cache getApplicationBindingSource(BuildRequest request) {
+	private LocalCache getApplicationBindingSource(BuildRequest request) {
 		if (request.getBuildWorkspace() != null) {
 			return getBuildWorkspaceBindingSource(request.getBuildWorkspace(), "app");
 		}
 		return createVolumeCache("pack-app-");
 	}
 
-	private Cache getBuildWorkspaceBindingSource(Cache buildWorkspace, String suffix) {
+	private LocalCache getBuildWorkspaceBindingSource(LocalCache buildWorkspace, String suffix) {
 		if (buildWorkspace.getVolume() != null) {
 			return Cache.volume(buildWorkspace.getVolume().getName() + "-" + suffix);
 		}
-
-		Bind bind = buildWorkspace.getBind();
+		LocalCache.Bind bind = buildWorkspace.getBind();
 		Assert.state(bind != null, "'bind' must not be null");
 		return Cache.bind(bind.getSource() + "-" + suffix);
 	}
 
-	private String getCacheBindingSource(Cache cache) {
+	private String getCacheBindingSource(LocalCache cache) {
 		if (cache.getVolume() != null) {
 			return cache.getVolume().getName();
 		}
-		Bind bind = cache.getBind();
+		LocalCache.Bind bind = cache.getBind();
 		Assert.state(bind != null, "'bind' must not be null");
 		return bind.getSource();
 	}
 
-	private Cache createVolumeCache(String prefix) {
+	private LocalCache createVolumeCache(String prefix) {
 		return Cache.volume(createRandomVolumeName(prefix));
 	}
 
-	private Cache createVolumeCache(BuildRequest request, String suffix) {
+	private LocalCache createVolumeCache(BuildRequest request, String suffix) {
 		return Cache.volume(
 				VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6));
 	}
@@ -348,13 +345,11 @@ class Lifecycle implements Closeable {
 	}
 
 	private void configureBuildCache(Phase phase) {
-		Cache.Image image = this.buildCache.getImage();
-		if (image != null) {
+		if (this.buildCache instanceof ImageCache image) {
 			phase.withBuildCache(image.getName());
 		}
-		else {
-			phase.withBuildCache(Directory.CACHE,
-					Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		else if (this.buildCache instanceof LocalCache localCache) {
+			phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(localCache), Directory.CACHE));
 		}
 	}
 
@@ -436,7 +431,7 @@ class Lifecycle implements Closeable {
 		this.docker.volume().delete(name, true);
 	}
 
-	private void deleteBind(Cache.Bind bind) {
+	private void deleteBind(LocalCache.Bind bind) {
 		try {
 			FileSystemUtils.deleteRecursively(Path.of(bind.getSource()));
 		}

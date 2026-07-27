@@ -47,6 +47,7 @@ import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.Creator;
+import org.springframework.boot.buildpack.platform.build.LocalCache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -75,11 +76,11 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private final String projectName;
 
-	private final CacheSpec buildWorkspace;
+	private final LocalCacheSpec buildWorkspace;
 
 	private final CacheSpec buildCache;
 
-	private final CacheSpec launchCache;
+	private final LocalCacheSpec launchCache;
 
 	private final DockerSpec docker;
 
@@ -100,9 +101,9 @@ public abstract class BootBuildImage extends DefaultTask {
 		getCleanCache().convention(false);
 		getVerboseLogging().convention(false);
 		getPublish().convention(false);
-		this.buildWorkspace = getProject().getObjects().newInstance(CacheSpec.class);
+		this.buildWorkspace = getProject().getObjects().newInstance(LocalCacheSpec.class);
 		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
-		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
+		this.launchCache = getProject().getObjects().newInstance(LocalCacheSpec.class);
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
 		this.pullPolicy = getProject().getObjects().property(PullPolicy.class);
 		getSecurityOptions().convention((Iterable<? extends String>) null);
@@ -280,17 +281,17 @@ public abstract class BootBuildImage extends DefaultTask {
 	 */
 	@Nested
 	@Optional
-	public CacheSpec getBuildWorkspace() {
+	public LocalCacheSpec getBuildWorkspace() {
 		return this.buildWorkspace;
 	}
 
 	/**
-	 * Customizes the {@link CacheSpec} for the build temporary workspace using the given
-	 * {@code action}.
+	 * Customizes the {@link LocalCacheSpec} for the build temporary workspace using the
+	 * given {@code action}.
 	 * @param action the action
 	 * @since 3.2.0
 	 */
-	public void buildWorkspace(Action<CacheSpec> action) {
+	public void buildWorkspace(Action<LocalCacheSpec> action) {
 		action.execute(this.buildWorkspace);
 	}
 
@@ -319,16 +320,16 @@ public abstract class BootBuildImage extends DefaultTask {
 	 */
 	@Nested
 	@Optional
-	public CacheSpec getLaunchCache() {
+	public LocalCacheSpec getLaunchCache() {
 		return this.launchCache;
 	}
 
 	/**
-	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * Customizes the {@link LocalCacheSpec} for the launch cache using the given
 	 * {@code action}.
 	 * @param action the action
 	 */
-	public void launchCache(Action<CacheSpec> action) {
+	public void launchCache(Action<LocalCacheSpec> action) {
 		action.execute(this.launchCache);
 	}
 
@@ -495,7 +496,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeCaches(BuildRequest request) {
-		Cache buildWorkspaceCache = this.buildWorkspace.asCache();
+		LocalCache buildWorkspaceCache = this.buildWorkspace.asCache();
 		if (buildWorkspaceCache != null) {
 			request = request.withBuildWorkspace(buildWorkspaceCache);
 		}
@@ -503,7 +504,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		if (buildCache != null) {
 			request = request.withBuildCache(buildCache);
 		}
-		Cache launchCache = this.launchCache.asCache();
+		LocalCache launchCache = this.launchCache.asCache();
 		if (launchCache != null) {
 			request = request.withLaunchCache(launchCache);
 		}

@@ -36,12 +36,11 @@ import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
-import org.springframework.boot.maven.CacheInfo.BindCacheInfo;
 import org.springframework.boot.maven.CacheInfo.ImageCacheInfo;
-import org.springframework.boot.maven.CacheInfo.VolumeCacheInfo;
+import org.springframework.boot.maven.LocalCacheInfo.BindCacheInfo;
+import org.springframework.boot.maven.LocalCacheInfo.VolumeCacheInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
@@ -202,7 +201,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasBuildWorkspaceVolumeUsesWorkspace() {
 		Image image = new Image();
-		image.buildWorkspace = CacheInfo.fromVolume(new VolumeCacheInfo("build-work-vol"));
+		image.buildWorkspace = LocalCacheInfo.fromVolume(new VolumeCacheInfo("build-work-vol"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuildWorkspace()).isEqualTo(Cache.volume("build-work-vol"));
 	}
@@ -218,7 +217,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasLaunchCacheVolumeUsesCache() {
 		Image image = new Image();
-		image.launchCache = CacheInfo.fromVolume(new VolumeCacheInfo("launch-cache-vol"));
+		image.launchCache = LocalCacheInfo.fromVolume(new VolumeCacheInfo("launch-cache-vol"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getLaunchCache()).isEqualTo(Cache.volume("launch-cache-vol"));
 	}
@@ -226,7 +225,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasBuildWorkspaceBindUsesWorkspace() {
 		Image image = new Image();
-		image.buildWorkspace = CacheInfo.fromBind(new BindCacheInfo("build-work-dir"));
+		image.buildWorkspace = LocalCacheInfo.fromBind(new BindCacheInfo("build-work-dir"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuildWorkspace()).isEqualTo(Cache.bind("build-work-dir"));
 	}
@@ -242,7 +241,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasLaunchCacheBindUsesCache() {
 		Image image = new Image();
-		image.launchCache = CacheInfo.fromBind(new BindCacheInfo("launch-cache-dir"));
+		image.launchCache = LocalCacheInfo.fromBind(new BindCacheInfo("launch-cache-dir"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getLaunchCache()).isEqualTo(Cache.bind("launch-cache-dir"));
 	}
@@ -253,15 +252,6 @@ class ImageTests {
 		image.buildCache = CacheInfo.fromImage(new ImageCacheInfo("build-cache-image"));
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuildCache()).isEqualTo(Cache.image("build-cache-image"));
-	}
-
-	@Test
-	void getBuildRequestWhenHasLaunchCacheImageThrowsException() {
-		Image image = new Image();
-		image.launchCache = CacheInfo.fromImage(new ImageCacheInfo("launch-cache-image"));
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> image.getBuildRequest(createArtifact(), mockApplicationContent()))
-			.withMessage("Launch cache must not be an image cache");
 	}
 
 	@Test
