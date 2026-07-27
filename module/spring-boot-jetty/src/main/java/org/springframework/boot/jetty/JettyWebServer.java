@@ -98,7 +98,10 @@ public class JettyWebServer implements WebServer {
 		if (gracefulHandler == null) {
 			return null;
 		}
-		return new GracefulShutdown(server, () -> (int) (gracefulHandler.getCurrentRequestCount() + gracefulHandler.getCurrentStreamWrapperCount()));
+		return new GracefulShutdown(server,
+				() -> (int) Math.min(
+						gracefulHandler.getCurrentRequestCount() + gracefulHandler.getCurrentStreamWrapperCount(),
+						Integer.MAX_VALUE));
 	}
 
 	private @Nullable GracefulHandler findGracefulHandler(Server server) {
