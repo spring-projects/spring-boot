@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @AutoConfigureWebTestClient
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 
 	@LocalServerPort
