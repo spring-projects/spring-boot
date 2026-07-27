@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("removal")
 class MyTests {
 
 	private final TestRestTemplate template = new TestRestTemplate();

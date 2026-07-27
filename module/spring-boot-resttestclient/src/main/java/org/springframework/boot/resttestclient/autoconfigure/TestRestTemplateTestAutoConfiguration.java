@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.context.ApplicationContext;
@@ -49,10 +48,10 @@ final class TestRestTemplateTestAutoConfiguration {
 		return template;
 	}
 
-	private HttpClientOption[] httpClientOptions(Scheme scheme) {
+	private TestRestTemplate.HttpClientOption[] httpClientOptions(Scheme scheme) {
 		return switch (scheme) {
-			case HTTP -> new HttpClientOption[] {};
-			case HTTPS -> new HttpClientOption[] { HttpClientOption.SSL };
+			case HTTP -> new TestRestTemplate.HttpClientOption[] {};
+			case HTTPS -> new TestRestTemplate.HttpClientOption[] { TestRestTemplate.HttpClientOption.SSL };
 		};
 	}
 

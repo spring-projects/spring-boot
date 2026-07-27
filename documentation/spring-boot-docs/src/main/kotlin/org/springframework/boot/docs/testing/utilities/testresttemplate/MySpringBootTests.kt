@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "REMOVAL")
 
 package org.springframework.boot.docs.testing.utilities.testresttemplate
 

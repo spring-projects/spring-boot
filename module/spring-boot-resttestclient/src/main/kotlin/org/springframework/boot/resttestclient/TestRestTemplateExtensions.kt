@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION", "REMOVAL")
+
 package org.springframework.boot.resttestclient
 
 import org.springframework.core.ParameterizedTypeReference

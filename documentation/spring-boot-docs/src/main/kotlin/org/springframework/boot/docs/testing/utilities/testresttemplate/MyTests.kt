@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION", "REMOVAL")
+
 package org.springframework.boot.docs.testing.utilities.testresttemplate
 
 import org.assertj.core.api.Assertions.assertThat

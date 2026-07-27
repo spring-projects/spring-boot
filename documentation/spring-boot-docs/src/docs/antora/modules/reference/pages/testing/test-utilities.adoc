@@ -42,6 +42,9 @@ include-code::MyOutputCaptureTests[]
 [[testing.utilities.test-rest-template]]
 == TestRestTemplate
 
+WARNING: As of Spring Boot 4.2, `TestRestTemplate` is formally deprecated along `RestTemplate` itself in Spring Framework 7.1.
+Test suites should xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-mvc-tests[migrate to `RestTestClient`], which can bind itself against a live server or a mock transport.
+
 javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
 It's provided by the `spring-boot-resttestclient` module.
 A dependency on `spring-boot-restclient` is also required.
