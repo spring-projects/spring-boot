@@ -16,13 +16,9 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -38,9 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -81,8 +75,8 @@ public final class MetricsAutoConfiguration {
 	}
 
 	@Bean
-	MeterRegistryCloser meterRegistryCloser(ApplicationContext context, MetricsProperties properties) {
-		return new MeterRegistryCloser(context, properties.isUseGlobalRegistry());
+	MeterRegistryCloser meterRegistryCloser(ApplicationContext context) {
+		return new MeterRegistryCloser(context);
 	}
 
 	@Bean
@@ -96,45 +90,6 @@ public final class MetricsAutoConfiguration {
 		MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable(() -> new CompositeMeterRegistry(clock));
 		return new DefaultMeterObservationHandler(meterRegistry,
 				properties.getObservations().getIgnoredMeters().toArray(IgnoredMeters[]::new));
-	}
-
-	/**
-	 * Ensures that {@link MeterRegistry meter registries} are closed early in the
-	 * shutdown process.
-	 */
-	static class MeterRegistryCloser implements ApplicationListener<ContextClosedEvent> {
-
-		private final ApplicationContext context;
-
-		private final boolean useGlobalRegistry;
-
-		private final Set<MeterRegistry> trackedRegistries = new LinkedHashSet<>();
-
-		MeterRegistryCloser(ApplicationContext context, boolean useGlobalRegistry) {
-			this.context = context;
-			this.useGlobalRegistry = useGlobalRegistry;
-		}
-
-		void track(MeterRegistry meterRegistry) {
-			this.trackedRegistries.add(meterRegistry);
-		}
-
-		@Override
-		public void onApplicationEvent(ContextClosedEvent event) {
-			if (this.context.equals(event.getApplicationContext())) {
-				Set<MeterRegistry> meterRegistries = new LinkedHashSet<>(this.trackedRegistries);
-				meterRegistries.addAll(this.context.getBeansOfType(MeterRegistry.class).values());
-				for (MeterRegistry meterRegistry : meterRegistries) {
-					if (this.useGlobalRegistry) {
-						Metrics.globalRegistry.remove(meterRegistry);
-					}
-					if (!meterRegistry.isClosed()) {
-						meterRegistry.close();
-					}
-				}
-			}
-		}
-
 	}
 
 }

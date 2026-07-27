@@ -54,17 +54,16 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 
 	private final ObjectProvider<MeterBinder> binders;
 
-	private final ObjectProvider<MetricsAutoConfiguration.MeterRegistryCloser> meterRegistryCloser;
+	private final ObjectProvider<MeterRegistryCloser> meterRegistryCloser;
 
 	private volatile boolean deferBinding = true;
 
 	private final Set<MeterRegistry> deferredBindings = new LinkedHashSet<>();
 
 	MeterRegistryPostProcessor(ApplicationContext applicationContext,
-			ObjectProvider<MetricsProperties> metricsProperties,
-			ObjectProvider<MeterRegistryCustomizer<?>> customizers, ObjectProvider<MeterFilter> filters,
-			ObjectProvider<MeterBinder> binders,
-			ObjectProvider<MetricsAutoConfiguration.MeterRegistryCloser> meterRegistryCloser) {
+			ObjectProvider<MetricsProperties> metricsProperties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
+			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders,
+			ObjectProvider<MeterRegistryCloser> meterRegistryCloser) {
 		this(CompositeMeterRegistries.of(applicationContext), metricsProperties, customizers, filters, binders,
 				meterRegistryCloser);
 	}
@@ -72,7 +71,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	MeterRegistryPostProcessor(CompositeMeterRegistries compositeMeterRegistries,
 			ObjectProvider<MetricsProperties> properties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
 			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders,
-			ObjectProvider<MetricsAutoConfiguration.MeterRegistryCloser> meterRegistryCloser) {
+			ObjectProvider<MeterRegistryCloser> meterRegistryCloser) {
 		this.compositeMeterRegistries = compositeMeterRegistries;
 		this.properties = properties;
 		this.customizers = customizers;
@@ -98,6 +97,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	private void postProcessMeterRegistry(MeterRegistry meterRegistry) {
+		this.meterRegistryCloser.getObject().track(meterRegistry);
 		// Customizers must be applied before binders, as they may add custom tags or
 		// alter timer or summary configuration.
 		applyCustomizers(meterRegistry);
@@ -129,7 +129,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
 		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(meterRegistry)) {
 			Metrics.addRegistry(meterRegistry);
-			this.meterRegistryCloser.getObject().track(meterRegistry);
+			this.meterRegistryCloser.getObject().trackAddedToGlobalRegistry(meterRegistry);
 		}
 	}
 
