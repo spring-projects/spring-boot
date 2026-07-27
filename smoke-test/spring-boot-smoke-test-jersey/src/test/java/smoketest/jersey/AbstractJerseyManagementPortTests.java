@@ -21,10 +21,7 @@ import jakarta.ws.rs.Path;
 import org.junit.jupiter.api.Test;
 import smoketest.jersey.AbstractJerseyManagementPortTests.ResourceConfigConfiguration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalManagementPort;
@@ -32,7 +29,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,10 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.server.port=0")
 @Import(ResourceConfigConfiguration.class)
 class AbstractJerseyManagementPortTests {
+
+	private final RestClient restClient = RestClient.create();
 
 	@LocalServerPort
 	private int port;
@@ -53,36 +53,34 @@ class AbstractJerseyManagementPortTests {
 	@LocalManagementPort
 	private int managementPort;
 
-	@Autowired
-	private TestRestTemplate testRestTemplate;
-
 	@Test
 	void resourceShouldBeAvailableOnMainPort() {
-		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/test",
-				String.class);
+		ResponseEntity<String> entity = getForEntity("http://localhost:" + this.port + "/test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("test");
 	}
 
 	@Test
 	void resourceShouldNotBeAvailableOnManagementPort() {
-		ResponseEntity<String> entity = this.testRestTemplate
-			.getForEntity("http://localhost:" + this.managementPort + "/test", String.class);
+		ResponseEntity<String> entity = getForEntity("http://localhost:" + this.managementPort + "/test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	void actuatorShouldBeAvailableOnManagementPort() {
-		ResponseEntity<String> entity = this.testRestTemplate
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+		ResponseEntity<String> entity = getForEntity("http://localhost:" + this.managementPort + "/actuator/health");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void actuatorShouldNotBeAvailableOnMainPort() {
-		ResponseEntity<String> entity = this.testRestTemplate
-			.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
+		ResponseEntity<String> entity = getForEntity("http://localhost:" + this.port + "/actuator/health");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	private ResponseEntity<String> getForEntity(String uri) {
+		return this.restClient.get().uri(uri).retrieve().onStatus(HttpStatusCode::isError, (request, response) -> {
+		}).toEntity(String.class);
 	}
 
 	@TestConfiguration

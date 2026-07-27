@@ -19,14 +19,13 @@ package smoketest.jetty.ssl;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.TrustAllTlsRequestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,11 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "debug=true")
-@AutoConfigureTestRestTemplate
 class SampleJettySslApplicationTests {
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+	@LocalServerPort
+	private int port;
 
 	@Autowired
 	private AbstractConfigurableWebServerFactory webServerFactory;
@@ -54,9 +52,10 @@ class SampleJettySslApplicationTests {
 
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("Hello World");
+		RestTestClient client = RestTestClient.bindToServer(TrustAllTlsRequestFactory.create())
+			.baseUrl("https://localhost:" + this.port)
+			.build();
+		client.get().uri("/").exchangeSuccessfully().expectBody(String.class).isEqualTo("Hello World");
 	}
 
 }

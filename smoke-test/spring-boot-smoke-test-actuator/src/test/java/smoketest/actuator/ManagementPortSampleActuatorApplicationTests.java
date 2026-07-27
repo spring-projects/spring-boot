@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import smoketest.actuator.ManagementPortSampleActuatorApplicationTests.CustomErrorAttributes;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
@@ -32,9 +31,9 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.context.request.WebRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,53 +58,78 @@ class ManagementPortSampleActuatorApplicationTests {
 	private CustomErrorAttributes errorAttributes;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testHome() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				new TestRestTemplate("user", "password").getForEntity("http://localhost:" + this.port, Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.port)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/")
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("message", "Hello Phil"));
 	}
 
 	@Test
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate()
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.build()
+			.get()
+			.uri("/actuator/metrics")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized();
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-		assertThat(entity.getBody()).contains("\"example\"");
-		assertThat(entity.getBody()).contains("\"counter\":42");
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/actuator/health")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\"")
+				.contains("\"example\"")
+				.contains("\"counter\":42"));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testErrorPage() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsEntry("status", 999);
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/error")
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("status", 999));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void securityContextIsAvailableToErrorHandling() {
 		this.errorAttributes.securityContext = null;
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/404")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.NOT_FOUND)
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("status", 404));
 		assertThat(this.errorAttributes.securityContext).isNotNull();
 		assertThat(this.errorAttributes.securityContext.getAuthentication()).isNotNull();
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(entity.getBody()).containsEntry("status", 404);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
 	}
 
 	static class CustomErrorAttributes extends DefaultErrorAttributes {

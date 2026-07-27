@@ -18,11 +18,9 @@ package smoketest.webflux;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalManagementPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,10 +39,17 @@ class SampleWebFluxApplicationActuatorDifferentPortTests {
 
 	@Test
 	void linksEndpointShouldBeAvailable() {
-		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-			.getForEntity("http://localhost:" + this.managementPort + "/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"_links\"");
+		WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.build()
+			.get()
+			.uri("/")
+			.headers((headers) -> headers.setBasicAuth("user", getPassword()))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.value((response) -> assertThat(response).contains("\"_links\""));
 	}
 
 	private String getPassword() {

@@ -16,7 +16,6 @@
 
 package smoketest.actuator;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,17 +23,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -46,160 +41,188 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Stephane Nicoll
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleActuatorApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
 	void testHomeIsSecure() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		assertThat(entity.getHeaders().headerNames()).doesNotContain("Set-Cookie");
+		this.restTestClient.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized()
+			.expectHeader()
+			.doesNotExist("Set-Cookie");
 	}
 
 	@Test
 	void testMetricsIsSecure() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.getForEntity("/actuator/metrics", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = asMapEntity(this.restTemplate.getForEntity("/actuator/metrics/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = asMapEntity(this.restTemplate.getForEntity("/actuator/metrics/foo", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = asMapEntity(this.restTemplate.getForEntity("/actuator/metrics.json", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.restTestClient.get().uri("/actuator/metrics").exchange().expectStatus().isUnauthorized();
+		this.restTestClient.get().uri("/actuator/metrics/").exchange().expectStatus().isUnauthorized();
+		this.restTestClient.get().uri("/actuator/metrics/foo").exchange().expectStatus().isUnauthorized();
+		this.restTestClient.get().uri("/actuator/metrics.json").exchange().expectStatus().isUnauthorized();
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testHome() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
+		this.restTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("message", "Hello Phil"));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/metrics", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).isNotNull();
-		assertThat(body).containsKey("names");
-		List<String> names = (List<String>) body.get("names");
-		assertThat(names).contains("jvm.buffer.count");
+		this.restTestClient.get()
+			.uri("/actuator/metrics")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> {
+				assertThat(body).containsKey("names");
+				List<String> names = (List<String>) body.get("names");
+				assertThat(names).contains("jvm.buffer.count");
+			});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testEnv() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/env", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsKey("propertySources");
+		this.restTestClient.get()
+			.uri("/actuator/env")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsKey("propertySources"));
 	}
 
 	@Test
 	void healthInsecureByDefault() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-		assertThat(entity.getBody()).doesNotContain("\"hello\":\"1\"");
+		this.restTestClient.get()
+			.uri("/actuator/health")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\"").doesNotContain("\"hello\":\"1\""));
 	}
 
 	@Test
 	void testErrorPage() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-			.getForEntity("/foo", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		String body = entity.getBody();
-		assertThat(body).contains("\"error\":");
+		this.restTestClient.get()
+			.uri("/foo")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"error\":"));
 	}
 
 	@Test
 	void testHtmlErrorPage() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-			.exchange("/foo", HttpMethod.GET, request, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		String body = entity.getBody();
-		assertThat(body).as("Body was null").isNotNull();
-		assertThat(body).contains("This application has no explicit mapping for /error");
+		this.restTestClient.get()
+			.uri("/foo")
+			.accept(MediaType.TEXT_HTML)
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).as("Body was null")
+				.isNotNull()
+				.contains("This application has no explicit mapping for /error"));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testErrorPageDirectAccess() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/error", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody()).containsEntry("error", "None");
-		assertThat(entity.getBody()).containsEntry("status", 999);
+		this.restTestClient.get()
+			.uri("/error")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(Map.class)
+			.value((body) -> {
+				assertThat(body).containsEntry("error", "None");
+				assertThat(body).containsEntry("status", 999);
+			});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testBeans() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/beans", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsOnlyKeys("contexts");
+		this.restTestClient.get()
+			.uri("/actuator/beans")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsOnlyKeys("contexts"));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void testConfigProps() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/configprops", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).isNotNull();
-		Map<String, Object> contexts = (Map<String, Object>) body.get("contexts");
-		assertThat(contexts).isNotNull();
-		Map<String, Object> context = (Map<String, Object>) contexts.get(this.applicationContext.getId());
-		assertThat(context).isNotNull();
-		Map<String, Object> beans = (Map<String, Object>) context.get("beans");
-		assertThat(beans).containsKey("spring.datasource-" + DataSourceProperties.class.getName());
+		this.restTestClient.get()
+			.uri("/actuator/configprops")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> {
+				Map<String, Object> contexts = (Map<String, Object>) body.get("contexts");
+				assertThat(contexts).isNotNull();
+				Map<String, Object> context = (Map<String, Object>) contexts.get(this.applicationContext.getId());
+				assertThat(context).isNotNull();
+				Map<String, Object> beans = (Map<String, Object>) context.get("beans");
+				assertThat(beans).containsKey("spring.datasource-" + DataSourceProperties.class.getName());
+			});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testLegacyDot() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/legacy", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
+		this.restTestClient.get()
+			.uri("/actuator/legacy")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).contains(entry("legacy", "legacy")));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testLegacyHyphen() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/anotherlegacy", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
+		this.restTestClient.get()
+			.uri("/actuator/anotherlegacy")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).contains(entry("legacy", "legacy")));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void testInfo() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/info", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsKey("build");
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).isNotNull();
-		Map<String, Object> example = (Map<String, Object>) body.get("example");
-		assertThat(example).containsEntry("someKey", "someValue");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		this.restTestClient.get()
+			.uri("/actuator/info")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> {
+				assertThat(body).containsKey("build");
+				Map<String, Object> example = (Map<String, Object>) body.get("example");
+				assertThat(example).containsEntry("someKey", "someValue");
+			});
 	}
 
 }

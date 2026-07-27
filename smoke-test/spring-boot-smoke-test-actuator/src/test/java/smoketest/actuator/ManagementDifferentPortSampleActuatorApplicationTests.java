@@ -18,11 +18,9 @@ package smoketest.actuator;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalManagementPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,10 +39,15 @@ class ManagementDifferentPortSampleActuatorApplicationTests {
 
 	@Test
 	void linksEndpointShouldBeAvailable() {
-		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"_links\"");
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"_links\""));
 	}
 
 }

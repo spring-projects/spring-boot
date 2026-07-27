@@ -19,13 +19,11 @@ package smoketest.web.staticcontent;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,26 +33,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleWebStaticApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("<title>Static");
+		this.restTestClient.get()
+			.uri("/")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("<title>Static"));
 	}
 
 	@Test
 	void testCss() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
-				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("body");
-		assertThat(entity.getHeaders().getContentType()).isEqualTo(MediaType.valueOf("text/css"));
+		this.restTestClient.get()
+			.uri("/webjars/bootstrap/3.0.3/css/bootstrap.min.css")
+			.exchangeSuccessfully()
+			.expectHeader()
+			.contentType(MediaType.valueOf("text/css"))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("body"));
 	}
 
 }

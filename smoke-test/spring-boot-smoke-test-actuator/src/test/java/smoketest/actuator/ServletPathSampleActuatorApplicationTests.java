@@ -21,12 +21,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,39 +36,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "spring.mvc.servlet.path=/spring" })
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class ServletPathSampleActuatorApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testErrorPath() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/spring/error", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody()).containsEntry("error", "None");
-		assertThat(entity.getBody()).containsEntry("status", 999);
+		this.restTestClient.get()
+			.uri("/spring/error")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(Map.class)
+			.value((body) -> {
+				assertThat(body).containsEntry("error", "None");
+				assertThat(body).containsEntry("status", 999);
+			});
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-			.getForEntity("/spring/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		this.restTestClient.get()
+			.uri("/spring/actuator/health")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\""));
 	}
 
 	@Test
 	void testHomeIsSecure() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/spring/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		assertThat(entity.getHeaders().headerNames()).doesNotContain("Set-Cookie");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		this.restTestClient.get()
+			.uri("/spring/")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isUnauthorized()
+			.expectHeader()
+			.doesNotExist("Set-Cookie");
 	}
 
 }

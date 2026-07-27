@@ -25,20 +25,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleOauth2ResourceServerApplicationTests {
 
 	private static final MockWebServer server = new MockWebServer();
@@ -50,7 +44,7 @@ class SampleOauth2ResourceServerApplicationTests {
 			+ "R44vmRqS5ncrF-1R0EGcPX49U6A";
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient rest;
 
 	@BeforeAll
 	static void setup() throws Exception {
@@ -68,19 +62,17 @@ class SampleOauth2ResourceServerApplicationTests {
 
 	@Test
 	void withValidBearerTokenShouldAllowAccess() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(VALID_TOKEN);
-		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, request, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		this.rest.get()
+			.uri("/")
+			.headers((headers) -> headers.setBearerAuth(VALID_TOKEN))
+			.exchange()
+			.expectStatus()
+			.isOk();
 	}
 
 	@Test
 	void withNoBearerTokenShouldNotAllowAccess() {
-		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, request, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.rest.get().uri("/").exchange().expectStatus().isUnauthorized();
 	}
 
 	private static MockResponse mockResponse() {

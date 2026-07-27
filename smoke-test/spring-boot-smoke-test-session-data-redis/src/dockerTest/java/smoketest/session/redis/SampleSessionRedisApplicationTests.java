@@ -16,8 +16,6 @@
 
 package smoketest.session.redis;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,19 +25,14 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -55,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleSessionRedisApplicationTests {
 
 	@Container
@@ -63,42 +56,39 @@ class SampleSessionRedisApplicationTests {
 	static RedisContainer redis = TestImage.container(RedisContainer.class);
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
 		performLogin();
-		ResponseEntity<Map<String, Object>> response = getSessions();
-		assertThat(response).isNotNull();
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = response.getBody();
+		Map<String, Object> body = getSessions().getResponseBody();
 		assertThat(body).isNotNull();
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) body.get("sessions");
 		assertThat(sessions).hasSize(1);
 	}
 
 	private void performLogin() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		this.restTemplate.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		this.restTestClient.post()
+			.uri("/login")
+			.accept(MediaType.TEXT_HTML)
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.body(form)
+			.exchange();
 	}
 
-	private RequestEntity<Object> getRequestEntity(URI uri) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBasicAuth("user", "password");
-		return new RequestEntity<>(headers, HttpMethod.GET, uri);
-	}
-
-	private ResponseEntity<Map<String, Object>> getSessions() {
-		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
+	private EntityExchangeResult<Map<String, Object>> getSessions() {
 		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<>() {
 		};
-		return this.restTemplate.exchange(request, stringObjectMap);
+		return this.restTestClient.get()
+			.uri("/actuator/sessions?username=user")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(stringObjectMap)
+			.returnResult();
 	}
 
 }

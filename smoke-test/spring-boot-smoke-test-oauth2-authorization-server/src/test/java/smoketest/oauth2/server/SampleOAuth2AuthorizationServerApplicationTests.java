@@ -16,38 +16,35 @@
 
 package smoketest.oauth2.server;
 
-import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationServerMetadata;
 import org.springframework.security.oauth2.server.authorization.oidc.OidcProviderConfiguration;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleOAuth2AuthorizationServerApplicationTests {
 
 	private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new ParameterizedTypeReference<>() {
@@ -57,14 +54,24 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	private int port;
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient rest;
+
+	private RestTestClient nonFollowingRedirect() {
+		return RestTestClient
+			.bindToServer(ClientHttpRequestFactoryBuilder.detect()
+				.build(HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW)))
+			.baseUrl("http://localhost:" + this.port)
+			.build();
+	}
 
 	@Test
 	void openidConfigurationShouldAllowAccess() {
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/.well-known/openid-configuration",
-				HttpMethod.GET, null, MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
+		EntityExchangeResult<Map<String, Object>> result = this.rest.get()
+			.uri("/.well-known/openid-configuration")
+			.exchange()
+			.returnResult(MAP_TYPE_REFERENCE);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		Map<String, Object> body = result.getResponseBody();
 		assertThat(body).isNotNull();
 		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(body).build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
@@ -82,10 +89,12 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 	@Test
 	void authServerMetadataShouldAllowAccess() {
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate
-			.exchange("/.well-known/oauth-authorization-server", HttpMethod.GET, null, MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
+		EntityExchangeResult<Map<String, Object>> result = this.rest.get()
+			.uri("/.well-known/oauth-authorization-server")
+			.exchange()
+			.returnResult(MAP_TYPE_REFERENCE);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		Map<String, Object> body = result.getResponseBody();
 		assertThat(body).isNotNull();
 		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(body).build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
@@ -101,26 +110,26 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 	@Test
 	void anonymousShouldRedirectToLogin() {
-		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
-			.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
+		RestTestClient.ResponseSpec response = nonFollowingRedirect().get().uri("/").exchange();
+		response.expectStatus().isFound();
+		response.expectHeader().location("http://localhost:" + this.port + "/login");
 	}
 
 	@Test
 	void validTokenRequestShouldReturnTokenResponse() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBasicAuth("messaging-client", "secret");
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
-		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
-				MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> tokenResponse = Objects.requireNonNull(entity.getBody());
+		EntityExchangeResult<Map<String, Object>> result = this.rest.post()
+			.uri("/token")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.headers((headers) -> headers.setBasicAuth("messaging-client", "secret"))
+			.body(body)
+			.exchange()
+			.returnResult(MAP_TYPE_REFERENCE);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		Map<String, Object> tokenResponse = Objects.requireNonNull(result.getResponseBody());
 		assertThat(tokenResponse.get(OAuth2ParameterNames.ACCESS_TOKEN)).isNotNull();
 		assertThat(tokenResponse.get(OAuth2ParameterNames.EXPIRES_IN)).isNotNull();
 		assertThat(tokenResponse.get(OAuth2ParameterNames.SCOPE)).isEqualTo("message.read message.write");
@@ -130,47 +139,49 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 	@Test
 	void anonymousTokenRequestShouldReturnUnauthorized() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
-		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
-				MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		EntityExchangeResult<Map<String, Object>> result = this.rest.post()
+			.uri("/token")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.body(body)
+			.exchange()
+			.returnResult(MAP_TYPE_REFERENCE);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void anonymousTokenRequestWithAcceptHeaderAllShouldReturnUnauthorized() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setAccept(List.of(MediaType.ALL));
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
-		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
-				MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		EntityExchangeResult<Map<String, Object>> result = this.rest.post()
+			.uri("/token")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.accept(MediaType.ALL)
+			.body(body)
+			.exchange()
+			.returnResult(MAP_TYPE_REFERENCE);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void anonymousTokenRequestWithAcceptHeaderTextHtmlShouldRedirectToLogin() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
-		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
-			.exchange("/token", HttpMethod.POST, request, MAP_TYPE_REFERENCE);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
+		RestTestClient.ResponseSpec response = nonFollowingRedirect().post()
+			.uri("/token")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.accept(MediaType.TEXT_HTML)
+			.body(body)
+			.exchange();
+		response.expectStatus().isFound();
+		response.expectHeader().location("http://localhost:" + this.port + "/login");
 	}
 
 }

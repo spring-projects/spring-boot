@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 import smoketest.tomcat.multiconnector.SampleTomcatTwoConnectorsApplicationTests.Ports;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.TrustAllTlsRequestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -34,8 +33,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(Ports.class)
-@AutoConfigureTestRestTemplate
 class SampleTomcatTwoConnectorsApplicationTests {
 
 	@LocalServerPort
@@ -55,9 +52,6 @@ class SampleTomcatTwoConnectorsApplicationTests {
 
 	@Autowired
 	private Ports ports;
-
-	@Autowired
-	private TestRestTemplate restTemplate;
 
 	@Autowired
 	private AbstractConfigurableWebServerFactory webServerFactory;
@@ -73,14 +67,14 @@ class SampleTomcatTwoConnectorsApplicationTests {
 	void testHello() {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
-		ResponseEntity<String> entity = this.restTemplate
-			.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("hello");
-		ResponseEntity<String> httpsEntity = this.restTemplate.getForEntity("https://localhost:" + this.port + "/hello",
-				String.class);
-		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(httpsEntity.getBody()).isEqualTo("hello");
+		RestTestClient httpClient = RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.ports.getHttpPort())
+			.build();
+		httpClient.get().uri("/hello").exchangeSuccessfully().expectBody(String.class).isEqualTo("hello");
+		RestTestClient httpsClient = RestTestClient.bindToServer(TrustAllTlsRequestFactory.create())
+			.baseUrl("https://localhost:" + this.port)
+			.build();
+		httpsClient.get().uri("/hello").exchangeSuccessfully().expectBody(String.class).isEqualTo("hello");
 	}
 
 	@TestConfiguration

@@ -18,7 +18,6 @@ package smoketest.secure.jersey;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
@@ -47,8 +46,8 @@ class ManagementPortAndPathJerseyApplicationTests extends AbstractJerseySecureTe
 
 	@Test
 	void testMissing() {
-		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-			.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
+		ResponseEntity<String> entity = getForEntity(adminRestClient(),
+				"http://localhost:" + this.managementPort + "/management/actuator/missing");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

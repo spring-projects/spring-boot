@@ -18,14 +18,11 @@ package smoketest.actuator;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for separate management and main service ports with Actuator's MVC
@@ -43,10 +40,17 @@ class ManagementDifferentPortAndEndpointWithExceptionHandlerSampleActuatorApplic
 
 	@Test
 	void testExceptionHandlerRestControllerEndpoint() {
-		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/exception", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.EXPECTATION_FAILED);
-		assertThat(entity.getBody()).isEqualTo("this is a custom exception body");
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/actuator/exception")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.EXPECTATION_FAILED)
+			.expectBody(String.class)
+			.isEqualTo("this is a custom exception body");
 	}
 
 }

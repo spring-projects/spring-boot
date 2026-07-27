@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,21 +46,21 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 	private ApplicationContext applicationContext;
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	void testInsecureApplicationPath() {
-		ResponseEntity<Map> entity = restTemplate().getForEntity(getPath() + "/foo", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).isNotNull();
-		assertThat((String) body.get("message")).contains("Expected exception in controller");
+		restTestClient().get()
+			.uri(getPath() + "/foo")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(Map.class)
+			.value((body) -> assertThat((String) body.get("message")).contains("Expected exception in controller"));
 	}
 
 	@Test
 	void mvcMatchersCanBeUsedToSecureActuators() {
-		ResponseEntity<Object> entity = beansRestTemplate().getForEntity(getActuatorPath() + "/beans", Object.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = beansRestTemplate().getForEntity(getActuatorPath() + "/beans/", Object.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+		beansRestTestClient().get().uri(getActuatorPath() + "/beans").exchange().expectStatus().isOk();
+		beansRestTestClient().get().uri(getActuatorPath() + "/beans/").exchange().expectStatus().isForbidden();
 	}
 
 	@Override

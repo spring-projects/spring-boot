@@ -25,20 +25,18 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
 import org.awaitility.Awaitility;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient.BodySpec;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -51,84 +49,88 @@ import static org.assertj.core.api.Assertions.within;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleQuartzApplicationWebTests {
 
+	private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE = new ParameterizedTypeReference<>() {
+	};
+
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
 	void quartzGroupNames() {
-		Map<String, Object> content = getContent("/actuator/quartz");
-		assertThat(content).containsOnlyKeys("jobs", "triggers");
+		assertContent("/actuator/quartz").value((content) -> assertThat(content).containsOnlyKeys("jobs", "triggers"));
 	}
 
 	@Test
 	void quartzJobGroups() {
-		Map<String, Object> content = getContent("/actuator/quartz/jobs");
-		assertThat(content).containsOnlyKeys("groups");
-		assertThat(content).extractingByKey("groups", nestedMap()).containsOnlyKeys("samples");
+		assertContent("/actuator/quartz/jobs").value((content) -> {
+			assertThat(content).containsOnlyKeys("groups");
+			assertThat(content).extractingByKey("groups", nestedMap()).containsOnlyKeys("samples");
+		});
 	}
 
 	@Test
 	void quartzTriggerGroups() {
-		Map<String, Object> content = getContent("/actuator/quartz/triggers");
-		assertThat(content).containsOnlyKeys("groups");
-		assertThat(content).extractingByKey("groups", nestedMap()).containsOnlyKeys("DEFAULT", "samples");
+		assertContent("/actuator/quartz/triggers").value((content) -> {
+			assertThat(content).containsOnlyKeys("groups");
+			assertThat(content).extractingByKey("groups", nestedMap()).containsOnlyKeys("DEFAULT", "samples");
+		});
 	}
 
 	@Test
 	void quartzJobDetail() {
-		Map<String, Object> content = getContent("/actuator/quartz/jobs/samples/helloJob");
-		assertThat(content).containsEntry("name", "helloJob").containsEntry("group", "samples");
+		assertContent("/actuator/quartz/jobs/samples/helloJob").value(
+				(content) -> assertThat(content).containsEntry("name", "helloJob").containsEntry("group", "samples"));
 	}
 
 	@Test
 	void quartzJobDetailWhenNameDoesNotExistReturns404() {
-		ResponseEntity<String> response = this.restTemplate.getForEntity("/actuator/quartz/jobs/samples/does-not-exist",
-				String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		this.restTestClient.get()
+			.uri("/actuator/quartz/jobs/samples/does-not-exist")
+			.exchange()
+			.expectStatus()
+			.isNotFound();
 	}
 
 	@Test
 	void quartzTriggerDetail() {
-		Map<String, Object> content = getContent("/actuator/quartz/triggers/samples/3am-weekdays");
-		assertThat(content).contains(entry("group", "samples"), entry("name", "3am-weekdays"), entry("state", "NORMAL"),
-				entry("type", "cron"));
+		assertContent("/actuator/quartz/triggers/samples/3am-weekdays")
+			.value((content) -> assertThat(content).contains(entry("group", "samples"), entry("name", "3am-weekdays"),
+					entry("state", "NORMAL"), entry("type", "cron")));
 	}
 
 	@Test
 	void quartzTriggerDetailWhenNameDoesNotExistReturns404() {
-		ResponseEntity<String> response = this.restTemplate
-			.getForEntity("/actuator/quartz/triggers/samples/does-not-exist", String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		this.restTestClient.get()
+			.uri("/actuator/quartz/triggers/samples/does-not-exist")
+			.exchange()
+			.expectStatus()
+			.isNotFound();
 	}
 
 	@Test
 	void quartzJobTriggeredManually(CapturedOutput output) {
-		ResponseEntity<Map<String, Object>> result = asMapEntity(this.restTemplate.postForEntity(
-				"/actuator/quartz/jobs/samples/onDemandJob", new HttpEntity<>(Map.of("state", "running")), Map.class));
-		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> content = result.getBody();
-		assertThat(content).contains(entry("group", "samples"), entry("name", "onDemandJob"),
-				entry("className", SampleJob.class.getName()));
-		assertThat(content).extractingByKey("triggerTime", InstanceOfAssertFactories.STRING)
-			.satisfies((triggerTime) -> assertThat(Instant.parse(triggerTime)).isCloseTo(Instant.now(),
-					within(10, ChronoUnit.SECONDS)));
+		this.restTestClient.post()
+			.uri("/actuator/quartz/jobs/samples/onDemandJob")
+			.body(Map.of("state", "running"))
+			.exchangeSuccessfully()
+			.expectBody(MAP_TYPE)
+			.value((content) -> {
+				assertThat(content).contains(entry("group", "samples"), entry("name", "onDemandJob"),
+						entry("className", SampleJob.class.getName()));
+				assertThat(content).extractingByKey("triggerTime", InstanceOfAssertFactories.STRING)
+					.satisfies((triggerTime) -> assertThat(Instant.parse(triggerTime)).isCloseTo(Instant.now(),
+							within(10, ChronoUnit.SECONDS)));
+			});
 		Awaitility.await()
 			.atMost(Duration.ofSeconds(30))
 			.untilAsserted(() -> assertThat(output).contains("Hello On Demand Job"));
 	}
 
-	private @Nullable Map<String, Object> getContent(String path) {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity(path, Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		return entity.getBody();
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+	private BodySpec<Map<String, Object>, ?> assertContent(String path) {
+		return this.restTestClient.get().uri(path).exchangeSuccessfully().expectBody(MAP_TYPE);
 	}
 
 	@SuppressWarnings("rawtypes")
