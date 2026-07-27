@@ -63,8 +63,8 @@ class ExportedImageTar implements Closeable {
 	private final LayerArchiveFactory layerArchiveFactory;
 
 	ExportedImageTar(ImageReference reference, InputStream inputStream) throws IOException {
-		this.tarFile = Files.createTempFile("docker-layers-", null);
-		try {
+		this.tarFile = Files.createTempFile("docker-layers-", ".tar");
+		try (inputStream) {
 			Files.copy(inputStream, this.tarFile, StandardCopyOption.REPLACE_EXISTING);
 			this.layerArchiveFactory = LayerArchiveFactory.create(reference, this.tarFile);
 		}
