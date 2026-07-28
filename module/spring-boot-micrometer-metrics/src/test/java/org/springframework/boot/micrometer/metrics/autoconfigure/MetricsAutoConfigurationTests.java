@@ -30,7 +30,6 @@ import io.micrometer.observation.ObservationHandler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration.MeterRegistryCloser;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
