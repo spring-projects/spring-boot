@@ -85,8 +85,9 @@ class ValueObjectBinder implements DataObjectBinder {
 			List<@Nullable Object> args = new ArrayList<>(parameters.size());
 			boolean bound = false;
 			for (ConstructorParameter parameter : parameters) {
-				Object arg = parameter.bind(propertyBinder);
-				bound = bound || arg != null;
+				DataObjectPropertyBinder.PropertyBinding binding = parameter.bind(propertyBinder);
+				bound = bound || binding.fromSource();
+				Object arg = binding.value();
 				arg = (arg != null) ? arg : getDefaultValue(context, parameter);
 				args.add(arg);
 			}
@@ -384,7 +385,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.annotations = annotations;
 		}
 
-		@Nullable Object bind(DataObjectPropertyBinder propertyBinder) {
+		DataObjectPropertyBinder.PropertyBinding bind(DataObjectPropertyBinder propertyBinder) {
 			return propertyBinder.bindProperty(this.name, Bindable.of(this.type).withAnnotations(this.annotations));
 		}
 
