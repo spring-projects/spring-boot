@@ -42,6 +42,12 @@ public final class RetryPolicySettings {
 	public static final long DEFAULT_MAX_RETRIES = RetryPolicy.Builder.DEFAULT_MAX_RETRIES;
 
 	/**
+	 * Default maximum elapsed time (infinite).
+	 * @since 4.2.0
+	 */
+	public static final Duration DEFAULT_TIMEOUT = RetryPolicy.Builder.DEFAULT_TIMEOUT;
+
+	/**
 	 * Default initial delay.
 	 */
 	public static final Duration DEFAULT_DELAY = Duration.ofMillis(RetryPolicy.Builder.DEFAULT_DELAY);
@@ -56,11 +62,6 @@ public final class RetryPolicySettings {
 	 */
 	public static final Duration DEFAULT_MAX_DELAY = Duration.ofMillis(RetryPolicy.Builder.DEFAULT_MAX_DELAY);
 
-	/**
-	 * Default maximum elapsed time (infinite).
-	 */
-	public static final Duration DEFAULT_TIMEOUT = RetryPolicy.withDefaults().getTimeout();
-
 	private List<Class<? extends Throwable>> exceptionIncludes = new ArrayList<>();
 
 	private List<Class<? extends Throwable>> exceptionExcludes = new ArrayList<>();
@@ -69,6 +70,8 @@ public final class RetryPolicySettings {
 
 	private Long maxRetries = DEFAULT_MAX_RETRIES;
 
+	private Duration timeout = DEFAULT_TIMEOUT;
+
 	private Duration delay = DEFAULT_DELAY;
 
 	private @Nullable Duration jitter;
@@ -76,8 +79,6 @@ public final class RetryPolicySettings {
 	private Double multiplier = DEFAULT_MULTIPLIER;
 
 	private Duration maxDelay = DEFAULT_MAX_DELAY;
-
-	private Duration timeout = DEFAULT_TIMEOUT;
 
 	private @Nullable Function<Builder, RetryPolicy> factory;
 
@@ -92,11 +93,11 @@ public final class RetryPolicySettings {
 		map.from(this::getExceptionExcludes).to(builder::excludes);
 		map.from(this::getExceptionPredicate).to(builder::predicate);
 		map.from(this::getMaxRetries).to(builder::maxRetries);
+		map.from(this::getTimeout).to(builder::timeout);
 		map.from(this::getDelay).to(builder::delay);
 		map.from(this::getJitter).to(builder::jitter);
 		map.from(this::getMultiplier).to(builder::multiplier);
 		map.from(this::getMaxDelay).to(builder::maxDelay);
-		map.from(this::getTimeout).to(builder::timeout);
 		return (this.factory != null) ? this.factory.apply(builder) : builder.build();
 	}
 
@@ -174,6 +175,31 @@ public final class RetryPolicySettings {
 	 */
 	public void setMaxRetries(Long maxRetries) {
 		this.maxRetries = maxRetries;
+	}
+
+	/**
+	 * Return the timeout for the maximum amount of elapsed time allowed for the initial
+	 * invocation and any subsequent retry attempts, including delays.
+	 * @return the maximum duration the request can take
+	 * @since 4.2.0
+	 */
+	public Duration getTimeout() {
+		return this.timeout;
+	}
+
+	/**
+	 * Specify a timeout for the maximum amount of elapsed time allowed for the initial
+	 * invocation and any subsequent retry attempts, including delays.
+	 * <p>
+	 * The default is {@link Duration#ZERO}, which signals that no timeout should be
+	 * applied.
+	 * @param timeout the timeout, typically in milliseconds or seconds; must be greater
+	 * than or equal to zero
+	 * @since 4.2.0
+	 * @see #DEFAULT_TIMEOUT
+	 */
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
 	}
 
 	/**
@@ -256,29 +282,6 @@ public final class RetryPolicySettings {
 	 */
 	public void setMaxDelay(Duration maxDelay) {
 		this.maxDelay = maxDelay;
-	}
-
-	/**
-	 * Return the timeout for the maximum amount of elapsed time allowed for the initial
-	 * invocation and any subsequent retry attempts, including delays.
-	 * @return the maximum duration the request can take
-	 */
-	public Duration getTimeout() {
-		return this.timeout;
-	}
-
-	/**
-	 * Specify a timeout for the maximum amount of elapsed time allowed for the initial
-	 * invocation and any subsequent retry attempts, including delays.
-	 * <p>
-	 * The default is {@link Duration#ZERO}, which signals that no timeout should be
-	 * applied.
-	 * @param timeout the timeout, typically in milliseconds or seconds; must be greater
-	 * than or equal to zero
-	 * @see #DEFAULT_TIMEOUT
-	 */
-	public void setTimeout(Duration timeout) {
-		this.timeout = timeout;
 	}
 
 	/**
