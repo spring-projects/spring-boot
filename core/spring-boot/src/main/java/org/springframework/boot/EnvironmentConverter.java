@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,11 +43,9 @@ final class EnvironmentConverter {
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
 
 	static {
-		Set<String> names = new HashSet<>();
-		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
-		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
-		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
+		SERVLET_ENVIRONMENT_SOURCE_NAMES = Set.of(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
+				StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME,
+				StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
 	}
 
 	private final ClassLoader classLoader;

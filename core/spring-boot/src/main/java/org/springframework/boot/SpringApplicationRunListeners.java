@@ -28,7 +28,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * A collection of {@link SpringApplicationRunListener}.
@@ -99,9 +98,6 @@ class SpringApplicationRunListeners {
 			listener.failed(context, exception);
 		}
 		catch (Throwable ex) {
-			if (exception == null) {
-				ReflectionUtils.rethrowRuntimeException(ex);
-			}
 			if (this.log.isDebugEnabled()) {
 				this.log.error("Error handling failed", ex);
 			}

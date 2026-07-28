@@ -19,8 +19,6 @@ package org.springframework.boot;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,13 +32,7 @@ import org.jspecify.annotations.Nullable;
  */
 class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
-	private static final Set<String> LOG_CONFIGURATION_MESSAGES;
-
-	static {
-		Set<String> messages = new HashSet<>();
-		messages.add("Logback configuration error detected");
-		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
-	}
+	private static final Set<String> LOG_CONFIGURATION_MESSAGES = Set.of("Logback configuration error detected");
 
 	private static final LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
 
