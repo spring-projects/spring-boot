@@ -114,6 +114,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private boolean bridgeHandlerInstalled;
 
+	@Nullable
+	private java.util.logging.Handler defaultRootHandler;
+
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
@@ -181,6 +184,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();
 			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
+				this.defaultRootHandler = handlers[0];
 				rootLogger.removeHandler(handlers[0]);
 			}
 		}
@@ -342,8 +346,17 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			removeJdkLoggingBridgeHandler();
 			this.bridgeHandlerInstalled = false;
 		}
+		restoreDefaultRootHandler();
 		context.getStatusManager().clear();
 		context.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
+	}
+
+	private void restoreDefaultRootHandler() {
+		if (this.defaultRootHandler != null) {
+			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+			rootLogger.addHandler(this.defaultRootHandler);
+			this.defaultRootHandler = null;
+		}
 	}
 
 	@Override
