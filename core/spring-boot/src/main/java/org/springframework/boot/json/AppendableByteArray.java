@@ -129,6 +129,12 @@ class AppendableByteArray implements Appendable {
 			result = new AppendableByteArray(charset);
 			cache.set(new SoftReference<>(result));
 		}
+		else {
+			// The cached instance is reused, so it must be clean before it is
+			// handed out again. A previous use may have been abandoned part-way,
+			// for example when writing the value threw, leaving content behind.
+			result.reset();
+		}
 		return result;
 	}
 
