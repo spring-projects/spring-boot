@@ -31,42 +31,51 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
- * {@link ContextCustomizerFactory} that globally disables metrics export in tests. The
- * behaviour can be controlled with {@link AutoConfigureMetrics} on the test class or via
- * the {@value #AUTO_CONFIGURE_PROPERTY} property.
+ * {@link ContextCustomizerFactory} that globally disables metrics export and the use of
+ * Micrometer's {@link io.micrometer.core.instrument.Metrics#globalRegistry global
+ * registry} in tests. The behaviour can be controlled with {@link AutoConfigureMetrics}
+ * on the test class, via the {@value #AUTO_CONFIGURE_PROPERTY} property and via the
+ * {@value #USE_GLOBAL_REGISTRY_PROPERTY} property.
  *
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Lordwill Kandiro
  */
 class MetricsContextCustomizerFactory implements ContextCustomizerFactory {
 
 	static final String AUTO_CONFIGURE_PROPERTY = "spring.test.metrics.export";
+
+	static final String USE_GLOBAL_REGISTRY_PROPERTY = "management.metrics.use-global-registry";
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		AutoConfigureMetrics annotation = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				AutoConfigureMetrics.class);
-		return new DisableMetricsExportContextCustomizer(annotation);
+		return new MetricsContextCustomizer(annotation);
 	}
 
-	private static class DisableMetricsExportContextCustomizer implements ContextCustomizer {
+	private static class MetricsContextCustomizer implements ContextCustomizer {
 
 		private final @Nullable AutoConfigureMetrics annotation;
 
-		DisableMetricsExportContextCustomizer(@Nullable AutoConfigureMetrics annotation) {
+		MetricsContextCustomizer(@Nullable AutoConfigureMetrics annotation) {
 			this.annotation = annotation;
 		}
 
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedContextConfiguration) {
-			if (areMetricsDisabled(context.getEnvironment())) {
+			Environment environment = context.getEnvironment();
+			if (areMetricsDisabled(environment)) {
 				TestPropertyValues
 					.of("management.defaults.metrics.export.enabled=false",
 							"management.simple.metrics.export.enabled=true")
 					.applyTo(context);
+			}
+			if (isGlobalRegistryDisabled(environment)) {
+				TestPropertyValues.of(USE_GLOBAL_REGISTRY_PROPERTY + "=false").applyTo(context);
 			}
 		}
 
@@ -77,6 +86,13 @@ class MetricsContextCustomizerFactory implements ContextCustomizerFactory {
 			return !environment.getProperty(AUTO_CONFIGURE_PROPERTY, Boolean.class, false);
 		}
 
+		private boolean isGlobalRegistryDisabled(Environment environment) {
+			if (this.annotation != null && this.annotation.useGlobalRegistry()) {
+				return false;
+			}
+			return !environment.containsProperty(USE_GLOBAL_REGISTRY_PROPERTY);
+		}
+
 		@Override
 		public boolean equals(@Nullable Object o) {
 			if (this == o) {
@@ -85,7 +101,7 @@ class MetricsContextCustomizerFactory implements ContextCustomizerFactory {
 			if (o == null || getClass() != o.getClass()) {
 				return false;
 			}
-			DisableMetricsExportContextCustomizer that = (DisableMetricsExportContextCustomizer) o;
+			MetricsContextCustomizer that = (MetricsContextCustomizer) o;
 			return Objects.equals(this.annotation, that.annotation);
 		}
 

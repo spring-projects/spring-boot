@@ -64,6 +64,9 @@ management:
     use-global-registry: false
 ----
 
+NOTE: In tests that use `spring-boot-micrometer-metrics-test`, the global registry is disabled by default.
+If you want to use the global registry in such a test, annotate it with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] using `useGlobalRegistry = true`, or set the configprop:management.metrics.use-global-registry[] property explicitly to `true`.
+
 You can register any number of javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer[] beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
 include-code::commontags/MyMeterRegistryConfiguration[]

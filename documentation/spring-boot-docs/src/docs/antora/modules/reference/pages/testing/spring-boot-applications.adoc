@@ -244,6 +244,9 @@ If you need to export metrics to a different backend as part of an integration t
 If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation], it auto-configures an in-memory javadoc:io.micrometer.core.instrument.MeterRegistry[].
 Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] annotation.
 
+Meter registries are not added to the xref:actuator/metrics.adoc#actuator.metrics.getting-started[global registry] by default in tests.
+If you need the global registry in a test, annotate it with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] using `useGlobalRegistry = true`, or set the configprop:management.metrics.use-global-registry[] property explicitly to `true`.
+
 
 
 [[testing.spring-boot-applications.tracing]]
