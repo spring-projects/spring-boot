@@ -70,9 +70,7 @@ class GroovyTemplateAutoConfigurationTests {
 	@AfterEach
 	void close() {
 		LocaleContextHolder.resetLocaleContext();
-		if (this.context != null) {
-			this.context.close();
-		}
+		this.context.close();
 	}
 
 	@Test
