@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -62,10 +64,13 @@ import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Format;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Forwardedheaders;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.HeaderFormat;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -101,6 +106,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -403,6 +409,47 @@ public final class WebMvcAutoConfiguration {
 		@ConditionalOnMissingFilterBean
 		static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
+		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+		FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
+				ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
+			Forwardedheaders properties = this.mvcProperties.getForwardedHeaders();
+			ForwardedHeaderFilter filter = new ForwardedHeaderFilter(
+					properties.getHeaderFormat() == HeaderFormat.STANDARD);
+			filter.setUseForwardedPrefix(properties.isUseForwardedPrefix());
+			customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
+			FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			return registration;
+		}
+
+	}
+
+	/**
+	 * Adapts a deprecated {@code spring-boot-web-server}
+	 * {@link org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer}
+	 * bean to {@link ForwardedHeaderFilterCustomizer}. Defined as a separate nested
+	 * config, guarded by {@link ConditionalOnClass}, so that referencing the deprecated
+	 * type does not prevent reflection on other configuration classes when
+	 * {@code spring-boot-web-server} is not on the classpath (as is the case for
+	 * traditional WAR deployments).
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer.class)
+	@SuppressWarnings("removal")
+	static class DeprecatedForwardedHeaderFilterCustomizerConfiguration {
+
+		@Bean
+		@ConditionalOnBean(org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer.class)
+		@ConditionalOnMissingBean
+		@SuppressWarnings("removal")
+		ForwardedHeaderFilterCustomizer deprecatedForwardedHeaderFilterCustomizerAdapter(
+				org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer customizer) {
+			return customizer::customize;
 		}
 
 	}
