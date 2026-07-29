@@ -44,6 +44,21 @@ final class JarFileUrlKey {
 		this.runtimeRef = "runtime".equals(url.getRef());
 	}
 
+	/**
+	 * Return a string representation of this key suitable for use as a
+	 * {@code HashMap<String, ...>} key. Unlike {@code URL.toString()}, this
+	 * method does not trigger DNS lookups.
+	 * @return a unique string key for this URL
+	 */
+	String toKeyString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.protocol).append("://").append(this.host).append(':').append(this.port).append(this.file);
+		if (this.runtimeRef) {
+			sb.append("#runtime");
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

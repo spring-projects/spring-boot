@@ -140,11 +140,13 @@ class UrlJarFiles {
 	}
 
 	/**
-	 * Internal cache.
+	 * Internal cache. Uses {@code String} keys in the underlying map to avoid
+	 * polluting the JVM's shared {@code HashMap.getNode} type profile with a
+	 * custom key type. See gh-51141.
 	 */
 	private static final class Cache {
 
-		private final Map<JarFileUrlKey, JarFile> jarFileUrlToJarFile = new HashMap<>();
+		private final Map<String, JarFile> jarFileUrlToJarFile = new HashMap<>();
 
 		private final Map<JarFile, URL> jarFileToJarFileUrl = new HashMap<>();
 
@@ -154,9 +156,8 @@ class UrlJarFiles {
 		 * @return the cached {@link JarFile} or {@code null}
 		 */
 		JarFile get(URL jarFileUrl) {
-			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
 			synchronized (this) {
-				return this.jarFileUrlToJarFile.get(urlKey);
+				return this.jarFileUrlToJarFile.get(new JarFileUrlKey(jarFileUrl).toKeyString());
 			}
 		}
 
@@ -180,11 +181,11 @@ class UrlJarFiles {
 		 * they were already there
 		 */
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
-			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
 			synchronized (this) {
-				JarFile cached = this.jarFileUrlToJarFile.get(urlKey);
+				String key = new JarFileUrlKey(jarFileUrl).toKeyString();
+				JarFile cached = this.jarFileUrlToJarFile.get(key);
 				if (cached == null) {
-					this.jarFileUrlToJarFile.put(urlKey, jarFile);
+					this.jarFileUrlToJarFile.put(key, jarFile);
 					this.jarFileToJarFileUrl.put(jarFile, jarFileUrl);
 					return true;
 				}
@@ -200,7 +201,7 @@ class UrlJarFiles {
 			synchronized (this) {
 				URL removedUrl = this.jarFileToJarFileUrl.remove(jarFile);
 				if (removedUrl != null) {
-					this.jarFileUrlToJarFile.remove(new JarFileUrlKey(removedUrl));
+					this.jarFileUrlToJarFile.remove(new JarFileUrlKey(removedUrl).toKeyString());
 				}
 			}
 		}
