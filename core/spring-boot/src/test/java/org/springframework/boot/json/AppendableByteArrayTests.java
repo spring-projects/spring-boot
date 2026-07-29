@@ -68,6 +68,18 @@ class AppendableByteArrayTests {
 		assertByteArray(StandardCharsets.UTF_8, AppendableByteArray::get, (appendable) -> appendable.append(string));
 	}
 
+	@Test
+	void getWhenPreviousUseWasAbandonedReturnsCleanInstance() throws IOException {
+		AppendableByteArray abandoned = AppendableByteArray.get(StandardCharsets.UTF_8);
+		abandoned.append("partial content");
+		// The instance is never converted to a byte array, as happens when writing
+		// the value throws part-way through.
+		AppendableByteArray reused = AppendableByteArray.get(StandardCharsets.UTF_8);
+		assertThat(reused).isSameAs(abandoned);
+		reused.append("clean");
+		assertThat(reused.toByteArray()).isEqualTo("clean".getBytes(StandardCharsets.UTF_8));
+	}
+
 	private void assertByteArray(Charset charset, ThrowingConsumer<Appendable> action) throws Exception {
 		assertByteArray(4, 4, charset, action);
 	}
