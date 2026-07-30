@@ -817,6 +817,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern",
 				"${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.clean-history-on-start", "true");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.total-size-cap", "1GB");
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.getSystemProperties(this.environment).apply(logFile);
@@ -825,9 +827,14 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
 		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
 		String fileNamePattern = System.getProperty("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN");
+		String cleanHistoryOnStart = System.getProperty("LOG4J2_ROLLINGPOLICY_CLEAN_HISTORY_ON_START");
+		String totalSizeCap = System.getProperty("LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP");
 		assertThat(maxFileSize).isEqualTo(String.valueOf(50 * 1024 * 1024));
 		assertThat(maxHistory).isEqualTo("30");
 		assertThat(fileNamePattern).isEqualTo("${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
+		assertThat(cleanHistoryOnStart).isEqualTo("true");
+		assertThat(totalSizeCap).isEqualTo(String.valueOf(DataSize.ofGigabytes(1).toBytes()));
+
 	}
 
 	@Test
