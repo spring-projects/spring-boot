@@ -117,4 +117,10 @@ public class NewRelicProperties extends StepRegistryProperties {
 		this.uri = uri;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [apiKey=" + ((this.apiKey != null) ? "******" : null) + ", accountId="
+				+ this.accountId + "]";
+	}
+
 }
