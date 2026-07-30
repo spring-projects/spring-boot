@@ -118,7 +118,10 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 			customizer.customize(server);
 		}
 		if (this.isUseForwardHeaders()) {
-			new ForwardHeadersCustomizer().customize(server);
+			new ForwardHeadersCustomizer(true).customize(server);
+		}
+		else if (this.isUseRfcForwardHeader()) {
+			new ForwardHeadersCustomizer(false).customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
 			GracefulHandler gracefulHandler = new GracefulHandler();

@@ -87,12 +87,21 @@ public class JettyServerProperties {
 	private final Accesslog accesslog = new Accesslog();
 
 	/**
+	 * Forwarded headers configuration.
+	 */
+	private final Forwardedheaders forwardedHeaders = new Forwardedheaders();
+
+	/**
 	 * Thread related configuration.
 	 */
 	private final Threads threads = new Threads();
 
 	public Accesslog getAccesslog() {
 		return this.accesslog;
+	}
+
+	public Forwardedheaders getForwardedHeaders() {
+		return this.forwardedHeaders;
 	}
 
 	public Threads getThreads() {
@@ -263,6 +272,43 @@ public class JettyServerProperties {
 			 * Extended NCSA format, as defined in CustomRequestLog#EXTENDED_NCSA_FORMAT.
 			 */
 			EXTENDED_NCSA
+
+		}
+
+	}
+
+	/**
+	 * Forwarded headers.
+	 */
+	public static class Forwardedheaders {
+
+		/**
+		 * Format of the forwarded headers to support.
+		 */
+		private HeaderFormat headerFormat = HeaderFormat.X_FORWARDED;
+
+		public HeaderFormat getHeaderFormat() {
+			return this.headerFormat;
+		}
+
+		public void setHeaderFormat(HeaderFormat headerFormat) {
+			this.headerFormat = headerFormat;
+		}
+
+		/**
+		 * Formats of forwarded headers supported by {@link Forwardedheaders}.
+		 */
+		public enum HeaderFormat {
+
+			/**
+			 * Use the standard "Forwarded" header, as defined by RFC 7239.
+			 */
+			STANDARD,
+
+			/**
+			 * Use the non-standard "X-Forwarded-*" headers.
+			 */
+			X_FORWARDED
 
 		}
 

@@ -517,8 +517,8 @@ If your web server of choice supports the set of HTTP headers you need, setting 
 | xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.tomcat[]
 
 | Jetty
-| `"X-Forwarded-*"`
-|
+| `"X-Forwarded-*"`, `"Forwarded"`
+| xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.jetty[]
 
 | Reactor Netty
 | `"X-Forwarded-*"`
@@ -566,6 +566,24 @@ TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 
 You can take complete control of the configuration of Tomcat's javadoc:org.apache.catalina.valves.RemoteIpValve[] by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.
+
+
+
+[[howto.webserver.use-behind-a-proxy-server.jetty]]
+=== Customize Jetty's Proxy Configuration
+
+If you use Jetty, you can additionally configure the type of the headers used to carry "`forwarded`" information.
+By default, the `"X-Forwarded-*"` format is used, but you can opt into the standard RFC variant:
+
+[configprops,yaml]
+----
+server:
+  jetty:
+    forwarded-headers:
+      header-format: "standard"
+----
+
+For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use Jetty's javadoc:org.eclipse.jetty.server.ForwardedRequestCustomizer[] to change the HTTP configuration.
 
 
 

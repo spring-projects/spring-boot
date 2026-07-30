@@ -677,6 +677,18 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(body).isEqualTo("https");
 	}
 
+	protected void assertRfcForwardHeaderIsUsed(ConfigurableReactiveWebServerFactory factory) {
+		this.webServer = factory.getWebServer(new XForwardedHandler());
+		this.webServer.start();
+		String body = getWebClient(this.webServer.getPort()).build()
+			.get()
+			.header("Forwarded", "proto=https")
+			.retrieve()
+			.bodyToMono(String.class)
+			.block(Duration.ofSeconds(30));
+		assertThat(body).isEqualTo("https");
+	}
+
 	private <T> T doWithRetry(Callable<T> action) throws Exception {
 		Exception lastFailure = null;
 		for (int i = 0; i < 10; i++) {

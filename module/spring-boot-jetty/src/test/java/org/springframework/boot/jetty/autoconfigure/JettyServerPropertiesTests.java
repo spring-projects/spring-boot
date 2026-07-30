@@ -101,6 +101,19 @@ class JettyServerPropertiesTests {
 	}
 
 	@Test
+	void forwardedHeadersDefaultToXForwarded() {
+		assertThat(this.properties.getForwardedHeaders().getHeaderFormat())
+			.isEqualTo(JettyServerProperties.Forwardedheaders.HeaderFormat.X_FORWARDED);
+	}
+
+	@Test
+	void testCustomizeJettyForwardedHeadersFormat() {
+		bind("server.jetty.forwarded-headers.header-format", "standard");
+		assertThat(this.properties.getForwardedHeaders().getHeaderFormat())
+			.isEqualTo(JettyServerProperties.Forwardedheaders.HeaderFormat.STANDARD);
+	}
+
+	@Test
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
