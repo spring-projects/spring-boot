@@ -27,18 +27,16 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
+import org.springframework.kafka.support.serializer.JacksonJsonSerde;
 
 @Configuration(proxyBeanMethods = false)
 @EnableKafkaStreams
 public class MyKafkaStreamsConfiguration {
 
 	@Bean
-	@SuppressWarnings({ "deprecation", "removal" })
 	public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 		KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
-		stream.map(this::uppercaseValue)
-			.to("ks1Out",
-					Produced.with(Serdes.Integer(), new org.springframework.kafka.support.serializer.JsonSerde<>()));
+		stream.map(this::uppercaseValue).to("ks1Out", Produced.with(Serdes.Integer(), new JacksonJsonSerde<>()));
 		return stream;
 	}
 

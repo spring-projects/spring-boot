@@ -24,6 +24,7 @@ import org.apache.kafka.streams.kstream.Produced
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafkaStreams
+import org.springframework.kafka.support.serializer.JacksonJsonSerde
 
 @Suppress("UNUSED_PARAMETER")
 @Configuration(proxyBeanMethods = false)
@@ -31,11 +32,9 @@ import org.springframework.kafka.annotation.EnableKafkaStreams
 class MyKafkaStreamsConfiguration {
 
 	@Bean
-	@Suppress("DEPRECATION")
 	fun kStream(streamsBuilder: StreamsBuilder): KStream<Int, String> {
 		val stream = streamsBuilder.stream<Int, String>("ks1In")
-		stream.map(this::uppercaseValue).to("ks1Out", Produced.with(Serdes.Integer(),
-			org.springframework.kafka.support.serializer.JsonSerde()))
+		stream.map(this::uppercaseValue).to("ks1Out", Produced.with(Serdes.Integer(), JacksonJsonSerde()))
 		return stream
 	}
 
