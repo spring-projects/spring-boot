@@ -1,0 +1,7 @@
+name: Build Release
+runs:
+  using: composite
+  steps:
+    - name: Build Release
+      shell: bash
+      run:  ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository publishAllPublicationsToDeploymentRepository

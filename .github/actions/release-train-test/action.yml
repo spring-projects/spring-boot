@@ -1,0 +1,7 @@
+name: Test Release
+runs:
+  using: composite
+  steps:
+    - name: Test Release
+      shell: bash
+      run:  ./gradlew build -x dockerTest -x reclaimDockerSpace

@@ -3,8 +3,7 @@ description: 'Publishes Spring Boot''s Gradle plugin to the Plugin Portal'
 inputs:
   build-number:
     description: 'Build number to use when downloading plugin artifacts'
-    required: false
-    default: ${{ github.run_number }}
+    required: true
   gradle-plugin-publish-key:
     description: 'Gradle publishing key'
     required: true

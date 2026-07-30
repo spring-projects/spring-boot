@@ -1,0 +1,69 @@
+name: Publicize Release
+on:
+  push:
+    tags:
+      - v4.2.[0-9]+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+jobs:
+  read-version:
+    name: Read Version
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Read Version From gradle.properties
+        id: read-version
+        shell: bash
+        run: |
+          version=$(sed -n 's/version=\(.*\)/\1/p' gradle.properties)
+          echo "Version is $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
+    outputs:
+      version: ${{ steps.read-version.outputs.version }}
+  publish-gradle-plugin:
+    name: Publish Gradle Plugin
+    if: ${{ !vars.COMMERCIAL }}
+    needs:
+      - read-version
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Publish
+        uses: ./.github/actions/publish-gradle-plugin
+        with:
+          build-number: '2026.4'
+          gradle-plugin-publish-key: ${{ secrets.GRADLE_PLUGIN_PUBLISH_KEY }}
+          gradle-plugin-publish-secret: ${{ secrets.GRADLE_PLUGIN_PUBLISH_SECRET }}
+          jfrog-cli-config-token: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+          plugin-version: ${{ needs.read-version.outputs.version }}
+  trigger-docs-build:
+    name: Trigger Docs Build
+    needs:
+      - read-version
+    permissions:
+      actions: write
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Run Deploy Docs Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.read-version.outputs.version }}
+  create-github-release:
+    name: Create GitHub Release
+    needs:
+      - read-version
+      - publish-gradle-plugin
+      - trigger-docs-build
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create GitHub Release
+        uses: ./.github/actions/create-github-release
+        with:
+          commercial: ${{ vars.COMMERCIAL }}
+          pre-release: true
+          milestone: ${{ needs.read-version.outputs.version }}
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
