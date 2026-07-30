@@ -43,6 +43,8 @@ public class RepositoryTransformersExtension {
 
 	private static final String REPOSITORIES_MARKER = "{spring.mavenRepositories}";
 
+	private static final String PLUGIN_REPOSITORIES_MARKER = "{spring.mavenPluginRepositories}";
+
 	private final Project project;
 
 	@Inject
@@ -67,13 +69,33 @@ public class RepositoryTransformersExtension {
 			getSpringRepositories().forEach((repository) -> {
 				if (repository.getName().startsWith("spring-commercial-")) {
 					String host = repository.getUrl().getHost();
-					hostCredentials.put(host,
-							new MavenCredential("${env.COMMERCIAL_REPO_USERNAME}", "${env.COMMERCIAL_REPO_PASSWORD}"));
+					hostCredentials.put(host, new MavenCredential("${env.COMMERCIAL_REPO_USERNAME}",
+							"${env.COMMERCIAL_REPO_PASSWORD}", "Artifactory Realm"));
+				}
+				else if (repository.getName().equals("spring-release-train")) {
+					String host = repository.getUrl().getHost();
+					hostCredentials.put(host, new MavenCredential("${env.RELEASE_TRAIN_MAVEN_REPOSITORY_USERNAME}",
+							"${env.RELEASE_TRAIN_MAVEN_REPOSITORY_PASSWORD}", "GitHub Package Registry"));
 				}
 			});
-			return transform(line, hostCredentials.entrySet(), (entry,
-					indent) -> "%s<credentials host=\"%s\" realm=\"Artifactory Realm\" username=\"%s\" passwd=\"%s\" />%n"
-						.formatted(indent, entry.getKey(), entry.getValue().username(), entry.getValue().password()));
+			return transform(line, hostCredentials.entrySet(),
+					(entry, indent) -> "%s<credentials host=\"%s\" realm=\"%s\" username=\"%s\" passwd=\"%s\" />%n"
+						.formatted(indent, entry.getKey(), entry.getValue().realm(), entry.getValue().username(),
+								entry.getValue().password()));
+		}
+		return line;
+	}
+
+	public Transformer<String, String> mavenSettings() {
+		return this::transformMavenSettings;
+	}
+
+	private String transformMavenSettings(String line) {
+		if (line.contains(REPOSITORIES_MARKER)) {
+			return transformMavenRepositories(line, false);
+		}
+		if (line.contains(PLUGIN_REPOSITORIES_MARKER)) {
+			return transformMavenRepositories(line, true);
 		}
 		return line;
 	}
@@ -141,7 +163,7 @@ public class RepositoryTransformersExtension {
 		project.getExtensions().create("springRepositoryTransformers", RepositoryTransformersExtension.class, project);
 	}
 
-	record MavenCredential(String username, String password) {
+	record MavenCredential(String username, String password, String realm) {
 
 	}
 
