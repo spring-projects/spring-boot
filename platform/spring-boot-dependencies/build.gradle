@@ -1627,7 +1627,7 @@ bom {
 		}
 	}
 	library("Micrometer", "1.17.0") {
-		considerSnapshots()
+		firstParty()
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1650,7 +1650,7 @@ bom {
 		}
 	}
 	library("Micrometer Tracing", "1.7.0") {
-		considerSnapshots()
+		firstParty()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
 		}
@@ -1979,7 +1979,7 @@ bom {
 		}
 	}
 	library("R2DBC H2", "1.1.0.RELEASE") {
-		considerSnapshots()
+		firstParty()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-h2"
@@ -2020,7 +2020,7 @@ bom {
 		}
 	}
 	library("R2DBC Pool", "1.0.2.RELEASE") {
-		considerSnapshots()
+		firstParty()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-pool"
@@ -2032,7 +2032,7 @@ bom {
 		}
 	}
 	library("R2DBC Postgresql", "1.1.2.RELEASE") {
-		considerSnapshots()
+		firstParty()
 		group("org.postgresql") {
 			modules = [
 				"r2dbc-postgresql"
@@ -2043,7 +2043,7 @@ bom {
 		}
 	}
 	library("R2DBC Proxy", "1.1.6.RELEASE") {
-		considerSnapshots()
+		firstParty()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-proxy"
@@ -2054,7 +2054,7 @@ bom {
 		}
 	}
 	library("R2DBC SPI", "1.0.0.RELEASE") {
-		considerSnapshots()
+		firstParty()
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-spi"
@@ -2109,7 +2109,7 @@ bom {
 		}
 	}
 	library("Reactor Bom", "2026.0.0-SNAPSHOT") {
-		considerSnapshots()
+		firstParty()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
 			bom("reactor-bom")
@@ -2546,7 +2546,7 @@ bom {
 		}
 	}
 	library("Spring AMQP", "4.1.0") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
 		}
@@ -2561,7 +2561,7 @@ bom {
 		}
 	}
 	library("Spring Batch", "6.0.4") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.batch") {
 			bom("spring-batch-bom")
 		}
@@ -2576,7 +2576,7 @@ bom {
 		}
 	}
 	library("Spring Data Bom", "2026.0.0") {
-		considerSnapshots()
+		firstParty()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
 			bom("spring-data-bom")
@@ -2588,7 +2588,7 @@ bom {
 		}
 	}
 	library("Spring Framework", "${springFrameworkVersion}") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework") {
 			bom("spring-framework-bom")
 		}
@@ -2606,7 +2606,7 @@ bom {
 		}
 	}
 	library("Spring GraphQL", "2.0.4") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
@@ -2624,7 +2624,7 @@ bom {
 		}
 	}
 	library("Spring gRPC", "${springGrpcVersion}") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.grpc") {
 			modules = [
 					"spring-grpc-core"
@@ -2641,7 +2641,7 @@ bom {
 		}
 	}
 	library("Spring HATEOAS", "3.1.1") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
@@ -2658,7 +2658,7 @@ bom {
 		}
 	}
 	library("Spring Integration", "7.1.0") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
 		}
@@ -2673,7 +2673,7 @@ bom {
 		}
 	}
 	library("Spring Kafka", "4.1.0") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -2691,7 +2691,7 @@ bom {
 		}
 	}
 	library("Spring LDAP", "4.1.0") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
@@ -2711,7 +2711,7 @@ bom {
 		}
 	}
 	library("Spring Pulsar", "2.0.6") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
 		}
@@ -2726,7 +2726,7 @@ bom {
 		}
 	}
 	library("Spring RESTDocs", "4.0.1") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.restdocs") {
 			bom("spring-restdocs-bom")
 		}
@@ -2741,7 +2741,7 @@ bom {
 		}
 	}
 	library("Spring Security", "7.1.0") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
 		}
@@ -2756,7 +2756,7 @@ bom {
 		}
 	}
 	library("Spring Session", "4.1.0") {
-		considerSnapshots()
+		firstParty()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
 			because "Spring Session switched to numeric version numbers"
@@ -2779,7 +2779,7 @@ bom {
 		}
 	}
 	library("Spring WS", "5.0.2") {
-		considerSnapshots()
+		firstParty()
 		group("org.springframework.ws") {
 			bom("spring-ws-bom")
 		}

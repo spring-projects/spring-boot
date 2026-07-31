@@ -16,8 +16,10 @@
 
 package org.springframework.boot.build.bom.bomr.github;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +94,19 @@ final class StandardGitHubRepository implements GitHubRepository {
 						+ milestone.getNumber(),
 				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title"),
 						Issue.State.of((String) issue.get("state"))));
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public String getContent(String path, String ref) {
+		Map body = this.rest.get().uri("contents/" + path + "?ref=" + ref).retrieve().body(Map.class);
+		return base64Decode((String) body.get("content"));
+
+	}
+
+	private String base64Decode(String encoded) {
+		return new String(Base64.getDecoder().decode(encoded.replace("\n", "").getBytes(StandardCharsets.UTF_8)),
+				StandardCharsets.UTF_8);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

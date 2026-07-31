@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,6 +45,7 @@ import org.springframework.boot.build.bom.BomExtension.LibraryHandler.AlignWithH
 import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.DependencyVersionAlignment;
 import org.springframework.boot.build.bom.Library.Exclusion;
+import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
@@ -120,8 +122,14 @@ public class BomExtension {
 				(version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
+		FirstParty firstParty = null;
+		if (libraryHandler.firstParty) {
+			String releaseTrainId = (libraryHandler.releaseTrainId != null) ? libraryHandler.releaseTrainId
+					: name.replace(' ', '-').toLowerCase(Locale.ROOT);
+			firstParty = new FirstParty(releaseTrainId);
+		}
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots,
+				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, firstParty,
 				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.linkRootName,
 				libraryHandler.links));
 	}
@@ -212,7 +220,9 @@ public class BomExtension {
 
 		private final AlignWithHandler alignWith;
 
-		private boolean considerSnapshots;
+		private boolean firstParty = false;
+
+		private String releaseTrainId = null;
 
 		private String version;
 
@@ -233,8 +243,15 @@ public class BomExtension {
 			this.version = version;
 		}
 
-		public void considerSnapshots() {
-			this.considerSnapshots = true;
+		public void firstParty() {
+			this.firstParty = true;
+		}
+
+		public void firstParty(Action<FirstPartyHandler> action) {
+			FirstPartyHandler handler = new FirstPartyHandler();
+			action.execute(handler);
+			this.firstParty = true;
+			this.releaseTrainId = handler.releaseTrainId;
 		}
 
 		public void setCalendarName(String calendarName) {
@@ -489,6 +506,16 @@ public class BomExtension {
 					this.exclusions = this.exclusions.or(exclusion);
 				}
 
+			}
+
+		}
+
+		public static class FirstPartyHandler {
+
+			private String releaseTrainId;
+
+			public void setReleaseTrainId(String releaseTrainId) {
+				this.releaseTrainId = releaseTrainId;
 			}
 
 		}

@@ -62,8 +62,12 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	}
 
 	@Override
-	protected String commitMessage(Upgrade upgrade, int issueNumber) {
-		return issueTitle(upgrade) + "\n\nCloses gh-" + issueNumber;
+	protected String commitMessage(Upgrade upgrade, Integer issueNumber) {
+		String message = issueTitle(upgrade);
+		if (issueNumber != null) {
+			message += "\n\nCloses gh-" + issueNumber;
+		}
+		return message;
 	}
 
 	@Override

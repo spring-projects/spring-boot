@@ -110,15 +110,13 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				moduleVersions.put(group.getId() + ":" + module.getName(),
-						getLaterVersionsForModule(group.getId(), module.getName(), library));
+						getVersionsForModule(group.getId(), module.getName(), library));
 			}
 			for (ImportedBom bom : group.getBoms()) {
-				moduleVersions.put(group.getId() + ":" + bom,
-						getLaterVersionsForModule(group.getId(), bom.name(), library));
+				moduleVersions.put(group.getId() + ":" + bom, getVersionsForModule(group.getId(), bom.name(), library));
 			}
 			for (String plugin : group.getPlugins()) {
-				moduleVersions.put(group.getId() + ":" + plugin,
-						getLaterVersionsForModule(group.getId(), plugin, library));
+				moduleVersions.put(group.getId() + ":" + plugin, getVersionsForModule(group.getId(), plugin, library));
 			}
 		}
 		List<VersionOption> versionOptions = new ArrayList<>();
@@ -146,8 +144,8 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 		return missingModules;
 	}
 
-	private SortedSet<DependencyVersion> getLaterVersionsForModule(String groupId, String artifactId, Library library) {
-		return this.versionResolver.resolveVersions(groupId, artifactId);
+	private SortedSet<DependencyVersion> getVersionsForModule(String groupId, String artifactId, Library library) {
+		return this.versionResolver.resolveVersions(groupId, artifactId, library);
 	}
 
 }
