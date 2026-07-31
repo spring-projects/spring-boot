@@ -18,6 +18,7 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.util.SortedSet;
 
+import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
@@ -32,8 +33,9 @@ interface VersionResolver {
 	 * {@code groupId} and {@code artifactId}.
 	 * @param groupId module's group ID
 	 * @param artifactId module's artifact ID
+	 * @param library the library to which the module belongs
 	 * @return the available versions
 	 */
-	SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId);
+	SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId, Library library);
 
 }

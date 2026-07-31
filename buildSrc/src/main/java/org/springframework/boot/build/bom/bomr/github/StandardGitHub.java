@@ -16,8 +16,6 @@
 
 package org.springframework.boot.build.bom.bomr.github;
 
-import java.util.Base64;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
@@ -50,10 +48,7 @@ final class StandardGitHub implements GitHub {
 				.withJsonConverter(new JacksonJsonHttpMessageConverter()))
 			.requestInterceptor((request, body, execution) -> {
 				request.getHeaders().add("User-Agent", StandardGitHub.this.username);
-				request.getHeaders()
-					.add("Authorization", "Basic " + Base64.getEncoder()
-						.encodeToString(
-								(StandardGitHub.this.username + ":" + StandardGitHub.this.password).getBytes()));
+				request.getHeaders().add("Authorization", "Bearer " + StandardGitHub.this.password);
 				request.getHeaders().add("Accept", MediaType.APPLICATION_JSON_VALUE);
 				return execution.execute(request, body);
 			})
