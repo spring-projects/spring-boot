@@ -59,7 +59,9 @@ public class NettyReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
-		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
+		if (getOrDeduceUseForwardHeaders()) {
+			configureForwardedSupport(factory);
+		}
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.nettyProperties::getConnectionTimeout)
 			.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
@@ -79,6 +81,13 @@ public class NettyReactiveWebServerFactoryCustomizer
 			return platform != null && platform.isUsingForwardHeaders();
 		}
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
+	}
+
+	private void configureForwardedSupport(NettyReactiveWebServerFactory factory) {
+		switch (this.nettyProperties.getForwardedHeaders().getHeaderFormat()) {
+			case X_FORWARDED -> factory.setUseForwardHeaders(true);
+			case STANDARD -> factory.setUseRfcForwardHeader(true);
+		}
 	}
 
 	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {

@@ -90,6 +90,11 @@ public class NettyServerProperties {
 	 */
 	private @Nullable Duration idleTimeout;
 
+	/**
+	 * Forwarded headers configuration.
+	 */
+	private final Forwardedheaders forwardedHeaders = new Forwardedheaders();
+
 	public @Nullable Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
@@ -144,6 +149,47 @@ public class NettyServerProperties {
 
 	public void setIdleTimeout(@Nullable Duration idleTimeout) {
 		this.idleTimeout = idleTimeout;
+	}
+
+	public Forwardedheaders getForwardedHeaders() {
+		return this.forwardedHeaders;
+	}
+
+	/**
+	 * Forwarded headers.
+	 */
+	public static class Forwardedheaders {
+
+		/**
+		 * Format of the forwarded headers to support.
+		 */
+		private HeaderFormat headerFormat = HeaderFormat.X_FORWARDED;
+
+		public HeaderFormat getHeaderFormat() {
+			return this.headerFormat;
+		}
+
+		public void setHeaderFormat(HeaderFormat headerFormat) {
+			this.headerFormat = headerFormat;
+		}
+
+		/**
+		 * Formats of forwarded headers supported by {@link Forwardedheaders}.
+		 */
+		public enum HeaderFormat {
+
+			/**
+			 * Use the standard "Forwarded" header, as defined by RFC 7239.
+			 */
+			STANDARD,
+
+			/**
+			 * Use the non-standard "X-Forwarded-*" headers.
+			 */
+			X_FORWARDED
+
+		}
+
 	}
 
 }

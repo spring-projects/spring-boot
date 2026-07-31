@@ -521,8 +521,8 @@ If your web server of choice supports the set of HTTP headers you need, setting 
 | xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.jetty[]
 
 | Reactor Netty
-| `"X-Forwarded-*"`
-|
+| `"X-Forwarded-*"`, `"Forwarded"`
+| xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.reactor-netty[]
 
 |===
 
@@ -584,6 +584,24 @@ server:
 ----
 
 For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use Jetty's javadoc:org.eclipse.jetty.server.ForwardedRequestCustomizer[] to change the HTTP configuration.
+
+
+
+[[howto.webserver.use-behind-a-proxy-server.reactor-netty]]
+=== Customize Reactor Netty's Proxy Configuration
+
+If you use Reactor Netty, you can additionally configure the type of the headers used to carry "`forwarded`" information.
+By default, the `"X-Forwarded-*"` format is used, but you can opt into the standard RFC variant:
+
+[configprops,yaml]
+----
+server:
+  netty:
+    forwarded-headers:
+      header-format: "standard"
+----
+
+For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use `reactor.netty.http.server.HttpServer` forwarded header support to change the HTTP configuration.
 
 
 
