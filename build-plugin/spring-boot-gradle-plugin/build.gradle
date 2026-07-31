@@ -171,8 +171,3 @@ tasks.named("compileTestJava") {
 tasks.named("compileDockerTestJava") {
 	options.nullability.checking = "tests"
 }
-
-tasks.named("test") {
-	outputs.upToDateWhen { false }
-	outputs.cacheIf { false }
-}
