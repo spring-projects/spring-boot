@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TomcatServerProperties}.
  *
  * @author Andy Wilkinson
+ * @author Tiziano Basile
  */
 class TomcatServerPropertiesTests {
 
@@ -235,8 +236,8 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatUseRelativeRedirectsDefaultsToFalse() {
-		assertThat(this.properties.isUseRelativeRedirects()).isFalse();
+	void tomcatUseRelativeRedirectsDefaultsToTrue() {
+		assertThat(this.properties.isUseRelativeRedirects()).isTrue();
 	}
 
 	@Test

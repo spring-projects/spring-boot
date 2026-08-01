@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.http.clients.redirects=dont-follow")
 @AutoConfigureRestTestClient
 class SampleGroovyTemplateApplicationTests {
-
-	@LocalServerPort
-	private int port;
 
 	@Autowired
 	private RestTestClient restTestClient;
@@ -62,7 +58,7 @@ class SampleGroovyTemplateApplicationTests {
 			.body(map)
 			.exchange()
 			.expectHeader()
-			.value("Location", (location) -> assertThat(location).contains("localhost:" + this.port));
+			.value("Location", (location) -> assertThat(location).matches("/\\d+(;jsessionid=[\\w.]+)?"));
 	}
 
 	@Test

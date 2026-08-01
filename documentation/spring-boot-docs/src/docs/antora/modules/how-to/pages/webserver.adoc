@@ -562,8 +562,9 @@ server:
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
-TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
+TIP: If you are using Tomcat, terminating SSL at the proxy, and have set configprop:server.tomcat.use-relative-redirects[] to `false`, then configprop:server.tomcat.redirect-context-root[] should also be set to `false`.
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
+When relative redirects are in use, which is Tomcat's default, the context root redirect carries no scheme so there is nothing for the header to correct.
 
 You can take complete control of the configuration of Tomcat's javadoc:org.apache.catalina.valves.RemoteIpValve[] by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.
 
