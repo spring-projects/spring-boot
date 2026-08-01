@@ -17,8 +17,6 @@ Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geo
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {url-spring-data-site}.
 
-Spring Boot also provides auto-configuration for the InfluxDB client but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
-
 
 
 [[data.nosql.redis]]
