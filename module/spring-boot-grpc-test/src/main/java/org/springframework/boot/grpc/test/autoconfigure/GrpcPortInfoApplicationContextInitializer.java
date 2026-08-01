@@ -31,6 +31,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.ClassUtils;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
@@ -50,8 +51,13 @@ import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
 class GrpcPortInfoApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+	private static final String GRPC_SERVER_STARTED_EVENT = "org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent";
+
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		if (!ClassUtils.isPresent(GRPC_SERVER_STARTED_EVENT, applicationContext.getClassLoader())) {
+			return;
+		}
 		applicationContext.addApplicationListener(new Listener(applicationContext));
 	}
 

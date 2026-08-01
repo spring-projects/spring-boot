@@ -16,10 +16,13 @@
 
 package org.springframework.boot.grpc.test.autoconfigure;
 
+import java.io.IOException;
+
 import io.grpc.Server;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +45,29 @@ import static org.mockito.Mockito.mock;
 class GrpcPortInfoApplicationContextInitializerTests {
 
 	private static final String PORT_PROPERTY = "local.grpc.server.port";
+
+	@Test
+	void whenGrpcServerStartedEventIsNotOnTheClasspathRegistersNoListener() throws IOException {
+		// gh-50825: the initializer is registered unconditionally via
+		// spring.factories, so with spring-grpc absent the listener's generic
+		// interface cannot be resolved and Spring throws TypeNotPresentException.
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+				FilteredClassLoader classLoader = new FilteredClassLoader(GrpcServerStartedEvent.class)) {
+			context.setClassLoader(classLoader);
+			int before = context.getApplicationListeners().size();
+			new GrpcPortInfoApplicationContextInitializer().initialize(context);
+			assertThat(context.getApplicationListeners()).hasSize(before);
+		}
+	}
+
+	@Test
+	void whenGrpcServerStartedEventIsOnTheClasspathRegistersListener() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			int before = context.getApplicationListeners().size();
+			new GrpcPortInfoApplicationContextInitializer().initialize(context);
+			assertThat(context.getApplicationListeners()).hasSize(before + 1);
+		}
+	}
 
 	@Test
 	void whenServerHasAddressInitializerSetsPortProperty() {
