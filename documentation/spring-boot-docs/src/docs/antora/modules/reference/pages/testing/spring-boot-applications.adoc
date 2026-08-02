@@ -331,6 +331,30 @@ include-code::MyJsonAssertJTests[tag=*]
 
 
 
+[[testing.spring-boot-applications.xml-tests]]
+== Auto-configured XML Tests
+
+To test that object XML serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] annotation from the `spring-boot-test-autoconfigure` module.
+javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] auto-configures the Jackson javadoc:tools.jackson.dataformat.xml.XmlMapper[], any javadoc:org.springframework.boot.jackson.JacksonComponent[format=annotation] beans and any Jackson javadoc:tools.jackson.databind.JacksonModule[].
+
+TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+
+If you need to configure elements of the auto-configuration, you can use the javadoc:org.springframework.boot.test.autoconfigure.xml.AutoConfigureXmlTesters[format=annotation] annotation.
+
+Spring Boot includes AssertJ-based helpers that work with the XMLUnit library to check that XML appears as expected.
+The javadoc:org.springframework.boot.test.xml.JacksonXmlTester[] class can be used for Jackson.
+Any helper fields on the test class can be javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] when using javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation].
+The following example shows a test class for Jackson:
+
+include-code::MyXmlTests[]
+
+NOTE: An identical comparison (`isEqualToXml`) requires the documents to match exactly, whereas a similar comparison (`isSimilarToXml`) ignores insignificant whitespace, comments and the ordering of elements and attributes.
+
+NOTE: XML helper classes can also be used directly in standard unit tests.
+To do so, call the `initFields` method of the helper in your javadoc:org.junit.jupiter.api.BeforeEach[format=annotation] method if you do not use javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation].
+
+
+
 [[testing.spring-boot-applications.spring-mvc-tests]]
 == Auto-configured Spring MVC Tests
 
