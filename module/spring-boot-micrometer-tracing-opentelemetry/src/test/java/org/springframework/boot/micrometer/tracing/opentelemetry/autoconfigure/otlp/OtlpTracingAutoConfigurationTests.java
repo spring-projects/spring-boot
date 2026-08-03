@@ -23,8 +23,8 @@ import java.util.function.Supplier;
 import javax.net.ssl.X509TrustManager;
 
 import io.opentelemetry.api.metrics.MeterProvider;
-import io.opentelemetry.exporter.internal.compression.GzipCompressor;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
+import io.opentelemetry.exporter.otlp.internal.GzipCompressor;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.HttpUrl;
