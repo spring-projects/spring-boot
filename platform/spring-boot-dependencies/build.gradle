@@ -1323,7 +1323,7 @@ bom {
 			javadoc("https://projectlombok.org/api")
 		}
 	}
-	library("MariaDB", "3.5.9") {
+	library("MariaDB", "3.5.10") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
