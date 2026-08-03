@@ -12,6 +12,11 @@
 						<plugin>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
+							<configuration>
+								<image>
+									<runImage>paketobuildpacks/ubuntu-resolute-run-tiny</runImage>
+								</image>
+							</configuration>
 							<executions>
 								<execution>
 									<id>build-image</id>

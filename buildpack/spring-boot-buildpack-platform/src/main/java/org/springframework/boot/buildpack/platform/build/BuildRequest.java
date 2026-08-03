@@ -48,11 +48,13 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-noble-java-tiny";
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/ubuntu-resolute-builder";
 
 	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
 
 	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
+			ImageReference.of("paketobuildpacks/ubuntu-resolute-builder"),
+			ImageReference.of("paketobuildpacks/ubuntu-resolute-builder-buildpackless"),
 			ImageReference.of("paketobuildpacks/builder-noble-java-tiny"),
 			ImageReference.of("paketobuildpacks/builder-jammy-java-tiny"),
 			ImageReference.of("paketobuildpacks/builder-jammy-tiny"),
