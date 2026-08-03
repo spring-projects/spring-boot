@@ -2605,7 +2605,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "2.0.4") {
+	library("Spring GraphQL", "2.0.5-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.graphql") {
 			modules = [
