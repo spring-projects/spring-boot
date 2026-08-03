@@ -258,7 +258,34 @@ class DataRedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+			assertThat(cf.getClientConfiguration().getSslParameters())
+				.hasValueSatisfying((sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm())
+					.isEqualTo("HTTPS"));
 		});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslEnabledAndVerifyHostnameDisabled() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.enabled:true", "spring.data.redis.ssl.verify-hostname:false")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying(
+						(sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm()).isNull());
+			});
+	}
+
+	@Test
+	void testRedisUrlWithSslVerifiesHostname() {
+		this.contextRunner.withPropertyValues("spring.data.redis.url:rediss://user:password@example:33")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying(
+						(sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm())
+							.isEqualTo("HTTPS"));
+			});
 	}
 
 	@Test

@@ -134,6 +134,9 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
 		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
+		if (getProperties().getSsl().isVerifyHostname()) {
+			sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+		}
 		sslBuilder.sslParameters(sslParameters);
 	}
 
@@ -159,7 +162,12 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder,
 			String url) {
 		if (urlUsesSsl(url)) {
-			builder.useSsl();
+			JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
+			if (getSslBundle() == null && getProperties().getSsl().isVerifyHostname()) {
+				SSLParameters sslParameters = new SSLParameters();
+				sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+				sslBuilder.sslParameters(sslParameters);
+			}
 		}
 	}
 
