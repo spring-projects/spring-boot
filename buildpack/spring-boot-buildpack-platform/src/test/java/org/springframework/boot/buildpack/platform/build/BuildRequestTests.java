@@ -170,6 +170,20 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void getDefaultRunImageWhenDefaultBuilderReturnsTinyRunImage() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThat(request.getDefaultRunImage())
+			.hasToString("docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest");
+	}
+
+	@Test
+	void getDefaultRunImageWhenCustomBuilderReturnsNull() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withBuilder(ImageReference.of("spring/builder"));
+		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
 	void withRunImageUpdatesRunImage() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 			.withRunImage(ImageReference.of("example.com/custom/run-image:latest"));
