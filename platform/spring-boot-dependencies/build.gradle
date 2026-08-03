@@ -1122,7 +1122,7 @@ bom {
 			releaseNotes("https://github.com/skyscreamer/JSONassert/releases/tag/jsonassert-{version}")
 		}
 	}
-	library("JSpecify", "1.0.0") {
+	library("JSpecify", "1.0.1") {
 		group("org.jspecify") {
 			modules = [
 					"jspecify"
