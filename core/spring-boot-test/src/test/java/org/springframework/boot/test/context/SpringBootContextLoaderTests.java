@@ -78,6 +78,13 @@ class SpringBootContextLoaderTests {
 	}
 
 	@Test
+	void applicationModeDefaultsToTest() {
+		TestContext context = new ExposedTestContextManager(SimpleConfig.class).getExposedTestContext();
+		assertThat(context.getApplicationContext().getEnvironment().getProperty("spring.application.mode"))
+			.isEqualTo("test");
+	}
+
+	@Test
 	void environmentPropertiesSimple() {
 		Map<String, Object> config = getMergedContextConfigurationProperties(SimpleConfig.class);
 		assertKey(config, "key", "myValue");

@@ -326,6 +326,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		ArrayList<String> properties = new ArrayList<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		properties.add("spring.jmx.enabled=false");
+		properties.add("spring.application.mode=test");
 		properties.addAll(Arrays.asList(mergedConfig.getPropertySourceProperties()));
 		return StringUtils.toStringArray(properties);
 	}

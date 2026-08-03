@@ -36,6 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApplicationInfoPropertySourceTests {
 
 	@Test
+	void shouldAddProductionMode() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.getPropertySources().addLast(new ApplicationInfoPropertySource("1.2.3"));
+		assertThat(environment.getProperty("spring.application.mode")).isEqualTo("prod");
+	}
+
+	@Test
+	void shouldAllowApplicationModeToBeOverridden() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.application.mode", "dev");
+		environment.getPropertySources().addLast(new ApplicationInfoPropertySource("1.2.3"));
+		assertThat(environment.getProperty("spring.application.mode")).isEqualTo("dev");
+	}
+
+	@Test
 	void shouldAddVersion() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.getPropertySources().addLast(new ApplicationInfoPropertySource("1.2.3"));

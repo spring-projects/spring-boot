@@ -38,7 +38,7 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenTheRunGoalIsExecutedTheApplicationIsForkedWithOptimizedJvmArguments(MavenBuild mavenBuild) {
 		mavenBuild.project("run").goals("spring-boot:run", "-X").execute((project) -> {
-			String jvmArguments = "JVM argument: -XX:TieredStopAtLevel=1";
+			String jvmArguments = "JVM arguments: -XX:TieredStopAtLevel=1 -Dspring.application.mode=dev";
 			assertThat(buildLog(project)).contains("I haz been run").contains(jvmArguments);
 		});
 	}

@@ -313,6 +313,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	protected RunArguments resolveJvmArguments() {
 		List<@Nullable String> arguments = new ArrayList<>();
+		arguments.add(SystemPropertyFormatter.format("spring.application.mode", getApplicationMode()));
 		if (this.systemPropertyVariables != null) {
 			for (Entry<String, String> systemProperty : this.systemPropertyVariables.entrySet()) {
 				String argument = SystemPropertyFormatter.format(systemProperty.getKey(), systemProperty.getValue());
@@ -327,6 +328,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 		return new RunArguments(arguments);
 	}
+
+	/**
+	 * Return the application mode to use.
+	 * @return the application mode
+	 */
+	protected abstract String getApplicationMode();
 
 	private void addJvmArgs(List<String> args) {
 		RunArguments jvmArguments = resolveJvmArguments();

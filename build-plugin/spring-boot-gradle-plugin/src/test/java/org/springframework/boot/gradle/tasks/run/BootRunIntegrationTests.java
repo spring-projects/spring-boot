@@ -111,7 +111,7 @@ class BootRunIntegrationTests {
 		BuildTask task = result.task(":bootRun");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).contains("-Dspring.application.mode=dev").contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate

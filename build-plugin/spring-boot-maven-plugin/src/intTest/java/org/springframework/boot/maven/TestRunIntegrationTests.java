@@ -38,6 +38,7 @@ class TestRunIntegrationTests {
 		mavenBuild.project("test-run")
 			.goals("spring-boot:test-run", "-X")
 			.execute((project) -> assertThat(buildLog(project))
+				.contains("JVM arguments: -XX:TieredStopAtLevel=1 -Dspring.application.mode=dev")
 				.contains("Main class name = org.test.TestSampleApplication")
 				.contains("1. " + canonicalPathOf(project, "target/test-classes"))
 				.contains("2. " + canonicalPathOf(project, "target/classes"))

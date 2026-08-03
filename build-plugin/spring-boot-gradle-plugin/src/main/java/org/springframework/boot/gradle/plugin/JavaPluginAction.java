@@ -214,6 +214,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
+			run.systemProperty("spring.application.mode", "dev");
 			configureToolchainConvention(project, run);
 		});
 	}
@@ -230,6 +231,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
+			run.systemProperty("spring.application.mode", "dev");
 			configureToolchainConvention(project, run);
 		});
 	}

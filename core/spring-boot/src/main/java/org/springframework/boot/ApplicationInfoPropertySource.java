@@ -54,6 +54,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements Propert
 
 	private static Map<String, Object> getProperties(@Nullable String applicationVersion) {
 		Map<String, Object> result = new HashMap<>();
+		result.put("spring.application.mode", "prod");
 		if (StringUtils.hasText(applicationVersion)) {
 			result.put("spring.application.version", applicationVersion);
 		}

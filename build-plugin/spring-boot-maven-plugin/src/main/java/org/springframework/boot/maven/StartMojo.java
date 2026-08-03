@@ -101,6 +101,11 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	protected String getApplicationMode() {
+		return "test";
+	}
+
+	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
 		RunProcess runProcess = processExecutor.runAsync(workingDirectory, args, environmentVariables);

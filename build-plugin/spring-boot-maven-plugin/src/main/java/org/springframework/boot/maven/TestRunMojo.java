@@ -71,6 +71,11 @@ public class TestRunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	protected String getApplicationMode() {
+		return "dev";
+	}
+
+	@Override
 	protected List<File> getClassesDirectories() {
 		ArrayList<File> classesDirectories = new ArrayList<>(super.getClassesDirectories());
 		classesDirectories.add(0, this.testClassesDirectory);

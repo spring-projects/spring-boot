@@ -406,6 +406,12 @@
       }
     },
     {
+      "name": "spring.application.mode",
+      "type": "java.lang.String",
+      "description": "Application bootstrap mode.",
+      "defaultValue": "prod"
+    },
+    {
       "name": "spring.application.name",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
@@ -699,6 +705,23 @@
     }
   ],
   "hints": [
+    {
+      "name": "spring.application.mode",
+      "values": [
+        {
+          "value": "dev",
+          "description": "Application is running as part of a development workflow."
+        },
+        {
+          "value": "test",
+          "description": "Application is running as part of automated tests."
+        },
+        {
+          "value": "prod",
+          "description": "Application is running in production."
+        }
+      ]
+    },
     {
       "name": "logging.group.values",
       "providers": [

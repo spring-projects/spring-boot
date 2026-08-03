@@ -67,6 +67,11 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	protected String getApplicationMode() {
+		return "dev";
+	}
+
+	@Override
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (this.optimizedLaunch) {
