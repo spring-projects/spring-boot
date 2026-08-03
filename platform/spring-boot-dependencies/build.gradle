@@ -2078,7 +2078,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
-	library("RabbitMQ AMQP Client", "1.2.0") {
+	library("RabbitMQ AMQP Client", "1.3.0") {
 		group("com.rabbitmq.client") {
 			modules = [
 					"amqp-client"
