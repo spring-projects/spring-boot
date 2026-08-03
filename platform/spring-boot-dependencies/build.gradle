@@ -1855,7 +1855,7 @@ bom {
 			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/releases/tag/v{version}")
 		}
 	}
-	library("Pooled JMS", "3.2.2") {
+	library("Pooled JMS", "3.2.3") {
 		group("org.messaginghub") {
 			modules = [
 				"pooled-jms"
