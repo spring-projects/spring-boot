@@ -1311,7 +1311,7 @@ bom {
 			releaseNotes("https://github.com/JetBrains/kotlin/releases/tag/v{version}")
 		}
 	}
-	library("Kotlin Coroutines", "1.10.2") {
+	library("Kotlin Coroutines", "1.11.0") {
 		group("org.jetbrains.kotlinx") {
 			bom("kotlinx-coroutines-bom")
 		}
