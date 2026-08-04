@@ -2554,7 +2554,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Batch", "6.0.4") {
+	library("Spring Batch", "6.1.0-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.batch") {
 			bom("spring-batch-bom")
