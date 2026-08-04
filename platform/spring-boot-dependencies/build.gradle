@@ -2751,7 +2751,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "4.1.1-INTERNAL-SNAPSHOT") {
+	library("Spring Session", "4.1.1") {
 		firstParty()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
