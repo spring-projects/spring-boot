@@ -108,15 +108,21 @@ tasks.named("checkCompileClasspathForProhibitedDependencies") {
 	permittedGroups = ["javax.inject"]
 }
 
+tasks.register("copySettingsXml", Copy) {
+	from file("src/intTest/projects/settings.xml")
+	into layout.buildDirectory.dir("generated-resources/settings")
+	filter(springRepositoryTransformers.mavenSettings())
+}
+
 sourceSets {
 	main {
 		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties"])
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
 	dockerTest {
-		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
 }
 
