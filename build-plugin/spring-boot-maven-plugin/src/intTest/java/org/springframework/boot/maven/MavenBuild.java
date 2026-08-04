@@ -69,6 +69,8 @@ class MavenBuild {
 
 	private final Properties properties = new Properties();
 
+	private String root = "intTest";
+
 	private @Nullable ProjectCallback preparation;
 
 	private @Nullable File projectDir;
@@ -102,6 +104,7 @@ class MavenBuild {
 	}
 
 	MavenBuild project(String root, String project) {
+		this.root = root;
 		this.projectDir = new File("src/" + root + "/projects/" + project);
 		return this;
 	}
@@ -163,7 +166,10 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = Files.readString(Paths.get("src", "intTest", "projects", "settings.xml"))
+			Path settingsXmlPath = "dockerTest".equals(this.root)
+					? Paths.get("build", "generated-resources", "settings", "settings.xml")
+					: Paths.get("src", "intTest", "projects", "settings.xml");
+			String settingsXml = Files.readString(settingsXmlPath)
 				.replace("@localCentralUrl@", new File("build/test-maven-repository").toURI().toURL().toString())
 				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);
