@@ -1563,7 +1563,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.6.7-INTERNAL-SNAPSHOT") {
+	library("Micrometer Tracing", "1.6.7") {
 		firstParty()
 		alignWith {
 			dependencyManagementDeclaredIn("io.micrometer:micrometer-tracing-bom") {
