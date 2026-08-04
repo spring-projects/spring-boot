@@ -34,7 +34,7 @@ class MyXmlTests {
 	void serialize() throws Exception {
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");
 		// Assert against a `.xml` file in the same package as the test
-		assertThat(this.xml.write(details)).isSimilarToXml("expected.xml");
+		assertThat(this.xml.write(details)).isEqualToXml("expected.xml");
 		// Or use XPath based assertions
 		assertThat(this.xml.write(details)).hasXPathValue("/VehicleDetails/make");
 		assertThat(this.xml.write(details)).extractingXPathStringValue("/VehicleDetails/make").isEqualTo("Honda");

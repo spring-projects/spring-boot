@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
  *     &#064;Test
  *     public void testWriteXml() throws IOException {
  *         ExampleObject object = //...
- *         assertThat(xml.write(object)).isSimilarToXml("expected.xml");
+ *         assertThat(xml.write(object)).isEqualToXml("expected.xml");
  *     }
  *
  * }

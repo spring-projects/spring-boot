@@ -72,7 +72,7 @@ class XmlTestIntegrationTests {
 	void writeWhenBasicObjectThenMatchesExpectedXml() throws Exception {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
-		assertThat(this.basicXml.write(object)).isSimilarToXml("example.xml");
+		assertThat(this.basicXml.write(object)).isEqualToXml("example.xml");
 	}
 
 	@Test

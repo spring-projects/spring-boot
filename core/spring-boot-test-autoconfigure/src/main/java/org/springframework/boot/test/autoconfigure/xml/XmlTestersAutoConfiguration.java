@@ -26,6 +26,7 @@ import org.springframework.boot.test.xml.AbstractXmlMarshalTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -57,16 +58,22 @@ public final class XmlTestersAutoConfiguration {
 
 		private void processField(Object bean, Field field) {
 			if (AbstractXmlMarshalTester.class.isAssignableFrom(field.getType())) {
-				initializeTester(bean, field, bean.getClass(), ResolvableType.forField(field).getGeneric());
+				ReflectionUtils.makeAccessible(field);
+				Object tester = ReflectionUtils.getField(field, bean);
+				if (tester != null) {
+					ReflectionTestUtils.invokeMethod(tester, "initialize", bean.getClass(), getTypeUnderTest(field));
+				}
 			}
 		}
 
-		private void initializeTester(Object bean, Field field, Object... args) {
-			ReflectionUtils.makeAccessible(field);
-			Object tester = ReflectionUtils.getField(field, bean);
-			if (tester != null) {
-				ReflectionTestUtils.invokeMethod(tester, "initialize", args);
-			}
+		private ResolvableType getTypeUnderTest(Field field) {
+			ResolvableType type = ResolvableType.forField(field).getGeneric();
+			Assert.state(type.resolve() != null,
+					() -> "Unable to determine the type under test for field '" + field.getName() + "' of "
+							+ field.getDeclaringClass().getName() + ". Declare the field with an explicit generic "
+							+ "type, for example '" + field.getType().getSimpleName() + "<MyType> " + field.getName()
+							+ ";'.");
+			return type;
 		}
 
 	}

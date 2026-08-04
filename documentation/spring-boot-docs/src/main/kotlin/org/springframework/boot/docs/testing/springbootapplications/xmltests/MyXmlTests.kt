@@ -29,7 +29,7 @@ class MyXmlTests(@Autowired val xml: JacksonXmlTester<VehicleDetails>) {
 	fun serialize() {
 		val details = VehicleDetails("Honda", "Civic")
 		// Assert against a `.xml` file in the same package as the test
-		assertThat(xml.write(details)).isSimilarToXml("expected.xml")
+		assertThat(xml.write(details)).isEqualToXml("expected.xml")
 		// Or use XPath based assertions
 		assertThat(xml.write(details)).hasXPathValue("/VehicleDetails/make")
 		assertThat(xml.write(details)).extractingXPathStringValue("/VehicleDetails/make").isEqualTo("Honda")

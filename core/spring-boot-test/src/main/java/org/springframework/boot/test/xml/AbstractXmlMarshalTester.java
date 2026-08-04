@@ -16,12 +16,9 @@
 
 package org.springframework.boot.test.xml;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
@@ -54,7 +51,7 @@ import org.springframework.util.ReflectionUtils;
  *     &#064;Test
  *     public void testWriteXml() {
  *         ExampleObject object = //...
- *         assertThat(xml.write(object)).isSimilarToXml("expected.xml");
+ *         assertThat(xml.write(object)).isEqualToXml("expected.xml");
  *         assertThat(xml.read("expected.xml")).isEqualTo(object);
  *     }
  *
@@ -296,10 +293,10 @@ public abstract class AbstractXmlMarshalTester<T> {
 	public ObjectContent<T> read(Resource resource) throws IOException {
 		verify();
 		Assert.notNull(resource, "'resource' must not be null");
-		InputStream inputStream = resource.getInputStream();
-		T object = readObject(inputStream, getTypeNotNull());
-		closeQuietly(inputStream);
-		return new ObjectContent<>(this.type, object);
+		try (InputStream inputStream = resource.getInputStream()) {
+			T object = readObject(inputStream, getTypeNotNull());
+			return new ObjectContent<>(this.type, object);
+		}
 	}
 
 	/**
@@ -322,17 +319,9 @@ public abstract class AbstractXmlMarshalTester<T> {
 	public ObjectContent<T> read(Reader reader) throws IOException {
 		verify();
 		Assert.notNull(reader, "'reader' must not be null");
-		T object = readObject(reader, getTypeNotNull());
-		closeQuietly(reader);
-		return new ObjectContent<>(this.type, object);
-	}
-
-	private void closeQuietly(Closeable closeable) {
-		try {
-			closeable.close();
-		}
-		catch (IOException ex) {
-			// Ignore
+		try (Reader source = reader) {
+			T object = readObject(source, getTypeNotNull());
+			return new ObjectContent<>(this.type, object);
 		}
 	}
 
@@ -351,17 +340,16 @@ public abstract class AbstractXmlMarshalTester<T> {
 	protected abstract String writeObject(T value, ResolvableType type) throws IOException;
 
 	/**
-	 * Read from the specified input stream to create an object of the specified type. The
-	 * default implementation delegates to {@link #readObject(Reader, ResolvableType)}.
+	 * Read from the specified input stream to create an object of the specified type.
+	 * Implementations must pass the bytes to the XML parser so that any encoding declared
+	 * by the XML prolog is honored, rather than decoding them with a charset of their own
+	 * choosing.
 	 * @param inputStream the source input stream (never {@code null})
 	 * @param type the resulting type (never {@code null})
 	 * @return the resulting object
 	 * @throws IOException on read error
 	 */
-	protected T readObject(InputStream inputStream, ResolvableType type) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		return readObject(reader, type);
-	}
+	protected abstract T readObject(InputStream inputStream, ResolvableType type) throws IOException;
 
 	/**
 	 * Read from the specified reader to create an object of the specified type.
@@ -413,6 +401,11 @@ public abstract class AbstractXmlMarshalTester<T> {
 
 		private void setupField(Field field, Object test, ObjectFactory<M> marshaller) {
 			ResolvableType type = ResolvableType.forField(field).getGeneric();
+			Assert.state(type.resolve() != null,
+					() -> "Unable to determine the type under test for field '" + field.getName() + "' of "
+							+ field.getDeclaringClass().getName() + ". Declare the field with an explicit generic "
+							+ "type, for example '" + field.getType().getSimpleName() + "<MyType> " + field.getName()
+							+ ";'.");
 			ReflectionUtils.setField(field, test, createTester(test.getClass(), type, marshaller.getObject()));
 		}
 

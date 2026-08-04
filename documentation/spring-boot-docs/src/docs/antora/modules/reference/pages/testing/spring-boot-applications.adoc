@@ -337,7 +337,8 @@ include-code::MyJsonAssertJTests[tag=*]
 To test that object XML serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] annotation from the `spring-boot-test-autoconfigure` module.
 javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] auto-configures the Jackson javadoc:tools.jackson.dataformat.xml.XmlMapper[], any javadoc:org.springframework.boot.jackson.JacksonComponent[format=annotation] beans and any Jackson javadoc:tools.jackson.databind.JacksonModule[].
 
-TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+NOTE: The slice supports Jackson XML only.
+Neither JAXB nor the deprecated Jackson 2 XML support is auto-configured by javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation].
 
 If you need to configure elements of the auto-configuration, you can use the javadoc:org.springframework.boot.test.autoconfigure.xml.AutoConfigureXmlTesters[format=annotation] annotation.
 
@@ -348,7 +349,18 @@ The following example shows a test class for Jackson:
 
 include-code::MyXmlTests[]
 
-NOTE: An identical comparison (`isEqualToXml`) requires the documents to match exactly, whereas a similar comparison (`isSimilarToXml`) ignores insignificant whitespace, comments and the ordering of elements and attributes.
+NOTE: A lenient comparison (`isEqualToXml`) ignores insignificant whitespace and comments, whereas a strict comparison (`isStrictlyEqualToXml`) requires the two documents to be identical.
+The ordering of attributes is never significant.
+For a lenient comparison, the ordering of sibling elements that share a name is not significant either, but only as long as those elements can be told apart by their own text content alone: `<i>a</i><i>b</i>` matches `<i>b</i><i>a</i>`.
+Siblings are paired up on name and text content, and nothing else.
+Siblings that have element-only content, such as `<item><id>1</id></item>`, and siblings that differ only in their attributes, such as `<item id="1">x</item>`, are therefore paired up by name alone and their ordering remains significant.
+
+WARNING: The XML declaration is part of a strict comparison.
+javadoc:tools.jackson.dataformat.xml.XmlMapper[] writes no declaration by default, so an expected document that starts with `<?xml version="1.0" encoding="UTF-8"?>` is not identical to the written output and `isStrictlyEqualToXml` fails with a message such as `Expected xml encoding 'UTF-8' but was 'null'`.
+Omit the declaration from fixtures used for strict comparison, or use `isEqualToXml`, which ignores it.
+
+NOTE: XPath expressions are evaluated with a namespace aware parser.
+An expression that uses no prefix matches only elements that are in no namespace, so to assert against a document that declares namespaces, first register the prefixes you want to use with `withNamespaces(Map)`, which returns a new assertion object bound to them.
 
 NOTE: XML helper classes can also be used directly in standard unit tests.
 To do so, call the `initFields` method of the helper in your javadoc:org.junit.jupiter.api.BeforeEach[format=annotation] method if you do not use javadoc:org.springframework.boot.test.autoconfigure.xml.XmlTest[format=annotation].

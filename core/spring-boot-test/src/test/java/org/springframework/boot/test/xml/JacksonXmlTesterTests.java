@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.xml;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -49,20 +51,20 @@ class JacksonXmlTesterTests {
 	}
 
 	@Test
-	void writeWhenObjectIsGivenShouldReturnSimilarXml() throws Exception {
-		assertThat(this.xml.write(createExampleObject())).isSimilarToXml(EXAMPLE_XML);
+	void writeWhenObjectIsGivenShouldReturnEqualXml() throws Exception {
+		assertThat(this.xml.write(createExampleObject())).isEqualToXml(EXAMPLE_XML);
 	}
 
 	@Test
 	void writeWhenObjectIsGivenShouldMatchResource() throws Exception {
-		assertThat(this.xml.write(createExampleObject())).isSimilarToXml("example-object.xml");
+		assertThat(this.xml.write(createExampleObject())).isEqualToXml("example-object.xml");
 	}
 
 	@Test
 	void writeWhenObjectIsGivenShouldHaveXPathValues() throws Exception {
 		XmlContent<ExampleObject> content = this.xml.write(createExampleObject());
 		assertThat(content).extractingXPathStringValue("/ExampleObject/name").isEqualTo("Spring");
-		assertThat(content).extractingXPathNumberValue("/ExampleObject/age").isEqualTo(100);
+		assertThat(content).extractingXPathNumberValue("/ExampleObject/age").isEqualTo(100.0);
 	}
 
 	@Test
@@ -89,7 +91,29 @@ class JacksonXmlTesterTests {
 
 	@Test
 	void parseObjectWhenBytesAreGivenShouldReturnObject() throws Exception {
-		assertThat(this.xml.parseObject(EXAMPLE_XML.getBytes())).isEqualTo(createExampleObject());
+		assertThat(this.xml.parseObject(EXAMPLE_XML.getBytes(StandardCharsets.UTF_8))).isEqualTo(createExampleObject());
+	}
+
+	@Test
+	void readWhenInputStreamDeclaresEncodingShouldUseDeclaredEncoding() throws Exception {
+		String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+				+ "<ExampleObject><name>Sprüng</name><age>100</age></ExampleObject>";
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.ISO_8859_1));
+		assertThat(this.xml.readObject(inputStream).getName()).isEqualTo("Sprüng");
+	}
+
+	@Test
+	void initFieldsWhenFieldIsRawShouldThrowException() {
+		RawFieldTestClass test = new RawFieldTestClass();
+		assertThatIllegalStateException().isThrownBy(() -> JacksonXmlTester.initFields(test, new XmlMapper()))
+			.withMessageContaining("field 'raw'");
+	}
+
+	@Test
+	void initFieldsWhenFieldIsWildcardShouldThrowException() {
+		WildcardFieldTestClass test = new WildcardFieldTestClass();
+		assertThatIllegalStateException().isThrownBy(() -> JacksonXmlTester.initFields(test, new XmlMapper()))
+			.withMessageContaining("field 'wildcard'");
 	}
 
 	@Test
@@ -149,6 +173,19 @@ class JacksonXmlTesterTests {
 
 		public JacksonXmlTester<ExampleObject> baseSet = new JacksonXmlTester<>(InitFieldsBaseClass.class,
 				ResolvableType.forClass(ExampleObject.class), new XmlMapper());
+
+	}
+
+	static class RawFieldTestClass {
+
+		@SuppressWarnings("rawtypes")
+		public @Nullable JacksonXmlTester raw;
+
+	}
+
+	static class WildcardFieldTestClass {
+
+		public @Nullable JacksonXmlTester<?> wildcard;
 
 	}
 

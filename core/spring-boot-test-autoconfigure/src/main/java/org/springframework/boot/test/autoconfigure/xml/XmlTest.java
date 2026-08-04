@@ -39,6 +39,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * Annotation for an XML test that focuses <strong>only</strong> on XML serialization.
  * <p>
+ * This slice supports <strong>Jackson XML only</strong>. It auto-configures Jackson's
+ * {@code XmlMapper} and initializes {@link JacksonXmlTester} fields. Neither JAXB nor the
+ * deprecated Jackson 2 XML support ({@code com.fasterxml.jackson.dataformat.xml}) is
+ * auto-configured, and no tester is provided for either of them.
+ * <p>
  * Using this annotation only enables auto-configuration that is relevant to XML tests.
  * Similarly, component scanning is limited to beans annotated with:
  * <ul>
