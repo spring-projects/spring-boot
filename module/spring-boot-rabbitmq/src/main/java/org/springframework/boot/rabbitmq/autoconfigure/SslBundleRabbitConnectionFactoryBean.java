@@ -50,6 +50,8 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 		this.sslBundle = sslBundle;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	@Override
 	public void setEnableHostnameVerification(boolean enable) {
 		this.enableHostnameVerification = enable;

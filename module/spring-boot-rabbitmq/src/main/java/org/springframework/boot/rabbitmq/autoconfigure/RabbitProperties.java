@@ -28,6 +28,7 @@ import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.Addr
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.convert.DurationUnit;
@@ -579,6 +580,7 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Hostname verification is always enabled", since = "4.2.0")
 		public boolean isVerifyHostname() {
 			return this.verifyHostname;
 		}
