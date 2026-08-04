@@ -2516,7 +2516,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.1.0") {
+	library("Spring AMQP", "4.1.1-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
