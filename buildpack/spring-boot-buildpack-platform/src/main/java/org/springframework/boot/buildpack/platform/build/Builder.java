@@ -120,7 +120,7 @@ public class Builder {
 			request = request.withRunImage(request.getRunImage().withDigest(runImage.getPrimaryDigest()));
 			runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage(), platform);
 		}
-		assertStackIdsMatch(runImage, builderImage);
+		warnIfStackIdsDoNotMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
 		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, platform, builderMetadata,
@@ -159,12 +159,11 @@ public class Builder {
 		return ImageReference.of(runImageName).inTaggedOrDigestForm();
 	}
 
-	private void assertStackIdsMatch(Image runImage, Image builderImage) {
+	private void warnIfStackIdsDoNotMatch(Image runImage, Image builderImage) {
 		StackId runImageStackId = StackId.fromImage(runImage);
 		StackId builderImageStackId = StackId.fromImage(builderImage);
-		if (runImageStackId.hasId() && builderImageStackId.hasId()) {
-			Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
-					+ "' does not match builder stack '" + builderImageStackId + "'");
+		if (runImageStackId.hasId() && builderImageStackId.hasId() && !runImageStackId.equals(builderImageStackId)) {
+			this.log.stackIdsDoNotMatch(runImageStackId.toString(), builderImageStackId.toString());
 		}
 	}
 
