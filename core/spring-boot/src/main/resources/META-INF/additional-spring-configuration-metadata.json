@@ -854,6 +854,14 @@
       ]
     },
     {
+      "name": "spring.profiles.group",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    },
+    {
       "name": "spring.profiles.include",
       "providers": [
         {
