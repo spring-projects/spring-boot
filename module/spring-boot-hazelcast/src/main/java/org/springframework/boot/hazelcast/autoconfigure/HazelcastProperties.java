@@ -47,7 +47,6 @@ public class HazelcastProperties {
 	/**
 	 * Resolve the config location if set.
 	 * @return the location or {@code null} if it is not set
-	 * @throws IllegalStateException if the config attribute is set to an unknown location
 	 */
 	public @Nullable Resource resolveConfigLocation() {
 		Resource config = this.config;
