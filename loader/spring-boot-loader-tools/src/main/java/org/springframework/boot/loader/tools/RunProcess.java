@@ -39,6 +39,8 @@ public class RunProcess {
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
+	private static final int EXIT_CODE_RUNNING = 5;
+
 	private final @Nullable File workingDirectory;
 
 	private final String[] command;
@@ -92,7 +94,7 @@ public class RunProcess {
 					return 1;
 				}
 			}
-			return 5;
+			return EXIT_CODE_RUNNING;
 		}
 		finally {
 			if (waitForProcess) {

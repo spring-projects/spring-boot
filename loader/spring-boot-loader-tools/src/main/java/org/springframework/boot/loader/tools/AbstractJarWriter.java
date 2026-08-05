@@ -173,11 +173,16 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			writeEntry(entry, (outputStream) -> {
 				BufferedWriter writer = new BufferedWriter(
 						new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-				for (String line : lines) {
-					writer.write(line);
-					writer.write("\n");
+				try {
+					for (String line : lines) {
+						writer.write(line);
+						writer.write("\n");
+					}
+					writer.flush();
 				}
-				writer.flush();
+				finally {
+					writer.close();
+				}
 			});
 		}
 	}

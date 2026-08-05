@@ -215,8 +215,9 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	private void addStackTrace(Map<String, @Nullable Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
-		error.printStackTrace(new PrintWriter(stackTrace));
-		stackTrace.flush();
+		try (PrintWriter printWriter = new PrintWriter(stackTrace)) {
+			error.printStackTrace(printWriter);
+		}
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 

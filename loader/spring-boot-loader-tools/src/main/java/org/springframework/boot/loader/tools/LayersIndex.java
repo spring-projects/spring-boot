@@ -95,16 +95,21 @@ public class LayersIndex {
 		this.root.buildIndex("", index);
 		index.values().forEach(Collections::sort);
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
-		for (Layer layer : this.layers) {
-			List<String> names = index.get(layer);
-			writer.write("- \"" + layer + "\":\n");
-			if (names != null) {
-				for (String name : names) {
-					writer.write("  - \"" + name + "\"\n");
+		try {
+			for (Layer layer : this.layers) {
+				List<String> names = index.get(layer);
+				writer.write("- \"" + layer + "\":\n");
+				if (names != null) {
+					for (String name : names) {
+						writer.write("  - \"" + name + "\"\n");
+					}
 				}
 			}
+			writer.flush();
 		}
-		writer.flush();
+		finally {
+			writer.close();
+		}
 	}
 
 	/**
