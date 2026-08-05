@@ -19,6 +19,7 @@ package org.springframework.boot.docker.compose.core;
 import java.util.List;
 import java.util.Locale;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.MapperFeature;
@@ -71,7 +72,12 @@ final class DockerJson {
 	}
 
 	private static <T> T deserialize(String json, JavaType type) {
-		return jsonMapper.readValue(json.trim(), type);
+		try {
+			return jsonMapper.readValue(json.trim(), type);
+		}
+		catch (JacksonException ex) {
+			throw new DockerOutputParseException(json, ex);
+		}
 	}
 
 }

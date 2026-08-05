@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +37,8 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Wrapper around {@code docker} and {@code docker-compose} command line tools.
+ * Wrapper around {@code docker} and {@code docker-compose} command line tools. Podman is
+ * supported as an alternative to Docker, see {@link ContainerEngine}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -131,59 +133,72 @@ class DockerCli {
 	/**
 	 * Holds details of the actual CLI commands to invoke.
 	 */
-	private static class DockerCommands {
+	static class DockerCommands {
 
 		private final DockerCommand dockerCommand;
 
 		private final DockerCommand dockerComposeCommand;
 
 		DockerCommands(ProcessRunner processRunner) {
-			this.dockerCommand = getDockerCommand(processRunner);
-			this.dockerComposeCommand = getDockerComposeCommand(processRunner);
+			DetectedContainerEngine detected = getContainerEngine(processRunner);
+			this.dockerCommand = new DockerCommand(detected.version(), List.of(detected.engine().command()));
+			this.dockerComposeCommand = getDockerComposeCommand(processRunner, detected.engine());
 		}
 
-		private DockerCommand getDockerCommand(ProcessRunner processRunner) {
-			try {
-				String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
-				logger.trace(LogMessage.format("Using docker %s", version));
-				return new DockerCommand(version, List.of("docker"));
-			}
-			catch (ProcessStartException ex) {
-				throw new DockerProcessStartException("Unable to start docker process. Is docker correctly installed?",
-						ex);
-			}
-			catch (ProcessExitException ex) {
-				if (ex.getStdErr().contains("docker daemon is not running")
-						|| ex.getStdErr().contains("Cannot connect to the Docker daemon")) {
-					throw new DockerNotRunningException(ex.getStdErr(), ex);
+		private static DetectedContainerEngine getContainerEngine(ProcessRunner processRunner) {
+			List<RuntimeException> failures = new ArrayList<>();
+			for (ContainerEngine candidate : ContainerEngine.values()) {
+				try {
+					String version = processRunner.run(candidate.command(), "version", "--format",
+							"{{.Client.Version}}");
+					logger.trace(LogMessage.format("Using %s %s", candidate.command(), version));
+					return new DetectedContainerEngine(candidate, version);
 				}
-				throw ex;
+				catch (ProcessStartException ex) {
+					// Ignore and try the next candidate
+					failures.add(ex);
+				}
+				catch (ProcessExitException ex) {
+					if (candidate.isNotRunning(ex.getStdErr())) {
+						throw new DockerNotRunningException(ex.getStdErr(), ex);
+					}
+					throw ex;
+				}
 			}
+			throw startException("Unable to start docker or podman process. Is docker or podman correctly installed?",
+					failures);
 		}
 
-		private DockerCommand getDockerComposeCommand(ProcessRunner processRunner) {
-			try {
-				DockerCliComposeVersionResponse response = DockerJson.deserialize(
-						processRunner.run("docker", "compose", "version", "--format", "json"),
-						DockerCliComposeVersionResponse.class);
-				logger.trace(LogMessage.format("Using Docker Compose %s", response.version()));
-				return new DockerCommand(response.version(), List.of("docker", "compose"));
+		private static DockerCommand getDockerComposeCommand(ProcessRunner processRunner,
+				ContainerEngine containerEngine) {
+			List<RuntimeException> failures = new ArrayList<>();
+			for (List<String> command : containerEngine.composeCommands()) {
+				try {
+					DockerCliComposeVersionResponse response = DockerJson.deserialize(
+							processRunner.run(join(command, List.of("version", "--format", "json"))),
+							DockerCliComposeVersionResponse.class);
+					logger.trace(LogMessage.format("Using %s %s", String.join(" ", command), response.version()));
+					return new DockerCommand(response.version(), command);
+				}
+				catch (ProcessStartException | ProcessExitException | DockerOutputParseException ex) {
+					// Ignore and try the next candidate
+					failures.add(ex);
+				}
 			}
-			catch (ProcessExitException ex) {
-				// Ignore and try docker-compose
-			}
-			try {
-				DockerCliComposeVersionResponse response = DockerJson.deserialize(
-						processRunner.run("docker-compose", "version", "--format", "json"),
-						DockerCliComposeVersionResponse.class);
-				logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
-				return new DockerCommand(response.version(), List.of("docker-compose"));
-			}
-			catch (ProcessStartException ex) {
-				throw new DockerProcessStartException(
-						"Unable to start 'docker-compose' process or use 'docker compose'. Is docker correctly installed?",
-						ex);
-			}
+			throw startException("Unable to use %s. Is %s correctly installed?"
+				.formatted(containerEngine.describeComposeCommands(), containerEngine.command()), failures);
+		}
+
+		private static String[] join(List<String> command, List<String> arguments) {
+			List<String> result = new ArrayList<>(command);
+			result.addAll(arguments);
+			return result.toArray(String[]::new);
+		}
+
+		private static DockerProcessStartException startException(String message, List<RuntimeException> failures) {
+			DockerProcessStartException result = new DockerProcessStartException(message, failures.get(0));
+			failures.subList(1, failures.size()).forEach(result::addSuppressed);
+			return result;
 		}
 
 		DockerCommand get(Type type) {
@@ -193,9 +208,87 @@ class DockerCli {
 			};
 		}
 
+		/**
+		 * A {@link ContainerEngine} that has been found on the local machine.
+		 *
+		 * @param engine the container engine
+		 * @param version the reported client version
+		 */
+		private record DetectedContainerEngine(ContainerEngine engine, String version) {
+
+		}
+
 	}
 
-	private record DockerCommand(String version, List<String> command) {
+	/**
+	 * Container engines that can be used to run the commands, in the order that they are
+	 * tried.
+	 */
+	enum ContainerEngine {
+
+		/**
+		 * Docker, using either the {@code docker compose} plugin or the standalone
+		 * {@code docker-compose} binary.
+		 */
+		DOCKER("docker", List.of(List.of("docker", "compose"), List.of("docker-compose"))) {
+
+			@Override
+			boolean isNotRunning(String stdErr) {
+				return stdErr.contains("docker daemon is not running")
+						|| stdErr.contains("Cannot connect to the Docker daemon");
+			}
+
+		},
+
+		/**
+		 * Podman. Only {@code podman compose} is used since it delegates to an external
+		 * Docker Compose compatible provider. The {@code podman-compose} binary is not
+		 * supported as its command line arguments and output are not compatible with
+		 * Docker Compose.
+		 */
+		PODMAN("podman", List.of(List.of("podman", "compose"))) {
+
+			@Override
+			boolean isNotRunning(String stdErr) {
+				return stdErr.contains("Cannot connect to Podman");
+			}
+
+		};
+
+		private final String command;
+
+		private final List<List<String>> composeCommands;
+
+		ContainerEngine(String command, List<List<String>> composeCommands) {
+			this.command = command;
+			this.composeCommands = composeCommands;
+		}
+
+		String command() {
+			return this.command;
+		}
+
+		List<List<String>> composeCommands() {
+			return this.composeCommands;
+		}
+
+		String describeComposeCommands() {
+			return this.composeCommands.stream()
+				.map((command) -> "'%s'".formatted(String.join(" ", command)))
+				.collect(Collectors.joining(" or "));
+		}
+
+		/**
+		 * Return if the given standard error output indicates that the engine is
+		 * installed, but not running.
+		 * @param stdErr the standard error output
+		 * @return {@code true} if the engine is not running
+		 */
+		abstract boolean isNotRunning(String stdErr);
+
+	}
+
+	record DockerCommand(String version, List<String> command) {
 
 	}
 

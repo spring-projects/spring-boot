@@ -61,6 +61,11 @@ When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-execut
 You need to have the `docker` and `docker compose` (or `docker-compose`) CLI applications on your path.
 The minimum supported Docker Compose version is 2.2.0.
 
+Podman can be used instead of Docker.
+If the `docker` CLI application is not on your path, the `podman` and `podman compose` CLI applications are used instead.
+Note that `podman compose` delegates to an external Docker Compose compatible provider which must also be installed.
+The `podman-compose` application is not supported, since its command line arguments and output are not compatible with Docker Compose.
+
 
 
 [[features.dev-services.docker-compose.service-connections]]

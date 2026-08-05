@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DockerJson}.
@@ -67,6 +68,20 @@ class DockerJsonTests {
 				""";
 		List<TestResponse> response = DockerJson.deserializeToList(json, TestResponse.class);
 		assertThat(response).containsExactly(new TestResponse(1), new TestResponse(2));
+	}
+
+	@Test
+	void deserializeWhenNotJsonThrowsException() {
+		assertThatExceptionOfType(DockerOutputParseException.class)
+			.isThrownBy(() -> DockerJson.deserialize("podman-compose version 1.3.0", TestResponse.class))
+			.withMessageContaining("Failed to parse docker JSON");
+	}
+
+	@Test
+	void deserializeWhenEmptyThrowsException() {
+		assertThatExceptionOfType(DockerOutputParseException.class)
+			.isThrownBy(() -> DockerJson.deserialize("", TestResponse.class))
+			.withMessageContaining("Failed to parse docker JSON");
 	}
 
 	@Test
