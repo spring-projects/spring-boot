@@ -349,15 +349,18 @@ The following example shows a test class for Jackson:
 
 include-code::MyXmlTests[]
 
-NOTE: A lenient comparison (`isEqualToXml`) ignores insignificant whitespace and comments, whereas a strict comparison (`isStrictlyEqualToXml`) requires the two documents to be identical.
+NOTE: A lenient comparison (`isEqualToXml`) ignores comments and whitespace, whereas a strict comparison (`isStrictlyEqualToXml`) requires the two documents to be identical.
+A lenient comparison ignores more whitespace than the whitespace between elements: text content is compared with its leading and trailing whitespace removed, so `<name>  Honda  </name>` is leniently equal to `<name>Honda</name>`, and text that consists only of whitespace is ignored altogether, so `<name>   </name>` is leniently equal to `<name/>`.
 The ordering of attributes is never significant.
 For a lenient comparison, the ordering of sibling elements that share a name is not significant either, but only as long as those elements can be told apart by their own text content alone: `<i>a</i><i>b</i>` matches `<i>b</i><i>a</i>`.
 Siblings are paired up on name and text content, and nothing else.
 Siblings that have element-only content, such as `<item><id>1</id></item>`, and siblings that differ only in their attributes, such as `<item id="1">x</item>`, are therefore paired up by name alone and their ordering remains significant.
 
-WARNING: The XML declaration is part of a strict comparison.
-javadoc:tools.jackson.dataformat.xml.XmlMapper[] writes no declaration by default, so an expected document that starts with `<?xml version="1.0" encoding="UTF-8"?>` is not identical to the written output and `isStrictlyEqualToXml` fails with a message such as `Expected xml encoding 'UTF-8' but was 'null'`.
+WARNING: A strict comparison compares everything that a lenient comparison ignores, and it also fails on a difference in the XML declaration, in namespace prefixes (`<p:a xmlns:p="urn:example"/>` is not identical to `<q:a xmlns:q="urn:example"/>`), in the distinction between a CDATA section and ordinary text (`<a><![CDATA[x]]></a>` is not identical to `<a>x</a>`), and in processing instructions.
+The XML declaration is a common trap: javadoc:tools.jackson.dataformat.xml.XmlMapper[] writes no declaration by default, so an expected document that starts with `<?xml version="1.0" encoding="UTF-8"?>` is not identical to the written output and `isStrictlyEqualToXml` fails with a message such as `Expected xml encoding 'UTF-8' but was 'null'`.
 Omit the declaration from fixtures used for strict comparison, or use `isEqualToXml`, which ignores it.
+
+NOTE: XML that cannot be parsed always fails the assertion, whichever side of the comparison it is on, including for `isNotEqualToXml` and `isNotStrictlyEqualToXml`.
 
 NOTE: XPath expressions are evaluated with a namespace aware parser.
 An expression that uses no prefix matches only elements that are in no namespace, so to assert against a document that declares namespaces, first register the prefixes you want to use with `withNamespaces(Map)`, which returns a new assertion object bound to them.

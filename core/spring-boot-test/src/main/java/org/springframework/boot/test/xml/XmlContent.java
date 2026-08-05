@@ -54,13 +54,14 @@ public final class XmlContent<T> implements AssertProvider<XmlContentAssert> {
 	}
 
 	/**
-	 * Use AssertJ's {@link org.assertj.core.api.Assertions#assertThat assertThat}
+	 * Return the {@link XmlContentAssert} for this content. This method is the
+	 * {@link AssertProvider} hook used by AssertJ and is not intended to be called
+	 * directly. Use AssertJ's
+	 * {@link org.assertj.core.api.Assertions#assertThat(AssertProvider) assertThat}
 	 * instead.
-	 * @deprecated to prevent accidental use. Prefer standard AssertJ
-	 * {@code assertThat(context)...} calls instead.
+	 * @return the assertion object
 	 */
 	@Override
-	@Deprecated(since = "4.2.0", forRemoval = false)
 	public XmlContentAssert assertThat() {
 		return new XmlContentAssert(this.resourceLoadClass, this.xml);
 	}

@@ -35,6 +35,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -78,9 +79,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Two flavours of comparison are supported, mirroring
  * {@link org.springframework.boot.test.json.JsonContentAssert JsonContentAssert}. A
  * <em>lenient</em> comparison ({@link #isEqualToXml(CharSequence) isEqualToXml}) ignores
- * insignificant whitespace and comments, whereas a <em>strict</em> comparison
+ * comments and whitespace, whereas a <em>strict</em> comparison
  * ({@link #isStrictlyEqualToXml(CharSequence) isStrictlyEqualToXml}) requires the two
  * documents to be identical.
+ * <p>
+ * A lenient comparison ignores more whitespace than the whitespace between elements. Text
+ * content is compared with its leading and trailing whitespace removed, so
+ * <code>&lt;name&gt;  Honda  &lt;/name&gt;</code> is leniently equal to
+ * <code>&lt;name&gt;Honda&lt;/name&gt;</code>, and text that consists only of whitespace
+ * is ignored altogether, so <code>&lt;name&gt;   &lt;/name&gt;</code> is leniently equal
+ * to <code>&lt;name/&gt;</code>.
  * <p>
  * The ordering of attributes is never significant. For a lenient comparison the ordering
  * of sibling elements that share a name is not significant either, <em>as long as those
@@ -89,22 +97,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  * and siblings that differ only in their attributes are both paired up by name alone and
  * their ordering remains significant.
  * <p>
- * A strict comparison also compares the XML declaration, so an expected document that
- * starts with {@code <?xml version="1.0" encoding="UTF-8"?>} is not identical to one
- * written without a declaration. Marshallers such as
- * {@link tools.jackson.dataformat.xml.XmlMapper XmlMapper} write no declaration by
- * default, so fixtures compared with {@link #isStrictlyEqualToXml(CharSequence)} should
- * omit it too.
+ * A strict comparison compares everything that a lenient comparison ignores, and it also
+ * fails on a difference in any of the following:
+ * <ul>
+ * <li>The XML declaration, including its version, encoding and standalone
+ * pseudo-attributes. A document that starts with
+ * {@code <?xml version="1.0" encoding="UTF-8"?>} is not identical to one written without
+ * a declaration. Marshallers such as {@link tools.jackson.dataformat.xml.XmlMapper
+ * XmlMapper} write no declaration by default, so fixtures compared with
+ * {@link #isStrictlyEqualToXml(CharSequence)} should omit it too.</li>
+ * <li>Namespace prefixes. {@code <p:a xmlns:p="urn:example"/>} is not identical to
+ * {@code <q:a xmlns:q="urn:example"/>} even though both elements are in the same
+ * namespace.</li>
+ * <li>The distinction between a CDATA section and ordinary text.
+ * {@code <a><![CDATA[x]]></a>} is not identical to {@code <a>x</a>}. XPath expressions
+ * make no such distinction, see below.</li>
+ * <li>Comments and processing instructions.</li>
+ * <li>Whitespace, both between elements and within text content.</li>
+ * </ul>
+ * <p>
+ * XML that cannot be parsed always fails the assertion, whichever side of the comparison
+ * it is on and including for {@link #isNotEqualToXml(CharSequence) isNotEqualToXml} and
+ * {@link #isNotStrictlyEqualToXml(CharSequence) isNotStrictlyEqualToXml}.
  * <p>
  * XPath expressions are evaluated with a namespace aware parser. Prefixes used in an
  * expression must first be registered with {@link #withNamespaces(Map)}; an expression
- * with no prefix only matches elements that are in no namespace.
+ * with no prefix only matches elements that are in no namespace. As in the XPath data
+ * model, a CDATA section is not distinguished from the text around it, so
+ * {@code <a>x<![CDATA[y]]>z</a>} has a single text node with the value {@code xyz}.
  * <p>
  * Documents may carry a {@code DOCTYPE} declaration with an internal subset. Entities
  * declared in that internal subset are part of the document and are expanded. External
  * entities are never resolved.
  * <p>
- * To use this class XMLUnit must be on the test classpath.
+ * To use this class XMLUnit 2.12.0 or later must be on the test classpath.
  *
  * @author Tiziano Basile
  * @since 4.2.0
@@ -185,9 +211,11 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	 * XPath expressions. Prefixes already bound on this instance are retained, with the
 	 * given bindings taking precedence. This instance is left unchanged.
 	 * @param namespaces a map of namespace prefix to namespace URI. XPath 1.0 has no
-	 * default namespace, so the empty prefix cannot be bound
+	 * default namespace, so the empty prefix cannot be bound, and the {@code xml} and
+	 * {@code xmlns} prefixes are reserved, so they cannot be rebound
 	 * @return a new assertion object bound to the given namespaces
 	 */
+	@CheckReturnValue
 	public XmlContentAssert withNamespaces(Map<String, String> namespaces) {
 		Assert.notNull(namespaces, "'namespaces' must not be null");
 		Map<String, String> merged = new LinkedHashMap<>(this.namespaces);
@@ -195,6 +223,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			Assert.isTrue(StringUtils.hasText(prefix),
 					"'namespaces' must not contain an empty prefix as XPath 1.0 has no default namespace, "
 							+ "bind an explicit prefix and use it in the expression instead");
+			Assert.isTrue(!XMLConstants.XML_NS_PREFIX.equals(prefix) && !XMLConstants.XMLNS_ATTRIBUTE.equals(prefix),
+					() -> "'namespaces' must not rebind the reserved prefix '" + prefix + "'");
 			Assert.isTrue(StringUtils.hasText(namespaceUri),
 					() -> "'namespaces' must not map prefix '" + prefix + "' to an empty namespace URI");
 			merged.put(prefix, namespaceUri);
@@ -209,6 +239,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 		if (overridingErrorMessage != null) {
 			result.info.overridingErrorMessage(overridingErrorMessage);
 		}
+		result.info.useRepresentation(this.info.representation());
 		return result;
 	}
 
@@ -240,9 +271,9 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML, ignoring
-	 * insignificant whitespace and comments. The {@code expected} value can contain the
-	 * XML itself or, if it ends with {@code .xml}, the name of a resource to be loaded
-	 * using {@code resourceLoadClass}.
+	 * comments and whitespace, including the leading and trailing whitespace of text
+	 * content. The {@code expected} value can contain the XML itself or, if it ends with
+	 * {@code .xml}, the name of a resource to be loaded using {@code resourceLoadClass}.
 	 * @param expected the expected XML or the name of a resource containing the expected
 	 * XML
 	 * @return {@code this} assertion object
@@ -254,7 +285,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML resource,
-	 * ignoring insignificant whitespace and comments.
+	 * ignoring comments and whitespace, including the leading and trailing whitespace of
+	 * text content.
 	 * @param path the name of a resource containing the expected XML
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @return {@code this} assertion object
@@ -266,7 +298,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML bytes,
-	 * ignoring insignificant whitespace and comments.
+	 * ignoring comments and whitespace, including the leading and trailing whitespace of
+	 * text content.
 	 * @param expected the expected XML bytes
 	 * @return {@code this} assertion object
 	 * @throws AssertionError if the actual XML value is not equal to the given one
@@ -277,7 +310,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML file,
-	 * ignoring insignificant whitespace and comments.
+	 * ignoring comments and whitespace, including the leading and trailing whitespace of
+	 * text content.
 	 * @param expected a file containing the expected XML
 	 * @return {@code this} assertion object
 	 * @throws AssertionError if the actual XML value is not equal to the given one
@@ -288,7 +322,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML input
-	 * stream, ignoring insignificant whitespace and comments.
+	 * stream, ignoring comments and whitespace, including the leading and trailing
+	 * whitespace of text content.
 	 * @param expected an input stream containing the expected XML
 	 * @return {@code this} assertion object
 	 * @throws AssertionError if the actual XML value is not equal to the given one
@@ -299,7 +334,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 
 	/**
 	 * Verifies that the actual value is leniently equal to the specified XML resource,
-	 * ignoring insignificant whitespace and comments.
+	 * ignoring comments and whitespace, including the leading and trailing whitespace of
+	 * text content.
 	 * @param expected a resource containing the expected XML
 	 * @return {@code this} assertion object
 	 * @throws AssertionError if the actual XML value is not equal to the given one
@@ -314,11 +350,15 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	 * the XML itself or, if it ends with {@code .xml}, the name of a resource to be
 	 * loaded using {@code resourceLoadClass}.
 	 * <p>
-	 * The XML declaration is part of a strict comparison. An expected document that
-	 * starts with {@code <?xml version="1.0" encoding="UTF-8"?>} is therefore
-	 * <em>not</em> identical to an actual document written without one, and the
-	 * comparison fails with a message such as
-	 * {@code Expected xml encoding 'UTF-8' but was 'null'}. Marshallers such as
+	 * As well as the comments and whitespace that {@link #isEqualToXml(CharSequence)}
+	 * ignores, a strict comparison fails on a difference in the XML declaration, in
+	 * namespace prefixes, in the distinction between a CDATA section and ordinary text,
+	 * and in processing instructions.
+	 * <p>
+	 * The XML declaration is a common trap. An expected document that starts with
+	 * {@code <?xml version="1.0" encoding="UTF-8"?>} is <em>not</em> identical to an
+	 * actual document written without one, and the comparison fails with a message such
+	 * as {@code Expected xml encoding 'UTF-8' but was 'null'}. Marshallers such as
 	 * {@link tools.jackson.dataformat.xml.XmlMapper XmlMapper} write no declaration by
 	 * default, so omit it from fixtures used for strict comparison, or use
 	 * {@link #isEqualToXml(CharSequence)} instead, which ignores the declaration.
@@ -552,7 +592,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	 * specifiers defined in {@link String#format(String, Object...)}. When no arguments
 	 * are supplied the expression is used verbatim
 	 * @return {@code this} assertion object
-	 * @throws AssertionError if there is no value at the given XPath expression
+	 * @throws AssertionError if there is no value at the given XPath expression or if the
+	 * expression does not select a node set
 	 */
 	public XmlContentAssert hasXPathValue(CharSequence expression, Object... args) {
 		new XPathValue(expression, args).assertHasValue();
@@ -566,7 +607,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	 * specifiers defined in {@link String#format(String, Object...)}. When no arguments
 	 * are supplied the expression is used verbatim
 	 * @return {@code this} assertion object
-	 * @throws AssertionError if there is a value at the given XPath expression
+	 * @throws AssertionError if there is a value at the given XPath expression or if the
+	 * expression does not select a node set
 	 */
 	public XmlContentAssert doesNotHaveXPathValue(CharSequence expression, Object... args) {
 		new XPathValue(expression, args).assertDoesNotHaveValue();
@@ -584,7 +626,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	 * are supplied the expression is used verbatim
 	 * @return {@code this} assertion object
 	 * @throws AssertionError if the expression does not match the expected number of
-	 * nodes
+	 * nodes or if the expression does not select a node set
 	 */
 	public XmlContentAssert hasXPathNodeCount(CharSequence expression, int expectedCount, Object... args) {
 		Assert.isTrue(expectedCount >= 0, "'expectedCount' must not be negative");
@@ -660,7 +702,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	}
 
 	private XmlContentAssert assertMatch(@Nullable String expectedXml, boolean strict) {
-		String difference = compare(expectedXml, strict, true);
+		String difference = compare(expectedXml, strict);
 		if (difference != null) {
 			failWithMessage("XML Comparison failure: %s", difference);
 		}
@@ -668,14 +710,23 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 	}
 
 	private XmlContentAssert assertNoMatch(@Nullable String expectedXml, boolean strict) {
-		String difference = compare(expectedXml, strict, false);
+		String difference = compare(expectedXml, strict);
 		if (difference == null) {
 			failWithMessage("XML Comparison failure: expected a difference but none was found");
 		}
 		return this;
 	}
 
-	private @Nullable String compare(@Nullable String expectedXml, boolean strict, boolean failOnError) {
+	/**
+	 * Compare the actual content with the expected content, returning a description of
+	 * their differences or {@code null} if there are none. XML that cannot be parsed
+	 * always fails rather than being reported as a difference, as content that cannot be
+	 * read is not evidence that the two documents differ.
+	 * @param expectedXml the expected XML
+	 * @param strict whether the comparison is strict
+	 * @return a description of the differences or {@code null}
+	 */
+	private @Nullable String compare(@Nullable String expectedXml, boolean strict) {
 		CharSequence actual = this.actual;
 		if (actual == null) {
 			return (expectedXml != null) ? "Expected null XML" : null;
@@ -687,10 +738,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			return describeDifferences(diff(expectedXml, actual.toString(), strict), strict);
 		}
 		catch (XMLUnitException ex) {
-			if (failOnError) {
-				throw new AssertionError("Unable to compare XML: " + ex.getMessage(), ex);
-			}
-			return "Unable to compare XML: " + ex.getMessage();
+			throw new AssertionError("Unable to compare XML: " + ex.getMessage(), ex);
 		}
 	}
 
@@ -698,7 +746,10 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 		// The document builder factory is honored for the stream sources used here. It is
 		// ignored for DOMSource inputs and, as XMLUnit's own javadoc notes,
 		// ignoreComments
-		// applies an XSLT transform which can reduce its effect.
+		// applies an XSLT transform which can reduce its effect. The factory deliberately
+		// does not coalesce, unlike the one used to evaluate XPath expressions, so that a
+		// strict comparison keeps reporting a CDATA section and the equivalent text as a
+		// difference.
 		DiffBuilder builder = DiffBuilder.compare(Input.fromString(expectedXml))
 			.withTest(Input.fromString(actualXml))
 			.withDocumentBuilderFactory(createDocumentBuilderFactory());
@@ -732,7 +783,15 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			throw new AssertionError("Expecting actual XML content not to be null");
 		}
 		try {
-			DocumentBuilder documentBuilder = createDocumentBuilderFactory().newDocumentBuilder();
+			DocumentBuilderFactory factory = createDocumentBuilderFactory();
+			// The XPath data model has no CDATA sections, a CDATA section and the text
+			// around it form a single text node. Coalescing makes the parsed document
+			// match that model, so that a selected text node carries the whole of the
+			// text rather than only the part before the first CDATA section. It is set
+			// here and not on the factory used for comparison, where a CDATA section and
+			// the equivalent text must remain a difference for a strict comparison.
+			factory.setCoalescing(true);
+			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 			return documentBuilder.parse(new InputSource(new StringReader(actual.toString())));
 		}
 		catch (Exception ex) {
@@ -753,6 +812,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 		// expansion is turned back on. Only entities the document declares itself are
 		// expanded, as the external entity features remain disabled.
 		factory.setExpandEntityReferences(true);
+		// Entity expansion is bounded by secure processing, which is requested here as
+		// well as on the XPath factory rather than being left to the parser's default.
 		setAttributeQuietly(factory, XMLConstants.ACCESS_EXTERNAL_DTD);
 		setAttributeQuietly(factory, XMLConstants.ACCESS_EXTERNAL_SCHEMA);
 		return factory;
@@ -766,7 +827,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			return String.format(expression, args);
 		}
 		catch (IllegalFormatException ex) {
-			throw new AssertionError("Unable to format XML path \"" + expression + "\" with arguments "
+			throw new AssertionError("Unable to format XPath expression \"" + expression + "\" with arguments "
 					+ Arrays.toString(args) + ": " + ex.getMessage(), ex);
 		}
 	}
@@ -776,6 +837,15 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			factory.setAttribute(name, "");
 		}
 		catch (IllegalArgumentException ex) {
+			// Not supported by this parser, ignore
+		}
+	}
+
+	private void setFeatureQuietly(DocumentBuilderFactory factory, String name) {
+		try {
+			factory.setFeature(name, true);
+		}
+		catch (ParserConfigurationException ex) {
 			// Not supported by this parser, ignore
 		}
 	}
@@ -805,22 +875,22 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 		void assertHasValue() {
 			NodeList nodeSet = requireNodeSet();
 			if (nodeSet.getLength() == 0) {
-				failWithMessage("No XML path \"%s\" found", this.expression);
+				failWithMessage("No XPath expression \"%s\" found", this.expression);
 			}
 		}
 
 		void assertDoesNotHaveValue() {
 			NodeList nodeSet = requireNodeSet();
 			if (nodeSet.getLength() > 0) {
-				failWithMessage("Expecting no XML path \"%s\"", this.expression);
+				failWithMessage("Expecting no XPath expression \"%s\"", this.expression);
 			}
 		}
 
 		void assertNodeCount(int expectedCount) {
 			NodeList nodeSet = requireNodeSet();
 			if (nodeSet.getLength() != expectedCount) {
-				failWithMessage("Expected %s node(s) at XML path \"%s\" but found %s", expectedCount, this.expression,
-						nodeSet.getLength());
+				failWithMessage("Expected %s node(s) at XPath expression \"%s\" but found %s", expectedCount,
+						this.expression, nodeSet.getLength());
 			}
 		}
 
@@ -843,12 +913,13 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 			if (this.nodeSet != null) {
 				String text = ((String) evaluate(XPathConstants.STRING)).trim();
 				if (!NUMBER_PATTERN.matcher(text).matches()) {
-					failWithMessage("Expected a number at XML path \"%s\" but found: %s", this.expression, text);
+					failWithMessage("Expected a number at XPath expression \"%s\" but found: %s", this.expression,
+							text);
 				}
 			}
 			double value = (Double) evaluate(XPathConstants.NUMBER);
 			if (Double.isNaN(value) || Double.isInfinite(value)) {
-				failWithMessage("Expected a number at XML path \"%s\" but found: %s", this.expression, value);
+				failWithMessage("Expected a number at XPath expression \"%s\" but found: %s", this.expression, value);
 			}
 			return value;
 		}
@@ -863,7 +934,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 				return Boolean.TRUE;
 			}
 			if (!"false".equals(text) && !"0".equals(text)) {
-				failWithMessage("Expected a boolean at XML path \"%s\" but found: %s", this.expression, text);
+				failWithMessage("Expected a boolean at XPath expression \"%s\" but found: %s", this.expression, text);
 			}
 			return Boolean.FALSE;
 		}
@@ -871,7 +942,7 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 		private NodeList requireNodeSet() {
 			NodeList nodeSet = this.nodeSet;
 			if (nodeSet == null) {
-				failWithMessage("XML path \"%s\" does not select nodes", this.expression);
+				failWithMessage("XPath expression \"%s\" does not select nodes", this.expression);
 				throw new AssertionError("Unreachable");
 			}
 			return nodeSet;
@@ -888,10 +959,10 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 				return;
 			}
 			if (nodeSet.getLength() == 0) {
-				failWithMessage("No value at XML path \"%s\"", this.expression);
+				failWithMessage("No value at XPath expression \"%s\"", this.expression);
 			}
 			else if (nodeSet.getLength() > 1) {
-				failWithMessage("Expected a single node at XML path \"%s\" but found %s nodes", this.expression,
+				failWithMessage("Expected a single node at XPath expression \"%s\" but found %s nodes", this.expression,
 						nodeSet.getLength());
 			}
 		}
@@ -904,8 +975,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 				String prefix = matcher.group(1);
 				if (!XMLConstants.XML_NS_PREFIX.equals(prefix)
 						&& !XmlContentAssert.this.namespaces.containsKey(prefix)) {
-					failWithMessage("Namespace prefix \"%s\" used in XML path \"%s\" has not been registered", prefix,
-							this.expression);
+					failWithMessage("Namespace prefix \"%s\" used in XPath expression \"%s\" has not been registered",
+							prefix, this.expression);
 				}
 			}
 		}
@@ -924,8 +995,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 				return xpath.compile(this.expression);
 			}
 			catch (XPathExpressionException ex) {
-				throw new AssertionError("Unable to compile XML path \"" + this.expression + "\": " + ex.getMessage(),
-						ex);
+				throw new AssertionError(
+						"Unable to compile XPath expression \"" + this.expression + "\": " + ex.getMessage(), ex);
 			}
 		}
 
@@ -944,8 +1015,8 @@ public class XmlContentAssert extends AbstractAssert<XmlContentAssert, CharSeque
 				return this.compiled.evaluate(this.document, returnType);
 			}
 			catch (XPathExpressionException ex) {
-				throw new AssertionError("Unable to evaluate XML path \"" + this.expression + "\": " + ex.getMessage(),
-						ex);
+				throw new AssertionError(
+						"Unable to evaluate XPath expression \"" + this.expression + "\": " + ex.getMessage(), ex);
 			}
 		}
 

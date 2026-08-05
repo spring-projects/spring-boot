@@ -61,7 +61,7 @@ import org.springframework.util.ReflectionUtils;
  * For a complete list of supported assertions see {@link XmlContentAssert} and
  * {@link ObjectContentAssert}.
  * <p>
- * To use this library XMLUnit must be on the test classpath.
+ * To use this library XMLUnit 2.12.0 or later must be on the test classpath.
  *
  * @param <T> the type under test
  * @author Tiziano Basile

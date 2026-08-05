@@ -76,6 +76,21 @@ class XmlContentAssertTests {
 
 	private static final String PERCENT = "<example><value>100%</value></example>";
 
+	private static final String CDATA = "<example><name>x<![CDATA[y]]>z</name></example>";
+
+	private static final String CDATA_AS_TEXT = "<example><name>xyz</name></example>";
+
+	private static final String BILLION_LAUGHS = """
+			<!DOCTYPE lolz [<!ENTITY lol "lol">\
+			<!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">\
+			<!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">\
+			<!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">\
+			<!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">\
+			<!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">\
+			<!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">\
+			<!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">\
+			]><lolz>&lol7;</lolz>""";
+
 	private static final String EXTERNAL_ENTITY = """
 			<!DOCTYPE example [<!ENTITY xxe SYSTEM "file:///does/not/exist">]>\
 			<example><name>&xxe;</name></example>""";
@@ -192,6 +207,24 @@ class XmlContentAssertTests {
 	}
 
 	@Test
+	void isEqualToXmlWhenTextHasLeadingAndTrailingWhitespaceThenPasses() {
+		// A lenient comparison trims text content, it does not only ignore the
+		// whitespace between elements
+		assertThat(forXml("<example><name>  Honda  </name></example>"))
+			.isEqualToXml("<example><name>Honda</name></example>");
+	}
+
+	@Test
+	void isEqualToXmlWhenTextIsOnlyWhitespaceThenPasses() {
+		assertThat(forXml("<example><name>   </name></example>")).isEqualToXml("<example><name/></example>");
+	}
+
+	@Test
+	void isEqualToXmlWhenCdataIsUsedInsteadOfTextThenPasses() {
+		assertThat(forXml(CDATA)).isEqualToXml(CDATA_AS_TEXT);
+	}
+
+	@Test
 	void isEqualToXmlWhenActualIsNullAndExpectedIsNotThenFails() {
 		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertThat(forXml(null)).isEqualToXml(SOURCE))
 			.withMessageContaining("Expected null XML");
@@ -261,6 +294,47 @@ class XmlContentAssertTests {
 			.isThrownBy(() -> assertThat(forXml(SOURCE))
 				.isStrictlyEqualToXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + SOURCE))
 			.withMessageContaining("Expected xml encoding 'UTF-8' but was 'null'");
+	}
+
+	@Test
+	void isStrictlyEqualToXmlWhenOnlyNamespacePrefixDiffersThenFails() {
+		// Documented trap: namespace prefixes are part of a strict comparison
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml("<q:example xmlns:q=\"urn:one\"/>"))
+				.isStrictlyEqualToXml("<p:example xmlns:p=\"urn:one\"/>"))
+			.withMessageContaining("Expected namespace prefix 'p' but was 'q'");
+	}
+
+	@Test
+	void isStrictlyEqualToXmlWhenCdataIsUsedInsteadOfTextThenFails() {
+		// Documented trap: a CDATA section is not identical to the equivalent text
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml("<example><name><![CDATA[Spring]]></name></example>"))
+				.isStrictlyEqualToXml("<example><name>Spring</name></example>"))
+			.withMessageContaining("Expected node type 'Text' but was 'CDATA Section'");
+	}
+
+	@Test
+	void isStrictlyEqualToXmlWhenOnlyACommentIsAddedThenFails() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml("<example/>")).isStrictlyEqualToXml("<example><!-- note --></example>"))
+			.withMessageContaining("XML Comparison failure");
+	}
+
+	@Test
+	void isStrictlyEqualToXmlWhenOnlyAProcessingInstructionIsAddedThenFails() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(
+					() -> assertThat(forXml("<example/>")).isStrictlyEqualToXml("<example><?target data?></example>"))
+			.withMessageContaining("XML Comparison failure");
+	}
+
+	@Test
+	void isStrictlyEqualToXmlWhenTextHasLeadingAndTrailingWhitespaceThenFails() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml("<example><name>Honda</name></example>"))
+				.isStrictlyEqualToXml("<example><name>  Honda  </name></example>"))
+			.withMessageContaining("Expected text value '  Honda  ' but was 'Honda'");
 	}
 
 	@Test
@@ -336,13 +410,17 @@ class XmlContentAssertTests {
 	}
 
 	@Test
-	void isNotEqualToXmlWhenActualIsMalformedThenPasses() {
-		assertThat(forXml(MALFORMED)).isNotEqualToXml(SOURCE);
+	void isNotEqualToXmlWhenActualIsMalformedThenFailsWithAssertionError() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml(MALFORMED)).isNotEqualToXml(SOURCE))
+			.withMessageContaining("Unable to compare XML");
 	}
 
 	@Test
-	void isNotEqualToXmlWhenExpectedIsMalformedThenPasses() {
-		assertThat(forXml(SOURCE)).isNotEqualToXml(MALFORMED);
+	void isNotEqualToXmlWhenExpectedIsMalformedThenFailsWithAssertionError() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml(SOURCE)).isNotEqualToXml(MALFORMED))
+			.withMessageContaining("Unable to compare XML");
 	}
 
 	@Test
@@ -388,8 +466,17 @@ class XmlContentAssertTests {
 	}
 
 	@Test
-	void isNotStrictlyEqualToXmlWhenExpectedIsMalformedThenPasses() {
-		assertThat(forXml(SOURCE)).isNotStrictlyEqualToXml(MALFORMED);
+	void isNotStrictlyEqualToXmlWhenExpectedIsMalformedThenFailsWithAssertionError() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml(SOURCE)).isNotStrictlyEqualToXml(MALFORMED))
+			.withMessageContaining("Unable to compare XML");
+	}
+
+	@Test
+	void isNotStrictlyEqualToXmlWhenActualIsMalformedThenFailsWithAssertionError() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml(MALFORMED)).isNotStrictlyEqualToXml(SOURCE))
+			.withMessageContaining("Unable to compare XML");
 	}
 
 	@Test
@@ -489,14 +576,14 @@ class XmlContentAssertTests {
 	void hasXPathValueWhenExpressionHasLiteralPercentAndArgsThenFailsWithAssertionError() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(PERCENT)).hasXPathValue("/example/value[text()='100%']", "unused"))
-			.withMessageContaining("Unable to format XML path \"/example/value[text()='100%']\"");
+			.withMessageContaining("Unable to format XPath expression \"/example/value[text()='100%']\"");
 	}
 
 	@Test
 	void hasXPathValueWhenExpressionDoesNotSelectNodesThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).hasXPathValue("count(/example/item)"))
-			.withMessageContaining("XML path \"count(/example/item)\" does not select nodes");
+			.withMessageContaining("XPath expression \"count(/example/item)\" does not select nodes");
 	}
 
 	@Test
@@ -510,14 +597,14 @@ class XmlContentAssertTests {
 	void doesNotHaveXPathValueWhenExpressionDoesNotSelectNodesThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).doesNotHaveXPathValue("count(/example/item)"))
-			.withMessageContaining("XML path \"count(/example/item)\" does not select nodes");
+			.withMessageContaining("XPath expression \"count(/example/item)\" does not select nodes");
 	}
 
 	@Test
 	void hasXPathValueWhenPathIsMissingThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).hasXPathValue("/example/nope"))
-			.withMessageContaining("No XML path \"/example/nope\" found");
+			.withMessageContaining("No XPath expression \"/example/nope\" found");
 	}
 
 	@Test
@@ -541,6 +628,32 @@ class XmlContentAssertTests {
 	void hasXPathValueWhenDocumentHasExternalEntityThenEntityIsNotResolved() {
 		assertThat(forXml(EXTERNAL_ENTITY)).hasXPathValue("/example/name");
 		assertThat(forXml(EXTERNAL_ENTITY)).extractingXPathStringValue("/example/name").isEmpty();
+	}
+
+	@Test
+	void hasXPathValueWhenDocumentExpandsEntitiesRecursivelyThenFails() {
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forXml(BILLION_LAUGHS)).hasXPathValue("/lolz"))
+			.withMessageContaining("Unable to parse XML content");
+	}
+
+	@Test
+	void extractingXPathNodeListWhenTextContainsCdataThenNodeCarriesAllOfTheText() {
+		// The XPath data model has no CDATA sections, the text either side of one
+		// belongs to the same text node
+		assertThat(forXml(CDATA)).extractingXPathNodeList("/example/name/text()")
+			.extracting(Node::getNodeValue)
+			.containsExactly("xyz");
+	}
+
+	@Test
+	void hasXPathNodeCountWhenTextContainsCdataThenCountsASingleTextNode() {
+		assertThat(forXml(CDATA)).hasXPathNodeCount("/example/name/text()", 1);
+	}
+
+	@Test
+	void extractingXPathStringValueWhenTextContainsCdataThenReturnsAllOfTheText() {
+		assertThat(forXml(CDATA)).extractingXPathStringValue("/example/name/text()").isEqualTo("xyz");
 	}
 
 	@Test
@@ -596,7 +709,7 @@ class XmlContentAssertTests {
 	void hasXPathValueWhenExpressionIsUnprefixedAndDocumentIsNamespacedThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(NAMESPACED)).hasXPathValue("/example/name"))
-			.withMessageContaining("No XML path");
+			.withMessageContaining("No XPath expression");
 	}
 
 	@Test
@@ -627,6 +740,24 @@ class XmlContentAssertTests {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertion.withNamespaces(NAMESPACES).hasXPathValue("/ns:example/ns:nope"))
 			.withMessageContaining("[my description]");
+	}
+
+	@Test
+	void withNamespacesWhenRepresentationIsSetThenRepresentationIsRetained() {
+		XmlContentAssert assertion = new XmlContentAssert(XmlContentAssertTests.class, NAMESPACED)
+			.withRepresentation((object) -> "<redacted>");
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertion.withNamespaces(NAMESPACES).isNull())
+			.withMessageContaining("<redacted>");
+	}
+
+	@Test
+	void withNamespacesWhenPrefixIsReservedThenThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> assertThat(forXml(NAMESPACED)).withNamespaces(Map.of("xml", "urn:example")))
+			.withMessageContaining("must not rebind the reserved prefix 'xml'");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> assertThat(forXml(NAMESPACED)).withNamespaces(Map.of("xmlns", "urn:example")))
+			.withMessageContaining("must not rebind the reserved prefix 'xmlns'");
 	}
 
 	@Test
@@ -702,7 +833,7 @@ class XmlContentAssertTests {
 	void extractingXPathStringValueWhenPathIsMissingThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).extractingXPathStringValue("/example/nope"))
-			.withMessageContaining("No value at XML path \"/example/nope\"");
+			.withMessageContaining("No value at XPath expression \"/example/nope\"");
 	}
 
 	@Test
@@ -763,7 +894,7 @@ class XmlContentAssertTests {
 	void extractingXPathNumberValueWhenPathIsMissingThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).extractingXPathNumberValue("/example/nope"))
-			.withMessageContaining("No value at XML path");
+			.withMessageContaining("No value at XPath expression");
 	}
 
 	@Test
@@ -794,7 +925,7 @@ class XmlContentAssertTests {
 	void extractingXPathBooleanValueWhenPathIsMissingThenFails() {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forXml(SOURCE)).extractingXPathBooleanValue("/example/nope"))
-			.withMessageContaining("No value at XML path");
+			.withMessageContaining("No value at XPath expression");
 	}
 
 	private File createFile(String content) throws IOException {
