@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.tomcat.util.net.SSLHostConfig.CertificateVerification;
 import org.apache.tomcat.util.net.openssl.ciphers.Cipher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,6 +161,26 @@ class SslConnectorCustomizerTests {
 
 	@Test
 	@WithPackageResources("test.jks")
+	void customizeRetainsCustomizationsAppliedToExistingSslHostConfig() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		ssl.setKeyStore("classpath:test.jks");
+		Connector connector = this.tomcat.getConnector();
+		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
+		SSLHostConfig existing = new SSLHostConfig();
+		existing.setHostName(protocol.getDefaultSSLHostConfigName());
+		existing.setTruststoreProvider(MockPkcs11SecurityProvider.NAME);
+		protocol.addSslHostConfig(existing);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
+		customizer.customize(WebServerSslBundle.get(ssl), Collections.emptyMap());
+		assertThat(protocol.findSslHostConfigs()).hasSize(1);
+		SSLHostConfig sslHostConfig = protocol.findSslHostConfigs()[0];
+		assertThat(sslHostConfig.getTruststoreProvider()).isEqualTo(MockPkcs11SecurityProvider.NAME);
+		assertThat(sslHostConfig.getCertificates()).hasSize(1);
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
 	void updateRetainsCustomizationsAppliedToSslHostConfig() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -175,6 +196,23 @@ class SslConnectorCustomizerTests {
 		SSLHostConfig updated = protocol.findSslHostConfigs()[0];
 		assertThat(updated.getTruststoreProvider()).isEqualTo(MockPkcs11SecurityProvider.NAME);
 		assertThat(updated.getCertificates()).hasSize(1);
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void updateRetainsClientAuthConfiguredOnSslHostConfig() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		ssl.setKeyStore("classpath:test.jks");
+		Connector connector = this.tomcat.getConnector();
+		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
+		customizer.customize(WebServerSslBundle.get(ssl), Collections.emptyMap());
+		SSLHostConfig sslHostConfig = protocol.findSslHostConfigs()[0];
+		sslHostConfig.setCertificateVerification("required");
+		customizer.update(null, WebServerSslBundle.get(ssl));
+		SSLHostConfig updated = protocol.findSslHostConfigs()[0];
+		assertThat(updated.getCertificateVerification()).isEqualTo(CertificateVerification.REQUIRED);
 	}
 
 	@Test
