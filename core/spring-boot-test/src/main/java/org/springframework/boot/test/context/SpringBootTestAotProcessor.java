@@ -36,6 +36,8 @@ import org.springframework.util.Assert;
  */
 public class SpringBootTestAotProcessor extends TestAotProcessor {
 
+	static final String AOT_PROCESSING = "spring.test.context.aot.processing";
+
 	/**
 	 * Create a new processor for the specified test classpath roots and general settings.
 	 * @param classpathRoots the classpath roots to scan for test classes
@@ -43,6 +45,23 @@ public class SpringBootTestAotProcessor extends TestAotProcessor {
 	 */
 	public SpringBootTestAotProcessor(Set<Path> classpathRoots, Settings settings) {
 		super(classpathRoots, settings);
+	}
+
+	@Override
+	protected Void doProcess() {
+		String previous = System.getProperty(AOT_PROCESSING);
+		try {
+			System.setProperty(AOT_PROCESSING, Boolean.TRUE.toString());
+			return super.doProcess();
+		}
+		finally {
+			if (previous != null) {
+				System.setProperty(AOT_PROCESSING, previous);
+			}
+			else {
+				System.clearProperty(AOT_PROCESSING);
+			}
+		}
 	}
 
 	public static void main(String[] args) {
