@@ -1,2 +1,0 @@
-org.springframework.boot.micrometer.tracing.brave.autoconfigure.BraveAutoConfiguration
-org.springframework.boot.micrometer.tracing.brave.autoconfigure.zipkin.ZipkinWithBraveTracingAutoConfiguration

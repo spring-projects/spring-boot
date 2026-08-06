@@ -1,3 +1,0 @@
-org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration
-org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration
-org.springframework.boot.elasticsearch.autoconfigure.health.ElasticsearchRestHealthContributorAutoConfiguration

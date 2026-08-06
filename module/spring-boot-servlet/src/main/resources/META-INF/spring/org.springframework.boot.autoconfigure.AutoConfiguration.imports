@@ -1,5 +1,0 @@
-org.springframework.boot.servlet.autoconfigure.HttpEncodingAutoConfiguration
-org.springframework.boot.servlet.autoconfigure.MultipartAutoConfiguration
-org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration
-org.springframework.boot.servlet.autoconfigure.actuate.web.exchanges.ServletHttpExchangesAutoConfiguration
-org.springframework.boot.servlet.autoconfigure.actuate.web.mappings.ServletMappingsAutoConfiguration

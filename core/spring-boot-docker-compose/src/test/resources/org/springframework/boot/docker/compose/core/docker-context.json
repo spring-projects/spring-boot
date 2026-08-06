@@ -1,8 +1,0 @@
-{
-	"Current": true,
-	"Description": "Current DOCKER_HOST based configuration",
-	"DockerEndpoint": "unix:///var/run/docker.sock",
-	"Error": "",
-	"KubernetesEndpoint": "",
-	"Name": "default"
-}

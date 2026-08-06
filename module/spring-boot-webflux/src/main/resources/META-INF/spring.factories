@@ -1,3 +1,0 @@
-# WebApplicationType Deducers
-org.springframework.boot.WebApplicationType$Deducer=\
-org.springframework.boot.webflux.WebFluxWebApplicationTypeDeducer

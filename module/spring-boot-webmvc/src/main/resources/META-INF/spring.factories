@@ -1,7 +1,0 @@
-# Template Availability Providers
-org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
-org.springframework.boot.webmvc.autoconfigure.JspTemplateAvailabilityProvider
-
-# WebApplicationType Deducers
-org.springframework.boot.WebApplicationType$Deducer=\
-org.springframework.boot.webmvc.WebMvcWebApplicationTypeDeducer

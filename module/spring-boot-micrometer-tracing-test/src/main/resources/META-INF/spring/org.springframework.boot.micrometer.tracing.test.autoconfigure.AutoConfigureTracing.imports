@@ -1,3 +1,0 @@
-org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration
-org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration
-org.springframework.boot.micrometer.tracing.autoconfigure.NoopTracerAutoConfiguration

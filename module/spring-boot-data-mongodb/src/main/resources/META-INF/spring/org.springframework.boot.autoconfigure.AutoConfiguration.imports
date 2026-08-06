@@ -1,4 +1,0 @@
-org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration
-org.springframework.boot.data.mongodb.autoconfigure.DataMongoReactiveAutoConfiguration
-org.springframework.boot.data.mongodb.autoconfigure.DataMongoReactiveRepositoriesAutoConfiguration
-org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositoriesAutoConfiguration

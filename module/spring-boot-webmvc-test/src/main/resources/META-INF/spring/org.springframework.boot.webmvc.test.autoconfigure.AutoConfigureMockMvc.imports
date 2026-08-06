@@ -1,3 +1,0 @@
-org.springframework.boot.webmvc.test.autoconfigure.MockMvcAutoConfiguration
-org.springframework.boot.webmvc.test.autoconfigure.MockMvcWebClientAutoConfiguration
-org.springframework.boot.webmvc.test.autoconfigure.MockMvcWebDriverAutoConfiguration

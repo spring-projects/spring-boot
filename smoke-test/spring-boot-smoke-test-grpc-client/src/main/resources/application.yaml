@@ -1,6 +1,0 @@
-spring:
-  grpc:
-    client:
-      channel:
-        default:
-          target: "static://localhost:9090"

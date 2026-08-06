@@ -1,5 +1,0 @@
-org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
-org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration
-org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration
-optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
-optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration

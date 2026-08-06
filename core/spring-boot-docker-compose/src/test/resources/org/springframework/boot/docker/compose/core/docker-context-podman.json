@@ -1,8 +1,0 @@
-{
-    "Name": "podman-machine-default",
-    "URI": "ssh://core@127.0.0.1:55599/run/user/501/podman/podman.sock",
-    "Identity": "/Users/user/.local/share/containers/podman/machine/machine",
-    "IsMachine": true,
-    "Default": false,
-    "ReadWrite": true
-}

@@ -1,2 +1,0 @@
-org.springframework.boot.jetty.autoconfigure.actuate.web.server.JettyReactiveManagementChildContextConfiguration
-org.springframework.boot.jetty.autoconfigure.actuate.web.server.JettyServletManagementChildContextConfiguration

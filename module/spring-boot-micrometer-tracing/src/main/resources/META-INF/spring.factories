@@ -1,4 +1,0 @@
-# Environment Post Processors
-org.springframework.boot.EnvironmentPostProcessor=\
-org.springframework.boot.micrometer.tracing.autoconfigure.LogCorrelationEnvironmentPostProcessor
-

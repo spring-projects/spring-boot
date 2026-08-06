@@ -1,3 +1,0 @@
-# Application Context Initializers
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.grpc.test.autoconfigure.GrpcPortInfoApplicationContextInitializer

@@ -1,4 +1,0 @@
-org.springframework.boot.data.ldap.autoconfigure.DataLdapRepositoriesAutoConfiguration
-org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration
-org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

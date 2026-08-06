@@ -1,3 +1,0 @@
-org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration
-org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration
-org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration

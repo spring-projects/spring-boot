@@ -1,5 +1,0 @@
-services:
-  redis2:
-    image: '{imageName}'
-    ports:
-      - '6379'

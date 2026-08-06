@@ -1,5 +1,0 @@
-org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration
-org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration
-org.springframework.boot.mongodb.autoconfigure.health.MongoHealthContributorAutoConfiguration
-org.springframework.boot.mongodb.autoconfigure.health.MongoReactiveHealthContributorAutoConfiguration
-org.springframework.boot.mongodb.autoconfigure.metrics.MongoMetricsAutoConfiguration

@@ -1,2 +1,0 @@
-org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration
-org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration

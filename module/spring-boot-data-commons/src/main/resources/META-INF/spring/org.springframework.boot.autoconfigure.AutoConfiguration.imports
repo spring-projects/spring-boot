@@ -1,2 +1,0 @@
-org.springframework.boot.data.autoconfigure.metrics.DataRepositoryMetricsAutoConfiguration
-org.springframework.boot.data.autoconfigure.web.DataWebAutoConfiguration

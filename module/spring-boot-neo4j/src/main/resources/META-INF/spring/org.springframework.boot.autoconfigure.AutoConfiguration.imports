@@ -1,3 +1,0 @@
-org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration
-org.springframework.boot.neo4j.autoconfigure.health.Neo4jHealthContributorAutoConfiguration
-org.springframework.boot.neo4j.autoconfigure.observation.Neo4jObservationAutoConfiguration

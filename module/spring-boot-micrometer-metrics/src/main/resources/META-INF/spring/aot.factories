@@ -1,2 +1,0 @@
-org.springframework.aot.hint.RuntimeHintsRegistrar=\
-org.springframework.boot.micrometer.metrics.autoconfigure.ServiceLevelObjectiveBoundary$ServiceLevelObjectiveBoundaryHints

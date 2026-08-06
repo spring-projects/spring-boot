@@ -1,3 +1,0 @@
-org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration
-org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.HealthEndpointJerseyExtensionAutoConfiguration
-org.springframework.boot.jersey.autoconfigure.metrics.JerseyServerMetricsAutoConfiguration

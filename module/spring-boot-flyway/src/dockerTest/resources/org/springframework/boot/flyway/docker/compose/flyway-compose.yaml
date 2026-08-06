@@ -1,9 +1,0 @@
-services:
-  database:
-    image: '{imageName}'
-    ports:
-      - '5432'
-    environment:
-      - 'POSTGRES_USER=myuser'
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'

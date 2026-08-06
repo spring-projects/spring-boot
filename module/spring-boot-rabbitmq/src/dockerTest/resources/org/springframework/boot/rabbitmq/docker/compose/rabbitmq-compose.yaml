@@ -1,8 +1,0 @@
-services:
-  rabbitmq:
-    image: '{imageName}'
-    environment:
-      - 'RABBITMQ_DEFAULT_USER=myuser'
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-    ports:
-      - '5672'
