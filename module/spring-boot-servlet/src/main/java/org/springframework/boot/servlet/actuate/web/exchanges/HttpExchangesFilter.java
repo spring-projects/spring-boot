@@ -39,12 +39,29 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * Servlet {@link Filter} for recording {@link HttpExchange HTTP exchanges}.
  *
+ * <p>
+ * This filter runs near the end of the filter chain (at {@code LOWEST_PRECEDENCE - 10})
+ * so it captures enriched headers added by earlier filters. When used together with
+ * {@link HttpExchangesStartingFilter}, it coordinates recording to ensure that requests
+ * short-circuited by high-priority filters (such as Spring Security) are still captured
+ * by the starting filter.
+ *
+ * <p>
+ * When {@link HttpExchangesStartingFilter} is present:
+ * <ul>
+ * <li>This filter reuses the {@link HttpExchange.Started} instance that the starting
+ * filter stored as a request attribute.</li>
+ * <li>After recording, this filter sets the {@code finished} attribute so the starting
+ * filter does not record the exchange a second time.</li>
+ * </ul>
+ *
  * @author Dave Syer
  * @author Wallace Wadge
  * @author Andy Wilkinson
  * @author Venil Noronha
  * @author Madhura Bhave
  * @since 4.0.0
+ * @see HttpExchangesStartingFilter
  */
 public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered {
 
@@ -82,8 +99,10 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 			filterChain.doFilter(request, response);
 			return;
 		}
-		RecordableServletHttpRequest sourceRequest = new RecordableServletHttpRequest(request);
-		HttpExchange.Started startedHttpExchange = HttpExchange.start(sourceRequest);
+		// Reuse the Started exchange created by HttpExchangesStartingFilter if present,
+		// otherwise create a new one (standalone use without
+		// HttpExchangesStartingFilter).
+		HttpExchange.Started startedExchange = getOrCreateStartedExchange(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
 			filterChain.doFilter(request, response);
@@ -91,10 +110,27 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 		}
 		finally {
 			RecordableServletHttpResponse sourceResponse = new RecordableServletHttpResponse(response, status);
-			HttpExchange finishedExchange = startedHttpExchange.finish(sourceResponse, request::getUserPrincipal,
+			HttpExchange finishedExchange = startedExchange.finish(sourceResponse, request::getUserPrincipal,
 					() -> getSessionId(request), this.includes);
 			this.repository.add(finishedExchange);
+			// Signal HttpExchangesStartingFilter not to record the exchange again.
+			request.setAttribute(HttpExchangesStartingFilter.ATTRIBUTE_FINISHED, Boolean.TRUE);
 		}
+	}
+
+	/**
+	 * Returns the {@link HttpExchange.Started} stored by
+	 * {@link HttpExchangesStartingFilter}, or creates a fresh one if the starting filter
+	 * is not in the chain.
+	 * @param request the source request
+	 * @return the started exchange to use for recording
+	 */
+	private HttpExchange.Started getOrCreateStartedExchange(HttpServletRequest request) {
+		Object attribute = request.getAttribute(HttpExchangesStartingFilter.ATTRIBUTE_STARTED);
+		if (attribute instanceof HttpExchange.Started started) {
+			return started;
+		}
+		return HttpExchange.start(new RecordableServletHttpRequest(request));
 	}
 
 	private boolean isRequestValid(HttpServletRequest request) {
@@ -107,6 +143,12 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 		}
 	}
 
+	/**
+	 * Return the session id for the given request, or {@code null} if the request does
+	 * not have a session.
+	 * @param request the source request
+	 * @return the session id or {@code null} if there is no session
+	 */
 	private @Nullable String getSessionId(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		return (session != null) ? session.getId() : null;
