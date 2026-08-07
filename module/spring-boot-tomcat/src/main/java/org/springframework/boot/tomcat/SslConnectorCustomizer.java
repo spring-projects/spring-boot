@@ -19,6 +19,7 @@ package org.springframework.boot.tomcat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.commons.logging.Log;
@@ -66,7 +67,13 @@ public class SslConnectorCustomizer {
 		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) this.connector.getProtocolHandler();
 		String host = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
 		this.logger.debug("SSL Bundle for host " + host + " has been updated, reloading SSL configuration");
-		addSslHostConfig(protocol, host, updatedSslBundle);
+		SSLHostConfig sslHostConfig = findSslHostConfig(protocol, host);
+		if (sslHostConfig == null) {
+			addSslHostConfig(protocol, host, updatedSslBundle);
+			return;
+		}
+		applySslBundle(protocol, sslHostConfig, updatedSslBundle);
+		protocol.addSslHostConfig(sslHostConfig, true);
 	}
 
 	public void customize(SslBundle sslBundle, Map<String, SslBundle> serverNameSslBundles) {
@@ -101,12 +108,21 @@ public class SslConnectorCustomizer {
 		protocol.addSslHostConfig(sslHostConfig, true);
 	}
 
+	private @Nullable SSLHostConfig findSslHostConfig(AbstractHttp11Protocol<?> protocol, String serverName) {
+		for (SSLHostConfig candidate : protocol.findSslHostConfigs()) {
+			if (serverName.equalsIgnoreCase(candidate.getHostName())) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
 	private void applySslBundle(AbstractHttp11Protocol<?> protocol, SSLHostConfig sslHostConfig, SslBundle sslBundle) {
 		SslBundleKey key = sslBundle.getKey();
 		SslStoreBundle stores = sslBundle.getStores();
 		SslOptions options = sslBundle.getOptions();
 		sslHostConfig.setSslProtocol(sslBundle.getProtocol());
-		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.UNDEFINED);
+		SSLHostConfigCertificate certificate = getCertificate(sslHostConfig);
 		String keystorePassword = (stores.getKeyStorePassword() != null) ? stores.getKeyStorePassword() : "";
 		certificate.setCertificateKeystorePassword(keystorePassword);
 		if (key.getPassword() != null) {
@@ -115,10 +131,19 @@ public class SslConnectorCustomizer {
 		if (key.getAlias() != null) {
 			certificate.setCertificateKeyAlias(key.getAlias());
 		}
-		sslHostConfig.addCertificate(certificate);
 		configureCiphers(options, sslHostConfig);
 		configureSslStores(sslHostConfig, certificate, stores);
 		configureEnabledProtocols(sslHostConfig, options);
+	}
+
+	private SSLHostConfigCertificate getCertificate(SSLHostConfig sslHostConfig) {
+		Set<SSLHostConfigCertificate> certificates = sslHostConfig.getCertificates();
+		if (certificates.size() == 1) {
+			return certificates.iterator().next();
+		}
+		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.UNDEFINED);
+		sslHostConfig.addCertificate(certificate);
+		return certificate;
 	}
 
 	private void configureCiphers(SslOptions options, SSLHostConfig sslHostConfig) {
