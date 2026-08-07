@@ -106,13 +106,19 @@ public final class KafkaAutoConfiguration {
 	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter,
-			ObjectProvider<KafkaTemplateObservationConvention> observationConvention) {
+			ObjectProvider<KafkaTemplateObservationConvention> observationConvention,
+			KafkaConnectionDetails connectionDetails) {
 		PropertyMapper map = PropertyMapper.get();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		observationConvention.ifUnique(kafkaTemplate::setObservationConvention);
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
 		Template templateProperties = this.properties.getTemplate();
+		KafkaProperties.Admin admin = templateProperties.getAdmin();
+		if (admin != null) {
+			kafkaTemplate
+				.setKafkaAdmin(createKafkaAdmin(this.properties.buildAdminProperties(admin), admin, connectionDetails));
+		}
 		map.from(templateProperties.getDefaultTopic()).to(kafkaTemplate::setDefaultTopic);
 		map.from(templateProperties.getTransactionIdPrefix()).to(kafkaTemplate::setTransactionIdPrefix);
 		map.from(templateProperties.getCloseTimeout()).to(kafkaTemplate::setCloseTimeout);
@@ -180,9 +186,14 @@ public final class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean
 	KafkaAdmin kafkaAdmin(KafkaConnectionDetails connectionDetails) {
 		Map<String, Object> properties = this.properties.buildAdminProperties();
+		KafkaProperties.Admin admin = this.properties.getAdmin();
+		return createKafkaAdmin(properties, admin, connectionDetails);
+	}
+
+	static KafkaAdmin createKafkaAdmin(Map<String, Object> properties, KafkaProperties.Admin admin,
+			KafkaConnectionDetails connectionDetails) {
 		applyKafkaConnectionDetailsForAdmin(properties, connectionDetails);
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
-		KafkaProperties.Admin admin = this.properties.getAdmin();
 		if (admin.getCloseTimeout() != null) {
 			kafkaAdmin.setCloseTimeout((int) admin.getCloseTimeout().getSeconds());
 		}
@@ -225,7 +236,7 @@ public final class KafkaAutoConfiguration {
 		applySslBundle(properties, producer.getSslBundle());
 	}
 
-	private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
+	static void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		Configuration admin = connectionDetails.getAdmin();
 		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, admin.getBootstrapServers());
