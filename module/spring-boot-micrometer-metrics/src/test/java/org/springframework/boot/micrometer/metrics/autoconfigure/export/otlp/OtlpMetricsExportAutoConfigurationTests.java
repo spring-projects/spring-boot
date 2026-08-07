@@ -266,6 +266,17 @@ class OtlpMetricsExportAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void testUrlFallbackToCommonOtlpEndpoint() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://common-host:4318")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpConfig.class);
+				OtlpConfig config = context.getBean(OtlpConfig.class);
+				assertThat(config.url()).isEqualTo("http://common-host:4318/v1/metrics");
+			});
+	}
+
 	private HttpClient extractHttpClient(OtlpHttpMetricsSender metricsSender) {
 		Object field = ReflectionTestUtils.getField(metricsSender, "httpSender");
 		assertThat(field).isNotNull();
