@@ -21,11 +21,14 @@ import java.util.Map;
 
 import io.grpc.Server;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.env.ConfigTreePropertySource.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -36,34 +39,41 @@ import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
 
 /**
- * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
- * ports that {@link Server gRPC servers} are actually listening on. The property
- * {@literal "local.grpc.server.port"} can be injected directly into tests using
- * {@link Value @Value} or obtained through the {@link Environment}.
+ * {@link EnableAutoConfiguration Auto-configuration} for an {@link ApplicationListener}
+ * that sets {@link Environment} properties for the port that a {@link Server gRPC server}
+ * is actually listening on. The property {@value PROPERTY_NAME} can be injected directly
+ * into tests using {@link Value @Value} or obtained through the {@link Environment}.
  * <p>
  * Properties are automatically propagated up to any parent context.
  *
  * @author Dave Syer
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Stephane Nicoll
+ * @since 4.1.1
  */
-class GrpcPortInfoApplicationContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+@AutoConfiguration(beforeName = "org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration")
+@ConditionalOnClass(GrpcServerStartedEvent.class)
+public final class GrpcServerPortInfoAutoConfiguration {
 
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addApplicationListener(new Listener(applicationContext));
+	/**
+	 * Property that contains the port that a {@link Server gRPC server} is actually
+	 * listening on.
+	 */
+	public static final String PROPERTY_NAME = "local.grpc.server.port";
+
+	@Bean
+	GrpcPortInfoApplicationListener grpcPortInfoApplicationListener(ConfigurableApplicationContext applicationContext) {
+		return new GrpcPortInfoApplicationListener(applicationContext);
 	}
 
-	private static class Listener implements ApplicationListener<GrpcServerStartedEvent> {
-
-		private static final String PROPERTY_NAME = "local.grpc.server.port";
+	static class GrpcPortInfoApplicationListener implements ApplicationListener<GrpcServerStartedEvent> {
 
 		private static final String PROPERTY_SOURCE_NAME = "server.ports";
 
 		private final ConfigurableApplicationContext applicationContext;
 
-		Listener(ConfigurableApplicationContext applicationContext) {
+		GrpcPortInfoApplicationListener(ConfigurableApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 

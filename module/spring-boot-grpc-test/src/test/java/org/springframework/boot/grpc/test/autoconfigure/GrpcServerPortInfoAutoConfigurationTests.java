@@ -20,10 +20,10 @@ import io.grpc.Server;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.grpc.test.autoconfigure.GrpcServerPortInfoAutoConfiguration.GrpcPortInfoApplicationListener;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
@@ -35,22 +35,36 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link GrpcPortInfoApplicationContextInitializer}.
+ * Tests for {@link GrpcServerPortInfoAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-class GrpcPortInfoApplicationContextInitializerTests {
+class GrpcServerPortInfoAutoConfigurationTests {
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(GrpcServerPortInfoAutoConfiguration.class));
 
 	private static final String PORT_PROPERTY = "local.grpc.server.port";
 
 	@Test
-	void whenServerHasAddressInitializerSetsPortProperty() {
+	void createsGrpcPortInfoApplicationListenerBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GrpcPortInfoApplicationListener.class));
+	}
+
+	@Test
+	void whenNoGrpcServerStartedEventClassDoesNotCreateBean() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(GrpcServerStartedEvent.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcPortInfoApplicationListener.class));
+	}
+
+	@Test
+	void whenServerHasAddressListenerSetsPortProperty() {
 		NettyGrpcServerFactory factory = mock();
 		testListener(factory, 65535, "65535");
 	}
 
 	@Test
-	void whenServerHasNoAddressInitializerSetsNoPortProperty() {
+	void whenServerHasNoAddressListenerSetsNoPortProperty() {
 		NettyGrpcServerFactory factory = mock();
 		testListener(factory, -1, null);
 	}
@@ -68,25 +82,14 @@ class GrpcPortInfoApplicationContextInitializerTests {
 	}
 
 	private void testListener(GrpcServerFactory factory, int port, @Nullable String expected) {
-		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Config.class)) {
-			context.getBean(GrpcPortInfoApplicationContextInitializer.class).initialize(context);
+		this.contextRunner.run((context) -> {
 			GrpcServerLifecycle lifecycle = mock();
 			Server server = mock();
 			given(lifecycle.getFactory()).willReturn(factory);
 			GrpcServerStartedEvent event = new GrpcServerStartedEvent(lifecycle, server, "localhost", port);
 			context.publishEvent(event);
 			assertThat(context.getEnvironment().getProperty(PORT_PROPERTY)).isEqualTo(expected);
-		}
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class Config {
-
-		@Bean
-		GrpcPortInfoApplicationContextInitializer grpcPortInfoApplicationContextInitializer() {
-			return new GrpcPortInfoApplicationContextInitializer();
-		}
-
+		});
 	}
 
 }

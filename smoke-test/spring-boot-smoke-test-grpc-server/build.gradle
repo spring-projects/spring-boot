@@ -25,7 +25,7 @@ description = "Spring Boot gRPC server smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-grpc-server"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-grpc-server-test"))
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
