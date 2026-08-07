@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
@@ -45,6 +47,8 @@ import org.springframework.util.StringUtils;
  */
 class DockerComposeServiceConnectionsApplicationListener
 		implements ApplicationListener<DockerComposeServicesReadyEvent> {
+
+	private static final String BEAN_DEFINITION_ATTRIBUTE = DockerComposeConnectionDetailsFactory.class.getName();
 
 	private final ConnectionDetailsFactories factories;
 
@@ -86,6 +90,7 @@ class DockerComposeServiceConnectionsApplicationListener
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		beanDefinition.setAttribute(BEAN_DEFINITION_ATTRIBUTE, true);
 		containerMetadata.addTo(beanDefinition);
 		registry.registerBeanDefinition(beanName, beanDefinition);
 	}
@@ -96,6 +101,15 @@ class DockerComposeServiceConnectionsApplicationListener
 		parts.add("for");
 		parts.addAll(Arrays.asList(runningService.name().split("-")));
 		return StringUtils.uncapitalize(parts.stream().map(StringUtils::capitalize).collect(Collectors.joining()));
+	}
+
+	static class DockerComposeConnectionDetailsBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
+
+		@Override
+		public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
+			return registeredBean.getMergedBeanDefinition().getAttribute(BEAN_DEFINITION_ATTRIBUTE) != null;
+		}
+
 	}
 
 }
