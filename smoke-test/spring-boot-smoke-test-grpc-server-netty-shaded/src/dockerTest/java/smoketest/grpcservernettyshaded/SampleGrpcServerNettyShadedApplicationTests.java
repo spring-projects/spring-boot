@@ -21,13 +21,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.startupcheck.IndefiniteWaitOneShotStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import smoketest.grpcservernettyshaded.SampleGrpcServerNettyShadedApplicationTests.GrpcServerStartedEventListener;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Import;
-import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,39 +34,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(properties = "spring.grpc.server.port=0")
 @Testcontainers(disabledWithoutDocker = true)
-@Import(GrpcServerStartedEventListener.class)
 class SampleGrpcServerNettyShadedApplicationTests {
 
-	@Autowired
-	private GrpcServerStartedEventListener startedEventListener;
+	@Value("${local.grpc.server.port}")
+	private int port;
 
 	@Test
 	@SuppressWarnings("resource")
 	void test() {
-		int port = this.startedEventListener.getPort();
-		String address = "host.testcontainers.internal:" + port;
-		org.testcontainers.Testcontainers.exposeHostPorts(port);
+		String address = "host.testcontainers.internal:" + this.port;
+		org.testcontainers.Testcontainers.exposeHostPorts(this.port);
 		try (GenericContainer<?> container = new GenericContainer<>(
 				DockerImageName.parse("fullstorydev/grpcurl:v1.9.3"))
 			.withCommand("-d", "{\"name\": \"spring\"}", "--plaintext", address, "HelloWorld/SayHello")
 			.withStartupCheckStrategy(new IndefiniteWaitOneShotStartupCheckStrategy())) {
 			container.start();
 			assertThat(container.getLogs()).contains("\"message\": \"Hello 'spring'\"");
-		}
-
-	}
-
-	static class GrpcServerStartedEventListener implements ApplicationListener<GrpcServerStartedEvent> {
-
-		private int port;
-
-		@Override
-		public void onApplicationEvent(GrpcServerStartedEvent event) {
-			this.port = event.getPort();
-		}
-
-		int getPort() {
-			return this.port;
 		}
 
 	}

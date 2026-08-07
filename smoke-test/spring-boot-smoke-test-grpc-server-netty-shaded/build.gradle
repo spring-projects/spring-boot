@@ -28,7 +28,7 @@ dependencies {
 	}
 	implementation("io.grpc:grpc-netty-shaded")
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-grpc-server-test"))
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
