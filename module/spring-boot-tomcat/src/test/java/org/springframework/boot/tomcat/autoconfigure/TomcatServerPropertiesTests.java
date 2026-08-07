@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TomcatServerProperties}.
  *
  * @author Andy Wilkinson
+ * @author Tiziano Basile
  */
 class TomcatServerPropertiesTests {
 
@@ -95,7 +96,7 @@ class TomcatServerPropertiesTests {
 		assertThat(this.properties.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(this.properties.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(this.properties.getRelaxedQueryChars()).containsExactly('^', '|');
-		assertThat(this.properties.isUseRelativeRedirects()).isTrue();
+		assertThat(this.properties.getUseRelativeRedirects()).isTrue();
 	}
 
 	@Test
@@ -235,8 +236,8 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatUseRelativeRedirectsDefaultsToFalse() {
-		assertThat(this.properties.isUseRelativeRedirects()).isFalse();
+	void tomcatUseRelativeRedirectsIsNotSetByDefault() {
+		assertThat(this.properties.getUseRelativeRedirects()).isNull();
 	}
 
 	@Test
