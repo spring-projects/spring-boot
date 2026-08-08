@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.Bean;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
@@ -44,6 +46,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -1271,6 +1274,78 @@ class JavaBeanBinderTests {
 		@Override
 		public String toString() {
 			return this.value;
+		}
+
+	}
+
+	@Test
+	void bindToListWithOptionalFieldAndNonIterableSourceShouldNotLoopInfinitely() {
+		ConfigurationPropertySource source = new ConfigurationPropertySource() {
+			@Override
+			public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+				return null;
+			}
+		};
+		this.sources.add(source);
+		assertThatCode(() -> this.binder.bind("foo", Bindable.of(ListOfOptionalExample.class)))
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	void bindToBeanWithOptionalFieldAndActualConfigurationShouldBindValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.optional-value", "hello");
+		this.sources.add(source);
+		ExampleWithOptional bound = this.binder.bind("foo", Bindable.of(ExampleWithOptional.class)).get();
+		assertThat(bound.getOptionalValue()).contains("hello");
+	}
+
+	@Test
+	void bindToBeanWithOptionalFieldAndNoConfigurationShouldNotBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source);
+		ExampleWithOptional bound = this.binder.bind("foo", Bindable.of(ExampleWithOptional.class)).orElse(null);
+		assertThat(bound).isNull();
+	}
+
+	static class ListOfOptionalExample {
+
+		private List<OptionalItem> items = new ArrayList<>();
+
+		List<OptionalItem> getItems() {
+			return this.items;
+		}
+
+		void setItems(List<OptionalItem> items) {
+			this.items = items;
+		}
+
+	}
+
+	static class OptionalItem {
+
+		private Optional<String> regex = Optional.empty();
+
+		Optional<String> getRegex() {
+			return this.regex;
+		}
+
+		void setRegex(Optional<String> regex) {
+			this.regex = regex;
+		}
+
+	}
+
+	static class ExampleWithOptional {
+
+		private Optional<String> optionalValue = Optional.empty();
+
+		Optional<String> getOptionalValue() {
+			return this.optionalValue;
+		}
+
+		void setOptionalValue(Optional<String> optionalValue) {
+			this.optionalValue = optionalValue;
 		}
 
 	}

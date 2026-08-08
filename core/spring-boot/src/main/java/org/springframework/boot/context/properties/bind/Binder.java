@@ -31,7 +31,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
-
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
@@ -495,6 +494,15 @@ public class Binder {
 		return result;
 	}
 
+	private boolean hasDescendantInAnySource(Context context, ConfigurationPropertyName name) {
+		for (ConfigurationPropertySource source : context.getSources()) {
+			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private @Nullable Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding, boolean fallbackToDefaultValue) {
 		if (isUnbindableBean(name, target, context)) {
@@ -505,8 +513,13 @@ public class Binder {
 		if (!allowRecursiveBinding && context.isBindingDataObject(type)) {
 			return null;
 		}
-		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
-				propertyTarget, handler, context, false, false);
+		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> {
+			ConfigurationPropertyName fullName = name.append(propertyName);
+			ConfigurationProperty property = findProperty(fullName, propertyTarget, context);
+			boolean fromSource = (property != null) || hasDescendantInAnySource(context, fullName);
+			Object value = bind(fullName, propertyTarget, handler, context, false, false);
+			return new DataObjectPropertyBinder.PropertyBinding(value, fromSource);
+		};
 		Supplier<@Nullable Object> supplier = () -> fromDataObjectBinders(bindMethod,
 				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder,
 						fallbackToDefaultValue));
