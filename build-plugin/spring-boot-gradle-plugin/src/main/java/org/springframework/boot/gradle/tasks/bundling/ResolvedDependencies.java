@@ -18,10 +18,8 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ResolvedConfiguration;
@@ -30,6 +28,7 @@ import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.capabilities.Capability;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
@@ -47,31 +46,26 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  * @author Phillip Webb
  * @author Paddy Drury
  * @author Andy Wilkinson
+ * @author Greg Taube
  */
 class ResolvedDependencies {
-
-	private final Map<String, LibraryCoordinates> projectCoordinatesByPath;
 
 	private final ListProperty<ComponentArtifactIdentifier> artifactIds;
 
 	private final ListProperty<File> artifactFiles;
 
+	private final ListProperty<String> artifactProjectGroups;
+
+	private final ListProperty<String> artifactProjectNames;
+
+	private final ListProperty<String> artifactProjectVersions;
+
 	ResolvedDependencies(Project project) {
 		this.artifactIds = project.getObjects().listProperty(ComponentArtifactIdentifier.class);
 		this.artifactFiles = project.getObjects().listProperty(File.class);
-		this.projectCoordinatesByPath = projectCoordinatesByPath(project);
-	}
-
-	private static Map<String, LibraryCoordinates> projectCoordinatesByPath(Project project) {
-		return project.getRootProject()
-			.getAllprojects()
-			.stream()
-			.collect(Collectors.toMap(Project::getPath, ResolvedDependencies::libraryCoordinates));
-	}
-
-	private static LibraryCoordinates libraryCoordinates(Project project) {
-		return LibraryCoordinates.of(Objects.toString(project.getGroup()), project.getName(),
-				Objects.toString(project.getVersion()));
+		this.artifactProjectGroups = project.getObjects().listProperty(String.class);
+		this.artifactProjectNames = project.getObjects().listProperty(String.class);
+		this.artifactProjectVersions = project.getObjects().listProperty(String.class);
 	}
 
 	@Input
@@ -84,42 +78,93 @@ class ResolvedDependencies {
 		return this.artifactFiles;
 	}
 
+	@Input
+	ListProperty<String> getArtifactProjectGroups() {
+		return this.artifactProjectGroups;
+	}
+
+	@Input
+	ListProperty<String> getArtifactProjectNames() {
+		return this.artifactProjectNames;
+	}
+
+	@Input
+	ListProperty<String> getArtifactProjectVersions() {
+		return this.artifactProjectVersions;
+	}
+
 	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
 		this.artifactFiles.addAll(
 				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getFile).toList()));
 		this.artifactIds.addAll(
 				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getId).toList()));
+		this.artifactProjectGroups.addAll(resolvedArtifacts
+			.map((artifacts) -> artifacts.stream().map(ResolvedDependencies::projectGroup).toList()));
+		this.artifactProjectNames.addAll(resolvedArtifacts
+			.map((artifacts) -> artifacts.stream().map(ResolvedDependencies::projectName).toList()));
+		this.artifactProjectVersions.addAll(resolvedArtifacts
+			.map((artifacts) -> artifacts.stream().map(ResolvedDependencies::projectVersion).toList()));
+	}
+
+	private static String projectGroup(ResolvedArtifactResult artifact) {
+		Capability capability = projectCapability(artifact);
+		return (capability != null) ? capability.getGroup() : "";
+	}
+
+	private static String projectName(ResolvedArtifactResult artifact) {
+		Capability capability = projectCapability(artifact);
+		return (capability != null) ? capability.getName() : "";
+	}
+
+	private static String projectVersion(ResolvedArtifactResult artifact) {
+		Capability capability = projectCapability(artifact);
+		return (capability != null) ? Objects.toString(capability.getVersion(), "") : "";
+	}
+
+	private static @Nullable Capability projectCapability(ResolvedArtifactResult artifact) {
+		ComponentIdentifier componentIdentifier = artifact.getId().getComponentIdentifier();
+		if (!(componentIdentifier instanceof ProjectComponentIdentifier projectComponentIdentifier)) {
+			return null;
+		}
+		List<? extends Capability> capabilities = artifact.getVariant().getCapabilities();
+		for (Capability candidate : capabilities) {
+			if (candidate.getName().equals(projectComponentIdentifier.getProjectName())) {
+				return candidate;
+			}
+		}
+		return capabilities.get(0);
 	}
 
 	@Nullable DependencyDescriptor find(File file) {
-		ComponentArtifactIdentifier id = findArtifactIdentifier(file);
-		if (id == null) {
+		int artifactIndex = findArtifactIndex(file);
+		if (artifactIndex < 0) {
 			return null;
 		}
+		ComponentArtifactIdentifier id = this.artifactIds.get().get(artifactIndex);
 		if (id instanceof ModuleComponentArtifactIdentifier moduleComponentId) {
 			ModuleComponentIdentifier moduleId = moduleComponentId.getComponentIdentifier();
 			return new DependencyDescriptor(
 					LibraryCoordinates.of(moduleId.getGroup(), moduleId.getModule(), moduleId.getVersion()), false);
 		}
 		ComponentIdentifier componentIdentifier = id.getComponentIdentifier();
-		if (componentIdentifier instanceof ProjectComponentIdentifier projectComponentId) {
-			String projectPath = projectComponentId.getProjectPath();
-			LibraryCoordinates projectCoordinates = this.projectCoordinatesByPath.get(projectPath);
-			if (projectCoordinates != null) {
-				return new DependencyDescriptor(projectCoordinates, true);
-			}
+		if (componentIdentifier instanceof ProjectComponentIdentifier) {
+			LibraryCoordinates projectCoordinates = LibraryCoordinates.of(
+					this.artifactProjectGroups.get().get(artifactIndex),
+					this.artifactProjectNames.get().get(artifactIndex),
+					this.artifactProjectVersions.get().get(artifactIndex));
+			return new DependencyDescriptor(projectCoordinates, true);
 		}
 		return null;
 	}
 
-	private @Nullable ComponentArtifactIdentifier findArtifactIdentifier(File file) {
+	private int findArtifactIndex(File file) {
 		List<File> files = this.artifactFiles.get();
 		for (int i = 0; i < files.size(); i++) {
 			if (file.equals(files.get(i))) {
-				return this.artifactIds.get().get(i);
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
 	/**
