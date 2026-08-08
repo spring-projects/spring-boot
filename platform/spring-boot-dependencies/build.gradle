@@ -618,11 +618,7 @@ bom {
 			releaseNotes("https://github.com/hamcrest/JavaHamcrest/releases/tag/v{version}")
 		}
 	}
-	library("Hazelcast", "5.5.0") {
-		prohibit {
-			versionRange "[5.6.0,)"
-			because "https://github.com/hazelcast/hazelcast/issues/26546"
-		}
+	library("Hazelcast", "5.7.0") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
