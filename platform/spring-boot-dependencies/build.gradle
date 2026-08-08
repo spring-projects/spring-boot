@@ -1920,7 +1920,7 @@ bom {
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
-	library("Qpid ProtonJ2", "1.1.0") {
+	library("Qpid ProtonJ2", "1.2.0") {
 		group("org.apache.qpid") {
 			modules = [
 					"protonj2",
