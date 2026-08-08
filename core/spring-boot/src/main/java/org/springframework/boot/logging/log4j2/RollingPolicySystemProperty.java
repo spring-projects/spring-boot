@@ -61,7 +61,17 @@ public enum RollingPolicySystemProperty {
 	/**
 	 * Logging system property for the cron based schedule.
 	 */
-	CRON("cron");
+	CRON("cron"),
+
+	/**
+	 * Logging system property for the clean history on start flag.
+	 */
+	CLEAN_HISTORY_ON_START("clean-history-on-start"),
+
+	/**
+	 * Logging system property for the file total size cap.
+	 */
+	TOTAL_SIZE_CAP("total-size-cap");
 
 	private final String environmentVariableName;
 

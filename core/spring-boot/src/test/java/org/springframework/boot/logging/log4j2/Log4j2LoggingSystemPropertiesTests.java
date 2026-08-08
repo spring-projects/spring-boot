@@ -68,6 +68,8 @@ class Log4j2LoggingSystemPropertiesTests {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.time-interval", "2");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.time-modulate", "true");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.cron", "0 0 1 * * ?");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.clean-history-on-start", "true");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.total-size-cap", "1GB");
 
 		new Log4j2LoggingSystemProperties(this.environment).apply(null);
 
@@ -78,7 +80,9 @@ class Log4j2LoggingSystemPropertiesTests {
 			.containsEntry("LOG4J2_ROLLINGPOLICY_STRATEGY", "time")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_TIME_INTERVAL", "2")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_TIME_MODULATE", "true")
-			.containsEntry("LOG4J2_ROLLINGPOLICY_CRON", "0 0 1 * * ?");
+			.containsEntry("LOG4J2_ROLLINGPOLICY_CRON", "0 0 1 * * ?")
+			.containsEntry("LOG4J2_ROLLINGPOLICY_CLEAN_HISTORY_ON_START", "true")
+			.containsEntry("LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP", String.valueOf(DataSize.ofGigabytes(1).toBytes()));
 	}
 
 	@Test
