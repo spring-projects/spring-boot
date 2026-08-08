@@ -194,7 +194,7 @@ class BootBuildImageTests {
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
 		BuildRequest request = this.buildImage.createRequest();
-		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/builder-noble-java-tiny");
+		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/ubuntu-resolute-builder");
 		assertThat(request.isTrustBuilder()).isTrue();
 	}
 
