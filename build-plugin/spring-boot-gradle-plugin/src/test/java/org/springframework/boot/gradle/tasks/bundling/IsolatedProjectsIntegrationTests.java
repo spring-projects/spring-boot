@@ -76,6 +76,8 @@ class IsolatedProjectsIntegrationTests {
 				}
 				group = 'org.example.projects'
 				version = '1.2.3'
+				configurations.runtimeElements.outgoing.capability('org.example.projects:library-alternative:1.2.3')
+				configurations.runtimeElements.outgoing.capability('org.example.projects:library:1.2.3')
 				""");
 	}
 
