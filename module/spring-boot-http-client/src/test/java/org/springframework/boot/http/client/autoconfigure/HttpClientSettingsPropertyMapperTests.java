@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 
@@ -121,6 +122,16 @@ class HttpClientSettingsPropertyMapperTests {
 		properties.getSsl().setBundle("test-bundle");
 		assertThatIllegalStateException().isThrownBy(() -> mapper.map(properties))
 			.withMessage("No 'sslBundles' available");
+	}
+
+	@Test
+	void mapWhenSslBundleIsEmptyStringTreatsBundleAsUnset() {
+		SslBundles sslBundles = new DefaultSslBundleRegistry();
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(sslBundles, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.getSsl().setBundle("");
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.sslBundle()).isNull();
 	}
 
 	static class TestHttpClientSettingsProperties extends HttpClientSettingsProperties {

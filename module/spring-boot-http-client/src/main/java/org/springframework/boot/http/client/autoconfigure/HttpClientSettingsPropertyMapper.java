@@ -52,6 +52,7 @@ public class HttpClientSettingsPropertyMapper {
 			settings = map.from(properties::getCookieHandling).to(settings, HttpClientSettings::withCookieHandling);
 			settings = map.from(properties::getSsl)
 				.as(HttpClientSettingsProperties.Ssl::getBundle)
+				.whenHasText()
 				.as(this::getSslBundle)
 				.to(settings, HttpClientSettings::withSslBundle);
 		}
