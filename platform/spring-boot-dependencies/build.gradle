@@ -31,7 +31,7 @@ bom {
 			]
 		}
 	}
-	library("ActiveMQ", "6.2.8") {
+	library("ActiveMQ", "6.2.9") {
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-console",
