@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.env.ConfigTreePropertySource.Value;
+import org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,7 +53,7 @@ import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
  * @author Stephane Nicoll
  * @since 4.1.1
  */
-@AutoConfiguration(beforeName = "org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration")
+@AutoConfiguration(before = GrpcServerAutoConfiguration.class)
 @ConditionalOnClass(GrpcServerStartedEvent.class)
 public final class GrpcServerPortInfoAutoConfiguration {
 
