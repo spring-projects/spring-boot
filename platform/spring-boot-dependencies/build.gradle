@@ -1732,7 +1732,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "6.1.0") {
+	library("Neo4j Java Driver", "6.2.1") {
 		alignWith {
 			version {
 				of "org.neo4j.driver:neo4j-java-driver"
