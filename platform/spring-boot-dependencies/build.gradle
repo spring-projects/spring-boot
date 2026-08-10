@@ -720,7 +720,7 @@ bom {
 			]
 		}
 	}
-	library("HttpClient5", "5.6.3") {
+	library("HttpClient5", "5.6.4") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
