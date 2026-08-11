@@ -28,6 +28,7 @@ import java.nio.charset.CodingErrorAction;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
+import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * {@link Appendable} implementation that can be used to return a byte array. Designed to
@@ -35,6 +36,7 @@ import org.springframework.util.Assert;
  * cached buffer scoped to the thread.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class AppendableByteArray implements Appendable {
 
@@ -112,7 +114,6 @@ class AppendableByteArray implements Appendable {
 		}
 		byte[] result = new byte[size];
 		System.arraycopy(this.out.array(), this.out.arrayOffset() + position, result, 0, size);
-		reset();
 		return result;
 	}
 
@@ -121,7 +122,26 @@ class AppendableByteArray implements Appendable {
 		this.encoder.reset();
 	}
 
-	static AppendableByteArray get(Charset charset) {
+	static byte[] toByteArray(Charset charset, ThrowingConsumer<Appendable> appendable) throws IOException {
+		Assert.notNull(charset, "'charset' must not be null");
+		Assert.notNull(appendable, "'appendable' must not be null");
+		AppendableByteArray appendableByteArray = get(charset);
+		try {
+			appendable.acceptWithException(appendableByteArray);
+			return appendableByteArray.toByteArray();
+		}
+		catch (IOException | RuntimeException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+		finally {
+			appendableByteArray.reset();
+		}
+	}
+
+	private static AppendableByteArray get(Charset charset) {
 		Assert.notNull(charset, "'charset' must not be null");
 		SoftReference<AppendableByteArray> cached = cache.get();
 		AppendableByteArray result = (cached != null) ? cached.get() : null;
