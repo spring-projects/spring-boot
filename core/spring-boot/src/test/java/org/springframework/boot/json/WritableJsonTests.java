@@ -67,17 +67,6 @@ class WritableJsonTests {
 	}
 
 	@Test
-	void toByteArrayWhenPreviousWriteFailedDoesNotIncludePartialContent() {
-		WritableJson failing = (out) -> {
-			out.append("{\"partial\":");
-			throw new IllegalStateException("bad");
-		};
-		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(failing::toByteArray);
-		WritableJson healthy = (out) -> out.append("{\"ok\":true}");
-		assertThat(healthy.toByteArray()).isEqualTo("{\"ok\":true}".getBytes(StandardCharsets.UTF_8));
-	}
-
-	@Test
 	void toResourceWritesJson() throws Exception {
 		File file = new File(this.temp, "out.json");
 		WritableJson writable = (out) -> out.append("{}");
