@@ -213,7 +213,7 @@ public final class KafkaAutoConfiguration {
 			KafkaConnectionDetails connectionDetails) {
 		Configuration consumer = connectionDetails.getConsumer();
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumer.getBootstrapServers());
-		applySecurityProtocol(properties, connectionDetails.getSecurityProtocol());
+		applySecurityProtocol(properties, consumer.getSecurityProtocol());
 		applySslBundle(properties, consumer.getSslBundle());
 	}
 

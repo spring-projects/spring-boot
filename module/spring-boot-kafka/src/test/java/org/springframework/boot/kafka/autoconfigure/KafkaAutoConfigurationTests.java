@@ -1023,7 +1023,37 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	void specificSecurityProtocolOverridesCommonSecurityProtocol() {
+	void specificProducerSecurityProtocolOverridesCommonSecurityProtocol() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.security.protocol=SSL",
+					"spring.kafka.producer.security.protocol=PLAINTEXT")
+			.run((context) -> {
+				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+				Map<String, Object> consumerConfigs = consumerFactory.getConfigurationProperties();
+				assertThat(consumerConfigs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
+				Map<String, Object> producerConfigs = producerFactory.getConfigurationProperties();
+				assertThat(producerConfigs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+			});
+	}
+
+	@Test
+	void specificConsumerSecurityProtocolOverridesCommonSecurityProtocol() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.security.protocol=SSL",
+					"spring.kafka.consumer.security.protocol=PLAINTEXT")
+			.run((context) -> {
+				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
+				Map<String, Object> producerConfigs = producerFactory.getConfigurationProperties();
+				assertThat(producerConfigs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+				Map<String, Object> consumerConfigs = consumerFactory.getConfigurationProperties();
+				assertThat(consumerConfigs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+			});
+	}
+
+	@Test
+	void specificAdminSecurityProtocolOverridesCommonSecurityProtocol() {
 		this.contextRunner
 			.withPropertyValues("spring.kafka.security.protocol=SSL", "spring.kafka.admin.security.protocol=PLAINTEXT")
 			.run((context) -> {
