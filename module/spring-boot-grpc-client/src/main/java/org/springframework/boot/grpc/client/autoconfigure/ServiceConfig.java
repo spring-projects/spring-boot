@@ -189,7 +189,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		 */
 		public record WeightedRoundRobinLoadBalancingConfig(Duration blackoutPeriod, Duration weightExpirationPeriod,
 				Duration outOfBandReportingPeriod, Boolean enableOutOfBandLoadReport, Duration weightUpdatePeriod,
-				Float errorUtilizationPenalty) {
+				Double errorUtilizationPenalty) {
 
 			Map<String, Object> grpcJavaConfig() {
 				// Aligned with WeightedRoundRobinLoadBalancerProvider
@@ -208,7 +208,9 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 				map.from(this::weightUpdatePeriod)
 					.as(ServiceConfig::durationString)
 					.to(grpcJavaConfig.in("weightUpdatePeriod"));
-				map.from(this::errorUtilizationPenalty).to(grpcJavaConfig.in("errorUtilizationPenalty"));
+				map.from(this::errorUtilizationPenalty)
+					.as(Object::toString)
+					.to(grpcJavaConfig.in("errorUtilizationPenalty"));
 				return grpcJavaConfig.asMap();
 			}
 
