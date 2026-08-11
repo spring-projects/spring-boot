@@ -2706,7 +2706,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "2.0.7-INTERNAL-SNAPSHOT") {
+	library("Spring Pulsar", "2.0.7") {
 		firstParty()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
