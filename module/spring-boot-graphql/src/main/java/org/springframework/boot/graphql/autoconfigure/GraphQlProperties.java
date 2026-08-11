@@ -244,8 +244,7 @@ public class GraphQlProperties {
 		private @Nullable String path;
 
 		/**
-		 * Time within which the initial {@code CONNECTION_INIT} type message must be
-		 * received.
+		 * Time within which the initial CONNECTION_INIT type message must be received.
 		 */
 		private Duration connectionInitTimeout = Duration.ofSeconds(60);
 
