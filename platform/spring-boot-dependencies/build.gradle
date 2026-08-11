@@ -558,9 +558,15 @@ bom {
 			site("https://groovy-lang.org")
 		}
 	}
-	library("Grpc Java", "1.81.1") {
+	library("Grpc Java", "1.83.1") {
 		group("io.grpc") {
 			bom("grpc-bom")
+		}
+		alignWith {
+			version {
+				of "io.grpc:grpc-core"
+				from "org.springframework.grpc:spring-grpc-core"
+			}
 		}
 		links {
 			github("https://github.com/grpc/grpc-java")
