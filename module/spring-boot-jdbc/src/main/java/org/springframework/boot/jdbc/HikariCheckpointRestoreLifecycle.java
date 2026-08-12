@@ -25,15 +25,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import javax.sql.DataSource;
-
-import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariPoolMXBean;
 import com.zaxxer.hikari.pool.HikariPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
@@ -52,6 +48,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Christoph Strobl
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Fabio Grassi
  * @since 3.2.0
  */
 public class HikariCheckpointRestoreLifecycle implements Lifecycle {
@@ -72,21 +69,20 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	private final Function<HikariPool, Boolean> hasOpenConnections;
 
-	private final @Nullable HikariDataSource dataSource;
+	private final HikariDataSource dataSource;
 
 	private final ConfigurableApplicationContext applicationContext;
 
 	/**
 	 * Creates a new {@code HikariCheckpointRestoreLifecycle} that will allow the given
-	 * {@code dataSource} to participate in checkpoint-restore. The {@code dataSource} is
-	 * {@link DataSourceUnwrapper#unwrap unwrapped} to a {@link HikariDataSource}. If such
-	 * unwrapping is not possible, the lifecycle will have no effect.
+	 * {@link HikariDataSource} to participate in checkpoint-restore.
 	 * @param dataSource the checkpoint-restore participant
 	 * @param applicationContext the application context
 	 * @since 3.4.0
 	 */
-	public HikariCheckpointRestoreLifecycle(DataSource dataSource, ConfigurableApplicationContext applicationContext) {
-		this.dataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class, HikariDataSource.class);
+	public HikariCheckpointRestoreLifecycle(HikariDataSource dataSource,
+			ConfigurableApplicationContext applicationContext) {
+		this.dataSource = dataSource;
 		this.applicationContext = applicationContext;
 		this.hasOpenConnections = (pool) -> {
 			ThreadPoolExecutor closeConnectionExecutor = (ThreadPoolExecutor) ReflectionUtils
@@ -98,7 +94,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public void start() {
-		if (this.dataSource == null || this.dataSource.isRunning()) {
+		if (this.dataSource.isRunning()) {
 			return;
 		}
 		Assert.state(!this.dataSource.isClosed(), "DataSource has been closed and cannot be restarted");
@@ -110,7 +106,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public void stop() {
-		if (this.dataSource == null || !this.dataSource.isRunning()) {
+		if (!this.dataSource.isRunning()) {
 			return;
 		}
 		if (this.dataSource.isAllowPoolSuspension()) {
@@ -164,7 +160,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public boolean isRunning() {
-		return this.dataSource != null && this.dataSource.isRunning();
+		return this.dataSource.isRunning();
 	}
 
 }
