@@ -2159,6 +2159,7 @@ bom {
 				"spring-boot-cloudfoundry",
 				"spring-boot-configuration-metadata",
 				"spring-boot-configuration-processor",
+				"spring-boot-configuration-symbol-processor",
 				"spring-boot-couchbase",
 				"spring-boot-data-cassandra",
 				"spring-boot-data-cassandra-test",
