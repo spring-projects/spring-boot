@@ -1,0 +1,83 @@
+[[appendix.configuration-metadata.symbol-processor]]
+= Generating Metadata for Kotlin by Using the Symbol Processor
+
+Kotlin code can be processed by the Java annotation processor described in xref:specification:configuration-metadata/annotation-processor.adoc[] through kapt.
+As kapt is in maintenance mode, the `spring-boot-configuration-symbol-processor` jar provides an alternative that is built on https://kotlinlang.org/docs/ksp-overview.html[Kotlin Symbol Processing] (KSP) and that processes Kotlin sources directly.
+
+The symbol processor writes the same `META-INF/spring-configuration-metadata.json` file as the annotation processor, so IDEs and other tools consume it without any change.
+
+
+
+[[appendix.configuration-metadata.symbol-processor.configuring]]
+== Configuring the Symbol Processor
+
+KSP is applied with its Gradle plugin.
+Once the plugin has been applied, declare the symbol processor in the `ksp` configuration, as shown in the following example:
+
+[source,gradle]
+----
+plugins {
+	id "com.google.devtools.ksp" version "$kspVersion"
+}
+
+dependencies {
+	ksp "org.springframework.boot:spring-boot-configuration-symbol-processor"
+}
+----
+
+
+
+[[appendix.configuration-metadata.symbol-processor.mixed-modules]]
+== Modules That Contain Java and Kotlin
+
+Both processors write `META-INF/spring-configuration-metadata.json`, so a module that applies both fails to build with a duplicate entry for that file.
+Apply only one of them to a module: the annotation processor when the module declares its configuration properties in Java, and the symbol processor when it declares them in Kotlin.
+When properties are declared in both languages, keep the annotation processor and let it process the Kotlin types through kapt.
+
+
+
+[[appendix.configuration-metadata.symbol-processor.supported-types]]
+== Supported Types
+
+The symbol processor generates metadata for Kotlin types that are annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation], covering:
+
+* Constructor binding, including javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] and javadoc:org.springframework.boot.context.properties.bind.Name[format=annotation].
+* JavaBean binding of `var` properties, and of read-only properties whose type is a `Collection` or a `Map`.
+* Methods that are annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation], whose return type carries the properties.
+* Nested groups, either deduced from a type that is declared in the same top level type or requested with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation].
+* Descriptions taken from the KDoc of a property, or from the `@property` and `@param` tags of the KDoc of the declaring class for constructor parameters.
+* Deprecations declared with `@Deprecated` or javadoc:org.springframework.boot.context.properties.DeprecatedConfigurationProperty[format=annotation].
+
+Types that are annotated with an actuator endpoint annotation, such as `@Endpoint`, contribute their `access` property and, when they declare a main read operation, their `cache.time-to-live` property.
+
+Kotlin types are reported using their JVM names, so a `List<String>` property is described as `java.util.List<java.lang.String>` and an `Int` property is described as `java.lang.Integer`.
+
+
+
+[[appendix.configuration-metadata.symbol-processor.additional-metadata]]
+== Adding Additional Metadata
+
+The metadata of `META-INF/additional-spring-configuration-metadata.json` is merged into the generated file, which also removes the properties that the additional metadata ignores.
+As KSP gives a processor no access to the resources of the module, the directories to look into have to be listed with a processor option, as shown in the following example:
+
+[source,gradle]
+----
+ksp {
+	arg("org.springframework.boot.configurationprocessor.additionalMetadataLocations", "src/main/resources")
+}
+----
+
+
+
+[[appendix.configuration-metadata.symbol-processor.limitations]]
+== Limitations
+
+The symbol processor does not support the following features of the annotation processor:
+
+* Default values that are declared with an initializer, such as `var port: Int = 8080`.
+KSP does not give a processor access to initializers, so annotate the property with javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] to describe such a default.
+* Endpoint annotations that are meta-annotated, as opposed to the endpoint annotations of Spring Boot itself.
+* javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesSource[format=annotation], and the per-type metadata that the annotation processor writes for it.
+* Lombok, which does not apply to Kotlin code.
+
+Generic type arguments that a superclass declares are not resolved against the type that extends it, so such a property is described using the upper bound of its type variable.
