@@ -54,6 +54,13 @@ class IndexedJarStructure implements JarStructure {
 	private static final Set<String> ENTRY_IGNORE_LIST = Set.of("META-INF/", "META-INF/MANIFEST.MF",
 			"META-INF/services/java.nio.file.spi.FileSystemProvider");
 
+	/**
+	 * Location of provided-scope dependencies in an executable war. Only
+	 * {@code Spring-Boot-Lib} is recorded in the manifest, but the classpath index of a
+	 * war also references this directory, as {@code WarLauncher} does when running one.
+	 */
+	private static final String WAR_PROVIDED_LIB_LOCATION = "WEB-INF/lib-provided/";
+
 	private final Manifest originalManifest;
 
 	private final String libLocation;
@@ -130,8 +137,13 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	private String toStructureDependency(String libEntryName) {
-		Assert.state(libEntryName.startsWith(this.libLocation), () -> "Invalid library location " + libEntryName);
-		return libEntryName.substring(this.libLocation.length());
+		if (libEntryName.startsWith(this.libLocation)) {
+			return libEntryName.substring(this.libLocation.length());
+		}
+		if (libEntryName.startsWith(WAR_PROVIDED_LIB_LOCATION)) {
+			return libEntryName.substring(WAR_PROVIDED_LIB_LOCATION.length());
+		}
+		throw new IllegalStateException("Invalid library location " + libEntryName);
 	}
 
 	private static String getMandatoryAttribute(Manifest manifest, String attribute) {

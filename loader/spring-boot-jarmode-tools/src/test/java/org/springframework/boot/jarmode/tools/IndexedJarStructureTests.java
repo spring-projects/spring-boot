@@ -54,6 +54,24 @@ class IndexedJarStructureTests {
 	}
 
 	@Test
+	void shouldResolveLibraryEntryFromWarProvidedLocation() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar");
+		assertThat(entry).isNotNull();
+		assertThat(entry.location()).isEqualTo("tomcat-embed-core-10.1.19.jar");
+		assertThat(entry.originalLocation()).isEqualTo("WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar");
+		assertThat(entry.type()).isEqualTo(Type.LIBRARY);
+	}
+
+	@Test
+	void shouldCreateLauncherManifestForWarWithProvidedLibraries() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Manifest manifest = structure.createLauncherManifest(UnaryOperator.identity());
+		assertThat(getAttributes(manifest)).containsEntry("Class-Path",
+				"spring-webmvc-6.1.4.jar tomcat-embed-core-10.1.19.jar");
+	}
+
+	@Test
 	void shouldResolveApplicationEntry() throws IOException {
 		IndexedJarStructure structure = createStructure();
 		Entry entry = structure.resolve("BOOT-INF/classes/application.properties");
@@ -121,6 +139,23 @@ class IndexedJarStructureTests {
 
 	private IndexedJarStructure createStructure() throws IOException {
 		return new IndexedJarStructure(createManifest(), createIndexFile());
+	}
+
+	private IndexedJarStructure createWarStructure() throws IOException {
+		Manifest manifest = new Manifest(new ByteArrayInputStream("""
+				Manifest-Version: 1.0
+				Main-Class: org.springframework.boot.loader.launch.WarLauncher
+				Start-Class: org.springframework.boot.jarmode.tools.IndexedJarStructureTests
+				Spring-Boot-Version: 3.3.0-SNAPSHOT
+				Spring-Boot-Classes: WEB-INF/classes/
+				Spring-Boot-Lib: WEB-INF/lib/
+				Spring-Boot-Classpath-Index: WEB-INF/classpath.idx
+				""".getBytes(StandardCharsets.UTF_8)));
+		String indexFile = """
+				- "WEB-INF/lib/spring-webmvc-6.1.4.jar"
+				- "WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"
+				""";
+		return new IndexedJarStructure(manifest, indexFile);
 	}
 
 	private String createIndexFile() {
