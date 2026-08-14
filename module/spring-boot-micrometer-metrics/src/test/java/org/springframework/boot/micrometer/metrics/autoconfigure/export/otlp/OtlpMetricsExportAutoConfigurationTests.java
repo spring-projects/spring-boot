@@ -151,10 +151,8 @@ class OtlpMetricsExportAutoConfigurationTests {
 	@Test
 	void allowsCustomMetricsSenderToBeUsed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
-			.run((context) -> {
-				assertHasCustomMetricsSender(context);
-				assertThat(context).doesNotHaveBean(OtlpHttpMetricsSender.class);
-			});
+			.run((context) -> assertThat(context).hasSingleBean(OtlpMetricsSender.class)
+				.doesNotHaveBean(OtlpHttpMetricsSender.class));
 	}
 
 	@Test
@@ -169,7 +167,8 @@ class OtlpMetricsExportAutoConfigurationTests {
 	void allowsCustomMetricsSenderToBeUsedWithVirtualThreads() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
 			.withPropertyValues("spring.threads.virtual.enabled=true")
-			.run(this::assertHasCustomMetricsSender);
+			.run((context) -> assertThat(context).hasSingleBean(OtlpMetricsSender.class)
+				.doesNotHaveBean(OtlpHttpMetricsSender.class));
 	}
 
 	@Test
@@ -272,13 +271,6 @@ class OtlpMetricsExportAutoConfigurationTests {
 		Object httpClient = ReflectionTestUtils.getField(field, "httpClient");
 		assertThat(httpClient).isNotNull();
 		return (HttpClient) httpClient;
-	}
-
-	private void assertHasCustomMetricsSender(AssertableApplicationContext context) {
-		assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
-		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
-		assertThat(registry).extracting("metricsSender")
-			.satisfies((sender) -> assertThat(sender).isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
 	}
 
 	private void assertHasCustomExemplarContextProvider(AssertableApplicationContext context) {

@@ -16,7 +16,10 @@
 
 package org.springframework.boot.micrometer.tracing.brave.autoconfigure;
 
+import java.util.List;
+
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
@@ -24,6 +27,7 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.registry.otlp.ExemplarContextProvider;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
+import io.micrometer.registry.otlp.shaded.io.opentelemetry.sdk.metrics.data.DoubleExemplarData;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import org.junit.jupiter.api.Test;
@@ -38,6 +42,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -85,12 +90,15 @@ class OtlpExemplarsAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test.observation", observationRegistry).stop();
 			OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
-			TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
+			Timer timer = otlpMeterRegistry.get("test.observation").timer();
 			otlpMeterRegistry.close();
-			assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
-				.containsOnlyOnce("exemplars")
-				.containsOnlyOnce("span_id")
-				.containsOnlyOnce("trace_id");
+
+			List<DoubleExemplarData> exemplars = ReflectionTestUtils.invokeMethod(timer, "exemplars");
+			assertThat(exemplars).hasSize(1).first().satisfies((exemplar) -> {
+				assertThat(exemplar).isNotNull();
+				assertThat(exemplar.getSpanContext().getSpanId()).isNotEmpty();
+				assertThat(exemplar.getSpanContext().getTraceId()).isNotEmpty();
+			});
 		});
 	}
 
@@ -104,12 +112,15 @@ class OtlpExemplarsAutoConfigurationTests {
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 				Observation.start("test.observation", observationRegistry).stop();
 				OtlpMeterRegistry otlpMeterRegistry = context.getBean(OtlpMeterRegistry.class);
-				TestOtlpMetricsSender metricsSender = context.getBean(TestOtlpMetricsSender.class);
+				Timer timer = otlpMeterRegistry.get("test.observation").timer();
 				otlpMeterRegistry.close();
-				assertThat(metricsSender.getOtlpRequest()).containsOnlyOnce("name: \"test.observation\"")
-					.containsOnlyOnce("exemplars")
-					.containsOnlyOnce("span_id")
-					.containsOnlyOnce("trace_id");
+
+				List<DoubleExemplarData> exemplars = ReflectionTestUtils.invokeMethod(timer, "exemplars");
+				assertThat(exemplars).hasSize(1).first().satisfies((exemplar) -> {
+					assertThat(exemplar).isNotNull();
+					assertThat(exemplar.getSpanContext().getSpanId()).isNotEmpty();
+					assertThat(exemplar.getSpanContext().getTraceId()).isNotEmpty();
+				});
 			});
 	}
 
@@ -151,15 +162,8 @@ class OtlpExemplarsAutoConfigurationTests {
 
 	static class TestOtlpMetricsSender implements OtlpMetricsSender {
 
-		private String request = "";
-
 		@Override
-		public void send(Request request) throws Exception {
-			this.request = request.toString();
-		}
-
-		String getOtlpRequest() {
-			return this.request;
+		public void send(Request ignored) {
 		}
 
 	}
