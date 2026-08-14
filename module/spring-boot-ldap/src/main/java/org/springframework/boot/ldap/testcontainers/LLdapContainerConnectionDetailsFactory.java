@@ -16,9 +16,12 @@
 
 package org.springframework.boot.ldap.testcontainers;
 
+import org.jspecify.annotations.Nullable;
+
 import org.testcontainers.ldap.LLdapContainer;
 
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -62,6 +65,11 @@ class LLdapContainerConnectionDetailsFactory
 		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

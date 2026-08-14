@@ -28,6 +28,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties.Template;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.convert.ConverterUtils;
@@ -53,9 +56,12 @@ public final class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LdapConnectionDetails.class)
-	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties,
-			Environment environment) {
-		return new PropertiesLdapConnectionDetails(properties, environment);
+	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(
+			LdapProperties properties,
+			Environment environment,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesLdapConnectionDetails(
+				properties, environment, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -63,7 +69,23 @@ public final class LdapAutoConfiguration {
 	LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
-		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
+		DirContextAuthenticationStrategy uniqueStrategy = dirContextAuthenticationStrategy.getIfUnique();
+		if (uniqueStrategy != null) {
+			// Exactly one custom strategy bean → use it
+			source.setAuthenticationStrategy(uniqueStrategy);
+		}
+		else if (!dirContextAuthenticationStrategy.stream().findAny().isPresent()) {
+			// No custom strategy beans at all → apply SSL bundle if configured
+			SslBundle sslBundle = connectionDetails.getSslBundle();
+			if (sslBundle != null) {
+				DefaultTlsDirContextAuthenticationStrategy tlsStrategy =
+						new DefaultTlsDirContextAuthenticationStrategy();
+				tlsStrategy.setSslSocketFactory(sslBundle.createSslContext().getSocketFactory());
+				source.setAuthenticationStrategy(tlsStrategy);
+			}
+			// else: no SSL bundle → retain built-in SimpleDirContextAuthenticationStrategy from constructor
+		}
+		// else: multiple custom strategy beans → retain built-in SimpleDirContextAuthenticationStrategy
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
 		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
