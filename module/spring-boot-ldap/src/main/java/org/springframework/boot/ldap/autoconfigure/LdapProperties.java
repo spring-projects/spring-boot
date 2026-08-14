@@ -27,6 +27,7 @@ import org.springframework.ldap.ReferralException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for LDAP.
@@ -77,6 +78,8 @@ public class LdapProperties {
 	private final Map<String, String> baseEnvironment = new LinkedHashMap<>();
 
 	private final Template template = new Template();
+
+	private final Ssl ssl = new Ssl();
 
 	public String @Nullable [] getUrls() {
 		return this.urls;
@@ -132,6 +135,10 @@ public class LdapProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	public String[] determineUrls(Environment environment) {
@@ -195,6 +202,35 @@ public class LdapProperties {
 
 		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
 			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
+		}
+
+		/**
+		 * Returns whether SSL is enabled. SSL is considered enabled if a bundle name
+		 * has been set.
+		 * @return whether SSL is enabled
+		 */
+		public boolean determineEnabled() {
+			return StringUtils.hasText(this.bundle);
 		}
 
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.ldap.autoconfigure;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * Details required to establish a connection to an LDAP service.
@@ -55,6 +56,14 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 	 * @return login password
 	 */
 	default @Nullable String getPassword() {
+		return null;
+	}
+
+	/**
+	 * SSL bundle to use to establish the LDAP connection.
+	 * @return the SSL bundle to use, or {@code null} if none
+	 */
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 
