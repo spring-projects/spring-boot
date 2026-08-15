@@ -95,9 +95,21 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
+	void processAotHonorsRuntimeClasspathExclusions() {
+		String output = this.gradleBuild.build("processAotClasspath").getOutput();
+		assertThat(output).doesNotContain("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
+	@TestTemplate
 	void processTestAotHasTransitiveRuntimeDependenciesOnItsClasspath() {
 		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
 		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
+	@TestTemplate
+	void processTestAotHonorsTestRuntimeClasspathExclusions() {
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
+		assertThat(output).doesNotContain("org.jboss.logging" + File.separatorChar + "jboss-logging");
 	}
 
 	@TestTemplate

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -176,6 +178,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			classpath.setDescription("Classpath of the " + taskName + " task.");
 			removeDevelopmentOnly(base.getExtendsFrom(), developmentOnlyConfigurationNames)
 				.forEach(classpath::extendsFrom);
+			classpath.getIncoming().beforeResolve((dependencies) -> copyExcludeRules(base, classpath));
 			classpath.attributes((attributes) -> {
 				ProviderFactory providers = project.getProviders();
 				AttributeContainer baseAttributes = base.getAttributes();
@@ -184,6 +187,21 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 							providers.provider(() -> baseAttributes.getAttribute(attribute)));
 				}
 			});
+		});
+	}
+
+	private void copyExcludeRules(Configuration source, Configuration target) {
+		source.getExcludeRules().forEach((excludeRule) -> {
+			Map<String, String> exclusion = new HashMap<>();
+			String group = excludeRule.getGroup();
+			String module = excludeRule.getModule();
+			if (group != null) {
+				exclusion.put("group", group);
+			}
+			if (module != null) {
+				exclusion.put("module", module);
+			}
+			target.exclude(exclusion);
 		});
 	}
 
