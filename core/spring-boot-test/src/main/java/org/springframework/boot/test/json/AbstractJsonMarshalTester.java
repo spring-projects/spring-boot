@@ -297,9 +297,13 @@ public abstract class AbstractJsonMarshalTester<T> {
 		verify();
 		Assert.notNull(resource, "'resource' must not be null");
 		InputStream inputStream = resource.getInputStream();
-		T object = readObject(inputStream, getTypeNotNull());
-		closeQuietly(inputStream);
-		return new ObjectContent<>(this.type, object);
+		try {
+			T object = readObject(inputStream, getTypeNotNull());
+			return new ObjectContent<>(this.type, object);
+		}
+		finally {
+			closeQuietly(inputStream);
+		}
 	}
 
 	/**
@@ -322,9 +326,13 @@ public abstract class AbstractJsonMarshalTester<T> {
 	public ObjectContent<T> read(Reader reader) throws IOException {
 		verify();
 		Assert.notNull(reader, "'reader' must not be null");
-		T object = readObject(reader, getTypeNotNull());
-		closeQuietly(reader);
-		return new ObjectContent<>(this.type, object);
+		try {
+			T object = readObject(reader, getTypeNotNull());
+			return new ObjectContent<>(this.type, object);
+		}
+		finally {
+			closeQuietly(reader);
+		}
 	}
 
 	private void closeQuietly(Closeable closeable) {

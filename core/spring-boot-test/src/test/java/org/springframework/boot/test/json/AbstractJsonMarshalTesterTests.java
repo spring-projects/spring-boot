@@ -18,6 +18,9 @@ package org.springframework.boot.test.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FilterInputStream;
+import java.io.FilterReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -27,6 +30,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
@@ -40,6 +44,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
@@ -54,6 +59,8 @@ abstract class AbstractJsonMarshalTesterTests {
 	private static final String MAP_JSON = "{\"a\":" + JSON + "}";
 
 	private static final String ARRAY_JSON = "[" + JSON + "]";
+
+	private static final String TRUNCATED_JSON = "{\"name\":\"Spring\",";
 
 	private static final ExampleObject OBJECT = createExampleObject("Spring", 123);
 
@@ -146,10 +153,51 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
+	void readResourceWhenReadFailsShouldCloseInputStream() {
+		AtomicBoolean closed = new AtomicBoolean();
+		Resource resource = new ByteArrayResource(TRUNCATED_JSON.getBytes()) {
+
+			@Override
+			public InputStream getInputStream() throws IOException {
+				return new FilterInputStream(super.getInputStream()) {
+
+					@Override
+					public void close() throws IOException {
+						closed.set(true);
+						super.close();
+					}
+
+				};
+			}
+
+		};
+		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
+		assertThatException().isThrownBy(() -> tester.read(resource));
+		assertThat(closed).isTrue();
+	}
+
+	@Test
 	void readReaderShouldReturnObject() throws Exception {
 		Reader reader = new StringReader(JSON);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(reader)).isEqualTo(OBJECT);
+	}
+
+	@Test
+	void readReaderWhenReadFailsShouldCloseReader() {
+		AtomicBoolean closed = new AtomicBoolean();
+		Reader reader = new FilterReader(new StringReader(TRUNCATED_JSON)) {
+
+			@Override
+			public void close() throws IOException {
+				closed.set(true);
+				super.close();
+			}
+
+		};
+		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
+		assertThatException().isThrownBy(() -> tester.read(reader));
+		assertThat(closed).isTrue();
 	}
 
 	@Test
