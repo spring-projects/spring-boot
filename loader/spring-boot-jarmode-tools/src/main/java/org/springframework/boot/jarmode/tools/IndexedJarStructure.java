@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Mohan Krishna Namburu
  */
 class IndexedJarStructure implements JarStructure {
 
@@ -54,9 +55,13 @@ class IndexedJarStructure implements JarStructure {
 	private static final Set<String> ENTRY_IGNORE_LIST = Set.of("META-INF/", "META-INF/MANIFEST.MF",
 			"META-INF/services/java.nio.file.spi.FileSystemProvider");
 
+	private static final String WAR_LIB_LOCATION = "WEB-INF/lib/";
+
+	private static final String WAR_LIB_PROVIDED_LOCATION = "WEB-INF/lib-provided/";
+
 	private final Manifest originalManifest;
 
-	private final String libLocation;
+	private final List<String> libLocations;
 
 	private final String classesLocation;
 
@@ -64,9 +69,18 @@ class IndexedJarStructure implements JarStructure {
 
 	IndexedJarStructure(Manifest originalManifest, String indexFile) {
 		this.originalManifest = originalManifest;
-		this.libLocation = getLocation(originalManifest, "Spring-Boot-Lib");
+		this.libLocations = getLibLocations(originalManifest);
 		this.classesLocation = getLocation(originalManifest, "Spring-Boot-Classes");
 		this.classpathEntries = readIndexFile(indexFile);
+	}
+
+	private static List<String> getLibLocations(Manifest manifest) {
+		String libLocation = getLocation(manifest, "Spring-Boot-Lib");
+		if (WAR_LIB_LOCATION.equals(libLocation)) {
+			// An executable war also has its provided libraries on the classpath
+			return List.of(libLocation, WAR_LIB_PROVIDED_LOCATION);
+		}
+		return List.of(libLocation);
 	}
 
 	private static String getLocation(Manifest manifest, String attribute) {
@@ -130,8 +144,12 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	private String toStructureDependency(String libEntryName) {
-		Assert.state(libEntryName.startsWith(this.libLocation), () -> "Invalid library location " + libEntryName);
-		return libEntryName.substring(this.libLocation.length());
+		for (String libLocation : this.libLocations) {
+			if (libEntryName.startsWith(libLocation)) {
+				return libEntryName.substring(libLocation.length());
+			}
+		}
+		throw new IllegalStateException("Invalid library location " + libEntryName);
 	}
 
 	private static String getMandatoryAttribute(Manifest manifest, String attribute) {

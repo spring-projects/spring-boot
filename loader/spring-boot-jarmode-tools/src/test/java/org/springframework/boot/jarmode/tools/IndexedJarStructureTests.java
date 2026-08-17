@@ -35,11 +35,13 @@ import org.springframework.boot.jarmode.tools.JarStructure.Entry;
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link IndexedJarStructure}.
  *
  * @author Moritz Halbritter
+ * @author Mohan Krishna Namburu
  */
 class IndexedJarStructureTests {
 
@@ -95,6 +97,64 @@ class IndexedJarStructureTests {
 			.containsEntry("Main-Class", "org.springframework.boot.jarmode.tools.IndexedJarStructureTests")
 			.doesNotContainKeys("Start-Class", "Spring-Boot-Classes", "Spring-Boot-Lib", "Spring-Boot-Classpath-Index",
 					"Spring-Boot-Layers-Index");
+	}
+
+	@Test
+	void shouldResolveLibraryEntryOfWar() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/lib/spring-web-6.1.4.jar");
+		assertThat(entry).isNotNull();
+		assertThat(entry.location()).isEqualTo("spring-web-6.1.4.jar");
+		assertThat(entry.originalLocation()).isEqualTo("WEB-INF/lib/spring-web-6.1.4.jar");
+		assertThat(entry.type()).isEqualTo(Type.LIBRARY);
+	}
+
+	@Test
+	void shouldResolveProvidedLibraryEntryOfWar() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar");
+		assertThat(entry).isNotNull();
+		assertThat(entry.location()).isEqualTo("tomcat-embed-core-10.1.19.jar");
+		assertThat(entry.originalLocation()).isEqualTo("WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar");
+		assertThat(entry.type()).isEqualTo(Type.LIBRARY);
+	}
+
+	@Test
+	void shouldResolveApplicationEntryOfWar() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/classes/application.properties");
+		assertThat(entry).isNotNull();
+		assertThat(entry.location()).isEqualTo("application.properties");
+		assertThat(entry.originalLocation()).isEqualTo("WEB-INF/classes/application.properties");
+		assertThat(entry.type()).isEqualTo(Type.APPLICATION_CLASS_OR_RESOURCE);
+	}
+
+	@Test
+	void shouldNotResolveNonExistingProvidedLibsOfWar() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/lib-provided/doesnt-exists.jar");
+		assertThat(entry).isNull();
+	}
+
+	@Test
+	void shouldCreateLauncherManifestForWar() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Manifest manifest = structure.createLauncherManifest(UnaryOperator.identity());
+		Map<String, String> attributes = getAttributes(manifest);
+		assertThat(attributes).containsEntry("Class-Path",
+				"spring-web-6.1.4.jar spring-core-6.1.4.jar spring-boot-web-server-4.1.0.jar tomcat-embed-core-10.1.19.jar")
+			.containsEntry("Main-Class", "org.springframework.boot.jarmode.tools.IndexedJarStructureTests")
+			.doesNotContainKeys("Start-Class", "Spring-Boot-Classes", "Spring-Boot-Lib", "Spring-Boot-Classpath-Index",
+					"Spring-Boot-Layers-Index");
+	}
+
+	@Test
+	void shouldFailWhenLibraryIsOutsideOfKnownLocations() throws IOException {
+		IndexedJarStructure structure = new IndexedJarStructure(createManifest(), """
+				- "BOOT-INF/other/spring-web-6.1.4.jar"
+				""");
+		assertThatIllegalStateException().isThrownBy(() -> structure.createLauncherManifest(UnaryOperator.identity()))
+			.withMessage("Invalid library location BOOT-INF/other/spring-web-6.1.4.jar");
 	}
 
 	@Test
@@ -155,6 +215,35 @@ class IndexedJarStructureTests {
 				- "BOOT-INF/lib/slf4j-api-2.0.12.jar"
 				- "BOOT-INF/lib/log4j-api-2.23.0.jar"
 				""";
+	}
+
+	private IndexedJarStructure createWarStructure() throws IOException {
+		return new IndexedJarStructure(createWarManifest(), createWarIndexFile());
+	}
+
+	private String createWarIndexFile() {
+		return """
+				- "WEB-INF/lib/spring-web-6.1.4.jar"
+				- "WEB-INF/lib/spring-core-6.1.4.jar"
+				- "WEB-INF/lib-provided/spring-boot-web-server-4.1.0.jar"
+				- "WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"
+				""";
+	}
+
+	private Manifest createWarManifest() throws IOException {
+		return new Manifest(new ByteArrayInputStream("""
+				Manifest-Version: 1.0
+				Main-Class: org.springframework.boot.loader.launch.WarLauncher
+				Start-Class: org.springframework.boot.jarmode.tools.IndexedJarStructureTests
+				Spring-Boot-Version: 3.3.0-SNAPSHOT
+				Spring-Boot-Classes: WEB-INF/classes/
+				Spring-Boot-Lib: WEB-INF/lib/
+				Spring-Boot-Classpath-Index: WEB-INF/classpath.idx
+				Spring-Boot-Layers-Index: WEB-INF/layers.idx
+				Build-Jdk-Spec: 17
+				Implementation-Title: IndexedJarStructureTests
+				Implementation-Version: 0.0.1-SNAPSHOT
+				""".getBytes(StandardCharsets.UTF_8)));
 	}
 
 	private Manifest createManifest() throws IOException {
