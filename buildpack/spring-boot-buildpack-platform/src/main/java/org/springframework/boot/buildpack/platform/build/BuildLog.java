@@ -140,7 +140,7 @@ public interface BuildLog {
 	 * image.
 	 * @param runImageStackId the stack ID of the run image
 	 * @param builderImageStackId the stack ID of the builder image
-	 * @since 4.0.8
+	 * @since 4.0.9
 	 */
 	default void stackIdsDoNotMatch(String runImageStackId, String builderImageStackId) {
 	}
