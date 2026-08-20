@@ -12,7 +12,7 @@ jobs:
       - name: Check Out Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: v4.1.1
+          ref: v4.2.0-M1
       - name: Read Version From gradle.properties
         id: read-version
         shell: bash
@@ -38,11 +38,24 @@ jobs:
           gradle-plugin-publish-secret: ${{ secrets.GRADLE_PLUGIN_PUBLISH_SECRET }}
           jfrog-cli-config-token: ${{ secrets.JF_ARTIFACTORY_SPRING }}
           plugin-version: ${{ needs.read-version.outputs.version }}
+  trigger-docs-build:
+    name: Trigger Docs Build
+    needs:
+      - read-version
+    permissions:
+      actions: write
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Run Deploy Docs Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-refname=v4.2.0-M1 -f build-version=${{ needs.read-version.outputs.version }}
   create-github-release:
     name: Create GitHub Release
     needs:
       - read-version
       - publish-gradle-plugin
+      - trigger-docs-build
     runs-on: 'ubuntu-latest'
     steps:
       - name: Check Out Code
@@ -51,6 +64,6 @@ jobs:
         uses: ./.github/actions/create-github-release
         with:
           commercial: ${{ vars.COMMERCIAL }}
-          latest: true
+          pre-release: true
           milestone: ${{ needs.read-version.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}

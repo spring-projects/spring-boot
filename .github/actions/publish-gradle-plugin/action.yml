@@ -26,7 +26,7 @@ runs:
         JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
     - name: Download Artifacts
       shell: bash
-      run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=spring-boot-4.1.1;buildNumber=2026.2'
+      run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=spring-boot-4.2.0-M1;buildNumber=2026.2'
     - name: Set Up Java
       uses: actions/setup-java@v5
       with:
