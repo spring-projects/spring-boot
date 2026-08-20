@@ -442,10 +442,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			if (file.exists()) {
 				InputStreamSource content = file.getContent();
 				Assert.state(content != null, "Unable to get file content");
-				byte[] existingContent;
-				try (InputStream inputStream = content.getInputStream()) {
-					existingContent = inputStream.readAllBytes();
-				}
+				byte[] existingContent = toByteArray(content);
 				if (!Arrays.equals(this.newContent, existingContent)) {
 					throw new IllegalStateException(
 							"Logging configuration differs from the configuration that has already been written. "
@@ -454,6 +451,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			}
 			else {
 				file.create(new ByteArrayResource(this.newContent));
+			}
+		}
+
+		private byte[] toByteArray(InputStreamSource content) throws IOException {
+			try (InputStream inputStream = content.getInputStream()) {
+				return inputStream.readAllBytes();
 			}
 		}
 
