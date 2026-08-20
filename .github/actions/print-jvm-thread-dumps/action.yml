@@ -1,0 +1,17 @@
+name: Print JVM thread dumps
+description: 'Prints a thread dump for all running JVMs'
+runs:
+  using: composite
+  steps:
+    - if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        for jvm_pid in $(jps -q -J-XX:+PerfDisableSharedMem); do
+          jcmd $jvm_pid Thread.print
+        done
+    - if: ${{ runner.os == 'Windows' }}
+      shell: powershell
+      run: |
+        foreach ($jvm_pid in $(jps -q -J-XX:+PerfDisableSharedMem)) {
+          jcmd $jvm_pid Thread.print
+        }
