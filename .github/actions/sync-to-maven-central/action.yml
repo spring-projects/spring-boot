@@ -1,0 +1,36 @@
+name: Sync to Maven Central
+description: 'Syncs a release to Maven Central and waits for it to be available for use'
+inputs:
+  central-token-password:
+    description: 'Password for authentication with central.sonatype.com'
+    required: true
+  central-token-username:
+    description: 'Username for authentication with central.sonatype.com'
+    required: true
+  jfrog-cli-config-token:
+    description: 'Config token for the JFrog CLI'
+    required: true
+  spring-boot-version:
+    description: 'Version of Spring Boot that is being synced to Central'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set Up JFrog CLI
+      uses: jfrog/setup-jfrog-cli@deda456d982fc5e9a7a020b63eb0d2968aedd33e # v5.1.0
+      env:
+        JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
+    - name: Download Release Artifacts
+      shell: bash
+      run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.spring-boot-version) }};buildNumber=${{ github.run_number }}'
+    - name: Sync
+      uses: spring-io/central-publish-action@0c03960e9b16fdfe70e2443e1d5393cbc3a35622 # v0.3.0
+      with:
+        token: ${{ inputs.central-token-password }}
+        token-name: ${{ inputs.central-token-username }}
+        ignore-already-exists-error: true
+        timeout: "90m"
+    - name: Await
+      uses: ./.github/actions/await-http-resource
+      with:
+        url: ${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot/{0}/spring-boot-{0}.jar', inputs.spring-boot-version) }}
