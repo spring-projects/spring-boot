@@ -192,3 +192,28 @@ The items contained in the "`ignored.properties`" section are removed from the "
 
 The additional properties file is optional.
 If you do not have any additional properties, do not add the file.
+
+The Spring Boot Maven and Gradle plugins exclude `additional-spring-configuration-metadata.json` from the packaged artifact.
+If you do not use either plugin to build your library, you should configure your build to exclude the file.
+With Maven, you can configure the `maven-jar-plugin` as follows:
+
+[source,xml]
+----
+<plugin>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+		<excludes>
+			<exclude>META-INF/additional-spring-configuration-metadata.json</exclude>
+		</excludes>
+	</configuration>
+</plugin>
+----
+
+With Gradle, you can configure the `jar` task as follows:
+
+[source,gradle]
+----
+tasks.named('jar') {
+	exclude('META-INF/additional-spring-configuration-metadata.json')
+}
+----
