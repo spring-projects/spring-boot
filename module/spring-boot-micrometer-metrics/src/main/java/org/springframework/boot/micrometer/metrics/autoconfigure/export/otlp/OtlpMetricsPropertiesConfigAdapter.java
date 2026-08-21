@@ -30,6 +30,7 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.Otl
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryResourceAttributes;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
@@ -43,16 +44,19 @@ import org.springframework.util.CollectionUtils;
 class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpMetricsProperties>
 		implements OtlpConfig {
 
+	private final OtlpProperties otlpProperties;
+
 	private final OpenTelemetryProperties openTelemetryProperties;
 
 	private final OtlpMetricsConnectionDetails connectionDetails;
 
 	private final Environment environment;
 
-	OtlpMetricsPropertiesConfigAdapter(OtlpMetricsProperties properties,
+	OtlpMetricsPropertiesConfigAdapter(OtlpMetricsProperties properties, OtlpProperties otlpProperties,
 			OpenTelemetryProperties openTelemetryProperties, OtlpMetricsConnectionDetails connectionDetails,
 			Environment environment) {
 		super(properties);
+		this.otlpProperties = otlpProperties;
 		this.connectionDetails = connectionDetails;
 		this.openTelemetryProperties = openTelemetryProperties;
 		this.environment = environment;
@@ -88,7 +92,9 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> headers() {
-		return obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
+		Map<String, String> headers = new LinkedHashMap<>(this.otlpProperties.getHeaders());
+		headers.putAll(obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers));
+		return Collections.unmodifiableMap(headers);
 	}
 
 	@Override
