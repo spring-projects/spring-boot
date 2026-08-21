@@ -67,6 +67,7 @@ include "test-support:spring-boot-gradle-test-support"
 include "configuration-metadata:spring-boot-configuration-metadata"
 include "configuration-metadata:spring-boot-configuration-metadata-changelog-generator"
 include "configuration-metadata:spring-boot-configuration-processor"
+include "configuration-metadata:spring-boot-configuration-symbol-processor"
 
 include "core:spring-boot"
 include "core:spring-boot-autoconfigure"
