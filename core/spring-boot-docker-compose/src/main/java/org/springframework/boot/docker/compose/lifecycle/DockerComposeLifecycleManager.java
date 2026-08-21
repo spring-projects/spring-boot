@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
@@ -53,6 +52,8 @@ import org.springframework.util.CollectionUtils;
  * @see DockerComposeListener
  */
 class DockerComposeLifecycleManager {
+
+	private static final String TEST_AOT_PROCESSING = "spring.test.context.aot.processing";
 
 	private static final Log logger = LogFactory.getLog(DockerComposeLifecycleManager.class);
 
@@ -97,8 +98,8 @@ class DockerComposeLifecycleManager {
 	}
 
 	void start() {
-		if (Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING) || AotDetector.useGeneratedArtifacts()) {
-			logger.trace("Docker Compose support disabled with AOT and native images");
+		if (Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING) && !Boolean.getBoolean(TEST_AOT_PROCESSING)) {
+			logger.trace("Docker Compose support disabled during AOT processing");
 			return;
 		}
 		if (!this.properties.isEnabled()) {
