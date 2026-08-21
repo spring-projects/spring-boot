@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -192,6 +193,15 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	@Nullable String imagePlatform;
 
 	/**
+	 * Alias for {@link Image#bindings} to support configuration through command-line
+	 * property.
+	 * @since 4.1.1
+	 */
+	@Parameter(property = "spring-boot.build-image.bindings")
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
+	String[] bindings;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -305,6 +315,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.imagePlatform == null && this.imagePlatform != null) {
 			image.setImagePlatform(this.imagePlatform);
+		}
+		if (this.bindings != null && this.bindings.length > 0) {
+			image.addBindings(Arrays.asList(this.bindings));
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
