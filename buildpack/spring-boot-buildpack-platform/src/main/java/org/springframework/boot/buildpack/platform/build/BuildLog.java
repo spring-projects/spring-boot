@@ -136,6 +136,16 @@ public interface BuildLog {
 	void sensitiveTargetBindingDetected(Binding binding);
 
 	/**
+	 * Log that the stack ID of the run image does not match the stack ID of the builder
+	 * image.
+	 * @param runImageStackId the stack ID of the run image
+	 * @param builderImageStackId the stack ID of the builder image
+	 * @since 4.0.9
+	 */
+	default void stackIdsDoNotMatch(String runImageStackId, String builderImageStackId) {
+	}
+
+	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.
 	 * @return a build log instance that logs to system out
 	 */
