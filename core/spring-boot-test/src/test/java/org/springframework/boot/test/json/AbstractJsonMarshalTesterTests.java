@@ -18,6 +18,7 @@ package org.springframework.boot.test.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -40,7 +41,13 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link AbstractJsonMarshalTester}.
@@ -54,6 +61,8 @@ abstract class AbstractJsonMarshalTesterTests {
 	private static final String MAP_JSON = "{\"a\":" + JSON + "}";
 
 	private static final String ARRAY_JSON = "[" + JSON + "]";
+
+	private static final String TRUNCATED_JSON = "{\"name\":\"Spring\",";
 
 	private static final ExampleObject OBJECT = createExampleObject("Spring", 123);
 
@@ -146,10 +155,28 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
+	void readResourceWhenReadFailsShouldCloseInputStream() throws IOException {
+		Resource resource = mock();
+		InputStream inputStream = spy(new ByteArrayInputStream(TRUNCATED_JSON.getBytes()));
+		given(resource.getInputStream()).willReturn(inputStream);
+		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
+		assertThatException().isThrownBy(() -> tester.read(resource));
+		then(inputStream).should(atLeastOnce()).close();
+	}
+
+	@Test
 	void readReaderShouldReturnObject() throws Exception {
 		Reader reader = new StringReader(JSON);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(reader)).isEqualTo(OBJECT);
+	}
+
+	@Test
+	void readReaderWhenReadFailsShouldCloseReader() throws IOException {
+		Reader reader = spy(new StringReader(TRUNCATED_JSON));
+		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
+		assertThatException().isThrownBy(() -> tester.read(reader));
+		then(reader).should(atLeastOnce()).close();
 	}
 
 	@Test
