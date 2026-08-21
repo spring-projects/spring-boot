@@ -53,7 +53,7 @@ class SampleOAuth2ClientApplicationTests {
 	void everythingShouldRedirectToLogin() {
 		RestTestClient.ResponseSpec response = nonFollowingRedirect().get().uri("/").exchange();
 		response.expectStatus().isFound();
-		response.expectHeader().location("http://localhost:" + this.port + "/login");
+		response.expectHeader().location("/login");
 	}
 
 	@Test

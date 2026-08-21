@@ -112,7 +112,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	void anonymousShouldRedirectToLogin() {
 		RestTestClient.ResponseSpec response = nonFollowingRedirect().get().uri("/").exchange();
 		response.expectStatus().isFound();
-		response.expectHeader().location("http://localhost:" + this.port + "/login");
+		response.expectHeader().location("/login");
 	}
 
 	@Test
@@ -181,7 +181,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 			.body(body)
 			.exchange();
 		response.expectStatus().isFound();
-		response.expectHeader().location("http://localhost:" + this.port + "/login");
+		response.expectHeader().location("/login");
 	}
 
 }
