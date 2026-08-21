@@ -259,6 +259,31 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
+	void correlationScopeDecoratorUsesDefaultMdcKeys() {
+		this.contextRunner.run((context) -> {
+			ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+			assertThat(scopeDecorator)
+				.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+				.extracting(SingleCorrelationField::name)
+				.containsExactly("traceId", "spanId");
+		});
+	}
+
+	@Test
+	void correlationScopeDecoratorUsesCustomMdcKeys() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.mdc.trace-id-key=customTraceId",
+					"management.tracing.mdc.span-id-key=customSpanId")
+			.run((context) -> {
+				ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+				assertThat(scopeDecorator)
+					.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+					.extracting(SingleCorrelationField::name)
+					.containsExactly("customTraceId", "customSpanId");
+			});
+	}
+
+	@Test
 	void shouldHave128BitTraceId() {
 		this.contextRunner.run((context) -> {
 			Tracing tracing = context.getBean(Tracing.class);

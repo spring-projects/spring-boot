@@ -190,6 +190,27 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void slf4jEventListenerUsesDefaultMdcKeys() {
+		this.contextRunner.run((context) -> {
+			Slf4JEventListener listener = context.getBean(Slf4JEventListener.class);
+			assertThat(listener).hasFieldOrPropertyWithValue("traceIdKey", "traceId")
+				.hasFieldOrPropertyWithValue("spanIdKey", "spanId");
+		});
+	}
+
+	@Test
+	void slf4jEventListenerUsesCustomMdcKeys() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.mdc.trace-id-key=customTraceId",
+					"management.tracing.mdc.span-id-key=customSpanId")
+			.run((context) -> {
+				Slf4JEventListener listener = context.getBean(Slf4JEventListener.class);
+				assertThat(listener).hasFieldOrPropertyWithValue("traceIdKey", "customTraceId")
+					.hasFieldOrPropertyWithValue("spanIdKey", "customSpanId");
+			});
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = { "io.micrometer.tracing.otel", "io.opentelemetry.sdk", "io.opentelemetry.api" })
 	void shouldNotSupplyBeansIfDependencyIsMissing(String packageName) {
