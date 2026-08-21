@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.stream.Stream;
@@ -108,6 +109,7 @@ import static org.mockito.Mockito.times;
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Dhruv Rastogi
+ * @author Rameel Rizvi
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
@@ -352,6 +354,37 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 		finally {
 			SLF4JBridgeHandler.uninstall();
+		}
+	}
+
+	@Test
+	void cleanUpRestoresDefaultRootHandlerToAvoidSilentlyDiscardingJulLogging(CapturedOutput output) {
+		// gh-50404: installing the bridge removes the default JUL root ConsoleHandler.
+		// If cleanUp does not restore it, anything subsequently logged through JUL
+		// (such as a startup failure reported via a JUL-backed commons-logging Log) is
+		// silently discarded. Start from the default single-ConsoleHandler state that a
+		// freshly started application has.
+		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] originalHandlers = rootLogger.getHandlers();
+		for (Handler handler : originalHandlers) {
+			rootLogger.removeHandler(handler);
+		}
+		rootLogger.addHandler(new ConsoleHandler());
+		try {
+			this.loggingSystem.beforeInitialize();
+			assertThat(bridgeHandlerInstalled()).isTrue();
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).isNotEmpty();
+			java.util.logging.Logger.getLogger(getClass().getName()).severe("JUL logging after cleanup");
+			assertThat(output).contains("JUL logging after cleanup");
+		}
+		finally {
+			for (Handler handler : rootLogger.getHandlers()) {
+				rootLogger.removeHandler(handler);
+			}
+			for (Handler handler : originalHandlers) {
+				rootLogger.addHandler(handler);
+			}
 		}
 	}
 
