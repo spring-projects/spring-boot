@@ -51,7 +51,7 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends Enum<?>> Converter<T, E> getConverter(Class<E> targetType) {
+	public <E extends Enum<?>> Converter<T, ? extends @Nullable E> getConverter(Class<E> targetType) {
 		Class<?> enumType = targetType;
 		while (enumType != null && !enumType.isEnum()) {
 			enumType = enumType.getSuperclass();
