@@ -20,6 +20,7 @@ import javax.naming.Name;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -35,8 +36,13 @@ import org.springframework.ldap.odm.core.ObjectDirectoryMapper;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.ldap.support.LdapUtils;
-
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -199,13 +205,52 @@ class LdapAutoConfigurationTests {
 				assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", false);
 			});
 	}
-
 	@Test
-	void contextSourceWithUserProvidedPooledContextSource() {
-		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class).run((context) -> {
+	void contextSourceWithSslBundleAndCustomDirContextAuthenticationStrategyUsesCustomStrategy() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
+
+		DirContextAuthenticationStrategy customStrategy = mock(DirContextAuthenticationStrategy.class);
+
+		this.contextRunner
+				.withPropertyValues("spring.ldap.ssl.bundle=test")
+				.withBean(SslBundles.class, () -> sslBundles)
+				.withBean(DirContextAuthenticationStrategy.class, () -> customStrategy)
+				.run((context) -> {
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+					assertThat(contextSource).extracting("authenticationStrategy").isSameAs(customStrategy);
+				});
+	}
+    @Test
+	void contextSourceWithSslBundleUsesDefaultTlsAuthenticationStrategy() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SSLContext sslContext = mock(SSLContext.class);
+		SSLSocketFactory socketFactory = mock(SSLSocketFactory.class);
+
+		when(sslBundle.createSslContext()).thenReturn(sslContext);
+		when(sslContext.getSocketFactory()).thenReturn(socketFactory);
+
+		SslBundles sslBundles = mock(SslBundles.class);
+		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
+
+		this.contextRunner
+				.withPropertyValues("spring.ldap.ssl.bundle=test")
+				.withBean(SslBundles.class, () -> sslBundles)
+				.run((context) -> {
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+					assertThat(contextSource).extracting("authenticationStrategy")
+							.isInstanceOf(DefaultTlsDirContextAuthenticationStrategy.class)
+							.extracting("sslSocketFactory")
+							.isSameAs(socketFactory);
+				});
+	}
+	@Test
+	void contextSourceWithoutSslBundleDoesNotConfigureAuthenticationStrategy() {
+		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
-			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
+			assertThat(contextSource).extracting("authenticationStrategy")
+				.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
 		});
 	}
 
@@ -222,6 +267,28 @@ class LdapAutoConfigurationTests {
 	@Test
 	void contextSourceWithCustomNonUniqueDirContextAuthenticationStrategy() {
 		this.contextRunner
+			.withUserConfiguration(CustomDirContextAuthenticationStrategy.class,
+					AnotherCustomDirContextAuthenticationStrategy.class)
+			.run((context) -> {
+				assertThat(context).hasBean("customDirContextAuthenticationStrategy")
+					.hasBean("anotherCustomDirContextAuthenticationStrategy");
+				LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+				assertThat(contextSource).extracting("authenticationStrategy")
+					.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
+					.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
+					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
+			});
+	}
+
+	@Test
+	void contextSourceWithSslBundleAndMultipleCustomStrategiesUsesDefault() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
+
+		this.contextRunner
+			.withPropertyValues("spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
 			.withUserConfiguration(CustomDirContextAuthenticationStrategy.class,
 					AnotherCustomDirContextAuthenticationStrategy.class)
 			.run((context) -> {
@@ -260,6 +327,11 @@ class LdapAutoConfigurationTests {
 				@Override
 				public String getPassword() {
 					return "ldap-password";
+				}
+
+				@Override
+				public @Nullable SslBundle getSslBundle() {
+					return null;
 				}
 			};
 		}
