@@ -12,7 +12,7 @@ jobs:
       - name: Check Out Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: v4.2.0-M1
+          ref: v4.0.8
       - name: Read Version From gradle.properties
         id: read-version
         shell: bash
@@ -49,7 +49,7 @@ jobs:
       - name: Run Deploy Docs Workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-refname=v4.2.0-M1 -f build-version=${{ needs.read-version.outputs.version }}
+        run: gh workflow run deploy-docs.yml --repo ${{ github.repository }} -r docs-build -f build-refname=v4.0.8 -f build-version=${{ needs.read-version.outputs.version }}
   create-github-release:
     name: Create GitHub Release
     needs:
@@ -64,6 +64,5 @@ jobs:
         uses: ./.github/actions/create-github-release
         with:
           commercial: ${{ vars.COMMERCIAL }}
-          pre-release: true
           milestone: ${{ needs.read-version.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
