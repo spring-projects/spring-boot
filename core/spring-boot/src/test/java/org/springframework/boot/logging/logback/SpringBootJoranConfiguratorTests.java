@@ -16,10 +16,17 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
@@ -32,7 +39,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.aot.generate.ClassNameGenerator;
+import org.springframework.aot.generate.DefaultGenerationContext;
+import org.springframework.aot.generate.GeneratedFiles;
+import org.springframework.aot.generate.GeneratedFiles.FileHandler;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -40,10 +52,14 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.aot.AbstractAotProcessor;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.javapoet.ClassName;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.
@@ -283,6 +299,29 @@ class SpringBootJoranConfiguratorTests {
 		});
 	}
 
+	@Test
+	@WithPropertyXmlResource
+	void aotContributionClosesExistingFileContent() throws Exception {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> {
+			initialize("property.xml");
+			BeanFactoryInitializationAotContribution contribution = (BeanFactoryInitializationAotContribution) this.context
+				.getObject(BeanFactoryInitializationAotContribution.class.getName());
+			assertThat(contribution).isNotNull();
+			List<AtomicBoolean> closed = new ArrayList<>();
+			GeneratedFiles generatedFiles = (kind, path, handler) -> {
+				AtomicBoolean fileClosed = new AtomicBoolean();
+				closed.add(fileClosed);
+				handler.accept(new ClosableContentFileHandler(fileClosed));
+			};
+			DefaultGenerationContext generationContext = new DefaultGenerationContext(
+					new ClassNameGenerator(ClassName.get(Object.class)), generatedFiles);
+			assertThatIllegalStateException()
+				.isThrownBy(() -> contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class)))
+				.withMessageContaining("Logging configuration differs");
+			assertThat(closed).isNotEmpty().allMatch(AtomicBoolean::get);
+		});
+	}
+
 	private void withSystemProperty(String name, String value, Action action) throws Exception {
 		System.setProperty(name, value);
 		try {
@@ -315,6 +354,30 @@ class SpringBootJoranConfiguratorTests {
 	private interface Action {
 
 		void perform() throws Exception;
+
+	}
+
+	/**
+	 * {@link FileHandler} whose existing content records when its stream is closed.
+	 */
+	private static final class ClosableContentFileHandler extends FileHandler {
+
+		private ClosableContentFileHandler(AtomicBoolean closed) {
+			super(true, () -> (InputStreamSource) () -> new FilterInputStream(
+					new ByteArrayInputStream("existing".getBytes(StandardCharsets.UTF_8))) {
+
+				@Override
+				public void close() throws IOException {
+					closed.set(true);
+					super.close();
+				}
+
+			});
+		}
+
+		@Override
+		protected void copy(InputStreamSource content, boolean override) {
+		}
 
 	}
 
