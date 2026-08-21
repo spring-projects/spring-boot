@@ -29,14 +29,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. If a single job is
- * found in the context, it will be executed on startup.
- * <p>
- * Disable this behavior with {@literal spring.batch.job.enabled=false}).
- * <p>
- * If multiple jobs are found, a job name to execute on startup can be supplied by the
- * User with : {@literal spring.batch.job.name=job1}. In this case the Runner will first
- * find jobs registered as Beans, then those in the existing JobRegistry.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch.
+ *
+ * <p>If a single job is found in the application context, it will be executed
+ * on startup.
+ *
+ * <p>This behavior can be disabled by setting
+ * {@literal spring.batch.job.enabled=false}.
+ *
+ * <p>If multiple jobs are found, the job to execute on startup can be specified
+ * by setting {@literal spring.batch.job.name=job1}. In this case, the runner
+ * first searches for jobs registered as beans and then for jobs registered in
+ * the existing {@code JobRegistry}.
  *
  * @author Dave Syer
  * @author Eddú Meléndez
