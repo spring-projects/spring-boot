@@ -128,6 +128,13 @@ public abstract class AbstractBuildLog implements BuildLog {
 		log();
 	}
 
+	@Override
+	public void stackIdsDoNotMatch(String runImageStackId, String builderImageStackId) {
+		log("Warning: Run image stack '%s' does not match builder stack '%s'. Stack IDs are deprecated, but the images may not be compatible."
+			.formatted(runImageStackId, builderImageStackId));
+		log();
+	}
+
 	private String getDigest(Image image) {
 		List<String> digests = image.getDigests();
 		return (digests.isEmpty() ? "" : digests.get(0));
