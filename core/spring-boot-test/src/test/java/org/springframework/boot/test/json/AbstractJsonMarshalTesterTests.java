@@ -18,8 +18,6 @@ package org.springframework.boot.test.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FilterInputStream;
-import java.io.FilterReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -30,7 +28,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
@@ -46,6 +43,11 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link AbstractJsonMarshalTester}.
@@ -153,27 +155,13 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	void readResourceWhenReadFailsShouldCloseInputStream() {
-		AtomicBoolean closed = new AtomicBoolean();
-		Resource resource = new ByteArrayResource(TRUNCATED_JSON.getBytes()) {
-
-			@Override
-			public InputStream getInputStream() throws IOException {
-				return new FilterInputStream(super.getInputStream()) {
-
-					@Override
-					public void close() throws IOException {
-						closed.set(true);
-						super.close();
-					}
-
-				};
-			}
-
-		};
+	void readResourceWhenReadFailsShouldCloseInputStream() throws IOException {
+		Resource resource = mock();
+		InputStream inputStream = spy(new ByteArrayInputStream(TRUNCATED_JSON.getBytes()));
+		given(resource.getInputStream()).willReturn(inputStream);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThatException().isThrownBy(() -> tester.read(resource));
-		assertThat(closed).isTrue();
+		then(inputStream).should(atLeastOnce()).close();
 	}
 
 	@Test
@@ -184,20 +172,11 @@ abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	void readReaderWhenReadFailsShouldCloseReader() {
-		AtomicBoolean closed = new AtomicBoolean();
-		Reader reader = new FilterReader(new StringReader(TRUNCATED_JSON)) {
-
-			@Override
-			public void close() throws IOException {
-				closed.set(true);
-				super.close();
-			}
-
-		};
+	void readReaderWhenReadFailsShouldCloseReader() throws IOException {
+		Reader reader = spy(new StringReader(TRUNCATED_JSON));
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThatException().isThrownBy(() -> tester.read(reader));
-		assertThat(closed).isTrue();
+		then(reader).should(atLeastOnce()).close();
 	}
 
 	@Test
