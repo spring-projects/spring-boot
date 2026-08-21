@@ -28,20 +28,24 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author htjworld
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpointGroupsPostProcessor {
 
 	private final boolean addAdditionalPaths;
 
-	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
+	private final HealthEndpointProperties properties;
+
+	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment, HealthEndpointProperties properties) {
 		this.addAdditionalPaths = "true"
 			.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
+		this.properties = properties;
 	}
 
 	@Override
 	public HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups) {
-		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths);
+		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths, this.properties);
 	}
 
 }
