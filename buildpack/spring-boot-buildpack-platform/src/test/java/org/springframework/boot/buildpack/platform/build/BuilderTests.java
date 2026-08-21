@@ -447,7 +447,7 @@ class BuilderTests {
 	}
 
 	@Test
-	void buildWhenStackIdDoesNotMatchThrowsException() throws Exception {
+	void buildWhenStackIdDoesNotMatchLogsWarning() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
@@ -458,9 +458,11 @@ class BuilderTests {
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
-			.withMessage(
-					"Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'io.buildpacks.stacks.bionic'");
+		builder.build(request);
+		assertThat(out.toString()).contains(
+				"Warning: Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'io.buildpacks.stacks.bionic'");
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
 	@Test
