@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jdbc;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
@@ -28,6 +29,7 @@ import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -141,6 +143,19 @@ class DataSourceUnwrapperTests {
 	}
 
 	@Test
+	void unwrapRootWithSelfReturningWrapper() {
+		DataSource dataSource = new SelfReturningDataSource();
+		assertThat(DataSourceUnwrapper.unwrapRoot(dataSource)).isSameAs(dataSource);
+	}
+
+	@Test
+	void unwrapRootWithDelegateWrappingSelfReturningWrapper() {
+		DataSource dataSource = new HikariDataSource();
+		DataSource actual = new RootAwareDelegatingDataSource(new SelfReturningDataSource(), dataSource);
+		assertThat(DataSourceUnwrapper.unwrapRoot(actual)).isSameAs(dataSource);
+	}
+
+	@Test
 	void unwrappingIsNotAttemptedWhenTargetIsNotAnInterface() {
 		DataSource dataSource = mock(DataSource.class);
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isNull();
@@ -161,6 +176,36 @@ class DataSourceUnwrapperTests {
 
 	private DataSource wrapInDelegate(DataSource dataSource) {
 		return new DelegatingDataSource(dataSource);
+	}
+
+	private static final class SelfReturningDataSource extends AbstractDataSource {
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	private static final class RootAwareDelegatingDataSource extends DelegatingDataSource {
+
+		private final DataSource root;
+
+		private RootAwareDelegatingDataSource(DataSource target, DataSource root) {
+			super(target);
+			this.root = root;
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return (iface.isInstance(this.root)) ? iface.cast(this.root) : super.unwrap(iface);
+		}
+
 	}
 
 }

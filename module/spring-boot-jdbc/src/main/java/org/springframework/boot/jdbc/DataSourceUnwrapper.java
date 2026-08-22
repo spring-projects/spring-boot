@@ -102,6 +102,10 @@ public final class DataSourceUnwrapper {
 	 * @since 4.1.0
 	 */
 	public static DataSource unwrapRoot(DataSource dataSource) {
+		DataSource unwrapped = safeUnwrap(dataSource);
+		if (unwrapped != null && unwrapped != dataSource) {
+			return unwrapRoot(unwrapped);
+		}
 		if (DELEGATING_DATA_SOURCE_PRESENT) {
 			DataSource targetDataSource = DelegatingDataSourceUnwrapper.getTargetDataSource(dataSource);
 			if (targetDataSource != null) {
@@ -113,13 +117,6 @@ public final class DataSourceUnwrapper {
 			if (proxyTarget instanceof DataSource proxyDataSource) {
 				return unwrapRoot(proxyDataSource);
 			}
-		}
-		DataSource unwrapped = safeUnwrap(dataSource);
-		if (unwrapped != null) {
-			if (unwrapped == dataSource) {
-				return unwrapped;
-			}
-			return unwrapRoot(unwrapped);
 		}
 		return dataSource;
 	}
