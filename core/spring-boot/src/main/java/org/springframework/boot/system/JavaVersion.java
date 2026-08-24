@@ -18,11 +18,11 @@ package org.springframework.boot.system;
 
 import java.io.Console;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.Future;
@@ -107,7 +107,7 @@ public enum JavaVersion {
 	 * Java 27.
 	 * @since 4.0.9
 	 */
-	TWENTY_SEVEN("27", EnumSet.class, "spliterator");
+	TWENTY_SEVEN("27", String.class, "encodedLength", Charset.class);
 
 	private final String name;
 
