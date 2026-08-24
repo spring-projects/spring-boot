@@ -86,7 +86,9 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	@Override
 	protected T readObject(Reader reader, ResolvableType type) throws IOException {
-		return this.gson.fromJson(reader, type.getType());
+		try (reader) {
+			return this.gson.fromJson(reader, type.getType());
+		}
 	}
 
 	/**
