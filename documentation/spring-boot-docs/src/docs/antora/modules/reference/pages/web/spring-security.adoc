@@ -36,7 +36,6 @@ You can provide a different javadoc:org.springframework.security.authentication.
 == MVC Security
 
 The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration[] auto-configures web security and javadoc:org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration[] auto-configures authentication.
 
 To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type javadoc:org.springframework.security.web.SecurityFilterChain[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.UserDetailsService[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.authentication.AuthenticationManager[].
