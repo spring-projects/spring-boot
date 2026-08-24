@@ -16,7 +16,9 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -30,14 +32,17 @@ import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.ConditionalOnEnabledLoggingExport;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -55,23 +60,50 @@ final class OtlpLoggingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(OtlpLoggingConnectionDetails.class)
-		@ConditionalOnProperty("management.opentelemetry.logging.export.otlp.endpoint")
+		@Conditional(OtlpEndpointCondition.class)
 		PropertiesOtlpLoggingConnectionDetails openTelemetryLoggingConnectionDetails(OtlpLoggingProperties properties,
-				ObjectProvider<SslBundles> sslBundles) {
-			return new PropertiesOtlpLoggingConnectionDetails(properties, sslBundles.getIfAvailable());
+				OtlpProperties otlpProperties, ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesOtlpLoggingConnectionDetails(properties, otlpProperties, sslBundles.getIfAvailable());
 		}
 
 		/**
-		 * Adapts {@link OtlpLoggingProperties} to {@link OtlpLoggingConnectionDetails}.
+		 * Condition to check if either the logging-specific endpoint or the common OTLP
+		 * endpoint is set.
+		 */
+		static class OtlpEndpointCondition extends AnyNestedCondition {
+
+			OtlpEndpointCondition() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
+
+			@ConditionalOnProperty("management.opentelemetry.logging.export.otlp.endpoint")
+			static class LoggingEndpoint {
+
+			}
+
+			@ConditionalOnProperty("management.opentelemetry.otlp.endpoint")
+			static class CommonEndpoint {
+
+			}
+
+		}
+
+		/**
+		 * Adapts {@link OtlpLoggingProperties} and {@link OtlpProperties} to
+		 * {@link OtlpLoggingConnectionDetails}.
 		 */
 		static class PropertiesOtlpLoggingConnectionDetails implements OtlpLoggingConnectionDetails {
 
 			private final OtlpLoggingProperties properties;
 
+			private final OtlpProperties otlpProperties;
+
 			private final @Nullable SslBundles sslBundles;
 
-			PropertiesOtlpLoggingConnectionDetails(OtlpLoggingProperties properties, @Nullable SslBundles sslBundles) {
+			PropertiesOtlpLoggingConnectionDetails(OtlpLoggingProperties properties, OtlpProperties otlpProperties,
+					@Nullable SslBundles sslBundles) {
 				this.properties = properties;
+				this.otlpProperties = otlpProperties;
 				this.sslBundles = sslBundles;
 			}
 
@@ -81,6 +113,12 @@ final class OtlpLoggingConfigurations {
 						"Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
 				String endpoint = this.properties.getEndpoint();
+				if (!StringUtils.hasLength(endpoint)) {
+					endpoint = this.otlpProperties.getEndpoint();
+					if (endpoint != null && transport == Transport.HTTP) {
+						endpoint = endpoint.endsWith("/") ? endpoint + "v1/logs" : endpoint + "/v1/logs";
+					}
+				}
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
 			}
@@ -110,14 +148,17 @@ final class OtlpLoggingConfigurations {
 		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "http",
 				matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
-				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				OtlpProperties otlpProperties, OtlpLoggingConnectionDetails connectionDetails,
+				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
-			properties.getHeaders().forEach(builder::addHeader);
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.US));
+			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
+			headers.putAll(properties.getHeaders());
+			headers.forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -127,18 +168,37 @@ final class OtlpLoggingConfigurations {
 		@Bean
 		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "grpc")
 		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
-				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				OtlpProperties otlpProperties, OtlpLoggingConnectionDetails connectionDetails,
+				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpGrpcLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
-			properties.getHeaders().forEach(builder::addHeader);
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.US));
+			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
+			headers.putAll(properties.getHeaders());
+			headers.forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
+		}
+
+		private OtlpLoggingProperties.Compression resolveCompression(OtlpLoggingProperties properties,
+				OtlpProperties otlpProperties) {
+			OtlpLoggingProperties.Compression compression = properties.getCompression();
+			if (compression != null) {
+				return compression;
+			}
+			OtlpProperties.Compression commonCompression = otlpProperties.getCompression();
+			if (commonCompression != null) {
+				return switch (commonCompression) {
+					case GZIP -> OtlpLoggingProperties.Compression.GZIP;
+					case NONE -> OtlpLoggingProperties.Compression.NONE;
+				};
+			}
+			return OtlpLoggingProperties.Compression.NONE;
 		}
 
 		private void configureSsl(OtlpLoggingConnectionDetails connectionDetails,

@@ -16,7 +16,9 @@
 
 package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -30,13 +32,16 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -54,23 +59,50 @@ final class OtlpTracingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty("management.opentelemetry.tracing.export.otlp.endpoint")
+		@Conditional(OtlpEndpointCondition.class)
 		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpTracingProperties properties,
-				ObjectProvider<SslBundles> sslBundles) {
-			return new PropertiesOtlpTracingConnectionDetails(properties, sslBundles.getIfAvailable());
+				OtlpProperties otlpProperties, ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesOtlpTracingConnectionDetails(properties, otlpProperties, sslBundles.getIfAvailable());
 		}
 
 		/**
-		 * Adapts {@link OtlpTracingProperties} to {@link OtlpTracingConnectionDetails}.
+		 * Condition to check if either the tracing-specific endpoint or the common OTLP
+		 * endpoint is set.
+		 */
+		static class OtlpEndpointCondition extends AnyNestedCondition {
+
+			OtlpEndpointCondition() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
+
+			@ConditionalOnProperty("management.opentelemetry.tracing.export.otlp.endpoint")
+			static class TracingEndpoint {
+
+			}
+
+			@ConditionalOnProperty("management.opentelemetry.otlp.endpoint")
+			static class CommonEndpoint {
+
+			}
+
+		}
+
+		/**
+		 * Adapts {@link OtlpTracingProperties} and {@link OtlpProperties} to
+		 * {@link OtlpTracingConnectionDetails}.
 		 */
 		static class PropertiesOtlpTracingConnectionDetails implements OtlpTracingConnectionDetails {
 
 			private final OtlpTracingProperties properties;
 
+			private final OtlpProperties otlpProperties;
+
 			private final @Nullable SslBundles sslBundles;
 
-			PropertiesOtlpTracingConnectionDetails(OtlpTracingProperties properties, @Nullable SslBundles sslBundles) {
+			PropertiesOtlpTracingConnectionDetails(OtlpTracingProperties properties, OtlpProperties otlpProperties,
+					@Nullable SslBundles sslBundles) {
 				this.properties = properties;
+				this.otlpProperties = otlpProperties;
 				this.sslBundles = sslBundles;
 			}
 
@@ -80,6 +112,12 @@ final class OtlpTracingConfigurations {
 						"Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
 				String endpoint = this.properties.getEndpoint();
+				if (!StringUtils.hasLength(endpoint)) {
+					endpoint = this.otlpProperties.getEndpoint();
+					if (endpoint != null && transport == Transport.HTTP) {
+						endpoint = endpoint.endsWith("/") ? endpoint + "v1/traces" : endpoint + "/v1/traces";
+					}
+				}
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
 			}
@@ -107,15 +145,17 @@ final class OtlpTracingConfigurations {
 		@Bean
 		@ConditionalOnProperty(name = "management.opentelemetry.tracing.export.otlp.transport", havingValue = "http",
 				matchIfMissing = true)
-		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties,
+		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties, OtlpProperties otlpProperties,
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpSpanExporterBuilderCustomizer> customizers) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
-			properties.getHeaders().forEach(builder::addHeader);
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
+			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
+			headers.putAll(properties.getHeaders());
+			headers.forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -124,19 +164,37 @@ final class OtlpTracingConfigurations {
 
 		@Bean
 		@ConditionalOnProperty(name = "management.opentelemetry.tracing.export.otlp.transport", havingValue = "grpc")
-		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties,
+		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties, OtlpProperties otlpProperties,
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpGrpcSpanExporterBuilderCustomizer> customizers) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
-			properties.getHeaders().forEach(builder::addHeader);
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
+			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
+			headers.putAll(properties.getHeaders());
+			headers.forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
+		}
+
+		private OtlpTracingProperties.Compression resolveCompression(OtlpTracingProperties properties,
+				OtlpProperties otlpProperties) {
+			OtlpTracingProperties.Compression compression = properties.getCompression();
+			if (compression != null) {
+				return compression;
+			}
+			OtlpProperties.Compression commonCompression = otlpProperties.getCompression();
+			if (commonCompression != null) {
+				return switch (commonCompression) {
+					case GZIP -> OtlpTracingProperties.Compression.GZIP;
+					case NONE -> OtlpTracingProperties.Compression.NONE;
+				};
+			}
+			return OtlpTracingProperties.Compression.NONE;
 		}
 
 		private void configureSsl(OtlpTracingConnectionDetails connectionDetails,

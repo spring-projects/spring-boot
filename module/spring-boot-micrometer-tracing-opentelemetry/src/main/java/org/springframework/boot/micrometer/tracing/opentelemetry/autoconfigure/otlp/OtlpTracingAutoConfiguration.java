@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -48,7 +49,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class, OtlpHttpSpanExporter.class })
-@EnableConfigurationProperties(OtlpTracingProperties.class)
+@EnableConfigurationProperties({ OtlpTracingProperties.class, OtlpProperties.class })
 @Import({ OtlpTracingConfigurations.ConnectionDetails.class, OtlpTracingConfigurations.Exporters.class })
 public final class OtlpTracingAutoConfiguration {
 
