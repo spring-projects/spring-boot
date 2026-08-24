@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConfigurations.ConnectionDetails.PropertiesOtlpTracingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -197,6 +198,49 @@ class OtlpTracingAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4318/v1/traces")
 			.run((context) -> assertThat(context).hasSingleBean(PropertiesOtlpTracingConnectionDetails.class));
+	}
+
+	@Test
+	void shouldAppendTracesPathToCommonEndpointForHttpTransport() {
+		OtlpTracingProperties properties = new OtlpTracingProperties();
+		properties.setTransport(Transport.HTTP);
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318");
+		PropertiesOtlpTracingConnectionDetails connectionDetails = new PropertiesOtlpTracingConnectionDetails(
+				properties, otlpProperties, null);
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/traces");
+	}
+
+	@Test
+	void shouldNotAppendTracesPathToCommonEndpointForGrpcTransport() {
+		OtlpTracingProperties properties = new OtlpTracingProperties();
+		properties.setTransport(Transport.GRPC);
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318");
+		PropertiesOtlpTracingConnectionDetails connectionDetails = new PropertiesOtlpTracingConnectionDetails(
+				properties, otlpProperties, null);
+		assertThat(connectionDetails.getUrl(Transport.GRPC)).isEqualTo("http://localhost:4318");
+	}
+
+	@Test
+	void shouldNotAppendTracesPathToTracingSpecificEndpoint() {
+		OtlpTracingProperties properties = new OtlpTracingProperties();
+		properties.setEndpoint("http://localhost:4318/custom/traces");
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318");
+		PropertiesOtlpTracingConnectionDetails connectionDetails = new PropertiesOtlpTracingConnectionDetails(
+				properties, otlpProperties, null);
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/custom/traces");
+	}
+
+	@Test
+	void shouldAppendTracesPathToCommonEndpointWithTrailingSlash() {
+		OtlpTracingProperties properties = new OtlpTracingProperties();
+		OtlpProperties otlpProperties = new OtlpProperties();
+		otlpProperties.setEndpoint("http://localhost:4318/");
+		PropertiesOtlpTracingConnectionDetails connectionDetails = new PropertiesOtlpTracingConnectionDetails(
+				properties, otlpProperties, null);
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/traces");
 	}
 
 	@Test

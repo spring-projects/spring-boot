@@ -144,14 +144,7 @@ public final class OtlpMetricsExportAutoConfiguration {
 
 		@Override
 		public @Nullable String getUrl() {
-			if (StringUtils.hasLength(this.properties.getUrl())) {
-				return this.properties.getUrl();
-			}
-			String endpoint = this.otlpProperties.getEndpoint();
-			if (StringUtils.hasLength(endpoint)) {
-				return endpoint.endsWith("/") ? endpoint + "v1/metrics" : endpoint + "/v1/metrics";
-			}
-			return null;
+			return this.otlpProperties.resolveEndpoint(this.properties.getUrl(), "v1/metrics");
 		}
 
 		@Override

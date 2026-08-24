@@ -79,18 +79,11 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public CompressionMode compressionMode() {
-		CompressionMode compressionMode = this.properties.getCompressionMode();
-		if (compressionMode != null) {
-			return compressionMode;
-		}
-		OtlpProperties.Compression compressionProperties = this.otlpProperties.getCompression();
-		if (compressionProperties != null) {
-			return switch (compressionProperties) {
-				case GZIP -> CompressionMode.GZIP;
-				case NONE -> CompressionMode.NONE;
-			};
-		}
-		return OtlpConfig.super.compressionMode();
+		return this.otlpProperties.resolveCompression(this.properties.getCompressionMode(),
+				OtlpConfig.super.compressionMode(), (commonCompression) -> switch (commonCompression) {
+					case GZIP -> CompressionMode.GZIP;
+					case NONE -> CompressionMode.NONE;
+				});
 	}
 
 	@Override
@@ -103,8 +96,8 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> headers() {
-		Map<String, String> headers = new LinkedHashMap<>(this.otlpProperties.getHeaders());
-		headers.putAll(obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers));
+		Map<String, String> headers = this.otlpProperties
+			.mergeHeaders(obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers));
 		return Collections.unmodifiableMap(headers);
 	}
 

@@ -18,10 +18,12 @@ package org.springframework.boot.opentelemetry.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * Common configuration properties for OpenTelemetry Protocol (OTLP) exporters.
@@ -65,6 +67,57 @@ public class OtlpProperties {
 
 	public void setCompression(@Nullable Compression compression) {
 		this.compression = compression;
+	}
+
+	/**
+	 * Resolves the endpoint to use, falling back to this common endpoint (with
+	 * {@code path} appended) when {@code signalEndpoint} is not set.
+	 * @param signalEndpoint the signal-specific endpoint, or {@code null} if not set
+	 * @param path the path to append to the common endpoint when used as a fallback, or
+	 * {@code null} if no path should be appended
+	 * @return the resolved endpoint, or {@code null} if neither endpoint is set
+	 */
+	public @Nullable String resolveEndpoint(@Nullable String signalEndpoint, @Nullable String path) {
+		if (StringUtils.hasLength(signalEndpoint)) {
+			return signalEndpoint;
+		}
+		if (this.endpoint == null || path == null) {
+			return this.endpoint;
+		}
+		return this.endpoint.endsWith("/") ? this.endpoint + path : this.endpoint + "/" + path;
+	}
+
+	/**
+	 * Merges the given signal-specific headers with these common headers. Entries in
+	 * {@code signalHeaders} take precedence over common headers with the same key.
+	 * @param signalHeaders the signal-specific headers
+	 * @return the merged headers
+	 */
+	public Map<String, String> mergeHeaders(Map<String, String> signalHeaders) {
+		Map<String, String> merged = new LinkedHashMap<>(this.headers);
+		merged.putAll(signalHeaders);
+		return merged;
+	}
+
+	/**
+	 * Resolves the compression to use, falling back to this common compression, mapped
+	 * through {@code mapper}, when {@code signalCompression} is not set.
+	 * @param <T> the signal-specific compression type
+	 * @param signalCompression the signal-specific compression, or {@code null} if not
+	 * set
+	 * @param defaultCompression the compression to use when neither is set
+	 * @param mapper maps this common compression to the signal-specific type
+	 * @return the resolved compression
+	 */
+	public <T> T resolveCompression(@Nullable T signalCompression, T defaultCompression,
+			Function<Compression, T> mapper) {
+		if (signalCompression != null) {
+			return signalCompression;
+		}
+		if (this.compression != null) {
+			return mapper.apply(this.compression);
+		}
+		return defaultCompression;
 	}
 
 	/**

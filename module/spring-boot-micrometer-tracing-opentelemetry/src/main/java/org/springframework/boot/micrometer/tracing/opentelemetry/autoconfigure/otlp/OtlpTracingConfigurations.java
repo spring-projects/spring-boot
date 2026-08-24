@@ -16,9 +16,7 @@
 
 package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp;
 
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -111,13 +109,8 @@ final class OtlpTracingConfigurations {
 				Assert.state(transport == this.properties.getTransport(),
 						"Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
-				String endpoint = this.properties.getEndpoint();
-				if (!StringUtils.hasLength(endpoint)) {
-					endpoint = this.otlpProperties.getEndpoint();
-					if (endpoint != null && transport == Transport.HTTP) {
-						endpoint = endpoint.endsWith("/") ? endpoint + "v1/traces" : endpoint + "/v1/traces";
-					}
-				}
+				String path = (transport == Transport.HTTP) ? "v1/traces" : null;
+				String endpoint = this.otlpProperties.resolveEndpoint(this.properties.getEndpoint(), path);
 				Assert.state(endpoint != null, "'endpoint' must not be null");
 				return endpoint;
 			}
@@ -153,9 +146,7 @@ final class OtlpTracingConfigurations {
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
-			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
-			headers.putAll(properties.getHeaders());
-			headers.forEach(builder::addHeader);
+			otlpProperties.mergeHeaders(properties.getHeaders()).forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -172,9 +163,7 @@ final class OtlpTracingConfigurations {
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
-			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
-			headers.putAll(properties.getHeaders());
-			headers.forEach(builder::addHeader);
+			otlpProperties.mergeHeaders(properties.getHeaders()).forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -183,18 +172,11 @@ final class OtlpTracingConfigurations {
 
 		private OtlpTracingProperties.Compression resolveCompression(OtlpTracingProperties properties,
 				OtlpProperties otlpProperties) {
-			OtlpTracingProperties.Compression compression = properties.getCompression();
-			if (compression != null) {
-				return compression;
-			}
-			OtlpProperties.Compression compressionProperties = otlpProperties.getCompression();
-			if (compressionProperties != null) {
-				return switch (compressionProperties) {
-					case GZIP -> OtlpTracingProperties.Compression.GZIP;
-					case NONE -> OtlpTracingProperties.Compression.NONE;
-				};
-			}
-			return OtlpTracingProperties.Compression.NONE;
+			return otlpProperties.resolveCompression(properties.getCompression(),
+					OtlpTracingProperties.Compression.NONE, (commonCompression) -> switch (commonCompression) {
+						case GZIP -> OtlpTracingProperties.Compression.GZIP;
+						case NONE -> OtlpTracingProperties.Compression.NONE;
+					});
 		}
 
 		private void configureSsl(OtlpTracingConnectionDetails connectionDetails,
