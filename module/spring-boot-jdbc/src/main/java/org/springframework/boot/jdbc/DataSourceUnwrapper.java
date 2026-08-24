@@ -94,14 +94,19 @@ public final class DataSourceUnwrapper {
 	}
 
 	/**
-	 * Return the root {@link DataSource} by recursively unwrapping all
-	 * {@link org.springframework.jdbc.datasource.DelegatingDataSource delegating}, proxy,
-	 * and {@link java.sql.Wrapper} layers until no further unwrapping is possible.
+	 * Return the root {@link DataSource} by recursively unwrapping
+	 * {@link java.sql.Wrapper},
+	 * {@link org.springframework.jdbc.datasource.DelegatingDataSource delegating}, and
+	 * proxy layers until no further unwrapping is possible.
 	 * @param dataSource the datasource to unwrap
 	 * @return the root {@link DataSource}
 	 * @since 4.1.0
 	 */
 	public static DataSource unwrapRoot(DataSource dataSource) {
+		DataSource unwrapped = safeUnwrap(dataSource);
+		if (unwrapped != null && unwrapped != dataSource) {
+			return unwrapRoot(unwrapped);
+		}
 		if (DELEGATING_DATA_SOURCE_PRESENT) {
 			DataSource targetDataSource = DelegatingDataSourceUnwrapper.getTargetDataSource(dataSource);
 			if (targetDataSource != null) {
@@ -113,13 +118,6 @@ public final class DataSourceUnwrapper {
 			if (proxyTarget instanceof DataSource proxyDataSource) {
 				return unwrapRoot(proxyDataSource);
 			}
-		}
-		DataSource unwrapped = safeUnwrap(dataSource);
-		if (unwrapped != null) {
-			if (unwrapped == dataSource) {
-				return unwrapped;
-			}
-			return unwrapRoot(unwrapped);
 		}
 		return dataSource;
 	}
