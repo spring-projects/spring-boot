@@ -187,9 +187,9 @@ final class OtlpTracingConfigurations {
 			if (compression != null) {
 				return compression;
 			}
-			OtlpProperties.Compression commonCompression = otlpProperties.getCompression();
-			if (commonCompression != null) {
-				return switch (commonCompression) {
+			OtlpProperties.Compression compressionProperties = otlpProperties.getCompression();
+			if (compressionProperties != null) {
+				return switch (compressionProperties) {
 					case GZIP -> OtlpTracingProperties.Compression.GZIP;
 					case NONE -> OtlpTracingProperties.Compression.NONE;
 				};

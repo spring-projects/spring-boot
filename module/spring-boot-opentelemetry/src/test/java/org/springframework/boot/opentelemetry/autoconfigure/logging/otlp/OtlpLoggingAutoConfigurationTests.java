@@ -330,7 +330,6 @@ class OtlpLoggingAutoConfigurationTests {
 		otlpProperties.setEndpoint("http://localhost:4318");
 		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
 				properties, otlpProperties, null);
-
 		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 	}
 
@@ -342,7 +341,6 @@ class OtlpLoggingAutoConfigurationTests {
 		otlpProperties.setEndpoint("http://localhost:4318");
 		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
 				properties, otlpProperties, null);
-
 		assertThat(connectionDetails.getUrl(Transport.GRPC)).isEqualTo("http://localhost:4318");
 	}
 
@@ -354,20 +352,16 @@ class OtlpLoggingAutoConfigurationTests {
 		otlpProperties.setEndpoint("http://localhost:4318");
 		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
 				properties, otlpProperties, null);
-
 		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/custom/logs");
 	}
 
 	@Test
 	void shouldAppendLogsPathToCommonEndpointWithTrailingSlash() {
 		OtlpLoggingProperties properties = new OtlpLoggingProperties();
-
 		OtlpProperties otlpProperties = new OtlpProperties();
 		otlpProperties.setEndpoint("http://localhost:4318/");
-
 		PropertiesOtlpLoggingConnectionDetails connectionDetails = new PropertiesOtlpLoggingConnectionDetails(
 				properties, otlpProperties, null);
-
 		assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 	}
 

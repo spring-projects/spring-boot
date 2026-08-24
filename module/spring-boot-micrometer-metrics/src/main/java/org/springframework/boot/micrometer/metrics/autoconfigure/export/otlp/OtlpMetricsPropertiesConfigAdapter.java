@@ -83,9 +83,9 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 		if (compressionMode != null) {
 			return compressionMode;
 		}
-		OtlpProperties.Compression commonCompression = this.otlpProperties.getCompression();
-		if (commonCompression != null) {
-			return switch (commonCompression) {
+		OtlpProperties.Compression compressionProperties = this.otlpProperties.getCompression();
+		if (compressionProperties != null) {
+			return switch (compressionProperties) {
 				case GZIP -> CompressionMode.GZIP;
 				case NONE -> CompressionMode.NONE;
 			};
