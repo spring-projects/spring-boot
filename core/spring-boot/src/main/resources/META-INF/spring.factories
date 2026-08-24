@@ -69,6 +69,7 @@ org.springframework.boot.diagnostics.analyzer.MissingParameterNamesFailureAnalyz
 org.springframework.boot.diagnostics.analyzer.MutuallyExclusiveConfigurationPropertiesFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.NoServletContextFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
