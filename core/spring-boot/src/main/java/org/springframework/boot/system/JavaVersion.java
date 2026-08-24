@@ -104,7 +104,7 @@ public enum JavaVersion {
 	TWENTY_SIX("26", String.class, "equalsFoldCase", String.class),
 
 	/**
-	 * Java 27
+	 * Java 27.
 	 * @since 4.0.9
 	 */
 	TWENTY_SEVEN("27", EnumSet.class, "spliterator");
