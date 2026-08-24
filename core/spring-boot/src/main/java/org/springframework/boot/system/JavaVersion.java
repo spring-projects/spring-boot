@@ -22,6 +22,7 @@ import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.Future;
@@ -100,7 +101,13 @@ public enum JavaVersion {
 	 * Java 26.
 	 * @since 4.0.3
 	 */
-	TWENTY_SIX("26", String.class, "equalsFoldCase", String.class);
+	TWENTY_SIX("26", String.class, "equalsFoldCase", String.class),
+
+	/**
+	 * Java 27
+	 * @since 4.0.9
+	 */
+	TWENTY_SEVEN("27", EnumSet.class, "spliterator");
 
 	private final String name;
 
