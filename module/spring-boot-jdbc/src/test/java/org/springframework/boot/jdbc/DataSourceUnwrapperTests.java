@@ -181,12 +181,12 @@ class DataSourceUnwrapperTests {
 	private static final class SelfReturningDataSource extends AbstractDataSource {
 
 		@Override
-		public Connection getConnection() throws SQLException {
+		public Connection getConnection() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Connection getConnection(String username, String password) throws SQLException {
+		public Connection getConnection(String username, String password) {
 			throw new UnsupportedOperationException();
 		}
 
