@@ -16,7 +16,6 @@
 
 package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -34,20 +33,16 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
 import org.springframework.boot.opentelemetry.autoconfigure.OtlpProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -81,13 +76,11 @@ final class OtlpTracingConfigurations {
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.tracing.export.otlp.endpoint")
-			@SuppressWarnings("unused")
 			static class TracingEndpoint {
 
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.otlp.endpoint")
-			@SuppressWarnings("unused")
 			static class CommonEndpoint {
 
 			}
@@ -115,6 +108,9 @@ final class OtlpTracingConfigurations {
 
 			@Override
 			public String getUrl(Transport transport) {
+				Assert.state(transport == this.properties.getTransport(),
+						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+								this.properties.getTransport()));
 				String endpoint = this.properties.getEndpoint();
 				if (!StringUtils.hasLength(endpoint)) {
 					endpoint = this.otlpProperties.getEndpoint();
@@ -153,23 +149,13 @@ final class OtlpTracingConfigurations {
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpSpanExporterBuilderCustomizer> customizers) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
-				.setEndpoint(connectionDetails.getUrl(Transport.HTTP));
-
-			Duration timeout = properties.getTimeout();
-			builder.setTimeout(timeout);
-
-			Duration connectTimeout = properties.getConnectTimeout();
-			builder.setConnectTimeout(connectTimeout);
-
-			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
-			if (StringUtils.hasLength(compression)) {
-				builder.setCompression(compression);
-			}
-
+				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
 			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
 			headers.putAll(properties.getHeaders());
 			headers.forEach(builder::addHeader);
-
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -182,27 +168,33 @@ final class OtlpTracingConfigurations {
 				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpGrpcSpanExporterBuilderCustomizer> customizers) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
-				.setEndpoint(connectionDetails.getUrl(Transport.GRPC));
-
-			Duration timeout = properties.getTimeout();
-			builder.setTimeout(timeout);
-
-			Duration connectTimeout = properties.getConnectTimeout();
-			builder.setConnectTimeout(connectTimeout);
-
-			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
-			if (StringUtils.hasLength(compression)) {
-				builder.setCompression(compression);
-			}
-
+				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.ROOT));
 			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
 			headers.putAll(properties.getHeaders());
 			headers.forEach(builder::addHeader);
-
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
+		}
+
+		private OtlpTracingProperties.Compression resolveCompression(OtlpTracingProperties properties,
+				OtlpProperties otlpProperties) {
+			OtlpTracingProperties.Compression compression = properties.getCompression();
+			if (compression != null) {
+				return compression;
+			}
+			OtlpProperties.Compression commonCompression = otlpProperties.getCompression();
+			if (commonCompression != null) {
+				return switch (commonCompression) {
+					case GZIP -> OtlpTracingProperties.Compression.GZIP;
+					case NONE -> OtlpTracingProperties.Compression.NONE;
+				};
+			}
+			return OtlpTracingProperties.Compression.NONE;
 		}
 
 		private void configureSsl(OtlpTracingConnectionDetails connectionDetails,
@@ -227,32 +219,6 @@ final class OtlpTracingConfigurations {
 		private interface SslContextConfigurer {
 
 			void configure(SSLContext sslContext, X509TrustManager trustManager);
-
-		}
-
-		static class HttpTransportCondition extends SpringBootCondition {
-
-			@Override
-			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-				String tracingTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.tracing.export.otlp.transport");
-				String activeTransport = (tracingTransport != null) ? tracingTransport : "http";
-				return new ConditionOutcome("http".equalsIgnoreCase(activeTransport),
-						"Transport is " + activeTransport);
-			}
-
-		}
-
-		static class GrpcTransportCondition extends SpringBootCondition {
-
-			@Override
-			public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-				String tracingTransport = context.getEnvironment()
-					.getProperty("management.opentelemetry.tracing.export.otlp.transport");
-				String activeTransport = (tracingTransport != null) ? tracingTransport : "http";
-				return new ConditionOutcome("grpc".equalsIgnoreCase(activeTransport),
-						"Transport is " + activeTransport);
-			}
 
 		}
 

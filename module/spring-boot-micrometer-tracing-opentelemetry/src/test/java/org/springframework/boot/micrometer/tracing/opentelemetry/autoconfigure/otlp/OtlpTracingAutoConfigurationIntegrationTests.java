@@ -135,6 +135,41 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 	}
 
 	@Test
+	void httpSpanExporterFallsBackToCommonCompressionWhenSignalSpecificCompressionIsNotSet() {
+		this.mockWebServer.enqueue(new MockResponse());
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.otlp.compression=gzip",
+					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:%d/test"
+						.formatted(this.mockWebServer.getPort()))
+			.run((context) -> {
+				context.getBean(Tracer.class).nextSpan().name("test").end();
+				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
+					.isSameAs(CompletableResultCode.ofSuccess());
+				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
+			});
+	}
+
+	@Test
+	void httpSpanExporterSignalSpecificCompressionWinsOverCommonCompression() {
+		this.mockWebServer.enqueue(new MockResponse());
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.otlp.compression=gzip",
+					"management.opentelemetry.tracing.export.otlp.compression=none",
+					"management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:%d/test"
+						.formatted(this.mockWebServer.getPort()))
+			.run((context) -> {
+				context.getBean(Tracer.class).nextSpan().name("test").end();
+				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
+					.isSameAs(CompletableResultCode.ofSuccess());
+				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.getHeader("Content-Encoding")).isNull();
+			});
+	}
+
+	@Test
 	void grpcSpanExporterShouldExportSpans() {
 		this.contextRunner
 			.withPropertyValues(

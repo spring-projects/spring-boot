@@ -16,7 +16,6 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -78,13 +77,11 @@ final class OtlpLoggingConfigurations {
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.logging.export.otlp.endpoint")
-			@SuppressWarnings("unused")
 			static class LoggingEndpoint {
 
 			}
 
 			@ConditionalOnProperty("management.opentelemetry.otlp.endpoint")
-			@SuppressWarnings("unused")
 			static class CommonEndpoint {
 
 			}
@@ -112,6 +109,9 @@ final class OtlpLoggingConfigurations {
 
 			@Override
 			public String getUrl(Transport transport) {
+				Assert.state(transport == this.properties.getTransport(),
+						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+								this.properties.getTransport()));
 				String endpoint = this.properties.getEndpoint();
 				if (!StringUtils.hasLength(endpoint)) {
 					endpoint = this.otlpProperties.getEndpoint();
@@ -152,20 +152,13 @@ final class OtlpLoggingConfigurations {
 				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpHttpLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getUrl(Transport.HTTP));
-
-			Duration timeout = properties.getTimeout();
-			builder.setTimeout(timeout);
-
-			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
-			if (StringUtils.hasLength(compression)) {
-				builder.setCompression(compression);
-			}
-
+				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.US));
 			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
 			headers.putAll(properties.getHeaders());
 			headers.forEach(builder::addHeader);
-
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -179,24 +172,33 @@ final class OtlpLoggingConfigurations {
 				ObjectProvider<MeterProvider> meterProvider,
 				ObjectProvider<OtlpGrpcLogRecordExporterBuilderCustomizer> customizers) {
 			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getUrl(Transport.GRPC));
-
-			Duration timeout = properties.getTimeout();
-			builder.setTimeout(timeout);
-
-			String compression = properties.getCompression().name().toLowerCase(Locale.ROOT);
-			if (StringUtils.hasLength(compression)) {
-				builder.setCompression(compression);
-			}
-
+				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(resolveCompression(properties, otlpProperties).name().toLowerCase(Locale.US));
 			Map<String, String> headers = new LinkedHashMap<>(otlpProperties.getHeaders());
 			headers.putAll(properties.getHeaders());
 			headers.forEach(builder::addHeader);
-
 			meterProvider.ifAvailable(builder::setMeterProvider);
 			configureSsl(connectionDetails, builder::setSslContext);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
+		}
+
+		private OtlpLoggingProperties.Compression resolveCompression(OtlpLoggingProperties properties,
+				OtlpProperties otlpProperties) {
+			OtlpLoggingProperties.Compression compression = properties.getCompression();
+			if (compression != null) {
+				return compression;
+			}
+			OtlpProperties.Compression commonCompression = otlpProperties.getCompression();
+			if (commonCompression != null) {
+				return switch (commonCompression) {
+					case GZIP -> OtlpLoggingProperties.Compression.GZIP;
+					case NONE -> OtlpLoggingProperties.Compression.NONE;
+				};
+			}
+			return OtlpLoggingProperties.Compression.NONE;
 		}
 
 		private void configureSsl(OtlpLoggingConnectionDetails connectionDetails,

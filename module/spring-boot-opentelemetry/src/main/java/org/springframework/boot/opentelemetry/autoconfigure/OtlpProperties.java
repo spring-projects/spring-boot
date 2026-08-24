@@ -42,6 +42,11 @@ public class OtlpProperties {
 	 */
 	private final Map<String, String> headers = new LinkedHashMap<>();
 
+	/**
+	 * Method used to compress the payload.
+	 */
+	private @Nullable Compression compression;
+
 	public @Nullable String getEndpoint() {
 		return this.endpoint;
 	}
@@ -52,6 +57,31 @@ public class OtlpProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
+	}
+
+	public @Nullable Compression getCompression() {
+		return this.compression;
+	}
+
+	public void setCompression(@Nullable Compression compression) {
+		this.compression = compression;
+	}
+
+	/**
+	 * Compression methods.
+	 */
+	public enum Compression {
+
+		/**
+		 * Gzip compression.
+		 */
+		GZIP,
+
+		/**
+		 * No compression.
+		 */
+		NONE
+
 	}
 
 }

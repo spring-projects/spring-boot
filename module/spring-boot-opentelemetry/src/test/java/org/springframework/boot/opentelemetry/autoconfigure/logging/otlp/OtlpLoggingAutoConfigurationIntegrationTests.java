@@ -108,6 +108,37 @@ class OtlpLoggingAutoConfigurationIntegrationTests {
 			});
 	}
 
+	@Test
+	void httpLogRecordExporterFallsBackToCommonCompressionWhenSignalSpecificCompressionIsNotSet() {
+		this.mockWebServer.enqueue(new MockResponse());
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:%d/v1/logs"
+				.formatted(this.mockWebServer.getPort()), "management.opentelemetry.otlp.compression=gzip")
+			.run((context) -> {
+				logMessage(context);
+				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
+			});
+	}
+
+	@Test
+	void httpLogRecordExporterSignalSpecificCompressionWinsOverCommonCompression() {
+		this.mockWebServer.enqueue(new MockResponse());
+		this.contextRunner
+			.withPropertyValues(
+					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:%d/v1/logs"
+						.formatted(this.mockWebServer.getPort()),
+					"management.opentelemetry.logging.export.otlp.compression=none",
+					"management.opentelemetry.otlp.compression=gzip")
+			.run((context) -> {
+				logMessage(context);
+				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.getHeader("Content-Encoding")).isNull();
+			});
+	}
+
 	private static void logMessage(ApplicationContext context) {
 		SdkLoggerProvider loggerProvider = context.getBean(SdkLoggerProvider.class);
 		loggerProvider.get("test")

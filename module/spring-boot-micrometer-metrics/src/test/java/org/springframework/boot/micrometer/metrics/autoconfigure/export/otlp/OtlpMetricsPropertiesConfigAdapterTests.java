@@ -279,4 +279,17 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		assertThat(createAdapter().url()).isEqualTo("http://signal-endpoint:4318/custom/metrics");
 	}
 
+	@Test
+	void whenPropertiesCompressionModeIsNotSetThenUseOtlpPropertiesCompressionAsFallback() {
+		this.otlpProperties.setCompression(OtlpProperties.Compression.GZIP);
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.GZIP);
+	}
+
+	@Test
+	void whenPropertiesCompressionModeIsSetThenItOverridesOtlpPropertiesCompression() {
+		this.otlpProperties.setCompression(OtlpProperties.Compression.GZIP);
+		this.properties.setCompressionMode(CompressionMode.NONE);
+		assertThat(createAdapter().compressionMode()).isSameAs(CompressionMode.NONE);
+	}
+
 }

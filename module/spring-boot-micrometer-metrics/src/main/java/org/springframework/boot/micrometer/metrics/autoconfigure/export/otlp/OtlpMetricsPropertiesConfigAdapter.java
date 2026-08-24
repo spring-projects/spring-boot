@@ -79,7 +79,18 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public CompressionMode compressionMode() {
-		return obtain(OtlpMetricsProperties::getCompressionMode, OtlpConfig.super::compressionMode);
+		CompressionMode compressionMode = this.properties.getCompressionMode();
+		if (compressionMode != null) {
+			return compressionMode;
+		}
+		OtlpProperties.Compression commonCompression = this.otlpProperties.getCompression();
+		if (commonCompression != null) {
+			return switch (commonCompression) {
+				case GZIP -> CompressionMode.GZIP;
+				case NONE -> CompressionMode.NONE;
+			};
+		}
+		return OtlpConfig.super.compressionMode();
 	}
 
 	@Override

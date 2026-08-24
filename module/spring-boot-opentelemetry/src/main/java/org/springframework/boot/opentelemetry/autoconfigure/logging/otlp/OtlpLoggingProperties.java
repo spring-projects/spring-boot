@@ -59,7 +59,7 @@ public class OtlpLoggingProperties {
 	/**
 	 * Method used to compress the payload.
 	 */
-	private Compression compression = Compression.NONE;
+	private @Nullable Compression compression;
 
 	/**
 	 * Custom HTTP headers you want to pass to the collector, for example auth headers.
@@ -100,11 +100,11 @@ public class OtlpLoggingProperties {
 		this.transport = transport;
 	}
 
-	public Compression getCompression() {
+	public @Nullable Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(Compression compression) {
+	public void setCompression(@Nullable Compression compression) {
 		this.compression = compression;
 	}
 
