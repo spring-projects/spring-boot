@@ -62,8 +62,12 @@ import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.util.StdDateFormat;
 import tools.jackson.dataformat.cbor.CBORFactory;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.cbor.CBORReadFeature;
+import tools.jackson.dataformat.cbor.CBORWriteFeature;
 import tools.jackson.dataformat.xml.XmlFactory;
 import tools.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.dataformat.xml.XmlReadFeature;
+import tools.jackson.dataformat.xml.XmlWriteFeature;
 import tools.jackson.module.kotlin.KotlinModule;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -784,10 +788,14 @@ class JacksonAutoConfigurationTests {
 			CBORMapper cborMapper = context.getBean(CBORMapper.class);
 			CBORMapper jackson2ConfiguredCborMapper = CBORMapper.builder().configureForJackson2().build();
 			assertCommonFeatureConfiguration(cborMapper, jackson2ConfiguredCborMapper);
-			assertThat(cborMapper.deserializationConfig().getFormatReadFeatures())
-				.isEqualTo(jackson2ConfiguredCborMapper.deserializationConfig().getFormatReadFeatures());
-			assertThat(cborMapper.serializationConfig().getFormatWriteFeatures())
-				.isEqualTo(jackson2ConfiguredCborMapper.serializationConfig().getFormatWriteFeatures());
+			for (CBORReadFeature feature : CBORReadFeature.values()) {
+				assertThat(cborMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredCborMapper.isEnabled(feature));
+			}
+			for (CBORWriteFeature feature : CBORWriteFeature.values()) {
+				assertThat(cborMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredCborMapper.isEnabled(feature));
+			}
 		});
 	}
 
@@ -797,10 +805,14 @@ class JacksonAutoConfigurationTests {
 			XmlMapper xmlMapper = context.getBean(XmlMapper.class);
 			XmlMapper jackson2ConfiguredXmlMapper = XmlMapper.builder().configureForJackson2().build();
 			assertCommonFeatureConfiguration(xmlMapper, jackson2ConfiguredXmlMapper);
-			assertThat(xmlMapper.deserializationConfig().getFormatReadFeatures())
-				.isEqualTo(jackson2ConfiguredXmlMapper.deserializationConfig().getFormatReadFeatures());
-			assertThat(xmlMapper.serializationConfig().getFormatWriteFeatures())
-				.isEqualTo(jackson2ConfiguredXmlMapper.serializationConfig().getFormatWriteFeatures());
+			for (XmlReadFeature feature : XmlReadFeature.values()) {
+				assertThat(xmlMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredXmlMapper.isEnabled(feature));
+			}
+			for (XmlWriteFeature feature : XmlWriteFeature.values()) {
+				assertThat(xmlMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredXmlMapper.isEnabled(feature));
+			}
 		});
 	}
 
