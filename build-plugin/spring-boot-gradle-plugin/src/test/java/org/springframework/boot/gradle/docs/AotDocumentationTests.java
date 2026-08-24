@@ -37,9 +37,10 @@ class AotDocumentationTests {
 
 	@TestTemplate
 	void applyNativeImagePlugin() {
-		assertThat(this.gradleBuild.script(Examples.DIR + "aot/apply-native-image-plugin").build("tasks").getOutput())
-			.contains("nativeCompile")
-			.contains("aotClasses");
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("9.7.0")
+			.script(Examples.DIR + "aot/apply-native-image-plugin")
+			.build("tasks")
+			.getOutput()).contains("nativeCompile").contains("aotClasses");
 	}
 
 	@TestTemplate
