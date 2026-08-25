@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -38,6 +39,12 @@ class ProtobufPluginActionIntegrationTests {
 
 	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
+
+	@BeforeEach
+	void prepareGradleBuild() {
+		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("9.7.0")
+			.expectDeprecationMessages("The Configuration.setVisible(boolean) method has been deprecated");
+	}
 
 	@TestTemplate
 	void configuresProtocArtifact() {
