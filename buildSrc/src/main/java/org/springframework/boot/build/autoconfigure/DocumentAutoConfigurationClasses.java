@@ -70,15 +70,6 @@ public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 		FileSystemUtils.deleteRecursively(getOutputDir().getAsFile().get());
 		List<AutoConfiguration> autoConfigurations = load();
 		autoConfigurations.forEach(this::writeModuleAdoc);
-		for (File metadataFile : this.autoConfiguration) {
-			Properties metadata = new Properties();
-			try (Reader reader = new FileReader(metadataFile)) {
-				metadata.load(reader);
-			}
-			AutoConfiguration autoConfiguration = new AutoConfiguration(metadata.getProperty("module"), new TreeSet<>(
-					StringUtils.commaDelimitedListToSet(metadata.getProperty("autoConfigurationClassNames"))));
-			writeModuleAdoc(autoConfiguration);
-		}
 		writeNavAdoc(autoConfigurations);
 	}
 
