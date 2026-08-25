@@ -170,7 +170,7 @@ public class Cookie {
 		 */
 		STRICT("Strict");
 
-		private @Nullable final String attributeValue;
+		private final @Nullable String attributeValue;
 
 		SameSite(@Nullable String attributeValue) {
 			this.attributeValue = attributeValue;

@@ -442,7 +442,7 @@ public final class ConditionMessage {
 			return result;
 		}
 
-		protected abstract @Nullable Object applyToItem(@Nullable Object item);
+		abstract @Nullable Object applyToItem(@Nullable Object item);
 
 	}
 

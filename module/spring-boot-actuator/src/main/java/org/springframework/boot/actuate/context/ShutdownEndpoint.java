@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
 @Endpoint(id = "shutdown", defaultAccess = Access.NONE)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	@Nullable private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@WriteOperation
 	public ShutdownDescriptor shutdown() {

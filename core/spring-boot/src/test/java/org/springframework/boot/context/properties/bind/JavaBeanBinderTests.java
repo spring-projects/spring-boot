@@ -42,6 +42,7 @@ import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -1062,7 +1063,7 @@ class JavaBeanBinderTests {
 
 	static class ConverterAnnotatedExampleBean {
 
-		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+		@DateTimeFormat(iso = ISO.DATE)
 		private @Nullable LocalDate date;
 
 		@Nullable LocalDate getDate() {

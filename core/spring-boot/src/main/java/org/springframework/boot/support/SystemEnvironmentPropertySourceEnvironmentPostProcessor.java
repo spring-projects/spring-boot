@@ -88,7 +88,6 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	 * settings from a parent {@link ConfigurableEnvironment}.
 	 * @param environment the environment to post-process
 	 * @param parentEnvironment the parent environment
-	 * @since 3.4.12
 	 */
 	public static void postProcessEnvironment(ConfigurableEnvironment environment,
 			ConfigurableEnvironment parentEnvironment) {

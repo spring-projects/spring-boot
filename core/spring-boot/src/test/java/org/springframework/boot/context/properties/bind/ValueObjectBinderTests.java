@@ -38,6 +38,7 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -623,8 +624,8 @@ class ValueObjectBinderTests {
 
 		private final String bar;
 
-		ConverterAnnotatedExampleBean(
-				@DefaultValue("2019-05-10") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, String bar) {
+		ConverterAnnotatedExampleBean(@DefaultValue("2019-05-10") @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+				String bar) {
 			this.date = date;
 			this.bar = bar;
 		}

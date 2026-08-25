@@ -21,6 +21,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,7 +32,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Phillip Webb
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.endpoints.jackson.isolated-json-mapper=false",
 				"spring.jackson.mapper.require-setters-for-getters=true" })
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)

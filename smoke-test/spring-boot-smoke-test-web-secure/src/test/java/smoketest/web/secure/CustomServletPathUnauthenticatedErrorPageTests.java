@@ -17,6 +17,7 @@
 package smoketest.web.secure;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,10 +29,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *
  * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { AbstractErrorPageTests.TestConfiguration.class,
-				CustomServletPathUnauthenticatedErrorPageTests.SecurityConfiguration.class,
-				SampleWebSecureApplication.class },
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { AbstractErrorPageTests.TestConfiguration.class,
+		CustomServletPathUnauthenticatedErrorPageTests.SecurityConfiguration.class, SampleWebSecureApplication.class },
 		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password", "spring.mvc.servlet.path=/custom/servlet/path" })
 class CustomServletPathUnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {

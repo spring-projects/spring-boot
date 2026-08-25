@@ -61,7 +61,7 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-	 * Returns if ANSI output is enabled
+	 * Returns if ANSI output is enabled.
 	 * @return if ANSI enabled, disabled or detected
 	 */
 	public static Enabled getEnabled() {
