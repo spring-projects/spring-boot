@@ -138,7 +138,8 @@ public class ContextPairs {
 		 */
 		@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 		public <V> void addMapEntries(Function<T, Map<String, V>> extractor) {
-			add(extractor.andThen(Map::entrySet), Map.Entry::getKey, Map.Entry::getValue);
+			Function<T, @Nullable Iterable<Map.Entry<String, V>>> elementsExtractor = extractor.andThen(Map::entrySet);
+			add(elementsExtractor, Map.Entry::getKey, Map.Entry::getValue);
 		}
 
 		/**
