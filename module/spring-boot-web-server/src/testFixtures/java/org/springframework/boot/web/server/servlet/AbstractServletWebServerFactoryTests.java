@@ -114,6 +114,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.InOrder;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
@@ -914,7 +915,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
+	@EnumSource(mode = Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
 		ConfigurableServletWebServerFactory factory = getFactory();
 		factory.getSettings().getSession().getCookie().setSameSite(sameSite);
@@ -929,7 +930,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
+	@EnumSource(mode = Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
 			throws Exception {
 		ConfigurableServletWebServerFactory factory = getFactory();

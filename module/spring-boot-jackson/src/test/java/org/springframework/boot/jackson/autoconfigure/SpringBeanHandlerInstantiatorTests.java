@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
@@ -251,7 +252,7 @@ class SpringBeanHandlerInstantiatorTests {
 
 	}
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "type")
+	@JsonTypeInfo(use = Id.CUSTOM, property = "type")
 	@JsonTypeResolver(CustomTypeResolverBuilder.class)
 	@JsonTypeIdResolver(CustomTypeIdResolver.class)
 	public static class Group {

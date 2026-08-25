@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Auto-configuration for application health indicators.
+ */
 @NullMarked
 package org.springframework.boot.health.autoconfigure.application;
 

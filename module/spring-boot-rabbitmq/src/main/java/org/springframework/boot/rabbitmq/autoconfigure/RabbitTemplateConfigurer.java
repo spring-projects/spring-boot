@@ -87,7 +87,6 @@ public class RabbitTemplateConfigurer {
 	/**
 	 * Sets the observation convention to use.
 	 * @param observationConvention the observation convention to use
-	 * @since 4.2.0
 	 */
 	public void setObservationConvention(@Nullable RabbitTemplateObservationConvention observationConvention) {
 		this.observationConvention = observationConvention;

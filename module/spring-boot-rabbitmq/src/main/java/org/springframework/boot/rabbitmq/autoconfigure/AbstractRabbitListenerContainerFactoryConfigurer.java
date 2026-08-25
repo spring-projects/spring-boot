@@ -102,7 +102,6 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	/**
 	 * Sets the observation convention to use.
 	 * @param observationConvention the observation convention to use
-	 * @since 4.2.0
 	 */
 	protected void setObservationConvention(@Nullable RabbitListenerObservationConvention observationConvention) {
 		this.observationConvention = observationConvention;

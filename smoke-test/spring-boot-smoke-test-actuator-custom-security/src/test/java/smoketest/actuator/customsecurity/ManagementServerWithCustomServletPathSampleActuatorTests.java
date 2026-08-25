@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +32,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "spring.mvc.servlet.path=/example" })
 class ManagementServerWithCustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
 

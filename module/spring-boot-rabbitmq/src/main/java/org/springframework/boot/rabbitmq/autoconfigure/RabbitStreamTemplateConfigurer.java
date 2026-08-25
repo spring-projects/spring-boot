@@ -73,7 +73,6 @@ public class RabbitStreamTemplateConfigurer {
 	/**
 	 * Set the observation convention to use.
 	 * @param observationConvention the observation convention to use
-	 * @since 4.2.0
 	 */
 	public void setObservationConvention(@Nullable RabbitStreamTemplateObservationConvention observationConvention) {
 		this.observationConvention = observationConvention;

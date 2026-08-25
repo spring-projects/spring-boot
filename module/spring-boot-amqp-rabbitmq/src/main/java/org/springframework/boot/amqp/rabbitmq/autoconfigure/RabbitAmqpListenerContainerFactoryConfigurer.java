@@ -60,7 +60,7 @@ public final class RabbitAmqpListenerContainerFactoryConfigurer {
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	protected void setMessageConverter(@Nullable MessageConverter messageConverter) {
+	void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -68,7 +68,7 @@ public final class RabbitAmqpListenerContainerFactoryConfigurer {
 	 * Set the {@link TaskScheduler} to use or {@code null} if the default should be used.
 	 * @param taskScheduler the {@link TaskScheduler}
 	 */
-	protected void setTaskScheduler(@Nullable TaskScheduler taskScheduler) {
+	void setTaskScheduler(@Nullable TaskScheduler taskScheduler) {
 		this.taskScheduler = taskScheduler;
 	}
 

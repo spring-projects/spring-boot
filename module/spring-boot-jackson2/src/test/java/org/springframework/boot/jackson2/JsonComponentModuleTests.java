@@ -58,6 +58,7 @@ class JsonComponentModuleTests {
 
 	private @Nullable AnnotationConfigApplicationContext context;
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@AfterEach
 	void closeContext() {
 		if (this.context != null) {
@@ -65,6 +66,7 @@ class JsonComponentModuleTests {
 		}
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterSerializers() throws Exception {
 		load(OnlySerializer.class);
@@ -72,6 +74,7 @@ class JsonComponentModuleTests {
 		assertSerialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterDeserializers() throws Exception {
 		load(OnlyDeserializer.class);
@@ -79,6 +82,7 @@ class JsonComponentModuleTests {
 		assertDeserialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterInnerClasses() throws Exception {
 		load(NameAndAgeJsonComponent.class);
@@ -87,6 +91,7 @@ class JsonComponentModuleTests {
 		assertDeserialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldAllowInnerAbstractClasses() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(JsonComponentModule.class,
@@ -96,6 +101,7 @@ class JsonComponentModuleTests {
 		context.close();
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterKeySerializers() throws Exception {
 		load(OnlyKeySerializer.class);
@@ -103,6 +109,7 @@ class JsonComponentModuleTests {
 		assertKeySerialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterKeyDeserializers() throws Exception {
 		load(OnlyKeyDeserializer.class);
@@ -110,6 +117,7 @@ class JsonComponentModuleTests {
 		assertKeyDeserialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterInnerClassesForKeyHandlers() throws Exception {
 		load(NameAndAgeJsonKeyComponent.class);
@@ -118,6 +126,7 @@ class JsonComponentModuleTests {
 		assertKeyDeserialize(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void moduleShouldRegisterOnlyForSpecifiedClasses() throws Exception {
 		load(NameAndCareerJsonComponent.class);
@@ -127,6 +136,7 @@ class JsonComponentModuleTests {
 		assertDeserializeForSpecifiedClasses(module);
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@Test
 	void aotContributionRegistersReflectionHintsForSuitableInnerClasses() {
 		load(ComponentWithInnerAbstractClass.class);
@@ -214,39 +224,47 @@ class JsonComponentModuleTests {
 		return context;
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@JsonComponent
 	static class OnlySerializer extends NameAndAgeJsonComponent.Serializer {
 
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@JsonComponent
 	static class OnlyDeserializer extends NameAndAgeJsonComponent.Deserializer {
 
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
 
 		}
 
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		static class ConcreteSerializer extends AbstractSerializer {
 
 		}
 
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		static class NotSuitable {
 
 		}
 
 	}
 
-	@JsonComponent(scope = JsonComponent.Scope.KEYS)
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@JsonComponent(scope = org.springframework.boot.jackson2.JsonComponent.Scope.KEYS)
 	static class OnlyKeySerializer extends NameAndAgeJsonKeyComponent.Serializer {
 
 	}
 
-	@JsonComponent(scope = JsonComponent.Scope.KEYS, type = NameAndAge.class)
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@JsonComponent(scope = org.springframework.boot.jackson2.JsonComponent.Scope.KEYS, type = NameAndAge.class)
 	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
 
 	}

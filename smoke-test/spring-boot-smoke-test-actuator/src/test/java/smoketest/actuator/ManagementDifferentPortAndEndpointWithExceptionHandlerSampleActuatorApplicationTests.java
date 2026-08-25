@@ -19,6 +19,7 @@ package smoketest.actuator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.client.RestTestClient;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
  *
  * @author Guirong Hu
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.endpoints.web.exposure.include=*", "management.server.port=0" })
 class ManagementDifferentPortAndEndpointWithExceptionHandlerSampleActuatorApplicationTests {
 
