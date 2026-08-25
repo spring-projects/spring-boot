@@ -41,10 +41,10 @@ class OAuth2ClientConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnOAuth2ClientRegistrationProperties
 	@EnableConfigurationProperties(OAuth2ClientProperties.class)
-	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	static class ClientRegistrationRepositoryConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 		InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
 					new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
