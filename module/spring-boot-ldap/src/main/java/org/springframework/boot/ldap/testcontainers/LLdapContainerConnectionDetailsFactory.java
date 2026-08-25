@@ -17,7 +17,6 @@
 package org.springframework.boot.ldap.testcontainers;
 
 import org.jspecify.annotations.Nullable;
-
 import org.testcontainers.ldap.LLdapContainer;
 
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;

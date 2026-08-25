@@ -703,6 +703,40 @@ Make sure to flag your customized javadoc:org.springframework.ldap.core.ContextS
 
 
 
+[[data.nosql.ldap.ssl]]
+=== SSL
+
+To connect using LDAPS, configure the xref:features/ssl.adoc[SSL bundle] to use by setting the configprop:spring.ldap.ssl.bundle[] property, and use an `ldaps://` URL in the configprop:spring.ldap.urls[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  ldap:
+    urls: "ldaps://myserver:636"
+    ssl:
+      bundle: "example"
+----
+
+Setting configprop:spring.ldap.ssl.bundle[] also switches the default URL to `ldaps://localhost:636`, so configprop:spring.ldap.urls[] only has to be set when connecting to a different host or port.
+
+NOTE: SSL is only supported when connecting over `ldaps://`. Enabling SSL while any of the configured URLs uses a plain `ldap://` scheme results in a startup failure.
+
+These properties do not configure StartTLS, which upgrades a plain `ldap://` connection rather than using LDAPS, and which therefore cannot be combined with an SSL bundle.
+To use StartTLS, define a javadoc:org.springframework.ldap.core.support.DirContextAuthenticationStrategy[] bean such as javadoc:org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy[] and set the SSL socket factory to use on it.
+
+If you need SSL support without customizing the trust and key material, set the configprop:spring.ldap.ssl.enabled[] property to `true` instead of providing a bundle.
+This uses the platform's default trust and key material.
+
+WARNING: These properties only apply to the auto-configured javadoc:org.springframework.ldap.core.support.LdapContextSource[].
+If you define your own javadoc:org.springframework.ldap.core.support.LdapContextSource[] bean, they are ignored and you have to configure SSL yourself.
+If you define your own javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[] bean, including one contributed by a `@ServiceConnection`, they are ignored as well and the auto-configured context source uses the SSL bundle provided by that bean instead.
+An `ldaps://` connection that has not been given any key or trust material silently uses the platform's default rather than failing.
+
+TIP: These properties configure the LDAP client.
+To enable SSL on the xref:data/nosql.adoc#data.nosql.ldap.embedded.ssl[embedded LDAP server], use the separate configprop:spring.ldap.embedded.ssl.bundle[] property.
+
+
+
 [[data.nosql.ldap.repositories]]
 === Spring Data LDAP Repositories
 

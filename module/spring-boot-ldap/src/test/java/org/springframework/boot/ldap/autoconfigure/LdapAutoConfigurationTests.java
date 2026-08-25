@@ -16,15 +16,26 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
+import java.util.Map;
+
 import javax.naming.Name;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.MapAssert;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -36,13 +47,10 @@ import org.springframework.ldap.odm.core.ObjectDirectoryMapper;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.ldap.support.LdapUtils;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -52,10 +60,18 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
+@ExtendWith(OutputCaptureExtension.class)
 class LdapAutoConfigurationTests {
+
+	private static final String SOCKET_FACTORY_ENV_KEY = "java.naming.ldap.factory.socket";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class));
+
+	@AfterEach
+	void clearSslBundle() {
+		LdapSslSocketFactory.setSslBundle(null);
+	}
 
 	@Test
 	void contextSourceWithDefaultUrl() {
@@ -205,53 +221,190 @@ class LdapAutoConfigurationTests {
 				assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", false);
 			});
 	}
+
 	@Test
-	void contextSourceWithSslBundleAndCustomDirContextAuthenticationStrategyUsesCustomStrategy() {
-		SslBundle sslBundle = mock(SslBundle.class);
-		SslBundles sslBundles = mock(SslBundles.class);
-		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
-
-		DirContextAuthenticationStrategy customStrategy = mock(DirContextAuthenticationStrategy.class);
-
-		this.contextRunner
-				.withPropertyValues("spring.ldap.ssl.bundle=test")
-				.withBean(SslBundles.class, () -> sslBundles)
-				.withBean(DirContextAuthenticationStrategy.class, () -> customStrategy)
-				.run((context) -> {
-					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-					assertThat(contextSource).extracting("authenticationStrategy").isSameAs(customStrategy);
-				});
-	}
-    @Test
-	void contextSourceWithSslBundleUsesDefaultTlsAuthenticationStrategy() {
-		SslBundle sslBundle = mock(SslBundle.class);
-		SSLContext sslContext = mock(SSLContext.class);
-		SSLSocketFactory socketFactory = mock(SSLSocketFactory.class);
-
-		when(sslBundle.createSslContext()).thenReturn(sslContext);
-		when(sslContext.getSocketFactory()).thenReturn(socketFactory);
-
-		SslBundles sslBundles = mock(SslBundles.class);
-		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
-
-		this.contextRunner
-				.withPropertyValues("spring.ldap.ssl.bundle=test")
-				.withBean(SslBundles.class, () -> sslBundles)
-				.run((context) -> {
-					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-					assertThat(contextSource).extracting("authenticationStrategy")
-							.isInstanceOf(DefaultTlsDirContextAuthenticationStrategy.class)
-							.extracting("sslSocketFactory")
-							.isSameAs(socketFactory);
-				});
-	}
-	@Test
-	void contextSourceWithoutSslBundleDoesNotConfigureAuthenticationStrategy() {
-		this.contextRunner.run((context) -> {
+	void contextSourceWithUserProvidedPooledContextSource() {
+		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class).run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			assertThat(contextSource).extracting("authenticationStrategy")
-				.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
+			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 		});
+	}
+
+	@Test
+	void shouldUseSslSocketFactoryWhenSslBundleConfiguredWithLdapsUrl() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> {
+				LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+				assertThat(contextSource.isAnonymousReadOnly()).isTrue();
+				assertThatAnonymousEnv(context).containsEntry(SOCKET_FACTORY_ENV_KEY,
+						LdapSslSocketFactory.class.getName());
+				assertThat(ReflectionTestUtils.getField(LdapSslSocketFactory.class, "sslBundle")).isSameAs(sslBundle);
+			});
+	}
+
+	@Test
+	void shouldUseSslSocketFactoryWhenSslBundleConfiguredAndReadOnlyOperationsAreAuthenticated() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test",
+					"spring.ldap.username=root", "spring.ldap.password=secret")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> {
+				LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+				assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+				assertThatAuthenticatedEnv(contextSource).containsEntry(SOCKET_FACTORY_ENV_KEY,
+						LdapSslSocketFactory.class.getName());
+			});
+	}
+
+	@Test
+	void shouldUseSslSocketFactoryWhenSslBundleConfiguredWithUppercaseLdapsUrl() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner.withPropertyValues("spring.ldap.urls=LDAPS://localhost:636", "spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThatAnonymousEnv(context).containsEntry(SOCKET_FACTORY_ENV_KEY,
+					LdapSslSocketFactory.class.getName()));
+	}
+
+	@Test
+	void shouldKeepCustomBaseEnvironmentWhenSslBundleConfigured() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test",
+					"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThatAnonymousEnv(context)
+				.containsEntry(SOCKET_FACTORY_ENV_KEY, LdapSslSocketFactory.class.getName())
+				.containsEntry("java.naming.security.authentication", "DIGEST-MD5"));
+	}
+
+	@Test
+	void shouldFailWhenSslBundleConfiguredWithoutLdapsUrl() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner.withPropertyValues("spring.ldap.urls=ldap://localhost:389", "spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.hasRootCauseInstanceOf(IllegalStateException.class)
+					.hasRootCauseMessage("SSL bundle has been configured but not all LDAP URLs use the 'ldaps' scheme");
+			});
+	}
+
+	@Test
+	void shouldFailWhenSslBundleConfiguredWithMixedSchemeUrls() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.urls=ldaps://localhost:636,ldap://mycompany:389",
+					"spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(IllegalStateException.class)
+				.hasRootCauseMessage("SSL bundle has been configured but not all LDAP URLs use the 'ldaps' scheme"));
+	}
+
+	@Test
+	void shouldUseReloadedSslBundleWhenBundleIsUpdated(CapturedOutput output) {
+		SslBundle original = mock(SslBundle.class, "original");
+		SslBundle reloaded = mock(SslBundle.class, "reloaded");
+		DefaultSslBundleRegistry sslBundles = new DefaultSslBundleRegistry("test", original);
+		this.contextRunner.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> {
+				assertThat(ReflectionTestUtils.getField(LdapSslSocketFactory.class, "sslBundle")).isSameAs(original);
+				sslBundles.updateBundle("test", reloaded);
+				assertThat(ReflectionTestUtils.getField(LdapSslSocketFactory.class, "sslBundle")).isSameAs(reloaded);
+				assertThat(output).doesNotContain("A different SSL bundle has already been set for LDAP")
+					.doesNotContain("doesn't support SSL reloading");
+			});
+	}
+
+	@Test
+	void shouldNotRegisterSslBundleUpdateHandlerWhenSslDisabled() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		DefaultSslBundleRegistry sslBundles = new DefaultSslBundleRegistry("test", sslBundle);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.ssl.bundle=test", "spring.ldap.ssl.enabled=false",
+					"spring.ldap.urls=ldap://localhost:389")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> {
+				sslBundles.updateBundle("test", mock(SslBundle.class));
+				assertThat(ReflectionTestUtils.getField(LdapSslSocketFactory.class, "sslBundle")).isNull();
+			});
+	}
+
+	@Test
+	void shouldFailWhenSslBundleConfiguredAndSocketFactorySetInBaseEnvironment() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test",
+					"spring.ldap.baseEnvironment." + SOCKET_FACTORY_ENV_KEY + "=com.example.MySocketFactory")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(IllegalStateException.class)
+				.rootCause()
+				.hasMessageContaining("Use either an SSL bundle or your own socket factory, not both"));
+	}
+
+	@Test
+	void shouldOverrideSocketFactorySetInBaseEnvironmentWhenSslBundleComesFromConnectionDetails() {
+		this.contextRunner
+			.withPropertyValues(
+					"spring.ldap.baseEnvironment." + SOCKET_FACTORY_ENV_KEY + "=com.example.MySocketFactory")
+			.withUserConfiguration(SslBundleConnectionDetailsConfiguration.class)
+			.run((context) -> assertThatAnonymousEnv(context).containsEntry(SOCKET_FACTORY_ENV_KEY,
+					LdapSslSocketFactory.class.getName()));
+	}
+
+	@Test
+	void shouldKeepSocketFactorySetInBaseEnvironmentWhenNoSslBundleConfigured() {
+		this.contextRunner
+			.withPropertyValues("spring.ldap.urls=ldaps://localhost:636",
+					"spring.ldap.baseEnvironment." + SOCKET_FACTORY_ENV_KEY + "=com.example.MySocketFactory")
+			.run((context) -> assertThatAnonymousEnv(context).containsEntry(SOCKET_FACTORY_ENV_KEY,
+					"com.example.MySocketFactory"));
+	}
+
+	@Test
+	void shouldUseSslSocketFactoryWhenSslEnabledAndNoBundleConfigured() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.enabled=true")
+			.run((context) -> {
+				assertThatAnonymousEnv(context).containsEntry(SOCKET_FACTORY_ENV_KEY,
+						LdapSslSocketFactory.class.getName());
+				assertThat(context.getBean(PropertiesLdapConnectionDetails.class).getSslBundle()).isNotNull();
+			});
+	}
+
+	@Test
+	void shouldNotUseSslSocketFactoryWhenSslNotConfigured() {
+		this.contextRunner.run((context) -> assertThatAnonymousEnv(context).doesNotContainKey(SOCKET_FACTORY_ENV_KEY));
+	}
+
+	@Test
+	void shouldNotUseSslSocketFactoryWhenSslDisabledButBundleConfigured() {
+		SslBundles sslBundles = mock(SslBundles.class);
+		this.contextRunner
+			.withPropertyValues("spring.ldap.ssl.bundle=test", "spring.ldap.ssl.enabled=false",
+					"spring.ldap.urls=ldap://localhost:389")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThatAnonymousEnv(context).doesNotContainKey(SOCKET_FACTORY_ENV_KEY));
 	}
 
 	@Test
@@ -280,26 +433,36 @@ class LdapAutoConfigurationTests {
 			});
 	}
 
-	@Test
-	void contextSourceWithSslBundleAndMultipleCustomStrategiesUsesDefault() {
-		SslBundle sslBundle = mock(SslBundle.class);
-		SslBundles sslBundles = mock(SslBundles.class);
-		when(sslBundles.getBundle("test")).thenReturn(sslBundle);
+	private MapAssert<Object, Object> assertThatAnonymousEnv(ApplicationContext context) {
+		LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+		return assertThat(contextSource).extracting("anonymousEnv", InstanceOfAssertFactories.MAP);
+	}
 
-		this.contextRunner
-			.withPropertyValues("spring.ldap.ssl.bundle=test")
-			.withBean(SslBundles.class, () -> sslBundles)
-			.withUserConfiguration(CustomDirContextAuthenticationStrategy.class,
-					AnotherCustomDirContextAuthenticationStrategy.class)
-			.run((context) -> {
-				assertThat(context).hasBean("customDirContextAuthenticationStrategy")
-					.hasBean("anotherCustomDirContextAuthenticationStrategy");
-				LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-				assertThat(contextSource).extracting("authenticationStrategy")
-					.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
-					.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
-					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
-			});
+	private MapAssert<Object, Object> assertThatAuthenticatedEnv(LdapContextSource contextSource) {
+		@Nullable Map<Object, Object> env = ReflectionTestUtils.invokeMethod(contextSource, "getAuthenticatedEnv", "root",
+				"secret");
+		return assertThat(env);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SslBundleConnectionDetailsConfiguration {
+
+		@Bean
+		LdapConnectionDetails ldapConnectionDetails() {
+			return new LdapConnectionDetails() {
+
+				@Override
+				public String[] getUrls() {
+					return new String[] { "ldaps://ldap.example.com" };
+				}
+
+				@Override
+				public SslBundle getSslBundle() {
+					return mock(SslBundle.class);
+				}
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -327,11 +490,6 @@ class LdapAutoConfigurationTests {
 				@Override
 				public String getPassword() {
 					return "ldap-password";
-				}
-
-				@Override
-				public @Nullable SslBundle getSslBundle() {
-					return null;
 				}
 			};
 		}

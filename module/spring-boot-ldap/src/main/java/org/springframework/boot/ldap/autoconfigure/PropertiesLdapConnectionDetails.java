@@ -42,6 +42,20 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 		this.properties = properties;
 		this.environment = environment;
 		this.sslBundles = sslBundles;
+		registerSslBundleUpdateHandler();
+	}
+
+	/**
+	 * Keeps {@link LdapSslSocketFactory} up-to-date when the configured bundle is
+	 * reloaded. Without this, the bundle resolved when the context source was created is
+	 * held on to and reloaded key or trust material is never used.
+	 */
+	private void registerSslBundleUpdateHandler() {
+		LdapProperties.Ssl ssl = this.properties.getSsl();
+		if (this.sslBundles == null || !ssl.isEnabled() || !StringUtils.hasLength(ssl.getBundle())) {
+			return;
+		}
+		this.sslBundles.addBundleUpdateHandler(ssl.getBundle(), LdapSslSocketFactory::updateSslBundle);
 	}
 
 	@Override
@@ -67,14 +81,14 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 	@Override
 	public @Nullable SslBundle getSslBundle() {
 		LdapProperties.Ssl ssl = this.properties.getSsl();
-		if (!ssl.determineEnabled()) {
+		if (!ssl.isEnabled()) {
 			return null;
 		}
 		if (StringUtils.hasLength(ssl.getBundle())) {
 			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
 			return this.sslBundles.getBundle(ssl.getBundle());
 		}
-		return null;
+		return SslBundle.systemDefault();
 	}
 
 }

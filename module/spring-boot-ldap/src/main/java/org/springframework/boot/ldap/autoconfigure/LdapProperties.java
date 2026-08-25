@@ -40,6 +40,8 @@ public class LdapProperties {
 
 	private static final int DEFAULT_PORT = 389;
 
+	private static final int DEFAULT_SSL_PORT = 636;
+
 	/**
 	 * LDAP URLs of the server.
 	 */
@@ -143,18 +145,21 @@ public class LdapProperties {
 
 	public String[] determineUrls(Environment environment) {
 		if (ObjectUtils.isEmpty(this.urls)) {
-			return new String[] { "ldap://localhost:" + determinePort(environment) };
+			boolean useSsl = this.ssl.isEnabled();
+			String protocol = useSsl ? "ldaps" : "ldap";
+			int defaultPort = useSsl ? DEFAULT_SSL_PORT : DEFAULT_PORT;
+			return new String[] { protocol + "://localhost:" + determinePort(environment, defaultPort) };
 		}
 		return this.urls;
 	}
 
-	private int determinePort(Environment environment) {
+	private int determinePort(Environment environment, int defaultPort) {
 		Assert.notNull(environment, "'environment' must not be null");
 		String localPort = environment.getProperty("local.ldap.port");
 		if (localPort != null) {
 			return Integer.parseInt(localPort);
 		}
-		return DEFAULT_PORT;
+		return defaultPort;
 	}
 
 	/**
@@ -212,9 +217,23 @@ public class LdapProperties {
 	public static class Ssl {
 
 		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
 		 * SSL bundle name.
 		 */
 		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public @Nullable String getBundle() {
 			return this.bundle;
@@ -222,15 +241,6 @@ public class LdapProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
-		}
-
-		/**
-		 * Returns whether SSL is enabled. SSL is considered enabled if a bundle name
-		 * has been set.
-		 * @return whether SSL is enabled
-		 */
-		public boolean determineEnabled() {
-			return StringUtils.hasText(this.bundle);
 		}
 
 	}

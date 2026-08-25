@@ -62,6 +62,7 @@ public interface LdapConnectionDetails extends ConnectionDetails {
 	/**
 	 * SSL bundle to use to establish the LDAP connection.
 	 * @return the SSL bundle to use, or {@code null} if none
+	 * @since 4.2.0
 	 */
 	default @Nullable SslBundle getSslBundle() {
 		return null;
