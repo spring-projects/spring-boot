@@ -82,6 +82,19 @@ class OAuth2ClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(OAuth2AuthorizedClientService.class));
 	}
 
+	@Test
+	void propertiesBeanIsCreatedWithUserDefinedClientRegistrationRepository() {
+		this.contextRunner
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.withBean(ClientRegistrationRepository.class,
+					() -> new InMemoryClientRegistrationRepository(getClientRegistration("test", "test")))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OAuth2ClientProperties.class);
+				assertThat(context).hasSingleBean(OAuth2AuthorizedClientService.class);
+			});
+	}
+
 	private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 		ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
 		builder.clientName("foo")
