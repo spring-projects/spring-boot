@@ -32,7 +32,7 @@ import org.springframework.core.annotation.AliasFor;
  * Indicates that a field or method is a {@link ContainerConnectionSource} which provides
  * a service that can be connected to.
  * <p>
- * If the underling connection supports SSL, the {@link PemKeyStore @PemKeyStore},
+ * If the underlying connection supports SSL, the {@link PemKeyStore @PemKeyStore},
  * {@link PemTrustStore @PemTrustStore}, {@link JksKeyStore @JksKeyStore},
  * {@link JksTrustStore @JksTrustStore}, {@link Ssl @Ssl} annotations may be used to
  * provide additional configuration.
