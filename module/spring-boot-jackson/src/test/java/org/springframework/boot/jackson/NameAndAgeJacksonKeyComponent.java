@@ -22,6 +22,7 @@ import tools.jackson.databind.KeyDeserializer;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
 
+import org.springframework.boot.jackson.JacksonComponent.Scope;
 import org.springframework.boot.jackson.types.NameAndAge;
 
 /**
@@ -29,7 +30,7 @@ import org.springframework.boot.jackson.types.NameAndAge;
  *
  * @author Paul Aly
  */
-@JacksonComponent(type = NameAndAge.class, scope = JacksonComponent.Scope.KEYS)
+@JacksonComponent(type = NameAndAge.class, scope = Scope.KEYS)
 public class NameAndAgeJacksonKeyComponent {
 
 	static class Serializer extends ValueSerializer<NameAndAge> {

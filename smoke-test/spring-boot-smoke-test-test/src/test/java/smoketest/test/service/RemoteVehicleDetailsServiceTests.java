@@ -18,6 +18,7 @@ package smoketest.test.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import smoketest.test.domain.VehicleIdentificationNumber;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Stephane Nicoll
  */
 @RestClientTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS)
 class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";

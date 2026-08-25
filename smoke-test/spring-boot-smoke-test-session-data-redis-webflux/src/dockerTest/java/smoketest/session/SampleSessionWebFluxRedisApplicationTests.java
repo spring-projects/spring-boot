@@ -27,6 +27,7 @@ import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -45,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@SpringBootTest(properties = "spring.session.timeout:10", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "spring.session.timeout:10", webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
 class SampleSessionWebFluxRedisApplicationTests {
 

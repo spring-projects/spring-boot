@@ -58,7 +58,7 @@ public interface LiquibaseConnectionDetails extends ConnectionDetails {
 	 * @see DatabaseDriver#fromJdbcUrl(String)
 	 * @see DatabaseDriver#getDriverClassName()
 	 */
-	@Nullable default String getDriverClassName() {
+	default @Nullable String getDriverClassName() {
 		String jdbcUrl = getJdbcUrl();
 		return (jdbcUrl != null) ? DatabaseDriver.fromJdbcUrl(jdbcUrl).getDriverClassName() : null;
 	}

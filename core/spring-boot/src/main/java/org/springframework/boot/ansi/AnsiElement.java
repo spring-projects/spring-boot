@@ -25,6 +25,7 @@ package org.springframework.boot.ansi;
 public interface AnsiElement {
 
 	/**
+	 * Return the ANSI escape code.
 	 * @return the ANSI escape code
 	 */
 	@Override

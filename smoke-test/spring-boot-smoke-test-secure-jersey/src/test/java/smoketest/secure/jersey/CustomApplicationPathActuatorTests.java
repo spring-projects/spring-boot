@@ -17,6 +17,7 @@
 package smoketest.secure.jersey;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
@@ -24,8 +25,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "spring.jersey.application-path=/example")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.application-path=/example")
 class CustomApplicationPathActuatorTests extends AbstractJerseySecureTests {
 
 	@LocalServerPort

@@ -43,7 +43,7 @@ class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProce
 
 	private @Nullable ClassLoader classLoader;
 
-	private @Nullable final List<String> classNames;
+	private final @Nullable List<String> classNames;
 
 	ReflectionEnvironmentPostProcessorsFactory(Class<?>... classes) {
 		this.classes = new ArrayList<>(Arrays.asList(classes));

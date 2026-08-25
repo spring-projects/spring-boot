@@ -34,11 +34,13 @@ import org.springframework.boot.jackson2.types.NameAndAge;
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
 @SuppressWarnings("removal")
-@JsonComponent(type = NameAndAge.class, scope = JsonComponent.Scope.KEYS)
+@JsonComponent(type = NameAndAge.class, scope = org.springframework.boot.jackson2.JsonComponent.Scope.KEYS)
 public class NameAndAgeJsonKeyComponent {
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	static class Serializer extends JsonSerializer<NameAndAge> {
 
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		@Override
 		public void serialize(NameAndAge value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
 			jgen.writeFieldName(value.asKey());
@@ -46,8 +48,10 @@ public class NameAndAgeJsonKeyComponent {
 
 	}
 
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	static class Deserializer extends KeyDeserializer {
 
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		@Override
 		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) throws IOException {
 			String[] keys = key.split("is");

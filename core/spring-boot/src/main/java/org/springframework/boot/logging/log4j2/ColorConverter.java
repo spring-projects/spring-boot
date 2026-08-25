@@ -125,7 +125,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		toAppendTo.append(AnsiOutput.toString(element, in));
 	}
 
-	protected void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement... elements) {
+	void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement... elements) {
 		Object[] ansiParams = new Object[elements.length + 1];
 		System.arraycopy(elements, 0, ansiParams, 0, elements.length);
 		ansiParams[elements.length] = in;

@@ -34,6 +34,7 @@ import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.jackson.JacksonComponent.Scope;
 import org.springframework.boot.jackson.JacksonComponentModule.JacksonComponentBeanFactoryInitializationAotProcessor;
 import org.springframework.boot.jackson.JacksonComponentModuleTests.ComponentWithInnerAbstractClass.AbstractSerializer;
 import org.springframework.boot.jackson.JacksonComponentModuleTests.ComponentWithInnerAbstractClass.ConcreteSerializer;
@@ -236,12 +237,12 @@ class JacksonComponentModuleTests {
 
 	}
 
-	@JacksonComponent(scope = JacksonComponent.Scope.KEYS)
+	@JacksonComponent(scope = Scope.KEYS)
 	static class OnlyKeySerializer extends NameAndAgeJacksonKeyComponent.Serializer {
 
 	}
 
-	@JacksonComponent(scope = JacksonComponent.Scope.KEYS, type = NameAndAge.class)
+	@JacksonComponent(scope = Scope.KEYS, type = NameAndAge.class)
 	static class OnlyKeyDeserializer extends NameAndAgeJacksonKeyComponent.Deserializer {
 
 	}
