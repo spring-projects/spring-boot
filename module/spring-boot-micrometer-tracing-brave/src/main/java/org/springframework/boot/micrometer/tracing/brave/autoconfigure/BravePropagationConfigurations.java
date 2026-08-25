@@ -141,14 +141,12 @@ class BravePropagationConfigurations {
 		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder(
 				ObjectProvider<CorrelationScopeCustomizer> correlationScopeCustomizers) {
 			Mdc mdc = this.tracingProperties.getMdc();
-			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder()
-				// Clear existing traceId/spanId backage field mappings
-				// so the MDC key names can be customized below.
-				// BravePropagationConfigurationsTests validates the assumption that
-				// the builder only configures the trace/span id by default.
-				.clear()
-				.add(SingleCorrelationField.newBuilder(BaggageFields.TRACE_ID).name(mdc.getTraceIdKey()).build())
-				.add(SingleCorrelationField.newBuilder(BaggageFields.SPAN_ID).name(mdc.getSpanIdKey()).build());
+			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+			if (mdc.isCustomized()) {
+				builder.clear()
+					.add(SingleCorrelationField.newBuilder(BaggageFields.TRACE_ID).name(mdc.getTraceIdKey()).build())
+					.add(SingleCorrelationField.newBuilder(BaggageFields.SPAN_ID).name(mdc.getSpanIdKey()).build());
+			}
 			correlationScopeCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}

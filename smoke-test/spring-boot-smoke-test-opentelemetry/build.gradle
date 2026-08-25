@@ -26,6 +26,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-opentelemetry"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-registry-otlp")
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
