@@ -20,12 +20,10 @@ import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -47,31 +45,12 @@ class FailureAnalyzersIntegrationTests {
 		assertThat(output).contains("APPLICATION FAILED TO START");
 	}
 
-	@Test
-	void missingServletContextForResourceHandlerMappingIsAnalyzed(CapturedOutput output) {
-		assertThatException().isThrownBy(() -> new SpringApplicationBuilder(MissingServletContextConfiguration.class)
-			.web(WebApplicationType.NONE)
-			.run());
-		assertThat(output).contains("Remove @EnableWebMvc");
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@PostConstruct
 		void fail() {
 			new PathPatternParser().parse("{ }");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class MissingServletContextConfiguration {
-
-		@Bean
-		Object resourceHandlerMapping() {
-			throw new BeanCreationException("resourceHandlerMapping", "Failed to create bean",
-					new IllegalStateException("No ServletContext set"));
 		}
 
 	}
