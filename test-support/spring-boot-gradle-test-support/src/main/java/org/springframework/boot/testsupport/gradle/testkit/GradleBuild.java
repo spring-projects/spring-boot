@@ -220,9 +220,7 @@ public class GradleBuild {
 		if (isWindows() && build.getAbsolutePath().length() >= 80) {
 			return new File(System.getProperty("java.io.tmpdir"), "gradle-test-kit");
 		}
-		else {
-			return new File(build, "gradle-test-kit");
-		}
+		return new File(build, "gradle-test-kit");
 	}
 
 	private boolean isWindows() {
