@@ -210,14 +210,15 @@ public class GradleBuild {
 	}
 
 	private File getTestKitDir() {
-		File testKitRoot = getTestKitRoot();
 		String gradleVersion = (this.gradleVersion != null) ? this.gradleVersion : "default";
+		File testKitRoot = getTestKitRoot(gradleVersion);
 		return new File(testKitRoot, gradleVersion).getAbsoluteFile();
 	}
 
-	private File getTestKitRoot() {
+	private File getTestKitRoot(String gradleVersion) {
 		File build = this.buildOutput.getRootLocation();
-		if (isWindows() && build.getAbsolutePath().length() >= 80) {
+		int length = build.getAbsolutePath().length() + gradleVersion.length();
+		if (isWindows() && length >= 85) {
 			return new File(System.getProperty("java.io.tmpdir"), "gradle-test-kit");
 		}
 		return new File(build, "gradle-test-kit");
