@@ -51,6 +51,18 @@ class LdapHealthIndicatorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	void ldapIsUpWhenVersionIsUnavailable() {
+		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
+		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any())).willReturn(null);
+		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).doesNotContainKey("version");
+		then(ldapTemplate).should().executeReadOnly((ContextExecutor<String>) any());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
 		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
