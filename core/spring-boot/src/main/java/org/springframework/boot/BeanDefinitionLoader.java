@@ -230,7 +230,7 @@ class BeanDefinitionLoader {
 			return new Resource[] { loader.getResource(source) };
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Error reading source '" + source + "'");
+			throw new IllegalStateException("Error reading source '" + source + "'", ex);
 		}
 	}
 

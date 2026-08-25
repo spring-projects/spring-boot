@@ -119,7 +119,7 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 			}
 			catch (ConversionException ex) {
 				throw new IllegalArgumentException(
-						"Unsupported rolling policy strategy '%s'".formatted(resolvedStrategy));
+						"Unsupported rolling policy strategy '%s'".formatted(resolvedStrategy), ex);
 			}
 		}
 

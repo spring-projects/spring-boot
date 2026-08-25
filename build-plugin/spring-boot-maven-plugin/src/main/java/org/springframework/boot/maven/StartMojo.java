@@ -212,7 +212,7 @@ public class StartMojo extends AbstractRunMojo {
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
-					throw new IllegalStateException("Interrupted while waiting for Spring Boot app to start.");
+					throw new IllegalStateException("Interrupted while waiting for Spring Boot app to start.", ex);
 				}
 			}
 		}

@@ -181,7 +181,7 @@ public class ResolveMainClassName extends DefaultTask {
 				return Files.readString(output);
 			}
 			catch (IOException ex) {
-				throw new RuntimeException("Failed to read main class name from '" + output + "'");
+				throw new RuntimeException("Failed to read main class name from '" + output + "'", ex);
 			}
 		}
 

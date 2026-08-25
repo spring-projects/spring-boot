@@ -79,7 +79,7 @@ class CustomLayersProvider {
 			return factory.newSchema(getClass().getResource("layers.xsd"));
 		}
 		catch (SAXException ex) {
-			throw new IllegalStateException("Unable to load layers XSD");
+			throw new IllegalStateException("Unable to load layers XSD", ex);
 		}
 	}
 
