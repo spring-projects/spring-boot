@@ -223,7 +223,7 @@ Please note that you still have to enable SSL on the service which is running in
 
 include-code::MyRedisWithSslIntegrationTests[]
 
-The above code uses the javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] annotation to load the client certificate and key into the keystore and the and javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotation to load the CA certificate into the truststore.
+The above code uses the javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] annotation to load the client certificate and key into the keystore and the javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotation to load the CA certificate into the truststore.
 This will authenticate the client against the server, and the CA certificate in the truststore makes sure that the server certificate is valid and trusted.
 
 The `SecureRedisContainer` in this example is a custom subclass of `RedisContainer` which copies certificates to the correct places and invokes `redis-server` with commandline parameters enabling SSL.
