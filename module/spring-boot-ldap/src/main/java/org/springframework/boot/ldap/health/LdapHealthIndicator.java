@@ -50,8 +50,9 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		String version = this.ldapOperations.executeReadOnly(versionContextExecutor);
+		builder.up();
 		if (version != null) {
-			builder.up().withDetail("version", version);
+			builder.withDetail("version", version);
 		}
 	}
 
