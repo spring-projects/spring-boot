@@ -24,6 +24,7 @@ import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.MDC;
@@ -77,6 +78,28 @@ class BraveBaggagePropagationIntegrationTests {
 			assertUnsetMdc(COUNTRY_CODE);
 			assertUnsetMdc(BUSINESS_PROCESS);
 		});
+	}
+
+	@Test
+	void shouldUseCustomMdcKeysForTraceAndSpanId() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+			.withPropertyValues("management.tracing.mdc.trace-id-key=customTraceId",
+					"management.tracing.mdc.span-id-key=customSpanId")
+			.run((context) -> {
+				Tracer tracer = tracer(context);
+				Span span = createSpan(tracer);
+				try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
+					assertMdcValue("customTraceId", span.context().traceId());
+					assertMdcValue("customSpanId", span.context().spanId());
+					assertUnsetMdc("traceId");
+					assertUnsetMdc("spanId");
+				}
+				finally {
+					span.end();
+				}
+				assertUnsetMdc("customTraceId");
+				assertUnsetMdc("customSpanId");
+			});
 	}
 
 	@ParameterizedTest

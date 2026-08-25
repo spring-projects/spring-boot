@@ -22,6 +22,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * Configuration properties for tracing.
@@ -53,6 +54,11 @@ public class TracingProperties {
 	 */
 	private final Exemplars exemplars = new Exemplars();
 
+	/**
+	 * {@code org.slf4j.MDC} key configuration for trace and span IDs.
+	 */
+	private final Mdc mdc = new Mdc();
+
 	public Sampling getSampling() {
 		return this.sampling;
 	}
@@ -67,6 +73,10 @@ public class TracingProperties {
 
 	public Exemplars getExemplars() {
 		return this.exemplars;
+	}
+
+	public Mdc getMdc() {
+		return this.mdc;
 	}
 
 	public static class Sampling {
@@ -254,6 +264,53 @@ public class TracingProperties {
 			 */
 			B3_MULTI
 
+		}
+
+	}
+
+	/**
+	 * {@code org.slf4j.MDC} key configuration for trace and span IDs.
+	 */
+	public static class Mdc {
+
+		static final String DEFAULT_TRACE_ID_KEY = "traceId";
+
+		static final String DEFAULT_SPAN_ID_KEY = "spanId";
+
+		/**
+		 * Key under which the trace ID is added to the {@code org.slf4j.MDC}.
+		 */
+		private String traceIdKey = DEFAULT_TRACE_ID_KEY;
+
+		/**
+		 * Key under which the span ID is added to the {@code org.slf4j.MDC}.
+		 */
+		private String spanIdKey = DEFAULT_SPAN_ID_KEY;
+
+		public String getTraceIdKey() {
+			return this.traceIdKey;
+		}
+
+		public void setTraceIdKey(String traceIdKey) {
+			Assert.hasText(traceIdKey, "'traceIdKey' must not be empty");
+			this.traceIdKey = traceIdKey;
+		}
+
+		public String getSpanIdKey() {
+			return this.spanIdKey;
+		}
+
+		public void setSpanIdKey(String spanIdKey) {
+			Assert.hasText(spanIdKey, "'spanIdKey' must not be empty");
+			this.spanIdKey = spanIdKey;
+		}
+
+		/**
+		 * Return whether any of the keys differs from its default.
+		 * @return whether the keys have been customized
+		 */
+		public boolean isCustomized() {
+			return !DEFAULT_TRACE_ID_KEY.equals(this.traceIdKey) || !DEFAULT_SPAN_ID_KEY.equals(this.spanIdKey);
 		}
 
 	}
