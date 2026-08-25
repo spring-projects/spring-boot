@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jms.health;
 
+import java.time.Duration;
+
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ConnectionMetaData;
@@ -32,6 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -94,6 +97,18 @@ class JmsHealthIndicatorTests {
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).doesNotContainKey("provider");
+	}
+
+	@Test
+	void whenConnectionStartThrowsWatchdogThreadDoesNotAlsoCloseConnection() throws JMSException {
+		Connection connection = mock(Connection.class);
+		willThrow(new JMSException("Could not start", "123")).given(connection).start();
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		given(connectionFactory.createConnection()).willReturn(connection);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
+		Health health = indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		then(connection).should(after(Duration.ofSeconds(5).plusMillis(500).toMillis()).times(1)).close();
 	}
 
 	@Test

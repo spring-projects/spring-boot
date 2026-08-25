@@ -65,7 +65,7 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 		}
 
 		void start() throws JMSException {
-			new Thread(() -> {
+			Thread watchdog = new Thread(() -> {
 				try {
 					if (!this.latch.await(5, TimeUnit.SECONDS)) {
 						JmsHealthIndicator.this.logger
@@ -76,9 +76,15 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
-			}, "jms-health-indicator").start();
-			this.connection.start();
-			this.latch.countDown();
+			}, "jms-health-indicator");
+			watchdog.setDaemon(true);
+			watchdog.start();
+			try {
+				this.connection.start();
+			}
+			finally {
+				this.latch.countDown();
+			}
 		}
 
 		private void closeConnection() {
