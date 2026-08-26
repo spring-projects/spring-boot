@@ -116,4 +116,4 @@ The https://spring.io/[spring.io] site contains several guides that show how to 
 
 == License
 
-Spring Boot is Open Source software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+Spring Boot is Open Source software released under the link:LICENSE.txt[Apache 2.0 license].
