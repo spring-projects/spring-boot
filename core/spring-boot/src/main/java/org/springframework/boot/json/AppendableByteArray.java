@@ -56,6 +56,8 @@ class AppendableByteArray implements Appendable {
 
 	private ByteBuffer out;
 
+	private char highSurrogate;
+
 	AppendableByteArray(Charset charset) {
 		this(charset, DEFAULT_INITIAL_SIZE, DEFAULT_EXPANSION_SIZE);
 	}
@@ -89,8 +91,19 @@ class AppendableByteArray implements Appendable {
 	}
 
 	private AppendableByteArray append(CharBuffer in) throws IOException {
-		CoderResult result = this.encoder.encode(in, this.out, false);
+		if (this.highSurrogate != 0) {
+			CharBuffer pending = CharBuffer.allocate(in.remaining() + 1);
+			pending.put(this.highSurrogate).put(in).flip();
+			this.highSurrogate = 0;
+			in = pending;
+		}
+		return append(in, false);
+	}
+
+	private AppendableByteArray append(CharBuffer in, boolean endOfInput) throws IOException {
+		CoderResult result = this.encoder.encode(in, this.out, endOfInput);
 		if (result.isUnderflow()) {
+			this.highSurrogate = (in.hasRemaining()) ? in.get() : 0;
 			return this;
 		}
 		if (result.isOverflow()) {
@@ -98,13 +111,18 @@ class AppendableByteArray implements Appendable {
 			this.out = ByteBuffer.allocate(out.capacity() + this.expansionSize);
 			out.flip();
 			this.out.put(out);
-			return append(in);
+			return append(in, endOfInput);
 		}
 		result.throwException();
 		return this;
 	}
 
-	byte[] toByteArray() {
+	byte[] toByteArray() throws IOException {
+		if (this.highSurrogate != 0) {
+			CharBuffer in = CharBuffer.wrap(new char[] { this.highSurrogate });
+			this.highSurrogate = 0;
+			append(in, true);
+		}
 		this.out.flip();
 		int limit = this.out.limit();
 		int position = this.out.position();
@@ -120,6 +138,7 @@ class AppendableByteArray implements Appendable {
 	private void reset() {
 		this.out.clear();
 		this.encoder.reset();
+		this.highSurrogate = 0;
 	}
 
 	static byte[] toByteArray(Charset charset, ThrowingConsumer<Appendable> appendable) throws IOException {
