@@ -48,6 +48,10 @@ class SniIntegrationTests {
 
 	public static final String ALT_SERVER_NAME = "hello-alt.example.com";
 
+	private static final String DEFAULT_SERVER_NAME = "_default_";
+
+	private static final int CUSTOMIZED_SESSION_TIMEOUT = 12345;
+
 	private static final Integer SERVER_PORT = 8443;
 
 	private static final Network SHARED_NETWORK = Network.newNetwork();
@@ -66,6 +70,9 @@ class SniIntegrationTests {
 			}
 			String serverLogs = serverContainer.getLogs();
 			assertThat(serverLogs).contains(SERVER_START_MESSAGES.get(server));
+			if ("tomcat".equals(server)) {
+				assertSslHostConfigCustomizationsRetained(serverContainer);
+			}
 			try (ApplicationContainer clientContainer = new ClientApplicationContainer()) {
 				clientContainer.start();
 				Awaitility.await().atMost(Duration.ofSeconds(60)).until(() -> !clientContainer.isRunning());
@@ -75,6 +82,24 @@ class SniIntegrationTests {
 				clientContainer.stop();
 			}
 			serverContainer.stop();
+		}
+	}
+
+	private void assertSslHostConfigCustomizationsRetained(ApplicationContainer serverContainer) {
+		for (String phase : new String[] { "start", "reload" }) {
+			for (String serverName : new String[] { PRIMARY_SERVER_NAME, ALT_SERVER_NAME, DEFAULT_SERVER_NAME }) {
+				String expected = ">>>>> on " + phase + ", host=" + serverName + ", port=" + SERVER_PORT
+						+ ", sessionTimeout=" + CUSTOMIZED_SESSION_TIMEOUT + ", certificates.size=1";
+				try {
+					Awaitility.await()
+						.atMost(Duration.ofSeconds(60))
+						.until(() -> serverContainer.getLogs().contains(expected));
+				}
+				catch (ConditionTimeoutException ex) {
+					assertThat(serverContainer.getLogs()).contains(expected);
+					throw ex;
+				}
+			}
 		}
 	}
 
