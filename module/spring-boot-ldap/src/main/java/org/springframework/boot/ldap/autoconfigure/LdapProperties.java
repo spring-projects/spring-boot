@@ -27,6 +27,7 @@ import org.springframework.ldap.ReferralException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for LDAP.
@@ -38,6 +39,8 @@ import org.springframework.util.ObjectUtils;
 public class LdapProperties {
 
 	private static final int DEFAULT_PORT = 389;
+
+	private static final int DEFAULT_SSL_PORT = 636;
 
 	/**
 	 * LDAP URLs of the server.
@@ -77,6 +80,8 @@ public class LdapProperties {
 	private final Map<String, String> baseEnvironment = new LinkedHashMap<>();
 
 	private final Template template = new Template();
+
+	private final Ssl ssl = new Ssl();
 
 	public String @Nullable [] getUrls() {
 		return this.urls;
@@ -134,20 +139,27 @@ public class LdapProperties {
 		return this.template;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public String[] determineUrls(Environment environment) {
 		if (ObjectUtils.isEmpty(this.urls)) {
-			return new String[] { "ldap://localhost:" + determinePort(environment) };
+			boolean useSsl = this.ssl.isEnabled();
+			String protocol = useSsl ? "ldaps" : "ldap";
+			int defaultPort = useSsl ? DEFAULT_SSL_PORT : DEFAULT_PORT;
+			return new String[] { protocol + "://localhost:" + determinePort(environment, defaultPort) };
 		}
 		return this.urls;
 	}
 
-	private int determinePort(Environment environment) {
+	private int determinePort(Environment environment, int defaultPort) {
 		Assert.notNull(environment, "'environment' must not be null");
 		String localPort = environment.getProperty("local.ldap.port");
 		if (localPort != null) {
 			return Integer.parseInt(localPort);
 		}
-		return DEFAULT_PORT;
+		return defaultPort;
 	}
 
 	/**
@@ -195,6 +207,40 @@ public class LdapProperties {
 
 		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
 			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
 		}
 
 	}
