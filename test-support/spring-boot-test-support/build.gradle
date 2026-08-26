@@ -22,7 +22,7 @@ plugins {
 description = "Spring Boot Testing Support"
 
 dependencies {
-	api(platform(project(path: ":platform:spring-boot-internal-dependencies")))
+	api(platform(project(":platform:spring-boot-internal-dependencies")))
 	api("com.jayway.jsonpath:json-path")
 	api("org.assertj:assertj-core")
 	api("org.awaitility:awaitility")
