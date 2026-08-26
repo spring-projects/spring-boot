@@ -43,6 +43,7 @@ configurations {
 
 dependencies {
 	compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
+	compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
 	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter-webmvc") {

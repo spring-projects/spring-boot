@@ -72,6 +72,7 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
+import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
@@ -698,6 +699,33 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		bundles.updateBundle("test", createPemSslBundle("classpath:2.crt", "classpath:2.key"));
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 		assertThat(verifier.getLastPrincipal()).isEqualTo("CN=2");
+	}
+
+	@Test
+	@WithPackageResources({ "1.crt", "1.key", "2.crt", "2.key" })
+	void shouldRetainSslHostConfigCustomizationsWhenReloadingSslBundles() throws Exception {
+		TomcatServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test",
+				createPemSslBundle("classpath:1.crt", "classpath:1.key"));
+		factory.setSslBundles(bundles);
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.addConnectorCustomizers((connector) -> {
+			if (connector.getProtocolHandler() instanceof AbstractHttp11Protocol<?> protocol) {
+				for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
+					sslHostConfig.setSessionTimeout(12345);
+				}
+			}
+		});
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		bundles.updateBundle("test", createPemSslBundle("classpath:2.crt", "classpath:2.key"));
+		Connector connector = ((TomcatWebServer) this.webServer).getTomcat().getConnector();
+		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
+		assertThat(protocol.findSslHostConfigs()).hasSize(1);
+		SSLHostConfig sslHostConfig = protocol.findSslHostConfigs()[0];
+		assertThat(sslHostConfig.getSessionTimeout()).isEqualTo(12345);
+		assertThat(sslHostConfig.getCertificates()).hasSize(1);
 	}
 
 	@Test
