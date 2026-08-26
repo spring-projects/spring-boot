@@ -412,6 +412,17 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	void whenSslIsEnabledWithoutAnSslBundleThenStartFails() {
+		this.contextRunner
+			.withPropertyValues("spring.ldap.embedded.port:0", "spring.ldap.embedded.base-dn:dc=spring,dc=org",
+					"spring.ldap.embedded.ssl.enabled:true")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure().hasMessageContaining("SSL is enabled but no SSL bundle has been set");
+			});
+	}
+
+	@Test
 	void sslIsNotEnabledWhenBundleIsEmpty() {
 		EmbeddedLdapProperties properties = new EmbeddedLdapProperties();
 		properties.getSsl().setBundle("");

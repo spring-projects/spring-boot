@@ -809,3 +809,7 @@ spring:
       ssl:
         bundle: "example"
 ----
+
+The bundle must provide the server's certificate and private key.
+
+NOTE: An SSL bundle is required for LDAPS. Setting configprop:spring.ldap.embedded.ssl.enabled[] without configprop:spring.ldap.embedded.ssl.bundle[] fails at startup.

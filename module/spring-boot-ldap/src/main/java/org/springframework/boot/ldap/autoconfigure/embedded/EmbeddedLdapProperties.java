@@ -141,7 +141,7 @@ public class EmbeddedLdapProperties {
 
 		/**
 		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
-		 * unless specified otherwise.
+		 * unless specified otherwise. A "bundle" is required when enabled.
 		 */
 		private @Nullable Boolean enabled;
 

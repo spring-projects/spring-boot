@@ -132,11 +132,14 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {
 		Ssl ssl = this.embeddedProperties.getSsl();
-		if (ssl.isEnabled() && StringUtils.hasLength(ssl.getBundle())) {
-			Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
-			return sslBundles.getBundle(ssl.getBundle());
+		if (!ssl.isEnabled()) {
+			return null;
 		}
-		return null;
+		String bundle = ssl.getBundle();
+		Assert.state(StringUtils.hasLength(bundle), "SSL is enabled but no SSL bundle has been set. "
+				+ "An SSL bundle providing the server's certificate and private key is required for LDAPS");
+		Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+		return sslBundles.getBundle(bundle);
 	}
 
 	private void setSchema(InMemoryDirectoryServerConfig config) {
