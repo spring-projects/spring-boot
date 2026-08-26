@@ -27,6 +27,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
@@ -302,6 +305,16 @@ class LdapAutoConfigurationTests {
 					.hasRootCauseInstanceOf(IllegalStateException.class)
 					.hasRootCauseMessage("SSL bundle has been configured but not all LDAP URLs use the 'ldaps' scheme");
 			});
+	}
+
+	@Test
+	void shouldRegisterHintsForSocketFactoryLoadedByJndi() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new LdapAutoConfiguration.LdapAutoConfigurationRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(LdapSslSocketFactory.class)
+			.withMemberCategory(MemberCategory.INVOKE_PUBLIC_METHODS)).accepts(runtimeHints);
 	}
 
 	@Test
