@@ -22,8 +22,8 @@ plugins {
 description = "Spring Boot Docker Testing Support"
 
 dependencies {
-	api(platform(project(path: ":platform:spring-boot-internal-dependencies")))
-	api(project(path: ":test-support:spring-boot-test-support"))
+	api(platform(project(":platform:spring-boot-internal-dependencies")))
+	api(project(":test-support:spring-boot-test-support"))
 
 	compileOnly("org.testcontainers:testcontainers")
 
