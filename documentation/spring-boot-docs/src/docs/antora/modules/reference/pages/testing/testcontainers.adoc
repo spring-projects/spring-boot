@@ -243,6 +243,7 @@ The SSL annotations are supported for the following service connections:
 * Couchbase
 * Elasticsearch
 * Kafka
+* LDAP
 * MongoDB
 * OpenTelemetry (OTLP logging, metrics, and tracing)
 * RabbitMQ

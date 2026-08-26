@@ -1,0 +1,15 @@
+services:
+  ldap:
+    image: '{imageName}'
+    environment:
+      - 'LDAP_DOMAIN=ldap.example.org'
+      - 'LDAP_ADMIN_PASSWORD=somepassword'
+      - 'LDAP_TLS=true'
+    hostname: ldap
+    ports:
+      - "389"
+      - "636"
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=server.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=server.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'

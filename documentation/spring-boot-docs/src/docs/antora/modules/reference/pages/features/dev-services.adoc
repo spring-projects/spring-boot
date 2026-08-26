@@ -154,6 +154,7 @@ SSL is supported for the following service connections:
 
 * Cassandra
 * Elasticsearch
+* LDAP
 * MongoDB
 * OpenTelemetry (OTLP logging, metrics, and tracing)
 * RabbitMQ
