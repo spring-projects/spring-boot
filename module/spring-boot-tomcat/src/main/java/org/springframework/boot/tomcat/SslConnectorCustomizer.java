@@ -17,6 +17,7 @@
 package org.springframework.boot.tomcat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,11 +66,11 @@ public class SslConnectorCustomizer {
 
 	public void update(@Nullable String serverName, SslBundle updatedSslBundle) {
 		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) this.connector.getProtocolHandler();
-		String host = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
-		this.logger.debug("SSL Bundle for host " + host + " has been updated, reloading SSL configuration");
-		SSLHostConfig sslHostConfig = findSslHostConfig(protocol, host);
+		String hostName = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
+		this.logger.debug("SSL Bundle for host " + hostName + " has been updated, reloading SSL configuration");
+		SSLHostConfig sslHostConfig = findSslHostConfig(protocol, hostName);
 		if (sslHostConfig == null) {
-			addSslHostConfig(protocol, host, updatedSslBundle);
+			addSslHostConfig(protocol, hostName, updatedSslBundle);
 			return;
 		}
 		applySslBundle(protocol, sslHostConfig, updatedSslBundle);
@@ -100,21 +101,19 @@ public class SslConnectorCustomizer {
 		serverNameSslBundles.forEach((serverName, bundle) -> addSslHostConfig(protocol, serverName, bundle));
 	}
 
-	private void addSslHostConfig(AbstractHttp11Protocol<?> protocol, String serverName, SslBundle sslBundle) {
+	private void addSslHostConfig(AbstractHttp11Protocol<?> protocol, String hostName, SslBundle sslBundle) {
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
-		sslHostConfig.setHostName(serverName);
+		sslHostConfig.setHostName(hostName);
 		configureSslClientAuth(sslHostConfig);
 		applySslBundle(protocol, sslHostConfig, sslBundle);
 		protocol.addSslHostConfig(sslHostConfig, true);
 	}
 
-	private @Nullable SSLHostConfig findSslHostConfig(AbstractHttp11Protocol<?> protocol, String serverName) {
-		for (SSLHostConfig candidate : protocol.findSslHostConfigs()) {
-			if (serverName.equalsIgnoreCase(candidate.getHostName())) {
-				return candidate;
-			}
-		}
-		return null;
+	private @Nullable SSLHostConfig findSslHostConfig(AbstractHttp11Protocol<?> protocol, String hostName) {
+		return Arrays.stream(protocol.findSslHostConfigs())
+			.filter((candidate) -> hostName.equalsIgnoreCase(candidate.getHostName()))
+			.findFirst()
+			.orElse(null);
 	}
 
 	private void applySslBundle(AbstractHttp11Protocol<?> protocol, SSLHostConfig sslHostConfig, SslBundle sslBundle) {
