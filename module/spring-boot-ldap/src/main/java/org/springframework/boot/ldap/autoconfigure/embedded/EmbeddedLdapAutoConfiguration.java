@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -30,6 +31,7 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.OperationType;
 import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 import org.jspecify.annotations.Nullable;
@@ -81,6 +83,7 @@ import org.springframework.util.StringUtils;
  * @author Mathieu Ouellet
  * @author Raja Kolli
  * @author Moritz Halbritter
+ * @author Sean Xu
  * @since 4.0.0
  */
 @AutoConfiguration(before = LdapAutoConfiguration.class)
@@ -109,6 +112,10 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		String password = this.embeddedProperties.getCredential().getPassword();
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			config.addAdditionalBindCredentials(username, password);
+		}
+		Set<OperationType> requiredOperationTypes = this.embeddedProperties.getAuthenticationRequiredOperationTypes();
+		if (!requiredOperationTypes.isEmpty()) {
+			config.setAuthenticationRequiredOperationTypes(requiredOperationTypes);
 		}
 		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);

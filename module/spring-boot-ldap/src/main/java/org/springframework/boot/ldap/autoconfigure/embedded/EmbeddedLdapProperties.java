@@ -17,8 +17,11 @@
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.unboundid.ldap.sdk.OperationType;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,6 +34,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
+ * @author Sean Xu
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.ldap.embedded")
@@ -40,6 +44,11 @@ public class EmbeddedLdapProperties {
 	 * Embedded LDAP port.
 	 */
 	private int port;
+
+	/**
+	 * LDAP operation types that require authentication.
+	 */
+	private Set<OperationType> authenticationRequiredOperationTypes = new LinkedHashSet<>();
 
 	/**
 	 * Embedded LDAP credentials.
@@ -73,6 +82,14 @@ public class EmbeddedLdapProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public Set<OperationType> getAuthenticationRequiredOperationTypes() {
+		return this.authenticationRequiredOperationTypes;
+	}
+
+	public void setAuthenticationRequiredOperationTypes(Set<OperationType> authenticationRequiredOperationTypes) {
+		this.authenticationRequiredOperationTypes = authenticationRequiredOperationTypes;
 	}
 
 	public Credential getCredential() {

@@ -29,6 +29,9 @@ import com.unboundid.ldap.sdk.BindResult;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.ResultCode;
+import com.unboundid.ldap.sdk.SearchRequest;
+import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.ldap.sdk.schema.Schema;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EmbeddedLdapAutoConfiguration}
@@ -498,6 +502,28 @@ class EmbeddedLdapAutoConfigurationTests {
 		assertThat(properties.getSsl().isEnabled()).isFalse();
 	}
 
+	@Test
+	@WithSchemaLdifResource
+	void authenticationRequiredOperationTypesAreApplied() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn=dc=spring,dc=org",
+				"spring.ldap.embedded.credential.username=uid=root", "spring.ldap.embedded.credential.password=boot",
+				"spring.ldap.embedded.authentication-required-operation-types=search")
+			.run((context) -> {
+				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				try (LDAPConnection connection = new LDAPConnection("localhost", server.getListenPort())) {
+					SearchRequest searchRequest = new SearchRequest("dc=spring,dc=org", SearchScope.SUB,
+							"(objectClass=*)");
+
+					assertThatExceptionOfType(LDAPException.class).isThrownBy(() -> connection.search(searchRequest))
+						.satisfies((ex) -> assertThat(ex.getResultCode())
+							.isEqualTo(ResultCode.INSUFFICIENT_ACCESS_RIGHTS));
+
+					connection.bind("uid=root", "boot");
+					assertThat(connection.search(searchRequest).getEntryCount()).isGreaterThan(0);
+				}
+			});
+	}
+
 	private String[] sslBundleProperties(String... additionalProperties) {
 		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
 		List<String> propertyValues = new ArrayList<>();
@@ -523,6 +549,7 @@ class EmbeddedLdapAutoConfigurationTests {
 		}
 
 	}
+
 
 	@Configuration(proxyBeanMethods = false)
 	static class LdapClientConfiguration {
