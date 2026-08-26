@@ -20,27 +20,28 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * Adapts {@link LdapProperties} to {@link LdapConnectionDetails}.
  *
  * @author Philipp Kessler
+ * @author Moritz Halbritter
  */
 class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 
-	private final LdapProperties properties;
+	private static final int DEFAULT_PORT = 389;
 
-	private final Environment environment;
+	private static final int DEFAULT_SSL_PORT = 636;
+
+	private final LdapProperties properties;
 
 	private final @Nullable SslBundles sslBundles;
 
-	PropertiesLdapConnectionDetails(LdapProperties properties, Environment environment,
-			@Nullable SslBundles sslBundles) {
+	PropertiesLdapConnectionDetails(LdapProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
-		this.environment = environment;
 		this.sslBundles = sslBundles;
 		registerSslBundleUpdateHandler();
 	}
@@ -60,7 +61,14 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 
 	@Override
 	public String[] getUrls() {
-		return this.properties.determineUrls(this.environment);
+		String[] urls = this.properties.getUrls();
+		if (!ObjectUtils.isEmpty(urls)) {
+			return urls;
+		}
+		boolean useSsl = this.properties.getSsl().isEnabled();
+		String protocol = useSsl ? "ldaps" : "ldap";
+		int port = useSsl ? DEFAULT_SSL_PORT : DEFAULT_PORT;
+		return new String[] { protocol + "://localhost:" + port };
 	}
 
 	@Override

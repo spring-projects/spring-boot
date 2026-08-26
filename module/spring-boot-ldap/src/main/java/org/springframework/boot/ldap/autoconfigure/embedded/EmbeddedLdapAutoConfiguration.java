@@ -50,6 +50,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapProperties.Ssl;
@@ -70,7 +71,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -80,6 +80,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
  * @author Raja Kolli
+ * @author Moritz Halbritter
  * @since 4.0.0
  */
 @AutoConfiguration(before = LdapAutoConfiguration.class)
@@ -242,19 +243,11 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 		@Bean
 		@DependsOn("directoryServer")
-		@ConditionalOnMissingBean
-		LdapContextSource ldapContextSource(Environment environment, LdapProperties properties,
-				EmbeddedLdapProperties embeddedProperties) {
-			LdapContextSource source = new LdapContextSource();
-			source.setBase(properties.getBase());
-			String username = embeddedProperties.getCredential().getUsername();
-			String password = embeddedProperties.getCredential().getPassword();
-			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-				source.setUserDn(username);
-				source.setPassword(password);
-			}
-			source.setUrls(properties.determineUrls(environment));
-			return source;
+		@ConditionalOnMissingBean(LdapConnectionDetails.class)
+		EmbeddedLdapConnectionDetails embeddedLdapConnectionDetails(Environment environment, LdapProperties properties,
+				EmbeddedLdapProperties embeddedProperties, ObjectProvider<SslBundles> sslBundles) {
+			return new EmbeddedLdapConnectionDetails(environment, properties, embeddedProperties,
+					sslBundles.getIfAvailable());
 		}
 
 	}

@@ -22,11 +22,8 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
 import org.springframework.ldap.ReferralException;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,10 +34,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties("spring.ldap")
 public class LdapProperties {
-
-	private static final int DEFAULT_PORT = 389;
-
-	private static final int DEFAULT_SSL_PORT = 636;
 
 	/**
 	 * LDAP URLs of the server.
@@ -141,25 +134,6 @@ public class LdapProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
-	}
-
-	public String[] determineUrls(Environment environment) {
-		if (ObjectUtils.isEmpty(this.urls)) {
-			boolean useSsl = this.ssl.isEnabled();
-			String protocol = useSsl ? "ldaps" : "ldap";
-			int defaultPort = useSsl ? DEFAULT_SSL_PORT : DEFAULT_PORT;
-			return new String[] { protocol + "://localhost:" + determinePort(environment, defaultPort) };
-		}
-		return this.urls;
-	}
-
-	private int determinePort(Environment environment, int defaultPort) {
-		Assert.notNull(environment, "'environment' must not be null");
-		String localPort = environment.getProperty("local.ldap.port");
-		if (localPort != null) {
-			return Integer.parseInt(localPort);
-		}
-		return defaultPort;
 	}
 
 	/**

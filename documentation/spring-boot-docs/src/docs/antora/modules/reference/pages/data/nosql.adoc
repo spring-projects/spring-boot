@@ -728,12 +728,12 @@ If you need SSL support without customizing the trust and key material, set the 
 This uses the platform's default trust and key material.
 
 WARNING: These properties only apply to the auto-configured javadoc:org.springframework.ldap.core.support.LdapContextSource[].
-If you define your own javadoc:org.springframework.ldap.core.support.LdapContextSource[] bean, they are ignored and you have to configure SSL yourself.
-If you define your own javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[] bean, including one contributed by a `@ServiceConnection`, they are ignored as well and the auto-configured context source uses the SSL bundle provided by that bean instead.
+If you define your own context source, you have to configure SSL on it yourself.
+If you define your own javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[] bean, including one contributed by a `@ServiceConnection`, the auto-configured context source uses the SSL bundle that bean provides instead.
 An `ldaps://` connection that has not been given any key or trust material silently uses the platform's default rather than failing.
 
-TIP: These properties configure the LDAP client.
-To enable SSL on the xref:data/nosql.adoc#data.nosql.ldap.embedded.ssl[embedded LDAP server], use the separate configprop:spring.ldap.embedded.ssl.bundle[] property.
+TIP: These properties configure the LDAP client and are ignored while an embedded LDAP server is used.
+To enable SSL on the xref:data/nosql.adoc#data.nosql.ldap.embedded.ssl[embedded LDAP server], use the separate configprop:spring.ldap.embedded.ssl.bundle[] property, which provides the server's certificate and private key as well as the client's trust material.
 
 
 
@@ -784,7 +784,6 @@ spring.ldap.embedded.base-dn:
 ====
 
 By default, the server starts on a random port and triggers the regular LDAP support.
-There is no need to specify a configprop:spring.ldap.urls[] property.
 
 If there is a `schema.ldif` file on your classpath, it is used to initialize the server.
 If you want to load the initialization script from a different resource, you can also use the configprop:spring.ldap.embedded.ldif[] property.
@@ -792,6 +791,19 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
+
+The `spring.ldap.embedded` properties configure the server, while the remaining `spring.ldap` properties configure the client that connects to it, as described in xref:data/nosql.adoc#data.nosql.ldap[LDAP].
+Everything that describes the connection itself is taken from the server, as only the server can determine what a connection to it looks like:
+
+* The client connects to the port and scheme that the server is listening on, so configprop:spring.ldap.urls[] is ignored.
+* The client uses the credentials from configprop:spring.ldap.embedded.credential.username[] and configprop:spring.ldap.embedded.credential.password[], so configprop:spring.ldap.username[] and configprop:spring.ldap.password[] are ignored.
+* The client uses the SSL bundle from configprop:spring.ldap.embedded.ssl.bundle[], so `spring.ldap.ssl.*` is ignored.
+
+A `spring.ldap` configuration meant for a production server therefore does not have to be unset to run a test against the embedded server.
+The remaining properties, such as configprop:spring.ldap.base[], configprop:spring.ldap.referral[] and `spring.ldap.base-environment.*`, are applied as usual.
+
+TIP: To configure the client differently, define your own javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[] bean.
+The auto-configured client then uses that bean and ignores the embedded server's URLs, credentials and SSL bundle.
 
 
 
@@ -813,3 +825,8 @@ spring:
 The bundle must provide the server's certificate and private key.
 
 NOTE: An SSL bundle is required for LDAPS. Setting configprop:spring.ldap.embedded.ssl.enabled[] without configprop:spring.ldap.embedded.ssl.bundle[] fails at startup.
+
+The auto-configured client connects to the server over `ldaps://` using the same bundle, so the bundle's trust material must trust the server's certificate.
+
+NOTE: The server decides whether TLS is used at all and which bundle secures the connection.
+To give the client its own SSL configuration, define your own javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[] bean.

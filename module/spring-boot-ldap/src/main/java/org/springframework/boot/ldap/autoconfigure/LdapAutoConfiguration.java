@@ -41,7 +41,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.core.env.Environment;
 import org.springframework.ldap.convert.ConverterUtils;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapOperations;
@@ -70,9 +69,9 @@ public final class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LdapConnectionDetails.class)
-	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties, Environment environment,
+	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties,
 			ObjectProvider<SslBundles> sslBundles) {
-		return new PropertiesLdapConnectionDetails(properties, environment, sslBundles.getIfAvailable());
+		return new PropertiesLdapConnectionDetails(properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -100,9 +99,10 @@ public final class LdapAutoConfiguration {
 	 * through a {@link DirContextAuthenticationStrategy} as the strategy is not consulted
 	 * when read-only operations use an anonymous environment.
 	 * <p>
-	 * A socket factory in the base environment conflicts with the bundle and is rejected,
-	 * but only when the bundle also came from the properties. A bundle from another
-	 * {@link LdapConnectionDetails} bean takes precedence over the properties instead.
+	 * A socket factory in the base environment conflicts with the bundle and is rejected
+	 * when the bundle came from properties, whether the client's or the embedded
+	 * server's. A bundle from a user-supplied {@link LdapConnectionDetails} bean takes
+	 * precedence over the base environment instead.
 	 * @param connectionDetails the connection details
 	 * @param properties the LDAP properties
 	 * @return the base environment properties

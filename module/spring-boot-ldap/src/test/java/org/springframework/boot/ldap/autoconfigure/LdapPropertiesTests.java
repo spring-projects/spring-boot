@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ldap.autoconfigure.LdapProperties.Template;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,42 +40,6 @@ class LdapPropertiesTests {
 				templateProperties.isIgnoreNameNotFoundException());
 		assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException",
 				templateProperties.isIgnoreSizeLimitExceededException());
-	}
-
-	@Test
-	void determineUrlsShouldDefaultToPlainLdapWhenSslNotEnabled() {
-		LdapProperties properties = new LdapProperties();
-		assertThat(properties.determineUrls(new MockEnvironment())).containsExactly("ldap://localhost:389");
-	}
-
-	@Test
-	void determineUrlsShouldDefaultToLdapsWhenSslEnabled() {
-		LdapProperties properties = new LdapProperties();
-		properties.getSsl().setEnabled(true);
-		assertThat(properties.determineUrls(new MockEnvironment())).containsExactly("ldaps://localhost:636");
-	}
-
-	@Test
-	void determineUrlsShouldDefaultToLdapsWhenSslBundleConfigured() {
-		LdapProperties properties = new LdapProperties();
-		properties.getSsl().setBundle("example");
-		assertThat(properties.determineUrls(new MockEnvironment())).containsExactly("ldaps://localhost:636");
-	}
-
-	@Test
-	void determineUrlsShouldPreferLocalPortOverDefaultSslPort() {
-		LdapProperties properties = new LdapProperties();
-		properties.getSsl().setEnabled(true);
-		MockEnvironment environment = new MockEnvironment().withProperty("local.ldap.port", "1234");
-		assertThat(properties.determineUrls(environment)).containsExactly("ldaps://localhost:1234");
-	}
-
-	@Test
-	void determineUrlsShouldUseConfiguredUrlsRegardlessOfSsl() {
-		LdapProperties properties = new LdapProperties();
-		properties.setUrls(new String[] { "ldap://localhost:1234" });
-		properties.getSsl().setEnabled(true);
-		assertThat(properties.determineUrls(new MockEnvironment())).containsExactly("ldap://localhost:1234");
 	}
 
 }
