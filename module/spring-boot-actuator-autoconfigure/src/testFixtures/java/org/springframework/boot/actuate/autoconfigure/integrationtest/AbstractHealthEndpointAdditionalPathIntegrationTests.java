@@ -55,6 +55,15 @@ public abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T ext
 	}
 
 	@Test
+	void groupIsAvailableAtAdditionalPathWithMultipleSegments() {
+		this.runner
+			.withPropertyValues("management.endpoint.health.group.live.include=diskSpace",
+					"management.endpoint.health.group.live.additional-path=server:/myBasePath/health",
+					"management.endpoint.health.group.live.show-components=always")
+			.run(withWebTestClient((client) -> testResponses(client, "/myBasePath/health"), "local.server.port"));
+	}
+
+	@Test
 	void multipleGroupsAreAvailableAtAdditionalPaths() {
 		this.runner
 			.withPropertyValues("management.endpoint.health.group.one.include=diskSpace",
