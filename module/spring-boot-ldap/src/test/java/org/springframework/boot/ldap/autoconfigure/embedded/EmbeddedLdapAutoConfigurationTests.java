@@ -513,11 +513,9 @@ class EmbeddedLdapAutoConfigurationTests {
 				try (LDAPConnection connection = new LDAPConnection("localhost", server.getListenPort())) {
 					SearchRequest searchRequest = new SearchRequest("dc=spring,dc=org", SearchScope.SUB,
 							"(objectClass=*)");
-
 					assertThatExceptionOfType(LDAPException.class).isThrownBy(() -> connection.search(searchRequest))
-						.satisfies((ex) -> assertThat(ex.getResultCode())
-							.isEqualTo(ResultCode.INSUFFICIENT_ACCESS_RIGHTS));
-
+						.extracting(LDAPException::getResultCode)
+						.isEqualTo(ResultCode.INSUFFICIENT_ACCESS_RIGHTS);
 					connection.bind("uid=root", "boot");
 					assertThat(connection.search(searchRequest).getEntryCount()).isGreaterThan(0);
 				}
@@ -549,7 +547,6 @@ class EmbeddedLdapAutoConfigurationTests {
 		}
 
 	}
-
 
 	@Configuration(proxyBeanMethods = false)
 	static class LdapClientConfiguration {

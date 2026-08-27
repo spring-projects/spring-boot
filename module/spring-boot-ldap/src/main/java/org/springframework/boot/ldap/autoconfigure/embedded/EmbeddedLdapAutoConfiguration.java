@@ -113,9 +113,10 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			config.addAdditionalBindCredentials(username, password);
 		}
-		Set<OperationType> requiredOperationTypes = this.embeddedProperties.getAuthenticationRequiredOperationTypes();
-		if (!requiredOperationTypes.isEmpty()) {
-			config.setAuthenticationRequiredOperationTypes(requiredOperationTypes);
+		Set<OperationType> authenticationRequiredOperationTypes = this.embeddedProperties
+			.getAuthenticationRequiredOperationTypes();
+		if (!authenticationRequiredOperationTypes.isEmpty()) {
+			config.setAuthenticationRequiredOperationTypes(authenticationRequiredOperationTypes);
 		}
 		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
