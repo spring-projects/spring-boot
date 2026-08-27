@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link KotlinMultiplatformPluginAction}.
  */
-class KotlinMultiplatformPluginActionTest {
+class KotlinMultiplatformPluginActionTests {
 
 	private Project project;
 
@@ -146,8 +146,8 @@ class KotlinMultiplatformPluginActionTest {
 			.getByType(KotlinMultiplatformExtension.class);
 
 		KotlinJvmTarget jvmTarget = kotlinExtension.jvm();
-		jvmTarget.binaries((Action<KotlinJvmBinariesDsl>) binaries -> binaries
-			.executable((Function1<? super KotlinJvmBinaryDsl, Unit>) exec -> {
+		jvmTarget.binaries((Action<KotlinJvmBinariesDsl>) (binaries) -> binaries
+			.executable((Function1<? super KotlinJvmBinaryDsl, Unit>) (exec) -> {
 				exec.getMainClass().set("com.example.KmpApplication");
 				return Unit.INSTANCE;
 			}));
