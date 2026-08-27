@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
@@ -62,22 +63,27 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		TestCustomizer<HttpClientBuilder> httpClientCustomizer1 = new TestCustomizer<>();
 		TestCustomizer<HttpClientBuilder> httpClientCustomizer2 = new TestCustomizer<>();
 		TestCustomizer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer = new TestCustomizer<>();
+		TestCustomizer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer = new TestCustomizer<>(); // ADDED
 		TestCustomizer<SocketConfig.Builder> socketConfigCustomizer = new TestCustomizer<>();
 		TestCustomizer<SocketConfig.Builder> socketConfigCustomizer1 = new TestCustomizer<>();
 		TestCustomizer<RequestConfig.Builder> defaultRequestConfigCustomizer = new TestCustomizer<>();
 		TestCustomizer<RequestConfig.Builder> defaultRequestConfigCustomizer1 = new TestCustomizer<>();
+
 		ClientHttpRequestFactoryBuilder.httpComponents()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.withConnectionManagerCustomizer(connectionManagerCustomizer)
+			.withConnectionManagerPostConfigurer(connectionManagerPostConfigurer)
 			.withSocketConfigCustomizer(socketConfigCustomizer)
 			.withSocketConfigCustomizer(socketConfigCustomizer1)
 			.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer)
 			.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer1)
 			.build();
+
 		httpClientCustomizer1.assertCalled();
 		httpClientCustomizer2.assertCalled();
 		connectionManagerCustomizer.assertCalled();
+		connectionManagerPostConfigurer.assertCalled();
 		socketConfigCustomizer.assertCalled();
 		socketConfigCustomizer1.assertCalled();
 		defaultRequestConfigCustomizer.assertCalled();

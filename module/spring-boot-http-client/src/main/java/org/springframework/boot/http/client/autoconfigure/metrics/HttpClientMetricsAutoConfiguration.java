@@ -17,17 +17,22 @@
 package org.springframework.boot.http.client.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.httpcomponents.hc5.PoolingHttpClientConnectionManagerMetricsBinder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.autoconfigure.ClientHttpRequestFactoryBuilderCustomizer;
 import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties.Web.Client;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -56,6 +61,22 @@ public final class HttpClientMetricsAutoConfiguration {
 		String meterNamePrefix = observationProperties.getHttp().getClient().getRequests().getName();
 		int maxUriTags = clientProperties.getMaxUriTags();
 		return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags, "Are you using 'uriVariables'?");
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(PoolingHttpClientConnectionManager.class)
+	static class HttpComponentsPoolMetricsConfiguration {
+
+		@Bean
+		@SuppressWarnings("deprecation")
+		ClientHttpRequestFactoryBuilderCustomizer<HttpComponentsClientHttpRequestFactoryBuilder> httpComponentsPoolMetricsCustomizer(
+				MeterRegistry meterRegistry) {
+			return (builder) -> builder.withConnectionManagerPostConfigurer(
+					(connectionManager) -> new PoolingHttpClientConnectionManagerMetricsBinder(connectionManager,
+							"httpcomponents.httpclient.pool")
+						.bindTo(meterRegistry));
+		}
+
 	}
 
 }

@@ -24,10 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.autoconfigure.ClientHttpRequestFactoryBuilderCustomizer;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,6 +58,32 @@ class HttpClientMetricsAutoConfigurationTests {
 				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
 				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
+			});
+	}
+
+	@Test
+	void httpComponentsPoolMetricsAreAutoConfigured() {
+		new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class, MetricsAutoConfiguration.class))
+			.withBean(SimpleMeterRegistry.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClientHttpRequestFactoryBuilderCustomizer.class);
+
+				@SuppressWarnings("unchecked")
+				ClientHttpRequestFactoryBuilderCustomizer<HttpComponentsClientHttpRequestFactoryBuilder> customizer = context
+					.getBean(ClientHttpRequestFactoryBuilderCustomizer.class);
+
+				HttpComponentsClientHttpRequestFactoryBuilder builder = ClientHttpRequestFactoryBuilder
+					.httpComponents();
+				builder = customizer.customize(builder);
+				HttpComponentsClientHttpRequestFactory factory = builder.build();
+
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThat(meterRegistry.find("httpcomponents.httpclient.pool.total.connections").gauge()).isNotNull();
+				assertThat(meterRegistry.find("httpcomponents.httpclient.pool.route.max.default").gauge()).isNotNull();
+
+				factory.destroy();
 			});
 	}
 

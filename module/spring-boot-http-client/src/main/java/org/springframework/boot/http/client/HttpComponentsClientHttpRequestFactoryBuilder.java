@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
@@ -181,6 +182,21 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	public HttpComponentsClientHttpRequestFactoryBuilder with(
 			UnaryOperator<HttpComponentsClientHttpRequestFactoryBuilder> customizer) {
 		return customizer.apply(this);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} that applies
+	 * additional post-processing to the constructed
+	 * {@link PoolingHttpClientConnectionManager}.
+	 * @param connectionManagerPostConfigurer the post-configurer to apply
+	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
+	 * @since 3.5.0
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder withConnectionManagerPostConfigurer(
+			Consumer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer) {
+		Assert.notNull(connectionManagerPostConfigurer, "'connectionManagerPostConfigurer' must not be null");
+		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withConnectionManagerPostConfigurer(connectionManagerPostConfigurer));
 	}
 
 	@Override
