@@ -31,10 +31,12 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("org.junit.jupiter:junit-jupiter-api")
+	optional("org.springframework.kafka:spring-kafka")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 
 	testRuntimeOnly("org.aspectj:aspectjrt")
 	testRuntimeOnly("org.aspectj:aspectjweaver")
