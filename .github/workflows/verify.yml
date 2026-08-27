@@ -55,7 +55,7 @@ jobs:
           java-version: 17
       - name: Set Up Homebrew
         if: ${{ !vars.COMMERCIAL }}
-        uses: Homebrew/actions/setup-homebrew@8f3d1ec8a696b3b9d9a6c3696b6c73033cab69e4
+        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869
         with:
           stable: true
       - name: Set Up Gradle
