@@ -926,7 +926,7 @@ management.endpoint.health.group.live.additional-path="server:/healthz"
 
 This would make the `live` health group available on the main server port at `/healthz`.
 The prefix is mandatory and must be either `server:` (represents the main server port) or `management:` (represents the management port, if configured.)
-The path must be a single path segment.
+The path can contain one or more path segments.
 
 
 

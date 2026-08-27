@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @param <D> the descriptor type
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Wan bin yu
  */
 abstract class HealthEndpointSupport<H, D> {
 
@@ -75,19 +76,29 @@ abstract class HealthEndpointSupport<H, D> {
 
 	@Nullable Result<D> getResult(ApiVersion apiVersion, @Nullable WebServerNamespace serverNamespace,
 			SecurityContext securityContext, boolean showAll, String... path) {
-		HealthEndpointGroup group = (path.length > 0) ? getGroup(serverNamespace, path) : null;
-		if (group != null) {
-			return getResult(apiVersion, group, securityContext, showAll, path, 1);
+		GroupMatch groupMatch = (path.length > 0) ? getGroup(serverNamespace, path) : null;
+		if (groupMatch != null) {
+			return getResult(apiVersion, groupMatch.group(), securityContext, showAll, path, groupMatch.pathOffset());
 		}
 		return getResult(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	private @Nullable HealthEndpointGroup getGroup(@Nullable WebServerNamespace serverNamespace, String... path) {
-		if (this.groups.get(path[0]) != null) {
-			return this.groups.get(path[0]);
+	private @Nullable GroupMatch getGroup(@Nullable WebServerNamespace serverNamespace, String... path) {
+		HealthEndpointGroup group = this.groups.get(path[0]);
+		if (group != null) {
+			return new GroupMatch(group, 1);
 		}
 		if (serverNamespace != null) {
-			return this.groups.get(AdditionalHealthEndpointPath.of(serverNamespace, path[0]));
+			StringBuilder additionalPath = new StringBuilder();
+			GroupMatch groupMatch = null;
+			for (int i = 0; i < path.length; i++) {
+				additionalPath.append((i != 0) ? "/" : "").append(path[i]);
+				group = this.groups.get(AdditionalHealthEndpointPath.of(serverNamespace, additionalPath.toString()));
+				if (group != null) {
+					groupMatch = new GroupMatch(group, i + 1);
+				}
+			}
+			return groupMatch;
 		}
 		return null;
 	}
@@ -207,6 +218,10 @@ abstract class HealthEndpointSupport<H, D> {
 	 * @param <D> the details type
 	 */
 	record Result<D>(D descriptor, HealthEndpointGroup group) {
+
+	}
+
+	private record GroupMatch(HealthEndpointGroup group, int pathOffset) {
 
 	}
 
