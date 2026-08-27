@@ -59,15 +59,24 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 		}
 
 		private String disableEncryptionIfNecessary(String jdbcUrl) {
-			if (jdbcUrl.contains(";encrypt=false;")) {
+			if (hasEncryptProperty(jdbcUrl)) {
 				return jdbcUrl;
 			}
 			StringBuilder jdbcUrlBuilder = new StringBuilder(jdbcUrl);
 			if (!jdbcUrl.endsWith(";")) {
 				jdbcUrlBuilder.append(";");
 			}
-			jdbcUrlBuilder.append("encrypt=false;");
+			jdbcUrlBuilder.append("encrypt=false");
 			return jdbcUrlBuilder.toString();
+		}
+
+		private boolean hasEncryptProperty(String jdbcUrl) {
+			for (String property : jdbcUrl.split(";")) {
+				if (property.startsWith("encrypt=")) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
