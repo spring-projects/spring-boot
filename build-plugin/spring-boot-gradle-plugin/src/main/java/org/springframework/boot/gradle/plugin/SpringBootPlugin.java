@@ -146,6 +146,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives,
 				project.getArtifacts());
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
+				new KotlinMultiplatformPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
 				new ApplicationPluginAction(), new KotlinPluginAction(), new NativeImagePluginAction(),
 				new CyclonedxPluginAction(), new ProtobufPluginAction());
