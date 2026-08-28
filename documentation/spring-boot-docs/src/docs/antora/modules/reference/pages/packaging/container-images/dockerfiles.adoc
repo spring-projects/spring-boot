@@ -22,6 +22,7 @@ Usage:
 Available commands:
   extract      Extract the contents from the jar
   list-layers  List layers from the jar that can be extracted
+  sbom         Print the SBOM from the jar
   help         Help about any command
 ----
 

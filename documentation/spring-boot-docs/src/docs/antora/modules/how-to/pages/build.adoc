@@ -116,6 +116,8 @@ plugins {
 }
 ----
 
+TIP: To print the SBOM packaged in an uber jar or war, run `java -Djarmode=tools -jar my-app.jar sbom`.
+
 
 
 [[howto.build.customize-dependency-versions]]
