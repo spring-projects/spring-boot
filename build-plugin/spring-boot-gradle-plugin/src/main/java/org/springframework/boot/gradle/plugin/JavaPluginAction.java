@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
+import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -36,7 +37,6 @@ import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -44,6 +44,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.util.GradleVersion;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -281,48 +282,63 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void configureProductionRuntimeClasspathConfiguration(Project project) {
-		Configuration productionRuntimeClasspath = project.getConfigurations()
-			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		Configuration runtimeClasspath = project.getConfigurations()
-			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		productionRuntimeClasspath.attributes((attributes) -> {
-			ProviderFactory providers = project.getProviders();
-			AttributeContainer sourceAttributes = runtimeClasspath.getAttributes();
+	static void copyAttributes(Provider<Configuration> from, Configuration to) {
+		if (GradleVersion.current().compareTo(GradleVersion.version("9.1.0")) < 0) {
+			copyAttributesLegacy(from, to);
+		}
+		else {
+			to.getAttributes().addAllLater(from.map(Configuration::getAttributes).get());
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked", "NullAway" })
+	static void copyAttributesLegacy(Provider<Configuration> from, Configuration to) {
+		to.attributes((attributes) -> {
+			AttributeContainer sourceAttributes = from.get().getAttributes();
 			for (Attribute attribute : sourceAttributes.keySet()) {
 				attributes.attributeProvider(attribute,
-						providers.provider(() -> sourceAttributes.getAttribute(attribute)));
+						from.map((source) -> source.getAttributes().getAttribute(attribute)));
 			}
 		});
-		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
-		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
-		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
-		productionRuntimeClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 	}
 
-	private void configureDevelopmentOnlyConfiguration(Project project) {
+	static void configureProductionRuntimeClasspathConfiguration(Project project) {
+		Configuration productionRuntimeClasspath = project.getConfigurations()
+				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		NamedDomainObjectProvider<Configuration> runtimeClasspath = project.getConfigurations()
+				.named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		copyAttributes(runtimeClasspath, productionRuntimeClasspath);
+		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.get().getExtendsFrom());
+		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.get().isCanBeResolved());
+		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.get().isCanBeConsumed());
+		productionRuntimeClasspath.shouldResolveConsistentlyWith(runtimeClasspath.get());
+	}
+
+	static void configureDevelopmentOnlyConfiguration(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
-			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+				.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		developmentOnly
-			.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
-		Configuration runtimeClasspath = project.getConfigurations()
-			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-
-		runtimeClasspath.extendsFrom(developmentOnly);
+				.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
+		NamedDomainObjectProvider<Configuration> runtimeClasspath = project.getConfigurations()
+				.named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		developmentOnly.setCanBeConsumed(false);
+		copyAttributes(runtimeClasspath, developmentOnly);
+		runtimeClasspath.configure((r) -> r.extendsFrom(developmentOnly));
 	}
 
-	private void configureTestAndDevelopmentOnlyConfiguration(Project project) {
+	static void configureTestAndDevelopmentOnlyConfiguration(Project project) {
 		Configuration testAndDevelopmentOnly = project.getConfigurations()
-			.create(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+				.create(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		testAndDevelopmentOnly
-			.setDescription("Configuration for test and development-only dependencies such as Spring Boot's DevTools.");
-		Configuration runtimeClasspath = project.getConfigurations()
-			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		runtimeClasspath.extendsFrom(testAndDevelopmentOnly);
-		Configuration testImplementation = project.getConfigurations()
-			.getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME);
-		testImplementation.extendsFrom(testAndDevelopmentOnly);
+				.setDescription("Configuration for test and development-only dependencies such as Spring Boot's DevTools.");
+		NamedDomainObjectProvider<Configuration> runtimeClasspath = project.getConfigurations()
+				.named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		testAndDevelopmentOnly.setCanBeConsumed(false);
+		copyAttributes(runtimeClasspath, testAndDevelopmentOnly);
+		runtimeClasspath.configure((it) -> it.extendsFrom(testAndDevelopmentOnly));
+		project.getConfigurations()
+			.named(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME)
+			.configure((testImplementation) -> testImplementation.extendsFrom(testAndDevelopmentOnly));
 	}
 
 	private void configureSpringBootStarterTestToDependOnJUnitPlatformLauncher(Project project) {
