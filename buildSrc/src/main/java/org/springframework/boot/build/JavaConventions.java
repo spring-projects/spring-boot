@@ -38,11 +38,19 @@ import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.attributes.AttributeContainer;
+import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Category;
+import org.gradle.api.attributes.DocsType;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -159,6 +167,7 @@ class JavaConventions {
 			configureProhibitedDependencyChecks(project);
 			configureFactoriesFilesChecks(project);
 			configureNullability(project);
+			configureDependencyFixes(project);
 		});
 	}
 
@@ -395,6 +404,34 @@ class JavaConventions {
 		if (errorProneVersion != null) {
 			extension.getErrorProneVersion().set(errorProneVersion);
 		}
+	}
+
+	private void configureDependencyFixes(Project project) {
+		project.getDependencies().getComponents().all((details) -> {
+			// https://github.com/spring-projects/spring-framework/issues/37209
+			if ("org.springframework".equals(details.getId().getGroup())) {
+				addDocumentaionVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
+				addDocumentaionVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
+			}
+		});
+	}
+
+	private void addDocumentaionVariant(Project project, ComponentMetadataDetails details, String name, String docsType,
+			String classifier) {
+		ModuleVersionIdentifier id = details.getId();
+		String file = "%s-%s-%s.jar".formatted(id.getName(), id.getVersion(), classifier);
+		details.addVariant(name, (variant) -> {
+			variant.attributes((attributes) -> addDocumentationAttributes(project, attributes, docsType));
+			variant.withFiles((files) -> files.addFile(file));
+		});
+	}
+
+	private void addDocumentationAttributes(Project project, AttributeContainer attributes, String docsType) {
+		ObjectFactory objects = project.getObjects();
+		attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME));
+		attributes.attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.class, Category.DOCUMENTATION));
+		attributes.attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.class, Bundling.EXTERNAL));
+		attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.class, docsType));
 	}
 
 }
