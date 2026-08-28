@@ -19,9 +19,7 @@ package org.springframework.boot.integration.autoconfigure;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -36,13 +34,11 @@ import org.springframework.integration.config.IntegrationComponentScanRegistrar;
  * @author Artem Bilan
  * @author Phillip Webb
  */
-class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar implements BeanFactoryAware {
+class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar {
 
-	@SuppressWarnings("NullAway.Init")
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	IntegrationAutoConfigurationScanRegistrar(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
