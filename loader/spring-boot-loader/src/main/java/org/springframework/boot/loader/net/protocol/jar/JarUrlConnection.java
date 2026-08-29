@@ -45,6 +45,7 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Rostyslav Dudka
+ * @author Greg Taube
  */
 final class JarUrlConnection extends java.net.JarURLConnection {
 
@@ -337,13 +338,8 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 			int separator = spec.indexOf("!/");
 			boolean specHasEntry = (separator != -1) && (separator + 2 != spec.length());
 			if (specHasEntry) {
-				URL jarFileUrl = new URL(spec.substring(0, separator));
-				if ("runtime".equals(url.getRef())) {
-					jarFileUrl = new URL(jarFileUrl, "#runtime");
-				}
 				String entryName = UrlDecoder.decode(spec.substring(separator + 2));
-				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
-				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
+				JarFile jarFile = jarFiles.getOrCreateNested(spec, separator, "runtime".equals(url.getRef()));
 				if (!hasEntry(jarFile, entryName)) {
 					return notFoundConnection(jarFile.getName(), entryName);
 				}

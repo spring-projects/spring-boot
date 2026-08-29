@@ -19,6 +19,13 @@ package org.springframework.boot.loader.net.protocol.jar;
 import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarFile;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -36,11 +43,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link UrlJarFiles}.
  *
  * @author Phillip Webb
+ * @author Greg Taube
  */
 @AssertFileChannelDataBlocksClosed
 class UrlJarFilesTests {
@@ -85,6 +94,59 @@ class UrlJarFilesTests {
 		JarFile jarFile2 = this.jarFiles.getOrCreate(true, this.url);
 		JarFile jarFile3 = this.jarFiles.getOrCreate(true, this.url);
 		assertThat(jarFile1).isSameAs(jarFile2).isSameAs(jarFile3);
+	}
+
+	@Test
+	void getOrCreateNestedCachesColdLookupAndReturnsItForWarmLookups() throws Exception {
+		given(this.factory.createJarFile(any(), any())).willCallRealMethod();
+		String spec = this.url + "!/3.dat";
+		int separator = spec.indexOf("!/");
+		JarFile jarFile1 = this.jarFiles.getOrCreateNested(spec, separator, false);
+		JarFile jarFile2 = this.jarFiles.getOrCreateNested(spec, separator, false);
+		JarFile jarFile3 = this.jarFiles.getOrCreateNested(spec, separator, false);
+		assertThat(jarFile1).isSameAs(jarFile2).isSameAs(jarFile3);
+		assertThat(this.jarFiles.getCached(this.url)).isSameAs(jarFile1);
+		then(this.factory).should(times(1)).createJarFile(any(), any());
+	}
+
+	@Test
+	void getOrCreateNestedWhenCallsRaceReturnsEachCreatedJarAndCachesOne() throws Exception {
+		JarFile jarFile1 = mock(JarFile.class);
+		JarFile jarFile2 = mock(JarFile.class);
+		List<JarFile> jarFiles = List.of(jarFile1, jarFile2);
+		AtomicInteger created = new AtomicInteger();
+		CountDownLatch bothCreating = new CountDownLatch(2);
+		given(this.factory.createJarFile(any(), any())).willAnswer((invocation) -> {
+			JarFile jarFile = jarFiles.get(created.getAndIncrement());
+			bothCreating.countDown();
+			assertThat(bothCreating.await(10, TimeUnit.SECONDS)).isTrue();
+			return jarFile;
+		});
+		String spec = this.url + "!/3.dat";
+		int separator = spec.indexOf("!/");
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		try {
+			Future<JarFile> result1 = executor.submit(() -> this.jarFiles.getOrCreateNested(spec, separator, false));
+			Future<JarFile> result2 = executor.submit(() -> this.jarFiles.getOrCreateNested(spec, separator, false));
+			assertThat(List.of(result1.get(), result2.get())).containsExactlyInAnyOrderElementsOf(jarFiles);
+		}
+		finally {
+			executor.shutdownNow();
+		}
+		assertThat(this.jarFiles.getCached(this.url)).isIn(jarFile1, jarFile2);
+	}
+
+	@Test
+	void getOrCreateNestedKeepsRuntimeRefSeparate() throws Exception {
+		JarFile jarFile = mock(JarFile.class);
+		JarFile runtimeJarFile = mock(JarFile.class);
+		given(this.factory.createJarFile(any(), any())).willReturn(jarFile, runtimeJarFile);
+		String spec = this.url + "!/3.dat";
+		int separator = spec.indexOf("!/");
+		assertThat(this.jarFiles.getOrCreateNested(spec, separator, false)).isSameAs(jarFile);
+		assertThat(this.jarFiles.getOrCreateNested(spec, separator, true)).isSameAs(runtimeJarFile);
+		assertThat(this.jarFiles.getCached(this.url)).isSameAs(jarFile);
+		assertThat(this.jarFiles.getCached(new URL(this.url + "#runtime"))).isSameAs(runtimeJarFile);
 	}
 
 	@Test

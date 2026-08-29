@@ -31,6 +31,7 @@ import java.util.jar.JarFile;
  * instances.
  *
  * @author Phillip Webb
+ * @author Greg Taube
  */
 class UrlJarFiles {
 
@@ -70,6 +71,30 @@ class UrlJarFiles {
 			}
 		}
 		return this.factory.createJarFile(jarFileUrl, this::onClose);
+	}
+
+	/**
+	 * Get an existing nested {@link JarFile} instance from the cache, or create and cache
+	 * a new one.
+	 * @param spec the complete jar URL file
+	 * @param separator the separator between the nested jar file and entry
+	 * @param runtimeRef if the jar file URL has a runtime reference
+	 * @return a new or existing {@link JarFile} instance
+	 * @throws IOException on I/O error
+	 */
+	JarFile getOrCreateNested(String spec, int separator, boolean runtimeRef) throws IOException {
+		JarFileUrlKey urlKey = JarFileUrlKey.ofNestedFile(spec, separator, runtimeRef);
+		JarFile cached = this.cache.get(urlKey);
+		if (cached != null) {
+			return cached;
+		}
+		URL jarFileUrl = new URL(spec.substring(0, separator));
+		if (runtimeRef) {
+			jarFileUrl = new URL(jarFileUrl, "#runtime");
+		}
+		JarFile jarFile = this.factory.createJarFile(jarFileUrl, this::onClose);
+		this.cache.putIfAbsent(urlKey, jarFileUrl, jarFile);
+		return jarFile;
 	}
 
 	/**
@@ -155,6 +180,10 @@ class UrlJarFiles {
 		 */
 		JarFile get(URL jarFileUrl) {
 			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
+			return get(urlKey);
+		}
+
+		private JarFile get(JarFileUrlKey urlKey) {
 			synchronized (this) {
 				return this.jarFileUrlToJarFile.get(urlKey);
 			}
@@ -181,6 +210,10 @@ class UrlJarFiles {
 		 */
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
 			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
+			return putIfAbsent(urlKey, jarFileUrl, jarFile);
+		}
+
+		private boolean putIfAbsent(JarFileUrlKey urlKey, URL jarFileUrl, JarFile jarFile) {
 			synchronized (this) {
 				JarFile cached = this.jarFileUrlToJarFile.get(urlKey);
 				if (cached == null) {

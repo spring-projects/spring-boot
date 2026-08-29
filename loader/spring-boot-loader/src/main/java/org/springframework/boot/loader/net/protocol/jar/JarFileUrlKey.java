@@ -23,8 +23,11 @@ import java.util.Objects;
  * A fast cache key for a jar file {@link URL} that doesn't trigger DNS lookups.
  *
  * @author Phillip Webb
+ * @author Greg Taube
  */
 final class JarFileUrlKey {
+
+	private static final String NESTED_PROTOCOL = "nested";
 
 	private final String protocol;
 
@@ -37,11 +40,21 @@ final class JarFileUrlKey {
 	private final boolean runtimeRef;
 
 	JarFileUrlKey(URL url) {
-		this.protocol = url.getProtocol();
-		this.host = url.getHost();
-		this.port = (url.getPort() != -1) ? url.getPort() : url.getDefaultPort();
-		this.file = url.getFile();
-		this.runtimeRef = "runtime".equals(url.getRef());
+		this(url.getProtocol(), url.getHost(), (url.getPort() != -1) ? url.getPort() : url.getDefaultPort(),
+				url.getFile(), "runtime".equals(url.getRef()));
+	}
+
+	private JarFileUrlKey(String protocol, String host, int port, String file, boolean runtimeRef) {
+		this.protocol = protocol;
+		this.host = host;
+		this.port = port;
+		this.file = file;
+		this.runtimeRef = runtimeRef;
+	}
+
+	static JarFileUrlKey ofNestedFile(String spec, int separator, boolean runtimeRef) {
+		return new JarFileUrlKey(NESTED_PROTOCOL, "", -1, spec.substring(NESTED_PROTOCOL.length() + 1, separator),
+				runtimeRef);
 	}
 
 	@Override

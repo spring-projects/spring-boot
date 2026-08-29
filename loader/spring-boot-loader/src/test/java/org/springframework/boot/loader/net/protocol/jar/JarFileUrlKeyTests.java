@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JarFileUrlKey}.
  *
  * @author Phillip Webb
+ * @author Greg Taube
  */
 class JarFileUrlKeyTests {
 
@@ -88,6 +89,24 @@ class JarFileUrlKeyTests {
 		JarFileUrlKey k1 = key("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
 		JarFileUrlKey k2 = key("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
 		assertThat(k1).isEqualTo(k2);
+	}
+
+	@Test
+	void nestedFileKeyIsEqualToUrlKey() throws Exception {
+		String spec = "nested:/my.jar/!mynested.jar!/my/path";
+		int separator = spec.indexOf("!/");
+		JarFileUrlKey k1 = JarFileUrlKey.ofNestedFile(spec, separator, false);
+		JarFileUrlKey k2 = new JarFileUrlKey(new URL(spec.substring(0, separator)));
+		assertThat(k1).isEqualTo(k2).hasSameHashCodeAs(k2);
+	}
+
+	@Test
+	void nestedFileKeyWithRuntimeRefIsEqualToUrlKey() throws Exception {
+		String spec = "nested:/my.jar/!mynested.jar!/my/path";
+		int separator = spec.indexOf("!/");
+		JarFileUrlKey k1 = JarFileUrlKey.ofNestedFile(spec, separator, true);
+		JarFileUrlKey k2 = new JarFileUrlKey(new URL(spec.substring(0, separator) + "#runtime"));
+		assertThat(k1).isEqualTo(k2).hasSameHashCodeAs(k2);
 	}
 
 	@Test
