@@ -409,7 +409,9 @@ class JavaConventions {
 	private void configureDependencyFixes(Project project) {
 		project.getDependencies().getComponents().all((details) -> {
 			// https://github.com/spring-projects/spring-framework/issues/37209
-			if ("org.springframework".equals(details.getId().getGroup())) {
+			// https://github.com/spring-projects/spring-graphql/issues/1515
+			String group = details.getId().getGroup();
+			if ("org.springframework".equals(group) || "org.springframework.graphql".equals(group)) {
 				addDocumentaionVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
 				addDocumentaionVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
 			}
