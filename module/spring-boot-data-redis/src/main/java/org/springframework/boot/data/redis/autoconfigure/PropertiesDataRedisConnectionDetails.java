@@ -73,6 +73,15 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	}
 
 	@Override
+	public boolean isSslEnabled() {
+		DataRedisUrl redisUrl = getRedisUrl();
+		if (redisUrl != null) {
+			return redisUrl.useSsl();
+		}
+		return this.properties.getSsl().isEnabled();
+	}
+
+	@Override
 	public Standalone getStandalone() {
 		DataRedisUrl redisUrl = getRedisUrl();
 		return (redisUrl != null)

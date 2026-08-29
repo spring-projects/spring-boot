@@ -58,6 +58,14 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
+	 * Whether the connection should use SSL.
+	 * @return {@code true} if SSL should be used, {@code false} otherwise.
+	 */
+	default boolean isSslEnabled() {
+		return false;
+	}
+
+	/**
 	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()},
 	 * {@link #getCluster()} and {@link #getMasterReplica()}.
 	 * @return the Redis standalone configuration

@@ -185,7 +185,7 @@ abstract class DataRedisConnectionConfiguration {
 	}
 
 	protected final boolean isSslEnabled() {
-		return getProperties().getSsl().isEnabled();
+		return this.connectionDetails.isSslEnabled();
 	}
 
 	protected final boolean urlUsesSsl(String url) {

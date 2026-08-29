@@ -167,7 +167,7 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 	}
 
 	private void applyProperties(LettuceClientConfigurationBuilder builder, @Nullable SslBundle sslBundle) {
-		if (sslBundle != null) {
+		if (isSslEnabled() || sslBundle != null) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
