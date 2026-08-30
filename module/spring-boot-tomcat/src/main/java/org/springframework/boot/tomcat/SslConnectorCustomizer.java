@@ -68,13 +68,7 @@ public class SslConnectorCustomizer {
 		AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) this.connector.getProtocolHandler();
 		String hostName = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
 		this.logger.debug("SSL Bundle for host " + hostName + " has been updated, reloading SSL configuration");
-		SSLHostConfig sslHostConfig = findSslHostConfig(protocol, hostName);
-		if (sslHostConfig == null) {
-			addSslHostConfig(protocol, hostName, updatedSslBundle);
-			return;
-		}
-		applySslBundle(protocol, sslHostConfig, updatedSslBundle);
-		protocol.addSslHostConfig(sslHostConfig, true);
+		configureSslHostConfig(protocol, hostName, updatedSslBundle);
 	}
 
 	public void customize(SslBundle sslBundle, Map<String, SslBundle> serverNameSslBundles) {
@@ -96,15 +90,18 @@ public class SslConnectorCustomizer {
 			Map<String, SslBundle> serverNameSslBundles) {
 		protocol.setSSLEnabled(true);
 		if (sslBundle != null) {
-			addSslHostConfig(protocol, protocol.getDefaultSSLHostConfigName(), sslBundle);
+			configureSslHostConfig(protocol, protocol.getDefaultSSLHostConfigName(), sslBundle);
 		}
-		serverNameSslBundles.forEach((serverName, bundle) -> addSslHostConfig(protocol, serverName, bundle));
+		serverNameSslBundles.forEach((serverName, bundle) -> configureSslHostConfig(protocol, serverName, bundle));
 	}
 
-	private void addSslHostConfig(AbstractHttp11Protocol<?> protocol, String hostName, SslBundle sslBundle) {
-		SSLHostConfig sslHostConfig = new SSLHostConfig();
-		sslHostConfig.setHostName(hostName);
-		configureSslClientAuth(sslHostConfig);
+	private void configureSslHostConfig(AbstractHttp11Protocol<?> protocol, String hostName, SslBundle sslBundle) {
+		SSLHostConfig sslHostConfig = findSslHostConfig(protocol, hostName);
+		if (sslHostConfig == null) {
+			sslHostConfig = new SSLHostConfig();
+			sslHostConfig.setHostName(hostName);
+			configureSslClientAuth(sslHostConfig);
+		}
 		applySslBundle(protocol, sslHostConfig, sslBundle);
 		protocol.addSslHostConfig(sslHostConfig, true);
 	}
