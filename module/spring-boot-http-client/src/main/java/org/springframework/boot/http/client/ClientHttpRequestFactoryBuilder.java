@@ -70,6 +70,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @return a new {@link ClientHttpRequestFactoryBuilder} instance
 	 */
 	default ClientHttpRequestFactoryBuilder<T> withCustomizer(Consumer<T> customizer) {
+		Assert.notNull(customizer, "'customizer' must not be null");
 		return withCustomizers(List.of(customizer));
 	}
 
