@@ -59,6 +59,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Base class for {@link ClientHttpConnectorBuilder} tests.
@@ -78,6 +79,13 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 	AbstractClientHttpConnectorBuilderTests(Class<T> connectorType, ClientHttpConnectorBuilder<T> builder) {
 		this.connectorType = connectorType;
 		this.builder = builder;
+	}
+
+	@Test
+	@SuppressWarnings("NullAway") // Test null check
+	void withCustomizerWhenCustomizerIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.withCustomizer(null))
+			.withMessage("'customizer' must not be null");
 	}
 
 	@Test

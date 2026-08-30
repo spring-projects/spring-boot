@@ -68,6 +68,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * @return a new {@link ClientHttpConnectorBuilder} instance
 	 */
 	default ClientHttpConnectorBuilder<T> withCustomizer(Consumer<T> customizer) {
+		Assert.notNull(customizer, "'customizer' must not be null");
 		return withCustomizers(List.of(customizer));
 	}
 
