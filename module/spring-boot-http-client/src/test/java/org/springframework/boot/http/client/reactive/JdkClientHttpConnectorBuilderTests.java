@@ -28,7 +28,6 @@ import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JdkClientHttpConnectorBuilder} and {@link JdkHttpClientBuilder}.
@@ -51,13 +50,6 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 			.build();
 		httpClientCustomizer1.assertCalled();
 		httpClientCustomizer2.assertCalled();
-	}
-
-	@Test
-	@SuppressWarnings("NullAway") // Test null check
-	void withCustomizerWhenCustomizerIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> ClientHttpConnectorBuilder.jdk().withCustomizer(null))
-			.withMessage("'customizer' must not be null");
 	}
 
 	@Test

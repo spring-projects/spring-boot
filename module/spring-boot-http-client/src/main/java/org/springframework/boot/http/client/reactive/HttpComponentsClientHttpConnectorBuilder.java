@@ -66,7 +66,7 @@ public final class HttpComponentsClientHttpConnectorBuilder
 	 */
 	public HttpComponentsClientHttpConnectorBuilder withHttpClientCustomizer(
 			Consumer<HttpAsyncClientBuilder> httpClientCustomizer) {
-		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
+		Assert.notNull(httpClientCustomizer, "'customizer' must not be null");
 		return new HttpComponentsClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
 	}

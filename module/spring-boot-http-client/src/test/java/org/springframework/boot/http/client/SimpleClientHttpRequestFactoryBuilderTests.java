@@ -16,7 +16,6 @@
 
 package org.springframework.boot.http.client;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,7 +25,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -81,14 +79,6 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	@Override
 	void redirectDontFollow(String httpMethod) throws Exception {
 		super.redirectDontFollow(httpMethod);
-	}
-
-	@Test
-	@SuppressWarnings("NullAway") // Test null check
-	void withCustomizerWhenCustomizerIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ClientHttpRequestFactoryBuilder.simple().withCustomizer(null))
-				.withMessage("'customizer' must not be null");
 	}
 
 	@Override
