@@ -139,7 +139,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <T extends ClientHttpConnector> ClientHttpConnectorBuilder<T> of(Class<T> clientHttpConnectorType) {
-		Assert.notNull(clientHttpConnectorType, "'requestFactoryType' must not be null");
+		Assert.notNull(clientHttpConnectorType, "'clientHttpConnectorType' must not be null");
 		Assert.isTrue(clientHttpConnectorType != ClientHttpConnector.class,
 				"'clientHttpConnectorType' must be an implementation of ClientHttpConnector");
 		if (clientHttpConnectorType == ReactorClientHttpConnector.class) {
