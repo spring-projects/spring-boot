@@ -64,7 +64,7 @@ public abstract class CheckLinks extends DefaultTask {
 			library.getLinks().forEachLink((type, link) -> {
 				URI uri;
 				try {
-					uri = new URI(link.url(library));
+					uri = new URI(link.url(library.getVersion()));
 					ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
 					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), type,
 							uri);

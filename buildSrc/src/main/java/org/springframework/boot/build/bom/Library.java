@@ -51,6 +51,7 @@ import org.w3c.dom.Document;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.xml.XmlDocument;
+import org.springframework.util.Assert;
 
 /**
  * A collection of modules, Maven plugins, and Maven boms that are versioned and released
@@ -64,7 +65,7 @@ public class Library {
 
 	private final String calendarName;
 
-	private final LibraryVersion version;
+	private final DependencyVersion version;
 
 	private final List<Group> groups;
 
@@ -102,7 +103,7 @@ public class Library {
 	 * {@code null} to generate one based on the library {@code name}
 	 * @param links a list of HTTP links relevant to the library
 	 */
-	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
+	public Library(String name, String calendarName, DependencyVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
 			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName, Links links) {
 		this.name = name;
@@ -132,7 +133,7 @@ public class Library {
 		return this.calendarName;
 	}
 
-	public LibraryVersion getVersion() {
+	public DependencyVersion getVersion() {
 		return this.version;
 	}
 
@@ -184,7 +185,7 @@ public class Library {
 		if (links.size() > 1) {
 			throw new IllegalStateException("Expected a single '%s' link for %s".formatted(type, getName()));
 		}
-		return links.get(0).url(this);
+		return links.get(0).url(getVersion());
 	}
 
 	public List<Link> getLinks(LinkType type) {
@@ -195,7 +196,7 @@ public class Library {
 		return getName() + " " + getVersion();
 	}
 
-	public Library withVersion(LibraryVersion version) {
+	public Library withVersion(DependencyVersion version) {
 		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
 				this.prohibitedVersions, this.firstParty, this.versionAlignment, this.bomAlignment, this.linkRootName,
 				this.links);
@@ -253,67 +254,6 @@ public class Library {
 			result = result || this.endsWith.stream().anyMatch(candidate::endsWith);
 			result = result || this.contains.stream().anyMatch(candidate::contains);
 			return result;
-		}
-
-	}
-
-	public static class LibraryVersion {
-
-		private final DependencyVersion version;
-
-		public LibraryVersion(DependencyVersion version) {
-			this.version = version;
-		}
-
-		public DependencyVersion getVersion() {
-			return this.version;
-		}
-
-		public int[] componentInts() {
-			return Arrays.stream(parts()).mapToInt(Integer::parseInt).toArray();
-		}
-
-		public String major() {
-			return parts()[0];
-		}
-
-		public String minor() {
-			return parts()[1];
-		}
-
-		public String patch() {
-			return parts()[2];
-		}
-
-		@Override
-		public String toString() {
-			return this.version.toString();
-		}
-
-		public String toString(String separator) {
-			return this.version.toString().replace(".", separator);
-		}
-
-		public String forAntora() {
-			String[] parts = parts();
-			String result = parts[0] + "." + parts[1];
-			if (toString().endsWith("SNAPSHOT")) {
-				result += "-SNAPSHOT";
-			}
-			return result;
-		}
-
-		public String forMajorMinorGeneration() {
-			String[] parts = parts();
-			String result = parts[0] + "." + parts[1] + ".x";
-			if (toString().endsWith("SNAPSHOT")) {
-				result += "-SNAPSHOT";
-			}
-			return result;
-		}
-
-		private String[] parts() {
-			return toString().split("[.-]");
 		}
 
 	}
@@ -539,8 +479,7 @@ public class Library {
 		private List<Dependency> getAligningDependencies() {
 			if (this.managedBy == null) {
 				Library fromLibrary = findFromLibrary();
-				return List
-					.of(this.project.getDependencies().create(this.from + ":" + fromLibrary.getVersion().getVersion()));
+				return List.of(this.project.getDependencies().create(this.from + ":" + fromLibrary.getVersion()));
 			}
 			else {
 				Library managingLibrary = findManagingLibrary();
@@ -579,13 +518,10 @@ public class Library {
 			if (manager == null) {
 				return Collections.emptyList();
 			}
-			return manager.getGroups()
-				.stream()
-				.flatMap((group) -> group.getBoms()
-					.stream()
-					.map((bom) -> this.project.getDependencies()
-						.platform(group.getId() + ":" + bom.name() + ":" + manager.getVersion().getVersion())))
-				.toList();
+			return manager.getGroups().stream().flatMap((group) -> group.getBoms().stream().map((bom) -> {
+				String plaform = group.getId() + ":" + bom.name() + ":" + manager.getVersion();
+				return this.project.getDependencies().platform(plaform);
+			})).toList();
 		}
 
 		String getFrom() {
@@ -671,13 +607,10 @@ public class Library {
 			if (manager == null) {
 				return Collections.emptyList();
 			}
-			return manager.getGroups()
-				.stream()
-				.flatMap((group) -> group.getBoms()
-					.stream()
-					.map((bom) -> this.project.getDependencies()
-						.platform(group.getId() + ":" + bom.name() + ":" + manager.getVersion().getVersion())))
-				.toList();
+			return manager.getGroups().stream().flatMap((group) -> group.getBoms().stream().map((bom) -> {
+				String platform = group.getId() + ":" + bom.name() + ":" + manager.getVersion();
+				return this.project.getDependencies().platform(platform);
+			})).toList();
 		}
 
 		private String propertyFrom(File pomFile) {
@@ -778,7 +711,7 @@ public class Library {
 
 	}
 
-	public record Link(String rootName, Function<LibraryVersion, String> factory, List<String> packages) {
+	public record Link(String rootName, Function<LinkedVersion, String> factory, List<String> packages) {
 
 		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
 
@@ -800,12 +733,72 @@ public class Library {
 			return Stream.of(suffixes).map((suffix) -> root + suffix);
 		}
 
-		public String url(Library library) {
-			return url(library.getVersion());
+		public String url(DependencyVersion version) {
+			return url(new LinkedVersion(version));
 		}
 
-		public String url(LibraryVersion libraryVersion) {
-			return factory().apply(libraryVersion);
+		public String url(LinkedVersion version) {
+			return factory().apply(version);
+		}
+
+	}
+
+	/**
+	 * A version used when resolving a {@link Link}.
+	 *
+	 * @param version the underlying version
+	 */
+	public record LinkedVersion(Object version) {
+
+		public LinkedVersion {
+			Assert.notNull(version, "'version' must not be null");
+		}
+
+		public int[] componentInts() {
+			return Arrays.stream(parts()).mapToInt(Integer::parseInt).toArray();
+		}
+
+		public String major() {
+			return parts()[0];
+		}
+
+		public String minor() {
+			return parts()[1];
+		}
+
+		public String patch() {
+			return parts()[2];
+		}
+
+		@Override
+		public String toString() {
+			return version().toString();
+		}
+
+		public String toString(String separator) {
+			return version().toString().replace(".", separator);
+		}
+
+		public String forAntora() {
+			String[] parts = parts();
+			String result = parts[0] + "." + parts[1];
+			if (toString().endsWith("SNAPSHOT")) {
+				result += "-SNAPSHOT";
+			}
+			return result;
+		}
+
+		public String forMajorMinorGeneration() {
+			String[] parts = parts();
+			String result = parts[0] + "." + parts[1] + ".x";
+			if (toString().endsWith("SNAPSHOT")) {
+				result += "-SNAPSHOT";
+			}
+			return result;
+		}
+
+		private String[] parts() {
+			return toString().split("[.-]");
 		}
 
 	}

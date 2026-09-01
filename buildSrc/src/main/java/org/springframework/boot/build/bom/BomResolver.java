@@ -77,21 +77,20 @@ class BomResolver {
 			List<Bom> imports = new ArrayList<>();
 			for (Group group : library.getGroups()) {
 				for (Module module : group.getModules()) {
-					Id id = new Id(group.getId(), module.getName(), library.getVersion().getVersion().toString());
+					Id id = new Id(group.getId(), module.getName(), library.getVersion().toString());
 					managedDependencies.add(id);
 				}
 				for (ImportedBom imported : group.getBoms()) {
-					Bom bom = bomFrom(resolveBom(
-							"%s:%s:%s".formatted(group.getId(), imported.name(), library.getVersion().getVersion())));
+					Bom bom = bomFrom(
+							resolveBom("%s:%s:%s".formatted(group.getId(), imported.name(), library.getVersion())));
 					imports.add(bom);
 				}
 			}
 			List<JavadocLink> javadocLinks = javadocLinksOf(library).stream()
-				.map((link) -> new JavadocLink(URI.create(link.url(library)), link.packages()))
+				.map((link) -> new JavadocLink(URI.create(link.url(library.getVersion())), link.packages()))
 				.toList();
-			ResolvedLibrary resolvedLibrary = new ResolvedLibrary(library.getName(),
-					library.getVersion().getVersion().toString(), library.getVersionProperty(), managedDependencies,
-					imports, new Links(javadocLinks));
+			ResolvedLibrary resolvedLibrary = new ResolvedLibrary(library.getName(), library.getVersion().toString(),
+					library.getVersionProperty(), managedDependencies, imports, new Links(javadocLinks));
 			libraries.add(resolvedLibrary);
 		}
 		String[] idComponents = bomExtension.getId().split(":");

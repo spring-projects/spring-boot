@@ -235,7 +235,7 @@ public class AntoraAsciidocAttributes {
 			library.getLinks().forEachLink((type, link) -> {
 				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
 				String linkName = "url-" + linkRootName + "-" + type.attributeName();
-				attributes.put(linkName, link.url(library));
+				attributes.put(linkName, link.url(library.getVersion()));
 				link.packages()
 					.stream()
 					.map(this::packageAttributeName)

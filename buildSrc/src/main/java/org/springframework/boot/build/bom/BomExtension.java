@@ -48,9 +48,9 @@ import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.PermittedDependency;
@@ -123,7 +123,7 @@ public class BomExtension {
 		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, this.project,
 				(version != null) ? version : "");
 		action.execute(libraryHandler);
-		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
+		DependencyVersion libraryVersion = DependencyVersion.parse(libraryHandler.version);
 		FirstParty firstParty = null;
 		if (libraryHandler.firstParty) {
 			String releaseTrainId = (libraryHandler.releaseTrainId != null) ? libraryHandler.releaseTrainId
@@ -182,7 +182,7 @@ public class BomExtension {
 		this.libraries.add(library);
 		String versionProperty = library.getVersionProperty();
 		if (versionProperty != null) {
-			this.properties.put(versionProperty, library.getVersion().getVersion());
+			this.properties.put(versionProperty, library.getVersion());
 		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
@@ -197,15 +197,14 @@ public class BomExtension {
 	private void addModule(Library library, DependencyHandler dependencies, String versionProperty, Group group,
 			Module module) {
 		putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
-		String constraint = createDependencyNotation(group.getId(), module.getName(),
-				library.getVersion().getVersion());
+		String constraint = createDependencyNotation(group.getId(), module.getName(), library.getVersion());
 		dependencies.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME, constraint);
 	}
 
 	private void addBomImport(Library library, DependencyHandler dependencies, String versionProperty, Group group,
 			String bomImport) {
 		putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
-		String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion().getVersion());
+		String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion());
 		dependencies.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, dependencies.platform(bomDependency));
 		dependencies.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME, dependencies.enforcedPlatform(bomDependency));
 	}
@@ -532,7 +531,7 @@ public class BomExtension {
 			site(asFactory(linkTemplate));
 		}
 
-		public void site(Function<LibraryVersion, String> linkFactory) {
+		public void site(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.SITE, linkFactory);
 		}
 
@@ -540,7 +539,7 @@ public class BomExtension {
 			github(asFactory(linkTemplate));
 		}
 
-		public void github(Function<LibraryVersion, String> linkFactory) {
+		public void github(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.GITHUB, linkFactory);
 		}
 
@@ -548,7 +547,7 @@ public class BomExtension {
 			docs(asFactory(linkTemplate));
 		}
 
-		public void docs(Function<LibraryVersion, String> linkFactory) {
+		public void docs(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.DOCS, linkFactory);
 		}
 
@@ -560,15 +559,15 @@ public class BomExtension {
 			javadoc(asFactory(linkTemplate), packages);
 		}
 
-		public void javadoc(Function<LibraryVersion, String> linkFactory) {
+		public void javadoc(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.JAVADOC, linkFactory);
 		}
 
-		public void javadoc(Function<LibraryVersion, String> linkFactory, String... packages) {
+		public void javadoc(Function<LinkedVersion, String> linkFactory, String... packages) {
 			add(LinkType.JAVADOC, linkFactory, packages);
 		}
 
-		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
+		public void javadoc(String rootName, Function<LinkedVersion, String> linkFactory, String... packages) {
 			add(rootName, LinkType.JAVADOC, linkFactory, packages);
 		}
 
@@ -576,7 +575,7 @@ public class BomExtension {
 			releaseNotes(asFactory(linkTemplate));
 		}
 
-		public void releaseNotes(Function<LibraryVersion, String> linkFactory) {
+		public void releaseNotes(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.RELEASE_NOTES, linkFactory);
 		}
 
@@ -584,25 +583,25 @@ public class BomExtension {
 			layersXsd(asFactory(linkTemplate));
 		}
 
-		public void layersXsd(Function<LibraryVersion, String> linkFactory) {
+		public void layersXsd(Function<LinkedVersion, String> linkFactory) {
 			add(LinkType.LAYERS_XSD, linkFactory);
 		}
 
-		private void add(LinkType name, Function<LibraryVersion, String> linkFactory) {
+		private void add(LinkType name, Function<LinkedVersion, String> linkFactory) {
 			add(name, linkFactory, null);
 		}
 
-		private void add(LinkType type, Function<LibraryVersion, String> linkFactory, String[] packages) {
+		private void add(LinkType type, Function<LinkedVersion, String> linkFactory, String[] packages) {
 			add(null, type, linkFactory, packages);
 		}
 
-		private void add(String rootName, LinkType type, Function<LibraryVersion, String> linkFactory,
+		private void add(String rootName, LinkType type, Function<LinkedVersion, String> linkFactory,
 				String[] packages) {
 			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
 			this.links.computeIfAbsent(type, (key) -> new ArrayList<>()).add(link);
 		}
 
-		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
+		private Function<LinkedVersion, String> asFactory(String linkTemplate) {
 			return (version) -> {
 				PlaceholderResolver resolver = (name) -> "version".equals(name) ? version.toString() : null;
 				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);

@@ -19,7 +19,6 @@ package org.springframework.boot.build.bom.bomr;
 import java.util.List;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
@@ -47,7 +46,7 @@ class VersionOption {
 	}
 
 	Upgrade upgrade(Library library) {
-		return new Upgrade(library, library.withVersion(new LibraryVersion(this.version)));
+		return new Upgrade(library, library.withVersion(this.version));
 	}
 
 	static final class AlignedVersionOption extends VersionOption {
@@ -102,8 +101,7 @@ class VersionOption {
 
 		@Override
 		Upgrade upgrade(Library library) {
-			return new Upgrade(library, library.withVersion(new LibraryVersion(super.version)),
-					library.withVersion(new LibraryVersion(this.releaseVersion)));
+			return new Upgrade(library, library.withVersion(super.version), library.withVersion(this.releaseVersion));
 		}
 
 	}

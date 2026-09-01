@@ -29,9 +29,9 @@ import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
@@ -214,7 +214,7 @@ class AntoraAsciidocAttributesTests {
 			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
 	}
 
-	private List<Link> singleLink(Function<LibraryVersion, String> factory, String... packages) {
+	private List<Link> singleLink(Function<LinkedVersion, String> factory, String... packages) {
 		Link link = new Link(null, factory, List.of(packages));
 		return List.of(link);
 	}
@@ -234,7 +234,7 @@ class AntoraAsciidocAttributesTests {
 	private Library mockLibrary(Map<LinkType, List<Link>> links) {
 		String name = "Spring Framework";
 		String calendarName = null;
-		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
+		DependencyVersion version = DependencyVersion.parse("1.2.3");
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		FirstParty firstParty = null;

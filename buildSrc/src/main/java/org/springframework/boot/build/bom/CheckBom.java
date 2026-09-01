@@ -136,7 +136,7 @@ public abstract class CheckBom extends DefaultTask {
 			for (Group group : library.getGroups()) {
 				for (Module module : group.getModules()) {
 					if (!module.getExclusions().isEmpty()) {
-						checkExclusions(group.getId(), module, library.getVersion().getVersion(), errors);
+						checkExclusions(group.getId(), module, library.getVersion(), errors);
 					}
 				}
 			}
@@ -183,9 +183,9 @@ public abstract class CheckBom extends DefaultTask {
 		@Override
 		public List<String> check(Library library) {
 			List<String> errors = new ArrayList<>();
-			ArtifactVersion currentVersion = new DefaultArtifactVersion(library.getVersion().getVersion().toString());
+			ArtifactVersion currentVersion = new DefaultArtifactVersion(library.getVersion().toString());
 			for (ProhibitedVersion prohibited : library.getProhibitedVersions()) {
-				if (prohibited.isProhibited(library.getVersion().getVersion().toString())) {
+				if (prohibited.isProhibited(library.getVersion().toString())) {
 					errors.add("Current version " + currentVersion + " is prohibited");
 				}
 				else {
@@ -232,9 +232,9 @@ public abstract class CheckBom extends DefaultTask {
 			Set<String> alignedVersions = versionAlignment.resolve();
 			if (alignedVersions.size() == 1) {
 				String alignedVersion = alignedVersions.iterator().next();
-				if (!alignedVersion.equals(library.getVersion().getVersion().toString())) {
-					errors.add("Version " + library.getVersion().getVersion() + " is misaligned. It should be "
-							+ alignedVersion + ".");
+				if (!alignedVersion.equals(library.getVersion().toString())) {
+					errors.add(
+							"Version " + library.getVersion() + " is misaligned. It should be " + alignedVersion + ".");
 				}
 			}
 			else {
@@ -296,7 +296,7 @@ public abstract class CheckBom extends DefaultTask {
 			BomAlignment alignsWithBom = library.getAlignsWithBom();
 			if (alignsWithBom != null) {
 				Bom mavenBom = this.bomResolver
-					.resolveMavenBom(alignsWithBom.getCoordinates() + ":" + library.getVersion().getVersion());
+					.resolveMavenBom(alignsWithBom.getCoordinates() + ":" + library.getVersion());
 				checkDependencyManagementAlignment(resolvedLibrary, mavenBom, errors, alignsWithBom::exclude);
 			}
 			return errors;

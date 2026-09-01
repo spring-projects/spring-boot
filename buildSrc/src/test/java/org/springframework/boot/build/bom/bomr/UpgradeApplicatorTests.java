@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.FileCopyUtils;
 
@@ -51,10 +50,10 @@ class UpgradeApplicatorTests {
 		String originalContents = Files.readString(bom.toPath());
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		Library activeMq = new Library("ActiveMQ", null, new LibraryVersion(DependencyVersion.parse("5.15.11")), null,
-				null, null, null, null, null, null, null);
+		Library activeMq = new Library("ActiveMQ", null, DependencyVersion.parse("5.15.11"), null, null, null, null,
+				null, null, null, null);
 		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
-			.apply(new Upgrade(activeMq, activeMq.withVersion(new LibraryVersion(DependencyVersion.parse("5.16")))));
+			.apply(new Upgrade(activeMq, activeMq.withVersion(DependencyVersion.parse("5.16"))));
 		String bomContents = Files.readString(bom.toPath());
 		assertThat(bomContents).hasSize(originalContents.length() - 3);
 	}
@@ -65,10 +64,10 @@ class UpgradeApplicatorTests {
 		FileCopyUtils.copy(new File("src/test/resources/bom.gradle"), bom);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		Library kotlin = new Library("Kotlin", null, new LibraryVersion(DependencyVersion.parse("1.3.70")), null, null,
-				null, null, null, null, null, null);
+		Library kotlin = new Library("Kotlin", null, DependencyVersion.parse("1.3.70"), null, null, null, null, null,
+				null, null, null);
 		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
-			.apply(new Upgrade(kotlin, kotlin.withVersion(new LibraryVersion(DependencyVersion.parse("1.4")))));
+			.apply(new Upgrade(kotlin, kotlin.withVersion(DependencyVersion.parse("1.4"))));
 		Properties properties = new Properties();
 		try (InputStream in = new FileInputStream(gradleProperties)) {
 			properties.load(in);

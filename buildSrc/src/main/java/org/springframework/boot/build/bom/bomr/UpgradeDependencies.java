@@ -305,11 +305,11 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		UpgradePolicy libraryPolicy = library.getUpgradePolicy();
 		UpgradePolicy bomPolicy = this.bom.getUpgrade().getPolicy();
 		UpgradePolicy upgradePolicy = UpgradePolicy.max(libraryPolicy, bomPolicy);
-		return upgradePolicy.test(candidate, library.getVersion().getVersion());
+		return upgradePolicy.test(candidate, library.getVersion());
 	}
 
 	private boolean isAnUpgrade(Library library, DependencyVersion candidate) {
-		return library.getVersion().getVersion().isUpgrade(candidate, this.movingToSnapshots);
+		return library.getVersion().isUpgrade(candidate, this.movingToSnapshots);
 	}
 
 	private boolean isNotProhibited(Library library, DependencyVersion candidate) {
