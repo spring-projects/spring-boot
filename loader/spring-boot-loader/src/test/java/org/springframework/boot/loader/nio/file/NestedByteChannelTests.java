@@ -118,9 +118,17 @@ class NestedByteChannelTests {
 	void readReadsBytesAndIncrementsPosition() throws IOException {
 		ByteBuffer dst = ByteBuffer.allocate(10);
 		assertThat(this.channel.position()).isZero();
-		this.channel.read(dst);
+		assertThat(this.channel.read(dst)).isEqualTo(10);
 		assertThat(this.channel.position()).isEqualTo(10L);
 		assertThat(dst.array()).isNotEqualTo(ByteBuffer.allocate(10).array());
+	}
+
+	@Test
+	void whenDataCannotFillBufferReadReturnsBytesRead() throws IOException {
+		ByteBuffer dst = ByteBuffer.allocate(8192);
+		assertThat(this.channel.position()).isZero();
+		assertThat(this.channel.read(dst)).isEqualTo(638);
+		assertThat(this.channel.position()).isEqualTo(638L);
 	}
 
 	@Test // gh-38592

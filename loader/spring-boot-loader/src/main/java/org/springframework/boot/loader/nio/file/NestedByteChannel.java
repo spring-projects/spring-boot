@@ -85,7 +85,7 @@ class NestedByteChannel implements SeekableByteChannel {
 		while (dst.remaining() > 0) {
 			int count = this.resources.getData().read(dst, this.position);
 			if (count <= 0) {
-				return (total != 0) ? 0 : count;
+				return (total != 0) ? total : count;
 			}
 			total += count;
 			this.position += count;
