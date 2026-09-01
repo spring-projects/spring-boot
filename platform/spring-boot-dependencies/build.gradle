@@ -665,12 +665,10 @@ bom {
 			site("https://hibernate.org/orm")
 			javadoc(version -> "https://docs.jboss.org/hibernate/orm/%s.%s/javadocs"
 				.formatted(version.major(), version.minor()), "org.hibernate.boot", "org.hibernate.resource")
-			docs(version -> "https://hibernate.org/orm/documentation/%s.%s"
+			docs(version -> "https://docs.hibernate.org/orm/%s.%s/userguide/html_single/"
 				.formatted(version.major(), version.minor()))
 			releaseNotes(version -> "https://github.com/hibernate/hibernate-orm/releases/tag/%s"
 				.formatted(version.toString().replace(".Final", "")))
-			add("userguide", version -> "https://docs.jboss.org/hibernate/orm/%s.%s/userguide/html_single/Hibernate_User_Guide.html"
-				.formatted(version.major(), version.minor()))
 		}
 	}
 	library("Hibernate Validator", "9.1.3.Final") {
@@ -2441,7 +2439,7 @@ bom {
 			javadoc("https://docs.spring.io/spring-boot/{version}/api/java", "org.springframework.boot")
 			docs("https://docs.spring.io/spring-boot/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-boot/releases/tag/v{version}")
-			add("layers-xsd", version -> "https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
+			layersXsd(version -> "https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
 				.formatted(version.major(), version.minor()))
 		}
 	}

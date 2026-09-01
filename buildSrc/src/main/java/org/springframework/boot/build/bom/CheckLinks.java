@@ -61,18 +61,18 @@ public abstract class CheckLinks extends DefaultTask {
 			.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
 			.build();
 		for (Library library : this.bom.getLibraries()) {
-			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
+			library.getLinks().forEachLink((type, link) -> {
 				URI uri;
 				try {
 					uri = new URI(link.url(library));
 					ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
-					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), name,
+					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), type,
 							uri);
 				}
 				catch (URISyntaxException ex) {
 					throw new RuntimeException(ex);
 				}
-			}));
+			});
 		}
 	}
 

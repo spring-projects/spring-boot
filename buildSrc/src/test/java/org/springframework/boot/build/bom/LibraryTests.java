@@ -18,7 +18,6 @@ package org.springframework.boot.build.bom;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
-import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -51,7 +50,7 @@ class LibraryTests {
 		VersionAlignment versionAlignment = null;
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
-		Map<String, List<Link>> links = Collections.emptyMap();
+		Links links = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
@@ -68,7 +67,7 @@ class LibraryTests {
 		VersionAlignment versionAlignment = null;
 		BomAlignment alignsWithBom = null;
 		String linkRootName = "spring-data";
-		Map<String, List<Link>> links = Collections.emptyMap();
+		Links links = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
