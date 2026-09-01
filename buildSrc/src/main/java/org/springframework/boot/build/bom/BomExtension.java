@@ -50,6 +50,8 @@ import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.PermittedDependency;
 import org.springframework.boot.build.bom.Library.PomPropertyVersionAlignment;
@@ -131,7 +133,7 @@ public class BomExtension {
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, firstParty,
 				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.linkRootName,
-				libraryHandler.links));
+				new Links(libraryHandler.links)));
 	}
 
 	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
@@ -230,7 +232,7 @@ public class BomExtension {
 
 		private String linkRootName;
 
-		private final Map<String, List<Link>> links = new HashMap<>();
+		private final Map<LinkType, List<Link>> links = new HashMap<>();
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -524,14 +526,14 @@ public class BomExtension {
 
 	public static class LinksHandler {
 
-		private final Map<String, List<Link>> links = new HashMap<>();
+		private final Map<LinkType, List<Link>> links = new HashMap<>();
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
 		}
 
 		public void site(Function<LibraryVersion, String> linkFactory) {
-			add("site", linkFactory);
+			add(LinkType.SITE, linkFactory);
 		}
 
 		public void github(String linkTemplate) {
@@ -539,7 +541,7 @@ public class BomExtension {
 		}
 
 		public void github(Function<LibraryVersion, String> linkFactory) {
-			add("github", linkFactory);
+			add(LinkType.GITHUB, linkFactory);
 		}
 
 		public void docs(String linkTemplate) {
@@ -547,7 +549,7 @@ public class BomExtension {
 		}
 
 		public void docs(Function<LibraryVersion, String> linkFactory) {
-			add("docs", linkFactory);
+			add(LinkType.DOCS, linkFactory);
 		}
 
 		public void javadoc(String linkTemplate) {
@@ -559,15 +561,15 @@ public class BomExtension {
 		}
 
 		public void javadoc(Function<LibraryVersion, String> linkFactory) {
-			add("javadoc", linkFactory);
+			add(LinkType.JAVADOC, linkFactory);
 		}
 
 		public void javadoc(Function<LibraryVersion, String> linkFactory, String... packages) {
-			add("javadoc", linkFactory, packages);
+			add(LinkType.JAVADOC, linkFactory, packages);
 		}
 
 		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
-			add(rootName, "javadoc", linkFactory, packages);
+			add(rootName, LinkType.JAVADOC, linkFactory, packages);
 		}
 
 		public void releaseNotes(String linkTemplate) {
@@ -575,25 +577,29 @@ public class BomExtension {
 		}
 
 		public void releaseNotes(Function<LibraryVersion, String> linkFactory) {
-			add("releaseNotes", linkFactory);
+			add(LinkType.RELEASE_NOTES, linkFactory);
 		}
 
-		public void add(String name, String linkTemplate) {
-			add(name, asFactory(linkTemplate));
+		public void layersXsd(String linkTemplate) {
+			layersXsd(asFactory(linkTemplate));
 		}
 
-		public void add(String name, Function<LibraryVersion, String> linkFactory) {
+		public void layersXsd(Function<LibraryVersion, String> linkFactory) {
+			add(LinkType.LAYERS_XSD, linkFactory);
+		}
+
+		private void add(LinkType name, Function<LibraryVersion, String> linkFactory) {
 			add(name, linkFactory, null);
 		}
 
-		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
-			add(null, name, linkFactory, packages);
+		private void add(LinkType type, Function<LibraryVersion, String> linkFactory, String[] packages) {
+			add(null, type, linkFactory, packages);
 		}
 
-		private void add(String rootName, String name, Function<LibraryVersion, String> linkFactory,
+		private void add(String rootName, LinkType type, Function<LibraryVersion, String> linkFactory,
 				String[] packages) {
 			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
-			this.links.computeIfAbsent(name, (key) -> new ArrayList<>()).add(link);
+			this.links.computeIfAbsent(type, (key) -> new ArrayList<>()).add(link);
 		}
 
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {

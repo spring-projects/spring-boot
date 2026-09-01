@@ -42,6 +42,7 @@ import org.w3c.dom.NodeList;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
@@ -98,7 +99,7 @@ class BomResolver {
 	}
 
 	private List<Link> javadocLinksOf(Library library) {
-		List<Link> javadocLinks = library.getLinks("javadoc");
+		List<Link> javadocLinks = library.getLinks(LinkType.JAVADOC);
 		return (javadocLinks != null) ? javadocLinks : Collections.emptyList();
 	}
 
