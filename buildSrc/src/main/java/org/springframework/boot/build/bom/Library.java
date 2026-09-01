@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -81,7 +82,7 @@ public class Library {
 
 	private final String linkRootName;
 
-	private final Map<String, List<Link>> links;
+	private final Links links;
 
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
@@ -103,8 +104,7 @@ public class Library {
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
-			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName,
-			Map<String, List<Link>> links) {
+			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName, Links links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -117,7 +117,7 @@ public class Library {
 		this.versionAlignment = versionAlignment;
 		this.bomAlignment = bomAlignment;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
-		this.links = (links != null) ? Collections.unmodifiableMap(new TreeMap<>(links)) : Collections.emptyMap();
+		this.links = (links != null) ? links : Links.empty();
 	}
 
 	private static String generateLinkRootName(String name) {
@@ -172,23 +172,23 @@ public class Library {
 		return this.bomAlignment;
 	}
 
-	public Map<String, List<Link>> getLinks() {
+	public Links getLinks() {
 		return this.links;
 	}
 
-	public String getLinkUrl(String name) {
-		List<Link> links = getLinks(name);
+	public String getLinkUrl(LinkType type) {
+		List<Link> links = getLinks(type);
 		if (links == null || links.isEmpty()) {
 			return null;
 		}
 		if (links.size() > 1) {
-			throw new IllegalStateException("Expected a single '%s' link for %s".formatted(name, getName()));
+			throw new IllegalStateException("Expected a single '%s' link for %s".formatted(type, getName()));
 		}
 		return links.get(0).url(this);
 	}
 
-	public List<Link> getLinks(String name) {
-		return this.links.get(name);
+	public List<Link> getLinks(LinkType type) {
+		return this.links.byType().get(type);
 	}
 
 	public String getNameAndVersion() {
@@ -709,6 +709,68 @@ public class Library {
 
 		public String getReleaseTrainId() {
 			return this.releaseTrainId;
+		}
+
+	}
+
+	public enum LinkType {
+
+		/**
+		 * A link to the library site.
+		 */
+		SITE("site"),
+
+		/**
+		 * A link to GitHub.
+		 */
+		GITHUB("github"),
+
+		/**
+		 * A link to the documentation.
+		 */
+		DOCS("docs"),
+
+		/**
+		 * A link to javadoc.
+		 */
+		JAVADOC("javadoc"),
+
+		/**
+		 * A link to release notes.
+		 */
+		RELEASE_NOTES("release-notes"),
+
+		/**
+		 * A link to the layers schema.
+		 */
+		LAYERS_XSD("layers-xsd");
+
+		private final String attributeName;
+
+		LinkType(String attributeName) {
+			this.attributeName = attributeName;
+		}
+
+		public String attributeName() {
+			return this.attributeName;
+		}
+
+	}
+
+	public record Links(Map<LinkType, List<Link>> byType) {
+
+		private static final Links EMPTY = new Links(Collections.emptyMap());
+
+		public Links {
+			byType = (byType != null) ? Collections.unmodifiableMap(new TreeMap<>(byType)) : Collections.emptyMap();
+		}
+
+		public void forEachLink(BiConsumer<LinkType, Link> action) {
+			byType().forEach((type, links) -> links.forEach((link) -> action.accept(type, link)));
+		}
+
+		public static Links empty() {
+			return EMPTY;
 		}
 
 	}

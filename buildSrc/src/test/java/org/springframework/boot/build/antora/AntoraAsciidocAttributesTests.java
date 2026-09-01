@@ -31,6 +31,8 @@ import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -196,10 +198,10 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void urlLinksFromLibrary() {
-		Map<String, List<Link>> links = new LinkedHashMap<>();
-		links.put("site", singleLink((version) -> "https://example.com/site/" + version));
-		links.put("docs", singleLink((version) -> "https://example.com/docs/" + version));
-		links.put("javadoc",
+		Map<LinkType, List<Link>> links = new LinkedHashMap<>();
+		links.put(LinkType.SITE, singleLink((version) -> "https://example.com/site/" + version));
+		links.put(LinkType.DOCS, singleLink((version) -> "https://example.com/docs/" + version));
+		links.put(LinkType.JAVADOC,
 				singleLink((version) -> "https://example.com/api/" + version, "org.springframework.[core|util]"));
 		Library library = mockLibrary(links);
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
@@ -229,7 +231,7 @@ class AntoraAsciidocAttributesTests {
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
-	private Library mockLibrary(Map<String, List<Link>> links) {
+	private Library mockLibrary(Map<LinkType, List<Link>> links) {
 		String name = "Spring Framework";
 		String calendarName = null;
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
@@ -240,7 +242,7 @@ class AntoraAsciidocAttributesTests {
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
-				versionAlignment, alignsWithBom, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, new Links(links));
 		return library;
 	}
 

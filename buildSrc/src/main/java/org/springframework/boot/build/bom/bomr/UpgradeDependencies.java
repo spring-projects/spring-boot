@@ -50,6 +50,7 @@ import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.bom.UpgradePolicy;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
@@ -342,8 +343,8 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
 		String description = upgrade.toRelease().getNameAndVersion();
-		String releaseNotesLink = upgrade.toRelease().getLinkUrl("releaseNotes");
-		String body = (releaseNotesLink != null) ? "Upgrade to [%s](%s).".formatted(description, releaseNotesLink)
+		String releaseNotesLinkUrl = upgrade.toRelease().getLinkUrl(LinkType.RELEASE_NOTES);
+		String body = (releaseNotesLinkUrl != null) ? "Upgrade to [%s](%s).".formatted(description, releaseNotesLinkUrl)
 				: "Upgrade to %s.".formatted(description);
 		if (existingUpgrade != null) {
 			body += "\n\nSupersedes #" + existingUpgrade.getNumber();
