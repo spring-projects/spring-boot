@@ -82,11 +82,11 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		Set<String> alignedVersions = (alignment != null) ? alignment.resolve() : null;
 		if (alignedVersions != null && alignedVersions.size() == 1) {
 			DependencyVersion alignedVersion = DependencyVersion.parse(alignedVersions.iterator().next());
-			if (alignedVersion.equals(library.getVersion().getVersion())) {
+			if (alignedVersion.equals(library.getVersion())) {
 				return new VersionOption.AlignedVersionOption(alignedVersion, alignment);
 			}
 		}
-		return new VersionOption(library.getVersion().getVersion());
+		return new VersionOption(library.getVersion());
 	}
 
 	private VersionOption selectOption(VersionOption defaultOption, Library library,
