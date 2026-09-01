@@ -49,6 +49,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Junhwan Choi
  */
 final class ImageBuildpack implements Buildpack {
 
@@ -137,24 +138,36 @@ final class ImageBuildpack implements Buildpack {
 					tarArchive.writeTo(out);
 				}
 				Path layerFile = Files.createTempFile("create-builder-scratch-", null);
-				try (TarArchiveOutputStream out = new TarArchiveOutputStream(Files.newOutputStream(layerFile))) {
-					try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(sourceTarFile))) {
-						out.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-						TarArchiveEntry entry = in.getNextEntry();
-						while (entry != null) {
-							String entryName = entry.getName();
-							Path entryPath = Path.of(entryName);
-							Assert.state(entryPath.toAbsolutePath().equals(entryPath.toAbsolutePath().normalize()),
-									() -> "Malformed zip entry name '%s'".formatted(entryName));
-							out.putArchiveEntry(entry);
-							StreamUtils.copy(in, out);
-							out.closeArchiveEntry();
-							entry = in.getNextEntry();
+				try {
+					try (TarArchiveOutputStream out = new TarArchiveOutputStream(Files.newOutputStream(layerFile))) {
+						try (TarArchiveInputStream in = new TarArchiveInputStream(
+								Files.newInputStream(sourceTarFile))) {
+							out.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+							TarArchiveEntry entry = in.getNextEntry();
+							while (entry != null) {
+								String entryName = entry.getName();
+								Path entryPath = Path.of(entryName);
+								Assert.state(entryPath.toAbsolutePath().equals(entryPath.toAbsolutePath().normalize()),
+										() -> "Malformed zip entry name '%s'".formatted(entryName));
+								out.putArchiveEntry(entry);
+								StreamUtils.copy(in, out);
+								out.closeArchiveEntry();
+								entry = in.getNextEntry();
+							}
+							out.finish();
 						}
-						out.finish();
 					}
+					return layerFile;
 				}
-				return layerFile;
+				catch (IOException | RuntimeException ex) {
+					try {
+						Files.deleteIfExists(layerFile);
+					}
+					catch (IOException suppressed) {
+						ex.addSuppressed(suppressed);
+					}
+					throw ex;
+				}
 			}
 			finally {
 				Files.deleteIfExists(sourceTarFile);
