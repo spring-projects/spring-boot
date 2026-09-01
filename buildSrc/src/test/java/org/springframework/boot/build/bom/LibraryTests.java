@@ -19,12 +19,13 @@ package org.springframework.boot.build.bom;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
@@ -43,7 +44,7 @@ class LibraryTests {
 	void getLinkRootNameWhenNoneSpecified() {
 		String name = "Spring Framework";
 		String calendarName = null;
-		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
+		DependencyVersion version = DependencyVersion.parse("1.2.3");
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		FirstParty firstParty = null;
@@ -60,7 +61,7 @@ class LibraryTests {
 	void getLinkRootNameWhenSpecified() {
 		String name = "Spring Data BOM";
 		String calendarName = null;
-		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
+		DependencyVersion version = DependencyVersion.parse("1.2.3");
 		List<Group> groups = Collections.emptyList();
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		FirstParty firstParty = null;
@@ -73,16 +74,21 @@ class LibraryTests {
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}
 
-	@Test
-	void toMajorMinorGenerationWithRelease() {
-		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
-		assertThat(version.forMajorMinorGeneration()).isEqualTo("1.2.x");
-	}
+	@Nested
+	class LinkedVersionTests {
 
-	@Test
-	void toMajorMinorGenerationWithSnapshot() {
-		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("2.0.0-SNAPSHOT"));
-		assertThat(version.forMajorMinorGeneration()).isEqualTo("2.0.x-SNAPSHOT");
+		@Test
+		void toMajorMinorGenerationWithRelease() {
+			LinkedVersion version = new LinkedVersion(DependencyVersion.parse("1.2.3"));
+			assertThat(version.forMajorMinorGeneration()).isEqualTo("1.2.x");
+		}
+
+		@Test
+		void toMajorMinorGenerationWithSnapshot() {
+			LinkedVersion version = new LinkedVersion(DependencyVersion.parse("2.0.0-SNAPSHOT"));
+			assertThat(version.forMajorMinorGeneration()).isEqualTo("2.0.x-SNAPSHOT");
+		}
+
 	}
 
 }

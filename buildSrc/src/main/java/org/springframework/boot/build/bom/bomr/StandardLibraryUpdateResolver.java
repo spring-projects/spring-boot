@@ -97,7 +97,7 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			Set<String> alignedVersions = versionAlignment.resolve();
 			if (alignedVersions != null && alignedVersions.size() == 1) {
 				DependencyVersion alignedVersion = DependencyVersion.parse(alignedVersions.iterator().next());
-				if (!alignedVersion.equals(library.getVersion().getVersion())) {
+				if (!alignedVersion.equals(library.getVersion())) {
 					return new VersionOption.AlignedVersionOption(alignedVersion, versionAlignment);
 				}
 			}

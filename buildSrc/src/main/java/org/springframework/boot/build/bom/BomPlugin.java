@@ -254,7 +254,7 @@ public class BomPlugin implements Plugin<Project> {
 						plugin.appendNode("artifactId", pluginName);
 						String versionProperty = library.getVersionProperty();
 						String value = (versionProperty != null) ? "${" + versionProperty + "}"
-								: library.getVersion().getVersion().toString();
+								: library.getVersion().toString();
 						plugin.appendNode("version", value);
 					}
 				}
