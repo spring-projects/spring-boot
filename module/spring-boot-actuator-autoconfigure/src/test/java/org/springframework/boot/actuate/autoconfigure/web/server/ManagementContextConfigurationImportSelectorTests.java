@@ -64,7 +64,8 @@ class ManagementContextConfigurationImportSelectorTests {
 
 	@Test
 	void selectImportsLoadsFromResources() {
-		String[] imports = new ManagementContextConfigurationImportSelector()
+		String[] imports = new ManagementContextConfigurationImportSelector(
+				ManagementContextConfigurationImportSelector.class.getClassLoader())
 			.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		Set<String> expected = new HashSet<>();
 		ImportCandidates
@@ -84,6 +85,7 @@ class ManagementContextConfigurationImportSelectorTests {
 		private final List<String> factoryNames;
 
 		private TestManagementContextConfigurationsImportSelector(Class<?>... classes) {
+			super(ManagementContextConfigurationImportSelector.class.getClassLoader());
 			this.factoryNames = Stream.of(classes).map(Class::getName).toList();
 		}
 

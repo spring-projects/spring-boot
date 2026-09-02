@@ -30,7 +30,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -170,15 +169,13 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 * {@link ImportSelector} that returns the original test class so that direct
 	 * {@code @Import} annotations are processed.
 	 */
-	static class ImportsSelector implements ImportSelector, BeanFactoryAware {
+	static class ImportsSelector implements ImportSelector {
 
 		private static final String[] NO_IMPORTS = {};
 
-		@SuppressWarnings("NullAway.Init")
-		private ConfigurableListableBeanFactory beanFactory;
+		private final ConfigurableListableBeanFactory beanFactory;
 
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		ImportsSelector(BeanFactory beanFactory) {
 			this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		}
 

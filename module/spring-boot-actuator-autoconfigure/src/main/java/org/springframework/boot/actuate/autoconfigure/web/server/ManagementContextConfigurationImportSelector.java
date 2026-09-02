@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.context.annotation.ImportCandidates;
@@ -51,9 +50,13 @@ import org.springframework.util.StringUtils;
  * @see ImportCandidates
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class ManagementContextConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware {
+class ManagementContextConfigurationImportSelector implements DeferredImportSelector {
 
-	private @Nullable ClassLoader classLoader;
+	private final ClassLoader classLoader;
+
+	ManagementContextConfigurationImportSelector(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
@@ -96,11 +99,6 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 
 	protected List<String> loadFactoryNames() {
 		return ImportCandidates.load(ManagementContextConfiguration.class, this.classLoader).getCandidates();
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
 	}
 
 	/**
