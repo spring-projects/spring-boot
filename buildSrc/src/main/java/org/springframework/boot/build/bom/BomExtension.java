@@ -126,7 +126,7 @@ public class BomExtension {
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, firstParty,
 				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.linkRootName,
-				new Links(libraryHandler.links)));
+				libraryHandler.links, libraryHandler.moduleLinks));
 	}
 
 	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
@@ -224,7 +224,9 @@ public class BomExtension {
 
 		private String linkRootName;
 
-		private final Map<LinkType, List<Link>> links = new HashMap<>();
+		private Links links;
+
+		private Map<String, Links> moduleLinks;
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -274,15 +276,17 @@ public class BomExtension {
 			action.execute(this.alignWith);
 		}
 
-		public void links(Action<LinksHandler> action) {
+		public void links(Action<LibraryLinksHandler> action) {
 			links(null, action);
 		}
 
-		public void links(String linkRootName, Action<LinksHandler> action) {
-			LinksHandler handler = new LinksHandler();
+		public void links(String linkRootName, Action<LibraryLinksHandler> action) {
+			LibraryLinksHandler handler = new LibraryLinksHandler();
 			action.execute(handler);
 			this.linkRootName = linkRootName;
-			this.links.putAll(handler.links);
+			this.links = new Links(handler.links());
+			this.moduleLinks = new HashMap<>();
+			handler.moduleLinks().forEach((module, links) -> this.moduleLinks.put(module, new Links(links)));
 		}
 
 		public static class ProhibitedHandler {
@@ -516,9 +520,13 @@ public class BomExtension {
 
 	}
 
-	public static class LinksHandler {
+	public abstract static class LinksHandler {
 
 		private final Map<LinkType, List<Link>> links = new HashMap<>();
+
+		Map<LinkType, List<Link>> links() {
+			return this.links;
+		}
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
@@ -560,10 +568,6 @@ public class BomExtension {
 			add(LinkType.JAVADOC, linkFactory, packages);
 		}
 
-		public void javadoc(String rootName, Function<LinkedVersion, String> linkFactory, String... packages) {
-			add(rootName, LinkType.JAVADOC, linkFactory, packages);
-		}
-
 		public void releaseNotes(String linkTemplate) {
 			releaseNotes(asFactory(linkTemplate));
 		}
@@ -585,12 +589,7 @@ public class BomExtension {
 		}
 
 		private void add(LinkType type, Function<LinkedVersion, String> linkFactory, String[] packages) {
-			add(null, type, linkFactory, packages);
-		}
-
-		private void add(String rootName, LinkType type, Function<LinkedVersion, String> linkFactory,
-				String[] packages) {
-			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
+			Link link = new Link(linkFactory, (packages != null) ? List.of(packages) : null);
 			this.links.computeIfAbsent(type, (key) -> new ArrayList<>()).add(link);
 		}
 
@@ -600,6 +599,34 @@ public class BomExtension {
 				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);
 			};
 		}
+
+	}
+
+	public static class LibraryLinksHandler extends LinksHandler {
+
+		private final Map<String, Map<LinkType, List<Link>>> moduleLinks = new HashMap<>();
+
+		public Map<String, Map<LinkType, List<Link>>> moduleLinks() {
+			return this.moduleLinks;
+		}
+
+		public void module(String moduleName, Closure<ModuleLinksHandler> closure) {
+			ModuleLinksHandler handler = new ModuleLinksHandler();
+			closure.setDelegate(handler);
+			closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+			closure.call(handler);
+			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
+		}
+
+		public void module(String moduleName, Action<ModuleLinksHandler> action) {
+			ModuleLinksHandler handler = new ModuleLinksHandler();
+			action.execute(handler);
+			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
+		}
+
+	}
+
+	public static class ModuleLinksHandler extends LinksHandler {
 
 	}
 

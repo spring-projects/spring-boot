@@ -174,7 +174,7 @@ public class AntoraConventions {
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
 		antoraTask.setPlaybook("antora-playbook.yml");
 		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
-		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArs(project, antoraTask)));
+		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArgs(project, antoraTask)));
 		project.getPlugins()
 			.withType(JavaBasePlugin.class,
 					(javaBasePlugin) -> project.getTasks()
@@ -182,7 +182,7 @@ public class AntoraConventions {
 						.dependsOn(antoraTask));
 	}
 
-	private List<String> getAntoraNpxArs(Project project, AntoraTask antoraTask) {
+	private List<String> getAntoraNpxArgs(Project project, AntoraTask antoraTask) {
 		logWarningIfNodeModulesInUserHome(project);
 		StartParameter startParameter = project.getGradle().getStartParameter();
 		boolean showStacktrace = startParameter.getShowStacktrace().name().startsWith("ALWAYS");
