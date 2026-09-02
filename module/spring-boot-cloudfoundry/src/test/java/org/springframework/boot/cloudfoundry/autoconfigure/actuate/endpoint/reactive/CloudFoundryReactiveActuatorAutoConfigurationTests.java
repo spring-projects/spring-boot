@@ -31,6 +31,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -42,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
@@ -66,8 +68,11 @@ import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -77,16 +82,21 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 /**
  * Tests for {@link CloudFoundryReactiveActuatorAutoConfiguration}.
  *
  * @author Madhura Bhave
  * @author Moritz Halbritter
+ * @author Aashikant Kumar
  */
 class CloudFoundryReactiveActuatorAutoConfigurationTests {
 
@@ -186,7 +196,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void cloudFoundryPathsIgnoredBySpringSecurity() {
+	void cloudFoundryPathsPermittedBySpringSecurity() {
 		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 					"vcap.application.cf_api:https://my-cloud-controller.com")
@@ -206,10 +216,60 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 						assertThat(cfRequestWithAdditionalPathMatches).isTrue();
 						assertThat(otherCfRequestMatches).isTrue();
 						assertThat(otherRequestMatches).isFalse();
-						otherRequestMatches = filters.get(1)
-							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
-							.block(Duration.ofSeconds(30));
-						assertThat(otherRequestMatches).isTrue();
+					});
+			});
+	}
+
+	@Test
+	void cloudFoundryPathsPermittedWithCsrfBySpringSecurity() {
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+			.run((context) -> {
+				WebTestClient client = WebTestClient.bindToApplicationContext(context).apply(springSecurity()).build();
+				client.post()
+					.uri(BASE_PATH + "/test?name=test")
+					.contentType(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+				// If CSRF fails we'll get a 403, if it works we get service unavailable
+				// because of "Cloud controller URL is not available"
+			});
+	}
+
+	@Test
+	void crossOriginRequestToCloudFoundryPathsPermittedBySpringSecurity() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", new CorsConfiguration());
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withBean("corsConfigurationSource", CorsConfigurationSource.class, () -> source)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+			.run((context) -> {
+				WebTestClient client = WebTestClient.bindToApplicationContext(context).apply(springSecurity()).build();
+				client.get()
+					.uri(BASE_PATH + "/test")
+					.header(HttpHeaders.ORIGIN, "elsewhere.example.com")
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+				// If CORS fails we'll get a 403, if it works we get service unavailable
+				// because of "Cloud controller URL is not available"
+			});
+	}
+
+	@Test
+	void userSecurityWebFilterChainIsPreserved() {
+		SecurityWebFilterChain userChain = mock(SecurityWebFilterChain.class);
+		this.contextRunner.withBean(SecurityWebFilterChain.class, () -> userChain)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+					"vcap.application.cf_api:https://my-cloud-controller.com")
+			.run((context) -> {
+				assertThat(context.getBean(WebFilterChainProxy.class))
+					.extracting("filters", InstanceOfAssertFactories.list(SecurityWebFilterChain.class))
+					.hasSize(2)
+					.satisfies((filters) -> {
+						assertThat(getMatches(filters, BASE_PATH)).isTrue();
+						assertThat(filters.get(1)).isSameAs(userChain);
 					});
 			});
 	}
@@ -385,6 +445,10 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 		@ReadOperation
 		String hello() {
 			return "hello world";
+		}
+
+		@WriteOperation
+		void update(String name) {
 		}
 
 	}

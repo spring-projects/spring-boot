@@ -24,9 +24,7 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -56,22 +54,24 @@ import org.springframework.boot.info.GitProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.WebFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
  * Cloud Foundry to use in a reactive environment.
  *
  * @author Madhura Bhave
+ * @author Aashikant Kumar
  * @since 4.0.0
  */
 @AutoConfiguration(after = InfoEndpointAutoConfiguration.class,
@@ -133,7 +133,7 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 				? new SecurityService(webClientBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
-	private CorsConfiguration getCorsConfiguration() {
+	private static CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
@@ -158,38 +158,21 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MatcherSecurityWebFilterChain.class)
+	@ConditionalOnClass({ ServerHttpSecurity.class, SecurityWebFilterChain.class, WebFilterChainProxy.class })
 	static class IgnoredPathsSecurityConfiguration {
 
+		private static final int FILTER_CHAIN_ORDER = -1;
+
 		@Bean
-		static WebFilterChainPostProcessor webFilterChainPostProcessor() {
-			return new WebFilterChainPostProcessor();
-		}
-
-	}
-
-	static class WebFilterChainPostProcessor implements BeanPostProcessor {
-
-		WebFilterChainPostProcessor() {
-		}
-
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof WebFilterChainProxy webFilterChainProxy) {
-				return postProcess(webFilterChainProxy);
-			}
-			return bean;
-		}
-
-		private WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
-			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers
-				.pathMatchers(BASE_PATH + "/**");
-			WebFilter noOpFilter = (exchange, chain) -> chain.filter(exchange);
-			MatcherSecurityWebFilterChain ignoredRequestFilterChain = new MatcherSecurityWebFilterChain(
-					cloudFoundryRequestMatcher, Collections.singletonList(noOpFilter));
-			MatcherSecurityWebFilterChain allRequestsFilterChain = new MatcherSecurityWebFilterChain(
-					ServerWebExchangeMatchers.anyExchange(), Collections.singletonList(existing));
-			return new WebFilterChainProxy(ignoredRequestFilterChain, allRequestsFilterChain);
+		@Order(FILTER_CHAIN_ORDER)
+		SecurityWebFilterChain cloudFoundrySecurityWebFilterChain(ServerHttpSecurity http) {
+			ServerWebExchangeMatcher cloudFoundryRequest = ServerWebExchangeMatchers.pathMatchers(BASE_PATH + "/**");
+			http.securityMatcher(cloudFoundryRequest);
+			http.authorizeExchange((exchanges) -> exchanges.anyExchange().permitAll());
+			http.csrf((csrf) -> csrf.disable());
+			CorsConfiguration corsConfiguration = getCorsConfiguration();
+			http.cors((cors) -> cors.configurationSource((exchange) -> corsConfiguration));
+			return http.build();
 		}
 
 	}
