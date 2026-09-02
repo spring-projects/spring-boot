@@ -17,10 +17,12 @@
 package org.springframework.boot.docker.compose.core;
 
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -75,11 +77,7 @@ class ProcessRunnerTests {
 			}
 		}, "process-runner-interrupt-test");
 		runner.start();
-		long deadline = System.currentTimeMillis() + 5000;
-		while (!Files.exists(pidFile) && System.currentTimeMillis() < deadline) {
-			Thread.sleep(50);
-		}
-		assertThat(pidFile).exists();
+		Awaitility.await().until(() -> Files.exists(pidFile, LinkOption.NOFOLLOW_LINKS));
 		long pid = Long.parseLong(Files.readString(pidFile).trim());
 		assertThat(ProcessHandle.of(pid)).isPresent().get().matches(ProcessHandle::isAlive);
 		runner.interrupt();
