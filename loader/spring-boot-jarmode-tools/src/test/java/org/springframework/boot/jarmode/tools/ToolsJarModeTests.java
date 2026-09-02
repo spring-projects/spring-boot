@@ -21,12 +21,16 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ToolsJarMode}.
  *
  * @author Moritz Halbritter
+ * @author Hyeongjun Cho
  */
 class ToolsJarModeTests extends AbstractJarModeTests {
 
@@ -93,6 +97,11 @@ class ToolsJarModeTests extends AbstractJarModeTests {
 	void optionMissingRequiredValueShowsErrorAndCommandHelp() {
 		run("extract", "--destination");
 		assertThat(this.out).hasSameContentAsResource("tools-error-option-missing-value-output.txt");
+	}
+
+	@Test
+	void commandFailureIsThrownAsJarModeErrorException() {
+		assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run("list-layers"));
 	}
 
 	private void run(String... args) {
