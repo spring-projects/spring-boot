@@ -73,14 +73,15 @@ class SbomCommand extends Command {
 
 	private String getSbomLocation(JarFile jarFile) throws IOException {
 		Manifest manifest = jarFile.getManifest();
-		if (manifest != null) {
-			String location = manifest.getMainAttributes().getValue(SBOM_LOCATION_ATTRIBUTE);
-			if (location != null) {
-				return location;
-			}
+		if (manifest == null) {
+			throw new JarModeErrorException("No manifest found in the jar");
 		}
-		throw new JarModeErrorException(
-				"No SBOM found in the jar; the manifest has no '%s' attribute".formatted(SBOM_LOCATION_ATTRIBUTE));
+		String location = manifest.getMainAttributes().getValue(SBOM_LOCATION_ATTRIBUTE);
+		if (location == null) {
+			throw new JarModeErrorException(
+					"No SBOM found in the jar; the manifest has no '%s' attribute".formatted(SBOM_LOCATION_ATTRIBUTE));
+		}
+		return location;
 	}
 
 	private void writeSbom(InputStream in, PrintStream out, Map<Option, @Nullable String> options) throws IOException {

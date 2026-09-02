@@ -17,6 +17,7 @@
 package org.springframework.boot.jarmode.tools;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +25,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +64,13 @@ class SbomCommandTests extends AbstractJarModeTests {
 	void shouldFailWhenSbomLocationIsMissing() {
 		assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(createArchive()))
 			.withMessage("No SBOM found in the jar; the manifest has no 'Sbom-Location' attribute");
+	}
+
+	@Test
+	void shouldFailWhenManifestIsMissing() throws IOException {
+		File archive = createArchiveWithoutManifest();
+		assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(archive))
+			.withMessage("No manifest found in the jar");
 	}
 
 	@Test
@@ -131,6 +141,15 @@ class SbomCommandTests extends AbstractJarModeTests {
 	private File createDefaultArchive() throws IOException {
 		Manifest manifest = createManifest("Sbom-Location: " + SBOM_LOCATION);
 		return createArchive(manifest, SBOM_LOCATION, SBOM_RESOURCE);
+	}
+
+	private File createArchiveWithoutManifest() throws IOException {
+		File file = new File(this.tempDir, "no-manifest.jar");
+		try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file))) {
+			zip.putNextEntry(new ZipEntry("some-file.txt"));
+			zip.closeEntry();
+		}
+		return file;
 	}
 
 	private byte[] getResourceContent(String resource) throws IOException {
