@@ -18,9 +18,7 @@ package org.springframework.boot.web.server.autoconfigure.reactive;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -58,15 +56,13 @@ public class ReactiveWebServerConfiguration {
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar {
 
-		private @Nullable ConfigurableListableBeanFactory beanFactory;
+		private final @Nullable ConfigurableListableBeanFactory beanFactory;
 
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
-				this.beanFactory = listableBeanFactory;
-			}
+		BeanPostProcessorsRegistrar(BeanFactory beanFactory) {
+			this.beanFactory = (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory)
+					? listableBeanFactory : null;
 		}
 
 		@Override

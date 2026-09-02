@@ -18,9 +18,7 @@ package org.springframework.boot.validation.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -42,20 +40,18 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Matej Nedic
  * @author Andy Wilkinson
  */
-class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar {
 
 	/**
 	 * The bean name of the auto-configured Validator.
 	 */
 	private static final String VALIDATOR_BEAN_NAME = "defaultValidator";
 
-	private @Nullable ConfigurableListableBeanFactory beanFactory;
+	private final @Nullable ConfigurableListableBeanFactory beanFactory;
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
-			this.beanFactory = listableBeanFactory;
-		}
+	PrimaryDefaultValidatorPostProcessor(BeanFactory beanFactory) {
+		this.beanFactory = (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory)
+				? listableBeanFactory : null;
 	}
 
 	@Override
