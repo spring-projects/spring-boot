@@ -61,8 +61,15 @@ import com.tngtech.archunit.lang.syntax.elements.ClassesShould;
 import com.tngtech.archunit.lang.syntax.elements.GivenMethodsConjunction;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ResourceUtils;
 
@@ -111,6 +118,7 @@ final class ArchitectureRules {
 		rules.add(autoConfigurationClassesShouldBePublicAndFinal());
 		rules.add(autoConfigurationClassesShouldHaveNoPublicMembers());
 		rules.add(testAutoConfigurationClassesShouldBePackagePrivateAndFinal());
+		rules.add(importParticipantsShouldOnlyImplementAwareInterfacesIfTheyArePublic());
 		return List.copyOf(rules);
 	}
 
@@ -297,6 +305,36 @@ final class ArchitectureRules {
 	private static ArchRule noClassesShouldCallStringToLowerCaseWithoutLocale() {
 		return noClassesShould().callMethod(String.class, "toLowerCase")
 			.because(shouldUse("String.toLowerCase(Locale.ROOT)"));
+	}
+
+	private static ArchRule importParticipantsShouldOnlyImplementAwareInterfacesIfTheyArePublic() {
+		return ArchRuleDefinition.classes()
+			.that(areImportParticipants())
+			.and()
+			.areNotPublic()
+			.should(notDirectlyImplementAwareInterfaces())
+			.allowEmptyShould(true);
+	}
+
+	private static DescribedPredicate<JavaClass> areImportParticipants() {
+		return JavaClass.Predicates.implement(ImportBeanDefinitionRegistrar.class)
+			.or(JavaClass.Predicates.implement(ImportSelector.class))
+			.or(JavaClass.Predicates.implement(TypeFilter.class));
+	}
+
+	private static ArchCondition<JavaClass> notDirectlyImplementAwareInterfaces() {
+		Set<String> awareNames = Set.of(BeanClassLoaderAware.class.getName(), BeanFactoryAware.class.getName(),
+				EnvironmentAware.class.getName(), ResourceLoaderAware.class.getName());
+		return ArchCondition
+			.from(DescribedPredicate.describe("not directly implement BeanClassLoaderAware, BeanFactoryAware,"
+					+ " EnvironmentAware, or ResourceLoaderAware", (javaClass) -> {
+						for (JavaClass rawInterface : javaClass.getRawInterfaces()) {
+							if (awareNames.contains(rawInterface.getFullName())) {
+								return false;
+							}
+						}
+						return true;
+					}));
 	}
 
 	private static ArchRule conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(
