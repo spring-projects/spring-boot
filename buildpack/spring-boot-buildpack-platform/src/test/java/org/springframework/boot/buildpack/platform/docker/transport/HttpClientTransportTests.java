@@ -68,19 +68,15 @@ class HttpClientTransportTests {
 	private static final String APPLICATION_X_TAR = "application/x-tar";
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private HttpClient client;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClassicHttpResponse response;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private HttpEntity entity;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private InputStream content;
 
 	private HttpClientTransport http;

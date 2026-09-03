@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 public class Service {
 
 	@Value("${message:World}")
-	@SuppressWarnings("NullAway.Init")
 	private String msg;
 
 	public String message() {

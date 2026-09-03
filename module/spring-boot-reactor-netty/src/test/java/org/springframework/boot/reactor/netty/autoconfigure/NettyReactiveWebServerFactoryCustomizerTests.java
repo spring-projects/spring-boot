@@ -63,7 +63,6 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 	private NettyReactiveWebServerFactoryCustomizer customizer;
 
 	@Captor
-	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<NettyServerCustomizer> customizerCaptor;
 
 	@BeforeEach

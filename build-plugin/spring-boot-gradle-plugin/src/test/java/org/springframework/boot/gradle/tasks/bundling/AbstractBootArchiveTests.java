@@ -80,7 +80,6 @@ import static org.mockito.Mockito.mock;
 abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private final Class<T> taskClass;

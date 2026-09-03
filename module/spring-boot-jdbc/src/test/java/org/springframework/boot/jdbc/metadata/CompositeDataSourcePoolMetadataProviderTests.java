@@ -38,31 +38,24 @@ import static org.mockito.BDDMockito.given;
 class CompositeDataSourcePoolMetadataProviderTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSourcePoolMetadataProvider firstProvider;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSourcePoolMetadata first;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSource firstDataSource;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSourcePoolMetadataProvider secondProvider;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSourcePoolMetadata second;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSource secondDataSource;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private DataSource unknownDataSource;
 
 	@BeforeEach

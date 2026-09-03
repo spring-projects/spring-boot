@@ -40,21 +40,18 @@ class ClassLoaderFileTests {
 	}
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void addedContentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
 			.withMessageContaining("'contents' must not be null");
 	}
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void modifiedContentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
 			.withMessageContaining("'contents' must not be null");
 	}
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void deletedContentsMustBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
 			.withMessageContaining("'contents' must be null");

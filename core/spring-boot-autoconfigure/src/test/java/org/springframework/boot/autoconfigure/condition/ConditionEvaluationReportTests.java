@@ -63,15 +63,12 @@ class ConditionEvaluationReportTests {
 	private ConditionEvaluationReport report;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Condition condition1;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Condition condition2;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Condition condition3;
 
 	private @Nullable ConditionOutcome outcome1;

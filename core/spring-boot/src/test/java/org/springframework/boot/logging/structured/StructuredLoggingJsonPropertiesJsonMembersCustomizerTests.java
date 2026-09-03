@@ -43,7 +43,7 @@ import static org.mockito.BDDMockito.given;
 class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Mock
-	@SuppressWarnings({ "rawtypes", "NullAway.Init" })
+	@SuppressWarnings("rawtypes")
 	private Instantiator instantiator;
 
 	@Test

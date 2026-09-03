@@ -67,23 +67,18 @@ class MeterRegistryPostProcessorTests {
 	private final List<MeterBinder> binders = new ArrayList<>();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private MeterRegistryCustomizer<MeterRegistry> mockCustomizer;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private MeterFilter mockFilter;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private MeterBinder mockBinder;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private MeterRegistry mockRegistry;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Config mockConfig;
 
 	private final ApplicationContext meterRegistryCloserContext = mock(ApplicationContext.class);

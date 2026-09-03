@@ -36,19 +36,15 @@ public class City implements Serializable {
 	private @Nullable Long id;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String state;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String country;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String map;
 
 	protected City() {

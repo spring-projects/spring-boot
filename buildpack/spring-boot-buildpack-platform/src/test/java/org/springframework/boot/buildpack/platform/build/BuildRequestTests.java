@@ -61,7 +61,6 @@ class BuildRequestTests {
 	private static final ZoneId UTC = ZoneId.of("UTC");
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

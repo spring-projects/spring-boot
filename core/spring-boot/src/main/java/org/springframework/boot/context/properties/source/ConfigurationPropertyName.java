@@ -635,7 +635,6 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a {@link ConfigurationPropertyName} instance
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
-	@SuppressWarnings("NullAway") // See https://github.com/uber/NullAway/issues/1232
 	public static ConfigurationPropertyName of(@Nullable CharSequence name) {
 		return of(name, false);
 	}
@@ -665,7 +664,6 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
 	}
 
-	@SuppressWarnings("NullAway") // See https://github.com/uber/NullAway/issues/1232
 	private static Elements probablySingleElementOf(CharSequence name) {
 		return elementsOf(name, false, 1);
 	}

@@ -62,7 +62,6 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	private static final int EXISTING_IMAGE_LAYER_COUNT = 43;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private final BuildOwner owner = BuildOwner.of(123, 456);
