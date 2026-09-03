@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -55,6 +56,7 @@ import org.springframework.boot.loader.zip.ZipContent.Entry;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ian Kettle
  * @since 3.2.0
  */
 public class NestedJarFile extends JarFile {
@@ -70,6 +72,13 @@ public class NestedJarFile extends JarFile {
 	private static final DebugLogger debug = DebugLogger.get(NestedJarFile.class);
 
 	private final Cleaner cleaner;
+
+	/**
+	 * Provide concurrency control for this instance. {@link ReentrantReadWriteLock} lock
+	 * preferred over synchronized blocks as this allows greater read throughput with
+	 * reduced potential for participating in deadlocks from calling code.
+	 */
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final NestedJarFileResources resources;
 
@@ -171,29 +180,41 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public Enumeration<JarEntry> entries() {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return new JarEntriesEnumeration(this.resources.zipContent());
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
 	@Override
 	public Stream<JarEntry> stream() {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return streamContentEntries().map(NestedJarEntry::new);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return streamContentEntries().map(this::getBaseName)
 				.filter(Objects::nonNull)
 				.distinct()
 				.map(this::getJarEntry)
 				.filter(Objects::nonNull);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
@@ -248,9 +269,13 @@ public class NestedJarFile extends JarFile {
 		if (entry != null) {
 			return true;
 		}
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return this.resources.zipContent().hasEntry(null, name);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
@@ -291,9 +316,13 @@ public class NestedJarFile extends JarFile {
 	}
 
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return this.resources.zipContent().getEntry(namePrefix, name);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
@@ -302,9 +331,13 @@ public class NestedJarFile extends JarFile {
 		if (manifestInfo != null) {
 			return manifestInfo;
 		}
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 		this.manifestInfo = manifestInfo;
 		return manifestInfo;
@@ -331,10 +364,14 @@ public class NestedJarFile extends JarFile {
 		if (metaInfVersionsInfo != null) {
 			return metaInfVersionsInfo;
 		}
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			metaInfVersionsInfo = this.resources.zipContent()
 				.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 		this.metaInfVersionsInfo = metaInfVersionsInfo;
 		return metaInfVersionsInfo;
@@ -354,7 +391,8 @@ public class NestedJarFile extends JarFile {
 		if (compression != ZipEntry.STORED && compression != ZipEntry.DEFLATED) {
 			throw new ZipException("invalid compression method");
 		}
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			InputStream inputStream = new JarEntryInputStream(contentEntry);
 			try {
@@ -369,21 +407,32 @@ public class NestedJarFile extends JarFile {
 				throw ex;
 			}
 		}
+		finally {
+			this.lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public String getComment() {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return this.resources.zipContent().getComment();
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
 	@Override
 	public int size() {
-		synchronized (this) {
+		this.lock.readLock().lock();
+		try {
 			ensureOpen();
 			return this.resources.zipContent().size();
+		}
+		finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
@@ -394,13 +443,15 @@ public class NestedJarFile extends JarFile {
 			return;
 		}
 		this.closed = true;
-		synchronized (this) {
-			try {
-				this.cleanup.clean();
-			}
-			catch (UncheckedIOException ex) {
-				throw ex.getCause();
-			}
+		this.lock.writeLock().lock();
+		try {
+			this.cleanup.clean();
+		}
+		catch (UncheckedIOException ex) {
+			throw ex.getCause();
+		}
+		finally {
+			this.lock.writeLock().unlock();
 		}
 	}
 
@@ -422,8 +473,12 @@ public class NestedJarFile extends JarFile {
 	 * Clear any internal caches.
 	 */
 	public void clearCache() {
-		synchronized (this) {
+		this.lock.writeLock().lock();
+		try {
 			this.lastEntry = null;
+		}
+		finally {
+			this.lock.writeLock().unlock();
 		}
 	}
 
@@ -649,9 +704,13 @@ public class NestedJarFile extends JarFile {
 			if (!hasMoreElements()) {
 				throw new NoSuchElementException();
 			}
-			synchronized (NestedJarFile.this) {
+			NestedJarFile.this.lock.readLock().lock();
+			try {
 				ensureOpen();
 				return new NestedJarEntry(this.zipContent.getEntry(this.cursor++));
+			}
+			finally {
+				NestedJarFile.this.lock.readLock().unlock();
 			}
 		}
 
@@ -677,9 +736,13 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
 			if (this.cursor < this.zipContent.size()) {
-				synchronized (NestedJarFile.this) {
+				NestedJarFile.this.lock.readLock().lock();
+				try {
 					ensureOpen();
 					action.accept(this.zipContent.getEntry(this.cursor++));
+				}
+				finally {
+					NestedJarFile.this.lock.readLock().unlock();
 				}
 				return true;
 			}
@@ -718,7 +781,8 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			int result;
-			synchronized (NestedJarFile.this) {
+			NestedJarFile.this.lock.readLock().lock();
+			try {
 				ensureOpen();
 				ByteBuffer dst = ByteBuffer.wrap(b, off, len);
 				int count = this.content.read(dst, this.pos);
@@ -728,16 +792,23 @@ public class NestedJarFile extends JarFile {
 				}
 				result = count;
 			}
+			finally {
+				NestedJarFile.this.lock.readLock().unlock();
+			}
 			return result;
 		}
 
 		@Override
 		public long skip(long n) throws IOException {
 			long result;
-			synchronized (NestedJarFile.this) {
+			NestedJarFile.this.lock.readLock().lock();
+			try {
 				result = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
 				this.pos += result;
 				this.remaining -= result;
+			}
+			finally {
+				NestedJarFile.this.lock.readLock().unlock();
 			}
 			return result;
 		}
