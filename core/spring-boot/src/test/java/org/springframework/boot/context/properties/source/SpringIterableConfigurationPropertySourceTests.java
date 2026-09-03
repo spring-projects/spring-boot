@@ -205,6 +205,22 @@ class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
+	void getChildrenOfShouldMatchDefaultImplementationForSystemEnvironmentSource() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("FOO_BARBAZ_BONG", "bing");
+		source.put("FOO_BAR_BAZ", "value");
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				propertySource, true, SystemEnvironmentPropertyMapper.INSTANCE);
+		for (String name : new String[] { "", "foo", "foo.bar-baz", "foo.barbaz" }) {
+			ConfigurationPropertyName propertyName = ConfigurationPropertyName.of(name);
+			assertThat(adapter.getChildrenOf(propertyName)).as("children of '%s'", name)
+				.isEqualTo(defaultGetChildrenOf(adapter, propertyName));
+		}
+	}
+
+	@Test
 	void containsDescendantOfShouldCheckSourceNames() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");

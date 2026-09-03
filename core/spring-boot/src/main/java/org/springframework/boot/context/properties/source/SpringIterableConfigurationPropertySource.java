@@ -150,14 +150,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return result;
 		}
 		if (this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK) {
-			Set<ConfigurationPropertyName> descendants = getCache().getDescendants();
-			if (descendants != null) {
-				if (name.isEmpty() && !descendants.isEmpty()) {
-					return ConfigurationPropertyState.PRESENT;
-				}
-				return !descendants.contains(name) ? ConfigurationPropertyState.ABSENT
-						: ConfigurationPropertyState.PRESENT;
-			}
+			return getCache().hasChildren(name) ? ConfigurationPropertyState.PRESENT
+					: ConfigurationPropertyState.ABSENT;
 		}
 		result = (this.containsDescendantOfCache != null) ? this.containsDescendantOfCache.get(name) : null;
 		if (result == null) {
@@ -198,8 +192,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private Cache createCache() {
 		boolean immutable = isImmutablePropertySource();
-		boolean captureDescendants = this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK;
-		return new Cache(getMappers(), immutable, captureDescendants, isSystemEnvironmentSource());
+		return new Cache(getMappers(), immutable, isSystemEnvironmentSource());
 	}
 
 	private Cache updateCache(Cache cache) {
@@ -231,17 +224,13 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final boolean immutable;
 
-		private final boolean captureDescendants;
-
 		private final boolean systemEnvironmentSource;
 
 		private volatile @Nullable Data data;
 
-		Cache(PropertyMapper[] mappers, boolean immutable, boolean captureDescendants,
-				boolean systemEnvironmentSource) {
+		Cache(PropertyMapper[] mappers, boolean immutable, boolean systemEnvironmentSource) {
 			this.mappers = mappers;
 			this.immutable = immutable;
-			this.captureDescendants = captureDescendants;
 			this.systemEnvironmentSource = systemEnvironmentSource;
 		}
 
@@ -274,7 +263,6 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 					(data != null) ? data.mappings() : null, size);
 			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(
 					(data != null) ? data.reverseMappings() : null, size);
-			Set<ConfigurationPropertyName> descendants = (!this.captureDescendants) ? null : new HashSet<>();
 			Map<String, Object> systemEnvironmentCopy = (!this.systemEnvironmentSource) ? null
 					: copySource(propertySource);
 			for (PropertyMapper propertyMapper : this.mappers) {
@@ -290,15 +278,13 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 			Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> children = new HashMap<>(size);
 			for (String propertyName : propertyNames) {
-				ConfigurationPropertyName name = reverseMappings.get(propertyName);
-				addParents(descendants, name);
-				addChildren(children, name);
+				addChildren(children, reverseMappings.get(propertyName));
 			}
 			ConfigurationPropertyName[] configurationPropertyNames = this.immutable
 					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
 			lastUpdated = this.immutable ? null : propertyNames;
-			this.data = new Data(mappings, reverseMappings, descendants, children, configurationPropertyNames,
-					systemEnvironmentCopy, lastUpdated);
+			this.data = new Data(mappings, reverseMappings, children, configurationPropertyNames, systemEnvironmentCopy,
+					lastUpdated);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -311,9 +297,9 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		/**
-		 * Record each name against its parent. Unlike
-		 * {@link #addParents(Set, ConfigurationPropertyName)} this cannot stop early when
-		 * a parent has been seen before, since the child recorded differs at each level.
+		 * Record the given name against its parent, and each of its ancestors against
+		 * theirs. The walk stops as soon as a parent is already known, since whichever
+		 * name first recorded it walked the rest of the way up.
 		 * @param children the children to update
 		 * @param name the name to record
 		 */
@@ -325,25 +311,18 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			ConfigurationPropertyName child = name;
 			ConfigurationPropertyName parent = name.getParent();
 			while (true) {
-				children.computeIfAbsent(parent, (key) -> new LinkedHashSet<>()).add(child);
+				Set<ConfigurationPropertyName> known = children.get(parent);
+				if (known != null) {
+					known.add(child);
+					return;
+				}
+				Set<ConfigurationPropertyName> added = new LinkedHashSet<>();
+				added.add(child);
+				children.put(parent, added);
 				if (parent.isEmpty()) {
 					return;
 				}
 				child = parent;
-				parent = parent.getParent();
-			}
-		}
-
-		private void addParents(@Nullable Set<ConfigurationPropertyName> descendants,
-				@Nullable ConfigurationPropertyName name) {
-			if (descendants == null || name == null || name.isEmpty()) {
-				return;
-			}
-			ConfigurationPropertyName parent = name.getParent();
-			while (!parent.isEmpty()) {
-				if (!descendants.add(parent)) {
-					return;
-				}
 				parent = parent.getParent();
 			}
 		}
@@ -376,10 +355,10 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return names;
 		}
 
-		@Nullable Set<ConfigurationPropertyName> getDescendants() {
+		boolean hasChildren(ConfigurationPropertyName name) {
 			Data data = this.data;
 			Assert.state(data != null, "'data' must not be null");
-			return data.descendants();
+			return data.children().containsKey(name);
 		}
 
 		@Nullable Object getSystemEnvironmentProperty(String name) {
@@ -398,7 +377,6 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private record Data(Map<ConfigurationPropertyName, Set<String>> mappings,
 				Map<String, ConfigurationPropertyName> reverseMappings,
-				@Nullable Set<ConfigurationPropertyName> descendants,
 				Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> children,
 				ConfigurationPropertyName @Nullable [] configurationPropertyNames,
 				@Nullable Map<String, Object> systemEnvironmentCopy, String @Nullable [] lastUpdated) {
