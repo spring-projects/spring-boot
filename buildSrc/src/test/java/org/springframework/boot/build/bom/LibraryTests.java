@@ -18,6 +18,7 @@ package org.springframework.boot.build.bom;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,8 +53,9 @@ class LibraryTests {
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Links links = null;
+		Map<String, Links> moduleLinks = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
-				versionAlignment, alignsWithBom, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, links, moduleLinks);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
 	}
 
@@ -69,8 +71,9 @@ class LibraryTests {
 		BomAlignment alignsWithBom = null;
 		String linkRootName = "spring-data";
 		Links links = null;
+		Map<String, Links> moduleLinks = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
-				versionAlignment, alignsWithBom, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, links, moduleLinks);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}
 

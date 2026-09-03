@@ -422,7 +422,9 @@ bom {
 		}
 		links {
 			releaseNotes(version -> "https://www.elastic.co/docs/release-notes/elasticsearch/clients/java/%s".formatted(version.toString("-")))
-			javadoc("elasticsearch-java", version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+			module("elasticsearch-java") {
+				javadoc(version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+			}
 		}
 	}
 	library("Flyway", "12.11.0") {
@@ -966,10 +968,14 @@ bom {
 			]
 		}
 		links {
-			javadoc("jakarta-websocket-server", version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/server"
-				.formatted(version.major(), version.minor()), "jakarta.websocket.server")
-			javadoc("jakarta-websocket-client", version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/client"
-				.formatted(version.major(), version.minor()), "jakarta.websocket")
+			module("jakarta.websocket-api") {
+				javadoc( version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/server"
+					.formatted(version.major(), version.minor()), "jakarta.websocket.server")
+			}
+			module("jakarta.websocket-client-api") {
+				javadoc(version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/client"
+					.formatted(version.major(), version.minor()), "jakarta.websocket")
+			}
 		}
 	}
 	library("Jakarta WS RS", "4.0.0") {
@@ -1242,10 +1248,14 @@ bom {
 		}
 		links {
 			site("https://junit.org/junit5")
-			javadoc("junit-platform-engine", version -> "https://junit.org/junit5/docs/%s/api/org.junit.platform.engine".formatted(version), "org.junit.platform")
-			javadoc("junit-jupiter-api", version -> "https://junit.org/junit5/docs/%s/api/org.junit.jupiter.api".formatted(version), "org.junit.jupiter.api")
 			docs("https://junit.org/junit5/docs/{version}/user-guide")
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
+			module("junit-platform-engine") {
+				javadoc(version -> "https://junit.org/junit5/docs/%s/api/org.junit.platform.engine".formatted(version), "org.junit.platform")
+			}
+			module("junit-jupiter-api") {
+				javadoc(version -> "https://junit.org/junit5/docs/%s/api/org.junit.jupiter.api".formatted(version), "org.junit.jupiter.api")
+			}
 		}
 	}
 	library("Kafka", "4.3.1") {
@@ -1374,10 +1384,14 @@ bom {
 		}
 		links {
 			site("https://logging.apache.org/log4j")
-			javadoc("log4j-api", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-api".formatted(version.major()))
-			javadoc("log4j-core", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-core".formatted(version.major()), "org.apache.logging.log4j.core")
 			docs(version -> "https://logging.apache.org/log4j/%s.x/manual".formatted(version.major()))
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
+			module("log4j-api") {
+				javadoc(version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-api".formatted(version.major()))
+			}
+			module("log4j-core") {
+				javadoc(version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-core".formatted(version.major()), "org.apache.logging.log4j.core")
+			}
 		}
 	}
 	library("Logback", "1.6.1") {
@@ -1632,15 +1646,27 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			javadoc("micrometer-core", version -> "https://javadoc.io/doc/io.micrometer/micrometer-core/%s".formatted(version), "io.micrometer.core")
-			javadoc("micrometer-observation", version -> "https://javadoc.io/doc/io.micrometer/micrometer-observation/%s".formatted(version), "io.micrometer.observation")
-			javadoc("micrometer-registry-graphite", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-graphite/%s".formatted(version), "io.micrometer.graphite")
-			javadoc("micrometer-registry-otlp", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-otlp/%s".formatted(version), "io.micrometer.registry.otlp")
-			javadoc("micrometer-registry-jmx", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/%s".formatted(version), "io.micrometer.jmx")
-			javadoc("micrometer-new-relic", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/%s".formatted(version), "io.micrometer.newrelic")
 			docs(version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
+			module("micrometer-core") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-core/%s".formatted(version), "io.micrometer.core")
+			}
+			module("micrometer-observation") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-observation/%s".formatted(version), "io.micrometer.observation")
+			}
+			module("micrometer-registry-graphite") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-graphite/%s".formatted(version), "io.micrometer.graphite")
+			}
+			module("micrometer-registry-otlp") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-otlp/%s".formatted(version), "io.micrometer.registry.otlp")
+			}
+			module("micrometer-registry-jmx") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/%s".formatted(version), "io.micrometer.jmx")
+			}
+			module("micrometer-registry-new-relic") {
+				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/%s".formatted(version), "io.micrometer.newrelic")
+			}
 		}
 	}
 	library("Micrometer Tracing", "1.8.0-M1") {
@@ -1678,10 +1704,14 @@ bom {
 		}
 		links {
 			site("https://github.com/mongodb/mongo-java-driver")
-			// Mongo has split packages so we can't use them
-			javadoc("mongodb-driver-core", version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-core".formatted(version.major(), version.minor()))
-			javadoc("mongodb-driver-sync", version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-sync".formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/mongodb/mongo-java-driver/releases/tag/r{version}")
+			// Mongo has split packages so we can't link by package name
+			module("mongodb-driver-core") {
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-core".formatted(version.major(), version.minor()))
+			}
+			module("mongodb-driver-sync") {
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-sync".formatted(version.major(), version.minor()))
+			}
 		}
 	}
 	library("MSSQL JDBC", "13.4.0.jre11") {
@@ -1788,14 +1818,28 @@ bom {
 		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
-			javadoc("opentelemetry-api", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
-			javadoc("opentelemetry-context", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/%s".formatted(version), "io.opentelemetry.context")
-			javadoc("opentelemetry-sdk-common", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common", "io.opentelemetry.sdk.resources")
-			javadoc("opentelemetry-sdk-logs", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
-			javadoc("opentelemetry-sdk-metrics", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
-			javadoc("opentelemetry-sdk-trace", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
-			javadoc("opentelemetry-exporter-otlp", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-exporter-otlp/%s".formatted(version), "io.opentelemetry.exporter.otlp")
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
+			module("opentelemetry-api") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
+			}
+			module("opentelemetry-context") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/%s".formatted(version), "io.opentelemetry.context")
+			}
+			module("opentelemetry-sdk-common") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common", "io.opentelemetry.sdk.resources")
+			}
+			module("opentelemetry-sdk-logs") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
+			}
+			module("opentelemetry-sdk-metrics") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
+			}
+			module("opentelemetry-sdk-trace") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
+			}
+			module("opentelemetry-exporter-otlp") {
+				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-exporter-otlp/%s".formatted(version), "io.opentelemetry.exporter.otlp")
+			}
 		}
 	}
 	library("Oracle Database", "23.26.3.0.0") {
@@ -1895,8 +1939,10 @@ bom {
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
-			javadoc("prometheus-metrics-tracer-common", (version) -> "https://javadoc.io/doc/io.prometheus/prometheus-metrics-tracer-common/%s".formatted(version), "io.prometheus.metrics.tracer.common")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/v{version}")
+			module("prometheus-metrics-tracer-common") {
+				javadoc((version) -> "https://javadoc.io/doc/io.prometheus/prometheus-metrics-tracer-common/%s".formatted(version), "io.prometheus.metrics.tracer.common")
+			}
 		}
 	}
 	library("Prometheus Simpleclient", "0.16.0") {
@@ -1905,8 +1951,10 @@ bom {
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
-			javadoc("prometheus-simpleclient-tracer-common", (version) -> "https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/%s".formatted(version), "io.prometheus.client.exemplars.tracer.common")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
+			module("simpleclient_tracer_common") {
+				javadoc((version) -> "https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/%s".formatted(version), "io.prometheus.client.exemplars.tracer.common")
+			}
 		}
 	}
 	library("Pulsar", "4.2.4") {
@@ -2804,30 +2852,75 @@ bom {
 		}
 		links {
 			docs("https://java.testcontainers.org")
-			javadoc("testcontainers", version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
-			javadoc("testcontainers-activemq", version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
-			javadoc("testcontainers-cassandra", version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
-			javadoc("testcontainers-clickhouse", version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
-			javadoc("testcontainers-couchbase", version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
-			javadoc("testcontainers-elasticsearch", version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
-			javadoc("testcontainers-grafana", version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
-			javadoc("testcontainers-jdbc", version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
-			javadoc("testcontainers-junit-jupiter", version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
-			javadoc("testcontainers-kafka", version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
-			javadoc("testcontainers-mariadb", version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
-			javadoc("testcontainers-mongodb", version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
-			javadoc("testcontainers-mssqlserver", version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
-			javadoc("testcontainers-mysql", version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
-			javadoc("testcontainers-neo4j", version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
-			javadoc("testcontainers-oracle-xe", version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
-			javadoc("testcontainers-oracle-free", version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
-			javadoc("testcontainers-postgresql", version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
-			javadoc("testcontainers-pulsar", version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
-			javadoc("testcontainers-rabbitmq", version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
-			javadoc("testcontainers-redpanda", version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
-			javadoc("testcontainers-r2dbc", version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 			site("https://java.testcontainers.org")
+			module("testcontainers") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
+			}
+			module("testcontainers-activemq") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
+			}
+			module("testcontainers-cassandra") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
+			}
+			module("testcontainers-clickhouse") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
+			}
+			module("testcontainers-couchbase") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
+			}
+			module("testcontainers-elasticsearch") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
+			}
+			module("testcontainers-grafana") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
+			}
+			module("testcontainers-jdbc") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
+			}
+			module("testcontainers-junit-jupiter") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
+			}
+			module("testcontainers-kafka") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
+			}
+			module("testcontainers-mariadb") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
+			}
+			module("testcontainers-mongodb") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
+			}
+			module("testcontainers-mssqlserver") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
+			}
+			module("testcontainers-mysql") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
+			}
+			module("testcontainers-neo4j") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
+			}
+			module("testcontainers-oracle-xe") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
+			}
+			module("testcontainers-oracle-free") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
+			}
+			module("testcontainers-postgresql") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
+			}
+			module("testcontainers-pulsar") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
+			}
+			module("testcontainers-rabbitmq") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
+			}
+			module("testcontainers-redpanda") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
+			}
+			module("testcontainers-r2dbc") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
+			}
+
 		}
 	}
 	library("Testcontainers Redis Module", "2.2.4") {
@@ -2850,9 +2943,13 @@ bom {
 		}
 		links {
 			site("https://www.thymeleaf.org")
-			javadoc("thymeleaf", version -> "https://www.thymeleaf.org/apidocs/thymeleaf/%s".formatted(version), "org.thymeleaf")
-			javadoc("thymeleaf-spring6", version -> "https://www.thymeleaf.org/apidocs/thymeleaf-spring6/%s".formatted(version), "org.thymeleaf.spring6")
 			releaseNotes("https://github.com/thymeleaf/thymeleaf/releases/tag/thymeleaf-{version}")
+			module("thymeleaf") {
+				javadoc(version -> "https://www.thymeleaf.org/apidocs/thymeleaf/%s".formatted(version), "org.thymeleaf")
+			}
+			module("thymeleaf-spring6") {
+				javadoc(version -> "https://www.thymeleaf.org/apidocs/thymeleaf-spring6/%s".formatted(version), "org.thymeleaf.spring6")
+			}
 		}
 	}
 	library("Thymeleaf Extras Data Attribute", "2.0.1") {
