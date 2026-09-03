@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Fahim Farook
+ * @author Tommy Karlsson
  */
 class SpringIterableConfigurationPropertySourceTests {
 
@@ -141,6 +142,66 @@ class SpringIterableConfigurationPropertySourceTests {
 		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
 		assertThat(configurationProperty).isNotNull();
 		assertThat(configurationProperty.getOrigin()).hasToString("TestOrigin key");
+	}
+
+	@Test
+	void getChildrenOfShouldReturnDirectChildren() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar", "value");
+		source.put("foo.baz[0]", "value");
+		source.put("foo.baz[1]", "value");
+		source.put("foo.qux.deep", "value");
+		source.put("faf", "value");
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				new OriginCapablePropertySource<>(new MapPropertySource("test", source)), false,
+				DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("foo"))).containsExactlyInAnyOrder(
+				ConfigurationPropertyName.of("foo.bar"), ConfigurationPropertyName.of("foo.baz"),
+				ConfigurationPropertyName.of("foo.qux"));
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("foo.baz"))).containsExactlyInAnyOrder(
+				ConfigurationPropertyName.of("foo.baz[0]"), ConfigurationPropertyName.of("foo.baz[1]"));
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("faf"))).isEmpty();
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("missing"))).isEmpty();
+	}
+
+	@Test
+	void getChildrenOfShouldMatchDefaultImplementation() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar-baz[0].name", "value");
+		source.put("foo.bar-baz[1].name", "value");
+		source.put("foo.bazBar", "value");
+		source.put("foo.other", "value");
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				new OriginCapablePropertySource<>(new MapPropertySource("test", source)), false,
+				DefaultPropertyMapper.INSTANCE);
+		for (String name : new String[] { "", "foo", "foo.bar-baz", "foo.barbaz", "foo.bar-baz[0]", "foo.bazbar" }) {
+			ConfigurationPropertyName propertyName = ConfigurationPropertyName.of(name);
+			assertThat(adapter.getChildrenOf(propertyName)).as("children of '%s'", name)
+				.isEqualTo(defaultGetChildrenOf(adapter, propertyName));
+		}
+	}
+
+	private Set<ConfigurationPropertyName> defaultGetChildrenOf(IterableConfigurationPropertySource source,
+			ConfigurationPropertyName name) {
+		Set<ConfigurationPropertyName> children = new LinkedHashSet<>();
+		int childElements = name.getNumberOfElements() + 1;
+		for (ConfigurationPropertyName candidate : source.filter(name::isAncestorOf)) {
+			children.add(candidate.chop(childElements));
+		}
+		return children;
+	}
+
+	@Test
+	void getChildrenOfShouldCombineChildrenOfEquivalentNames() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo-bar.baz", "x");
+		source.put("fooBar.zoo", "y");
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				new MapPropertySource("test", source), false, DefaultPropertyMapper.INSTANCE);
+		Set<ConfigurationPropertyName> expected = Set.of(ConfigurationPropertyName.of("foo-bar.baz"),
+				ConfigurationPropertyName.of("foobar.zoo"));
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("foo-bar"))).isEqualTo(expected);
+		assertThat(adapter.getChildrenOf(ConfigurationPropertyName.of("foobar"))).isEqualTo(expected);
 	}
 
 	@Test

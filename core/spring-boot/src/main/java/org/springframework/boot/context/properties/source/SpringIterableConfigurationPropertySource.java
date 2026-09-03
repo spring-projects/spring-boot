@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -52,6 +53,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Tommy Karlsson
  * @see PropertyMapper
  */
 class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
@@ -134,6 +136,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	@Override
 	public Iterator<ConfigurationPropertyName> iterator() {
 		return new ConfigurationPropertyNamesIterator(getConfigurationPropertyNames());
+	}
+
+	@Override
+	public Set<ConfigurationPropertyName> getChildrenOf(ConfigurationPropertyName name) {
+		return getCache().getChildren(name);
 	}
 
 	@Override
@@ -281,13 +288,16 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 					}
 				}
 			}
+			Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> children = new HashMap<>(size);
 			for (String propertyName : propertyNames) {
-				addParents(descendants, reverseMappings.get(propertyName));
+				ConfigurationPropertyName name = reverseMappings.get(propertyName);
+				addParents(descendants, name);
+				addChildren(children, name);
 			}
 			ConfigurationPropertyName[] configurationPropertyNames = this.immutable
 					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
 			lastUpdated = this.immutable ? null : propertyNames;
-			this.data = new Data(mappings, reverseMappings, descendants, configurationPropertyNames,
+			this.data = new Data(mappings, reverseMappings, descendants, children, configurationPropertyNames,
 					systemEnvironmentCopy, lastUpdated);
 		}
 
@@ -298,6 +308,30 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private <K, V> Map<K, V> cloneOrCreate(@Nullable Map<K, V> source, int size) {
 			return (source != null) ? new LinkedHashMap<>(source) : new LinkedHashMap<>(size);
+		}
+
+		/**
+		 * Record each name against its parent. Unlike
+		 * {@link #addParents(Set, ConfigurationPropertyName)} this cannot stop early when
+		 * a parent has been seen before, since the child recorded differs at each level.
+		 * @param children the children to update
+		 * @param name the name to record
+		 */
+		private void addChildren(Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> children,
+				@Nullable ConfigurationPropertyName name) {
+			if (name == null || name.isEmpty()) {
+				return;
+			}
+			ConfigurationPropertyName child = name;
+			ConfigurationPropertyName parent = name.getParent();
+			while (true) {
+				children.computeIfAbsent(parent, (key) -> new LinkedHashSet<>()).add(child);
+				if (parent.isEmpty()) {
+					return;
+				}
+				child = parent;
+				parent = parent.getParent();
+			}
 		}
 
 		private void addParents(@Nullable Set<ConfigurationPropertyName> descendants,
@@ -356,9 +390,16 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return systemEnvironmentCopy.get(name);
 		}
 
+		Set<ConfigurationPropertyName> getChildren(ConfigurationPropertyName name) {
+			Data data = this.data;
+			Assert.state(data != null, "'data' must not be null");
+			return data.children().getOrDefault(name, Collections.emptySet());
+		}
+
 		private record Data(Map<ConfigurationPropertyName, Set<String>> mappings,
 				Map<String, ConfigurationPropertyName> reverseMappings,
 				@Nullable Set<ConfigurationPropertyName> descendants,
+				Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> children,
 				ConfigurationPropertyName @Nullable [] configurationPropertyNames,
 				@Nullable Map<String, Object> systemEnvironmentCopy, String @Nullable [] lastUpdated) {
 
