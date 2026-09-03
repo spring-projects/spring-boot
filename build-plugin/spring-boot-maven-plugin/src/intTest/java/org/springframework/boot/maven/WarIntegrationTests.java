@@ -68,6 +68,16 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void sbomManifestAttributesAreAddedToRepackagedWar(MavenBuild mavenBuild) {
+		mavenBuild.project("war-sbom").execute((project) -> {
+			File repackaged = new File(project, "target/war-sbom-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(repackaged)).hasEntryWithName("WEB-INF/classes/META-INF/sbom/application.cdx.json")
+				.manifest((manifest) -> manifest.hasAttribute("Sbom-Format", "CycloneDX")
+					.hasAttribute("Sbom-Location", "WEB-INF/classes/META-INF/sbom/application.cdx.json"));
+		});
+	}
+
+	@TestTemplate
 	void jarDependencyWithCustomFinalNameBuiltInSameReactorIsPackagedUsingArtifactIdAndVersion(MavenBuild mavenBuild) {
 		mavenBuild.project("war-reactor")
 			.execute(((project) -> assertThat(jar(new File(project, "war/target/war-0.0.1.BUILD-SNAPSHOT.war")))
