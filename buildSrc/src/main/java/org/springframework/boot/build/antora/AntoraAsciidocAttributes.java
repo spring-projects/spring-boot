@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
@@ -34,8 +32,10 @@ import org.gradle.api.Project;
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.ResolvedBom;
-import org.springframework.boot.build.bom.ResolvedBom.Bom;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.properties.BuildProperties;
@@ -61,6 +61,8 @@ public class AntoraAsciidocAttributes {
 
 	private final List<Library> libraries;
 
+	private final ResolvedBom resolvedBom;
+
 	private final Map<String, String> dependencyVersions;
 
 	private final Map<String, ?> projectProperties;
@@ -71,51 +73,9 @@ public class AntoraAsciidocAttributes {
 		this.buildType = BuildProperties.get(project).buildType();
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
-		this.dependencyVersions = dependencyVersionsOf(resolvedBom);
+		this.resolvedBom = resolvedBom;
+		this.dependencyVersions = resolvedBom.dependencyVersions();
 		this.projectProperties = project.getProperties();
-	}
-
-	private static Map<String, String> dependencyVersionsOf(ResolvedBom resolvedBom) {
-		Map<String, String> dependencyVersions = new HashMap<>();
-		for (ResolvedLibrary library : resolvedBom.libraries()) {
-			dependencyVersions.putAll(dependencyVersionsOf(library.managedDependencies()));
-			for (Bom importedBom : library.importedBoms()) {
-				dependencyVersions.putAll(dependencyVersionsOf(importedBom));
-			}
-		}
-		return dependencyVersions;
-	}
-
-	private static Map<String, String> dependencyVersionsOf(Bom bom) {
-		Map<String, String> dependencyVersions = new HashMap<>();
-		if (bom != null) {
-			dependencyVersions.putAll(dependencyVersionsOf(bom.managedDependencies()));
-			dependencyVersions.putAll(dependencyVersionsOf(bom.parent()));
-			for (Bom importedBom : bom.importedBoms()) {
-				dependencyVersions.putAll(dependencyVersionsOf(importedBom));
-			}
-		}
-		return dependencyVersions;
-	}
-
-	private static Map<String, String> dependencyVersionsOf(Collection<Id> managedDependencies) {
-		Map<String, String> dependencyVersions = new HashMap<>();
-		for (Id managedDependency : managedDependencies) {
-			dependencyVersions.put(managedDependency.groupId() + ":" + managedDependency.artifactId(),
-					managedDependency.version());
-		}
-		return dependencyVersions;
-	}
-
-	AntoraAsciidocAttributes(String version, boolean latestVersion, BuildType buildType, List<Library> libraries,
-			Map<String, String> dependencyVersions, Map<String, ?> projectProperties) {
-		this.version = version;
-		this.latestVersion = latestVersion;
-		this.buildType = buildType;
-		this.artifactRelease = ArtifactRelease.forVersion(version);
-		this.libraries = (libraries != null) ? libraries : Collections.emptyList();
-		this.dependencyVersions = (dependencyVersions != null) ? dependencyVersions : Collections.emptyMap();
-		this.projectProperties = (projectProperties != null) ? projectProperties : Collections.emptyMap();
 	}
 
 	public Map<String, String> get() {
@@ -126,7 +86,7 @@ public class AntoraAsciidocAttributes {
 		addVersionAttributes(attributes, internal);
 		addArtifactAttributes(attributes);
 		addUrlJava(attributes);
-		addUrlLibraryLinkAttributes(attributes);
+		addLinksAttributes(attributes);
 		addPropertyAttributes(attributes, internal);
 		return attributes;
 	}
@@ -229,25 +189,10 @@ public class AntoraAsciidocAttributes {
 		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}/java.xml");
 	}
 
-	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
-		Map<String, String> packageAttributes = new LinkedHashMap<>();
-		this.libraries.forEach((library) -> {
-			library.getLinks().forEachLink((type, link) -> {
-				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
-				String linkName = "url-" + linkRootName + "-" + type.attributeName();
-				attributes.put(linkName, link.url(library.getVersion()));
-				link.packages()
-					.stream()
-					.map(this::packageAttributeName)
-					.forEach((packageAttributeName) -> packageAttributes.put(packageAttributeName,
-							"{" + linkName + "}"));
-			});
-		});
-		attributes.putAll(packageAttributes);
-	}
-
-	private String packageAttributeName(String packageName) {
-		return "javadoc-location-" + packageName.replace('.', '-');
+	private void addLinksAttributes(Map<String, String> attributes) {
+		LinkAttributes linkAttributes = new LinkAttributes();
+		this.libraries.forEach(linkAttributes::add);
+		linkAttributes.copyTo(attributes);
 	}
 
 	private void addPropertyAttributes(Map<String, String> attributes, Map<String, String> internal) {
@@ -273,6 +218,46 @@ public class AntoraAsciidocAttributes {
 			value = value.replace("{" + entry.getKey() + "}", entry.getValue());
 		}
 		return value;
+	}
+
+	class LinkAttributes {
+
+		private final Map<String, String> urlAttributes = new TreeMap<>();
+
+		private final Map<String, String> packageAttributes = new TreeMap<>();
+
+		void add(Library library) {
+			ResolvedLibrary resolvedLibrary = AntoraAsciidocAttributes.this.resolvedBom.library(library);
+			LinkedVersion libraryVersion = new LinkedVersion(library.getVersion());
+			String libraryName = library.getLinkRootName();
+			library.getLinks().forEachLink((type, link) -> addLinkAttributes(libraryName, type, link, libraryVersion));
+			library.getModuleLinks().forEach((moduleName, links) -> {
+				Id resolvedModule = resolvedLibrary.module(moduleName);
+				LinkedVersion moduleVersion = new LinkedVersion(resolvedModule.version());
+				links.forEachLink((type, link) -> addLinkAttributes(moduleName, type, link, moduleVersion));
+			});
+		}
+
+		private void addLinkAttributes(String root, LinkType type, Link link, LinkedVersion version) {
+			String urlAttributeName = "url-" + root + "-" + type.attributeName();
+			this.urlAttributes.put(urlAttributeName, link.url(version));
+			link.packages()
+				.stream()
+				.map(this::packageAttributeName)
+				.forEach((packageAttributeName) -> this.packageAttributes.put(packageAttributeName,
+						"{" + urlAttributeName + "}"));
+		}
+
+		private String packageAttributeName(String packageName) {
+			return "javadoc-location-" + packageName.replace('.', '-');
+		}
+
+		void copyTo(Map<String, String> attributes) {
+			// URL attributes first since package attributes reference them
+			attributes.putAll(this.urlAttributes);
+			attributes.putAll(this.packageAttributes);
+		}
+
 	}
 
 }
