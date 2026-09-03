@@ -95,7 +95,6 @@ class CustomContainerWebSocketsApplicationTests {
 	static class ClientConfiguration implements CommandLineRunner {
 
 		@Value("${websocket.uri}")
-		@SuppressWarnings("NullAway.Init")
 		private String webSocketUri;
 
 		private final CountDownLatch latch = new CountDownLatch(1);

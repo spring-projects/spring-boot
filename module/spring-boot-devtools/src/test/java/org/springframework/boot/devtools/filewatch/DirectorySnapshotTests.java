@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class DirectorySnapshotTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	private File directory;

@@ -48,7 +48,6 @@ abstract class AbstractStructuredLoggingTests {
 	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	MockStructuredLoggingJsonMembersCustomizerBuilder<?> customizerBuilder = new MockStructuredLoggingJsonMembersCustomizerBuilder<>(

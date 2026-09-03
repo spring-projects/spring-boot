@@ -35,11 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AutoConfiguredHealthCheckedGrpcComponentTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private StatusAggregator statusAggregator;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private StatusMapper statusMapper;
 
 	@Test

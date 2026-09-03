@@ -347,7 +347,7 @@ class JsonValueWriter {
 	}
 
 	// Lambda isn't detected with the correct nullability
-	@SuppressWarnings({ "unchecked", "NullAway" })
+	@SuppressWarnings("unchecked")
 	private <V> @Nullable V processValue(@Nullable V value, ValueProcessor<?> valueProcessor) {
 		return (V) LambdaSafe
 			.callback(ValueProcessor.class, valueProcessor, this.path, new @Nullable Object[] { value })

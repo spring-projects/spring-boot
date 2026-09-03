@@ -52,15 +52,12 @@ class AutoConfiguredRestClientSslTests {
 		.withConnectTimeout(Duration.ofSeconds(30));
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private SslBundles sslBundles;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestFactoryBuilder<ClientHttpRequestFactory> factoryBuilder;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestFactory factory;
 
 	private AutoConfiguredRestClientSsl restClientSsl;

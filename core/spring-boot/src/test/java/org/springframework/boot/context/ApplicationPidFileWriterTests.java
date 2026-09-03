@@ -57,7 +57,6 @@ class ApplicationPidFileWriterTests {
 			new String[] {}, mock(ConfigurableApplicationContext.class));
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@BeforeEach

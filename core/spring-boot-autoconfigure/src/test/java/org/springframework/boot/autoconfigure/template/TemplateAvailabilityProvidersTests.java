@@ -53,7 +53,6 @@ class TemplateAvailabilityProvidersTests {
 	private TemplateAvailabilityProviders providers;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private TemplateAvailabilityProvider provider;
 
 	private final String view = "view";
@@ -63,7 +62,6 @@ class TemplateAvailabilityProvidersTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	@BeforeEach

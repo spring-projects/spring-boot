@@ -60,7 +60,6 @@ class MockWebEnvironmentServletComponentScanIntegrationTests {
 	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@AfterEach

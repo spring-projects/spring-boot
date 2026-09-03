@@ -32,11 +32,9 @@ public class Person {
 	private @Nullable Long id;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String firstName;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String lastName;
 
 	public String getFirstName() {

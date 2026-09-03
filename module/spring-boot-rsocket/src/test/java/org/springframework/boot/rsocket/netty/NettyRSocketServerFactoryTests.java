@@ -281,7 +281,6 @@ class NettyRSocketServerFactoryTests {
 
 	@Test
 	@WithPackageResources({ "test-cert.pem", "test-key.pem" })
-	@SuppressWarnings("NullAway") // Test null check
 	void websocketTransportSslProviderReturnsDefaultWhenServerNameIsNull() {
 		SslBundle defaultBundle = createBundle("test-cert.pem", "test-key.pem");
 		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(

@@ -89,7 +89,6 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	}
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	protected TestJarFile testJarFile;

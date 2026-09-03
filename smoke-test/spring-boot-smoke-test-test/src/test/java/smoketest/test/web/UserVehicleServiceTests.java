@@ -44,11 +44,9 @@ class UserVehicleServiceTests {
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private VehicleDetailsService vehicleDetailsService;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private UserRepository userRepository;
 
 	private UserVehicleService service;

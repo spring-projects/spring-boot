@@ -54,7 +54,6 @@ class FileSystemWatcherTests {
 	private final List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@BeforeEach

@@ -83,7 +83,6 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 				"spring.web.error.include-binding-errors=always");
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test // gh-17938

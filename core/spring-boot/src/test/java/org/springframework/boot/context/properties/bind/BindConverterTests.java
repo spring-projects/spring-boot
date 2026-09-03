@@ -54,7 +54,6 @@ import static org.mockito.BDDMockito.then;
 class BindConverterTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	@Test

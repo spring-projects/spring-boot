@@ -63,7 +63,6 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 	private SpringApplication application;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	public File temp;
 
 	@BeforeEach

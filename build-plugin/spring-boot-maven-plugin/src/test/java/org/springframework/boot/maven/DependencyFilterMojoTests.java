@@ -49,7 +49,6 @@ import static org.mockito.Mockito.mock;
 class DependencyFilterMojoTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	static Path temp;
 
 	@Test

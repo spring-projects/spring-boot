@@ -63,11 +63,9 @@ class WebServiceTemplateBuilderTests {
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private WebServiceMessageSender messageSender;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientInterceptor interceptor;
 
 	@Test

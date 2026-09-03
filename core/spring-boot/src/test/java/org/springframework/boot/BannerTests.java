@@ -60,7 +60,6 @@ class BannerTests {
 	}
 
 	@Captor
-	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;
 
 	@Test

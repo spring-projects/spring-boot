@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Override

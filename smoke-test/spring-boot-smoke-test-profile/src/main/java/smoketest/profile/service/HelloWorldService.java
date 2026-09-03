@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 public class HelloWorldService implements MessageService {
 
 	@Value("${test.name:World}")
-	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Override

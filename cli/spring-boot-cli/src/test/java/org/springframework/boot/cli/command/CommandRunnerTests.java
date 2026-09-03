@@ -48,11 +48,9 @@ class CommandRunnerTests {
 	private CommandRunner commandRunner;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Command regularCommand;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Command anotherCommand;
 
 	private final Set<Call> calls = EnumSet.noneOf(Call.class);

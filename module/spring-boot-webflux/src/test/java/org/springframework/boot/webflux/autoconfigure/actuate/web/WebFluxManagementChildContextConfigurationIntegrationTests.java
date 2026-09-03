@@ -84,7 +84,6 @@ class WebFluxManagementChildContextConfigurationIntegrationTests {
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test

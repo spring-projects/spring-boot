@@ -58,7 +58,6 @@ class RootUriRequestExpectationManagerTests {
 	private final String uri = "https://example.com";
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private RequestExpectationManager delegate;
 
 	private RootUriRequestExpectationManager manager;
