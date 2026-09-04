@@ -788,6 +788,9 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+			module("jackson2-databind", ["jackson-databind"]) {
+				javadoc("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/{version}", "com.fasterxml.jackson.databind")
+			}
 		}
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
@@ -798,6 +801,18 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+			module("jackson-annotations") {
+				javadoc("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/{version}", "com.fasterxml.jackson.annotation")
+			}
+			module("jackson-core") {
+				javadoc("https://javadoc.io/doc/tools.jackson.core/jackson-core//{version}", "tools.jackson.core")
+			}
+			module("jackson-databind") {
+				javadoc("https://javadoc.io/doc/tools.jackson.core/jackson-databind/{version}", "tools.jackson.databind")
+			}
+			module("jackson-dataformat-xml") {
+				javadoc("https://javadoc.io/doc/tools.jackson.dataformat/jackson-dataformat-xml//{version}", "tools.jackson.dataformat.xml")
+			}
 		}
 	}
 	library("Jakarta Activation", "2.1.4") {
