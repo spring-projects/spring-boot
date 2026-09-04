@@ -128,7 +128,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	@SuppressWarnings("unchecked")
-	private void extract(String name, Map<String, Object> result, Object value) {
+	private void extract(String name, Map<String, Object> result, @Nullable Object value) {
 		if (value instanceof Map<?, ?> map) {
 			if (CollectionUtils.isEmpty(map)) {
 				result.put(name, value);
