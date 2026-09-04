@@ -114,11 +114,6 @@ public class AntoraAsciidocAttributes {
 		this.libraries.forEach((library) -> addVersionAttributes(attributes, library));
 		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
-		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
-		addDependencyVersion(attributes, "jackson-core", "tools.jackson.core:jackson-core");
-		addDependencyVersion(attributes, "jackson-databind", "tools.jackson.core:jackson-databind");
-		addDependencyVersion(attributes, "jackson-dataformat-xml", "tools.jackson.dataformat:jackson-dataformat-xml");
-		addDependencyVersion(attributes, "jackson2-databind", "com.fasterxml.jackson.core:jackson-databind");
 		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 
