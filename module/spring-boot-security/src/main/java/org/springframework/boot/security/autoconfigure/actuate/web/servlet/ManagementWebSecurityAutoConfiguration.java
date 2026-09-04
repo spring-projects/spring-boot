@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultServletWebSecurity;
 import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +53,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration" })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ RequestMatcher.class, WebEndpointAutoConfiguration.class })
-@ConditionalOnDefaultWebSecurity
+@ConditionalOnDefaultServletWebSecurity
 public final class ManagementWebSecurityAutoConfiguration {
 
 	@Bean
