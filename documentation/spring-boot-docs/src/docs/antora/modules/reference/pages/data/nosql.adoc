@@ -6,14 +6,12 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {url-spring-data-cassandra-site}[Cassandra]
 * {url-spring-data-couchbase-site}[Couchbase]
 * {url-spring-data-elasticsearch-site}[Elasticsearch]
-* {url-spring-data-geode-site}[Geode]
 * {url-spring-data-ldap-site}[LDAP]
 * {url-spring-data-mongodb-site}[MongoDB]
 * {url-spring-data-neo4j-site}[Neo4J]
 * {url-spring-data-redis-site}[Redis]
 
 Of these, Spring Boot provides auto-configuration for Cassandra, Couchbase, Elasticsearch, LDAP, MongoDB, Neo4J and Redis.
-Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {url-spring-data-site}.
 
