@@ -700,6 +700,21 @@ abstract class AbstractPackagerTests<P extends Packager> {
 			.isEqualTo("META-INF/sbom/application.cdx.json");
 	}
 
+	@Test
+	void sbomManifestEntriesAreWrittenForWar() throws IOException {
+		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("WEB-INF/classes/META-INF/sbom/application.cdx.json",
+				new ByteArrayInputStream(new byte[0]));
+		P packager = createPackager(this.testJarFile.getFile());
+		packager.setLayout(new Layouts.War());
+		execute(packager, NO_LIBRARIES);
+		Manifest manifest = getPackagedManifest();
+		assertThat(manifest).isNotNull();
+		assertThat(manifest.getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
+		assertThat(manifest.getMainAttributes().getValue("Sbom-Location"))
+			.isEqualTo("WEB-INF/classes/META-INF/sbom/application.cdx.json");
+	}
+
 	private File createLibraryJar() throws IOException {
 		TestJarFile library = new TestJarFile(this.tempDir);
 		library.addClass("com/example/library/Library.class", ClassWithoutMainMethod.class);
