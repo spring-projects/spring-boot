@@ -26,6 +26,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.springframework.boot.loader.log.DebugLogger;
@@ -160,7 +161,7 @@ class FileDataBlock implements CloseableDataBlock {
 
 		private final Path path;
 
-		private int referenceCount;
+		private final AtomicInteger referenceCount = new AtomicInteger();
 
 		private FileChannel fileChannel;
 
@@ -242,47 +243,56 @@ class FileDataBlock implements CloseableDataBlock {
 		}
 
 		void open() throws IOException {
-			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
-					debug.log("Opening '%s'", this.path);
-					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-					this.buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
-					tracker.openedFileChannel(this.path);
-				}
-				this.referenceCount++;
-				debug.log("Reference count for '%s' incremented to %s", this.path, this.referenceCount);
+			int references = this.referenceCount.get();
+			if (references != 0) {
+				references = this.referenceCount.incrementAndGet();
 			}
+			else {
+				synchronized (this.lock) {
+					references = this.referenceCount.get();
+					if (references == 0) {
+						debug.log("Opening '%s'", this.path);
+						this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
+						this.buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+						tracker.openedFileChannel(this.path);
+						references = this.referenceCount.incrementAndGet();
+					}
+				}
+			}
+			debug.log("Reference count for '%s' incremented to %s", this.path, references);
 		}
 
 		void close() throws IOException {
-			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
-					return;
-				}
-				this.referenceCount--;
-				if (this.referenceCount == 0) {
-					debug.log("Closing '%s'", this.path);
-					this.buffer = null;
-					this.bufferPosition = -1;
-					this.bufferSize = 0;
-					this.fileChannel.close();
-					tracker.closedFileChannel(this.path);
-					this.fileChannel = null;
-					if (this.randomAccessFile != null) {
-						this.randomAccessFile.close();
+			int references = this.referenceCount.get();
+			if (references == 0) {
+				return;
+			}
+			references = this.referenceCount.decrementAndGet();
+			if (references == 0) {
+				synchronized (this.lock) {
+					if (this.referenceCount.get() == 0) {
+						debug.log("Closing '%s'", this.path);
+						this.buffer = null;
+						this.bufferPosition = -1;
+						this.bufferSize = 0;
+						this.fileChannel.close();
 						tracker.closedFileChannel(this.path);
-						this.randomAccessFile = null;
+						this.fileChannel = null;
+						if (this.randomAccessFile != null) {
+							this.randomAccessFile.close();
+							tracker.closedFileChannel(this.path);
+							this.randomAccessFile = null;
+						}
 					}
 				}
-				debug.log("Reference count for '%s' decremented to %s", this.path, this.referenceCount);
 			}
+			debug.log("Reference count for '%s' decremented to %s", this.path, references);
 		}
 
 		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
-			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
-					throw exceptionSupplier.get();
-				}
+			int references = this.referenceCount.get();
+			if (references == 0) {
+				throw exceptionSupplier.get();
 			}
 		}
 

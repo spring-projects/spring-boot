@@ -87,7 +87,6 @@ public class NestedJarFile extends JarFile {
 
 	private volatile MetaInfVersionsInfo metaInfVersionsInfo;
 
-	private final Object mutex = new Object();
 	/**
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
 	 * {@code File}.
@@ -172,34 +171,30 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public Enumeration<JarEntry> entries() {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return new JarEntriesEnumeration(this.resources.zipContent());
-		}
+		ZipContent zipContent = ensureOpen();
+		return new JarEntriesEnumeration(zipContent);
 	}
 
 	@Override
 	public Stream<JarEntry> stream() {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return streamContentEntries().map(NestedJarEntry::new);
-		}
+		ZipContent zipContent = ensureOpen();
+		return streamContentEntries(zipContent).map(NestedJarEntry::new);
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return streamContentEntries().map(this::getBaseName)
-				.filter(Objects::nonNull)
-				.distinct()
-				.map(this::getJarEntry)
-				.filter(Objects::nonNull);
-		}
+
+		ZipContent zipContent = ensureOpen();
+		return streamContentEntries(zipContent).map(this::getBaseName)
+			.filter(Objects::nonNull)
+			.distinct()
+			.map(this::getJarEntry)
+			.filter(Objects::nonNull);
+
 	}
 
-	private Stream<ZipContent.Entry> streamContentEntries() {
-		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(this.resources.zipContent());
+	private Stream<ZipContent.Entry> streamContentEntries(ZipContent zipContent) {
+		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(zipContent);
 		return StreamSupport.stream(spliterator, false);
 	}
 
@@ -249,10 +244,8 @@ public class NestedJarFile extends JarFile {
 		if (entry != null) {
 			return true;
 		}
-		synchronized (this.mutex) {
-			ensureOpen();
-			return this.resources.zipContent().hasEntry(null, name);
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.hasEntry(null, name);
 	}
 
 	private NestedJarEntry getNestedJarEntry(String name) {
@@ -292,10 +285,8 @@ public class NestedJarFile extends JarFile {
 	}
 
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return this.resources.zipContent().getEntry(namePrefix, name);
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.getEntry(namePrefix, name);
 	}
 
 	private ManifestInfo getManifestInfo() {
@@ -303,10 +294,8 @@ public class NestedJarFile extends JarFile {
 		if (manifestInfo != null) {
 			return manifestInfo;
 		}
-		synchronized (this.mutex) {
-			ensureOpen();
-			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
-		}
+		ZipContent zipContent = ensureOpen();
+		manifestInfo = zipContent.getInfo(ManifestInfo.class, this::getManifestInfo);
 		this.manifestInfo = manifestInfo;
 		return manifestInfo;
 	}
@@ -332,11 +321,8 @@ public class NestedJarFile extends JarFile {
 		if (metaInfVersionsInfo != null) {
 			return metaInfVersionsInfo;
 		}
-		synchronized (this.mutex) {
-			ensureOpen();
-			metaInfVersionsInfo = this.resources.zipContent()
-				.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
-		}
+		ZipContent zipContent = ensureOpen();
+		metaInfVersionsInfo = zipContent.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
 		this.metaInfVersionsInfo = metaInfVersionsInfo;
 		return metaInfVersionsInfo;
 	}
@@ -355,7 +341,7 @@ public class NestedJarFile extends JarFile {
 		if (compression != ZipEntry.STORED && compression != ZipEntry.DEFLATED) {
 			throw new ZipException("invalid compression method");
 		}
-		synchronized (this.mutex) {
+		synchronized (this) {
 			ensureOpen();
 			InputStream inputStream = new JarEntryInputStream(contentEntry);
 			try {
@@ -374,17 +360,15 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public String getComment() {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return this.resources.zipContent().getComment();
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.getComment();
 	}
 
 	@Override
 	public int size() {
-		synchronized (this.mutex) {
-			ensureOpen();
-			return this.resources.zipContent().size();
+		synchronized (this) { // consistent with superclass.
+			ZipContent zipContent = ensureOpen();
+			return zipContent.size();
 		}
 	}
 
@@ -395,7 +379,6 @@ public class NestedJarFile extends JarFile {
 			return;
 		}
 		this.closed = true;
-		// super synchronizes on 'this' so this shouldn't use the local mutex object for synchronization.
 		synchronized (this) {
 			try {
 				this.cleanup.clean();
@@ -411,20 +394,28 @@ public class NestedJarFile extends JarFile {
 		return this.name;
 	}
 
-	private void ensureOpen() {
+	/**
+	 * Ensures the jar is open and that there is a {@link ZipContent} instance available.
+	 * @return the ZipContent instance - never {@code null}.
+	 * @throws IllegalStateException if the jar is closed or the {@link ZipContent} is
+	 * null.
+	 */
+	private ZipContent ensureOpen() {
 		if (this.closed) {
 			throw new IllegalStateException("Zip file closed");
 		}
-		if (this.resources.zipContent() == null) {
+		ZipContent zipContent = this.resources.zipContent();
+		if (zipContent == null) {
 			throw new IllegalStateException("The object is not initialized.");
 		}
+		return zipContent;
 	}
 
 	/**
 	 * Clear any internal caches.
 	 */
 	public void clearCache() {
-		synchronized (this.mutex) {
+		synchronized (this) {
 			this.lastEntry = null;
 		}
 	}
@@ -651,7 +642,7 @@ public class NestedJarFile extends JarFile {
 			if (!hasMoreElements()) {
 				throw new NoSuchElementException();
 			}
-			synchronized (NestedJarFile.this.mutex) {
+			synchronized (NestedJarFile.this) {
 				ensureOpen();
 				return new NestedJarEntry(this.zipContent.getEntry(this.cursor++));
 			}
@@ -679,10 +670,8 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
 			if (this.cursor < this.zipContent.size()) {
-				synchronized (NestedJarFile.this.mutex) {
-					ensureOpen();
-					action.accept(this.zipContent.getEntry(this.cursor++));
-				}
+				ensureOpen();
+				action.accept(this.zipContent.getEntry(this.cursor++));
 				return true;
 			}
 			return false;
@@ -720,7 +709,7 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
 			int result;
-			synchronized (NestedJarFile.this.mutex) {
+			synchronized (NestedJarFile.this) {
 				ensureOpen();
 				ByteBuffer dst = ByteBuffer.wrap(b, off, len);
 				int count = this.content.read(dst, this.pos);
@@ -736,7 +725,7 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public long skip(long n) throws IOException {
 			long result;
-			synchronized (NestedJarFile.this.mutex) {
+			synchronized (NestedJarFile.this) {
 				result = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
 				this.pos += result;
 				this.remaining -= result;
