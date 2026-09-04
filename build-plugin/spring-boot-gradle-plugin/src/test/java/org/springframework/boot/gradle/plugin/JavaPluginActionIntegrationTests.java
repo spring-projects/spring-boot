@@ -214,6 +214,24 @@ class JavaPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
+	void developmentOnlyIsConfiguredWithAttributesThatMatchRuntimeClasspath() {
+		String output = this.gradleBuild.build("build").getOutput();
+		Matcher matcher = Pattern.compile("runtimeClasspath: (\\[.*])").matcher(output);
+		assertThat(matcher.find()).as("%s found in %s", matcher, output).isTrue();
+		String attributes = matcher.group(1);
+		assertThat(output).contains("developmentOnly: " + attributes);
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyIsConfiguredWithAttributesThatMatchRuntimeClasspath() {
+		String output = this.gradleBuild.build("build").getOutput();
+		Matcher matcher = Pattern.compile("runtimeClasspath: (\\[.*])").matcher(output);
+		assertThat(matcher.find()).as("%s found in %s", matcher, output).isTrue();
+		String attributes = matcher.group(1);
+		assertThat(output).contains("testAndDevelopmentOnly: " + attributes);
+	}
+
+	@TestTemplate
 	void productionRuntimeClasspathIsConfiguredWithResolvabilityAndConsumabilityThatMatchesRuntimeClasspath() {
 		String output = this.gradleBuild.build("build").getOutput();
 		assertThat(output).contains("runtimeClasspath canBeResolved: true");
