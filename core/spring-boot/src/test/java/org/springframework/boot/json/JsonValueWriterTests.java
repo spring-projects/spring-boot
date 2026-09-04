@@ -31,9 +31,10 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-import org.springframework.boot.json.JsonValueWriter.Series;
+import org.springframework.boot.json.JsonWriter.ValueProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -321,6 +322,23 @@ class JsonValueWriterTests {
 		writer.end(Series.ARRAY);
 		writer.end(Series.ARRAY);
 		assertThat(out).hasToString("[[[]]]");
+	}
+
+	@Test // gh-50651
+	void valueProcessorShouldNotAllowReentrancy() {
+		// Ensures that a ValueProcessor attempting recursive writing/processing
+		// does not trigger infinite recursion or StackOverflowError.
+		StringBuilder out = new StringBuilder();
+		JsonValueWriter writer = new JsonValueWriter(out);
+		JsonWriterFiltersAndProcessors processors = new JsonWriterFiltersAndProcessors(
+				List.of(), List.of(), List.of(),
+				List.of(ValueProcessor.of((value) -> {
+					writer.write("nested");
+					return value;
+				}))
+		);
+		writer.pushProcessors(processors);
+		assertThatCode(() -> writer.write("test")).doesNotThrowAnyException();
 	}
 
 	private <V> String write(@Nullable V value) {
