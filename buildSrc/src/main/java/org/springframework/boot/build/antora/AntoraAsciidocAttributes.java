@@ -37,7 +37,6 @@ import org.springframework.boot.build.bom.ResolvedBom;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.boot.build.properties.BuildType;
-import org.springframework.util.Assert;
 
 /**
  * Generates Asciidoctor attributes for use with Antora.
@@ -60,8 +59,6 @@ public class AntoraAsciidocAttributes {
 
 	private final ResolvedBom resolvedBom;
 
-	private final Map<String, String> dependencyVersions;
-
 	private final Map<String, ?> projectProperties;
 
 	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom, ResolvedBom resolvedBom) {
@@ -71,7 +68,6 @@ public class AntoraAsciidocAttributes {
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.resolvedBom = resolvedBom;
-		this.dependencyVersions = resolvedBom.dependencyVersions();
 		this.projectProperties = project.getProperties();
 	}
 
@@ -116,7 +112,6 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		attributes.put("version-protobuf-gradle-plugin",
 				(String) this.projectProperties.get("protobufGradlePluginVersion"));
-		addDependencyVersion(attributes, "grpc-api", "io.grpc:grpc-api");
 	}
 
 	private void addVersionAttributes(Map<String, String> attributes, Library library) {
@@ -126,16 +121,6 @@ public class AntoraAsciidocAttributes {
 			String moduleVersion = resolvedLibrary.moduleVersion(module);
 			attributes.put("version-" + module.rootName(), moduleVersion);
 		});
-	}
-
-	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
-		attributes.put("version-" + name, getVersion(groupAndArtifactId));
-	}
-
-	private String getVersion(String groupAndArtifactId) {
-		String version = this.dependencyVersions.get(groupAndArtifactId);
-		Assert.notNull(version, () -> "No version found for " + groupAndArtifactId);
-		return version;
 	}
 
 	private void addArtifactAttributes(Map<String, String> attributes) {
