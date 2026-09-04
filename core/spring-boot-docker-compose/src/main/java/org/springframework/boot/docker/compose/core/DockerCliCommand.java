@@ -44,7 +44,7 @@ abstract sealed class DockerCliCommand<R> {
 
 	private final boolean listResponse;
 
-	private final Function<ComposeVersion, List<String>> command;
+	private final Function<ComposeContext, List<String>> command;
 
 	private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
 		this(type, LogLevel.OFF, responseType, listResponse, command);
@@ -52,11 +52,11 @@ abstract sealed class DockerCliCommand<R> {
 
 	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
 			String... command) {
-		this(type, logLevel, responseType, listResponse, (version) -> List.of(command));
+		this(type, logLevel, responseType, listResponse, (context) -> List.of(command));
 	}
 
 	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
-			Function<ComposeVersion, List<String>> command) {
+			Function<ComposeContext, List<String>> command) {
 		this.type = type;
 		this.logLevel = logLevel;
 		this.responseType = responseType;
@@ -72,12 +72,20 @@ abstract sealed class DockerCliCommand<R> {
 		return this.logLevel;
 	}
 
-	List<String> getCommand(ComposeVersion composeVersion) {
-		return this.command.apply(composeVersion);
+	List<String> getCommand(ComposeContext context) {
+		return this.command.apply(context);
+	}
+
+	boolean isSupported(ComposeContext context) {
+		return true;
+	}
+
+	R emptyResponse() {
+		throw new UnsupportedOperationException("Command is not supported and provides no empty response");
 	}
 
 	@SuppressWarnings("unchecked")
-	R convert(String response) {
+	R convert(String response, ComposeContext context) {
 		if (this.responseType == None.class) {
 			return (R) None.INSTANCE;
 		}
@@ -101,7 +109,7 @@ abstract sealed class DockerCliCommand<R> {
 		result = result && this.responseType == other.responseType;
 		result = result && this.listResponse == other.listResponse;
 		result = result
-				&& this.command.apply(ComposeVersion.UNKNOWN).equals(other.command.apply(ComposeVersion.UNKNOWN));
+				&& this.command.apply(ComposeContext.UNKNOWN).equals(other.command.apply(ComposeContext.UNKNOWN));
 		return result;
 	}
 
@@ -131,6 +139,16 @@ abstract sealed class DockerCliCommand<R> {
 			super(Type.DOCKER, DockerCliContextResponse.class, true, "context", "ls", "--format={{ json . }}");
 		}
 
+		@Override
+		boolean isSupported(ComposeContext context) {
+			return context.engine() == ContainerEngine.DOCKER;
+		}
+
+		@Override
+		List<DockerCliContextResponse> emptyResponse() {
+			return java.util.Collections.emptyList();
+		}
+
 	}
 
 	/**
@@ -150,8 +168,25 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeConfig extends DockerCliCommand<DockerCliComposeConfigResponse> {
 
+		private static final List<String> DOCKER_COMMAND = List.of("config", "--format=json");
+
+		private static final List<String> PODMAN_COMMAND = List.of("config");
+
 		ComposeConfig() {
-			super(Type.DOCKER_COMPOSE, DockerCliComposeConfigResponse.class, false, "config", "--format=json");
+			super(Type.DOCKER_COMPOSE, LogLevel.OFF, DockerCliComposeConfigResponse.class, false,
+					ComposeConfig::getConfigCommand);
+		}
+
+		private static List<String> getConfigCommand(ComposeContext context) {
+			return (context.engine() == ContainerEngine.PODMAN) ? PODMAN_COMMAND : DOCKER_COMMAND;
+		}
+
+		@Override
+		DockerCliComposeConfigResponse convert(String response, ComposeContext context) {
+			if (context.engine() == ContainerEngine.PODMAN) {
+				return PodmanComposeConfigYamlParser.parse(response);
+			}
+			return super.convert(response, context);
 		}
 
 	}
@@ -169,8 +204,11 @@ abstract sealed class DockerCliCommand<R> {
 			super(Type.DOCKER_COMPOSE, LogLevel.OFF, DockerCliComposePsResponse.class, true, ComposePs::getPsCommand);
 		}
 
-		private static List<String> getPsCommand(ComposeVersion composeVersion) {
-			return (composeVersion.isLessThan(2, 24)) ? WITHOUT_ORPHANS : WITH_ORPHANS;
+		private static List<String> getPsCommand(ComposeContext context) {
+			if (context.engine() == ContainerEngine.DOCKER && !context.composeVersion().isLessThan(2, 24)) {
+				return WITH_ORPHANS;
+			}
+			return WITHOUT_ORPHANS;
 		}
 
 	}
@@ -181,17 +219,19 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposeUp extends DockerCliCommand<None> {
 
 		ComposeUp(LogLevel logLevel, List<String> arguments) {
-			super(Type.DOCKER_COMPOSE, logLevel, None.class, false, getCommand(arguments));
+			super(Type.DOCKER_COMPOSE, logLevel, None.class, false, (context) -> getCommand(context, arguments));
 		}
 
-		private static String[] getCommand(List<String> arguments) {
+		private static List<String> getCommand(ComposeContext context, List<String> arguments) {
 			List<String> result = new ArrayList<>();
 			result.add("up");
 			result.add("--no-color");
 			result.add("--detach");
-			result.add("--wait");
+			if (context.engine() == ContainerEngine.DOCKER) {
+				result.add("--wait");
+			}
 			result.addAll(arguments);
-			return result.toArray(String[]::new);
+			return result;
 		}
 
 	}
@@ -315,6 +355,19 @@ abstract sealed class DockerCliCommand<R> {
 				return UNKNOWN;
 			}
 		}
+
+	}
+
+	/**
+	 * The active compose context, combining the container engine with the compose
+	 * version.
+	 *
+	 * @param engine the active container engine
+	 * @param composeVersion the compose version
+	 */
+	record ComposeContext(ContainerEngine engine, ComposeVersion composeVersion) {
+
+		static final ComposeContext UNKNOWN = new ComposeContext(ContainerEngine.DOCKER, ComposeVersion.UNKNOWN);
 
 	}
 

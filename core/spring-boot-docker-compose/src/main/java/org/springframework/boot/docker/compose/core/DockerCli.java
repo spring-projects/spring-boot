@@ -24,11 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeContext;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeVersion;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.Type;
 import org.springframework.boot.logging.LogLevel;
@@ -36,7 +39,8 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Wrapper around {@code docker} and {@code docker-compose} command line tools.
+ * Wrapper around {@code docker}, {@code docker-compose}, {@code podman}, and
+ * {@code podman-compose} command line tools.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -48,13 +52,16 @@ class DockerCli {
 
 	private static final Log logger = LogFactory.getLog(DockerCli.class);
 
+	private static final Pattern PODMAN_COMPOSE_VERSION_PATTERN = Pattern
+		.compile("podman-compose version (\\d+\\.\\d+\\.\\d+)");
+
 	private final ProcessRunner processRunner;
 
 	private final DockerCommands dockerCommands;
 
 	private final DockerComposeOptions dockerComposeOptions;
 
-	private final ComposeVersion composeVersion;
+	private final ComposeContext composeContext;
 
 	/**
 	 * Create a new {@link DockerCli} instance.
@@ -66,21 +73,27 @@ class DockerCli {
 		this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
 				(key) -> new DockerCommands(this.processRunner));
 		this.dockerComposeOptions = (dockerComposeOptions != null) ? dockerComposeOptions : DockerComposeOptions.none();
-		this.composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
+		ComposeVersion composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
+		this.composeContext = new ComposeContext(this.dockerCommands.engine(), composeVersion);
 	}
 
-	/**
-	 * Run the given {@link DockerCli} command and return the response.
-	 * @param <R> the response type
-	 * @param dockerCommand the command to run
-	 * @return the response
-	 */
+	DockerCli(ProcessRunner processRunner) {
+		this.processRunner = processRunner;
+		this.dockerCommands = new DockerCommands(this.processRunner);
+		this.dockerComposeOptions = DockerComposeOptions.none();
+		ComposeVersion composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
+		this.composeContext = new ComposeContext(this.dockerCommands.engine(), composeVersion);
+	}
+
 	<R> R run(DockerCliCommand<R> dockerCommand) {
+		if (!dockerCommand.isSupported(this.composeContext)) {
+			return dockerCommand.emptyResponse();
+		}
 		List<String> command = createCommand(dockerCommand.getType());
-		command.addAll(dockerCommand.getCommand(this.composeVersion));
+		command.addAll(dockerCommand.getCommand(this.composeContext));
 		Consumer<String> outputConsumer = createOutputConsumer(dockerCommand.getLogLevel());
 		String response = this.processRunner.run(outputConsumer, command.toArray(new String[0]));
-		return dockerCommand.convert(response);
+		return dockerCommand.convert(response, this.composeContext);
 	}
 
 	private @Nullable Consumer<String> createOutputConsumer(@Nullable LogLevel logLevel) {
@@ -94,7 +107,8 @@ class DockerCli {
 		return switch (type) {
 			case DOCKER -> new ArrayList<>(this.dockerCommands.get(type).command());
 			case DOCKER_COMPOSE -> {
-				List<String> result = new ArrayList<>(this.dockerCommands.get(type).command());
+				DockerCommand composeCmd = this.dockerCommands.get(type);
+				List<String> result = new ArrayList<>(composeCmd.command());
 				DockerComposeFile composeFile = this.dockerComposeOptions.composeFile();
 				if (composeFile != null) {
 					for (File file : composeFile.getFiles()) {
@@ -102,8 +116,12 @@ class DockerCli {
 						result.add(file.getPath());
 					}
 				}
-				result.add("--ansi");
-				result.add("never");
+
+				if (composeCmd.supportsAnsi()) {
+					result.add("--ansi");
+					result.add("never");
+				}
+
 				Set<String> activeProfiles = this.dockerComposeOptions.activeProfiles();
 				if (!CollectionUtils.isEmpty(activeProfiles)) {
 					for (String profile : activeProfiles) {
@@ -133,57 +151,131 @@ class DockerCli {
 	 */
 	private static class DockerCommands {
 
+		private final ContainerEngine engine;
+
 		private final DockerCommand dockerCommand;
 
 		private final DockerCommand dockerComposeCommand;
 
 		DockerCommands(ProcessRunner processRunner) {
-			this.dockerCommand = getDockerCommand(processRunner);
-			this.dockerComposeCommand = getDockerComposeCommand(processRunner);
+			Provider provider = discoverProvider(processRunner);
+			this.engine = provider.engine();
+			this.dockerCommand = provider.engineCommand();
+			this.dockerComposeCommand = provider.composeCommand();
 		}
 
-		private DockerCommand getDockerCommand(ProcessRunner processRunner) {
+		ContainerEngine engine() {
+			return this.engine;
+		}
+
+		private Provider discoverProvider(ProcessRunner processRunner) {
 			try {
-				String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
-				logger.trace(LogMessage.format("Using docker %s", version));
-				return new DockerCommand(version, List.of("docker"));
+				return getDockerProvider(processRunner);
 			}
-			catch (ProcessStartException ex) {
-				throw new DockerProcessStartException("Unable to start docker process. Is docker correctly installed?",
-						ex);
+			catch (ProcessStartException ex1) {
+				// Only fall back to Podman if 'docker' executable is completely missing
+				// on PATH
+				try {
+					return getPodmanProvider(processRunner);
+				}
+				catch (ProcessStartException ex2) {
+					DockerProcessStartException exception = new DockerProcessStartException(
+							"Unable to find 'docker' or 'podman' executable on PATH.", ex1);
+					exception.addSuppressed(ex2);
+					throw exception;
+				}
+			}
+		}
+
+		private Provider getDockerProvider(ProcessRunner processRunner) {
+			DockerCommand engine = fetchEngineCommand(processRunner, "docker");
+			try {
+				return new Provider(ContainerEngine.DOCKER, engine, fetchDockerComposePlugin(processRunner));
+			}
+			catch (ProcessStartException | ProcessExitException ex1) {
+				try {
+					return new Provider(ContainerEngine.DOCKER, engine, fetchDockerComposeStandalone(processRunner));
+				}
+				catch (ProcessStartException | ProcessExitException ex2) {
+					throw new DockerProcessStartException(
+							"Docker binary was found, but neither 'docker compose' nor 'docker-compose' could be executed.",
+							ex1);
+				}
+			}
+		}
+
+		private Provider getPodmanProvider(ProcessRunner processRunner) {
+			DockerCommand engine = fetchEngineCommand(processRunner, "podman");
+			try {
+				return new Provider(ContainerEngine.PODMAN, engine, fetchPodmanComposePlugin(processRunner));
+			}
+			catch (ProcessStartException | ProcessExitException ex1) {
+				try {
+					return new Provider(ContainerEngine.PODMAN, engine, fetchPodmanComposeStandalone(processRunner));
+				}
+				catch (ProcessStartException | ProcessExitException ex2) {
+					throw new DockerProcessStartException(
+							"Podman binary was found, but neither 'podman compose' nor 'podman-compose' could be executed.",
+							ex1);
+				}
+			}
+		}
+
+		private DockerCommand fetchEngineCommand(ProcessRunner processRunner, String executable) {
+			try {
+				String version = processRunner.run(executable, "version", "--format", "{{.Client.Version}}");
+				logger.trace(LogMessage.format("Using %s %s", executable, version.trim()));
+				return new DockerCommand(version.trim(), List.of(executable), false);
 			}
 			catch (ProcessExitException ex) {
-				if (ex.getStdErr().contains("docker daemon is not running")
-						|| ex.getStdErr().contains("Cannot connect to the Docker daemon")) {
+				if ("docker".equals(executable) && isDaemonNotRunning(ex.getStdErr())) {
 					throw new DockerNotRunningException(ex.getStdErr(), ex);
 				}
-				throw ex;
+				throw new DockerProcessStartException(executable + " process failed to run correctly", ex);
 			}
 		}
 
-		private DockerCommand getDockerComposeCommand(ProcessRunner processRunner) {
-			try {
-				DockerCliComposeVersionResponse response = DockerJson.deserialize(
-						processRunner.run("docker", "compose", "version", "--format", "json"),
-						DockerCliComposeVersionResponse.class);
-				logger.trace(LogMessage.format("Using Docker Compose %s", response.version()));
-				return new DockerCommand(response.version(), List.of("docker", "compose"));
+		private DockerCommand fetchDockerComposePlugin(ProcessRunner processRunner) {
+			String output = processRunner.run("docker", "compose", "version", "--format", "json");
+			DockerCliComposeVersionResponse response = DockerJson.deserialize(output,
+					DockerCliComposeVersionResponse.class);
+			logger.trace(LogMessage.format("Using docker compose %s", response.version()));
+			return new DockerCommand(response.version(), List.of("docker", "compose"), true);
+		}
+
+		private DockerCommand fetchDockerComposeStandalone(ProcessRunner processRunner) {
+			String output = processRunner.run("docker-compose", "version", "--format", "json");
+			DockerCliComposeVersionResponse response = DockerJson.deserialize(output,
+					DockerCliComposeVersionResponse.class);
+			logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
+			return new DockerCommand(response.version(), List.of("docker-compose"), true);
+		}
+
+		private DockerCommand fetchPodmanComposePlugin(ProcessRunner processRunner) {
+			String output = processRunner.run("podman", "compose", "version");
+			String version = parsePodmanComposeVersion(output);
+			logger.trace(LogMessage.format("Using podman compose %s", version));
+			return new DockerCommand(version, List.of("podman", "compose"), false);
+		}
+
+		private DockerCommand fetchPodmanComposeStandalone(ProcessRunner processRunner) {
+			String output = processRunner.run("podman-compose", "version");
+			String version = parsePodmanComposeVersion(output);
+			logger.trace(LogMessage.format("Using podman-compose %s", version));
+			return new DockerCommand(version, List.of("podman-compose"), false);
+		}
+
+		private static String parsePodmanComposeVersion(String rawOutput) {
+			Matcher matcher = PODMAN_COMPOSE_VERSION_PATTERN.matcher(rawOutput);
+			if (matcher.find()) {
+				return matcher.group(1);
 			}
-			catch (ProcessExitException ex) {
-				// Ignore and try docker-compose
-			}
-			try {
-				DockerCliComposeVersionResponse response = DockerJson.deserialize(
-						processRunner.run("docker-compose", "version", "--format", "json"),
-						DockerCliComposeVersionResponse.class);
-				logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
-				return new DockerCommand(response.version(), List.of("docker-compose"));
-			}
-			catch (ProcessStartException ex) {
-				throw new DockerProcessStartException(
-						"Unable to start 'docker-compose' process or use 'docker compose'. Is docker correctly installed?",
-						ex);
-			}
+			throw new IllegalStateException("Unable to parse version from podman-compose output: " + rawOutput);
+		}
+
+		private static boolean isDaemonNotRunning(String stdErr) {
+			return stdErr.contains("docker daemon is not running")
+					|| stdErr.contains("Cannot connect to the Docker daemon");
 		}
 
 		DockerCommand get(Type type) {
@@ -195,17 +287,14 @@ class DockerCli {
 
 	}
 
-	private record DockerCommand(String version, List<String> command) {
+	private record Provider(ContainerEngine engine, DockerCommand engineCommand, DockerCommand composeCommand) {
 
 	}
 
-	/**
-	 * Options for Docker Compose.
-	 *
-	 * @param composeFile the Docker Compose file to use
-	 * @param activeProfiles the profiles to activate
-	 * @param arguments the arguments to pass to Docker Compose
-	 */
+	private record DockerCommand(String version, List<String> command, boolean supportsAnsi) {
+
+	}
+
 	record DockerComposeOptions(@Nullable DockerComposeFile composeFile, Set<String> activeProfiles,
 			List<String> arguments) {
 

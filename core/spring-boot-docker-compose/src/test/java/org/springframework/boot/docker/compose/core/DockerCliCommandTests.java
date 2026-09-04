@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeContext;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeVersion;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.None;
 import org.springframework.boot.logging.LogLevel;
@@ -38,45 +39,59 @@ class DockerCliCommandTests {
 
 	private static final ComposeVersion COMPOSE_VERSION = ComposeVersion.of("2.31.0");
 
+	private static final ComposeContext DOCKER_CONTEXT = new ComposeContext(ContainerEngine.DOCKER, COMPOSE_VERSION);
+
+	private static final ComposeContext PODMAN_CONTEXT = new ComposeContext(ContainerEngine.PODMAN, COMPOSE_VERSION);
+
 	@Test
 	void context() {
 		DockerCliCommand<?> command = new DockerCliCommand.Context();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("context", "ls", "--format={{ json . }}");
-		assertThat(command.convert("[]")).isInstanceOf(List.class);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("context", "ls", "--format={{ json . }}");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isInstanceOf(List.class);
 	}
 
 	@Test
 	void inspect() {
 		DockerCliCommand<?> command = new DockerCliCommand.Inspect(List.of("123", "345"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("inspect", "--format={{ json . }}", "123",
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("inspect", "--format={{ json . }}", "123",
 				"345");
-		assertThat(command.convert("[]")).isInstanceOf(List.class);
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isInstanceOf(List.class);
 	}
 
 	@Test
 	void composeConfig() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeConfig();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("config", "--format=json");
-		assertThat(command.convert("{}")).isInstanceOf(DockerCliComposeConfigResponse.class);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("config", "--format=json");
+		assertThat(command.getCommand(PODMAN_CONTEXT)).containsExactly("config");
+		assertThat(command.convert("{}", DOCKER_CONTEXT)).isInstanceOf(DockerCliComposeConfigResponse.class);
+		assertThat(command.convert("name: test", PODMAN_CONTEXT)).isInstanceOf(DockerCliComposeConfigResponse.class);
 	}
 
 	@Test
 	void composePs() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposePs();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("ps", "--orphans=false", "--format=json");
-		assertThat(command.convert("[]")).isInstanceOf(List.class);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("ps", "--orphans=false", "--format=json");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isInstanceOf(List.class);
 	}
 
 	@Test
 	void composePsWhenLessThanV224() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposePs();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(ComposeVersion.of("2.23"))).containsExactly("ps", "--format=json");
-		assertThat(command.convert("[]")).isInstanceOf(List.class);
+		assertThat(command.getCommand(new ComposeContext(ContainerEngine.DOCKER, ComposeVersion.of("2.23"))))
+			.containsExactly("ps", "--format=json");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isInstanceOf(List.class);
+	}
+
+	@Test
+	void composePsWithPodmanDoesNotUseOrphansFlag() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposePs();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand(PODMAN_CONTEXT)).containsExactly("ps", "--format=json");
 	}
 
 	@Test
@@ -84,9 +99,17 @@ class DockerCliCommandTests {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp(LogLevel.INFO, List.of("--renew-anon-volumes"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("up", "--no-color", "--detach", "--wait",
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("up", "--no-color", "--detach", "--wait",
 				"--renew-anon-volumes");
-		assertThat(command.convert("[]")).isSameAs(None.INSTANCE);
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isSameAs(None.INSTANCE);
+	}
+
+	@Test
+	void composeUpWithPodmanDoesNotUseWaitFlag() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp(LogLevel.INFO, List.of("--renew-anon-volumes"));
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand(PODMAN_CONTEXT)).containsExactly("up", "--no-color", "--detach",
+				"--renew-anon-volumes");
 	}
 
 	@Test
@@ -94,8 +117,8 @@ class DockerCliCommandTests {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeDown(Duration.ofSeconds(1),
 				List.of("--remove-orphans"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("down", "--timeout", "1", "--remove-orphans");
-		assertThat(command.convert("[]")).isSameAs(None.INSTANCE);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("down", "--timeout", "1", "--remove-orphans");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isSameAs(None.INSTANCE);
 	}
 
 	@Test
@@ -103,16 +126,16 @@ class DockerCliCommandTests {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart(LogLevel.INFO, List.of("--dry-run"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("start", "--dry-run");
-		assertThat(command.convert("[]")).isSameAs(None.INSTANCE);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("start", "--dry-run");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isSameAs(None.INSTANCE);
 	}
 
 	@Test
 	void composeStop() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeStop(Duration.ofSeconds(1), List.of("--dry-run"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("stop", "--timeout", "1", "--dry-run");
-		assertThat(command.convert("[]")).isSameAs(None.INSTANCE);
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("stop", "--timeout", "1", "--dry-run");
+		assertThat(command.convert("[]", DOCKER_CONTEXT)).isSameAs(None.INSTANCE);
 	}
 
 	@Test
@@ -134,11 +157,11 @@ class DockerCliCommandTests {
 	void composeLogs() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeLogs();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("logs");
+		assertThat(command.getCommand(DOCKER_CONTEXT)).containsExactly("logs");
 		assertThat(command.convert("""
 				multi
 				line
-				logs""")).isEqualTo("""
+				logs""", DOCKER_CONTEXT)).isEqualTo("""
 				multi
 				line
 				logs""");
