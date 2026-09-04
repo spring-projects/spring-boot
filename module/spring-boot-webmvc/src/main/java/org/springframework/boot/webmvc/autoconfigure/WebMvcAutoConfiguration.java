@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -62,10 +64,13 @@ import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Format;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Forwardedheaders;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.HeaderFormat;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -84,7 +89,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.lang.Contract;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -102,6 +106,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -116,7 +121,6 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -137,7 +141,6 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -266,30 +269,6 @@ public final class WebMvcAutoConfiguration {
 			if (timeout != null) {
 				configurer.setDefaultTimeout(timeout.toMillis());
 			}
-		}
-
-		@Override
-		@SuppressWarnings("removal")
-		public void configurePathMatch(PathMatchConfigurer configurer) {
-			if (this.mvcProperties.getPathmatch()
-				.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
-				configurer.setPathMatcher(new AntPathMatcher());
-				this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
-					String servletUrlMapping = dispatcherPath.getServletUrlMapping();
-					if (servletUrlMapping.equals("/") && singleDispatcherServlet()) {
-						UrlPathHelper urlPathHelper = new UrlPathHelper();
-						urlPathHelper.setAlwaysUseFullPath(true);
-						configurer.setUrlPathHelper(urlPathHelper);
-					}
-				});
-			}
-		}
-
-		private boolean singleDispatcherServlet() {
-			return this.servletRegistrations.stream()
-				.map(ServletRegistrationBean::getServlet)
-				.filter(DispatcherServlet.class::isInstance)
-				.count() == 1;
 		}
 
 		@Override
@@ -430,6 +409,47 @@ public final class WebMvcAutoConfiguration {
 		@ConditionalOnMissingFilterBean
 		static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
+		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+		FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
+				ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
+			Forwardedheaders properties = this.mvcProperties.getForwardedHeaders();
+			ForwardedHeaderFilter filter = new ForwardedHeaderFilter(
+					properties.getHeaderFormat() == HeaderFormat.STANDARD);
+			filter.setUseForwardedPrefix(properties.isUseForwardedPrefix());
+			customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
+			FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			return registration;
+		}
+
+	}
+
+	/**
+	 * Adapts a deprecated {@code spring-boot-web-server}
+	 * {@link org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer}
+	 * bean to {@link ForwardedHeaderFilterCustomizer}. Defined as a separate nested
+	 * config, guarded by {@link ConditionalOnClass}, so that referencing the deprecated
+	 * type does not prevent reflection on other configuration classes when
+	 * {@code spring-boot-web-server} is not on the classpath (as is the case for
+	 * traditional WAR deployments).
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer.class)
+	@SuppressWarnings("removal")
+	static class DeprecatedForwardedHeaderFilterCustomizerConfiguration {
+
+		@Bean
+		@ConditionalOnBean(org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer.class)
+		@ConditionalOnMissingBean
+		@SuppressWarnings("removal")
+		ForwardedHeaderFilterCustomizer deprecatedForwardedHeaderFilterCustomizerAdapter(
+				org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer customizer) {
+			return customizer::customize;
 		}
 
 	}
@@ -673,13 +693,6 @@ public final class WebMvcAutoConfiguration {
 
 		T create(TemplateAvailabilityProviders templateAvailabilityProviders, ApplicationContext applicationContext,
 				@Nullable Resource indexHtmlResource, String staticPathPattern);
-
-	}
-
-	@FunctionalInterface
-	interface ResourceHandlerRegistrationCustomizer {
-
-		void customize(ResourceHandlerRegistration registration);
 
 	}
 

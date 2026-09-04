@@ -16,7 +16,7 @@
 
 package org.springframework.boot.webservices.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -59,7 +59,7 @@ public class WebServicesProperties {
 		/**
 		 * Servlet init parameters to pass to Spring Web Services.
 		 */
-		private Map<String, String> init = new HashMap<>();
+		private Map<String, String> init = new LinkedHashMap<>();
 
 		/**
 		 * Load on startup priority of the Spring Web Services servlet.

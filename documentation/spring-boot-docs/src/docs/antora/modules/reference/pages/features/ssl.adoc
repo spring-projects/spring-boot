@@ -161,6 +161,7 @@ Currently the following components are compatible:
 
 * Tomcat web server
 * Netty web server
+* LDAP client
 
 To enable reloading, you need to opt-in via a configuration property as shown in this example:
 

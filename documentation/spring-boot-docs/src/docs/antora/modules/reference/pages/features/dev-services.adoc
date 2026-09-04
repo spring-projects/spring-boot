@@ -86,6 +86,9 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq", "apache/activemq-classic" or "apache/activemq"
 
+| javadoc:org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails[]
+| Containers named "rabbitmq" or "apache/activemq-classic" or "apache/activemq-artemis"
+
 | javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis" or "apache/artemis"
 
@@ -125,10 +128,10 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[]
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
-| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq" with container port 5672 mapped
 
-| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitStreamConnectionDetails[]
+| javadoc:org.springframework.boot.rabbitmq.autoconfigure.RabbitStreamConnectionDetails[]
 | Containers named "rabbitmq" with container port 5552 mapped, or port 5551 mapped when SSL is configured
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
@@ -151,6 +154,7 @@ SSL is supported for the following service connections:
 
 * Cassandra
 * Elasticsearch
+* LDAP
 * MongoDB
 * OpenTelemetry (OTLP logging, metrics, and tracing)
 * RabbitMQ

@@ -33,6 +33,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ValidatorFactory;
@@ -114,6 +115,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.method.ControllerAdviceBean;
@@ -662,6 +664,58 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void forwardedHeaderFilterIsNotConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterIsNotConfiguredWhenStrategyIsNotFramework() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
+			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterIsConfiguredWhenFrameworkStrategyIsUsed() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework").run((context) -> {
+			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+			assertThat(filter).extracting("useStandardHeader").isEqualTo(false);
+			assertThat(filter).extracting("useForwardedPrefix").isEqualTo(false);
+		});
+	}
+
+	@Test
+	void forwardedHeaderFilterAppliesConfiguredProperties() {
+		this.contextRunner
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"spring.mvc.forwarded-headers.header-format=standard",
+					"spring.mvc.forwarded-headers.use-forwarded-prefix=true")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).extracting("useStandardHeader").isEqualTo(true);
+				assertThat(filter).extracting("useForwardedPrefix").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void forwardedHeaderFilterBacksOffWhenFilterBeanAlreadyRegistered() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterCustomizerFromDeprecatedTypeIsApplied() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterCustomizerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).extracting("removeOnly").isEqualTo(true);
+			});
+	}
+
+	@Test
 	void customConfigurableWebBindingInitializer() {
 		this.contextRunner.withUserConfiguration(CustomConfigurableWebBindingInitializer.class)
 			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class).getWebBindingInitializer())
@@ -944,25 +998,6 @@ class WebMvcAutoConfigurationTests {
 				ConversionService service = context.getBean(ConversionService.class);
 				assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
 				assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
-			});
-	}
-
-	@Test
-	void urlPathHelperUsesFullPathByDefaultWhenAntPathMatchingIsUsed() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:ant-path-matcher")
-			.run((context) -> {
-				UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
-				assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(true);
-			});
-	}
-
-	@Test
-	void urlPathHelperDoesNotUseFullPathWithServletMapping() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:ant-path-matcher")
-			.withPropertyValues("spring.mvc.servlet.path=/test/")
-			.run((context) -> {
-				UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
-				assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
 			});
 	}
 
@@ -1360,6 +1395,27 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		FormContentFilter customFormContentFilter() {
 			return new FormContentFilter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterConfiguration {
+
+		@Bean
+		FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
+			return new FilterRegistrationBean<>(new ForwardedHeaderFilter(false));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterCustomizerConfiguration {
+
+		@Bean
+		@SuppressWarnings("removal")
+		org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer forwardedHeaderFilterCustomizer() {
+			return (filter) -> filter.setRemoveOnly(true);
 		}
 
 	}

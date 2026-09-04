@@ -1618,6 +1618,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 			.contains("remoteaddr=140.211.11.130");
 	}
 
+	protected void assertRfcForwardHeaderIsUsed(ServletWebServerFactory factory)
+			throws IOException, URISyntaxException {
+		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
+		this.webServer.start();
+		assertThat(getResponse(getLocalUrl("/hello"), "Forwarded:for=140.211.11.130"))
+			.contains("remoteaddr=140.211.11.130");
+	}
+
 	protected abstract ConfigurableServletWebServerFactory getFactory();
 
 	protected abstract org.apache.jasper.servlet.@Nullable JspServlet getJspServlet() throws Exception;

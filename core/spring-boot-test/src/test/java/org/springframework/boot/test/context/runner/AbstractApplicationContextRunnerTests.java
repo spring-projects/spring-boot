@@ -62,8 +62,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @param <A> the assertable context type
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Stefano Cordio
  */
-abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> {
 
 	@Test
 	void runWithInitializerShouldInitialize() {
@@ -276,6 +277,12 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 				assertThat(context).hasBean("foo");
 				assertThat(context.getBean("foo")).isEqualTo("overridden");
 			});
+	}
+
+	@Test
+	void runShouldWorkWithSatisfiesAssertion() {
+		get().run((context) -> assertThat(context).satisfies((ctx) -> assertThat(ctx).hasNotFailed(),
+				(ctx) -> assertThat(ctx).doesNotHaveBean("foo")));
 	}
 
 	@Test

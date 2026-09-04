@@ -19,14 +19,12 @@ package smoketest.actuator.customsecurity;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,10 +51,16 @@ class ManagementServerWithCustomBasePathAndWebEndpointsBasePathSampleActuatorApp
 
 	@Test
 	void testMissing() {
-		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-			.getForEntity(getActuatorPath() + "/missing", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(entity.getBody()).contains("\"status\":404");
+		RestTestClient.bindToServer()
+			.defaultHeaders((headers) -> headers.setBasicAuth("admin", "admin"))
+			.build()
+			.get()
+			.uri(getActuatorPath() + "/missing")
+			.exchange()
+			.expectStatus()
+			.isNotFound()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":404"));
 	}
 
 	@Override

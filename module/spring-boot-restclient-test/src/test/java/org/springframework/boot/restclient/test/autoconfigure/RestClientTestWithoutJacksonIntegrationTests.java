@@ -34,21 +34,21 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Andy Wilkinson
  */
 @ClassPathExclusions("jackson-*.jar")
-@RestClientTest(ExampleRestTemplateService.class)
+@RestClientTest(ExampleRestClientService.class)
 class RestClientTestWithoutJacksonIntegrationTests {
 
 	@Autowired
 	private MockRestServiceServer server;
 
 	@Autowired
-	private ExampleRestTemplateService client;
+	private ExampleRestClientService client;
 
 	@Test
 	void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		assertThat(ClassUtils.isPresent("com.fasterxml.jackson.databind.Module", classLoader)).isFalse();
 		assertThat(ClassUtils.isPresent("tools.jackson.databind.JacksonModule", classLoader)).isFalse();
-		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("https://example.com/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("hello");
 	}
 

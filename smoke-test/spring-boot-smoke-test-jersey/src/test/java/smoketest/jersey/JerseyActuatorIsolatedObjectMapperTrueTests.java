@@ -19,9 +19,6 @@ package smoketest.jersey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
@@ -29,6 +26,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "management.endpoints.jackson.isolated-json-mapper=true")
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
@@ -49,13 +46,13 @@ class JerseyActuatorIsolatedObjectMapperTrueTests {
 	@LocalManagementPort
 	private int managementPort;
 
-	@Autowired
-	private TestRestTemplate testRestTemplate;
-
 	@Test
 	void resourceShouldBeAvailableOnMainPort() {
-		ResponseEntity<String> entity = this.testRestTemplate
-			.getForEntity("http://localhost:" + this.port + "/actuator/startup", String.class);
+		ResponseEntity<String> entity = RestClient.create()
+			.get()
+			.uri("http://localhost:" + this.port + "/actuator/startup")
+			.retrieve()
+			.toEntity(String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"timeline\":");
 	}

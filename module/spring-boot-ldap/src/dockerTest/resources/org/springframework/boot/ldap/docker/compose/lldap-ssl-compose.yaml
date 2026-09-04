@@ -1,0 +1,19 @@
+services:
+  ldap:
+    image: '{imageName}'
+    environment:
+      - 'LLDAP_LDAP_BASE_DN=dc=springframework,dc=org'
+      - 'LLDAP_LDAP_USER_PASS=somepassword'
+      - 'LLDAP_LDAPS_OPTIONS__ENABLED=true'
+      - 'LLDAP_LDAPS_OPTIONS__CERT_FILE=/certs/server.crt'
+      - 'LLDAP_LDAPS_OPTIONS__KEY_FILE=/certs/server.key'
+    ports:
+      - "3890"
+      - "6360"
+    volumes:
+      - './server.crt:/certs/server.crt'
+      - './server.key:/certs/server.key'
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=server.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=server.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'

@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Jonatan Ivanov
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class LogCorrelationEnvironmentPostProcessorTests {
 
@@ -72,7 +73,42 @@ class LogCorrelationEnvironmentPostProcessorTests {
 		PropertySource<?> propertySource = this.environment.getPropertySources().get("logCorrelation");
 		assertThat(propertySource).isInstanceOf(EnumerablePropertySource.class);
 		assertThat(((EnumerablePropertySource<?>) propertySource).getPropertyNames())
-			.containsExactly(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY);
+			.containsExactly(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "logging.pattern.correlation");
+	}
+
+	@Test
+	void getCorrelationPatternWhenMdcKeysAreDefaultReturnsPatternUsingDefaultKeys() {
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("logging.pattern.correlation"))
+			.isEqualTo("%correlationId{traceId(32),spanId(16)}");
+	}
+
+	@Test
+	void getCorrelationPatternWhenMdcKeysAreCustomizedReturnsPatternUsingThoseKeys() {
+		TestPropertyValues
+			.of("management.tracing.mdc.trace-id-key=customTraceId", "management.tracing.mdc.span-id-key=customSpanId")
+			.applyTo(this.environment);
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("logging.pattern.correlation"))
+			.isEqualTo("%correlationId{customTraceId(32),customSpanId(16)}");
+	}
+
+	@Test
+	void getCorrelationPatternWhenSetByUserDoesNotOverride() {
+		TestPropertyValues
+			.of("management.tracing.mdc.trace-id-key=customTraceId", "logging.pattern.correlation=%correlationId{x(1)}")
+			.applyTo(this.environment);
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("logging.pattern.correlation")).isEqualTo("%correlationId{x(1)}");
+	}
+
+	@Test
+	void getCorrelationPatternWhenTracingDisabledReturnsNull() {
+		TestPropertyValues
+			.of("management.tracing.export.enabled=false", "management.tracing.mdc.trace-id-key=customTraceId")
+			.applyTo(this.environment);
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("logging.pattern.correlation")).isNull();
 	}
 
 }

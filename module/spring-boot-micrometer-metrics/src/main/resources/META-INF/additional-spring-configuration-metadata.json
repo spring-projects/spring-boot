@@ -1822,6 +1822,12 @@
       }
     },
     {
+      "name": "management.otlp.metrics.export.compression-mode",
+      "type": "org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsProperties$CompressionMode",
+      "description": "Compression mode to use when exporting metrics.",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.promethus.metrics.export.pushgateway.base-url",
       "type": "java.lang.String",
       "deprecation": {

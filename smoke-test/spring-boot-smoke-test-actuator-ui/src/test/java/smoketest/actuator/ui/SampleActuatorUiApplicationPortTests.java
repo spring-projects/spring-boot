@@ -16,19 +16,13 @@
 
 package smoketest.actuator.ui;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port:0" })
-@AutoConfigureTestRestTemplate
 class SampleActuatorUiApplicationPortTests {
 
 	@LocalServerPort
@@ -47,30 +40,41 @@ class SampleActuatorUiApplicationPortTests {
 	@LocalManagementPort
 	private int managementPort;
 
-	@Autowired
-	private TestRestTemplate testRestTemplate;
-
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("http://localhost:" + this.port,
-				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.port)
+			.build()
+			.get()
+			.headers((headers) -> headers.setBasicAuth("user", getPassword()))
+			.exchange()
+			.expectStatus()
+			.isOk();
 	}
 
 	@Test
 	void testMetrics() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.testRestTemplate
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.build()
+			.get()
+			.uri("/actuator/metrics")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized();
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", getPassword())
-			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", getPassword()))
+			.build()
+			.get()
+			.uri("/actuator/health")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\""));
 	}
 
 	private String getPassword() {

@@ -64,6 +64,9 @@ management:
     use-global-registry: false
 ----
 
+NOTE: In tests that use `spring-boot-micrometer-metrics-test`, the global registry is disabled by default.
+If you want to use the global registry in such a test, annotate it with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] using `useGlobalRegistry = true`, or set the configprop:management.metrics.use-global-registry[] property explicitly to `true`.
+
 You can register any number of javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer[] beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
 include-code::commontags/MyMeterRegistryConfiguration[]
@@ -840,21 +843,20 @@ This metric is tagged with the following information:
 [[actuator.metrics.supported.http-clients]]
 === HTTP Client Metrics
 
-Spring Boot Actuator manages the instrumentation of javadoc:org.springframework.web.client.RestTemplate[], javadoc:org.springframework.web.reactive.function.client.WebClient[] and javadoc:org.springframework.web.client.RestClient[].
+Spring Boot Actuator manages the instrumentation of javadoc:org.springframework.web.reactive.function.client.WebClient[] and javadoc:org.springframework.web.client.RestClient[].
 For that, you have to inject the auto-configured builder and use it to create instances:
 
-* javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] for javadoc:org.springframework.web.client.RestTemplate[]
 * javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] for javadoc:org.springframework.web.reactive.function.client.WebClient[]
 * javadoc:org.springframework.web.client.RestClient$Builder[] for javadoc:org.springframework.web.client.RestClient[]
 
-You can also manually apply the customizers responsible for this instrumentation, namely javadoc:org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer[], javadoc:org.springframework.boot.webclient.observation.ObservationWebClientCustomizer[] and javadoc:org.springframework.boot.restclient.observation.ObservationRestClientCustomizer[].
+You can also manually apply the customizers responsible for this instrumentation, namely javadoc:org.springframework.boot.webclient.observation.ObservationWebClientCustomizer[] and javadoc:org.springframework.boot.restclient.observation.ObservationRestClientCustomizer[].
 
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
-To customize the tags when using javadoc:org.springframework.web.client.RestTemplate[] or javadoc:org.springframework.web.client.RestClient[], provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.http.client.observation.ClientRequestObservationConvention[] from the `org.springframework.http.client.observation` package.
+To customize the tags when using javadoc:org.springframework.web.client.RestClient[], provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.http.client.observation.ClientRequestObservationConvention[] from the `org.springframework.http.client.observation` package.
 To customize the tags when using javadoc:org.springframework.web.reactive.function.client.WebClient[], provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.web.reactive.function.client.ClientRequestObservationConvention[] from the `org.springframework.web.reactive.function.client` package.
 
 

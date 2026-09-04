@@ -24,14 +24,12 @@ import smoketest.test.service.VehicleDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -42,13 +40,13 @@ import static org.mockito.BDDMockito.given;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleTestApplicationWebIntegrationTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("01234567890123456");
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@MockitoBean
 	private VehicleDetailsService vehicleDetailsService;
@@ -60,8 +58,7 @@ class SampleTestApplicationWebIntegrationTests {
 
 	@Test
 	void test() {
-		assertThat(this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework").getStatusCode())
-			.isEqualTo(HttpStatus.OK);
+		this.restTestClient.get().uri("/{username}/vehicle", "sframework").exchange().expectStatus().isOk();
 	}
 
 }

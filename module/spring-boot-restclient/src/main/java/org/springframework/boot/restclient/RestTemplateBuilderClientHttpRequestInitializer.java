@@ -33,7 +33,10 @@ import org.springframework.http.client.ClientHttpRequestInitializer;
  *
  * @author Dmytro Nosan
  * @author Ilya Lukyanovich
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestTemplateBuilderClientHttpRequestInitializer implements ClientHttpRequestInitializer {
 
 	private final @Nullable BasicAuthentication basicAuthentication;

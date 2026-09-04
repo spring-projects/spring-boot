@@ -51,6 +51,7 @@ bootBuildImage {
 	environment = [
 		'BP_JVM_VERSION': java.targetCompatibility.getMajorVersion(),
 		'BP_TOMCAT_VERSION': '11.*',
-		'BP_DEPENDENCY_MIRROR_DOWNLOADS_APACHE_ORG': 'https://archive.apache.org/dist'
+		'BP_DEPENDENCY_MIRROR_DOWNLOADS_APACHE_ORG': 'https://archive.apache.org/dist',
+		'BP_SPRING_CLOUD_BINDINGS_DISABLED': 'true'
 	]
 }

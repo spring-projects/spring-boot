@@ -115,6 +115,7 @@ class RetryPolicySettingsTests {
 	void createRetryPolicyWithDefaultsMatchesBackOffDefaults() {
 		RetryPolicy defaultRetryPolicy = RetryPolicy.builder().build();
 		RetryPolicy retryPolicy = new RetryPolicySettings().createRetryPolicy();
+		assertThat(retryPolicy.getTimeout()).isEqualByComparingTo(defaultRetryPolicy.getTimeout());
 		assertThat(retryPolicy.getBackOff()).isInstanceOf(ExponentialBackOff.class);
 		ExponentialBackOff defaultBackOff = (ExponentialBackOff) defaultRetryPolicy.getBackOff();
 		ExponentialBackOff backOff = (ExponentialBackOff) retryPolicy.getBackOff();
@@ -129,11 +130,13 @@ class RetryPolicySettingsTests {
 	void createRetryPolicyWithCustomAttributes() {
 		RetryPolicySettings settings = new RetryPolicySettings();
 		settings.setMaxRetries(10L);
+		settings.setTimeout(Duration.ofHours(1));
 		settings.setDelay(Duration.ofSeconds(2));
 		settings.setJitter(Duration.ofMillis(500));
 		settings.setMultiplier(2.0);
 		settings.setMaxDelay(Duration.ofSeconds(20));
 		RetryPolicy retryPolicy = settings.createRetryPolicy();
+		assertThat(retryPolicy.getTimeout()).isEqualTo(Duration.ofHours(1));
 		assertThat(retryPolicy.getBackOff()).isInstanceOfSatisfying(ExponentialBackOff.class, (backOff) -> {
 			assertThat(backOff.getMaxAttempts()).isEqualTo(10);
 			assertThat(backOff.getInitialInterval()).isEqualTo(2000);

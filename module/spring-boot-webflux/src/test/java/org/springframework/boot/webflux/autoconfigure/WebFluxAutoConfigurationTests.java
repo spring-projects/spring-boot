@@ -123,6 +123,7 @@ import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
@@ -472,6 +473,47 @@ class WebFluxAutoConfigurationTests {
 	void hiddenHttpMethodFilterCanBeEnabled() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
 			.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsNotConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsNotConfiguredWhenStrategyIsNotFramework() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
+			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsConfiguredWhenFrameworkStrategyIsUsed() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework").run((context) -> {
+			assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class);
+			ForwardedHeaderTransformer transformer = context.getBean(ForwardedHeaderTransformer.class);
+			assertThat(transformer).extracting("useStandardHeader").isEqualTo(false);
+			assertThat(transformer).extracting("useForwardedPrefix").isEqualTo(false);
+		});
+	}
+
+	@Test
+	void forwardedHeaderTransformerAppliesConfiguredProperties() {
+		this.contextRunner
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"spring.webflux.forwarded-headers.header-format=standard",
+					"spring.webflux.forwarded-headers.use-forwarded-prefix=true")
+			.run((context) -> {
+				ForwardedHeaderTransformer transformer = context.getBean(ForwardedHeaderTransformer.class);
+				assertThat(transformer).extracting("useStandardHeader").isEqualTo(true);
+				assertThat(transformer).extracting("useForwardedPrefix").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void forwardedHeaderTransformerBacksOffWhenBeanAlreadyRegistered() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
@@ -1140,6 +1182,16 @@ class WebFluxAutoConfigurationTests {
 		@Bean
 		HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
 			return mock(HiddenHttpMethodFilter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderTransformerConfiguration {
+
+		@Bean
+		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
+			return new ForwardedHeaderTransformer(false);
 		}
 
 	}

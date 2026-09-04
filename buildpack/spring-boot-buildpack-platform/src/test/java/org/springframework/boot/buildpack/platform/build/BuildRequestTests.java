@@ -326,6 +326,14 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void withBuildImageCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withBuildCache(Cache.image("build-cache-image"));
+		assertThat(request.getBuildCache()).isNull();
+		assertThat(withCache.getBuildCache()).isEqualTo(Cache.image("build-cache-image"));
+	}
+
+	@Test
 	@SuppressWarnings("NullAway") // Test null check
 	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));

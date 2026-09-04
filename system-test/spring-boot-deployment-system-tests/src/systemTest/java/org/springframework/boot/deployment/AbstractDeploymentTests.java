@@ -32,54 +32,50 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.images.builder.dockerfile.DockerfileBuilder;
 
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract class for deployment tests.
  */
+@SuppressWarnings("removal")
 abstract class AbstractDeploymentTests {
 
 	protected static final int DEFAULT_PORT = 8080;
 
 	@Test
 	void home() {
-		getDeployedApplication().test((rest) -> {
-			ResponseEntity<String> response = rest.getForEntity("/", String.class);
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-			assertThat(response.getBody()).isEqualTo("Hello World");
-		});
+		getDeployedApplication().test((client) -> client.get()
+			.uri("/")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.isEqualTo("Hello World"));
 	}
 
 	@Test
 	void errorPage() {
-		getDeployedApplication().test((rest) -> {
-			ResponseEntity<String> response = rest.getForEntity("/does-not-exist", String.class);
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		});
+		getDeployedApplication()
+			.test((client) -> client.get().uri("/does-not-exist").exchange().expectStatus().isNotFound());
 	}
 
 	@Test
 	void health() {
-		getDeployedApplication().test((rest) -> {
-			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-			assertThat(response.getBody()).isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}");
-		});
+		getDeployedApplication().test((client) -> client.get()
+			.uri("/actuator/health")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}"));
 	}
 
 	@Test
 	void conditionalOnWarShouldBeTrue() {
-		getDeployedApplication().test((rest) -> {
-			ResponseEntity<String> response = rest.getForEntity("/actuator/war", String.class);
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-			assertThat(response.getBody()).isEqualTo("{\"hello\":\"world\"}");
-		});
+		getDeployedApplication().test((client) -> client.get()
+			.uri("/actuator/war")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.isEqualTo("{\"hello\":\"world\"}"));
 	}
 
 	private DeployedApplication getDeployedApplication() {
@@ -103,18 +99,19 @@ abstract class AbstractDeploymentTests {
 			this.port = port;
 		}
 
-		private void test(Consumer<TestRestTemplate> consumer) {
-			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-				.baseUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
-						+ "/spring-boot")
-				.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+		private void test(Consumer<RestTestClient> consumer) {
+			RestTestClient client = RestTestClient
+				.bindToServer(new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
-					.build())));
+					.build()))
+				.baseUrl("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
+						+ "/spring-boot")
+				.build();
 			try {
 				Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
 					try {
 						System.out.println(this.container.getLogs());
-						consumer.accept(rest);
+						consumer.accept(client);
 						return true;
 					}
 					catch (Throwable ex) {

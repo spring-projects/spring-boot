@@ -70,6 +70,12 @@ class ToolsJarModeTests extends AbstractJarModeTests {
 	}
 
 	@Test
+	void helpForSbom() {
+		run("help", "sbom");
+		assertThat(this.out).hasSameContentAsResource("tools-help-sbom-output.txt");
+	}
+
+	@Test
 	void helpForHelp() {
 		run("help", "help");
 		assertThat(this.out).hasSameContentAsResource("tools-help-help-output.txt");

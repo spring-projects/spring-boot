@@ -16,17 +16,13 @@
 
 package smoketest.actuator;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,22 +43,27 @@ class ManagementAddressActuatorApplicationTests {
 
 	@Test
 	void testHome() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				new TestRestTemplate().getForEntity("http://localhost:" + this.port, Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.port)
+			.build()
+			.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized();
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/admin/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		RestTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.managementPort)
+			.defaultHeaders((headers) -> headers.setBasicAuth("user", "password"))
+			.build()
+			.get()
+			.uri("/admin/actuator/health")
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\""));
 	}
 
 }

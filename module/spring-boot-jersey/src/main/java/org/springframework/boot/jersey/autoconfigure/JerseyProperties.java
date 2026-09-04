@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jersey.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -42,7 +42,7 @@ public class JerseyProperties {
 	/**
 	 * Init parameters to pass to Jersey through the servlet or filter.
 	 */
-	private Map<String, String> init = new HashMap<>();
+	private Map<String, String> init = new LinkedHashMap<>();
 
 	private final Filter filter = new Filter();
 

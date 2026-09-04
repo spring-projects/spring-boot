@@ -75,9 +75,81 @@ class MetricsContextCustomizerFactoryTests {
 	}
 
 	@Test
+	void whenNotAnnotatedGlobalRegistryIsDisabled() {
+		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		applyCustomizerToContext(customizer, context);
+		assertThatGlobalRegistryIsDisabled(context);
+	}
+
+	@Test
+	void whenAnnotatedWithDefaultAttributeGlobalRegistryIsDisabled() {
+		ContextCustomizer customizer = createContextCustomizer(MetricsExportDefault.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		applyCustomizerToContext(customizer, context);
+		assertThatGlobalRegistryIsDisabled(context);
+	}
+
+	@Test
+	void whenAnnotatedWithFalseUseGlobalRegistryAttributeGlobalRegistryIsDisabled() {
+		ContextCustomizer customizer = createContextCustomizer(UseGlobalRegistryDisabled.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		applyCustomizerToContext(customizer, context);
+		assertThatGlobalRegistryIsDisabled(context);
+	}
+
+	@Test
+	void whenAnnotatedWithTrueUseGlobalRegistryAttributeGlobalRegistryIsEnabled() {
+		ContextCustomizer customizer = createContextCustomizer(UseGlobalRegistryEnabled.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		applyCustomizerToContext(customizer, context);
+		assertThatGlobalRegistryIsNotConfigured(context);
+	}
+
+	@Test
+	void globalRegistryPropertySetToTrueIsNotOverridden() {
+		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.metrics.use-global-registry", "true");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThat(context.getEnvironment().getProperty("management.metrics.use-global-registry")).isEqualTo("true");
+	}
+
+	@Test
+	void globalRegistryPropertySetToFalseIsNotOverridden() {
+		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.metrics.use-global-registry", "false");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThatGlobalRegistryIsDisabled(context);
+	}
+
+	@Test
+	void annotationDoesNotTakePrecedenceOverGlobalRegistryProperty() {
+		ContextCustomizer customizer = createContextCustomizer(UseGlobalRegistryDisabled.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.metrics.use-global-registry", "true");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThat(context.getEnvironment().getProperty("management.metrics.use-global-registry")).isEqualTo("true");
+	}
+
+	@Test
 	void notEquals() {
 		ContextCustomizer customizer1 = createContextCustomizer(MetricsExportEnabled.class);
 		ContextCustomizer customizer2 = createContextCustomizer(MetricsExportDisabled.class);
+		assertThat(customizer1).isNotEqualTo(customizer2);
+	}
+
+	@Test
+	void notEqualsWhenUseGlobalRegistryDiffers() {
+		ContextCustomizer customizer1 = createContextCustomizer(UseGlobalRegistryEnabled.class);
+		ContextCustomizer customizer2 = createContextCustomizer(UseGlobalRegistryDisabled.class);
 		assertThat(customizer1).isNotEqualTo(customizer2);
 	}
 
@@ -155,6 +227,14 @@ class MetricsContextCustomizerFactoryTests {
 		assertThat(context.getEnvironment().getProperty("management.simple.metrics.export.enabled")).isNull();
 	}
 
+	private void assertThatGlobalRegistryIsDisabled(ConfigurableApplicationContext context) {
+		assertThat(context.getEnvironment().getProperty("management.metrics.use-global-registry")).isEqualTo("false");
+	}
+
+	private void assertThatGlobalRegistryIsNotConfigured(ConfigurableApplicationContext context) {
+		assertThat(context.getEnvironment().getProperty("management.metrics.use-global-registry")).isNull();
+	}
+
 	static class NoAnnotation {
 
 	}
@@ -171,6 +251,16 @@ class MetricsContextCustomizerFactoryTests {
 
 	@AutoConfigureMetrics(export = true)
 	static class MetricsExportEnabled {
+
+	}
+
+	@AutoConfigureMetrics(useGlobalRegistry = false)
+	static class UseGlobalRegistryDisabled {
+
+	}
+
+	@AutoConfigureMetrics(useGlobalRegistry = true)
+	static class UseGlobalRegistryEnabled {
 
 	}
 

@@ -17,7 +17,7 @@
 package org.springframework.boot.quartz.autoconfigure;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -69,7 +69,7 @@ public class QuartzProperties {
 	/**
 	 * Additional Quartz Scheduler properties.
 	 */
-	private final Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new LinkedHashMap<>();
 
 	public JobStoreType getJobStoreType() {
 		return this.jobStoreType;

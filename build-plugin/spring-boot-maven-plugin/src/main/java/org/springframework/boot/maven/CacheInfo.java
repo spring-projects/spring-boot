@@ -19,6 +19,8 @@ package org.springframework.boot.maven;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
+import org.springframework.boot.maven.LocalCacheInfo.BindCacheInfo;
+import org.springframework.boot.maven.LocalCacheInfo.VolumeCacheInfo;
 import org.springframework.util.Assert;
 
 /**
@@ -52,6 +54,13 @@ public class CacheInfo {
 		this.cache = Cache.bind(source);
 	}
 
+	public void setImage(ImageCacheInfo info) {
+		Assert.state(this.cache == null, "Each image building cache can be configured only once");
+		String name = info.getName();
+		Assert.state(name != null, "'name' must not be null");
+		this.cache = Cache.image(name);
+	}
+
 	@Nullable Cache asCache() {
 		return this.cache;
 	}
@@ -68,17 +77,23 @@ public class CacheInfo {
 		return new CacheInfo(Cache.bind(source));
 	}
 
+	static CacheInfo fromImage(ImageCacheInfo cacheInfo) {
+		String name = cacheInfo.getName();
+		Assert.state(name != null, "'name' must not be null");
+		return new CacheInfo(Cache.image(name));
+	}
+
 	/**
-	 * Encapsulates configuration of an image building cache stored in a volume.
+	 * Encapsulates configuration of an image building cache stored in an image.
 	 */
-	public static class VolumeCacheInfo {
+	public static class ImageCacheInfo {
 
 		private @Nullable String name;
 
-		public VolumeCacheInfo() {
+		public ImageCacheInfo() {
 		}
 
-		VolumeCacheInfo(String name) {
+		ImageCacheInfo(String name) {
 			this.name = name;
 		}
 
@@ -88,30 +103,6 @@ public class CacheInfo {
 
 		void setName(@Nullable String name) {
 			this.name = name;
-		}
-
-	}
-
-	/**
-	 * Encapsulates configuration of an image building cache stored in a bind mount.
-	 */
-	public static class BindCacheInfo {
-
-		private @Nullable String source;
-
-		public BindCacheInfo() {
-		}
-
-		BindCacheInfo(String name) {
-			this.source = name;
-		}
-
-		public @Nullable String getSource() {
-			return this.source;
-		}
-
-		void setSource(@Nullable String source) {
-			this.source = source;
 		}
 
 	}

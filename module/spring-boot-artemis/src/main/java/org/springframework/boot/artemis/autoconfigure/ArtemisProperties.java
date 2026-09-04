@@ -16,7 +16,7 @@
 
 package org.springframework.boot.artemis.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -216,7 +216,7 @@ public class ArtemisProperties {
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
 		public Map<String, Object> generateTransportParameters() {
-			Map<String, Object> parameters = new HashMap<>();
+			Map<String, Object> parameters = new LinkedHashMap<>();
 			parameters.put(TransportConstants.SERVER_ID_PROP_NAME, getServerId());
 			return parameters;
 		}

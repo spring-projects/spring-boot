@@ -16,17 +16,15 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
 import org.springframework.ldap.ReferralException;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for LDAP.
@@ -36,8 +34,6 @@ import org.springframework.util.ObjectUtils;
  */
 @ConfigurationProperties("spring.ldap")
 public class LdapProperties {
-
-	private static final int DEFAULT_PORT = 389;
 
 	/**
 	 * LDAP URLs of the server.
@@ -74,9 +70,11 @@ public class LdapProperties {
 	/**
 	 * LDAP specification settings.
 	 */
-	private final Map<String, String> baseEnvironment = new HashMap<>();
+	private final Map<String, String> baseEnvironment = new LinkedHashMap<>();
 
 	private final Template template = new Template();
+
+	private final Ssl ssl = new Ssl();
 
 	public String @Nullable [] getUrls() {
 		return this.urls;
@@ -134,20 +132,8 @@ public class LdapProperties {
 		return this.template;
 	}
 
-	public String[] determineUrls(Environment environment) {
-		if (ObjectUtils.isEmpty(this.urls)) {
-			return new String[] { "ldap://localhost:" + determinePort(environment) };
-		}
-		return this.urls;
-	}
-
-	private int determinePort(Environment environment) {
-		Assert.notNull(environment, "'environment' must not be null");
-		String localPort = environment.getProperty("local.ldap.port");
-		if (localPort != null) {
-			return Integer.parseInt(localPort);
-		}
-		return DEFAULT_PORT;
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	/**
@@ -195,6 +181,40 @@ public class LdapProperties {
 
 		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
 			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

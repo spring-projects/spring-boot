@@ -1,0 +1,19 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.6",
+  "serialNumber" : "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version" : 1,
+  "metadata" : {
+    "component" : {
+      "type" : "application",
+      "name" : "test-application",
+      "version" : "1.0.0"
+    }
+  },
+  "components" : [ {
+    "type" : "library",
+    "name" : "dependency-1",
+    "version" : "1.0.0",
+    "purl" : "pkg:maven/com.example/dependency-1@1.0.0"
+  } ]
+}

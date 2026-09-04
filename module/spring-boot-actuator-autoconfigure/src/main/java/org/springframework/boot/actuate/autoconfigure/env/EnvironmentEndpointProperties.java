@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
@@ -41,7 +41,7 @@ public class EnvironmentEndpointProperties {
 	 * Roles used to determine whether a user is authorized to be shown unsanitized
 	 * values. When empty, all authenticated users are authorized.
 	 */
-	private final Set<String> roles = new HashSet<>();
+	private final Set<String> roles = new LinkedHashSet<>();
 
 	public Show getShowValues() {
 		return this.showValues;

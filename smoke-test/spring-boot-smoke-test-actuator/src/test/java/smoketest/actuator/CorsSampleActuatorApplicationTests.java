@@ -16,26 +16,14 @@
 
 package smoketest.actuator;
 
-import java.net.URI;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.http.server.LocalTestWebServer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
  * Integration test for cors preflight requests to management endpoints.
@@ -44,46 +32,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class CorsSampleActuatorApplicationTests {
 
-	private TestRestTemplate testRestTemplate;
-
 	@Autowired
-	private ApplicationContext applicationContext;
-
-	@BeforeEach
-	void setUp() {
-		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(this.applicationContext);
-		builder = builder.uriTemplateHandler(localTestWebServer.uriBuilderFactory());
-		this.testRestTemplate = new TestRestTemplate(builder);
-	}
+	private RestTestClient restTestClient;
 
 	@Test
 	void endpointShouldReturnUnauthorized() {
-		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.restTestClient.get().uri("/actuator/env").exchange().expectStatus().isUnauthorized();
 	}
 
 	@Test
-	void preflightRequestToEndpointShouldReturnOk() throws Exception {
-		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/actuator/env"))
-			.header("Origin", "http://localhost:8080")
-			.header("Access-Control-Request-Method", "GET")
-			.build();
-		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest, Map.class);
-		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+	void preflightRequestToEndpointShouldReturnOk() {
+		this.restTestClient.options().uri("/actuator/env").headers((headers) -> {
+			headers.set("Origin", "http://localhost:8080");
+			headers.set("Access-Control-Request-Method", "GET");
+		}).exchange().expectStatus().isOk();
 	}
 
 	@Test
-	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
-			.header("Origin", "http://localhost:9095")
-			.header("Access-Control-Request-Method", "GET")
-			.build();
-		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
-		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() {
+		this.restTestClient.options().uri("/actuator/env").headers((headers) -> {
+			headers.set("Origin", "http://localhost:9095");
+			headers.set("Access-Control-Request-Method", "GET");
+		}).exchange().expectStatus().isForbidden();
 	}
 
 }

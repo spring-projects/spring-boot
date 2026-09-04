@@ -79,7 +79,9 @@ public class JettyWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
-		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
+		if (getOrDeduceUseForwardHeaders()) {
+			configureForwardedSupport(factory);
+		}
 		JettyServerProperties.Threads threadProperties = this.jettyProperties.getThreads();
 		factory.setThreadPool(JettyThreadPool.create(this.jettyProperties.getThreads()));
 		PropertyMapper map = PropertyMapper.get();
@@ -119,6 +121,13 @@ public class JettyWebServerFactoryCustomizer
 			return platform != null && platform.isUsingForwardHeaders();
 		}
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
+	}
+
+	private void configureForwardedSupport(ConfigurableJettyWebServerFactory factory) {
+		switch (this.jettyProperties.getForwardedHeaders().getHeaderFormat()) {
+			case X_FORWARDED -> factory.setUseForwardHeaders(true);
+			case STANDARD -> factory.setUseRfcForwardHeader(true);
+		}
 	}
 
 	private <T> Consumer<T> customizeHttpConfigurations(ConfigurableJettyWebServerFactory factory,

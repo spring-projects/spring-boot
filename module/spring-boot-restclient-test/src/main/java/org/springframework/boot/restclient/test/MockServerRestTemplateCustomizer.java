@@ -61,7 +61,11 @@ import org.springframework.web.client.RestTemplate;
  * @since 4.0.0
  * @see #getServer()
  * @see #getServer(RestTemplate)
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link MockServerRestClientCustomizer}
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
 	private final Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<>();

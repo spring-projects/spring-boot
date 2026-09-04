@@ -21,12 +21,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,31 +34,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port=-1" })
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class NoManagementSampleActuatorApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testHome() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
+		this.restTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("message", "Hello Phil"));
 	}
 
 	@Test
 	void testMetricsNotAvailable() {
 		testHome(); // makes sure some requests have been made
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/metrics", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		this.restTestClient.get()
+			.uri("/metrics")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isNotFound();
 	}
 
 }

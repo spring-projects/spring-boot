@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * an {@link ObservationRegistry} are added to the application context.
  *
  * @author Moritz Halbritter
+ * @author Lordwill Kandiro
  * @since 4.0.0
  */
 @Target(ElementType.TYPE)
@@ -50,5 +51,15 @@ public @interface AutoConfigureMetrics {
 	 * @return whether metrics should be reported to external systems in the test
 	 */
 	boolean export() default true;
+
+	/**
+	 * Whether {@link MeterRegistry meter registries} should be added to Micrometer's
+	 * {@link io.micrometer.core.instrument.Metrics#globalRegistry global registry} in the
+	 * test. If {@code management.metrics.use-global-registry} has been set explicitly,
+	 * its value is used and this attribute has no effect.
+	 * @return whether the global registry should be used in the test
+	 * @since 4.2.0
+	 */
+	boolean useGlobalRegistry() default false;
 
 }

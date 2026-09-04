@@ -26,6 +26,8 @@ import org.gradle.api.tasks.Input;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
+import org.springframework.boot.gradle.tasks.bundling.LocalCacheSpec.BindCacheSpec;
+import org.springframework.boot.gradle.tasks.bundling.LocalCacheSpec.VolumeCacheSpec;
 
 /**
  * Configuration for an image building cache.
@@ -75,30 +77,30 @@ public class CacheSpec {
 	}
 
 	/**
-	 * Configuration for an image building cache stored in a Docker volume.
+	 * Configures an image cache using the given {@code action}.
+	 * @param action the action
+	 * @since 4.2.0
 	 */
-	public abstract static class VolumeCacheSpec {
-
-		/**
-		 * Returns the name of the cache.
-		 * @return the cache name
-		 */
-		@Input
-		public abstract Property<String> getName();
-
+	public void image(Action<ImageCacheSpec> action) {
+		if (this.cache != null) {
+			throw new GradleException("Each image building cache can be configured only once");
+		}
+		ImageCacheSpec spec = this.objectFactory.newInstance(ImageCacheSpec.class);
+		action.execute(spec);
+		this.cache = Cache.image(spec.getName().get());
 	}
 
 	/**
-	 * Configuration for an image building cache stored in a bind mount.
+	 * Configuration for an image building cache stored in an image.
 	 */
-	public abstract static class BindCacheSpec {
+	public abstract static class ImageCacheSpec {
 
 		/**
-		 * Returns the source of the cache.
-		 * @return the cache source
+		 * Returns the name of the cache image.
+		 * @return the cache image name
 		 */
 		@Input
-		public abstract Property<String> getSource();
+		public abstract Property<String> getName();
 
 	}
 

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
+import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -355,6 +356,30 @@ class BootBuildImageTests {
 	void whenImagePlatformIsConfiguredThenRequestHasImagePlatform() {
 		this.buildImage.getImagePlatform().set("linux/arm64/v1");
 		assertThat(this.buildImage.createRequest().getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64/v1"));
+	}
+
+	@Test
+	void whenBuildWorkspaceIsConfiguredThenRequestHasBuildWorkspace() {
+		this.buildImage.buildWorkspace((cache) -> cache.volume((volume) -> volume.getName().set("workspace-vol")));
+		assertThat(this.buildImage.createRequest().getBuildWorkspace()).isEqualTo(Cache.volume("workspace-vol"));
+	}
+
+	@Test
+	void whenBuildCacheIsConfiguredWithVolumeThenRequestHasBuildCache() {
+		this.buildImage.buildCache((cache) -> cache.volume((volume) -> volume.getName().set("build-vol")));
+		assertThat(this.buildImage.createRequest().getBuildCache()).isEqualTo(Cache.volume("build-vol"));
+	}
+
+	@Test
+	void whenBuildCacheIsConfiguredWithImageThenRequestHasBuildCache() {
+		this.buildImage.buildCache((cache) -> cache.image((image) -> image.getName().set("build-cache-image")));
+		assertThat(this.buildImage.createRequest().getBuildCache()).isEqualTo(Cache.image("build-cache-image"));
+	}
+
+	@Test
+	void whenLaunchCacheIsConfiguredThenRequestHasLaunchCache() {
+		this.buildImage.launchCache((cache) -> cache.bind((bind) -> bind.getSource().set("/tmp/launch")));
+		assertThat(this.buildImage.createRequest().getLaunchCache()).isEqualTo(Cache.bind("/tmp/launch"));
 	}
 
 }

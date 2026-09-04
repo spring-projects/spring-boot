@@ -39,7 +39,6 @@ import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.core.ParameterizedTypeReference;
@@ -80,7 +79,10 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Kristine Jetzke
  * @author Yanming Zhou
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class TestRestTemplateTests {
 
 	@Test
@@ -142,9 +144,8 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void options() {
-		RequestConfig config = getRequestConfig(new TestRestTemplate(HttpClientOption.ENABLE_COOKIES));
+		RequestConfig config = getRequestConfig(new TestRestTemplate(TestRestTemplate.HttpClientOption.ENABLE_COOKIES));
 		assertThat(config.getCookieSpec()).isEqualTo("strict");
 	}
 
@@ -178,7 +179,6 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
@@ -235,7 +235,7 @@ class TestRestTemplateTests {
 	}
 
 	private @Nullable RedirectStrategy getRedirectStrategy(@Nullable RestTemplateBuilder builder,
-			HttpClientOption... httpClientOptions) {
+			TestRestTemplate.HttpClientOption... httpClientOptions) {
 		builder = (builder != null) ? builder : new RestTemplateBuilder();
 		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
 		return getRedirectStrategy(template);

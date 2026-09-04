@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.relaxedbinding.mapsfromenvironmentvariables;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("my.props")
 public class MyMapsProperties {
 
-	private final Map<String, String> values = new HashMap<>();
+	private final Map<String, String> values = new LinkedHashMap<>();
 
 	public Map<String, String> getValues() {
 		return this.values;

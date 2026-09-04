@@ -133,7 +133,7 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 				.parseInt(getSystemProperty(RollingPolicySystemProperty.TIME_INTERVAL, DEFAULT_TIME_INTERVAL));
 			boolean modulate = Boolean
 				.parseBoolean(getSystemProperty(RollingPolicySystemProperty.TIME_MODULATE, Boolean.FALSE.toString()));
-			return TimeBasedTriggeringPolicy.newBuilder().withInterval(interval).withModulate(modulate).build();
+			return TimeBasedTriggeringPolicy.newBuilder().setInterval(interval).setModulate(modulate).build();
 		}
 
 		private TriggeringPolicy createCronPolicy() {

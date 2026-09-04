@@ -41,7 +41,11 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Stephane Nicoll
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link RestClientBuilderConfigurer}
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class RestTemplateBuilderConfigurer {
 
 	private @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;

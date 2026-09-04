@@ -66,8 +66,8 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 		}
 		Enum<? extends Producible<?>> result = null;
 		for (String accept : accepts) {
-			for (String mimeType : MimeTypeUtils.tokenize(accept)) {
-				result = mostRecent(result, forMimeType(values, MimeTypeUtils.parseMimeType(mimeType)));
+			for (MimeType mimeType : MimeTypeUtils.parseMimeTypes(accept)) {
+				result = mostRecent(result, forMimeType(values, mimeType));
 			}
 		}
 		return result;

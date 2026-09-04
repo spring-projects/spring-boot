@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for testcontainers RabbitMQ service connections.
+ * Support for testcontainers generic AMQP service connections.
  */
 @NullMarked
 package org.springframework.boot.amqp.testcontainers;

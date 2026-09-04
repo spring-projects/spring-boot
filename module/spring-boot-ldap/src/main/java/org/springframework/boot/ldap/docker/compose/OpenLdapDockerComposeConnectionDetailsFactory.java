@@ -26,6 +26,7 @@ import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link LdapConnectionDetails}
@@ -59,8 +60,11 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 
 		private final String password;
 
+		private final @Nullable SslBundle sslBundle;
+
 		OpenLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
+			this.sslBundle = getSslBundle(service);
 			Map<String, @Nullable String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
 			String ldapPort = usesTls ? getFromEnv(env, "LDAPS_PORT", "636") : getFromEnv(env, "LDAP_PORT", "389");
@@ -102,6 +106,11 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 		@Override
 		public String getPassword() {
 			return this.password;
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 	}

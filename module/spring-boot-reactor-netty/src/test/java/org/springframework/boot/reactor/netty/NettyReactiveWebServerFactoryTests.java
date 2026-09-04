@@ -147,6 +147,22 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	void useRfcForwardHeader() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseRfcForwardHeader(true);
+		assertRfcForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		factory.setUseRfcForwardHeader(true);
+		assertForwardHeaderIsUsed(factory);
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
+	}
+
+	@Test
 	@WithPackageResources("test.jks")
 	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");

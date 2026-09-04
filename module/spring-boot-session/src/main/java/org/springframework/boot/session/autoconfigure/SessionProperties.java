@@ -19,9 +19,8 @@ package org.springframework.boot.session.autoconfigure;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -66,18 +65,6 @@ public class SessionProperties {
 	}
 
 	/**
-	 * Determine the session timeout. If no timeout is configured, the
-	 * {@code fallbackTimeout} is used.
-	 * @param fallbackTimeout a fallback timeout value if the timeout isn't configured
-	 * @return the session timeout
-	 * @deprecated since 4.0.1 for removal in 4.2.0 in favor of {@link SessionTimeout}
-	 */
-	@Deprecated(since = "4.0.1", forRemoval = true)
-	public Duration determineTimeout(Supplier<Duration> fallbackTimeout) {
-		return (this.timeout != null) ? this.timeout : fallbackTimeout.get();
-	}
-
-	/**
 	 * Servlet-related properties.
 	 */
 	public static class Servlet {
@@ -90,7 +77,7 @@ public class SessionProperties {
 		/**
 		 * Session repository filter dispatcher types.
 		 */
-		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(
+		private Set<DispatcherType> filterDispatcherTypes = new LinkedHashSet<>(
 				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getFilterOrder() {

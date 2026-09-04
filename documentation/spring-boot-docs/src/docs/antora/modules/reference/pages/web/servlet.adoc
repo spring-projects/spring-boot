@@ -278,21 +278,9 @@ spring:
         markdown: "text/markdown"
 ----
 
-As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
-By default, Spring Boot uses the javadoc:org.springframework.web.util.pattern.PathPatternParser[] strategy.
-javadoc:org.springframework.web.util.pattern.PathPatternParser[] is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but comes with some restrictions compared to the javadoc:org.springframework.util.AntPathMatcher[] strategy.
-javadoc:org.springframework.web.util.pattern.PathPatternParser[] restricts usage of {url-spring-framework-docs}/web/webmvc/mvc-controller/ann-requestmapping.html#mvc-ann-requestmapping-uri-templates[some path pattern variants].
+Spring Boot uses the javadoc:org.springframework.web.util.pattern.PathPatternParser[] strategy for matching request paths to controllers.
+javadoc:org.springframework.web.util.pattern.PathPatternParser[] is an https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[optimized implementation] but restricts usage of {url-spring-framework-docs}/web/webmvc/mvc-controller/ann-requestmapping.html#mvc-ann-requestmapping-uri-templates[some path pattern variants].
 It is also incompatible with configuring the javadoc:org.springframework.web.servlet.DispatcherServlet[] with a path prefix (configprop:spring.mvc.servlet.path[]).
-
-The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:
-
-[configprops,yaml]
-----
-spring:
-  mvc:
-    pathmatch:
-      matching-strategy: "ant-path-matcher"
-----
 
 Spring MVC will throw a javadoc:org.springframework.web.servlet.NoHandlerFoundException[] if a handler is not found for a request.
 Note that, by default, the xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[serving of static content] is mapped to `+/**+` and will, therefore, provide a handler for all requests.

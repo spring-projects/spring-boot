@@ -2,6 +2,12 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.opentelemetry.tracing.export.otlp.compression",
+      "type": "org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingProperties$Compression",
+      "description": "Method used to compress the payload.",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.otlp.tracing.compression",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.compression",

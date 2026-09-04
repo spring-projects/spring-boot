@@ -16,69 +16,46 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
-import java.util.Objects;
-
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.buildpack.platform.build.LocalCache.Bind;
+import org.springframework.boot.buildpack.platform.build.LocalCache.Volume;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Details of a cache for use by the CNB builder.
  *
  * @author Scott Frederick
+ * @author Tim Ysewyn
+ * @author Stephane Nicoll
  * @since 2.6.0
  */
-public class Cache {
-
-	/**
-	 * The format of the cache.
-	 */
-	public enum Format {
-
-		/**
-		 * A cache stored as a volume in the Docker daemon.
-		 */
-		VOLUME("volume"),
-
-		/**
-		 * A cache stored as a bind mount.
-		 */
-		BIND("bind mount");
-
-		private final String description;
-
-		Format(String description) {
-			this.description = description;
-		}
-
-		public String getDescription() {
-			return this.description;
-		}
-
-	}
-
-	protected final Format format;
-
-	Cache(Format format) {
-		this.format = format;
-	}
+public sealed interface Cache permits LocalCache, ImageCache {
 
 	/**
 	 * Return the details of the cache if it is a volume cache.
 	 * @return the cache, or {@code null} if it is not a volume cache
 	 */
-	public @Nullable Volume getVolume() {
-		return (this.format.equals(Format.VOLUME)) ? (Volume) this : null;
+	default LocalCache.@Nullable Volume getVolume() {
+		return (this instanceof LocalCache.Volume volume) ? volume : null;
 	}
 
 	/**
 	 * Return the details of the cache if it is a bind cache.
 	 * @return the cache, or {@code null} if it is not a bind cache
 	 */
-	public @Nullable Bind getBind() {
-		return (this.format.equals(Format.BIND)) ? (Bind) this : null;
+	default LocalCache.@Nullable Bind getBind() {
+		return (this instanceof LocalCache.Bind bind) ? bind : null;
+	}
+
+	/**
+	 * Return the details of the cache if it is an image cache.
+	 * @return the cache, or {@code null} if it is not an image cache
+	 * @since 4.2.0
+	 */
+	default @Nullable ImageCache getImage() {
+		return (this instanceof ImageCache image) ? image : null;
 	}
 
 	/**
@@ -86,7 +63,7 @@ public class Cache {
 	 * @param name the cache volume name
 	 * @return a new cache instance
 	 */
-	public static Cache volume(String name) {
+	static LocalCache volume(String name) {
 		Assert.notNull(name, "'name' must not be null");
 		return new Volume(VolumeName.of(name));
 	}
@@ -96,7 +73,7 @@ public class Cache {
 	 * @param name the cache volume name
 	 * @return a new cache instance
 	 */
-	public static Cache volume(VolumeName name) {
+	static LocalCache volume(VolumeName name) {
 		Assert.notNull(name, "'name' must not be null");
 		return new Volume(name);
 	}
@@ -106,120 +83,20 @@ public class Cache {
 	 * @param source the cache bind mount source
 	 * @return a new cache instance
 	 */
-	public static Cache bind(String source) {
+	static LocalCache bind(String source) {
 		Assert.notNull(source, "'source' must not be null");
 		return new Bind(source);
 	}
 
-	@Override
-	public boolean equals(@Nullable Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		Cache other = (Cache) obj;
-		return Objects.equals(this.format, other.format);
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.format);
-	}
-
 	/**
-	 * Details of a cache stored in a Docker volume.
+	 * Create a new {@code Cache} that uses an image with the provided name.
+	 * @param name the cache image name
+	 * @return a new cache instance
+	 * @since 4.2.0
 	 */
-	public static class Volume extends Cache {
-
-		private final VolumeName name;
-
-		Volume(VolumeName name) {
-			super(Format.VOLUME);
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name.toString();
-		}
-
-		public VolumeName getVolumeName() {
-			return this.name;
-		}
-
-		@Override
-		public boolean equals(@Nullable Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			if (!super.equals(obj)) {
-				return false;
-			}
-			Volume other = (Volume) obj;
-			return Objects.equals(this.name, other.name);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = super.hashCode();
-			result = 31 * result + ObjectUtils.nullSafeHashCode(this.name);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return this.format.getDescription() + " '" + this.name + "'";
-		}
-
-	}
-
-	/**
-	 * Details of a cache stored in a bind mount.
-	 */
-	public static class Bind extends Cache {
-
-		private final String source;
-
-		Bind(String source) {
-			super(Format.BIND);
-			this.source = source;
-		}
-
-		public String getSource() {
-			return this.source;
-		}
-
-		@Override
-		public boolean equals(@Nullable Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			if (!super.equals(obj)) {
-				return false;
-			}
-			Bind other = (Bind) obj;
-			return Objects.equals(this.source, other.source);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = super.hashCode();
-			result = 31 * result + ObjectUtils.nullSafeHashCode(this.source);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return this.format.getDescription() + " '" + this.source + "'";
-		}
-
+	static ImageCache image(String name) {
+		Assert.notNull(name, "'name' must not be null");
+		return new ImageCache(name);
 	}
 
 }

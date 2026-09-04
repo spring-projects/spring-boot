@@ -34,7 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestRestTemplateTestAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class TestRestTemplateTestAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()

@@ -19,10 +19,7 @@ package org.springframework.boot.devtools.tests;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
  * Integration tests for DevTools with lazy initialization enabled.
@@ -36,15 +33,14 @@ class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsInt
 	void addARequestMappingToAnExistingControllerWhenLazyInit(ApplicationLauncher applicationLauncher)
 			throws Exception {
 		launchApplication(applicationLauncher, "--spring.main.lazy-initialization=true");
-		TestRestTemplate template = new TestRestTemplate();
+		RestTestClient client = RestTestClient.bindToServer().build();
 		String urlBase = "http://localhost:" + awaitServerPort();
-		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
-		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-			.isEqualTo(HttpStatus.NOT_FOUND);
+		client.get().uri(urlBase + "/one").exchangeSuccessfully().expectBody(String.class).isEqualTo("one");
+		client.get().uri(urlBase + "/two").exchange().expectStatus().isNotFound();
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
-		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
-		assertThat(template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
+		client.get().uri(urlBase + "/one").exchangeSuccessfully().expectBody(String.class).isEqualTo("one");
+		client.get().uri(urlBase + "/two").exchangeSuccessfully().expectBody(String.class).isEqualTo("two");
 	}
 
 	static Object[] parameters() {

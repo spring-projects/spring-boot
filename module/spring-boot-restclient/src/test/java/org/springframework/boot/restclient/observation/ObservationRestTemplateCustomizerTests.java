@@ -29,7 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ObservationRestTemplateCustomizer}.
  *
  * @author Brian Clozel
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class ObservationRestTemplateCustomizerTests {
 
 	private static final String TEST_METRIC_NAME = "http.test.metric.name";

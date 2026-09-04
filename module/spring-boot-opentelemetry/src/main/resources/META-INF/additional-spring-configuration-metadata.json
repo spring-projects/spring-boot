@@ -8,6 +8,12 @@
       "description": "Whether auto-configuration of logging is enabled to export logs over OTLP."
     },
     {
+      "name": "management.opentelemetry.logging.export.otlp.compression",
+      "type": "org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingProperties$Compression",
+      "description": "Method used to compress the payload.",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.opentelemetry.map-environment-variables",
       "type": "java.lang.Boolean",
       "defaultValue": true,

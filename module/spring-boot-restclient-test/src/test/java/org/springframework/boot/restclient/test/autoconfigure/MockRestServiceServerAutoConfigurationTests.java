@@ -46,6 +46,8 @@ class MockRestServiceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void registersMockServerRestTemplateCustomizer() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MockServerRestTemplateCustomizer.class));
 	}
@@ -63,6 +65,8 @@ class MockRestServiceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void backsOffWhenUserProvidesMockServerRestTemplateCustomizer() {
 		this.contextRunner.withBean("userMockServerRestTemplateCustomizer", MockServerRestTemplateCustomizer.class)
 			.run((context) -> assertThat(context).hasSingleBean(MockServerRestTemplateCustomizer.class)

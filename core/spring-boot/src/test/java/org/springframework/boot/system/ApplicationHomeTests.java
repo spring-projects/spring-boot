@@ -57,6 +57,29 @@ class ApplicationHomeTests {
 		assertThat(applicationHome.getDir()).isEqualTo(app);
 	}
 
+	@Test
+	void getPathReturnsSamePathAsGetDir() throws Exception {
+		File app = new File(this.tempDir, "app");
+		ApplicationHome applicationHome = createApplicationHome(app);
+		assertThat(applicationHome.getPath()).isEqualTo(applicationHome.getDir().toPath());
+	}
+
+	@Test
+	void getSourcePathReturnsSamePathAsGetSource() throws Exception {
+		File app = new File(this.tempDir, "app");
+		ApplicationHome applicationHome = createApplicationHome(app);
+		File source = applicationHome.getSource();
+		assertThat(source).isNotNull();
+		assertThat(applicationHome.getSourcePath()).isEqualTo(source.toPath());
+	}
+
+	@Test
+	void getSourcePathReturnsNullWhenSourceIsNull() {
+		ApplicationHome applicationHome = new ApplicationHome();
+		assertThat(applicationHome.getSource()).isNull();
+		assertThat(applicationHome.getSourcePath()).isNull();
+	}
+
 	private ApplicationHome createApplicationHome(File location) throws Exception {
 		File examplePackage = new File(location, "com/example");
 		examplePackage.mkdirs();

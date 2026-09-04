@@ -24,13 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.web.client.RestClient.Builder;
 
 /**
  * Annotation that can be applied to a test class to enable auto-configuration of a
- * {@link Builder RestClient.Builder} and a {@link RestTemplateBuilder}.
+ * {@link Builder RestClient.Builder}.
  *
  * @author Andy Wilkinson
  * @since 4.0.0

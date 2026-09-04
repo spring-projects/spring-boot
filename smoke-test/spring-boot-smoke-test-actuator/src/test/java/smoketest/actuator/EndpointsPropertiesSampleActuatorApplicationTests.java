@@ -21,13 +21,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,34 +37,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("endpoints")
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testCustomErrorPath() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/oops", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).containsEntry("error", "None");
-		assertThat(body).containsEntry("status", 999);
+		this.restTestClient.get()
+			.uri("/oops")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(Map.class)
+			.value((body) -> {
+				assertThat(body).containsEntry("error", "None");
+				assertThat(body).containsEntry("status", 999);
+			});
 	}
 
 	@Test
 	void testCustomContextPath() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-			.getForEntity("/admin/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-		assertThat(entity.getBody()).contains("\"hello\":\"world\"");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		this.restTestClient.get()
+			.uri("/admin/health")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"status\":\"UP\"").contains("\"hello\":\"world\""));
 	}
 
 }

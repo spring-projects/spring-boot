@@ -57,6 +57,15 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	void setUseForwardHeaders(boolean useForwardHeaders);
 
 	/**
+	 * Set if the RFC forwarded header should be processed.
+	 * <p>
+	 * {@link #setUseForwardHeaders(boolean)} will take precedence if enabled.
+	 * @param useRfcForwardHeader if forwarded header should be used
+	 * @since 4.2.0
+	 */
+	void setUseRfcForwardHeader(boolean useRfcForwardHeader);
+
+	/**
 	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
 	 * before it is started.
 	 * @param customizers the customizers to add

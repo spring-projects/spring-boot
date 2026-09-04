@@ -59,6 +59,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.tracing.autoconfigure.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.NoopTracerAutoConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties;
+import org.springframework.boot.micrometer.tracing.autoconfigure.TracingProperties.Mdc;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.NoPropagation;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithBaggage;
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage;
@@ -219,7 +220,8 @@ public final class OpenTelemetryTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Slf4JEventListener otelSlf4JEventListener() {
-		return new Slf4JEventListener();
+		Mdc mdc = this.tracingProperties.getMdc();
+		return new Slf4JEventListener(mdc.getTraceIdKey(), mdc.getSpanIdKey());
 	}
 
 	@Bean

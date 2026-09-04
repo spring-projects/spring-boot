@@ -18,6 +18,7 @@ package org.springframework.boot.ldap.docker.compose;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,17 @@ class OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getBase()).isEqualTo("dc=ldap,dc=example,dc=org");
 		assertThat(connectionDetails.getUrls()).hasSize(1);
 		assertThat(connectionDetails.getUrls()[0]).startsWith("ldaps://");
+		assertThat(connectionDetails.getSslBundle()).isNull();
+	}
+
+	@DockerComposeTest(composeFile = "ldap-ssl-compose.yaml", image = TestImage.OPEN_LDAP,
+			additionalResources = { "ca.crt", "server.crt", "server.key" })
+	void runWithSslCreatesConnectionDetails(LdapConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUrls()).hasSize(1);
+		assertThat(connectionDetails.getUrls()[0]).startsWith("ldaps://");
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		assertThat(sslBundle).isNotNull();
+		assertThat(sslBundle.createSslContext()).isNotNull();
 	}
 
 }

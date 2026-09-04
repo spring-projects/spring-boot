@@ -44,6 +44,11 @@ public class DatadogProperties extends StepRegistryProperties {
 	private @Nullable String applicationKey;
 
 	/**
+	 * Whether payload should be compressed.
+	 */
+	private boolean compress = true;
+
+	/**
 	 * Whether to publish descriptions metadata to Datadog. Turn this off to minimize the
 	 * amount of metadata sent.
 	 */
@@ -74,6 +79,14 @@ public class DatadogProperties extends StepRegistryProperties {
 
 	public void setApplicationKey(@Nullable String applicationKey) {
 		this.applicationKey = applicationKey;
+	}
+
+	public boolean isCompress() {
+		return this.compress;
+	}
+
+	public void setCompress(boolean compress) {
+		this.compress = compress;
 	}
 
 	public boolean isDescriptions() {

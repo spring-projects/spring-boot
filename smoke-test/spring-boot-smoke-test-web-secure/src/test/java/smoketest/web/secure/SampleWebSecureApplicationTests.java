@@ -17,28 +17,26 @@
 package smoketest.web.secure;
 
 import java.net.URI;
-import java.util.Collections;
 
 import jakarta.servlet.DispatcherType;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -53,49 +51,60 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { SampleWebSecureApplicationTests.SecurityConfiguration.class, SampleWebSecureApplication.class })
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleWebSecureApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient rest;
 
 	@LocalServerPort
 	private int port;
 
+	private RestTestClient nonFollowingRedirect() {
+		return RestTestClient
+			.bindToServer(ClientHttpRequestFactoryBuilder.detect()
+				.build(HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW)))
+			.baseUrl("http://localhost:" + this.port)
+			.build();
+	}
+
 	@Test
 	void testHome() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
-			.exchange("/home", HttpMethod.GET, new HttpEntity<>(headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		URI location = entity.getHeaders().getLocation();
+		EntityExchangeResult<String> result = nonFollowingRedirect().get()
+			.uri("/home")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
+		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
 		assertThat(location.toString()).endsWith(this.port + "/login");
 	}
 
 	@Test
 	void testLoginPage() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.GET, new HttpEntity<>(headers),
-				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("<title>Login</title>");
+		this.rest.get()
+			.uri("/login")
+			.accept(MediaType.TEXT_HTML)
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("<title>Login</title>"));
 	}
 
 	@Test
 	void testLogin() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
-			.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		URI location = entity.getHeaders().getLocation();
+		EntityExchangeResult<String> result = nonFollowingRedirect().post()
+			.uri("/login")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.accept(MediaType.TEXT_HTML)
+			.body(form)
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
+		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
 		assertThat(location.toString()).endsWith(this.port + "/");
 	}

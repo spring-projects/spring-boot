@@ -16,7 +16,6 @@
 
 package org.springframework.boot.tomcat.autoconfigure.servlet;
 
-import jakarta.servlet.Filter;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.junit.jupiter.api.Test;
@@ -27,10 +26,8 @@ import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.servlet.AbstractServletWebServerAutoConfigurationTests;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,30 +114,6 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 						TomcatProtocolHandlerCustomizer.class);
 				assertThat(factory.getProtocolHandlerCustomizers()).contains(customizer);
 				then(customizer).should().customize(any());
-			});
-	}
-
-	@Test
-	void whenUsingFrameworkForwardHeadersStrategyAndRelativeRedirectsAreEnabledThenFilterIsConfiguredToUseRelativeRedirects() {
-		this.serverRunner
-			.withPropertyValues("server.forward-headers-strategy=framework",
-					"server.tomcat.use-relative-redirects=true", "server.port=0")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-				assertThat(filter).extracting("relativeRedirects").isEqualTo(true);
-			});
-	}
-
-	@Test
-	void whenUsingFrameworkForwardHeadersStrategyAndNotUsingRelativeRedirectsThenFilterIsNotConfiguredToUseRelativeRedirects() {
-		this.serverRunner
-			.withPropertyValues("server.forward-headers-strategy=framework",
-					"server.tomcat.use-relative-redirects=false", "server.port=0")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-				assertThat(filter).extracting("relativeRedirects").isEqualTo(false);
 			});
 	}
 

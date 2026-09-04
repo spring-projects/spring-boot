@@ -30,8 +30,10 @@ import org.springframework.web.client.RestTemplate;
  * @since 4.0.0
  * @see RestTemplateBuilder
  * @see ClientHttpRequestInitializer
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
  */
 @FunctionalInterface
+@Deprecated(since = "4.2.0", forRemoval = true)
 public interface RestTemplateRequestCustomizer<T extends ClientHttpRequest> {
 
 	/**

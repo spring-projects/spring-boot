@@ -136,6 +136,30 @@ NOTE: Keep in mind that Spring Boot doesn't use OpenTelemetry's metrics function
 
 
 
+[[actuator.observability.opentelemetry.common-otlp-configuration]]
+=== Common OTLP Configuration
+
+The endpoint, headers, and compression used to export traces, logs, and metrics over OTLP can be configured once for all three signals using the `management.opentelemetry.otlp.*` configuration properties:
+
+[configprops,yaml]
+----
+management:
+  opentelemetry:
+    otlp:
+      endpoint: "https://otlp.example.com:4318"
+      compression: "gzip"
+      headers:
+        Authorization: "Bearer some-token"
+----
+
+Each signal-specific property, for example configprop:management.opentelemetry.tracing.export.otlp.endpoint[], configprop:management.opentelemetry.logging.export.otlp.endpoint[], or configprop:management.otlp.metrics.export.url[], takes precedence over the common one when set.
+When the common endpoint is used as a fallback and the signal is exported over HTTP, the signal-specific path (`v1/traces`, `v1/logs`, or `v1/metrics`) is appended to it, as in the example above.
+Headers configured for a specific signal are merged with the common headers, with the signal-specific values taking precedence for any matching keys.
+
+This mirrors the fallback behavior of the general and signal-specific `OTEL_EXPORTER_OTLP_*` environment variables described below.
+
+
+
 [[actuator.observability.opentelemetry.environment-variables]]
 === Environment variables
 

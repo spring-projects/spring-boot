@@ -32,12 +32,15 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
  *
  * @author Andy Wilkinson
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link AutoConfigureRestTestClient}
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 @ImportAutoConfiguration
+@Deprecated(since = "4.2.0", forRemoval = true)
 public @interface AutoConfigureTestRestTemplate {
 
 }

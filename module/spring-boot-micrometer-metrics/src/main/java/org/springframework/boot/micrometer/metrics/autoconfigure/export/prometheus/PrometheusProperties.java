@@ -17,7 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -56,7 +56,7 @@ public class PrometheusProperties {
 	/**
 	 * Additional properties to pass to the Prometheus client.
 	 */
-	private final Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new LinkedHashMap<>();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -148,7 +148,7 @@ public class PrometheusProperties {
 		/**
 		 * Grouping key for the pushed metrics.
 		 */
-		private Map<String, String> groupingKey = new HashMap<>();
+		private Map<String, String> groupingKey = new LinkedHashMap<>();
 
 		/**
 		 * Operation that should be performed on shutdown.

@@ -48,8 +48,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link RootUriRequestExpectationManager}.
  *
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @ExtendWith(MockitoExtension.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RootUriRequestExpectationManagerTests {
 
 	private final String uri = "https://example.com";

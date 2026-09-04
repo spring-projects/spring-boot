@@ -31,9 +31,6 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
-import org.springframework.batch.core.converter.DefaultJobParametersConverter;
-import org.springframework.batch.core.converter.JobParametersConverter;
-import org.springframework.batch.core.converter.JsonJobParametersConverter;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
@@ -512,31 +509,6 @@ class BatchJdbcAutoConfigurationTests {
 				assertThat(configuration.getIsolationLevelForCreate()).isEqualTo(Isolation.READ_COMMITTED);
 			});
 
-	}
-
-	@Test
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void customJobParametersConverterIsUsed() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withBean(JobParametersConverter.class, JsonJobParametersConverter::new)
-			.withPropertyValues("spring.datasource.generate-unique-name=true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(JsonJobParametersConverter.class);
-				assertThat(context.getBean(SpringBootBatchJdbcConfiguration.class).getJobParametersConverter())
-					.isInstanceOf(JsonJobParametersConverter.class);
-			});
-	}
-
-	@Test
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void defaultJobParametersConverterIsUsed() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(JobParametersConverter.class);
-			assertThat(context.getBean(SpringBootBatchJdbcConfiguration.class).getJobParametersConverter())
-				.isInstanceOf(DefaultJobParametersConverter.class);
-		});
 	}
 
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
