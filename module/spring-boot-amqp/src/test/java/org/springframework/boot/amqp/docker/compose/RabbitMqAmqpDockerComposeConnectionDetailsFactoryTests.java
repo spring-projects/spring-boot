@@ -17,8 +17,10 @@
 package org.springframework.boot.amqp.docker.compose;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -70,7 +72,32 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
-	private AmqpEnvironment getAmqpEnvironment(Map<String, String> env) {
+	@Test
+	void getUsernameWhenRabbitmqDefaultUserHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_USER", null);
+		AmqpEnvironment environment = getAmqpEnvironment(env);
+		assertThat(environment.getUsername()).isEqualTo("guest");
+	}
+
+	@Test
+	void getPasswordWhenRabbitmqDefaultPassHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_PASS", null);
+		AmqpEnvironment environment = getAmqpEnvironment(env);
+		assertThat(environment.getPassword()).isEqualTo("guest");
+	}
+
+	@Test
+	void getUsernameWhenRabbitmqDefaultUserHasNoValueAndHasRabbitmqUsername() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_USER", null);
+		env.put("RABBITMQ_USERNAME", "me");
+		AmqpEnvironment environment = getAmqpEnvironment(env);
+		assertThat(environment.getUsername()).isEqualTo("me");
+	}
+
+	private AmqpEnvironment getAmqpEnvironment(Map<String, @Nullable String> env) {
 		RunningService runningService = mock(RunningService.class);
 		given(runningService.env()).willReturn(env);
 		return new RabbitMqAmqpDockerComposeConnectionDetailsFactory().getAmqpEnvironment(runningService);

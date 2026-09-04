@@ -32,8 +32,14 @@ class RabbitEnvironment {
 	private final @Nullable String password;
 
 	RabbitEnvironment(Map<String, @Nullable String> env) {
-		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
-		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
+		this.username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME");
+		this.password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD");
+	}
+
+	private static String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
+		String value = env.get(key);
+		value = (value != null) ? value : env.get(fallbackKey);
+		return (value != null) ? value : "guest";
 	}
 
 	@Nullable String getUsername() {
