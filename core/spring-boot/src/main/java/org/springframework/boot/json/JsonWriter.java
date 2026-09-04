@@ -451,7 +451,7 @@ public interface JsonWriter<T> {
 		 */
 		@SuppressWarnings("unchecked")
 		public <R> Member<R> as(Extractor<T, R> extractor) {
-			Assert.notNull(extractor, "'adapter' must not be null");
+			Assert.notNull(extractor, "'extractor' must not be null");
 			Member<R> result = (Member<R>) this;
 			result.valueExtractor = this.valueExtractor.as(extractor::extract);
 			return result;
