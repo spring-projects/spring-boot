@@ -416,7 +416,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private @Nullable Publisher<?> invoke(InvocationContext invocationContext) {
-			return (@Nullable Publisher<?>) this.invoker.invoke(invocationContext);
+			return (Publisher<?>) this.invoker.invoke(invocationContext);
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, @Nullable Map<String, String> body) {
