@@ -45,6 +45,7 @@ import org.springframework.boot.loader.tools.AbstractJarWriter.EntryTransformer;
 import org.springframework.boot.loader.tools.AbstractJarWriter.UnpackHandler;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -68,6 +69,8 @@ public abstract class Packager {
 	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
 
 	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
+
+	private static final String BOOT_LIB_PROVIDED_ATTRIBUTE = "Spring-Boot-Lib-Provided";
 
 	private static final String BOOT_CLASSPATH_INDEX_ATTRIBUTE = "Spring-Boot-Classpath-Index";
 
@@ -406,7 +409,12 @@ public abstract class Packager {
 		else {
 			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());
 		}
-		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
+		String libraryLocation = getLayout().getLibraryLocation("", LibraryScope.COMPILE);
+		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, libraryLocation);
+		String providedLibraryLocation = getLayout().getLibraryLocation("", LibraryScope.PROVIDED);
+		if (!ObjectUtils.nullSafeEquals(providedLibraryLocation, libraryLocation)) {
+			putIfHasLength(attributes, BOOT_LIB_PROVIDED_ATTRIBUTE, providedLibraryLocation);
+		}
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 		if (isLayered()) {
 			putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());

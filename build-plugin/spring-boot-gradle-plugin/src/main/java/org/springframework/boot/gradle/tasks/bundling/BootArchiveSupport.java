@@ -84,14 +84,17 @@ class BootArchiveSupport {
 	}
 
 	void configureManifest(Manifest manifest, String mainClass, String classes, String lib,
-			@Nullable String classPathIndex, @Nullable String layersIndex, String jdkVersion,
-			String implementationTitle, @Nullable Object implementationVersion) {
+			@Nullable String libProvided, @Nullable String classPathIndex, @Nullable String layersIndex,
+			String jdkVersion, String implementationTitle, @Nullable Object implementationVersion) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClass);
 		attributes.computeIfAbsent("Spring-Boot-Version", (name) -> determineSpringBootVersion());
 		attributes.putIfAbsent("Spring-Boot-Classes", classes);
 		attributes.putIfAbsent("Spring-Boot-Lib", lib);
+		if (libProvided != null) {
+			attributes.putIfAbsent("Spring-Boot-Lib-Provided", libProvided);
+		}
 		if (classPathIndex != null) {
 			attributes.putIfAbsent("Spring-Boot-Classpath-Index", classPathIndex);
 		}

@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 class IndexedJarStructure implements JarStructure {
 
 	private static final List<String> MANIFEST_DENY_LIST = List.of("Start-Class", "Spring-Boot-Classes",
-			"Spring-Boot-Lib", "Spring-Boot-Classpath-Index", "Spring-Boot-Layers-Index");
+			"Spring-Boot-Lib", "Spring-Boot-Lib-Provided", "Spring-Boot-Classpath-Index", "Spring-Boot-Layers-Index");
 
 	private static final Set<String> ENTRY_IGNORE_LIST = Set.of("META-INF/", "META-INF/MANIFEST.MF",
 			"META-INF/services/java.nio.file.spi.FileSystemProvider");
@@ -58,6 +58,8 @@ class IndexedJarStructure implements JarStructure {
 
 	private final String libLocation;
 
+	private final @Nullable String providedLibLocation;
+
 	private final String classesLocation;
 
 	private final List<String> classpathEntries;
@@ -65,12 +67,21 @@ class IndexedJarStructure implements JarStructure {
 	IndexedJarStructure(Manifest originalManifest, String indexFile) {
 		this.originalManifest = originalManifest;
 		this.libLocation = getLocation(originalManifest, "Spring-Boot-Lib");
+		this.providedLibLocation = getOptionalLocation(originalManifest, "Spring-Boot-Lib-Provided");
 		this.classesLocation = getLocation(originalManifest, "Spring-Boot-Classes");
 		this.classpathEntries = readIndexFile(indexFile);
 	}
 
 	private static String getLocation(Manifest manifest, String attribute) {
 		String location = getMandatoryAttribute(manifest, attribute);
+		return (!location.endsWith("/")) ? location + "/" : location;
+	}
+
+	private static @Nullable String getOptionalLocation(Manifest manifest, String attribute) {
+		String location = manifest.getMainAttributes().getValue(attribute);
+		if (!StringUtils.hasLength(location)) {
+			return null;
+		}
 		return (!location.endsWith("/")) ? location + "/" : location;
 	}
 
@@ -130,8 +141,13 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	private String toStructureDependency(String libEntryName) {
-		Assert.state(libEntryName.startsWith(this.libLocation), () -> "Invalid library location " + libEntryName);
-		return libEntryName.substring(this.libLocation.length());
+		if (libEntryName.startsWith(this.libLocation)) {
+			return libEntryName.substring(this.libLocation.length());
+		}
+		if (this.providedLibLocation != null && libEntryName.startsWith(this.providedLibLocation)) {
+			return libEntryName.substring(this.providedLibLocation.length());
+		}
+		throw new IllegalStateException("Invalid library location " + libEntryName);
 	}
 
 	private static String getMandatoryAttribute(Manifest manifest, String attribute) {
