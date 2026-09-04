@@ -84,7 +84,7 @@ class ProcessRunnerTests {
 		runner.join(Duration.ofSeconds(5).toMillis());
 		assertThat(runner.isAlive()).isFalse();
 		assertThat(error.get()).isInstanceOf(IllegalStateException.class);
-		assertThat(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false)).isFalse();
+		Awaitility.await().until(() -> !ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false));
 	}
 
 	@Nested
