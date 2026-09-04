@@ -28,12 +28,21 @@ import org.jspecify.annotations.Nullable;
 interface DataObjectPropertyBinder {
 
 	/**
+	 * The result of binding a single property.
+	 *
+	 * @param value the bound value or {@code null}
+	 * @param fromSource whether the value was bound from a configuration source
+	 */
+	record PropertyBinding(@Nullable Object value, boolean fromSource) {
+	}
+
+	/**
 	 * Bind the given property.
 	 * @param propertyName the property name (in lowercase dashed form, e.g.
 	 * {@code first-name})
 	 * @param target the target bindable
-	 * @return the bound value or {@code null}
+	 * @return the binding result (never {@code null})
 	 */
-	@Nullable Object bindProperty(String propertyName, Bindable<?> target);
+	PropertyBinding bindProperty(String propertyName, Bindable<?> target);
 
 }
