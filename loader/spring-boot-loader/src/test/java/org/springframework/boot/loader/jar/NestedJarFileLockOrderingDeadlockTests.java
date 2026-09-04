@@ -29,37 +29,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproduces a deadlock caused by {@link NestedJarFile} locking on
- * {@code synchronized (this)}. One thread can hold an unrelated lock (e.g., ClassLoader or
- * reflection machinery) while waiting on {@code NestedJarFile}'s monitor, while another
- * thread holds that monitor while waiting on the unrelated lock.
+ * {@code synchronized (this)}. One thread can hold an unrelated lock (e.g., ClassLoader
+ * or reflection machinery) while waiting on {@code NestedJarFile}'s monitor, while
+ * another thread holds that monitor while waiting on the unrelated lock.
  *
  * <p>
  * This reflects real-world scenarios from gh-51463 and gh-51379 where concurrent jar
  * operations under class-loading/reflection contention trigger the deadlock. Two
- * {@link CountDownLatch}es force each thread into "holding one lock, about to request
- * the other" before either attempts the second lock, making the deadlock easily
- * reproducible. The test fails (times out) against the {@code synchronized (this)}
- * implementation, and passes once {@code NestedJarFile} stops exposing its monitor.
+ * {@link CountDownLatch}es force each thread into "holding one lock, about to request the
+ * other" before either attempts the second lock, making the deadlock easily reproducible.
+ * The test fails (times out) against the {@code synchronized (this)} implementation, and
+ * passes once {@code NestedJarFile} stops exposing its monitor.
  *
  * <p>
  * The thread dumps in gh-51463 and gh-51379 do not show the thread as being deadlocked,
  * which is due to the difference in how the JVM's own deadlock detector handles standard
- * vs virtual threads.  Both gh-51463 and gh-51379 specify explicitly virtual threads are
+ * vs virtual threads. Both gh-51463 and gh-51379 specify explicitly virtual threads are
  * part of their scenarios. Ideally, this test would be updated to use virtual threads but
- * current language level standards prevent the test from using virtual threads
- * (requires JDK21 level).
+ * current language level standards prevent the test from using virtual threads (requires
+ * JDK21 level).
  *
  * <p>
  * The default timeout is 5 seconds (for CI), but can be overridden by setting
- * {@code test.deadlock.hang=true} to block forever (for capturing thread dumps). When a thread
- * dump is captured:
- * <pre>
+ * {@code test.deadlock.hang=true} to block forever (for capturing thread dumps). When a
+ * thread dump is captured: <pre>
  * jcmd &lt;pid&gt; Thread.print > thread-dump.txt
  * jcmd &lt;pid&gt; Thread.dump_to_file -format=json thread-dump.json
- * </pre>
- * the result is different when virtual threads are used vs standard threads. Standard threads
- * will show as a deadlock in the text dump but when virtual threads are deadlocked they just
- * show as blocked in the json dump.
+ * </pre> the result is different when virtual threads are used vs standard threads.
+ * Standard threads will show as a deadlock in the text dump but when virtual threads are
+ * deadlocked they just show as blocked in the json dump.
  *
  * @author Ian Kettle
  */
