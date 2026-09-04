@@ -179,8 +179,8 @@ public class OAuth2ResourceServerProperties {
 			return this.authoritiesClaimExpressions;
 		}
 
-		public void setAuthoritiesExpressions(List<String> authoritiesExpressions) {
-			this.authoritiesClaimExpressions = authoritiesExpressions;
+		public void setAuthoritiesClaimExpressions(List<String> authoritiesClaimExpressions) {
+			this.authoritiesClaimExpressions = authoritiesClaimExpressions;
 		}
 
 		public @Nullable String getPrincipalClaimName() {
