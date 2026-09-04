@@ -282,7 +282,7 @@ public interface InetAddressFilter {
 
 	/**
 	 * Return a filter that matches any of the given IP addresses. Address may be either a
-	 * full IP address (e.g. {@code 192.168.1.1}) or an IP address block spcified using
+	 * full IP address (e.g. {@code 192.168.1.1}) or an IP address block specified using
 	 * CIDR notations (for example {@code 192.168.1.0/24}). Both IPv4 and IPv6 addresses
 	 * are supported.
 	 * @param addresses the IP addresses to match

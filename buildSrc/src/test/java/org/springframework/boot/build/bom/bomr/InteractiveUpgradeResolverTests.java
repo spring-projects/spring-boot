@@ -41,9 +41,9 @@ class InteractiveUpgradeResolverTests {
 	@Test
 	void resolveUpgradeUpdateVersionNumberInLibrary() {
 		UserInputHandler userInputHandler = mock(UserInputHandler.class);
-		LibraryUpdateResolver libaryUpdateResolver = mock(LibraryUpdateResolver.class);
+		LibraryUpdateResolver libraryUpdateResolver = mock(LibraryUpdateResolver.class);
 		InteractiveUpgradeResolver upgradeResolver = new InteractiveUpgradeResolver(userInputHandler,
-				libaryUpdateResolver);
+				libraryUpdateResolver);
 		List<Library> libraries = new ArrayList<>();
 		DependencyVersion version = DependencyVersion.parse("1.0.0");
 		Library library = new Library("test", null, version, null, null, null, null, null, null, null, null, null);
@@ -54,7 +54,7 @@ class InteractiveUpgradeResolverTests {
 		DependencyVersion updateVersion = DependencyVersion.parse("1.0.1");
 		VersionOption versionOption = new VersionOption(updateVersion);
 		updates.add(new LibraryWithVersionOptions(library, List.of(versionOption)));
-		given(libaryUpdateResolver.findLibraryUpdates(any(), any())).willReturn(updates);
+		given(libraryUpdateResolver.findLibraryUpdates(any(), any())).willReturn(updates);
 		Provider<Object> providerOfVersionOption = providerOf(versionOption);
 		given(userInputHandler.askUser(any())).willReturn(providerOfVersionOption);
 		List<Upgrade> upgrades = upgradeResolver.resolveUpgrades(librariesToUpgrade, libraries);

@@ -58,7 +58,7 @@ final class InternalInetAddressFilter implements InetAddressFilter {
 	 * {@code fc00::/7} (RFC 4193). To keep our private network checking accurate to
 	 * modern subnets, we maintain manual parsing.
 	 * @param address the address to check
-	 * @return if the addess is site local
+	 * @return if the address is site local
 	 */
 	private boolean isSiteLocalIpv6Address(byte[] address) {
 		return (address.length == 16)
