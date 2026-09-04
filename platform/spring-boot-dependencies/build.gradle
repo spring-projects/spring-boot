@@ -574,6 +574,9 @@ bom {
 			github("https://github.com/grpc/grpc-java")
 			docs("https://grpc.io/docs/languages/java/")
 			releaseNotes("https://github.com/grpc/grpc-java/releases/tag/v{version}")
+			module("grpc-api") {
+				javadoc("https://javadoc.io/doc/io.grpc/grpc-api/{version}", "io.grpc")
+			}
 		}
 	}
 	library("Grpc Kotlin", "1.5.0") {
