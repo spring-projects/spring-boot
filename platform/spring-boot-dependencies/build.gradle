@@ -1972,6 +1972,9 @@ bom {
 			docs(version -> "https://pulsar.apache.org/docs/%s.%s.x"
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
+			module("pulsar-client-api") {
+				javadoc("https://javadoc.io/doc/org.apache.pulsar/pulsar-client-api/{version}", "org.apache.pulsar.client.api")
+			}
 		}
 	}
 	library("Qpid ProtonJ2", "1.2.0") {

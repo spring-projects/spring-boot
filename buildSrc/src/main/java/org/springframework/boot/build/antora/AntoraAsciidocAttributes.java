@@ -117,7 +117,6 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-protobuf-gradle-plugin",
 				(String) this.projectProperties.get("protobufGradlePluginVersion"));
 		addDependencyVersion(attributes, "grpc-api", "io.grpc:grpc-api");
-		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 
 	private void addVersionAttributes(Map<String, String> attributes, Library library) {
