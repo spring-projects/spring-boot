@@ -18,11 +18,13 @@ package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SslBundleKey}.
  *
  * @author Phillip Webb
+ * @author Benedict
  */
 class SslBundleKeyTests {
 
@@ -69,7 +72,49 @@ class SslBundleKeyTests {
 		given(keyStore.containsAlias("alias")).willThrow(KeyStoreException.class);
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
 		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
-			.withMessage("Could not determine if keystore contains alias 'alias'");
+			.withMessage("Could not validate keystore alias 'alias'");
+	}
+
+	@Test
+	void assertContainsAliasWhenAliasIsNotKeyEntryThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(true);
+		given(keyStore.isKeyEntry("alias")).willReturn(false);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Keystore alias 'alias' is not a key entry");
+	}
+
+	@Test
+	void assertContainsAliasWhenAliasHasNoCertificateChainThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(true);
+		given(keyStore.isKeyEntry("alias")).willReturn(true);
+		given(keyStore.getCertificateChain("alias")).willReturn(null);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Keystore alias 'alias' does not have a certificate chain");
+	}
+
+	@Test
+	void assertContainsAliasWhenAliasHasEmptyCertificateChainThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(true);
+		given(keyStore.isKeyEntry("alias")).willReturn(true);
+		given(keyStore.getCertificateChain("alias")).willReturn(new Certificate[0]);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Keystore alias 'alias' does not have a certificate chain");
+	}
+
+	@Test
+	void assertContainsAliasWhenAliasIsValidKeyEntryDoesNotThrow() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(true);
+		given(keyStore.isKeyEntry("alias")).willReturn(true);
+		given(keyStore.getCertificateChain("alias")).willReturn(new Certificate[] { mock(Certificate.class) });
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatNoException().isThrownBy(() -> key.assertContainsAlias(keyStore));
 	}
 
 }

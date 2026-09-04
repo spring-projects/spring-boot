@@ -102,7 +102,7 @@ class DefaultSslManagerBundleTests {
 		DefaultSslManagerBundle bundle = new TestDefaultSslManagerBundle(storeBundle,
 				SslBundleKey.of("secret", "alias"));
 		assertThatIllegalStateException().isThrownBy(bundle::getKeyManagerFactory)
-			.withMessage("Could not determine if keystore contains alias 'alias'");
+			.withMessage("Could not validate keystore alias 'alias'");
 	}
 
 	@Test
