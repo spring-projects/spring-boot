@@ -19,13 +19,11 @@ package org.springframework.boot.build.antora;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 
@@ -36,7 +34,6 @@ import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.ResolvedBom;
-import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.boot.build.properties.BuildType;
@@ -114,11 +111,7 @@ public class AntoraAsciidocAttributes {
 	}
 
 	private void addVersionAttributes(Map<String, String> attributes, Map<String, String> internal) {
-		this.libraries.forEach((library) -> {
-			String name = "version-" + library.getLinkRootName();
-			String value = library.getVersion().toString();
-			attributes.put(name, value);
-		});
+		this.libraries.forEach((library) -> addVersionAttributes(attributes, library));
 		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
@@ -126,35 +119,16 @@ public class AntoraAsciidocAttributes {
 		addDependencyVersion(attributes, "jackson-databind", "tools.jackson.core:jackson-databind");
 		addDependencyVersion(attributes, "jackson-dataformat-xml", "tools.jackson.dataformat:jackson-dataformat-xml");
 		addDependencyVersion(attributes, "jackson2-databind", "com.fasterxml.jackson.core:jackson-databind");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-elasticsearch");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-jdbc");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-jpa");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-mongodb");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-neo4j");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-r2dbc");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
-		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
 		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 
-	private void addSpringDataDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
-			String artifactId) {
-		addSpringDataDependencyVersion(attributes, internal, artifactId, artifactId);
-	}
-
-	private void addSpringDataDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
-			String name, String artifactId) {
-		String groupAndArtifactId = "org.springframework.data:" + artifactId;
-		addDependencyVersion(attributes, name, groupAndArtifactId);
-		String version = getVersion(groupAndArtifactId);
-		String majorMinor = Arrays.stream(version.split("\\.")).limit(2).collect(Collectors.joining("."));
-		String antoraVersion = version.endsWith(DASH_SNAPSHOT) ? majorMinor + DASH_SNAPSHOT : majorMinor;
-		internal.put("antoraversion-" + name, antoraVersion);
-		internal.put("dotxversion-" + name, majorMinor + ".x");
+	private void addVersionAttributes(Map<String, String> attributes, Library library) {
+		attributes.put("version-" + library.getLinkRootName(), library.getVersion().toString());
+		ResolvedLibrary resolvedLibrary = this.resolvedBom.library(library);
+		library.getModuleLinks().forEach((module, links) -> {
+			String moduleVersion = resolvedLibrary.moduleVersion(module);
+			attributes.put("version-" + module.rootName(), moduleVersion);
+		});
 	}
 
 	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
@@ -228,10 +202,9 @@ public class AntoraAsciidocAttributes {
 			LinkedVersion libraryVersion = new LinkedVersion(library.getVersion());
 			String libraryName = library.getLinkRootName();
 			library.getLinks().forEachLink((type, link) -> addLinkAttributes(libraryName, type, link, libraryVersion));
-			library.getModuleLinks().forEach((moduleName, links) -> {
-				Id resolvedModule = resolvedLibrary.module(moduleName);
-				LinkedVersion moduleVersion = new LinkedVersion(resolvedModule.version());
-				links.forEachLink((type, link) -> addLinkAttributes(moduleName, type, link, moduleVersion));
+			library.getModuleLinks().forEach((module, links) -> {
+				LinkedVersion moduleVersion = new LinkedVersion(resolvedLibrary.moduleVersion(module));
+				links.forEachLink((type, link) -> addLinkAttributes(module.rootName(), type, link, moduleVersion));
 			});
 		}
 
