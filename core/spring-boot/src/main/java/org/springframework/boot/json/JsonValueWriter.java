@@ -61,6 +61,8 @@ class JsonValueWriter {
 
 	private final Deque<ActiveSeries> activeSeries = new ArrayDeque<>();
 
+	private boolean processingValue;
+
 	/**
 	 * Create a new {@link JsonValueWriter} instance.
 	 * @param out the {@link Appendable} used to receive the JSON output
@@ -337,13 +339,28 @@ class JsonValueWriter {
 		return name;
 	}
 
+	/**
+	 * Process a value through active {@link ValueProcessor} instances with re-entrancy protection
+	 * to prevent infinite recursion and {@link StackOverflowError}.
+	 * @param value the value to process
+	 * @param <V> the value type
+	 * @return the processed value
+	 */
 	private <V> @Nullable V processValue(@Nullable V value) {
-		for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
-			for (ValueProcessor<?> valueProcessor : filtersAndProcessors.valueProcessors()) {
-				value = processValue(value, valueProcessor);
-			}
+		if (this.processingValue) {
+			return value;
 		}
-		return value;
+		this.processingValue = true;
+		try {
+			for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
+				value = filtersAndProcessors.valueProcessors().stream()
+					.reduce(value, (v, processor) -> processValue(v, processor), (v1, v2) -> v2);
+			}
+			return value;
+		}
+		finally {
+			this.processingValue = false;
+		}
 	}
 
 	// Lambda isn't detected with the correct nullability
