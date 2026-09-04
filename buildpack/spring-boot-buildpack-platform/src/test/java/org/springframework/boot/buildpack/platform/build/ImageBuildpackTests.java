@@ -61,6 +61,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Junhwan Choi
  */
 class ImageBuildpackTests extends AbstractJsonTests {
 
@@ -198,6 +199,25 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1");
 		assertThatIllegalStateException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
 			.withMessage("Malformed zip entry name '../cnb/'");
+	}
+
+	@Test
+	void resolveWhenLayerCreationFailsDeletesLayerTempFiles() throws Exception {
+		File tempDir = new File(System.getProperty("java.io.tmpdir"));
+		Set<String> tempsBefore = listTempFileNames(tempDir, "create-builder-scratch-");
+		Image image = Image.of(getContent("buildpack-image.json"));
+		ImageReference imageReference = ImageReference.of("example/buildpack1:latest");
+		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
+		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
+		willAnswer((invocation) -> withMockLayers(invocation, "..")).given(resolverContext)
+			.exportImageLayers(eq(imageReference), any());
+		BuildpackReference reference = BuildpackReference.of("example/buildpack1");
+		assertThatIllegalStateException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
+			.withMessage("Malformed zip entry name '../cnb/'");
+		Set<String> tempsAfter = new HashSet<>(listTempFileNames(tempDir, "create-builder-scratch-"));
+		tempsAfter.removeAll(tempsBefore);
+		assertThat(tempsAfter).as("layer temp files must be deleted when layer creation fails").isEmpty();
 	}
 
 	@Test
