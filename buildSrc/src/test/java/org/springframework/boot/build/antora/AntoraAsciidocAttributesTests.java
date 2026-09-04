@@ -35,12 +35,12 @@ import org.springframework.boot.build.bom.Library.FirstParty;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedModule;
 import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.ResolvedBom;
-import org.springframework.boot.build.bom.ResolvedBom.Id;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.properties.BuildType;
@@ -106,28 +106,6 @@ class AntoraAsciidocAttributesTests {
 		AntoraAsciidocAttributes attributes = attributes("1.2.3.1-SNAPSHOT", false, BuildType.OPEN_SOURCE,
 				List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("version-spring-framework", "1.2.3");
-	}
-
-	@Test
-	void versionReferenceFromSpringDataDependencyReleaseVersion() {
-		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
-				mockDependencyVersions("3.2.5"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.5");
-		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
-				"https://docs.spring.io/spring-data/mongodb/reference/3.2");
-		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
-				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
-	}
-
-	@Test
-	void versionReferenceFromSpringDataDependencySnapshotVersion() {
-		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
-				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.0-SNAPSHOT");
-		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
-				"https://docs.spring.io/spring-data/mongodb/reference/3.2-SNAPSHOT");
-		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
-				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
 	}
 
 	@Test
@@ -227,8 +205,8 @@ class AntoraAsciidocAttributesTests {
 	@Test
 	void urlLinksFromLibraryModule() {
 		Links links = new Links(Map.of(LinkType.SITE, singleLink((version) -> "https://example.com/site/" + version)));
-		Map<String, Links> moduleLinks = new LinkedHashMap<>();
-		moduleLinks.put("example-module", new Links(Map.of(LinkType.JAVADOC,
+		Map<LinkedModule, Links> moduleLinks = new LinkedHashMap<>();
+		moduleLinks.put(LinkedModule.of("example-module"), new Links(Map.of(LinkType.JAVADOC,
 				singleLink((version) -> "https://example.com/moduleapi/" + version, "com.example"))));
 		Library library = mockLibrary(links, moduleLinks);
 		Map<String, String> dependencyVersions = mockDependencyVersions();
@@ -251,8 +229,7 @@ class AntoraAsciidocAttributesTests {
 				mockDependencyVersions(), null)
 			.get();
 		assertThat(attributes).containsEntry("include-java", "ROOT:example$java/org/springframework/boot/docs");
-		assertThat(attributes).containsEntry("url-spring-data-cassandra-site",
-				"https://spring.io/projects/spring-data-cassandra");
+		assertThat(attributes).containsEntry("url-github-wiki", "https://github.com/{github-repo}/wiki");
 		List<String> keys = new ArrayList<>(attributes.keySet());
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
@@ -278,10 +255,9 @@ class AntoraAsciidocAttributesTests {
 		given(resolvedBom.dependencyVersions()).willReturn(dependencyVersions);
 		ResolvedLibrary resolvedLibrary = mock();
 		given(resolvedBom.library(any())).willReturn(resolvedLibrary);
-		given(resolvedLibrary.module(any())).willAnswer((invocation) -> {
-			String moduleName = invocation.getArgument(0);
-			String moduleVersion = dependencyVersions.get(moduleName);
-			return new Id("com.example", moduleName, moduleVersion, null);
+		given(resolvedLibrary.moduleVersion(any())).willAnswer((invocation) -> {
+			LinkedModule module = invocation.getArgument(0);
+			return dependencyVersions.get(module.moduleNames().get(0));
 		});
 		return new AntoraAsciidocAttributes(project, dependencyBom, resolvedBom);
 	}
@@ -290,7 +266,7 @@ class AntoraAsciidocAttributesTests {
 		return mockLibrary(new Links(links), Collections.emptyMap());
 	}
 
-	private Library mockLibrary(Links links, Map<String, Links> moduleLinks) {
+	private Library mockLibrary(Links links, Map<LinkedModule, Links> moduleLinks) {
 		String name = "Spring Framework";
 		String calendarName = null;
 		DependencyVersion version = DependencyVersion.parse("1.2.3");

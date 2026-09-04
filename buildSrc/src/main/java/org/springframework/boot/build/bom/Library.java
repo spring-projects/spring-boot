@@ -85,7 +85,7 @@ public class Library {
 
 	private final Links links;
 
-	private final Map<String, Links> moduleLinks;
+	private final Map<LinkedModule, Links> moduleLinks;
 
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
@@ -109,7 +109,7 @@ public class Library {
 	public Library(String name, String calendarName, DependencyVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
 			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName, Links links,
-			Map<String, Links> moduleLinks) {
+			Map<LinkedModule, Links> moduleLinks) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -182,7 +182,7 @@ public class Library {
 		return this.links;
 	}
 
-	public Map<String, Links> getModuleLinks() {
+	public Map<LinkedModule, Links> getModuleLinks() {
 		return this.moduleLinks;
 	}
 
@@ -748,6 +748,21 @@ public class Library {
 
 		public String url(LinkedVersion version) {
 			return factory().apply(version);
+		}
+
+	}
+
+	/**
+	 * A linked module.
+	 *
+	 * @param rootName the root name for the module
+	 * @param moduleNames the names of the linked modules that all share the same version
+	 * number and links.
+	 */
+	public record LinkedModule(String rootName, List<String> moduleNames) {
+
+		public static LinkedModule of(String moduleName) {
+			return new LinkedModule(moduleName, List.of(moduleName));
 		}
 
 	}
