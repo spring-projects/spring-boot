@@ -70,6 +70,8 @@ import static org.mockito.Mockito.never;
 @ExtendWith(OutputCaptureExtension.class)
 class DockerComposeLifecycleManagerTests {
 
+	private static final String TEST_AOT_PROCESSING = "spring.test.context.aot.processing";
+
 	@TempDir
 	@SuppressWarnings("NullAway.Init")
 	File temp;
@@ -142,14 +144,27 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
-	void startWhenUsingAotArtifactsDoesNotStart() {
+	void startWhenTestAotProcessingStarts() {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true",
+				() -> withSystemProperty(TEST_AOT_PROCESSING, "true", () -> {
+					EventCapturingListener listener = new EventCapturingListener();
+					this.eventListeners.add(listener);
+					setUpRunningServices();
+					this.lifecycleManager.start();
+					assertThat(listener.getEvent()).isNotNull();
+					then(this.dockerCompose).should().hasDefinedServices();
+				}));
+	}
+
+	@Test
+	void startWhenUsingAotArtifactsStarts() {
 		withSystemProperty(AotDetector.AOT_ENABLED, "true", () -> {
 			EventCapturingListener listener = new EventCapturingListener();
 			this.eventListeners.add(listener);
 			setUpRunningServices();
 			this.lifecycleManager.start();
-			assertThat(listener.getEvent()).isNull();
-			then(this.dockerCompose).should(never()).hasDefinedServices();
+			assertThat(listener.getEvent()).isNotNull();
+			then(this.dockerCompose).should().hasDefinedServices();
 		});
 	}
 

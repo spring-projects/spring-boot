@@ -1,0 +1,2 @@
+org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter=\
+org.springframework.boot.docker.compose.service.connection.DockerComposeServiceConnectionsApplicationListener$DockerComposeConnectionDetailsBeanRegistrationExcludeFilter
