@@ -44,8 +44,8 @@ public final class ConnectionFactoryUnwrapper {
 	 */
 	public static ConnectionFactory unwrapCaching(ConnectionFactory connectionFactory) {
 		if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {
-			ConnectionFactory unwrapedConnectionFactory = cachingConnectionFactory.getTargetConnectionFactory();
-			return (unwrapedConnectionFactory != null) ? unwrapCaching(unwrapedConnectionFactory) : connectionFactory;
+			ConnectionFactory unwrappedConnectionFactory = cachingConnectionFactory.getTargetConnectionFactory();
+			return (unwrappedConnectionFactory != null) ? unwrapCaching(unwrappedConnectionFactory) : connectionFactory;
 		}
 		return connectionFactory;
 	}
