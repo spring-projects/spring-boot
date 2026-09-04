@@ -39,9 +39,15 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactory extends AbstractAmqpDock
 	@Override
 	protected AmqpEnvironment getAmqpEnvironment(RunningService service) {
 		Map<String, @Nullable String> env = service.env();
-		String username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
-		String password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
+		String username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME");
+		String password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD");
 		return new AmqpEnvironment(username, password);
+	}
+
+	private String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
+		String value = env.get(key);
+		value = (value != null) ? value : env.get(fallbackKey);
+		return (value != null) ? value : "guest";
 	}
 
 }
