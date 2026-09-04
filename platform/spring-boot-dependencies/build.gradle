@@ -2627,6 +2627,123 @@ bom {
 			site("https://spring.io/projects/spring-data")
 			github("https://github.com/spring-projects/spring-data-bom")
 			releaseNotes("https://github.com/spring-projects/spring-data-bom/releases/tag/{version}")
+			module("spring-data-cassandra") {
+				site("https://spring.io/projects/spring-data-cassandra")
+				github("https://github.com/spring-projects/spring-data-cassandra")
+				javadoc(version -> "https://docs.spring.io/spring-data-cassandra/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.cassandra")
+				docs(version -> "https://docs.spring.io/spring-data-cassandra/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-cassandra/releases/tag/{version}")
+			}
+			module("spring-data-commons") {
+				site("https://spring.io/projects/spring-data-commons")
+				github("https://github.com/spring-projects/spring-data-commons")
+				javadoc(version -> "https://docs.spring.io/spring-data-commons/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.[convert|querydsl|repository]")
+				docs(version -> "https://docs.spring.io/spring-data-commons/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-commons/releases/tag/{version}")
+			}
+			module("spring-data-couchbase") {
+				site("https://spring.io/projects/spring-data-couchbase")
+				github("https://github.com/spring-projects/spring-data-couchbase")
+				javadoc(version -> "https://docs.spring.io/spring-data-couchbase/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.couchbase")
+				docs(version -> "https://docs.spring.io/spring-data-couchbase/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-couchbase/releases/tag/{version}")
+			}
+			module("spring-data-elasticsearch") {
+				site("https://spring.io/projects/spring-data-elasticsearch")
+				github("https://github.com/spring-projects/spring-data-elasticsearch")
+				javadoc(version -> "https://docs.spring.io/spring-data-elasticsearch/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.elasticsearch")
+				docs(version -> "https://docs.spring.io/spring-data-elasticsearch/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-elasticsearch/releases/tag/{version}")
+			}
+			module("spring-data-envers") {
+				site("https://spring.io/projects/spring-data-envers")
+				github("https://github.com/spring-projects/spring-data-envers")
+				javadoc(version -> "https://docs.spring.io/spring-data-envers/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.envers")
+				docs(version -> "https://docs.spring.io/spring-data-envers/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-envers/releases/tag/{version}")
+			}
+			module("spring-data-jdbc") {
+				site("https://spring.io/projects/spring-data-jdbc")
+				github("https://github.com/spring-projects/spring-data-jdbc")
+				javadoc(version -> "https://docs.spring.io/spring-data-jdbc/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.jdbc")
+				docs(version -> "https://docs.spring.io/spring-data-jdbc/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-jdbc/releases/tag/{version}")
+			}
+			module("spring-data-jpa") {
+				site("https://spring.io/projects/spring-data-jpa")
+				github("https://github.com/spring-projects/spring-data-jpa")
+				javadoc(version -> "https://docs.spring.io/spring-data-jpa/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.jpa")
+				docs(version -> "https://docs.spring.io/spring-data-jpa/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-jpa/releases/tag/{version}")
+			}
+			module("spring-data-ldap") {
+				site("https://spring.io/projects/spring-data-ldap")
+				github("https://github.com/spring-projects/spring-data-ldap")
+				javadoc(version -> "https://docs.spring.io/spring-data-ldap/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.ldap")
+				docs(version -> "https://docs.spring.io/spring-data-ldap/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-ldap/releases/tag/{version}")
+			}
+			module("spring-data-mongodb") {
+				site("https://spring.io/projects/spring-data-mongodb")
+				github("https://github.com/spring-projects/spring-data-mongodb")
+				javadoc(version -> "https://docs.spring.io/spring-data-mongodb/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.mongodb")
+				docs(version -> "https://docs.spring.io/spring-data-mongodb/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-mongodb/releases/tag/{version}")
+			}
+			module("spring-data-neo4j") {
+				site("https://spring.io/projects/spring-data-neo4j")
+				github("https://github.com/spring-projects/spring-data-neo4j")
+				javadoc(version -> "https://docs.spring.io/spring-data-neo4j/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.neo4j")
+				docs(version -> "https://docs.spring.io/spring-data-neo4j/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-neo4j/releases/tag/{version}")
+			}
+			module("spring-data-r2dbc") {
+				site("https://spring.io/projects/spring-data-r2dbc")
+				github("https://github.com/spring-projects/spring-data-r2dbc")
+				javadoc(version -> "https://docs.spring.io/spring-data-r2dbc/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.r2dbc")
+				docs(version -> "https://docs.spring.io/spring-data-r2dbc/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-r2dbc/releases/tag/{version}")
+			}
+			module("spring-data-redis") {
+				site("https://spring.io/projects/spring-data-redis")
+				github("https://github.com/spring-projects/spring-data-redis")
+				javadoc(version -> "https://docs.spring.io/spring-data-redis/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.redis")
+				docs(version -> "https://docs.spring.io/spring-data-redis/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-redis/releases/tag/{version}")
+			}
+			module("spring-data-rest", ["spring-data-rest-core", "spring-data-rest-webmvc"]) {
+				site("https://spring.io/projects/spring-data-rest")
+				github("https://github.com/spring-projects/spring-data-rest")
+				javadoc(version -> "https://docs.spring.io/spring-data-rest/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.rest")
+				docs(version -> "https://docs.spring.io/spring-data-rest/reference/%s"
+					.formatted(version.forAntora()))
+				releaseNotes("https://github.com/spring-projects/spring-data-rest/releases/tag/{version}")
+			}
 		}
 	}
 	library("Spring Framework", "${springFrameworkVersion}") {

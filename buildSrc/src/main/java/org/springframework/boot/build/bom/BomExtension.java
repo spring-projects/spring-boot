@@ -50,6 +50,7 @@ import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedModule;
 import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.Module;
@@ -233,7 +234,7 @@ public class BomExtension {
 
 		private Links links;
 
-		private Map<String, Links> moduleLinks;
+		private Map<LinkedModule, Links> moduleLinks;
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -611,24 +612,23 @@ public class BomExtension {
 
 	public static class LibraryLinksHandler extends LinksHandler {
 
-		private final Map<String, Map<LinkType, List<Link>>> moduleLinks = new HashMap<>();
+		private final Map<LinkedModule, Map<LinkType, List<Link>>> moduleLinks = new HashMap<>();
 
-		public Map<String, Map<LinkType, List<Link>>> moduleLinks() {
+		Map<LinkedModule, Map<LinkType, List<Link>>> moduleLinks() {
 			return this.moduleLinks;
 		}
 
 		public void module(String moduleName, Closure<ModuleLinksHandler> closure) {
+			module(moduleName, List.of(moduleName), closure);
+		}
+
+		public void module(String rootName, List<String> moduleNames, Closure<ModuleLinksHandler> closure) {
 			ModuleLinksHandler handler = new ModuleLinksHandler();
 			closure.setDelegate(handler);
 			closure.setResolveStrategy(Closure.DELEGATE_FIRST);
 			closure.call(handler);
-			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
-		}
-
-		public void module(String moduleName, Action<ModuleLinksHandler> action) {
-			ModuleLinksHandler handler = new ModuleLinksHandler();
-			action.execute(handler);
-			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
+			this.moduleLinks.computeIfAbsent(new LinkedModule(rootName, moduleNames), (key) -> new HashMap<>())
+				.putAll(handler.links());
 		}
 
 	}

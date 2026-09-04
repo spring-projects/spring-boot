@@ -24,12 +24,15 @@ import java.io.Writer;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.json.JsonMapper;
 
+import org.springframework.boot.build.bom.Library.LinkedModule;
 import org.springframework.util.Assert;
 
 /**
@@ -84,11 +87,15 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
 			List<Bom> importedBoms, Links links) {
 
-		public Id module(String name) {
-			List<Id> matching = allDependencies().filter((candidate) -> candidate.artifactId().equals(name)).toList();
-			Assert.state(!matching.isEmpty(), () -> "No module found with name '%s'".formatted(name));
-			Assert.state(matching.size() == 1, () -> "Multiple artifacts found with name '%s'".formatted(name));
-			return matching.get(0);
+		public String moduleVersion(LinkedModule linkedModule) {
+			Set<String> matching = allDependencies()
+				.filter((candidate) -> linkedModule.moduleNames().contains(candidate.artifactId()))
+				.map((candidate) -> candidate.version())
+				.collect(Collectors.toCollection(TreeSet::new));
+			Assert.state(!matching.isEmpty(), () -> "No module found with name '%s'".formatted(this.name));
+			Assert.state(matching.size() == 1,
+					() -> "Multiple artifacts versions found with name '%s'".formatted(this.name));
+			return matching.iterator().next();
 		}
 
 		public Stream<Id> allDependencies() {

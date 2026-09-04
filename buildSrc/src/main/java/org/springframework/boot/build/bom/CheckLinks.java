@@ -80,7 +80,7 @@ public abstract class CheckLinks extends DefaultTask {
 		library.getLinks().forEachLink((type, link) -> check(restClient, type, link, libraryName, libraryVersion));
 		library.getModuleLinks().forEach((module, links) -> {
 			String moduleName = "%s (%s)".formatted(library.getName(), module);
-			String moduleVersion = resolvedLibrary.module(module).version();
+			String moduleVersion = resolvedLibrary.moduleVersion(module);
 			links.forEachLink((type, link) -> check(restClient, type, link, moduleName, moduleVersion));
 		});
 	}
