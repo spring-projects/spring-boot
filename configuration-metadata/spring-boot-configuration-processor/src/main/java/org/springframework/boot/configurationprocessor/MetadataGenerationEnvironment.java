@@ -137,6 +137,10 @@ class MetadataGenerationEnvironment {
 		return this.typeUtils;
 	}
 
+	boolean hasSourceTree(TypeElement element) {
+		return this.fieldValuesParser.hasSourceTree(element);
+	}
+
 	Messager getMessager() {
 		return this.messager;
 	}
