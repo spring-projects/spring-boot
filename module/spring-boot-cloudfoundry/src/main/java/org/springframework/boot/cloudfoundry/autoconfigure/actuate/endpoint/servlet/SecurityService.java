@@ -118,6 +118,7 @@ class SecurityService {
 		Assert.state(keys != null, "'keys' must not be null");
 		for (Object key : keys) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;
+			Assert.state(tokenKey != null, "'tokenKey' must not be null");
 			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}
 		return tokenKeys;
