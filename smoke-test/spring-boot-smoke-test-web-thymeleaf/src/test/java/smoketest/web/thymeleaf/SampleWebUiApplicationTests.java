@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -42,9 +41,6 @@ class SampleWebUiApplicationTests {
 
 	@Autowired
 	private RestTestClient restTestClient;
-
-	@LocalServerPort
-	private int port;
 
 	@Test
 	void testHome() {
@@ -67,7 +63,7 @@ class SampleWebUiApplicationTests {
 			.getResponseHeaders()
 			.getLocation();
 		assertThat(location).isNotNull();
-		assertThat(location.toString()).contains("localhost:" + this.port);
+		assertThat(location.toString()).matches("/\\d+(;jsessionid=[\\w.]+)?");
 	}
 
 }

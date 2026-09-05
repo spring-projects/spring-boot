@@ -91,7 +91,7 @@ class SampleMethodSecurityApplicationTests {
 		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
 		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
-		assertThat(location.toString()).endsWith(this.port + "/");
+		assertThat(location.toString()).isEqualTo("/");
 	}
 
 	@Test
