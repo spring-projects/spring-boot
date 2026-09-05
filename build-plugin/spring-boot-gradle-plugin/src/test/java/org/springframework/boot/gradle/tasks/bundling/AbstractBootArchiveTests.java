@@ -249,6 +249,25 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
+	void additionalConfigurationMetadataIsExcluded() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		File classpathDirectory = new File(this.temp, "classes");
+		File additionalMetadata = new File(classpathDirectory,
+				"META-INF/additional-spring-configuration-metadata.json");
+		additionalMetadata.getParentFile().mkdirs();
+		additionalMetadata.createNewFile();
+		File metadata = new File(classpathDirectory, "META-INF/spring-configuration-metadata.json");
+		metadata.createNewFile();
+		this.task.classpath(classpathDirectory);
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(getEntryNames(jarFile))
+				.noneMatch((name) -> name.endsWith("META-INF/additional-spring-configuration-metadata.json"))
+				.anyMatch((name) -> name.endsWith("META-INF/spring-configuration-metadata.json"));
+		}
+	}
+
+	@Test
 	void loaderIsWrittenToTheRootOfTheJarAfterManifest() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		executeTask();

@@ -55,9 +55,12 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Wan bin yu
  * @since 2.3.0
  */
 public abstract class Packager {
+
+	private static final String ADDITIONAL_CONFIGURATION_METADATA_PATH = "META-INF/additional-spring-configuration-metadata.json";
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -205,7 +208,7 @@ public abstract class Packager {
 		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
-		writer.writeEntries(sourceJar, getEntityTransformer(), libraries.getUnpackHandler(),
+		writer.writeEntries(sourceJar, getEntryTransformer(), libraries.getUnpackHandler(),
 				libraries.getLibraryLookup());
 		Map<String, Library> writtenLibraries = libraries.write(writer);
 		writeNativeImageArgFile(writer, sourceJar, writtenLibraries);
@@ -272,11 +275,14 @@ public abstract class Packager {
 			throws IOException {
 	}
 
-	private EntryTransformer getEntityTransformer() {
+	private EntryTransformer getEntryTransformer() {
+		EntryTransformer transformer = EntryTransformer.NONE;
 		if (getLayout() instanceof RepackagingLayout repackagingLayout) {
-			return new RepackagingEntryTransformer(repackagingLayout);
+			transformer = new RepackagingEntryTransformer(repackagingLayout);
 		}
-		return EntryTransformer.NONE;
+		EntryTransformer delegate = transformer;
+		String additionalMetadataLocation = getLayout().getClassesLocation() + ADDITIONAL_CONFIGURATION_METADATA_PATH;
+		return (entry) -> (entry.getName().equals(additionalMetadataLocation)) ? null : delegate.transform(entry);
 	}
 
 	private boolean isZip(InputStreamSupplier supplier) {
