@@ -248,7 +248,7 @@ class ExtractCommand extends Command {
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkdirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
-			ManfiestWriter manfiestWriter = (sourceJarFile) -> {
+			ManifestWriter manifestWriter = (sourceJarFile) -> {
 				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
 						sourceJarFile.getJarEntry(JarFile.MANIFEST_NAME));
 				output.putNextEntry(entry);
@@ -257,7 +257,7 @@ class ExtractCommand extends Command {
 			};
 			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
 			Set<String> writtenEntries = new HashSet<>();
-			withJarEntries(this.context.getArchiveFile(), manfiestWriter, ((stream, jarEntry) -> {
+			withJarEntries(this.context.getArchiveFile(), manifestWriter, ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
 				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
@@ -346,11 +346,11 @@ class ExtractCommand extends Command {
 		withJarEntries(file, null, callback);
 	}
 
-	private static void withJarEntries(File file, @Nullable ManfiestWriter manfiestWriter, ThrowingConsumer callback)
+	private static void withJarEntries(File file, @Nullable ManifestWriter manifestWriter, ThrowingConsumer callback)
 			throws IOException {
 		try (JarFile jarFile = new JarFile(file)) {
-			if (manfiestWriter != null) {
-				manfiestWriter.writeManifest(jarFile);
+			if (manifestWriter != null) {
+				manifestWriter.writeManifest(jarFile);
 			}
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
@@ -385,7 +385,7 @@ class ExtractCommand extends Command {
 	}
 
 	@FunctionalInterface
-	private interface ManfiestWriter {
+	private interface ManifestWriter {
 
 		void writeManifest(JarFile sourceJarFile) throws IOException;
 

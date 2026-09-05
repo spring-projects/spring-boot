@@ -528,8 +528,8 @@ public class Library {
 				return Collections.emptyList();
 			}
 			return manager.getGroups().stream().flatMap((group) -> group.getBoms().stream().map((bom) -> {
-				String plaform = group.getId() + ":" + bom.name() + ":" + manager.getVersion();
-				return this.project.getDependencies().platform(plaform);
+				String platform = group.getId() + ":" + bom.name() + ":" + manager.getVersion();
+				return this.project.getDependencies().platform(platform);
 			})).toList();
 		}
 

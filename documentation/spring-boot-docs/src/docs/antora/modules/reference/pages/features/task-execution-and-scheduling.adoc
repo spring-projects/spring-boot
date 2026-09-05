@@ -23,7 +23,7 @@ For Spring MVC and Spring WebFlux, this bean must be of type javadoc:org.springf
 
 Spring WebSocket and JPA will use javadoc:org.springframework.core.task.AsyncTaskExecutor[] if either a single bean of this type is available or a bean named `applicationTaskExecutor` is defined.
 
-Finally, the boostrap executor of the `ApplicationContext` uses a bean named `applicationTaskExecutor` unless a bean named `bootstrapExecutor` is defined.
+Finally, the bootstrap executor of the `ApplicationContext` uses a bean named `applicationTaskExecutor` unless a bean named `bootstrapExecutor` is defined.
 
 The following code snippet demonstrates how to register a custom javadoc:org.springframework.core.task.AsyncTaskExecutor[] to be used with Spring MVC, Spring WebFlux, Spring GraphQL, Spring WebSocket, JPA, and background initialization of beans.
 

@@ -51,7 +51,7 @@ public final class CompiledMetadataReader {
 			}
 		}
 		catch (Exception ex) {
-			throw new RuntimeException("Failed to read metadata fom '%s'".formatted(location), ex);
+			throw new RuntimeException("Failed to read metadata from '%s'".formatted(location), ex);
 		}
 	}
 
