@@ -19,17 +19,15 @@ package org.springframework.boot.security.oauth2.server.resource.autoconfigure.w
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.actuate.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ConditionalOnDefaultReactiveWebSecurity;
 import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec.JwtSpec;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
@@ -51,8 +49,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				ReactiveUserDetailsServiceAutoConfiguration.class },
 		after = ReactiveOAuth2ResourceServerAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnDefaultWebSecurity
-@ConditionalOnClass({ EnableWebFluxSecurity.class })
+@ConditionalOnDefaultReactiveWebSecurity
 public final class ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration {
 
 	@Bean

@@ -67,6 +67,17 @@ class WritableJsonTests {
 	}
 
 	@Test
+	void toByteArrayWhenContentIsAppendedCharByCharWritesSupplementaryCharacters() {
+		String emoji = new String(Character.toChars(0x1F600));
+		WritableJson writable = (out) -> {
+			for (int i = 0; i < emoji.length(); i++) {
+				out.append(emoji.charAt(i));
+			}
+		};
+		assertThat(writable.toByteArray(StandardCharsets.UTF_8)).isEqualTo(emoji.getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
 	void toResourceWritesJson() throws Exception {
 		File file = new File(this.temp, "out.json");
 		WritableJson writable = (out) -> out.append("{}");

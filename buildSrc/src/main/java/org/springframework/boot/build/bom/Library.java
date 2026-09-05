@@ -85,6 +85,8 @@ public class Library {
 
 	private final Links links;
 
+	private final Map<LinkedModule, Links> moduleLinks;
+
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
 	 * {@code groups}.
@@ -101,11 +103,13 @@ public class Library {
 	 * @param bomAlignment the bom, if any, that this library should align with
 	 * @param linkRootName the root name to use when generating link variable or
 	 * {@code null} to generate one based on the library {@code name}
-	 * @param links a list of HTTP links relevant to the library
+	 * @param links HTTP links relevant to the library
+	 * @param moduleLinks HTTP links relevant to the library modules
 	 */
 	public Library(String name, String calendarName, DependencyVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
-			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName, Links links) {
+			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName, Links links,
+			Map<LinkedModule, Links> moduleLinks) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -119,6 +123,7 @@ public class Library {
 		this.bomAlignment = bomAlignment;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
 		this.links = (links != null) ? links : Links.empty();
+		this.moduleLinks = (links != null) ? moduleLinks : Collections.emptyMap();
 	}
 
 	private static String generateLinkRootName(String name) {
@@ -177,6 +182,10 @@ public class Library {
 		return this.links;
 	}
 
+	public Map<LinkedModule, Links> getModuleLinks() {
+		return this.moduleLinks;
+	}
+
 	public String getLinkUrl(LinkType type) {
 		List<Link> links = getLinks(type);
 		if (links == null || links.isEmpty()) {
@@ -199,7 +208,7 @@ public class Library {
 	public Library withVersion(DependencyVersion version) {
 		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
 				this.prohibitedVersions, this.firstParty, this.versionAlignment, this.bomAlignment, this.linkRootName,
-				this.links);
+				this.links, this.moduleLinks);
 	}
 
 	/**
@@ -711,7 +720,7 @@ public class Library {
 
 	}
 
-	public record Link(String rootName, Function<LinkedVersion, String> factory, List<String> packages) {
+	public record Link(Function<LinkedVersion, String> factory, List<String> packages) {
 
 		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
 
@@ -739,6 +748,21 @@ public class Library {
 
 		public String url(LinkedVersion version) {
 			return factory().apply(version);
+		}
+
+	}
+
+	/**
+	 * A linked module.
+	 *
+	 * @param rootName the root name for the module
+	 * @param moduleNames the names of the linked modules that all share the same version
+	 * number and links.
+	 */
+	public record LinkedModule(String rootName, List<String> moduleNames) {
+
+		public static LinkedModule of(String moduleName) {
+			return new LinkedModule(moduleName, List.of(moduleName));
 		}
 
 	}

@@ -90,6 +90,22 @@ class AppendableByteArrayTests {
 		assertThat(reused).isEqualTo("clean".getBytes(StandardCharsets.UTF_8));
 	}
 
+	@Test
+	void writesSurrogatePairAppendedAsIndividualChars() throws Exception {
+		assertByteArray(StandardCharsets.UTF_8, (appendable) -> appendable.append('\uD83D').append('\uDE00'));
+		assertByteArray(StandardCharsets.UTF_16, (appendable) -> appendable.append('\uD83D').append('\uDE00'));
+	}
+
+	@Test
+	void writesSurrogatePairSplitAcrossAppendedStrings() throws Exception {
+		assertByteArray(StandardCharsets.UTF_8, (appendable) -> appendable.append("a\uD83D").append("\uDE00b"));
+	}
+
+	@Test
+	void writesUnpairedHighSurrogate() throws Exception {
+		assertByteArray(StandardCharsets.UTF_8, (appendable) -> appendable.append('\uD83D'));
+	}
+
 	private void assertByteArray(Charset charset, ThrowingConsumer<Appendable> action) throws Exception {
 		assertByteArray(4, 4, charset, action);
 	}

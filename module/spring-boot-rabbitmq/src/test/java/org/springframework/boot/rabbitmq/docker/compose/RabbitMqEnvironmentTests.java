@@ -17,8 +17,10 @@
 package org.springframework.boot.rabbitmq.docker.compose;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +69,31 @@ class RabbitMqEnvironmentTests {
 	void getUsernameWhenHasRabbitMqPassword() {
 		RabbitMqEnvironment environment = new RabbitMqEnvironment(Map.of("RABBITMQ_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getUsernameWhenRabbitmqDefaultUserHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_USER", null);
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(env);
+		assertThat(environment.getUsername()).isEqualTo("guest");
+	}
+
+	@Test
+	void getPasswordWhenRabbitmqDefaultPassHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_PASS", null);
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(env);
+		assertThat(environment.getPassword()).isEqualTo("guest");
+	}
+
+	@Test
+	void getUsernameWhenRabbitmqDefaultUserHasNoValueAndHasRabbitmqUsername() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_USER", null);
+		env.put("RABBITMQ_USERNAME", "me");
+		RabbitMqEnvironment environment = new RabbitMqEnvironment(env);
+		assertThat(environment.getUsername()).isEqualTo("me");
 	}
 
 }

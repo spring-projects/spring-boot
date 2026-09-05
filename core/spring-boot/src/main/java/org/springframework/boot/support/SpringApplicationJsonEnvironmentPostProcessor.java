@@ -128,17 +128,17 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	@SuppressWarnings("unchecked")
-	private void extract(String name, Map<String, Object> result, Object value) {
+	private void extract(String name, Map<String, Object> result, @Nullable Object value) {
 		if (value instanceof Map<?, ?> map) {
 			if (CollectionUtils.isEmpty(map)) {
-				result.put(name, value);
+				result.put(name, "");
 				return;
 			}
 			flatten(name, result, (Map<String, Object>) value);
 		}
 		else if (value instanceof Collection<?> collection) {
 			if (CollectionUtils.isEmpty(collection)) {
-				result.put(name, value);
+				result.put(name, "");
 				return;
 			}
 			int index = 0;
@@ -148,7 +148,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 			}
 		}
 		else {
-			result.put(name, value);
+			result.put(name, (value != null) ? value : "");
 		}
 	}
 

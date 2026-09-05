@@ -25,9 +25,15 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.impldep.org.apache.http.client.config.CookieSpecs;
 
+import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
+import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
+import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
@@ -46,13 +52,16 @@ public abstract class CheckLinks extends DefaultTask {
 
 	private final BomExtension bom;
 
+	private final Configuration resolvedBom;
+
 	@Inject
-	public CheckLinks(BomExtension bom) {
+	public CheckLinks(BomExtension bom, Configuration resolvedBom) {
 		this.bom = bom;
+		this.resolvedBom = resolvedBom;
 	}
 
 	@TaskAction
-	void releaseNotes() {
+	void check() {
 		RequestConfig config = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
 		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(config).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -60,19 +69,31 @@ public abstract class CheckLinks extends DefaultTask {
 			.requestFactory(requestFactory)
 			.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
 			.build();
-		for (Library library : this.bom.getLibraries()) {
-			library.getLinks().forEachLink((type, link) -> {
-				URI uri;
-				try {
-					uri = new URI(link.url(library.getVersion()));
-					ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
-					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), type,
-							uri);
-				}
-				catch (URISyntaxException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+		this.bom.getLibraries().forEach((library) -> check(restClient, library));
+	}
+
+	private void check(RestClient restClient, Library library) {
+		ResolvedBom resolvedBom = ResolvedBom.readFrom(this.resolvedBom.getSingleFile());
+		ResolvedLibrary resolvedLibrary = resolvedBom.library(library);
+		DependencyVersion libraryVersion = library.getVersion();
+		String libraryName = library.getName();
+		library.getLinks().forEachLink((type, link) -> check(restClient, type, link, libraryName, libraryVersion));
+		library.getModuleLinks().forEach((module, links) -> {
+			String moduleName = "%s (%s)".formatted(library.getName(), module);
+			String moduleVersion = resolvedLibrary.moduleVersion(module);
+			links.forEachLink((type, link) -> check(restClient, type, link, moduleName, moduleVersion));
+		});
+	}
+
+	private void check(RestClient restClient, LinkType type, Link link, String name, Object version) {
+		try {
+			URI uri = new URI(link.url(new LinkedVersion(version)));
+			ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
+			int statusCode = response.getStatusCode().value();
+			System.out.printf("[%3d] %s - %s (%s)%n", statusCode, name, type, uri);
+		}
+		catch (URISyntaxException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

@@ -29,14 +29,12 @@ import org.springframework.context.annotation.Conditional;
  * the user has not defined their own configuration.
  *
  * @author Phillip Webb
- * @since 4.0.0
- * @deprecated since 4.1.2 in favor of {@link ConditionalOnDefaultServletWebSecurity}
+ * @since 4.1.2
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(DefaultServletWebSecurityCondition.class)
-@Deprecated(since = "4.1.2", forRemoval = true)
-public @interface ConditionalOnDefaultWebSecurity {
+public @interface ConditionalOnDefaultServletWebSecurity {
 
 }

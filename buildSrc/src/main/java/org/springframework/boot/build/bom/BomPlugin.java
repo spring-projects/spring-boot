@@ -65,13 +65,15 @@ public class BomPlugin implements Plugin<Project> {
 		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
 		checkBom.configure(
 				(task) -> task.getResolvedBomFile().set(createResolvedBom.flatMap(CreateResolvedBom::getOutputFile)));
+		Configuration resolvedBom = project.getConfigurations().create("resolvedBom");
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
 		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
-		project.getTasks().register("checkLinks", CheckLinks.class, bom);
-		Configuration resolvedBomConfiguration = project.getConfigurations().create("resolvedBom");
+		project.getTasks()
+			.register("checkLinks", CheckLinks.class, bom, resolvedBom)
+			.configure((task) -> task.dependsOn(resolvedBom));
 		project.getArtifacts()
-			.add(resolvedBomConfiguration.getName(), createResolvedBom.map(CreateResolvedBom::getOutputFile),
+			.add(resolvedBom.getName(), createResolvedBom.map(CreateResolvedBom::getOutputFile),
 					(artifact) -> artifact.builtBy(createResolvedBom));
 		new PublishingCustomizer(project, bom).customize();
 	}
