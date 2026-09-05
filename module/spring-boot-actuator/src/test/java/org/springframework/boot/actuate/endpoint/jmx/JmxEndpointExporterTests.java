@@ -59,11 +59,9 @@ class JmxEndpointExporterTests {
 	private final List<ExposableJmxEndpoint> endpoints = new ArrayList<>();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private MBeanServer mBeanServer;
 
 	@Spy
-	@SuppressWarnings("NullAway.Init")
 	private EndpointObjectNameFactory objectNameFactory = new TestEndpointObjectNameFactory();
 
 	private JmxEndpointExporter exporter;

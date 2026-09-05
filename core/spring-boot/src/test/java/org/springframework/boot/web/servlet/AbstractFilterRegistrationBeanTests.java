@@ -61,11 +61,9 @@ import static org.mockito.Mockito.never;
 abstract class AbstractFilterRegistrationBeanTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	ServletContext servletContext;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	FilterRegistration.Dynamic registration;
 
 	@Test

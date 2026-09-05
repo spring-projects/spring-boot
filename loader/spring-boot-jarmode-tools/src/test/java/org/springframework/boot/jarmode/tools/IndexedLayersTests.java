@@ -42,7 +42,6 @@ import static org.mockito.Mockito.mock;
 class IndexedLayersTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

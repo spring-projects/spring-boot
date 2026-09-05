@@ -43,15 +43,12 @@ import static org.mockito.BDDMockito.then;
 class TestEntityManagerTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private EntityManagerFactory entityManagerFactory;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private EntityManager entityManager;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private PersistenceUnitUtil persistenceUnitUtil;
 
 	private TestEntityManager testEntityManager;

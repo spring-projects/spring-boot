@@ -25,11 +25,9 @@ import org.springframework.stereotype.Component;
 public class GenericService implements MessageService {
 
 	@Value("${test.hello:Hello}")
-	@SuppressWarnings("NullAway.Init")
 	private String hello;
 
 	@Value("${test.name:World}")
-	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Override

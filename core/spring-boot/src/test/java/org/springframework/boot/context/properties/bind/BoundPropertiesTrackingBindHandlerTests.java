@@ -49,7 +49,6 @@ class BoundPropertiesTrackingBindHandlerTests {
 	private Binder binder;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Consumer<ConfigurationProperty> consumer;
 
 	@BeforeEach

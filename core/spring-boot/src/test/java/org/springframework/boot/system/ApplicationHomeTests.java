@@ -40,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApplicationHomeTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

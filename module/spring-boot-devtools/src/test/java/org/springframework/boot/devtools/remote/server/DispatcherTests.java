@@ -52,7 +52,6 @@ import static org.mockito.Mockito.withSettings;
 class DispatcherTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private AccessManager accessManager;
 
 	private final MockHttpServletResponse response = new MockHttpServletResponse();

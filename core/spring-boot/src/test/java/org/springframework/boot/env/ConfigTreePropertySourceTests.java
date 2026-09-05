@@ -49,7 +49,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ConfigTreePropertySourceTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path directory;
 
 	@Test

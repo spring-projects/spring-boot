@@ -40,11 +40,9 @@ import static org.mockito.Mockito.mock;
 class AmqpRabbitHealthIndicatorTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private AmqpConnectionFactory amqpConnectionFactory;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Connection connection;
 
 	@Test

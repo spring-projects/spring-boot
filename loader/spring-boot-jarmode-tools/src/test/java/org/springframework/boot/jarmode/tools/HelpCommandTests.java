@@ -40,7 +40,6 @@ class HelpCommandTests {
 	private TestPrintStream out;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@BeforeEach

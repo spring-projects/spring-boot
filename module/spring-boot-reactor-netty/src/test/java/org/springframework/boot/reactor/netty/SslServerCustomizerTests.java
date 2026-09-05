@@ -60,7 +60,6 @@ class SslServerCustomizerTests {
 
 	@Test
 	@WithPackageResources({ "1.key", "1.crt" })
-	@SuppressWarnings("NullAway") // Test null check
 	void getSslProviderReturnsDefaultWhenServerNameIsNull() {
 		SslBundle defaultBundle = createBundle("1.key", "1.crt");
 		SslServerCustomizer customizer = new SslServerCustomizer(null, Ssl.ClientAuth.NONE, defaultBundle,

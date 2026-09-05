@@ -51,11 +51,9 @@ import static org.mockito.BDDMockito.then;
 class CachingOperationInvokerAdvisorTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private OperationInvoker invoker;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Function<EndpointId, @Nullable Long> timeToLive;
 
 	private CachingOperationInvokerAdvisor advisor;

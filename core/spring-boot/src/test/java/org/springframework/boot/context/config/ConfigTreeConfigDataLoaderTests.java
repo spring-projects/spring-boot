@@ -44,7 +44,6 @@ class ConfigTreeConfigDataLoaderTests {
 	private final ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path directory;
 
 	@Test

@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ZipFileTarArchiveTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

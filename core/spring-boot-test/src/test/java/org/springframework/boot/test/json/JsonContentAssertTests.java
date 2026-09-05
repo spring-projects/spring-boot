@@ -64,7 +64,6 @@ class JsonContentAssertTests {
 	private static final JSONComparator COMPARATOR = new DefaultComparator(JSONCompareMode.LENIENT);
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	public Path tempDir;
 
 	private File temp;

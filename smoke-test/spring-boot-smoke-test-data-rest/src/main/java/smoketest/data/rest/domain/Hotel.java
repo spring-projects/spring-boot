@@ -39,20 +39,16 @@ public class Hotel implements Serializable {
 
 	@ManyToOne(optional = false)
 	@NaturalId
-	@SuppressWarnings("NullAway.Init")
 	private City city;
 
 	@Column(nullable = false)
 	@NaturalId
-	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String address;
 
 	@Column(nullable = false)
-	@SuppressWarnings("NullAway.Init")
 	private String zip;
 
 	protected Hotel() {

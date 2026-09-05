@@ -47,15 +47,12 @@ import static org.mockito.Mockito.never;
 class ClassPathFileChangeListenerTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ApplicationEventPublisher eventPublisher;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClassPathRestartStrategy restartStrategy;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private FileSystemWatcher fileSystemWatcher;
 
 	@Test

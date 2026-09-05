@@ -58,7 +58,6 @@ class ServletComponentScanIntegrationTests {
 	private @Nullable AnnotationConfigServletWebServerApplicationContext context;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@AfterEach

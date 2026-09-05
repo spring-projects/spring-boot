@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class WritableJsonTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

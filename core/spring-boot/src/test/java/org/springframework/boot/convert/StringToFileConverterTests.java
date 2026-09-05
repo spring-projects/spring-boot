@@ -39,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StringToFileConverterTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@ConversionServiceTest

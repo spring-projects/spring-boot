@@ -39,7 +39,6 @@ import static org.mockito.Mockito.mock;
 class JarTypeFilterTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test

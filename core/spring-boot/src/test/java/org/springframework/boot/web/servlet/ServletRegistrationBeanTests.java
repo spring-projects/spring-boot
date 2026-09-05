@@ -52,11 +52,9 @@ class ServletRegistrationBeanTests {
 	private final MockServlet servlet = new MockServlet();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ServletRegistration.Dynamic registration;
 
 	@Test

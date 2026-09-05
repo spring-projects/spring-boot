@@ -44,15 +44,12 @@ import static org.mockito.BDDMockito.then;
 class BindResultTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Consumer<String> consumer;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Function<String, String> mapper;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Supplier<String> supplier;
 
 	@Test

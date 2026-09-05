@@ -54,7 +54,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 abstract class AbstractJarModeTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	Manifest createManifest(String... entries) {

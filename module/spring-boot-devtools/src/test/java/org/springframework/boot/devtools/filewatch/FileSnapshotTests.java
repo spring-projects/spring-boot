@@ -42,7 +42,6 @@ class FileSnapshotTests {
 	private static final long MODIFIED = new Date().getTime() - TimeUnit.DAYS.toMillis(10);
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

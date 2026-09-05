@@ -60,7 +60,6 @@ abstract class AbstractStructuredLoggingTests {
 	private BasicMarkerFactory markerFactory;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	MockStructuredLoggingJsonMembersCustomizerBuilder<?> customizerBuilder = new MockStructuredLoggingJsonMembersCustomizerBuilder<>(
