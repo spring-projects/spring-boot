@@ -911,6 +911,24 @@ See the {url-spring-graphql-docs}/observability.html[Spring GraphQL reference do
 
 
 
+[[actuator.metrics.supported.r2dbc]]
+=== R2DBC Pool Metrics
+
+Auto-configuration instruments R2DBC connection pools with gauges prefixed with `r2dbc.pool` and tagged with the connection factory bean `name`.
+
+When `io.projectreactor.addons:reactor-pool-micrometer` is on the classpath, the pool auto-configured using `spring.r2dbc.pool` also records Reactor pool lifecycle metrics.
+These include allocation and pending timings, recycling counts, and resource idle and lifetime timings.
+They use Reactor's `reactor.pool` prefix and a `pool.name` tag of `connectionFactory`.
+These metrics describe Reactor pool operations, rather than the complete R2DBC connection acquisition and validation process.
+Recording starts after meter binders have been applied; events during earlier bean initialization are not replayed.
+Use `management.metrics.enable.reactor.pool=false` to disable these lifecycle metrics.
+
+To replace the default recorder for the auto-configured pool, define a `PoolMetricsRecorder` bean named `r2dbcPoolMetricsRecorder`.
+Pools created by application code or through an explicit `r2dbc:pool:` URL retain the gauge instrumentation.
+To record lifecycle metrics for a pool created by application code, configure its builder's `metricsRecorder` with Reactor's `Micrometer.recorder` and the application's meter registry.
+
+
+
 [[actuator.metrics.supported.jdbc]]
 === DataSource Metrics
 

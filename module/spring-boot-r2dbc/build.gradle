@@ -43,6 +43,7 @@ dependencies {
 	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.micrometer:micrometer-core")
+	optional("io.projectreactor.addons:reactor-pool-micrometer")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.r2dbc:r2dbc-spi")
