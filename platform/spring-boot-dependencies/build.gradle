@@ -574,6 +574,9 @@ bom {
 			github("https://github.com/grpc/grpc-java")
 			docs("https://grpc.io/docs/languages/java/")
 			releaseNotes("https://github.com/grpc/grpc-java/releases/tag/v{version}")
+			module("grpc-api") {
+				javadoc("https://javadoc.io/doc/io.grpc/grpc-api/{version}", "io.grpc")
+			}
 		}
 	}
 	library("Grpc Kotlin", "1.5.0") {
@@ -791,6 +794,9 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+			module("jackson2-databind", ["jackson-databind"]) {
+				javadoc("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/{version}", "com.fasterxml.jackson.databind")
+			}
 		}
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
@@ -805,6 +811,18 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+			module("jackson-annotations") {
+				javadoc("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/{version}", "com.fasterxml.jackson.annotation")
+			}
+			module("jackson-core") {
+				javadoc("https://javadoc.io/doc/tools.jackson.core/jackson-core//{version}", "tools.jackson.core")
+			}
+			module("jackson-databind") {
+				javadoc("https://javadoc.io/doc/tools.jackson.core/jackson-databind/{version}", "tools.jackson.databind")
+			}
+			module("jackson-dataformat-xml") {
+				javadoc("https://javadoc.io/doc/tools.jackson.dataformat/jackson-dataformat-xml//{version}", "tools.jackson.dataformat.xml")
+			}
 		}
 	}
 	library("Jakarta Activation", "2.1.4") {
@@ -1957,6 +1975,9 @@ bom {
 			docs(version -> "https://pulsar.apache.org/docs/%s.%s.x"
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
+			module("pulsar-client-api") {
+				javadoc("https://javadoc.io/doc/org.apache.pulsar/pulsar-client-api/{version}", "org.apache.pulsar.client.api")
+			}
 		}
 	}
 	library("Qpid ProtonJ2", "1.2.0") {

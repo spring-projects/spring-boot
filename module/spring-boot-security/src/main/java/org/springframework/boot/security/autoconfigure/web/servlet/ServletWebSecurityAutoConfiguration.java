@@ -75,7 +75,7 @@ public final class ServletWebSecurityAutoConfiguration {
 	 * part of the custom security configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnDefaultWebSecurity
+	@ConditionalOnDefaultServletWebSecurity
 	static class SecurityFilterChainConfiguration {
 
 		@Bean

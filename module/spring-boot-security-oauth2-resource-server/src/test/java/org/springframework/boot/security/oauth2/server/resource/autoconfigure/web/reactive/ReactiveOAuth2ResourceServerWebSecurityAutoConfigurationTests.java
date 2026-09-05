@@ -35,6 +35,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
 import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenReactiveAuthenticationManager;
 import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -73,6 +74,7 @@ class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 	@Test
 	void whenNoReactiveJwtDecoderDoesNotAddFilterChain() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class);
 			ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
 			assertThatExceptionOfType(UsernameNotFoundException.class)
 				.isThrownBy(authenticationManager.authenticate(mock())::block);
@@ -82,6 +84,7 @@ class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 	@Test
 	void whenHasReactiveJwtDecoderAddsFilterChain() {
 		this.contextRunner.withPropertyValues(JWK_SET_URI_PROPERTY).run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class);
 			ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
 			assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 		});
@@ -90,6 +93,7 @@ class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 	@Test
 	void whenNoReactiveOpaqueTokenIntrospectorDoesNotAddFilterChain() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class);
 			ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
 			assertThatExceptionOfType(UsernameNotFoundException.class)
 				.isThrownBy(authenticationManager.authenticate(mock())::block);
@@ -104,9 +108,17 @@ class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.opaquetoken.client-id=test",
 					"spring.security.oauth2.resourceserver.opaquetoken.client-secret=shh")
 			.run((context) -> {
+				assertThat(context).hasSingleBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class);
 				ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
 				assertThat(authenticationManager).isInstanceOf(OpaqueTokenReactiveAuthenticationManager.class);
 			});
+	}
+
+	@Test
+	void backsOffWhenExistingSecurityWebFilterChain() {
+		this.contextRunner.withBean(SecurityWebFilterChain.class, () -> mock(SecurityWebFilterChain.class))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class));
 	}
 
 	private ReactiveAuthenticationManager getAuthenticationManager(AssertableReactiveWebApplicationContext context) {
