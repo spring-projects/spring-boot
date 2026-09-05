@@ -49,3 +49,9 @@ bootWar {
 		)
 	}
 }
+
+tasks.named('bootBuildImage') {
+	environment = [
+			'BP_SPRING_CLOUD_BINDINGS_DISABLED': 'true'
+	]
+}

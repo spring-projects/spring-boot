@@ -16,59 +16,37 @@
 
 package smoketest.actuator.extension;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.http.server.LocalTestWebServer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "spring.web.error.include-message=always" })
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleActuatorExtensionApplicationTests {
 
 	@Autowired
-	private ApplicationContext applicationContext;
-
-	@Autowired
-	private TestRestTemplate restTemplate;
-
-	@Autowired
-	private RestTemplateBuilder restTemplateBuilder;
+	private RestTestClient restTestClient;
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void healthActuatorIsNotExposed() {
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/health", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		this.restTestClient.get().uri("/actuator/health").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void healthExtensionWithAuthHeaderIsDenied() {
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/myextension/health", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.restTestClient.get().uri("/myextension/health").exchange().expectStatus().isUnauthorized();
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void healthExtensionWithAuthHeader() {
-		TestRestTemplate restTemplate = new TestRestTemplate(
-				this.restTemplateBuilder.defaultHeader("Authorization", "Bearer secret"));
-		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(this.applicationContext);
-		restTemplate.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());
-		ResponseEntity<Map> entity = restTemplate.getForEntity("/myextension/health", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		RestTestClient restTestClient = this.restTestClient.mutate()
+			.defaultHeader("Authorization", "Bearer secret")
+			.build();
+		restTestClient.get().uri("/myextension/health").exchange().expectStatus().isOk();
 	}
 
 }

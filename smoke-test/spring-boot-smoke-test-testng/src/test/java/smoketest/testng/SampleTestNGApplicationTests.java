@@ -19,15 +19,11 @@ package smoketest.testng;
 import org.testng.annotations.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
  * Basic integration tests for demo application.
@@ -35,17 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
 	public void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("Hello World");
+		this.restTestClient.get().uri("/").exchangeSuccessfully().expectBody(String.class).isEqualTo("Hello World");
 	}
 
 }

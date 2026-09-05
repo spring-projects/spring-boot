@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
@@ -55,9 +54,8 @@ class CloudFoundryInfoEndpointWebExtensionTests {
 				ServletWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
 				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 

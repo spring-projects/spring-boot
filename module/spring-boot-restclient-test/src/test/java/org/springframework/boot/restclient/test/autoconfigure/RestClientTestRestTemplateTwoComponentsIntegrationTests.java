@@ -32,8 +32,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link RestClientTest @RestClientTest} with two {@code RestTemplate} clients.
  *
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @RestClientTest({ ExampleRestTemplateService.class, AnotherExampleRestTemplateService.class })
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestClientTestRestTemplateTwoComponentsIntegrationTests {
 
 	@Autowired

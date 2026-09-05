@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -36,8 +35,6 @@ import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties;
 import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
-import org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer;
 import org.springframework.boot.web.server.autoconfigure.servlet.ServletWebServerConfiguration;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -80,12 +77,6 @@ public final class TomcatServletWebServerAutoConfiguration {
 	TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			TomcatServerProperties tomcatProperties) {
 		return new TomcatServletWebServerFactoryCustomizer(tomcatProperties);
-	}
-
-	@Bean
-	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
-		return (filter) -> filter.setRelativeRedirects(this.tomcatProperties.isUseRelativeRedirects());
 	}
 
 }

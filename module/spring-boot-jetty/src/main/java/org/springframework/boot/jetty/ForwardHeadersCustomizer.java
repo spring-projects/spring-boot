@@ -30,9 +30,36 @@ import org.eclipse.jetty.server.Server;
  */
 public class ForwardHeadersCustomizer implements JettyServerCustomizer {
 
+	private final boolean useXForwarded;
+
+	/**
+	 * Create a new customizer instance.
+	 * @param useXForwarded "X-Forwarded-*" headers are used if {@code true}, otherwise
+	 * standard "Forwarded" are used instead.
+	 * @since 4.2.0
+	 */
+	public ForwardHeadersCustomizer(boolean useXForwarded) {
+		this.useXForwarded = useXForwarded;
+	}
+
+	/**
+	 * Create a new customizer instance with "X-Forwarded-*" support.
+	 */
+	public ForwardHeadersCustomizer() {
+		this(true);
+	}
+
 	@Override
 	public void customize(Server server) {
 		ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
+		if (this.useXForwarded) {
+			// disable "Forwarded" support
+			customizer.setForwardedHeader(null);
+		}
+		else {
+			// disable "X-Forwarded-*" support
+			customizer.setForwardedOnly(true);
+		}
 		for (Connector connector : server.getConnectors()) {
 			for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory jettyConnectionFactory) {

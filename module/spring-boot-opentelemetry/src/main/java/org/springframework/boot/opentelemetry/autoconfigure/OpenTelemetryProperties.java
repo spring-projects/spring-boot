@@ -16,7 +16,7 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,7 +40,7 @@ public class OpenTelemetryProperties {
 	/**
 	 * Resource attributes.
 	 */
-	private Map<String, String> resourceAttributes = new HashMap<>();
+	private Map<String, String> resourceAttributes = new LinkedHashMap<>();
 
 	public boolean isEnabled() {
 		return this.enabled;

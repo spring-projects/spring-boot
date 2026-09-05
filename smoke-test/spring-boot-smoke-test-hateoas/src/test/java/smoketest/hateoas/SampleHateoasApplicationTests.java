@@ -16,61 +16,54 @@
 
 package smoketest.hateoas;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleHateoasApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
 	void hasHalLinksWhenAnythingIsAcceptable() {
-		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
-				new HttpEntity<>(headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
-		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
+		this.restTestClient.get().uri("/customers/1").exchangeSuccessfully().expectBody(String.class).value((body) -> {
+			assertThat(body).startsWith("{\"_links\":{\"self\":{\"href\"");
+			assertThat(body).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
+		});
 	}
 
 	@Test
 	void hasHalLinksWhenJsonIsAcceptable() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
-				new HttpEntity<>(headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
-		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
+		this.restTestClient.get()
+			.uri("/customers/1")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchangeSuccessfully()
+			.expectBody(String.class)
+			.value((body) -> {
+				assertThat(body).startsWith("{\"_links\":{\"self\":{\"href\"");
+				assertThat(body).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
+			});
 	}
 
 	@Test
 	void producesJsonWhenXmlIsPreferred() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set(HttpHeaders.ACCEPT, "application/xml;q=0.9,application/json;q=0.8");
-		HttpEntity<?> request = new HttpEntity<>(headers);
-		ResponseEntity<String> response = this.restTemplate.exchange("/customers/1", HttpMethod.GET, request,
-				String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.parseMediaType("application/json"));
+		this.restTestClient.get()
+			.uri("/customers/1")
+			.header(HttpHeaders.ACCEPT, "application/xml;q=0.9,application/json;q=0.8")
+			.exchangeSuccessfully()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON);
 	}
 
 }

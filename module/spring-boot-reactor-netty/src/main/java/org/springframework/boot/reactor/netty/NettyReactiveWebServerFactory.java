@@ -59,6 +59,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private boolean useForwardHeaders;
 
+	private boolean useRfcForwardHeader;
+
 	private @Nullable ReactorResourceFactory resourceFactory;
 
 	public NettyReactiveWebServerFactory() {
@@ -140,6 +142,17 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
+	 * Set if the RFC "Forwarded" header should be processed.
+	 * <p>
+	 * {@link #setUseForwardHeaders(boolean)} will take precedence if enabled.
+	 * @param useRfcForwardHeader if the "Forwarded" header should be used
+	 * @since 4.2.0
+	 */
+	public void setUseRfcForwardHeader(boolean useRfcForwardHeader) {
+		this.useRfcForwardHeader = useRfcForwardHeader;
+	}
+
+	/**
 	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
 	 */
@@ -157,8 +170,18 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
 			server = compressionCustomizer.apply(server);
 		}
-		server = server.protocol(listProtocols()).forwarded(this.useForwardHeaders);
+		server = configureForwardedHeaders(server.protocol(listProtocols()));
 		return applyCustomizers(server);
+	}
+
+	private HttpServer configureForwardedHeaders(HttpServer server) {
+		if (this.useForwardHeaders) {
+			return server.forwarded(false, false);
+		}
+		if (this.useRfcForwardHeader) {
+			return server.forwarded(true, false);
+		}
+		return server.noForwarded();
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer, Ssl ssl) {

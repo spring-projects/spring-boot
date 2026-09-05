@@ -206,6 +206,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
+	 * Directory containing the test classes and resource files that can be included when
+	 * running the application.
+	 *
+	 * @since 4.2.0
+	 */
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
+	private File testClassesDirectory;
+
+	/**
 	 * Skip the execution.
 	 *
 	 * @since 1.3.2
@@ -241,10 +251,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 3.1.0
 	 */
 	protected List<File> getClassesDirectories() {
-		return List.of(this.classesDirectory);
+		List<File> classesDirectories = new ArrayList<>();
+		if (testClasspath() == TestClasspath.ALL) {
+			classesDirectories.add(this.testClassesDirectory);
+		}
+		classesDirectories.add(this.classesDirectory);
+		return Collections.unmodifiableList(classesDirectories);
 	}
 
-	protected abstract boolean isUseTestClasspath();
+	/**
+	 * Return the {@link TestClasspath} strategy to use.
+	 * @return the test classpath strategy
+	 */
+	protected abstract TestClasspath testClasspath();
 
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();
@@ -416,7 +435,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
-		Set<Artifact> artifacts = (isUseTestClasspath()) ? filterDependencies(this.project.getArtifacts())
+		TestClasspath testClasspath = testClasspath();
+		Set<Artifact> artifacts = ((testClasspath == TestClasspath.ALL || testClasspath == TestClasspath.DEPENDENCIES))
+				? filterDependencies(this.project.getArtifacts())
 				: filterDependencies(this.project.getArtifacts(), new ExcludeTestScopeArtifactFilter());
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
@@ -430,6 +451,29 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			String message = (args.length == 1) ? name + ": " : name + "s: ";
 			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
+	}
+
+	/**
+	 * Strategies to handle the test classpath when running an application.
+	 */
+	protected enum TestClasspath {
+
+		/**
+		 * Do not include the test classpath at all.
+		 */
+		OFF,
+
+		/**
+		 * Include only dependencies with test scope.
+		 */
+		DEPENDENCIES,
+
+		/**
+		 * Include the full test classpath (test classes and dependencies with test
+		 * scope).
+		 */
+		ALL
+
 	}
 
 }

@@ -34,10 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * with a user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
  *
  * @author Madhura Bhave
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.main.web-application-type=reactive", "value=123" })
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTests
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 

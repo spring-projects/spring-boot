@@ -36,12 +36,16 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Brian Clozel
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link RestClientObservationAutoConfiguration}
  */
 @AutoConfiguration
 @ConditionalOnClass({ RestTemplate.class, ObservationRestTemplateCustomizer.class, ObservationRegistry.class,
 		ObservationProperties.class })
 @ConditionalOnBean({ ObservationRegistry.class, RestTemplateBuilder.class })
 @EnableConfigurationProperties(ObservationProperties.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class RestTemplateObservationAutoConfiguration {
 
 	@Bean

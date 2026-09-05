@@ -103,6 +103,17 @@ class PhaseTests {
 	}
 
 	@Test
+	void applyWhenWithImageBuildCacheUpdatesConfigurationWithCacheImage() {
+		Phase phase = new Phase("test", false);
+		phase.withBuildCache("my-cache-image");
+		Update update = mock(Update.class);
+		phase.apply(update);
+		then(update).should().withCommand("/cnb/lifecycle/test", "-cache-image", "my-cache-image");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
+	}
+
+	@Test
 	void applyWhenWithBindsUpdatesConfigurationWithBinds() {
 		Phase phase = new Phase("test", false);
 		VolumeName volumeName = VolumeName.of("test");

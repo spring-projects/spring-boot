@@ -293,6 +293,27 @@ class LifecycleTests {
 
 	@ParameterizedTest
 	@BooleanValueSource
+	void executeWithImageBuildCacheExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest(trustBuilder).withBuildCache(Cache.image("my-cache-image"));
+		createLifecycle(request).execute();
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-image-cache.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-image-cache.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-image-cache.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-image-cache.json"));
+		}
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@ParameterizedTest
+	@BooleanValueSource
 	void executeWithCreatedDateExecutesPhases(boolean trustBuilder) throws Exception {
 		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());

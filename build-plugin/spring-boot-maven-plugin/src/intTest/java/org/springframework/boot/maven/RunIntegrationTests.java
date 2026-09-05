@@ -95,8 +95,31 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void whenUseTestClasspathIsEnabledTheApplicationHasTestDependenciesOnItsClasspath(MavenBuild mavenBuild) {
 		mavenBuild.project("run-use-test-classpath")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run")
+				.contains("useTestClasspath is deprecated, use testClasspath instead."));
+	}
+
+	@TestTemplate
+	void whenTestClasspathIsDependenciesTheApplicationHasTestDependenciesOnItsClasspath(MavenBuild mavenBuild) {
+		mavenBuild.project("run-test-classpath-dependencies")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenTestClasspathIsAllTheApplicationHasTestAndClassesDependenciesOnItsClasspath(MavenBuild mavenBuild) {
+		mavenBuild.project("run-test-classpath-all")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenTestClasspathIsOffTheApplicationHasNeitherTestNorClassesDependenciesOnItsClasspath(MavenBuild mavenBuild) {
+		mavenBuild.project("run-test-classpath-off")
 			.goals("spring-boot:run")
 			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}

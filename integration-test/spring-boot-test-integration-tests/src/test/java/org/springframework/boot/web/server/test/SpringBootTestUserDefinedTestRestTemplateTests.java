@@ -35,9 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class SpringBootTestUserDefinedTestRestTemplateTests extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test

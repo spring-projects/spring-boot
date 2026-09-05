@@ -60,6 +60,13 @@ class DatadogPropertiesConfigAdapterTests
 	}
 
 	@Test
+	void whenPropertiesCompressIsSetAdapterCompressReturnsIt() {
+		DatadogProperties properties = createProperties();
+		properties.setCompress(false);
+		assertThat(createConfigAdapter(properties).compress()).isFalse();
+	}
+
+	@Test
 	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
 		DatadogProperties properties = createProperties();
 		properties.setDescriptions(false);

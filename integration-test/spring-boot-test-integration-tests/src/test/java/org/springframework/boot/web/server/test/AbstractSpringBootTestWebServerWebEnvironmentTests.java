@@ -50,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @AutoConfigureRestTestClient
 @AutoConfigureTestRestTemplate
+@SuppressWarnings("removal")
 abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@LocalServerPort
@@ -74,6 +75,7 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 		return this.context;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}

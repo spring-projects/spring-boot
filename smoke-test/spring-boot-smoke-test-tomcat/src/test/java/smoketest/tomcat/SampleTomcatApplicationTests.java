@@ -29,24 +29,20 @@ import smoketest.tomcat.util.RandomStringUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,11 +57,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleTomcatApplicationTests {
 
+	@LocalServerPort
+	private int port;
+
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -75,21 +74,29 @@ class SampleTomcatApplicationTests {
 
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getHeaders().get(HttpHeaders.CONTENT_ENCODING)).isNull();
-		assertThat(entity.getBody()).isEqualTo("Hello World");
+		EntityExchangeResult<String> result = this.restTestClient.get().uri("/").exchange().returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getResponseHeaders().get(HttpHeaders.CONTENT_ENCODING)).isNull();
+		assertThat(result.getResponseBody()).isEqualTo("Hello World");
 	}
 
 	@Test
 	void testCompression() throws IOException {
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Accept-Encoding", "gzip");
-		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
-		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET, requestEntity, byte[].class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getHeaders().get(HttpHeaders.CONTENT_ENCODING)).containsExactly("gzip");
-		try (GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(entity.getBody()))) {
+		// Use a client with automatic decompression disabled so that the raw gzipped
+		// response body and the Content-Encoding header can be verified.
+		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory();
+		requestFactory.enableCompression(false);
+		RestTestClient nonDecompressingClient = RestTestClient.bindToServer(requestFactory)
+			.baseUrl("http://localhost:" + this.port)
+			.build();
+		EntityExchangeResult<byte[]> result = nonDecompressingClient.get()
+			.uri("/")
+			.headers((headers) -> headers.set("Accept-Encoding", "gzip"))
+			.exchange()
+			.returnResult(byte[].class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getResponseHeaders().get(HttpHeaders.CONTENT_ENCODING)).containsExactly("gzip");
+		try (GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(result.getResponseBody()))) {
 			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8)).isEqualTo("Hello World");
 		}
 	}
@@ -106,8 +113,11 @@ class SampleTomcatApplicationTests {
 
 	@Test
 	void testMaxHttpResponseHeaderSize(CapturedOutput output) {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/max-http-response-header", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		this.restTestClient.get()
+			.uri("/max-http-response-header")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(output).contains(
 				"threw exception [Request processing failed: org.apache.coyote.http11.HeadersTooLargeException: An attempt was made to write more data to the response headers than there was room available in the buffer. Increase maxHttpHeaderSize on the connector or write less data into the response headers.]");
 	}
@@ -115,23 +125,13 @@ class SampleTomcatApplicationTests {
 	@Test
 	void testMaxHttpRequestHeaderSize(CapturedOutput output) {
 		String headerValue = RandomStringUtil.getRandomBase64EncodedString(this.maxHttpRequestHeaderSize + 1);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("x-max-request-header", headerValue);
-		HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, httpEntity, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		this.restTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.add("x-max-request-header", headerValue))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(output).contains("java.lang.IllegalArgumentException: Request header is too large");
-	}
-
-	@TestConfiguration
-	static class DisableCompressionConfiguration {
-
-		@Bean
-		RestTemplateBuilder restTemplateBuilder() {
-			return new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()
-				.withCustomizer((factory) -> factory.enableCompression(false)));
-		}
-
 	}
 
 }

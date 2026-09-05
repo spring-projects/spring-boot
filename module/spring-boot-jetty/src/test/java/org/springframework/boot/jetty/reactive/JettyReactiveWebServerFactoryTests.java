@@ -43,6 +43,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
@@ -119,6 +120,22 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void useRfcForwardHeader() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseRfcForwardHeader(true);
+		assertRfcForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		factory.setUseRfcForwardHeader(true);
+		assertForwardHeaderIsUsed(factory);
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
 	}
 
 	@Test

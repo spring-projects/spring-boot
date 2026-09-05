@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +42,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
@@ -56,8 +54,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -93,13 +91,11 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void testErrorForMachineClientDefault() {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, null, "/");
-		assertThat(entity.getBody()).doesNotContainKey("exception");
-		assertThat(entity.getBody()).doesNotContainKey("trace");
+		Map<String, ?> response = getResponseMap("?trace=true");
+		assertErrorAttributes(response, "500", "Internal Server Error", null, null, "/");
+		assertThat(response).doesNotContainKey("exception").doesNotContainKey("trace");
 	}
 
 	@Test
@@ -138,44 +134,39 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void testErrorForMachineClientAlwaysParamsWithoutMessage() {
 		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/noMessage"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+		Map<String, ?> response = getResponseMap("/noMessage");
+		assertErrorAttributes(response, "500", "Internal Server Error", IllegalStateException.class,
 				"No message available", "/noMessage");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void exceptionWithStackTraceAndMessage(String path) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
-				"Expected!", "/");
-		assertThat(entity.getBody()).containsKey("trace");
+		Map<String, ?> response = getResponseMap(path);
+		assertErrorAttributes(response, "500", "Internal Server Error", IllegalStateException.class, "Expected!", "/");
+		assertThat(response).containsKey("trace");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void exceptionWithoutStackTraceAndMessage(String path) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class, null, "/");
-		assertThat(entity.getBody()).doesNotContainKey("trace");
+		Map<String, ?> response = getResponseMap(path);
+		assertErrorAttributes(response, "500", "Internal Server Error", IllegalStateException.class, null, "/");
+		assertThat(response).doesNotContainKey("trace");
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedExceptionWithoutMessage() {
 		load("--spring.web.error.include-exception=true");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
-				null, "/annotated");
+		Map<String, ?> response = getResponseMap("/annotated");
+		assertErrorAttributes(response, "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class, null,
+				"/annotated");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedExceptionWithMessage() {
 		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
+		Map<String, ?> response = getResponseMap("/annotated");
+		assertErrorAttributes(response, "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
 				"Expected!", "/annotated");
 	}
 
@@ -183,8 +174,8 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoReasonExceptionWithoutMessage() {
 		load("--spring.web.error.include-exception=true");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
-		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+		Map<String, ?> response = getResponseMap("/annotatedNoReason");
+		assertErrorAttributes(response, "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, null, "/annotatedNoReason");
 	}
 
@@ -192,8 +183,8 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoReasonExceptionWithMessage() {
 		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
-		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+		Map<String, ?> response = getResponseMap("/annotatedNoReason");
+		assertErrorAttributes(response, "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, "Expected message", "/annotatedNoReason");
 	}
 
@@ -201,8 +192,8 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoMessageExceptionWithMessage() {
 		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoMessage"), Map.class);
-		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+		Map<String, ?> response = getResponseMap("/annotatedNoMessage");
+		assertErrorAttributes(response, "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, "No message available",
 				"/annotatedNoMessage");
 	}
@@ -267,87 +258,94 @@ class BasicErrorControllerIntegrationTests {
 		bindingExceptionWithoutMessage("?message=true");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithErrors(String param) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
-				"/bind");
-		assertThat(entity.getBody()).containsKey("errors");
+		Map<String, ?> response = getResponseMap("/bind" + param);
+		assertErrorAttributes(response, "400", "Bad Request", MethodArgumentNotValidException.class, null, "/bind");
+		assertThat(response).containsKey("errors");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutErrors(String param) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
-				"/bind");
-		assertThat(entity.getBody()).doesNotContainKey("errors");
+		Map<String, ?> response = getResponseMap("/bind" + param);
+		assertErrorAttributes(response, "400", "Bad Request", MethodArgumentNotValidException.class, null, "/bind");
+		assertThat(response).doesNotContainKey("errors");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithMessage(String param) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class,
+		Map<String, ?> response = getResponseMap("/bind" + param);
+		assertErrorAttributes(response, "400", "Bad Request", MethodArgumentNotValidException.class,
 				"Validation failed for object='test'. Error count: 1", "/bind");
-		assertThat(entity.getBody()).doesNotContainKey("errors");
+		assertThat(response).doesNotContainKey("errors");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutMessage(String param) {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
-				"/bind");
-		assertThat(entity.getBody()).doesNotContainKey("errors");
+		Map<String, ?> response = getResponseMap("/bind" + param);
+		assertErrorAttributes(response, "400", "Bad Request", MethodArgumentNotValidException.class, null, "/bind");
+		assertThat(response).doesNotContainKey("errors");
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	void testRequestBodyValidationForMachineClient() {
 		load("--spring.web.error.include-exception=true");
-		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
-			.accept(MediaType.APPLICATION_JSON)
+		Map<String, ?> response = createRestClient().post()
+			.uri("/bodyValidation")
 			.contentType(MediaType.APPLICATION_JSON)
-			.body("{}");
-		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
+			.accept(MediaType.APPLICATION_JSON)
+			.body("{}")
+			.exchange()
+			.expectBody(Map.class)
+			.returnResult()
+			.getResponseBody();
+		assertErrorAttributes(response, "400", "Bad Request", MethodArgumentNotValidException.class, null,
 				"/bodyValidation");
-		assertThat(entity.getBody()).doesNotContainKey("errors");
+		assertThat(response).doesNotContainKey("errors");
 	}
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void testBindingExceptionForMachineClientDefault() {
 		load();
-		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind?trace=true,message=true")))
+		Map<String, ?> response = createRestClient().get()
+			.uri("/bind?trace=true,message=true")
 			.accept(MediaType.APPLICATION_JSON)
-			.build();
-		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		assertThat(entity.getBody()).doesNotContainKey("exception");
-		assertThat(entity.getBody()).doesNotContainKey("trace");
-		assertThat(entity.getBody()).doesNotContainKey("errors");
+			.exchange()
+			.expectBody(Map.class)
+			.returnResult()
+			.getResponseBody();
+		assertThat(response).doesNotContainKey("exception");
+		assertThat(response).doesNotContainKey("trace");
+		assertThat(response).doesNotContainKey("errors");
 	}
 
 	@Test
 	void testIncompatibleMediaType() {
 		load();
-		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/incompatibleType")))
+		createRestClient().get()
+			.uri("/incompatibleType")
 			.accept(MediaType.TEXT_PLAIN)
-			.build();
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-		assertThat(entity.getHeaders().getContentType()).isNull();
-		assertThat(entity.getBody()).isNull();
+			.exchange()
+			.expectStatus()
+			.isBadRequest()
+			.expectHeader()
+			.doesNotExist("Content-Type")
+			.expectBody()
+			.isEmpty();
 	}
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void customErrorControllerWithoutStatusConfiguration() {
 		load(CustomErrorControllerWithoutStatusConfiguration.class);
-		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
+		Map<String, ?> response = createRestClient().post()
+			.uri("/bodyValidation")
 			.accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
-			.body("{}");
-		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		assertThat(entity.getBody()).doesNotContainKey("status");
+			.body("{}")
+			.exchange()
+			.expectBody(Map.class)
+			.returnResult()
+			.getResponseBody();
+		assertThat(response).doesNotContainKey("status");
 	}
 
 	private void assertErrorAttributes(@Nullable Map<?, ?> content, String status, String error,
@@ -365,11 +363,23 @@ class BasicErrorControllerIntegrationTests {
 		assertThat(content.get("path")).as("Wrong path").isEqualTo(path);
 	}
 
-	private String createUrl(String path) {
+	@SuppressWarnings("unchecked")
+	private Map<String, String> getResponseMap(String url) {
+		Map<String, String> responseBody = createRestClient().get()
+			.uri(url)
+			.exchange()
+			.expectBody(Map.class)
+			.returnResult()
+			.getResponseBody();
+		Assert.notNull(responseBody, "Response body should not be null");
+		return responseBody;
+	}
+
+	RestTestClient createRestClient() {
 		assertThat(this.context).isNotNull();
 		Integer port = this.context.getEnvironment().getProperty("local.server.port", Integer.class);
 		assertThat(port).isNotNull();
-		return "http://localhost:" + port + path;
+		return RestTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
 	}
 
 	private void load(String... arguments) {

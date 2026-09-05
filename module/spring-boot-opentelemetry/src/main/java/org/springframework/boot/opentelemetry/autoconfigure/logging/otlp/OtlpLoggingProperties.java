@@ -17,7 +17,7 @@
 package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -59,12 +59,12 @@ public class OtlpLoggingProperties {
 	/**
 	 * Method used to compress the payload.
 	 */
-	private Compression compression = Compression.NONE;
+	private @Nullable Compression compression;
 
 	/**
 	 * Custom HTTP headers you want to pass to the collector, for example auth headers.
 	 */
-	private final Map<String, String> headers = new HashMap<>();
+	private final Map<String, String> headers = new LinkedHashMap<>();
 
 	private final Ssl ssl = new Ssl();
 
@@ -100,11 +100,11 @@ public class OtlpLoggingProperties {
 		this.transport = transport;
 	}
 
-	public Compression getCompression() {
+	public @Nullable Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(Compression compression) {
+	public void setCompression(@Nullable Compression compression) {
 		this.compression = compression;
 	}
 

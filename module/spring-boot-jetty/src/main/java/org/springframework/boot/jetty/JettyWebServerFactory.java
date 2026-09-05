@@ -64,6 +64,8 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 
 	private boolean useForwardHeaders;
 
+	private boolean useRfcForwardHeader;
+
 	private Set<JettyServerCustomizer> jettyServerCustomizers = new LinkedHashSet<>();
 
 	private int maxConnections = -1;
@@ -178,6 +180,15 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 	@Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	public boolean isUseRfcForwardHeader() {
+		return this.useRfcForwardHeader;
+	}
+
+	@Override
+	public void setUseRfcForwardHeader(boolean useRfcForwardHeader) {
+		this.useRfcForwardHeader = useRfcForwardHeader;
 	}
 
 	protected AbstractConnector createConnector(InetSocketAddress address, Server server) {

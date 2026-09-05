@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -91,9 +92,24 @@ public class StartMojo extends AbstractRunMojo {
 
 	/**
 	 * Flag to include the test classpath when running.
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@code testClasspath}
 	 */
-	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private boolean useTestClasspath;
+	@Parameter(property = "spring-boot.run.useTestClasspath")
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	private @Nullable Boolean useTestClasspath;
+
+	/**
+	 * Strategy to determine how the test classpath should be included when running the
+	 * application. Available values are {@code off} to not include the test classpath at
+	 * all, {@code dependencies} to include only dependencies with test scope, and
+	 * {@code all} to include the full test classpath (test classes and dependencies with
+	 * test scope).
+	 * @since 4.2.0
+	 */
+	@Parameter(property = "spring-boot.run.testClasspath", defaultValue = "off")
+	private String testClasspath = "off";
+
+	private @Nullable TestClasspath resolvedTestClasspath;
 
 	@Inject
 	public StartMojo(ToolchainManager toolchainManager) {
@@ -205,8 +221,17 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected boolean isUseTestClasspath() {
-		return this.useTestClasspath;
+	protected TestClasspath testClasspath() {
+		if (this.resolvedTestClasspath == null) {
+			if (this.useTestClasspath != null) {
+				getLog().warn("useTestClasspath is deprecated, use testClasspath instead.");
+				this.resolvedTestClasspath = (this.useTestClasspath) ? TestClasspath.DEPENDENCIES : TestClasspath.OFF;
+			}
+			else {
+				this.resolvedTestClasspath = TestClasspath.valueOf(this.testClasspath.toUpperCase(Locale.ROOT));
+			}
+		}
+		return this.resolvedTestClasspath;
 	}
 
 	private class CreateJmxConnector implements Callable<@Nullable JMXConnector> {

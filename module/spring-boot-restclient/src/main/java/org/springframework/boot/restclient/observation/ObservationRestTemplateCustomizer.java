@@ -28,7 +28,11 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Brian Clozel
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link ObservationRestClientCustomizer}
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class ObservationRestTemplateCustomizer implements RestTemplateCustomizer {
 
 	private final ObservationRegistry observationRegistry;

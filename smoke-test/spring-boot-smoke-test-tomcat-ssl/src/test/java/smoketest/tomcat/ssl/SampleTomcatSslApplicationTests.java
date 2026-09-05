@@ -19,24 +19,24 @@ package smoketest.tomcat.ssl;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.TrustAllTlsRequestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.json.JsonContent;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
 class SampleTomcatSslApplicationTests {
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+	@LocalServerPort
+	private int port;
 
 	@Autowired
 	private AbstractConfigurableWebServerFactory webServerFactory;
@@ -50,16 +50,17 @@ class SampleTomcatSslApplicationTests {
 
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("Hello, world");
+		restTestClient().get().uri("/").exchangeSuccessfully().expectBody(String.class).isEqualTo("Hello, world");
 	}
 
 	@Test
 	void testSslInfo() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		String body = entity.getBody();
+		EntityExchangeResult<String> result = restTestClient().get()
+			.uri("/actuator/info")
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+		String body = result.getResponseBody();
 		assertThat(body).isNotNull();
 		JsonContent json = new JsonContent(body);
 		assertThat(json).extractingPath("ssl.bundles[0].name").isEqualTo("ssldemo");
@@ -78,9 +79,12 @@ class SampleTomcatSslApplicationTests {
 
 	@Test
 	void testSslHealth() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-		String body = entity.getBody();
+		EntityExchangeResult<String> result = restTestClient().get()
+			.uri("/actuator/health")
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+		String body = result.getResponseBody();
 		assertThat(body).isNotNull();
 		JsonContent json = new JsonContent(body);
 		assertThat(json).extractingPath("status").isEqualTo("OUT_OF_SERVICE");
@@ -96,6 +100,12 @@ class SampleTomcatSslApplicationTests {
 		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.message")
 			.asString()
 			.startsWith("Not valid after ");
+	}
+
+	private RestTestClient restTestClient() {
+		return RestTestClient.bindToServer(TrustAllTlsRequestFactory.create())
+			.baseUrl("https://localhost:" + this.port)
+			.build();
 	}
 
 }

@@ -49,8 +49,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link RestTemplateObservationAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @ExtendWith(OutputCaptureExtension.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestTemplateObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

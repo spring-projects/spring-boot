@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the License);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -23,32 +23,28 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot AMQP"
+description = "Spring Boot support for AMQP 1.0"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api("org.apache.qpid:protonj2-client")
 	api("org.springframework:spring-messaging")
-	api("org.springframework.amqp:spring-rabbit")
-
-	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+	api("org.springframework.amqp:spring-amqp-client")
 
 	implementation(project(":module:spring-boot-transaction"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
+	optional(project(":module:spring-boot-jackson"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-health"))
-	optional(project(":module:spring-boot-micrometer-metrics"))
-	optional("io.micrometer:micrometer-core")
-	optional("org.springframework.amqp:spring-rabbit-stream")
+	optional("org.testcontainers:testcontainers-activemq")
 	optional("org.testcontainers:testcontainers-rabbitmq")
 
+	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-
-	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

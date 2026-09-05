@@ -22,18 +22,17 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -47,79 +46,96 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "spring.http.clients.imperative.factory=simple")
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class SampleMethodSecurityApplicationTests {
 
 	@LocalServerPort
 	private int port;
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient rest;
+
+	private RestTestClient followingRedirects() {
+		return RestTestClient
+			.bindToServer(ClientHttpRequestFactoryBuilder.detect()
+				.build(HttpClientSettings.defaults().withRedirects(HttpRedirects.FOLLOW_WHEN_POSSIBLE)))
+			.baseUrl("http://localhost:" + this.port)
+			.build();
+	}
+
+	private RestTestClient nonFollowingRedirects() {
+		return RestTestClient
+			.bindToServer(ClientHttpRequestFactoryBuilder.detect()
+				.build(HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW)))
+			.baseUrl("http://localhost:" + this.port)
+			.build();
+	}
 
 	@Test
 	void testHome() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<>(headers),
-				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		followingRedirects().get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
 	}
 
 	@Test
 	void testLogin() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "admin");
 		form.set("password", "admin");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
-				new HttpEntity<>(form, headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		URI location = entity.getHeaders().getLocation();
+		EntityExchangeResult<String> result = nonFollowingRedirects().post()
+			.uri("/login")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.accept(MediaType.TEXT_HTML)
+			.body(form)
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
+		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
 		assertThat(location.toString()).endsWith(this.port + "/");
 	}
 
 	@Test
 	void testDenied() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
-				new HttpEntity<>(form, headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		String cookie = entity.getHeaders().getFirst("Set-Cookie");
-		headers.set("Cookie", cookie);
-		URI location = entity.getHeaders().getLocation();
+		EntityExchangeResult<String> result = nonFollowingRedirects().post()
+			.uri("/login")
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.accept(MediaType.TEXT_HTML)
+			.body(form)
+			.exchange()
+			.returnResult(String.class);
+		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
+		String cookie = result.getResponseHeaders().getFirst("Set-Cookie");
+		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
-		ResponseEntity<String> page = this.restTemplate.exchange(location, HttpMethod.GET, new HttpEntity<>(headers),
-				String.class);
-		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		assertThat(page.getBody()).contains("Access denied");
+		EntityExchangeResult<String> page = this.rest.get().uri(location).headers((headers) -> {
+			headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
+			headers.set("Cookie", cookie);
+		}).exchange().returnResult(String.class);
+		assertThat(page.getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat(page.getResponseBody()).contains("Access denied");
 	}
 
 	@Test
 	void testManagementProtected() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans", HttpMethod.GET,
-				new HttpEntity<>(headers), String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.rest.get()
+			.uri("/actuator/beans")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isUnauthorized();
 	}
 
 	@Test
 	void testManagementAuthorizedAccess() {
-		BasicAuthenticationInterceptor basicAuthInterceptor = new BasicAuthenticationInterceptor("admin", "admin");
-		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
-		try {
-			ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/beans", String.class);
-			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		}
-		finally {
-			this.restTemplate.getRestTemplate().getInterceptors().remove(basicAuthInterceptor);
-		}
+		this.rest.get()
+			.uri("/actuator/beans")
+			.headers((headers) -> headers.setBasicAuth("admin", "admin"))
+			.exchange()
+			.expectStatus()
+			.isOk();
 	}
 
 }

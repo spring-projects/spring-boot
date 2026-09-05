@@ -39,6 +39,7 @@ import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -85,7 +86,8 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 	void defaultUseForwardHeaders() {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(false);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
 	}
 
 	@Test
@@ -102,7 +104,30 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(false);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
+	}
+
+	@Test
+	void forwardedHeadersFormatXForwardedConfiguresUseForwardHeaders() {
+		this.environment.setProperty("DYNO", "-");
+		this.nettyProperties.getForwardedHeaders()
+			.setHeaderFormat(NettyServerProperties.Forwardedheaders.HeaderFormat.X_FORWARDED);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseForwardHeaders(true);
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
+	}
+
+	@Test
+	void forwardedHeadersFormatStandardConfiguresUseRfcForwardHeader() {
+		this.environment.setProperty("DYNO", "-");
+		this.nettyProperties.getForwardedHeaders()
+			.setHeaderFormat(NettyServerProperties.Forwardedheaders.HeaderFormat.STANDARD);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseRfcForwardHeader(true);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
 	}
 
 	@Test

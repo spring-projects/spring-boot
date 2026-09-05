@@ -53,7 +53,10 @@ import org.springframework.web.util.UriTemplateHandler;
  * @see DefaultUriBuilderFactory
  * @see #bindTo(RestTemplate)
  * @see #forRestTemplate(RestTemplate, RequestExpectationManager)
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class RootUriRequestExpectationManager implements RequestExpectationManager {
 
 	private final String rootUri;

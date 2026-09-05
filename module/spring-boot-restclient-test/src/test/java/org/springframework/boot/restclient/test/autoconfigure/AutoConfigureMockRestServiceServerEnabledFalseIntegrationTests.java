@@ -41,6 +41,7 @@ class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
+	@SuppressWarnings("removal")
 	void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 			.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));

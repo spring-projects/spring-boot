@@ -64,7 +64,6 @@ dependencies {
 	testImplementation("org.apache.tomcat:tomcat-jdbc")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
-	testImplementation("org.codehaus.janino:janino")
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client-transport")

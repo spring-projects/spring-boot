@@ -24,7 +24,7 @@ import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee11.servlet.ServletHolder;
 import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.eclipse.jetty.server.handler.GracefulHandler;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
@@ -118,12 +118,15 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 			customizer.customize(server);
 		}
 		if (this.isUseForwardHeaders()) {
-			new ForwardHeadersCustomizer().customize(server);
+			new ForwardHeadersCustomizer(true).customize(server);
+		}
+		else if (this.isUseRfcForwardHeader()) {
+			new ForwardHeadersCustomizer(false).customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
-			StatisticsHandler statisticsHandler = new StatisticsHandler();
-			statisticsHandler.setHandler(server.getHandler());
-			server.setHandler(statisticsHandler);
+			GracefulHandler gracefulHandler = new GracefulHandler();
+			gracefulHandler.setHandler(server.getHandler());
+			server.setHandler(gracefulHandler);
 		}
 		return server;
 	}

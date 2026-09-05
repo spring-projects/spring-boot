@@ -54,8 +54,10 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link JettyWebServerFactoryCustomizer}.
@@ -94,7 +96,8 @@ class JettyWebServerFactoryCustomizerTests {
 	void defaultUseForwardHeaders() {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(false);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
 	}
 
 	@Test
@@ -111,7 +114,28 @@ class JettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(false);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
+	}
+
+	@Test
+	void forwardedHeadersFormatXForwardedConfiguresUseForwardHeaders() {
+		this.environment.setProperty("DYNO", "-");
+		bind("server.jetty.forwarded-headers.header-format=x_forwarded");
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseForwardHeaders(true);
+		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
+	}
+
+	@Test
+	void forwardedHeadersFormatStandardConfiguresUseRfcForwardHeader() {
+		this.environment.setProperty("DYNO", "-");
+		bind("server.jetty.forwarded-headers.header-format=standard");
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseRfcForwardHeader(true);
+		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
 	}
 
 	@Test

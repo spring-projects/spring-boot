@@ -106,7 +106,7 @@ If your application needs IO capabilities, see one or more of the following sect
 * *Quartz:* xref:reference:io/quartz.adoc[Quartz Scheduling]
 * *Mail:* xref:reference:io/email.adoc[Sending Email]
 * *Validation:* xref:reference:io/validation.adoc[JSR-303 Validation]
-* *REST Clients:* xref:reference:io/rest-client.adoc[Calling REST Services with RestTemplate and WebClient]
+* *REST Clients:* xref:reference:io/rest-client.adoc[Calling REST Services with RestClient and WebClient]
 * *Webservices:* xref:reference:io/webservices.adoc[Auto-configuration for Spring Web Services]
 * *JTA:* xref:reference:io/jta.adoc[Distributed Transactions with JTA]
 

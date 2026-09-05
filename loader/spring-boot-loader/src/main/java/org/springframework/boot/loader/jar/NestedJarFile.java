@@ -171,34 +171,30 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public Enumeration<JarEntry> entries() {
-		synchronized (this) {
-			ensureOpen();
-			return new JarEntriesEnumeration(this.resources.zipContent());
-		}
+		ZipContent zipContent = ensureOpen();
+		return new JarEntriesEnumeration(zipContent);
 	}
 
 	@Override
 	public Stream<JarEntry> stream() {
-		synchronized (this) {
-			ensureOpen();
-			return streamContentEntries().map(NestedJarEntry::new);
-		}
+		ZipContent zipContent = ensureOpen();
+		return streamContentEntries(zipContent).map(NestedJarEntry::new);
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-		synchronized (this) {
-			ensureOpen();
-			return streamContentEntries().map(this::getBaseName)
-				.filter(Objects::nonNull)
-				.distinct()
-				.map(this::getJarEntry)
-				.filter(Objects::nonNull);
-		}
+
+		ZipContent zipContent = ensureOpen();
+		return streamContentEntries(zipContent).map(this::getBaseName)
+			.filter(Objects::nonNull)
+			.distinct()
+			.map(this::getJarEntry)
+			.filter(Objects::nonNull);
+
 	}
 
-	private Stream<ZipContent.Entry> streamContentEntries() {
-		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(this.resources.zipContent());
+	private Stream<ZipContent.Entry> streamContentEntries(ZipContent zipContent) {
+		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(zipContent);
 		return StreamSupport.stream(spliterator, false);
 	}
 
@@ -248,10 +244,8 @@ public class NestedJarFile extends JarFile {
 		if (entry != null) {
 			return true;
 		}
-		synchronized (this) {
-			ensureOpen();
-			return this.resources.zipContent().hasEntry(null, name);
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.hasEntry(null, name);
 	}
 
 	private NestedJarEntry getNestedJarEntry(String name) {
@@ -291,10 +285,8 @@ public class NestedJarFile extends JarFile {
 	}
 
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
-		synchronized (this) {
-			ensureOpen();
-			return this.resources.zipContent().getEntry(namePrefix, name);
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.getEntry(namePrefix, name);
 	}
 
 	private ManifestInfo getManifestInfo() {
@@ -302,10 +294,8 @@ public class NestedJarFile extends JarFile {
 		if (manifestInfo != null) {
 			return manifestInfo;
 		}
-		synchronized (this) {
-			ensureOpen();
-			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
-		}
+		ZipContent zipContent = ensureOpen();
+		manifestInfo = zipContent.getInfo(ManifestInfo.class, this::getManifestInfo);
 		this.manifestInfo = manifestInfo;
 		return manifestInfo;
 	}
@@ -331,11 +321,8 @@ public class NestedJarFile extends JarFile {
 		if (metaInfVersionsInfo != null) {
 			return metaInfVersionsInfo;
 		}
-		synchronized (this) {
-			ensureOpen();
-			metaInfVersionsInfo = this.resources.zipContent()
-				.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
-		}
+		ZipContent zipContent = ensureOpen();
+		metaInfVersionsInfo = zipContent.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
 		this.metaInfVersionsInfo = metaInfVersionsInfo;
 		return metaInfVersionsInfo;
 	}
@@ -373,17 +360,15 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public String getComment() {
-		synchronized (this) {
-			ensureOpen();
-			return this.resources.zipContent().getComment();
-		}
+		ZipContent zipContent = ensureOpen();
+		return zipContent.getComment();
 	}
 
 	@Override
 	public int size() {
-		synchronized (this) {
-			ensureOpen();
-			return this.resources.zipContent().size();
+		synchronized (this) { // consistent with superclass.
+			ZipContent zipContent = ensureOpen();
+			return zipContent.size();
 		}
 	}
 
@@ -409,13 +394,21 @@ public class NestedJarFile extends JarFile {
 		return this.name;
 	}
 
-	private void ensureOpen() {
+	/**
+	 * Ensures the jar is open and that there is a {@link ZipContent} instance available.
+	 * @return the ZipContent instance - never {@code null}.
+	 * @throws IllegalStateException if the jar is closed or the {@link ZipContent} is
+	 * null.
+	 */
+	private ZipContent ensureOpen() {
 		if (this.closed) {
 			throw new IllegalStateException("Zip file closed");
 		}
-		if (this.resources.zipContent() == null) {
+		ZipContent zipContent = this.resources.zipContent();
+		if (zipContent == null) {
 			throw new IllegalStateException("The object is not initialized.");
 		}
+		return zipContent;
 	}
 
 	/**
@@ -677,10 +670,8 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
 			if (this.cursor < this.zipContent.size()) {
-				synchronized (NestedJarFile.this) {
-					ensureOpen();
-					action.accept(this.zipContent.getEntry(this.cursor++));
-				}
+				ensureOpen();
+				action.accept(this.zipContent.getEntry(this.cursor++));
 				return true;
 			}
 			return false;

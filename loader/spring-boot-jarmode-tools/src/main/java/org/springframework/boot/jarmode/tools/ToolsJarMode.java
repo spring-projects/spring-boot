@@ -65,7 +65,7 @@ public class ToolsJarMode implements JarMode {
 	}
 
 	static List<Command> getCommands(Context context) {
-		return List.of(new ExtractCommand(context), new ListLayersCommand(context));
+		return List.of(new ExtractCommand(context), new ListLayersCommand(context), new SbomCommand(context));
 	}
 
 }

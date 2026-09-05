@@ -443,6 +443,22 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	void useRfcForwardHeader() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setUseRfcForwardHeader(true);
+		assertRfcForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		factory.setUseRfcForwardHeader(true);
+		assertForwardHeaderIsUsed(factory);
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
+	}
+
+	@Test
 	void defaultThreadPool() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setThreadPool(null);

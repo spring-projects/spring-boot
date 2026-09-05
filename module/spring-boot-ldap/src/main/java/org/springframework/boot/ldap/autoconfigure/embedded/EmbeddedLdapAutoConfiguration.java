@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -30,6 +31,7 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.OperationType;
 import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 import org.jspecify.annotations.Nullable;
@@ -50,6 +52,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapProperties.Ssl;
@@ -70,7 +73,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -80,6 +82,8 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
  * @author Raja Kolli
+ * @author Moritz Halbritter
+ * @author Sean Xu
  * @since 4.0.0
  */
 @AutoConfiguration(before = LdapAutoConfiguration.class)
@@ -109,6 +113,11 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			config.addAdditionalBindCredentials(username, password);
 		}
+		Set<OperationType> authenticationRequiredOperationTypes = this.embeddedProperties
+			.getAuthenticationRequiredOperationTypes();
+		if (!authenticationRequiredOperationTypes.isEmpty()) {
+			config.setAuthenticationRequiredOperationTypes(authenticationRequiredOperationTypes);
+		}
 		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
 		this.server = new InMemoryDirectoryServer(config);
@@ -132,11 +141,14 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {
 		Ssl ssl = this.embeddedProperties.getSsl();
-		if (ssl.isEnabled() && StringUtils.hasLength(ssl.getBundle())) {
-			Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
-			return sslBundles.getBundle(ssl.getBundle());
+		if (!ssl.isEnabled()) {
+			return null;
 		}
-		return null;
+		String bundle = ssl.getBundle();
+		Assert.state(StringUtils.hasLength(bundle), "SSL is enabled but no SSL bundle has been set. "
+				+ "An SSL bundle providing the server's certificate and private key is required for LDAPS");
+		Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+		return sslBundles.getBundle(bundle);
 	}
 
 	private void setSchema(InMemoryDirectoryServerConfig config) {
@@ -239,19 +251,11 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 		@Bean
 		@DependsOn("directoryServer")
-		@ConditionalOnMissingBean
-		LdapContextSource ldapContextSource(Environment environment, LdapProperties properties,
-				EmbeddedLdapProperties embeddedProperties) {
-			LdapContextSource source = new LdapContextSource();
-			source.setBase(properties.getBase());
-			String username = embeddedProperties.getCredential().getUsername();
-			String password = embeddedProperties.getCredential().getPassword();
-			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-				source.setUserDn(username);
-				source.setPassword(password);
-			}
-			source.setUrls(properties.determineUrls(environment));
-			return source;
+		@ConditionalOnMissingBean(LdapConnectionDetails.class)
+		EmbeddedLdapConnectionDetails embeddedLdapConnectionDetails(Environment environment, LdapProperties properties,
+				EmbeddedLdapProperties embeddedProperties, ObjectProvider<SslBundles> sslBundles) {
+			return new EmbeddedLdapConnectionDetails(environment, properties, embeddedProperties,
+					sslBundles.getIfAvailable());
 		}
 
 	}

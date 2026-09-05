@@ -35,7 +35,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @see WebApplicationContext
  */
 public interface AssertableWebApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>, ConfigurableWebApplicationContext {
+		extends ApplicationContextAssertProvider<AssertableWebApplicationContext, ConfigurableWebApplicationContext>,
+		ConfigurableWebApplicationContext {
 
 	/**
 	 * Factory method to create a new {@link AssertableWebApplicationContext} instance.

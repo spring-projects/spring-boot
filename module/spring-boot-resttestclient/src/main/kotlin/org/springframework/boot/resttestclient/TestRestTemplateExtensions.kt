@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION", "REMOVAL")
+
 package org.springframework.boot.resttestclient
 
 import org.springframework.core.ParameterizedTypeReference
@@ -32,7 +34,10 @@ import java.net.URI
  *
  * @author Sebastien Deleuze
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * {@link org.springframework.test.web.servlet.client.RestTestClient}
  */
+@Deprecated(message = "in favor of RestTestClient", level = DeprecationLevel.ERROR)
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, vararg uriVariables: Any): T? =
 		getForObject(url, T::class.java, *uriVariables)

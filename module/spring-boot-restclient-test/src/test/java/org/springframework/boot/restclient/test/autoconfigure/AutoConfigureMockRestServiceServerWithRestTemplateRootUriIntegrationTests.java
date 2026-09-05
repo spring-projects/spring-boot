@@ -40,9 +40,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * {@link RestTemplate} configured with a root URI.
  *
  * @author Andy Wilkinson
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @SpringBootTest
 @AutoConfigureMockRestServiceServer
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class AutoConfigureMockRestServiceServerWithRestTemplateRootUriIntegrationTests {
 
 	@Autowired

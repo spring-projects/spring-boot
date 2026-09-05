@@ -41,9 +41,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("micrometer-core-*.jar")
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestTemplateObservationAutoConfigurationWithoutMetricsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

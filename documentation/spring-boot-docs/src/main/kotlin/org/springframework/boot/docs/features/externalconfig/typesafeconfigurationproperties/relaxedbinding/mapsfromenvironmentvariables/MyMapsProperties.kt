@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties("my.props")
 class MyMapsProperties {
 
-	val values: Map<String, String> = HashMap()
+	val values: Map<String, String> = LinkedHashMap()
 
 }
 

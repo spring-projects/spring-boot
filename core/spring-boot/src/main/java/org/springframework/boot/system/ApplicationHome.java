@@ -23,6 +23,7 @@ import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
@@ -164,11 +165,31 @@ public class ApplicationHome {
 	}
 
 	/**
+	 * Returns the path of the underlying source used to find the home directory. This is
+	 * usually the jar file or a directory. Can return {@code null} if the source cannot
+	 * be determined.
+	 * @return the underlying source path or {@code null}
+	 * @since 4.2.0
+	 */
+	public @Nullable Path getSourcePath() {
+		return (this.source != null) ? this.source.toPath() : null;
+	}
+
+	/**
 	 * Returns the application home directory.
 	 * @return the home directory (never {@code null})
 	 */
 	public File getDir() {
 		return this.dir;
+	}
+
+	/**
+	 * Returns the path of the application home directory.
+	 * @return the home path (never {@code null})
+	 * @since 4.2.0
+	 */
+	public Path getPath() {
+		return this.dir.toPath();
 	}
 
 	@Override

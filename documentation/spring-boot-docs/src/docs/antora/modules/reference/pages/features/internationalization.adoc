@@ -23,3 +23,5 @@ TIP: The configprop:spring.messages.basename[] property supports a list of locat
 The configprop:spring.messages.common-messages[] property supports a list of property file resources.
 
 See javadoc:org.springframework.boot.autoconfigure.context.MessageSourceProperties[] for more supported options.
+
+If you need to use a different implementation of javadoc:org.springframework.context.support.AbstractResourceBasedMessageSource[], Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.context.ResourceBasedMessageSourceConfigurer[] bean that you can use to apply the same settings as the auto-configured message source.

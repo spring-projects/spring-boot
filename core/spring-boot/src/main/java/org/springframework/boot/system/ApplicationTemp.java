@@ -117,7 +117,12 @@ public class ApplicationTemp {
 		return createDirectory(getPath().resolve(subDir)).toFile();
 	}
 
-	private Path getPath() {
+	/**
+	 * Return the path to be used for application specific temp files.
+	 * @return the application temp path
+	 * @since 4.2.0
+	 */
+	public Path getPath() {
 		if (this.path == null) {
 			this.pathLock.lock();
 			try {

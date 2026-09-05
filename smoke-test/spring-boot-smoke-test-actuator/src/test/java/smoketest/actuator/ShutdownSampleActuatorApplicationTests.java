@@ -21,18 +21,16 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,35 +41,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(classes = { ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
 		SampleActuatorApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestRestTemplate
+@AutoConfigureRestTestClient
 class ShutdownSampleActuatorApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private RestTestClient restTestClient;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testHome() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).containsEntry("message", "Hello Phil");
+		this.restTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat(body).containsEntry("message", "Hello Phil"));
 	}
 
 	@Test
 	@DirtiesContext
+	@SuppressWarnings("unchecked")
 	void testShutdown() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.withBasicAuth("user", "password")
-			.postForEntity("/actuator/shutdown", null, Map.class));
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body).isNotNull();
-		assertThat(((String) body.get("message"))).contains("Shutting down");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		this.restTestClient.post()
+			.uri("/actuator/shutdown")
+			.headers((headers) -> headers.setBasicAuth("user", "password"))
+			.exchangeSuccessfully()
+			.expectBody(Map.class)
+			.value((body) -> assertThat((String) body.get("message")).contains("Shutting down"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

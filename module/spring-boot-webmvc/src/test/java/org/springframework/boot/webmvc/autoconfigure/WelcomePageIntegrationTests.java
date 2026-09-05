@@ -16,14 +16,11 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
-import java.net.URI;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -32,8 +29,7 @@ import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +49,7 @@ class WelcomePageIntegrationTests {
 				WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
 
-	private final TestRestTemplate template = new TestRestTemplate();
+	private final RestTestClient client = RestTestClient.bindToServer().build();
 
 	@Test
 	void contentStrategyWithWelcomePage() {
@@ -61,12 +57,12 @@ class WelcomePageIntegrationTests {
 			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
 			assertThat(webServer).isNotNull();
 			int port = webServer.getPort();
-			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
+			this.client.get()
+				.uri("http://localhost:" + port + "/")
 				.header("Accept", MediaType.ALL.toString())
-				.build();
-			ResponseEntity<String> content = this.template.exchange(entity, String.class);
-			assertThat(content.getBody()).contains("custom welcome page");
-			assertThat(content.getStatusCode()).isEqualTo(HttpStatus.OK);
+				.exchangeSuccessfully()
+				.expectBody(String.class)
+				.value((body) -> assertThat(body).contains("custom welcome page"));
 		});
 	}
 
@@ -76,11 +72,12 @@ class WelcomePageIntegrationTests {
 			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
 			assertThat(webServer).isNotNull();
 			int port = webServer.getPort();
-			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
+			this.client.get()
+				.uri("http://localhost:" + port + "/")
 				.header("Accept", "spring/boot")
-				.build();
-			ResponseEntity<String> content = this.template.exchange(entity, String.class);
-			assertThat(content.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.NOT_ACCEPTABLE);
 		});
 	}
 

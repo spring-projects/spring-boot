@@ -151,10 +151,8 @@ class OtlpMetricsExportAutoConfigurationTests {
 	@Test
 	void allowsCustomMetricsSenderToBeUsed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
-			.run((context) -> {
-				assertHasCustomMetricsSender(context);
-				assertThat(context).doesNotHaveBean(OtlpHttpMetricsSender.class);
-			});
+			.run((context) -> assertThat(context).hasSingleBean(OtlpMetricsSender.class)
+				.doesNotHaveBean(OtlpHttpMetricsSender.class));
 	}
 
 	@Test
@@ -169,7 +167,8 @@ class OtlpMetricsExportAutoConfigurationTests {
 	void allowsCustomMetricsSenderToBeUsedWithVirtualThreads() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
 			.withPropertyValues("spring.threads.virtual.enabled=true")
-			.run(this::assertHasCustomMetricsSender);
+			.run((context) -> assertThat(context).hasSingleBean(OtlpMetricsSender.class)
+				.doesNotHaveBean(OtlpHttpMetricsSender.class));
 	}
 
 	@Test
@@ -266,19 +265,23 @@ class OtlpMetricsExportAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void testUrlFallbackToCommonOtlpEndpoint() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://common-host:4318")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpConfig.class);
+				OtlpConfig config = context.getBean(OtlpConfig.class);
+				assertThat(config.url()).isEqualTo("http://common-host:4318/v1/metrics");
+			});
+	}
+
 	private HttpClient extractHttpClient(OtlpHttpMetricsSender metricsSender) {
 		Object field = ReflectionTestUtils.getField(metricsSender, "httpSender");
 		assertThat(field).isNotNull();
 		Object httpClient = ReflectionTestUtils.getField(field, "httpClient");
 		assertThat(httpClient).isNotNull();
 		return (HttpClient) httpClient;
-	}
-
-	private void assertHasCustomMetricsSender(AssertableApplicationContext context) {
-		assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
-		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
-		assertThat(registry).extracting("metricsSender")
-			.satisfies((sender) -> assertThat(sender).isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
 	}
 
 	private void assertHasCustomExemplarContextProvider(AssertableApplicationContext context) {

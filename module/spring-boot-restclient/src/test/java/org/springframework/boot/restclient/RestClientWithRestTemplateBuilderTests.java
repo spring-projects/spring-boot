@@ -31,7 +31,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for building a {@link RestClient} from a {@link RestTemplateBuilder}.
  *
  * @author Scott Frederick
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestClientWithRestTemplateBuilderTests {
 
 	@Test

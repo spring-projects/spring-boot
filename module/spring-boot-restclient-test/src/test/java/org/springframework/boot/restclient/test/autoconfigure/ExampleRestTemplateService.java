@@ -27,8 +27,11 @@ import org.springframework.web.client.RestTemplate;
  * {@link RestClientTest @RestClientTest} tests.
  *
  * @author Phillip Webb
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @Service
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class ExampleRestTemplateService {
 
 	private final RestTemplate restTemplate;

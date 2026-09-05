@@ -80,8 +80,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Ilya Lukyanovich
  * @author Brian Clozel
  * @author Yanming Zhou
+ * @deprecated since 4.2.0 for removal in 4.4.0
  */
 @ExtendWith(MockitoExtension.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class RestTemplateBuilderTests {
 
 	private final RestTemplateBuilder builder = new RestTemplateBuilder();

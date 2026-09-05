@@ -26,8 +26,10 @@ import brave.Span;
 import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
+import brave.baggage.BaggageFields;
 import brave.baggage.BaggagePropagation;
 import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
+import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
@@ -256,6 +258,20 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
 			.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
+	}
+
+	/**
+	 * Guards the assumption behind the {@code clear()} call that
+	 * {@code BravePropagationConfigurations} makes when the MDC keys have been
+	 * customized: if Brave ever adds another default correlation field, this fails
+	 * instead of that field silently disappearing from the MDC of applications using
+	 * custom keys.
+	 */
+	@Test
+	void shouldOnlyHaveTraceIdAndSpanIdCorrelationFieldsByDefaultInBrave() {
+		assertThat(MDCScopeDecorator.newBuilder().configs())
+			.extracting((config) -> ((SingleCorrelationField) config).name())
+			.containsExactlyInAnyOrder(BaggageFields.TRACE_ID.name(), BaggageFields.SPAN_ID.name());
 	}
 
 	@Test

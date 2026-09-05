@@ -23,8 +23,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
@@ -35,7 +33,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 /**
  * {@link Configuration Configuration} for a reactive web server.
@@ -53,13 +50,6 @@ public class ReactiveWebServerConfiguration {
 	ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	ForwardedHeaderTransformer forwardedHeaderTransformer() {
-		return new ForwardedHeaderTransformer();
 	}
 
 	/**

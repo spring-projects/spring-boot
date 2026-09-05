@@ -18,13 +18,13 @@ package org.springframework.boot.webmvc.autoconfigure.error;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.error.ErrorPageRegistrar;
@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,26 +46,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.mvc.servlet.path:/spring/")
+@AutoConfigureRestTestClient
 @DirtiesContext
 class RemappedErrorViewIntegrationTests {
 
-	@LocalServerPort
-	private int port;
-
-	private final TestRestTemplate template = new TestRestTemplate();
+	@Autowired
+	private RestTestClient client;
 
 	@Test
 	void directAccessToErrorPage() {
-		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/error", String.class);
-		assertThat(content).contains("error");
-		assertThat(content).contains("999");
+		this.client.get()
+			.uri("/spring/error")
+			.exchange()
+			.expectBody(String.class)
+			.value((content) -> assertThat(content).contains("error").contains("999"));
 	}
 
 	@Test
 	void forwardToErrorPage() {
-		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/", String.class);
-		assertThat(content).contains("error");
-		assertThat(content).contains("500");
+		this.client.get()
+			.uri("/spring/")
+			.exchange()
+			.expectBody(String.class)
+			.value((content) -> assertThat(content).contains("error").contains("500"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -80,6 +80,12 @@ class ApplicationTempTests {
 	}
 
 	@Test
+	void getPathReturnsSamePathAsGetDir() {
+		ApplicationTemp temp = new ApplicationTemp();
+		assertThat(temp.getPath()).isEqualTo(temp.getDir().toPath());
+	}
+
+	@Test
 	void posixPermissions() throws IOException {
 		ApplicationTemp temp = new ApplicationTemp();
 		Path path = temp.getDir().toPath();

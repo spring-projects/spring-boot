@@ -53,7 +53,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	/**
 	 * Compression mode to use when exporting metrics.
 	 */
-	private CompressionMode compressionMode = CompressionMode.NONE;
+	private @Nullable CompressionMode compressionMode;
 
 	/**
 	 * Headers for the exported metrics.
@@ -109,11 +109,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
-	public CompressionMode getCompressionMode() {
+	public @Nullable CompressionMode getCompressionMode() {
 		return this.compressionMode;
 	}
 
-	public void setCompressionMode(CompressionMode compressionMode) {
+	public void setCompressionMode(@Nullable CompressionMode compressionMode) {
 		this.compressionMode = compressionMode;
 	}
 

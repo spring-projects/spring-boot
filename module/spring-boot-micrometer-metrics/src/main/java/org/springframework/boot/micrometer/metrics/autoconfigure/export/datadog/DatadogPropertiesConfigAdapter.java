@@ -50,6 +50,11 @@ class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	}
 
 	@Override
+	public boolean compress() {
+		return obtain(DatadogProperties::isCompress, DatadogConfig.super::compress);
+	}
+
+	@Override
 	public @Nullable String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}

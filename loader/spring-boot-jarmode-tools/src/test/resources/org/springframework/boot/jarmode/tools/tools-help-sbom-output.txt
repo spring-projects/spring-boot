@@ -1,0 +1,7 @@
+Print the SBOM from the jar
+
+Usage:
+  java -Djarmode=tools -jar test.jar sbom [options]
+
+Options:
+  --destination string  File to write the SBOM to. Defaults to printing the SBOM to the console
