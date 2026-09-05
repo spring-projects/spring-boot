@@ -1,3 +1,7 @@
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.webmvc.autoconfigure.NoServletContextFailureAnalyzer
+
 # Template Availability Providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.webmvc.autoconfigure.JspTemplateAvailabilityProvider
