@@ -304,9 +304,9 @@ class NestedJarFileTests {
 		given(cleaner.register(any(), action.capture())).willReturn(cleanable);
 		try (NestedJarFile jar = new NestedJarFile(this.file, null, null, false, cleaner)) {
 			Object channel = Extractors.byName("resources.zipContent.data.fileAccess").apply(jar);
-			assertThat(channel).extracting("referenceCount.plain").isEqualTo(1);
+			assertThat(channel).extracting("referenceCount").isEqualTo(1);
 			action.getValue().run();
-			assertThat(channel).extracting("referenceCount.plain").isEqualTo(0);
+			assertThat(channel).extracting("referenceCount").isEqualTo(0);
 		}
 	}
 
