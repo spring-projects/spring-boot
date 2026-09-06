@@ -22,6 +22,7 @@ import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Wrapped;
 import org.jspecify.annotations.Nullable;
+import reactor.pool.introspection.micrometer.Micrometer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -30,8 +31,11 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.r2dbc.metrics.ConnectionPoolMetrics;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics on all available
@@ -39,6 +43,7 @@ import org.springframework.boot.r2dbc.metrics.ConnectionPoolMetrics;
  *
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
+ * @author Goutam Adwant
  * @since 4.0.0
  */
 @AutoConfiguration(after = R2dbcAutoConfiguration.class,
@@ -66,6 +71,18 @@ public final class ConnectionPoolMetricsAutoConfiguration {
 			return extractPool(((Wrapped<?>) candidate).unwrap());
 		}
 		return null;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Micrometer.class)
+	static class PoolMetricsRecorderConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "r2dbcPoolMetricsRecorder")
+		ConnectionPoolMetricsRecorder r2dbcPoolMetricsRecorder() {
+			return new ConnectionPoolMetricsRecorder();
+		}
+
 	}
 
 }

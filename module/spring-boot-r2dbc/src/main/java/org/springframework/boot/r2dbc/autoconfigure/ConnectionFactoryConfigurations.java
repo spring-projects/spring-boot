@@ -22,8 +22,10 @@ import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
 import org.jspecify.annotations.Nullable;
+import reactor.pool.PoolMetricsRecorder;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,6 +52,7 @@ import org.springframework.util.StringUtils;
 /**
  * Actual {@link ConnectionFactory} configurations.
  *
+ * @author Goutam Adwant
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Rodolpho S. Couto
@@ -99,7 +102,8 @@ abstract class ConnectionFactoryConfigurations {
 			ConnectionPool connectionFactory(R2dbcProperties properties,
 					ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers,
-					ObjectProvider<ConnectionFactoryDecorator> decorators) {
+					ObjectProvider<ConnectionFactoryDecorator> decorators,
+					@Qualifier("r2dbcPoolMetricsRecorder") ObjectProvider<PoolMetricsRecorder> metricsRecorders) {
 				ConnectionFactory connectionFactory = createConnectionFactory(properties,
 						connectionDetails.getIfAvailable(), resourceLoader.getClassLoader(),
 						customizers.orderedStream().toList(), decorators.orderedStream().toList());
@@ -117,6 +121,7 @@ abstract class ConnectionFactoryConfigurations {
 				map.from(pool.getValidationDepth()).to(builder::validationDepth);
 				map.from(pool.getMinIdle()).to(builder::minIdle);
 				map.from(pool.getMaxValidationTime()).to(builder::maxValidationTime);
+				metricsRecorders.ifUnique(builder::metricsRecorder);
 				return new ConnectionPool(builder.build());
 			}
 
