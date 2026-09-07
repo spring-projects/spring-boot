@@ -44,7 +44,6 @@ import static org.mockito.BDDMockito.then;
 class DefaultPropertiesPropertySourceTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Consumer<DefaultPropertiesPropertySource> action;
 
 	@Test

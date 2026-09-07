@@ -71,7 +71,6 @@ import static org.mockito.Mockito.never;
 class DockerComposeLifecycleManagerTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private DockerComposeFile dockerComposeFile;

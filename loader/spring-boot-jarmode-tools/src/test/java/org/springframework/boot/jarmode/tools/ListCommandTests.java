@@ -48,11 +48,9 @@ import static org.mockito.BDDMockito.given;
 class ListCommandTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Context context;
 
 	private ListCommand command;

@@ -38,7 +38,6 @@ class RunArguments {
 		this(parseArgs(arguments));
 	}
 
-	@SuppressWarnings("NullAway") // Maven can't handle nullable arrays
 	RunArguments(@Nullable String[] args) {
 		this((args != null) ? Arrays.asList(args) : null);
 	}

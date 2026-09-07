@@ -45,11 +45,9 @@ import static org.mockito.Mockito.mock;
 class RabbitHealthIndicatorTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private RabbitTemplate rabbitTemplate;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private Channel channel;
 
 	@Test

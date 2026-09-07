@@ -49,7 +49,6 @@ class RootUriTemplateHandlerTests {
 	private URI uri;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	public UriTemplateHandler delegate;
 
 	public UriTemplateHandler handler;

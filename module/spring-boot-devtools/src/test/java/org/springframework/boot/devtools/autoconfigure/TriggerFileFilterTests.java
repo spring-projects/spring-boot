@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class TriggerFileFilterTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

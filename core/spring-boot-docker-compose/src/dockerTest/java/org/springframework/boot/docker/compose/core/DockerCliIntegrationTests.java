@@ -59,7 +59,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DockerCliIntegrationTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	private static Path tempDir;
 
 	@Test

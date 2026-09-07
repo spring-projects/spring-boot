@@ -52,7 +52,6 @@ import static org.mockito.BDDMockito.then;
 class HttpRestartServerTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private RestartServer delegate;
 
 	private HttpRestartServer server;

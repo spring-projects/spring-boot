@@ -69,8 +69,7 @@ public class CacheMetricsRegistrar {
 		return false;
 	}
 
-	// Lambda isn't detected with the correct nullability
-	@SuppressWarnings({ "unchecked", "NullAway" })
+	@SuppressWarnings("unchecked")
 	private @Nullable MeterBinder getMeterBinder(Cache cache, Tags tags) {
 		Tags cacheTags = tags.and(getAdditionalTags(cache));
 		return LambdaSafe.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)

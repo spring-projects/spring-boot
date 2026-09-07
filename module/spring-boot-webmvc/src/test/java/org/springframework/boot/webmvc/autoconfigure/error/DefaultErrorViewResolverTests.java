@@ -62,7 +62,6 @@ class DefaultErrorViewResolverTests {
 	private DefaultErrorViewResolver resolver;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private TemplateAvailabilityProvider templateAvailabilityProvider;
 
 	private Resources resourcesProperties;

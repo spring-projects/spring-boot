@@ -120,7 +120,6 @@ class LoggingApplicationListenerTests {
 	private final GenericApplicationContext context = new GenericApplicationContext();
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	public Path tempDir;
 
 	private File logFile;

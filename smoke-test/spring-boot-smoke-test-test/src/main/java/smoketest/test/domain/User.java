@@ -39,10 +39,8 @@ public class User {
 	private @Nullable Long id;
 
 	@Column(unique = true)
-	@SuppressWarnings("NullAway.Init")
 	private String username;
 
-	@SuppressWarnings("NullAway.Init")
 	private VehicleIdentificationNumber vin;
 
 	protected User() {

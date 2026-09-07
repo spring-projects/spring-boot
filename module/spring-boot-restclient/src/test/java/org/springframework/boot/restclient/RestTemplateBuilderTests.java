@@ -90,11 +90,9 @@ class RestTemplateBuilderTests {
 	private final RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private HttpMessageConverter<Object> messageConverter;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestInterceptor interceptor;
 
 	@Test

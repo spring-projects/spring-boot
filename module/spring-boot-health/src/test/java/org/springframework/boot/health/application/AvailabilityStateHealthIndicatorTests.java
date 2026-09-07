@@ -41,7 +41,6 @@ import static org.mockito.BDDMockito.given;
 class AvailabilityStateHealthIndicatorTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ApplicationAvailability applicationAvailability;
 
 	@Test

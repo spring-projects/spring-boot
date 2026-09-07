@@ -46,7 +46,6 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 	private final WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ListableBeanFactory beanFactory;
 
 	@BeforeEach

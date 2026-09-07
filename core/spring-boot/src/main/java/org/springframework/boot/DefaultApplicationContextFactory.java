@@ -38,7 +38,6 @@ import org.springframework.lang.Contract;
 class DefaultApplicationContextFactory implements ApplicationContextFactory {
 
 	// Method reference is not detected with correct nullability
-	@SuppressWarnings("NullAway")
 	@Override
 	public @Nullable Class<? extends ConfigurableEnvironment> getEnvironmentType(
 			@Nullable WebApplicationType webApplicationType) {
@@ -46,14 +45,12 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 	}
 
 	// Method reference is not detected with correct nullability
-	@SuppressWarnings("NullAway")
 	@Override
 	public @Nullable ConfigurableEnvironment createEnvironment(@Nullable WebApplicationType webApplicationType) {
 		return getFromSpringFactories(webApplicationType, ApplicationContextFactory::createEnvironment, null);
 	}
 
 	// Method reference is not detected with correct nullability
-	@SuppressWarnings("NullAway")
 	@Override
 	public ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType) {
 		try {

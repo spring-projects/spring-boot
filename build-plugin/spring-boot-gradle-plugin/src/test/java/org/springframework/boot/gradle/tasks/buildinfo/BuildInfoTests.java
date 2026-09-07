@@ -43,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThatException;
 class BuildInfoTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

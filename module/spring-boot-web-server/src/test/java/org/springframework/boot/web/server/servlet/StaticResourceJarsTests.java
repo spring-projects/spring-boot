@@ -47,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class StaticResourceJarsTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

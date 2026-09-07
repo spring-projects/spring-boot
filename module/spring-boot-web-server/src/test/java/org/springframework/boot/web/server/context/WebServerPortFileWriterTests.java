@@ -44,7 +44,6 @@ import static org.mockito.Mockito.mock;
 class WebServerPortFileWriterTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@BeforeEach
