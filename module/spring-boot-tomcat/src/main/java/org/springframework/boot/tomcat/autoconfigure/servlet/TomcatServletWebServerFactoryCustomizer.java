@@ -29,7 +29,6 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Brian Clozel
  * @author Phillip Webb
- * @author Tiziano Basile
  */
 class TomcatServletWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
