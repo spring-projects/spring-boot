@@ -193,7 +193,7 @@ class NestedJarFileTests {
 
 	@Test
 	void getEntryWhenMultiReleaseEntryReturnsEntry() throws IOException {
-		File multiReleaseFile = new File(this.tempDir, "mutli.zip");
+		File multiReleaseFile = new File(this.tempDir, "multi.zip");
 		try (ZipContent zip = ZipContent.open(this.file.toPath(), "multi-release.jar")) {
 			try (InputStream in = zip.openRawZipData().asInputStream()) {
 				try (FileOutputStream out = new FileOutputStream(multiReleaseFile)) {

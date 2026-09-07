@@ -459,7 +459,7 @@ For more details, please see {url-spring-grpc-docs}/server.html#_declarative_sec
 ==== Servlet Container Based Servers
 
 If your gRPC server is running xref:web/servlet.adoc[within a standard Servlet Container], you can use typical xref:web/spring-security.adoc#web.security.spring-mvc[web security configuration] to secure your application.
-Spring Boot will auto-configre javadoc:org.springframework.boot.grpc.server.autoconfigure.GrpcServerExecutorProvider[] and javadoc:org.springframework.grpc.server.security.SecurityContextServerInterceptor[] beans to ensure that Spring Security works correctly.
+Spring Boot will auto-configure javadoc:org.springframework.boot.grpc.server.autoconfigure.GrpcServerExecutorProvider[] and javadoc:org.springframework.grpc.server.security.SecurityContextServerInterceptor[] beans to ensure that Spring Security works correctly.
 
 Cross-Site Request Forgery (CSRF) protection is incompatible with the gRPC protocol and will be disabled by default for all gRPC requests.
 If you prefer to configure your own CSRF protection, you can switch this off by setting configprop:spring.grpc.server.security.csrf.enabled[] to `false`.

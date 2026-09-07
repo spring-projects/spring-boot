@@ -252,7 +252,7 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBackgroundBootstrapingAndSingleAsyncTaksExecutorConfiguresBackgroundExecutor() {
+	void whenBackgroundBootstrappingAndSingleAsyncTaskExecutorConfiguresBackgroundExecutor() {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.withUserConfiguration(SingleAsyncTaskExecutorConfiguration.class)
 			.run((context) -> assertThat(
@@ -261,7 +261,7 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBackgroundBootstrapingAndApplicationTaksExecutorConfiguresBackgroundExecutor() {
+	void whenBackgroundBootstrappingAndApplicationTaskExecutorConfiguresBackgroundExecutor() {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.withUserConfiguration(MultipleAsyncTaskExecutorsConfiguration.class,
 					ApplicationTaskExecutorConfiguration.class)
@@ -271,7 +271,7 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBackgroundBootstrapingAndMissingTaksExecutorThrowsException() {
+	void whenBackgroundBootstrappingAndMissingTaskExecutorThrowsException() {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.run((context) -> assertThat(context).getFailure()
 				.rootCause()
@@ -281,7 +281,7 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBackgroundBootstrapingAndMultipleTaksExecutorThrowsException() {
+	void whenBackgroundBootstrappingAndMultipleTaskExecutorThrowsException() {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.withUserConfiguration(MultipleAsyncTaskExecutorsConfiguration.class)
 			.run((context) -> assertThat(context).getFailure()
@@ -292,7 +292,7 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void whenBackgroundBootstrapingAndCustomizedBackgroundExecutorThrowsException() {
+	void whenBackgroundBootstrappingAndCustomizedBackgroundExecutorThrowsException() {
 		this.contextRunner.withPropertyValues("spring.jpa.bootstrap=async")
 			.withBean(EntityManagerFactoryBuilderCustomizer.class, this::bootstrapExecutorCustomizer)
 			.run((context) -> assertThat(

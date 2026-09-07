@@ -94,7 +94,7 @@ class GrpcServerHealthSchedulerTests {
 		HealthStatusManager statusManager = mock();
 		TaskScheduler taskScheduler = mock();
 		GenericWebApplicationContext context = new GenericWebApplicationContext();
-		context.registerBean("registartion", GrpcServletRegistration.class, () -> mock());
+		context.registerBean("registration", GrpcServletRegistration.class, () -> mock());
 		context.refresh();
 		new GrpcServerHealthScheduler(context, serverHealth, statusManager, taskScheduler, Duration.ofSeconds(10),
 				Duration.ofSeconds(30));

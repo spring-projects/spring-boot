@@ -100,7 +100,7 @@ public enum TestcontainersStartup {
 	}
 
 	/**
-	 * Start the given {@link Startable} unless is's detected as already running.
+	 * Start the given {@link Startable} unless it's detected as already running.
 	 * @param startable the startable to start
 	 * @since 3.4.1
 	 */

@@ -142,7 +142,7 @@ class JwtDecoderConfiguration {
 
 	private JwtDecoder supplyJwtDecoderByIssuerUri() {
 		String issuerUri = this.properties.getIssuerUri();
-		Assert.state(issuerUri != null, "No JWT issuer URI propery specified");
+		Assert.state(issuerUri != null, "No JWT issuer URI property specified");
 		JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withIssuerLocation(issuerUri);
 		return buildJwkSetUriJwtDecoder(builder);
 	}

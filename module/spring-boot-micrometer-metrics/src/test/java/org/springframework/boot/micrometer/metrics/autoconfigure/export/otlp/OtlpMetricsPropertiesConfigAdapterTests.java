@@ -227,7 +227,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void shouldUseApplicationGroupIfServiceNamspaceIsNotSet() {
+	void shouldUseApplicationGroupIfServiceNamespaceIsNotSet() {
 		this.environment.setProperty("spring.application.group", "alpha");
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.namespace", "alpha");
 	}

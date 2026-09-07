@@ -106,7 +106,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("uptime").description("Process uptime, if available.")
 					.optional()
 					.type(JsonFieldType.STRING),
-				fieldWithPath("startTime").description("Process start time, if availabe.")
+				fieldWithPath("startTime").description("Process start time, if available.")
 					.optional()
 					.type(JsonFieldType.STRING),
 				fieldWithPath("currentTime").description("Current time known by the process.")

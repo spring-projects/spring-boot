@@ -412,14 +412,14 @@ class JavaConventions {
 			// https://github.com/spring-projects/spring-graphql/issues/1515
 			String group = details.getId().getGroup();
 			if ("org.springframework".equals(group) || "org.springframework.graphql".equals(group)) {
-				addDocumentaionVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
-				addDocumentaionVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
+				addDocumentationVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
+				addDocumentationVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
 			}
 		});
 	}
 
-	private void addDocumentaionVariant(Project project, ComponentMetadataDetails details, String name, String docsType,
-			String classifier) {
+	private void addDocumentationVariant(Project project, ComponentMetadataDetails details, String name,
+			String docsType, String classifier) {
 		ModuleVersionIdentifier id = details.getId();
 		String file = "%s-%s-%s.jar".formatted(id.getName(), id.getVersion(), classifier);
 		details.addVariant(name, (variant) -> {
