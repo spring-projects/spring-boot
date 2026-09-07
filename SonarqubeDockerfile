@@ -11,13 +11,7 @@ RUN mkdir -p /scripts && \
 set -e
 
 echo "=========================================="
-echo "🔨 GRADLE BUILD START"
-echo "=========================================="
-gradle clean build --no-daemon -x test 2>&1
-
-echo ""
-echo "=========================================="
-echo "🔍 SONARQUBE SCAN START"
+echo "🔍 SONARQUBE SCAN START (Skip Gradle Build)"
 echo "=========================================="
 gradle sonarqube \
   -Dsonar.host.url=${SONAR_HOST} \
@@ -28,7 +22,7 @@ gradle sonarqube \
 
 echo ""
 echo "=========================================="
-echo "✅ BUILD + SCAN COMPLETED"
+echo "✅ SCAN COMPLETED"
 echo "=========================================="
 BASH_SCRIPT
 
