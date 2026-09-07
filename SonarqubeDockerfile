@@ -1,13 +1,12 @@
 FROM gradle:7.6-jdk17
 
-# Install curl for API calls and git for version info
 RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . .
 
-# Create entrypoint script
-RUN cat > /entrypoint.sh << 'SCRIPT_EOF'
+RUN mkdir -p /scripts && \
+    cat > /scripts/build-and-scan.sh << 'BASH_SCRIPT'
 #!/bin/bash
 set -e
 
@@ -31,7 +30,8 @@ echo ""
 echo "=========================================="
 echo "✅ BUILD + SCAN COMPLETED"
 echo "=========================================="
-SCRIPT_EOF
-chmod +x /entrypoint.sh
+BASH_SCRIPT
 
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+RUN chmod +x /scripts/build-and-scan.sh
+
+ENTRYPOINT ["/scripts/build-and-scan.sh"]
