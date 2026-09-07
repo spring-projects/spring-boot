@@ -6,8 +6,9 @@ RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY . .
 
-# Entrypoint script runs Gradle build + SonarQube scan
-RUN echo '#!/bin/bash
+# Create entrypoint script
+RUN cat > /entrypoint.sh << 'SCRIPT_EOF'
+#!/bin/bash
 set -e
 
 echo "=========================================="
@@ -30,6 +31,7 @@ echo ""
 echo "=========================================="
 echo "✅ BUILD + SCAN COMPLETED"
 echo "=========================================="
-' > /entrypoint.sh && chmod +x /entrypoint.sh
+SCRIPT_EOF
+chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
