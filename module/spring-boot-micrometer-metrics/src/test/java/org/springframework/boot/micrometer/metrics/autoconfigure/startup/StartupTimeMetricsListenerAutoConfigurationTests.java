@@ -55,9 +55,9 @@ class StartupTimeMetricsListenerAutoConfigurationTests {
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), new String[0],
 					context.getSourceApplicationContext(), Duration.ofMillis(1500)));
-			TimeGauge startedTimeGage = registry.find("application.started.time").timeGauge();
-			assertThat(startedTimeGage).isNotNull();
-			assertThat(startedTimeGage.value(TimeUnit.MILLISECONDS)).isEqualTo(1500L);
+			TimeGauge startedTimeGauge = registry.find("application.started.time").timeGauge();
+			assertThat(startedTimeGauge).isNotNull();
+			assertThat(startedTimeGauge.value(TimeUnit.MILLISECONDS)).isEqualTo(1500L);
 			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), new String[0],
 					context.getSourceApplicationContext(), Duration.ofMillis(2000)));
 			TimeGauge readyTimeGage = registry.find("application.ready.time").timeGauge();

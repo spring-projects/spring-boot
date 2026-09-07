@@ -75,7 +75,7 @@ class JettyServletWebServerAutoConfigurationTests extends AbstractServletWebServ
 	}
 
 	@Test
-	void jettyWebSocketUpgradeFilterIsAddedToServletContex() {
+	void jettyWebSocketUpgradeFilterIsAddedToServletContext() {
 		this.serverRunner.run((context) -> {
 			ServletContext servletContext = context.getServletContext();
 			assertThat(servletContext).isNotNull();
