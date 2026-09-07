@@ -697,10 +697,10 @@ public final class ZipContent implements Closeable {
 		}
 
 		void detect(ZipCentralDirectoryFileHeaderRecord centralRecord, FileDataBlock data, long pos,
-				ByteBuffer loadeBuffer) throws IOException {
+				ByteBuffer loadedBuffer) throws IOException {
 			if (!this.detected) {
 				long filenamePos = pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-				if (centralRecord.fileNameLength() > this.buffer.capacity() && ZipString.startsWith(loadeBuffer, data,
+				if (centralRecord.fileNameLength() > this.buffer.capacity() && ZipString.startsWith(loadedBuffer, data,
 						filenamePos, centralRecord.fileNameLength(), META_INF) >= 0) {
 					this.buffer.clear();
 					data.readFully(this.buffer, filenamePos + centralRecord.fileNameLength() - this.buffer.capacity());
