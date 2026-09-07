@@ -1,0 +1,35 @@
+FROM gradle:7.6-jdk17
+
+# Install curl for API calls and git for version info
+RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . .
+
+# Entrypoint script runs Gradle build + SonarQube scan
+RUN echo '#!/bin/bash
+set -e
+
+echo "=========================================="
+echo "🔨 GRADLE BUILD START"
+echo "=========================================="
+gradle clean build --no-daemon -x test 2>&1
+
+echo ""
+echo "=========================================="
+echo "🔍 SONARQUBE SCAN START"
+echo "=========================================="
+gradle sonarqube \
+  -Dsonar.host.url=${SONAR_HOST} \
+  -Dsonar.login=${SONAR_TOKEN} \
+  -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+  -Dsonar.sourceEncoding=UTF-8 \
+  --no-daemon 2>&1
+
+echo ""
+echo "=========================================="
+echo "✅ BUILD + SCAN COMPLETED"
+echo "=========================================="
+' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
