@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TomcatServletWebServerFactoryCustomizer}.
  *
  * @author Phillip Webb
+ * @author Tiziano Basile
  */
 class TomcatServletWebServerFactoryCustomizerTests {
 
@@ -80,12 +81,20 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void useRelativeRedirectsCanBeConfigured() {
-		bind("server.tomcat.use-relative-redirects=true");
+	void useRelativeRedirectsDefaultsToTrue() {
 		assertThat(this.tomcatProperties.isUseRelativeRedirects()).isTrue();
 		TomcatWebServer server = customizeAndGetServer();
 		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getUseRelativeRedirects()).isTrue();
+	}
+
+	@Test
+	void useRelativeRedirectsCanBeDisabled() {
+		bind("server.tomcat.use-relative-redirects=false");
+		assertThat(this.tomcatProperties.isUseRelativeRedirects()).isFalse();
+		TomcatWebServer server = customizeAndGetServer();
+		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
+		assertThat(context.getUseRelativeRedirects()).isFalse();
 	}
 
 	private void bind(String... inlinedProperties) {

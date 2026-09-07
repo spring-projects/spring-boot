@@ -71,7 +71,7 @@ class SampleWebSecureJdbcApplicationTests {
 		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
 		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
-		assertThat(location.toString()).endsWith(this.port + "/login");
+		assertThat(location.toString()).isEqualTo("/login");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class SampleWebSecureJdbcApplicationTests {
 		assertThat(result.getStatus()).isEqualTo(HttpStatus.FOUND);
 		URI location = result.getResponseHeaders().getLocation();
 		assertThat(location).isNotNull();
-		assertThat(location.toString()).endsWith(this.port + "/");
+		assertThat(location.toString()).isEqualTo("/");
 	}
 
 }
