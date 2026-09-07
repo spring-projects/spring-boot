@@ -47,7 +47,8 @@ public class AggregatorPlugin implements Plugin<Project> {
 					configureAttributes(configuration, aggregate, target.getObjects());
 				});
 			target.getRootProject()
-				.allprojects((project) -> target.getDependencies().add(dependencies.getName(), project));
+				.allprojects((project) -> target.getDependencies()
+					.add(dependencies.getName(), project.getDependencyFactory().createProjectDependency()));
 			aggregate.getFiles()
 				.convention(aggregated.map((configuration) -> configuration.getIncoming()
 					.artifactView((view) -> view.setLenient(true))
