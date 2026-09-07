@@ -58,15 +58,12 @@ import static org.mockito.Mockito.mock;
 class ServletEndpointRegistrarTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ServletRegistration.Dynamic servletDynamic;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private FilterRegistration.Dynamic filterDynamic;
 
 	@Test

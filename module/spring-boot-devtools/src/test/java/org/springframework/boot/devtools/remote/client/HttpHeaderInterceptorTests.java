@@ -54,11 +54,9 @@ class HttpHeaderInterceptorTests {
 	private byte[] body;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestExecution execution;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse response;
 
 	private MockHttpServletRequest httpRequest;

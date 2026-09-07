@@ -48,11 +48,9 @@ import static org.mockito.BDDMockito.given;
 class SecurityInterceptorTests {
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private TokenValidator tokenValidator;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private SecurityService securityService;
 
 	private SecurityInterceptor interceptor;

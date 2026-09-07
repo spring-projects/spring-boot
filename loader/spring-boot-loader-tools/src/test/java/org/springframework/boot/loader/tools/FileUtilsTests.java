@@ -39,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FileUtilsTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	private File outputDirectory;

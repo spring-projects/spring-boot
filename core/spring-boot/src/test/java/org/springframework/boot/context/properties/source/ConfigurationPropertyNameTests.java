@@ -40,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigurationPropertyNameTests {
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void ofNameShouldNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyName.of(null))
 			.withMessageContaining("'name' must not be null");

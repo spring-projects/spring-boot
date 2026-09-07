@@ -56,7 +56,6 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 	}
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void targetBeanNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
 			.withMessageContaining("'targetBeanName' must not be empty");

@@ -45,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class FilePermissionsTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	Path tempDir;
 
 	@Test

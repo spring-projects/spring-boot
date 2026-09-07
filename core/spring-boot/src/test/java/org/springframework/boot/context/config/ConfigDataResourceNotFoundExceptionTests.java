@@ -49,7 +49,6 @@ class ConfigDataResourceNotFoundExceptionTests {
 	private File missing;
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@BeforeEach

@@ -46,7 +46,6 @@ class DiskSpaceHealthIndicatorTests {
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private File fileMock;
 
 	private HealthIndicator healthIndicator;

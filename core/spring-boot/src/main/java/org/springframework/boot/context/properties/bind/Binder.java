@@ -346,7 +346,6 @@ public class Binder {
 	 * @return the bound or created object
 	 * @since 2.2.0
 	 */
-	@SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1232
 	public <T> T bindOrCreate(ConfigurationPropertyName name, Bindable<T> target, @Nullable BindHandler handler) {
 		return bind(name, target, handler, true);
 	}

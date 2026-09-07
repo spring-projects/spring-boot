@@ -50,27 +50,21 @@ class DelayedLiveReloadTriggerTests {
 	private static final String URL = "http://localhost:8080";
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private OptionalLiveReloadServer liveReloadServer;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestFactory requestFactory;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequest errorRequest;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequest okRequest;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse errorResponse;
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse okResponse;
 
 	private DelayedLiveReloadTrigger trigger;

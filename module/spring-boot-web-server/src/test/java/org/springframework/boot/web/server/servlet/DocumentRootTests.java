@@ -40,7 +40,6 @@ class DocumentRootTests {
 	private static final Log logger = LogFactory.getLog(DocumentRootTests.class);
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	private final DocumentRoot documentRoot = new DocumentRoot(logger);

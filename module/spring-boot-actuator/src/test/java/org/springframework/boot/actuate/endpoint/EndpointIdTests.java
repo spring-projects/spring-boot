@@ -42,7 +42,6 @@ class EndpointIdTests {
 	}
 
 	@Test
-	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(""))
 			.withMessage("'value' must not be empty");

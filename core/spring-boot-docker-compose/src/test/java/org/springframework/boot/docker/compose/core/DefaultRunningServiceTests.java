@@ -47,7 +47,6 @@ import static org.assertj.core.api.Assertions.entry;
 class DefaultRunningServiceTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private DefaultRunningService runningService;

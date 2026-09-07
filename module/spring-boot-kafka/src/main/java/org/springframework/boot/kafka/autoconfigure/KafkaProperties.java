@@ -1447,7 +1447,6 @@ public class KafkaProperties {
 			return properties;
 		}
 
-		@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 		private void validate() {
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
