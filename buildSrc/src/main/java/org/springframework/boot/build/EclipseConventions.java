@@ -29,6 +29,7 @@ import org.gradle.plugins.ide.eclipse.model.EclipseClasspath;
 import org.gradle.plugins.ide.eclipse.model.EclipseJdt;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.plugins.ide.eclipse.model.Library;
+import org.gradle.plugins.ide.eclipse.model.SourceFolder;
 
 /**
  * Conventions that are applied in the presence of the {@link EclipsePlugin} to work
@@ -95,6 +96,7 @@ class EclipseConventions {
 		merger.whenMerged((content) -> {
 			if (content instanceof Classpath classpath) {
 				classpath.getEntries().removeIf(this::isKotlinPluginContributedBuildDirectory);
+				classpath.getEntries().forEach(this::ignoreOptionalProblemsInProtoGeneratedSources);
 			}
 		});
 	}
@@ -119,6 +121,12 @@ class EclipseConventions {
 	private boolean isTest(Library library) {
 		Object value = library.getEntryAttributes().get("test");
 		return (value instanceof String string && Boolean.parseBoolean(string));
+	}
+
+	private void ignoreOptionalProblemsInProtoGeneratedSources(ClasspathEntry entry) {
+		if (entry instanceof SourceFolder source && source.getPath().startsWith("build/generated/sources/proto/")) {
+			source.getEntryAttributes().put("ignore_optional_problems", true);
+		}
 	}
 
 }
