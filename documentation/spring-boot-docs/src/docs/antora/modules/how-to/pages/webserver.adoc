@@ -562,7 +562,7 @@ server:
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
-TIP: If you are using Tomcat, terminating SSL at the proxy, and have set configprop:server.tomcat.use-relative-redirects[] to `false`, then configprop:server.tomcat.redirect-context-root[] should also be set to `false`.
+TIP: If you are using Tomcat, terminating SSL at the proxy, and have set configprop:server.tomcat.servlet.use-relative-redirects[] to `false`, then configprop:server.tomcat.servlet.redirect-context-root[] should also be set to `false`.
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 When relative redirects are in use, which is Tomcat's default, the context root redirect carries no scheme so there is nothing for the header to correct.
 
