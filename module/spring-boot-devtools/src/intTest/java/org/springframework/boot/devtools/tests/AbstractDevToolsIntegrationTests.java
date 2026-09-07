@@ -52,7 +52,6 @@ abstract class AbstractDevToolsIntegrationTests {
 	protected final JvmLauncher javaLauncher = new JvmLauncher();
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	protected static File temp;
 
 	private @Nullable LaunchedApplication launchedApplication;

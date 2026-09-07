@@ -84,7 +84,6 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		private String format;
 
 		@PluginBuilderAttribute
-		@SuppressWarnings("NullAway.Init")
 		private String charset = StandardCharsets.UTF_8.name();
 
 		public Builder setFormat(String format) {

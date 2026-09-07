@@ -101,7 +101,6 @@ class PropertyPlaceholderAutoConfigurationTests {
 	static class PlaceholderConfig {
 
 		@Value("${fruit:apple}")
-		@SuppressWarnings("NullAway.Init")
 		private String fruit;
 
 	}

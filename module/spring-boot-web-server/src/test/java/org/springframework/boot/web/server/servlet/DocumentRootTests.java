@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DocumentRootTests {
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	private final DocumentRoot documentRoot = new DocumentRoot(LogFactory.getLog(getClass()));

@@ -68,7 +68,6 @@ class DatabaseInitializationDependencyConfigurerTests {
 	private final ConfigurableEnvironment environment = new MockEnvironment();
 
 	@TempDir
-	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@BeforeEach

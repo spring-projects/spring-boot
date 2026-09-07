@@ -105,7 +105,6 @@ class DockerApiTests {
 			StandardCharsets.UTF_8);
 
 	@Mock
-	@SuppressWarnings("NullAway.Init")
 	private HttpTransport http;
 
 	private DockerApi dockerApi;
@@ -222,19 +221,15 @@ class DockerApiTests {
 		private ImageApi api;
 
 		@Mock
-		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<PullImageUpdateEvent> pullListener;
 
 		@Mock
-		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<PushImageUpdateEvent> pushListener;
 
 		@Mock
-		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<LoadImageUpdateEvent> loadListener;
 
 		@Captor
-		@SuppressWarnings("NullAway.Init")
 		private ArgumentCaptor<IOConsumer<OutputStream>> writer;
 
 		@BeforeEach
@@ -632,11 +627,9 @@ class DockerApiTests {
 		private ContainerApi api;
 
 		@Captor
-		@SuppressWarnings("NullAway.Init")
 		private ArgumentCaptor<IOConsumer<OutputStream>> writer;
 
 		@Mock
-		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<LogUpdateEvent> logListener;
 
 		@BeforeEach
