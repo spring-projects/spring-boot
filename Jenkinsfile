@@ -3,7 +3,7 @@ pipeline {
     
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
-        timeout(time: 30, unit: 'MINUTES')
+        timeout(time: 10, unit: 'MINUTES')
         timestamps()
     }
     
@@ -11,56 +11,51 @@ pipeline {
         SONAR_HOST = 'http://15.206.213.78:9000'
         SONAR_TOKEN = credentials('sonar-token')
         GITHUB_TOKEN = credentials('archana-sonar')
-        SERVICE_NAME = "${env.JOB_NAME.split('-')[0]}"
-        DOCKER_IMAGE = "ongrid-scan-${env.BUILD_NUMBER}"
         PROJECT_KEY = "ongrid-${env.JOB_NAME}"
+        DOCKER_IMAGE = "ongrid-scan-${env.BUILD_NUMBER}"
     }
     
     stages {
         stage('📥 Checkout') {
             steps {
-                script {
-                    echo "Checking out code from: ${env.GIT_URL}"
-                }
+                echo "Checking out code from: ${env.GIT_URL}"
                 checkout scm
             }
         }
         
         stage('🐳 Docker Build') {
             steps {
-                script {
-                    echo "Building Docker image: ${DOCKER_IMAGE}"
-                    sh 'docker build -f SonarqubeDockerfile -t ${DOCKER_IMAGE} .'
-                }
+                echo "Building Docker image: ${DOCKER_IMAGE}"
+                sh 'docker build -f SonarqubeDockerfile -t ${DOCKER_IMAGE} .'
             }
         }
         
-        stage('🔨 Build + 🔍 Scan (Inside Docker)') {
+        stage('🔍 SonarQube Scan (Source Code)') {
             steps {
-                script {
-                    echo "Running Gradle build and SonarQube scan inside container..."
-                    sh '''
-                        docker run --rm \
-                          -e SONAR_HOST=${SONAR_HOST} \
-                          -e SONAR_TOKEN=${SONAR_TOKEN} \
-                          -e SONAR_PROJECT_KEY=${PROJECT_KEY} \
-                          ${DOCKER_IMAGE}
-                    '''
-                }
+                echo "Running SonarQube scan..."
+                sh '''
+                    docker run --rm \
+                      -e SONAR_HOST_URL=${SONAR_HOST} \
+                      -e SONAR_LOGIN=${SONAR_TOKEN} \
+                      ${DOCKER_IMAGE} \
+                      -Dsonar.host.url=${SONAR_HOST} \
+                      -Dsonar.login=${SONAR_TOKEN} \
+                      -Dsonar.projectKey=${PROJECT_KEY} \
+                      -Dsonar.exclusions="**/*.min.js,**/node_modules/**,**/*.xml"
+                '''
             }
         }
         
         stage('⏱️ Quality Gate Check') {
             steps {
                 script {
-                    echo "Checking Quality Gate status for project: ${PROJECT_KEY}"
+                    echo "Checking Quality Gate status..."
                     
                     def qgStatus = ''
                     def attempts = 0
                     def maxAttempts = 12
-                    def waitSeconds = 5
                     
-                    timeout(time: 5, unit: 'MINUTES') {
+                    timeout(time: 3, unit: 'MINUTES') {
                         while (attempts < maxAttempts) {
                             try {
                                 qgStatus = sh(
@@ -72,20 +67,18 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                                 
-                                echo "QG Check attempt ${attempts + 1}/${maxAttempts}: Status = ${qgStatus}"
+                                echo "QG Check ${attempts + 1}/${maxAttempts}: Status = ${qgStatus}"
                                 
                                 if (qgStatus in ['OK', 'ERROR']) {
                                     break
                                 }
                                 
-                                if (attempts < maxAttempts - 1) {
-                                    sleep(waitSeconds)
-                                }
+                                sleep(5)
                                 attempts++
                             } catch (Exception e) {
-                                echo "Error checking QG status: ${e.message}"
+                                echo "Error: ${e.message}"
                                 attempts++
-                                sleep(waitSeconds)
+                                sleep(5)
                             }
                         }
                     }
@@ -103,7 +96,7 @@ pipeline {
             steps {
                 script {
                     def status = currentBuild.result == 'SUCCESS' ? 'success' : 'failure'
-                    def description = currentBuild.result == 'SUCCESS' ? '✅ Code Quality Check Passed' : '❌ Code Quality Check Failed'
+                    def description = currentBuild.result == 'SUCCESS' ? '✅ Code Quality OK' : '❌ Quality Gate Failed'
                     
                     try {
                         sh '''
@@ -115,9 +108,9 @@ pipeline {
                               https://api.github.com/repos/HELPIIndia/${REPO_NAME}/statuses/${GIT_COMMIT} \
                               -d "{\\"state\\":\\"${status}\\",\\"description\\":\\"${description}\\",\\"context\\":\\"SonarQube/QualityGate\\",\\"target_url\\":\\"${SONAR_HOST}/dashboard?id=${PROJECT_KEY}\\"}"
                         '''
-                        echo "GitHub status posted successfully"
+                        echo "GitHub status posted"
                     } catch (Exception e) {
-                        echo "⚠️ Warning: Could not post GitHub status: ${e.message}"
+                        echo "⚠️ Warning: GitHub status post failed: ${e.message}"
                     }
                 }
             }
@@ -126,10 +119,7 @@ pipeline {
     
     post {
         always {
-            script {
-                echo "Cleaning up Docker image: ${DOCKER_IMAGE}"
-                sh 'docker rmi ${DOCKER_IMAGE} || true && docker system prune -f'
-            }
+            sh 'docker rmi ${DOCKER_IMAGE} || true && docker system prune -f'
         }
         
         success {

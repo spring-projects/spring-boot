@@ -1,31 +1,17 @@
-FROM gradle:8.5-jdk17
+FROM openjdk:11-jre-slim
 
-RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+RUN curl -fsSL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip -o sonar-scanner.zip && \
+    unzip sonar-scanner.zip && \
+    rm sonar-scanner.zip && \
+    mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner && \
+    chmod +x /opt/sonar-scanner/bin/sonar-scanner
+
 COPY . .
 
-RUN mkdir -p /scripts && \
-    cat > /scripts/build-and-scan.sh << 'BASH_SCRIPT'
-#!/bin/bash
-set -e
-
-echo "=========================================="
-echo "🔍 SONARQUBE SCAN START (Skip Gradle Build)"
-echo "=========================================="
-gradle sonarqube \
-  -Dsonar.host.url=${SONAR_HOST} \
-  -Dsonar.login=${SONAR_TOKEN} \
-  -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-  -Dsonar.sourceEncoding=UTF-8 \
-  --no-daemon 2>&1
-
-echo ""
-echo "=========================================="
-echo "✅ SCAN COMPLETED"
-echo "=========================================="
-BASH_SCRIPT
-
-RUN chmod +x /scripts/build-and-scan.sh
-
-ENTRYPOINT ["/scripts/build-and-scan.sh"]
+ENTRYPOINT ["/opt/sonar-scanner/bin/sonar-scanner", \
+    "-Dsonar.projectBaseDir=/app", \
+    "-Dsonar.sourceEncoding=UTF-8"]
