@@ -1828,7 +1828,7 @@
       "defaultValue": "none"
     },
     {
-      "name": "management.promethus.metrics.export.pushgateway.base-url",
+      "name": "management.prometheus.metrics.export.pushgateway.base-url",
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
