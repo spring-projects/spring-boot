@@ -51,7 +51,7 @@ pipeline {
                 script {
                     echo "Checking Quality Gate status for: ${PROJECT_KEY}"
                     
-                    def qgStatus = ''
+                    def qgStatus = 'UNKNOWN'
                     def attempts = 0
                     def maxAttempts = 12
                     
@@ -61,8 +61,8 @@ pipeline {
                                 qgStatus = sh(
                                     script: '''
                                         curl -s -u "${SONAR_TOKEN}": \
-                                        "${SONAR_HOST}/api/qualitygates/project_status?projectKey=${PROJECT_KEY}" \
-                                        | jq -r '.projectStatus.status // "UNKNOWN"'
+                                        "${SONAR_HOST}/api/qualitygates/project_status?projectKey=${PROJECT_KEY}" | \
+                                        grep -oP '"status":"\\K[^"]+' || echo "UNKNOWN"
                                     ''',
                                     returnStdout: true
                                 ).trim()
