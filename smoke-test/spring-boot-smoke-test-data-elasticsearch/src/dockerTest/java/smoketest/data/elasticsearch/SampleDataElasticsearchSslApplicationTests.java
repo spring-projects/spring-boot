@@ -45,7 +45,8 @@ class SampleDataElasticsearchSslApplicationTests {
 	@Container
 	@ServiceConnection
 	@PemTrustStore(certificate = "classpath:ssl.crt")
-	static final ElasticsearchContainer elasticSearch = TestImage.forContainer(SecureElasticsearchContainer.class);
+	static final ElasticsearchContainer elasticSearch = TestImage.ELASTICSEARCH
+		.container(SecureElasticsearchContainer.class);
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
