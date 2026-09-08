@@ -265,6 +265,11 @@ class ReactiveOAuth2ResourceServerJwtConfiguration {
 
 		}
 
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter")
+		static class OnAuthoritiesClaimDelimiter {
+
+		}
+
 	}
 
 }
