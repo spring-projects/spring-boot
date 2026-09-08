@@ -1,0 +1,13 @@
+# Bad YAML - duplicate keys (violation)
+app:
+  name: MyApp
+  name: MyApp
+  
+  security:
+    password: hardcoded123  # Hardcoded credential (violation)
+    apiKey: secret-key-exposed  # Another hardcoded secret
+    
+  database:
+    host: localhost
+    # Very long line without proper formatting that should be broken down properly according to code style guidelines
+    connectionString: jdbc:mysql://localhost:3306/mydb?autoReconnect=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
