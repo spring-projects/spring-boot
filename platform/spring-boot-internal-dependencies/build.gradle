@@ -248,6 +248,14 @@ bom {
 			]
 		}
 	}
+	library("TomlJ", "1.0.0") {
+		group("org.tomlj") {
+			modules = [
+				"tomlj"
+			]
+		}
+
+	}
 }
 
 dependencies {
