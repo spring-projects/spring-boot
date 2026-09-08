@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PulsarAutoConfigurationIntegrationTests {
 
 	@Container
-	static final PulsarContainer pulsar = TestImage.container(PulsarContainer.class);
+	static final PulsarContainer pulsar = TestImage.forContainer(PulsarContainer.class);
 
 	private static final CountDownLatch listenLatch = new CountDownLatch(1);
 

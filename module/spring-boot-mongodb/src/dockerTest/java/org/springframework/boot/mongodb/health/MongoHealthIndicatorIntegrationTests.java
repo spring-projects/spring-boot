@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoHealthIndicatorIntegrationTests {
 
 	@Container
-	static MongoDBContainer mongo = TestImage.container(MongoDBContainer.class);
+	static MongoDBContainer mongo = TestImage.forContainer(MongoDBContainer.class);
 
 	@Test
 	void standardApi() {

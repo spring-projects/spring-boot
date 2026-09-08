@@ -56,7 +56,7 @@ class ApacheKafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final KafkaContainer kafka = TestImage.container(KafkaContainer.class);
+	static final KafkaContainer kafka = TestImage.forContainer(KafkaContainer.class);
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;

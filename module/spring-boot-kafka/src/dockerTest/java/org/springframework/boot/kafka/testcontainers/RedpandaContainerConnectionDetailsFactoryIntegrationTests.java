@@ -53,7 +53,7 @@ class RedpandaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final RedpandaContainer redpanda = TestImage.container(RedpandaContainer.class);
+	static final RedpandaContainer redpanda = TestImage.forContainer(RedpandaContainer.class);
 
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;

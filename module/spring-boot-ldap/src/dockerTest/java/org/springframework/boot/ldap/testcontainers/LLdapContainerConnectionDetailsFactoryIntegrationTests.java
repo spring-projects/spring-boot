@@ -47,7 +47,7 @@ class LLdapContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final LLdapContainer lldap = TestImage.container(LLdapContainer.class);
+	static final LLdapContainer lldap = TestImage.forContainer(LLdapContainer.class);
 
 	@Autowired
 	private LdapTemplate ldapTemplate;

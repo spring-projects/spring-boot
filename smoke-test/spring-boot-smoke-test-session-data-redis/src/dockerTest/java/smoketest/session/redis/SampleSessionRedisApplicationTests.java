@@ -61,7 +61,7 @@ class SampleSessionRedisApplicationTests {
 
 	@Container
 	@ServiceConnection
-	static RedisContainer redis = TestImage.container(RedisContainer.class);
+	static RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	@Autowired
 	private TestRestTemplate restTemplate;

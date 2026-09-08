@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class);
+	private static final Neo4jContainer neo4j = TestImage.forContainer(Neo4jContainer.class);
 
 	@SpringBootTest
 	@Nested

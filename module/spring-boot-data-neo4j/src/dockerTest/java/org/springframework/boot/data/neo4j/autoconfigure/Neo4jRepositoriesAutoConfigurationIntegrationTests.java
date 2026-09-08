@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class);
+	static final Neo4jContainer neo4j = TestImage.forContainer(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

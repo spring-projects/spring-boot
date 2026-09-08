@@ -51,7 +51,7 @@ class AutoConfigureTestDatabaseServiceConnectionIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static PostgreSQLContainer postgres = TestImage.container(PostgreSQLContainer.class);
+	static PostgreSQLContainer postgres = TestImage.forContainer(PostgreSQLContainer.class);
 
 	@Autowired
 	private DataSource dataSource;

@@ -35,7 +35,7 @@ public class TestPropertiesSampleSessionRedisApplication {
 
 		@Bean
 		RedisContainer redisContainer(DynamicPropertyRegistry properties) {
-			RedisContainer container = TestImage.container(RedisContainer.class);
+			RedisContainer container = TestImage.forContainer(RedisContainer.class);
 			properties.add("spring.data.redis.host", container::getHost);
 			properties.add("spring.data.redis.port", container::getFirstMappedPort);
 			return container;

@@ -36,7 +36,7 @@ public class TestServiceConnectionSampleSessionRedisApplication {
 		@Bean
 		@ServiceConnection
 		RedisContainer redisContainer() {
-			return TestImage.container(RedisContainer.class);
+			return TestImage.forContainer(RedisContainer.class);
 		}
 
 	}

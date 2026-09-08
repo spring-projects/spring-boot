@@ -25,6 +25,8 @@ import java.util.function.Supplier;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
+import org.testcontainers.activemq.ActiveMQContainer;
+import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
@@ -48,8 +50,11 @@ import org.springframework.util.Assert;
 
 /**
  * References to container images used for integration tests. This class also acts a
- * central location for tests to {@link #container(Class) create} a correctly configured
- * {@link Container testcontainer}.
+ * central location for {@link #container(Class) creating} a correctly configured
+ * {@link Container testcontainer}. For uniquely defined containers (one image matching
+ * one container), {@link #forContainer(Class)} creates a container based on its type. For
+ * other cases, or to be explicit, use {@link #container(Class)} on the image the test
+ * requires.
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
@@ -62,7 +67,8 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing ActiveMQ made by Symptoma.
 	 */
-	ACTIVE_MQ_SYMPTOMA("symptoma/activemq", "5.18.3", () -> SymptomaActiveMQContainer.class),
+	ACTIVE_MQ_SYMPTOMA("symptoma/activemq", "5.18.3",
+			(container) -> ((GenericContainer<?>) container).addExposedPorts(61616)),
 
 	/**
 	 * A container image suitable for testing ActiveMQ.
@@ -72,7 +78,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing ActiveMQ classic.
 	 */
-	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQClassicContainer.class),
+	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQContainer.class),
 
 	/**
 	 * A container image suitable for testing Apache Kafka.
@@ -88,7 +94,7 @@ public enum TestImage {
 	 * A container image suitable for testing Artemis using the legacy
 	 * {@code apache/activemq-artemis} image.
 	 */
-	ARTEMIS_LEGACY("apache/activemq-artemis", "2.34.0", () -> ArtemisLegacyContainer.class),
+	ARTEMIS_LEGACY("apache/activemq-artemis", "2.34.0", () -> ArtemisContainer.class),
 
 	/**
 	 * A container image suitable for testing Cassandra.
@@ -124,7 +130,11 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Elasticsearch 9.
 	 */
-	ELASTICSEARCH_9("elasticsearch", "9.0.2"),
+	ELASTICSEARCH_9("elasticsearch", "9.0.2", () -> ElasticsearchContainer.class, (container) -> {
+		ElasticsearchContainer elasticsearchContainer = (ElasticsearchContainer) container;
+		elasticsearchContainer.addEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m");
+		elasticsearchContainer.addEnv("xpack.security.enabled", "false");
+	}),
 
 	/**
 	 * A container image from Elastic Registry suitable for testing Elasticsearch 9.
@@ -360,20 +370,45 @@ public enum TestImage {
 		}
 	}
 
-	private boolean matchesContainerClass(Class<?> containerClass) {
-		return this.containerClass != null && this.containerClass.isAssignableFrom(containerClass);
+	/**
+	 * Create a container with the default container type.
+	 * @param <C> the type of container this instance produces
+	 * @return a container with default settings
+	 */
+	public <C extends Container<?>> C container() {
+		return container((Consumer<C>) null);
 	}
 
 	/**
-	 * Create a {@link GenericContainer} for the given {@link TestImage}.
-	 * @return a generic container for the test image
+	 * Create a container with the default container type, and customize it before it is
+	 * started.
+	 * @param setup a consumer of the container
+	 * @param <C> the type of container this instance produces
+	 * @return a container with default settings, further customized by the given
+	 * consumer.
 	 */
-	public GenericContainer<?> genericContainer() {
-		return createContainer(GenericContainer.class);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public <C extends Container<?>> C container(Consumer<C> setup) {
+		if (this.containerClass != null) {
+			return createContainer((Class<C>) this.containerClass, setup);
+		}
+		else {
+			return (C) createContainer(GenericContainer.class, (Consumer) setup);
+		}
+	}
+
+	/**
+	 * Create a container for the given {@code containerClass}.
+	 * @param containerClass the container type
+	 * @param <C> the requested type of container
+	 * @return a container with default settings
+	 */
+	public <C extends Container<?>> C container(Class<? extends C> containerClass) {
+		return createContainer(containerClass, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <C extends Container<?>> C createContainer(Class<C> containerClass) {
+	private <C extends Container<?>> C createContainer(Class<C> containerClass, Consumer<C> userSetup) {
 		DockerImageName dockerImageName = DockerImageName.parse(toString());
 		try {
 			Constructor<C> constructor = containerClass.getDeclaredConstructor(DockerImageName.class);
@@ -381,6 +416,9 @@ public enum TestImage {
 			C container = constructor.newInstance(dockerImageName);
 			if (this.containerSetup != null) {
 				((Consumer) this.containerSetup).accept(container);
+			}
+			if (userSetup != null) {
+				userSetup.accept(container);
 			}
 			return container;
 		}
@@ -400,13 +438,14 @@ public enum TestImage {
 
 	/**
 	 * Factory method to create and configure a {@link Container} using a deduced
-	 * {@link TestImage}.
+	 * {@link TestImage}. At most one {@link TestImage} should match with the given
+	 * {@code containerClass}.
 	 * @param <C> the container type
 	 * @param containerClass the container type
 	 * @return a container instance
 	 */
-	public static <C extends Container<?>> C container(Class<C> containerClass) {
-		return forContainerClass(containerClass).createContainer(containerClass);
+	public static <C extends Container<?>> C forContainer(Class<C> containerClass) {
+		return forContainerClass(containerClass).createContainer(containerClass, null);
 	}
 
 	private static TestImage forContainerClass(Class<?> containerClass) {
@@ -416,6 +455,10 @@ public enum TestImage {
 		Assert.state(!images.isEmpty(), () -> "Unknown container class " + containerClass);
 		Assert.state(images.size() == 1, () -> "Multiple test images match container class " + containerClass);
 		return images.get(0);
+	}
+
+	private boolean matchesContainerClass(Class<?> containerClass) {
+		return this.containerClass != null && this.containerClass.isAssignableFrom(containerClass);
 	}
 
 }

@@ -57,7 +57,7 @@ class DeprecatedRabbitContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final RabbitMQContainer rabbit = TestImage.container(RabbitMQContainer.class);
+	static final RabbitMQContainer rabbit = TestImage.forContainer(RabbitMQContainer.class);
 
 	@Autowired(required = false)
 	private RabbitConnectionDetails connectionDetails;

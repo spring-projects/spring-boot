@@ -52,7 +52,7 @@ class DataRedisTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static RedisContainer redis = TestImage.container(RedisContainer.class);
+	static RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;

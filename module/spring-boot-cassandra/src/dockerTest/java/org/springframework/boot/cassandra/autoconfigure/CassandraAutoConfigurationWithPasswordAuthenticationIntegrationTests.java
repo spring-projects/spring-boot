@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	@Container
-	static final CassandraContainer cassandra = TestImage.container(PasswordAuthenticatorCassandraContainer.class)
+	static final CassandraContainer cassandra = TestImage.forContainer(PasswordAuthenticatorCassandraContainer.class)
 		.withStartupAttempts(5)
 		.waitingFor(new CassandraWaitStrategy());
 

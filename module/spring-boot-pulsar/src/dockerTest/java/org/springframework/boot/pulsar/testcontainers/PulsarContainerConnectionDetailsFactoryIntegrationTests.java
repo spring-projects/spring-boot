@@ -53,7 +53,7 @@ class PulsarContainerConnectionDetailsFactoryIntegrationTests {
 	@Container
 	@ServiceConnection
 	@SuppressWarnings("unused")
-	static final PulsarContainer pulsar = TestImage.container(PulsarContainer.class);
+	static final PulsarContainer pulsar = TestImage.forContainer(PulsarContainer.class);
 
 	@Autowired
 	private PulsarTemplate<String> pulsarTemplate;

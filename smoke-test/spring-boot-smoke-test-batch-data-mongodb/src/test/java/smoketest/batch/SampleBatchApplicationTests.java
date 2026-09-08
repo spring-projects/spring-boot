@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleBatchApplicationTests {
 
 	@Container
-	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class).withReplicaSet();
+	static final MongoDBContainer mongoDb = TestImage.forContainer(MongoDBContainer.class).withReplicaSet();
 
 	@Test
 	void testDefaultSettings(CapturedOutput output) {

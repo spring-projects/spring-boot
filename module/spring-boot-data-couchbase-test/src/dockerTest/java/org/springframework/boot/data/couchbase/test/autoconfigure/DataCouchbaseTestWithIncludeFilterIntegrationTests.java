@@ -48,7 +48,7 @@ class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final CouchbaseContainer couchbase = TestImage.container(CouchbaseContainer.class)
+	static final CouchbaseContainer couchbase = TestImage.forContainer(CouchbaseContainer.class)
 		.withEnabledServices(CouchbaseService.KV, CouchbaseService.INDEX, CouchbaseService.QUERY)
 		.withBucket(new BucketDefinition("cbbucket"));
 

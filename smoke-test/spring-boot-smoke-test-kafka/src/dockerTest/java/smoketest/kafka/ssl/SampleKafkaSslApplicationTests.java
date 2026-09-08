@@ -52,7 +52,7 @@ class SampleKafkaSslApplicationTests {
 	@ServiceConnection
 	@JksTrustStore(location = "classpath:ssl/test-ca.p12", password = "password")
 	@JksKeyStore(location = "classpath:ssl/test-client.p12", password = "password")
-	public static ConfluentKafkaContainer kafka = TestImage.container(SecureKafkaContainer.class);
+	public static ConfluentKafkaContainer kafka = TestImage.forContainer(SecureKafkaContainer.class);
 
 	@Autowired
 	private Producer producer;

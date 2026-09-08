@@ -45,7 +45,7 @@ class DeprecatedMongoDbContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class);
+	static final MongoDBContainer mongoDb = TestImage.forContainer(MongoDBContainer.class);
 
 	@Autowired(required = false)
 	private MongoConnectionDetails connectionDetails;

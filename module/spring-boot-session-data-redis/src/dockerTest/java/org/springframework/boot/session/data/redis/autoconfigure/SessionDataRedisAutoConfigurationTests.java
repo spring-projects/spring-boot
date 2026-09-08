@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.entry;
 class SessionDataRedisAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = TestImage.container(RedisContainer.class);
+	public static RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	@BeforeEach
 	void prepareContextRunner() {

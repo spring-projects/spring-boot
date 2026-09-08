@@ -45,7 +45,7 @@ class DeprecatedNeo4jContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final Neo4jContainer<?> container = TestImage.container(Neo4jContainer.class);
+	static final Neo4jContainer<?> container = TestImage.forContainer(Neo4jContainer.class);
 
 	@Autowired(required = false)
 	private Neo4jConnectionDetails connectionDetails;

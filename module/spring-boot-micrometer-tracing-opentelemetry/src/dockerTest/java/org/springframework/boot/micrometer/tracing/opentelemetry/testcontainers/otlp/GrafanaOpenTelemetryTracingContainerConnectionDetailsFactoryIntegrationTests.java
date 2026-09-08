@@ -44,7 +44,7 @@ class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTes
 
 	@Container
 	@ServiceConnection
-	static final LgtmStackContainer container = TestImage.container(LgtmStackContainer.class);
+	static final LgtmStackContainer container = TestImage.forContainer(LgtmStackContainer.class);
 
 	@Autowired
 	private OtlpTracingConnectionDetails connectionDetails;
