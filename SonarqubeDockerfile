@@ -1,17 +1,20 @@
-FROM openjdk:11-jre-slim
+FROM gradle:8.5-jdk17
 
 RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+# Download SonarQube Scanner
 RUN curl -fsSL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip -o sonar-scanner.zip && \
     unzip sonar-scanner.zip && \
     rm sonar-scanner.zip && \
     mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner && \
     chmod +x /opt/sonar-scanner/bin/sonar-scanner
 
+# Copy source code
 COPY . .
 
+# Run scanner
 ENTRYPOINT ["/opt/sonar-scanner/bin/sonar-scanner", \
     "-Dsonar.projectBaseDir=/app", \
     "-Dsonar.sourceEncoding=UTF-8"]
