@@ -701,6 +701,13 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class));
 	}
 
+	@Test
+	void shouldConfigureJwtConverterIfAuthoritiesClaimDelimiterIsSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveJwtAuthenticationConverter.class));
+	}
+
 	@ParameterizedTest(name = "{0}")
 	@ArgumentsSource(JwtConverterCustomizationsArgumentsProvider.class)
 	void autoConfigurationShouldConfigureResourceServerWithJwtConverterCustomizations(String[] properties, Jwt jwt,
