@@ -784,6 +784,13 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureJwtConverterIfAuthoritiesClaimDelimiterIsSet() {
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.authorities-claim-delimiter=dummy")
+			.run((context) -> assertThat(context).hasSingleBean(JwtAuthenticationConverter.class));
+	}
+
+	@Test
 	void jwtAuthenticationConverterByJwtConfigIsConditionalOnMissingBean() {
 		String propertiesPrincipalClaim = "principal_from_properties";
 		String propertiesPrincipalValue = "from_props";

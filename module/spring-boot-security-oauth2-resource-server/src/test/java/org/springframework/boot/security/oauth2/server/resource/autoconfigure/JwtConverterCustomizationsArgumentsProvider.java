@@ -53,7 +53,7 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 		String principalClaimProperty = "spring.security.oauth2.resourceserver.jwt.principal-claim-name="
 				+ customPrincipalClaim;
 		String[] customPrefixProps = { jwkSetUriProperty, authorityPrefixProperty };
-		String[] customDelimiterProps = { jwkSetUriProperty, authorityPrefixProperty, authoritiesDelimiterProperty };
+		String[] customDelimiterProps = { jwkSetUriProperty, authoritiesDelimiterProperty };
 		String[] customAuthoritiesClaimProps = { jwkSetUriProperty, authoritiesClaimProperty };
 		String[] customPrincipalClaimProps = { jwkSetUriProperty, principalClaimProperty };
 		String[] allJwtConverterProps = { jwkSetUriProperty, authorityPrefixProperty, authoritiesDelimiterProperty,
@@ -84,7 +84,7 @@ public final class JwtConverterCustomizationsArgumentsProvider implements Argume
 				Arguments.of(Named.named("Custom prefix for GrantedAuthority", customPrefixProps),
 						noAuthoritiesCustomizationsJwt, subjectValue, customPrefixAuthorities),
 				Arguments.of(Named.named("Custom delimiter for JWT scopes", customDelimiterProps),
-						customAuthoritiesDelimiterJwt, subjectValue, customPrefixAuthorities),
+						customAuthoritiesDelimiterJwt, subjectValue, defaultPrefixAuthorities),
 				Arguments.of(Named.named("Custom JWT authority claim name", customAuthoritiesClaimProps),
 						customAuthoritiesClaimJwt, subjectValue, defaultPrefixAuthorities),
 				Arguments.of(Named.named("Custom JWT principal claim name", customPrincipalClaimProps),
