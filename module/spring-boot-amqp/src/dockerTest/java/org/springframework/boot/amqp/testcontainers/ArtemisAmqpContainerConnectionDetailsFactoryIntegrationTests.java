@@ -30,7 +30,6 @@ import org.springframework.boot.amqp.autoconfigure.AmqpAutoConfiguration;
 import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.container.ArtemisLegacyContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -51,8 +50,8 @@ class ArtemisAmqpContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ArtemisContainer container = TestImage.container(ArtemisLegacyContainer.class)
-		.withEnv("EXTRA_ARGS", "--queues %s:anycast".formatted(QUEUE_NAME));
+	static final ArtemisContainer container = TestImage.ARTEMIS_LEGACY
+		.container((setup) -> setup.withEnv("EXTRA_ARGS", "--queues %s:anycast".formatted(QUEUE_NAME)));
 
 	@Autowired(required = false)
 	private AmqpConnectionDetails connectionDetails;

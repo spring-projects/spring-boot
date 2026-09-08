@@ -68,7 +68,7 @@ class DataJdbcRepositoriesAutoConfigurationDialectResolutionTests {
 
 	private <C extends JdbcDatabaseContainer<?>> void withContainer(Class<C> containerType,
 			ThrowingConsumer<ApplicationContextRunner> callback) {
-		C container = TestImage.container(containerType);
+		C container = TestImage.forContainer(containerType);
 		try {
 			container.start();
 			ApplicationContextRunner contextRunner = new ApplicationContextRunner()

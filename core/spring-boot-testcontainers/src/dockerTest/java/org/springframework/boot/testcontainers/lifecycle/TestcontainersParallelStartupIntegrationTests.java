@@ -55,17 +55,17 @@ class TestcontainersParallelStartupIntegrationTests {
 
 		@Bean
 		static PostgreSQLContainer container1() {
-			return TestImage.container(PostgreSQLContainer.class);
+			return TestImage.forContainer(PostgreSQLContainer.class);
 		}
 
 		@Bean
 		static PostgreSQLContainer container2() {
-			return TestImage.container(PostgreSQLContainer.class);
+			return TestImage.forContainer(PostgreSQLContainer.class);
 		}
 
 		@Bean
 		static PostgreSQLContainer container3() {
-			return TestImage.container(PostgreSQLContainer.class);
+			return TestImage.forContainer(PostgreSQLContainer.class);
 		}
 
 	}

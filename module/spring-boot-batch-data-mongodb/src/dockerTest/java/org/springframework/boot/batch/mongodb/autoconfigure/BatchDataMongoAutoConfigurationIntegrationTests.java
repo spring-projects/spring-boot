@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BatchDataMongoAutoConfigurationIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class).withReplicaSet();
+	static final MongoDBContainer mongoDb = TestImage.forContainer(MongoDBContainer.class).withReplicaSet();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withUserConfiguration(JobConfiguration.class)

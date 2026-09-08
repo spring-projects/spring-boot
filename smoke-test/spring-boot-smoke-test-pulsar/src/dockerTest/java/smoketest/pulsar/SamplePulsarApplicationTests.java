@@ -42,7 +42,7 @@ class SamplePulsarApplicationTests {
 
 	@Container
 	@ServiceConnection
-	static final PulsarContainer pulsar = TestImage.container(PulsarContainer.class);
+	static final PulsarContainer pulsar = TestImage.forContainer(PulsarContainer.class);
 
 	@Test
 	void appProducesAndConsumesMessages(CapturedOutput output) {

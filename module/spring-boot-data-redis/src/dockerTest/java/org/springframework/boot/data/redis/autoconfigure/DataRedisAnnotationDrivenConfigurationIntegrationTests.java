@@ -42,7 +42,7 @@ import static org.awaitility.Awaitility.await;
 class DataRedisAnnotationDrivenConfigurationIntegrationTests {
 
 	@Container
-	static final RedisContainer redis = TestImage.container(RedisContainer.class);
+	static final RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(DataRedisAutoConfiguration.class))

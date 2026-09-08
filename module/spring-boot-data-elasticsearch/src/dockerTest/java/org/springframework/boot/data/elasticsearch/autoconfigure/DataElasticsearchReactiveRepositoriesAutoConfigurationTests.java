@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataElasticsearchReactiveRepositoriesAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
+	static final ElasticsearchContainer elasticsearch = TestImage.ELASTICSEARCH.container(ElasticsearchContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,

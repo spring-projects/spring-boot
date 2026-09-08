@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BootBuildImageRegistryIntegrationTests {
 
 	@Container
-	static final RegistryContainer registry = TestImage.container(RegistryContainer.class);
+	static final RegistryContainer registry = TestImage.forContainer(RegistryContainer.class);
 
 	String registryAddress;
 

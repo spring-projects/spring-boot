@@ -48,7 +48,7 @@ class SampleDataCouchbaseApplicationSslTests {
 	@ServiceConnection
 	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
 	@PemTrustStore(certificate = "classpath:ssl/test-ca.crt")
-	static final CouchbaseContainer couchbase = TestImage.container(SecureCouchbaseContainer.class)
+	static final CouchbaseContainer couchbase = TestImage.forContainer(SecureCouchbaseContainer.class)
 		.withBucket(new BucketDefinition(BUCKET_NAME));
 
 	@Autowired

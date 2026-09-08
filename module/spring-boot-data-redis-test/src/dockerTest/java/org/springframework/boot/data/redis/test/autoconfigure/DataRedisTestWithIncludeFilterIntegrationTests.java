@@ -43,7 +43,7 @@ class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final RedisContainer redis = TestImage.container(RedisContainer.class);
+	static final RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	@Autowired
 	private ExampleRepository exampleRepository;

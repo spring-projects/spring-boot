@@ -49,7 +49,7 @@ class SampleRedisApplicationSslTests {
 	@ServiceConnection
 	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
 	@PemTrustStore("classpath:ssl/test-ca.crt")
-	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
+	static RedisContainer redis = TestImage.forContainer(SecureRedisContainer.class);
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;

@@ -48,7 +48,7 @@ class JdbcContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final PostgreSQLContainer postgres = TestImage.container(PostgreSQLContainer.class);
+	static final PostgreSQLContainer postgres = TestImage.forContainer(PostgreSQLContainer.class);
 
 	@Autowired(required = false)
 	private JdbcConnectionDetails connectionDetails;

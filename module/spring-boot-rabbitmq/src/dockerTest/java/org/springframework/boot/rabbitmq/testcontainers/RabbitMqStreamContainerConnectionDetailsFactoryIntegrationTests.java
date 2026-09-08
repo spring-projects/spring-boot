@@ -69,7 +69,7 @@ class RabbitMqStreamContainerConnectionDetailsFactoryIntegrationTests {
 	static final RabbitMQContainer rabbit = getRabbitMqStreamContainer();
 
 	private static RabbitMQContainer getRabbitMqStreamContainer() {
-		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
+		RabbitMQContainer container = TestImage.forContainer(RabbitMQContainer.class);
 		container.addExposedPorts(RABBITMQ_STREAMS_PORT);
 		String enabledPlugins = "[rabbitmq_stream,rabbitmq_prometheus].";
 		container.withCopyToContainer(Transferable.of(enabledPlugins), "/etc/rabbitmq/enabled_plugins");

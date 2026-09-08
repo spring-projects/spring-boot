@@ -49,7 +49,7 @@ class DataMongoTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class);
+	static final MongoDBContainer mongoDb = TestImage.forContainer(MongoDBContainer.class);
 
 	@Autowired
 	private MongoTemplate mongoTemplate;

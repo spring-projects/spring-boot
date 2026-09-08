@@ -40,7 +40,7 @@ class SampleCacheApplicationRedisTests {
 
 	@Container
 	@ServiceConnection
-	private static final RedisContainer redis = TestImage.container(RedisContainer.class);
+	private static final RedisContainer redis = TestImage.forContainer(RedisContainer.class);
 
 	@Autowired
 	private CacheManager cacheManager;

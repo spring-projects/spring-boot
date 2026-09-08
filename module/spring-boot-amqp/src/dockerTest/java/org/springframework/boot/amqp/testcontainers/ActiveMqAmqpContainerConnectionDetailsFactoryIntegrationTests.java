@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -29,7 +30,6 @@ import org.springframework.boot.amqp.autoconfigure.AmqpAutoConfiguration;
 import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.container.ActiveMQClassicContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -47,7 +47,7 @@ class ActiveMqAmqpContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ActiveMQClassicContainer container = TestImage.container(ActiveMQClassicContainer.class);
+	static final ActiveMQContainer container = TestImage.ACTIVE_MQ_CLASSIC.container();
 
 	@Autowired(required = false)
 	private AmqpConnectionDetails connectionDetails;

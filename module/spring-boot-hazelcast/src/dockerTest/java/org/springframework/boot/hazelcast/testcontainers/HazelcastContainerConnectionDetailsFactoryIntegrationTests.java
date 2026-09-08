@@ -47,7 +47,7 @@ class HazelcastContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final HazelcastContainer hazelcast = TestImage.container(HazelcastContainer.class);
+	static final HazelcastContainer hazelcast = TestImage.forContainer(HazelcastContainer.class);
 
 	@Autowired(required = false)
 	private HazelcastConnectionDetails connectionDetails;

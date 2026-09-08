@@ -76,7 +76,7 @@ class LdapAutoConfigurationSslIntegrationTests {
 	}
 
 	private static OpenLdapContainer openLdapContainer(String certificates) {
-		OpenLdapContainer container = TestImage.container(OpenLdapContainer.class);
+		OpenLdapContainer container = TestImage.forContainer(OpenLdapContainer.class);
 		container.addExposedPorts(636);
 		return container.withEnv("LDAP_TLS_VERIFY_CLIENT", "never")
 			// The image restarts slapd internally once the TLS config has been applied,

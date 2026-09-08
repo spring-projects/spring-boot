@@ -51,7 +51,7 @@ class DataNeo4jTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class);
+	static final Neo4jContainer neo4j = TestImage.forContainer(Neo4jContainer.class);
 
 	@Autowired
 	private Neo4jTemplate neo4jTemplate;

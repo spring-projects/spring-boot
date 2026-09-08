@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +31,6 @@ import org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.container.SymptomaActiveMQContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +51,7 @@ class ActiveMQContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final SymptomaActiveMQContainer activemq = TestImage.container(SymptomaActiveMQContainer.class);
+	static final GenericContainer<?> activemq = TestImage.ACTIVE_MQ_SYMPTOMA.container();
 
 	@Autowired
 	private JmsClient jmsClient;

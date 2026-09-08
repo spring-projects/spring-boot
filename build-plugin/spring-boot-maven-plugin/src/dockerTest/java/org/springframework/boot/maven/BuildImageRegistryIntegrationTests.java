@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests {
 
 	@Container
-	static final RegistryContainer registry = TestImage.container(RegistryContainer.class);
+	static final RegistryContainer registry = TestImage.forContainer(RegistryContainer.class);
 
 	DockerClient dockerClient;
 

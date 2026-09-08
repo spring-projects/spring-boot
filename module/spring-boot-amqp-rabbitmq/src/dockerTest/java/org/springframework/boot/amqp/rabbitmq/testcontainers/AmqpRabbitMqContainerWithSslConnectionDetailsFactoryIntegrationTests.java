@@ -63,7 +63,7 @@ class AmqpRabbitMqContainerWithSslConnectionDetailsFactoryIntegrationTests {
 	static final RabbitMQContainer rabbit = getRabbitMqContainer();
 
 	private static RabbitMQContainer getRabbitMqContainer() {
-		RabbitMQContainer container = TestImage.container(RabbitMQContainer.class);
+		RabbitMQContainer container = TestImage.forContainer(RabbitMQContainer.class);
 		container.addExposedPorts(RABBITMQ_TLS_PORT);
 		container.withCopyFileToContainer(
 				MountableFile

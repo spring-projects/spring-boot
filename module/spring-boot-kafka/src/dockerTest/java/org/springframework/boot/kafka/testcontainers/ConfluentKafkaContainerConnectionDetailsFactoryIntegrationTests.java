@@ -55,7 +55,7 @@ class ConfluentKafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ConfluentKafkaContainer kafka = TestImage.container(ConfluentKafkaContainer.class);
+	static final ConfluentKafkaContainer kafka = TestImage.forContainer(ConfluentKafkaContainer.class);
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;

@@ -63,7 +63,7 @@ class LLdapContainerConnectionDetailsFactorySslIntegrationTests {
 	private LdapTemplate ldapTemplate;
 
 	private static LLdapContainer ldapsContainer() {
-		LLdapContainer container = TestImage.container(LLdapContainer.class);
+		LLdapContainer container = TestImage.forContainer(LLdapContainer.class);
 		container.addExposedPorts(LDAPS_PORT);
 		return container.withEnv("LLDAP_LDAPS_OPTIONS__ENABLED", "true")
 			.withEnv("LLDAP_LDAPS_OPTIONS__CERT_FILE", "/certs/server.crt")

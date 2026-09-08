@@ -68,10 +68,10 @@ class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OTEL_COLLECTOR.genericContainer()
-		.withCommand("--config=/etc/" + CONFIG_FILE_NAME)
-		.withCopyToContainer(MountableFile.forClasspathResource(CONFIG_FILE_NAME), "/etc/" + CONFIG_FILE_NAME)
-		.withExposedPorts(4318, 9090);
+	static final GenericContainer<?> container = TestImage.OTEL_COLLECTOR
+		.container((setup) -> setup.withCommand("--config=/etc/" + CONFIG_FILE_NAME)
+			.withCopyToContainer(MountableFile.forClasspathResource(CONFIG_FILE_NAME), "/etc/" + CONFIG_FILE_NAME)
+			.withExposedPorts(4318, 9090));
 
 	@Autowired
 	private MeterRegistry meterRegistry;

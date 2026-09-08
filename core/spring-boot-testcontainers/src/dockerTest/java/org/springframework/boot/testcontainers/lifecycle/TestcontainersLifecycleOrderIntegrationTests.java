@@ -65,7 +65,7 @@ class TestcontainersLifecycleOrderIntegrationTests {
 		@Bean
 		@ServiceConnection
 		RedisContainer redisContainer() {
-			return TestImage.container(EventRecordingRedisContainer.class);
+			return TestImage.forContainer(EventRecordingRedisContainer.class);
 		}
 
 	}

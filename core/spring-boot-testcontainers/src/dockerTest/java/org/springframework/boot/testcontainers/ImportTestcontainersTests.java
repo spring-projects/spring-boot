@@ -127,7 +127,7 @@ class ImportTestcontainersTests {
 	static class ImportWithoutValue {
 
 		@ContainerAnnotation
-		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.forContainer(PostgreSQLContainer.class);
 
 	}
 
@@ -151,14 +151,14 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NonStaticContainer {
 
-		PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
+		PostgreSQLContainer container = TestImage.forContainer(PostgreSQLContainer.class);
 
 	}
 
 	interface ContainerDefinitions {
 
 		@ContainerAnnotation
-		PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
+		PostgreSQLContainer container = TestImage.forContainer(PostgreSQLContainer.class);
 
 	}
 
@@ -170,7 +170,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class ContainerDefinitionsWithDynamicPropertySource {
 
-		static PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container = TestImage.forContainer(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void containerProperties(DynamicPropertyRegistry registry) {

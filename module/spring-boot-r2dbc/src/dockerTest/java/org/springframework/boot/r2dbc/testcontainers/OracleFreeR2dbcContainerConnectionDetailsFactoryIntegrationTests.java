@@ -47,7 +47,7 @@ class OracleFreeR2dbcContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final OracleContainer oracle = TestImage.container(OracleContainer.class);
+	static final OracleContainer oracle = TestImage.forContainer(OracleContainer.class);
 
 	@Autowired
 	ConnectionFactory connectionFactory;

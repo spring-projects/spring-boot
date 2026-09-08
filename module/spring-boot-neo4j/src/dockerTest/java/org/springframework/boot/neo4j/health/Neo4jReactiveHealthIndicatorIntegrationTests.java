@@ -49,7 +49,7 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 	// gh-33428
 
 	@Container
-	private static final Neo4jContainer neo4jServer = TestImage.container(Neo4jContainer.class);
+	private static final Neo4jContainer neo4jServer = TestImage.forContainer(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

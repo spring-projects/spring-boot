@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AutoConfigureTestDatabaseNonTestDatabaseIntegrationTests {
 
 	@Container
-	static PostgreSQLContainer postgres = TestImage.container(PostgreSQLContainer.class);
+	static PostgreSQLContainer postgres = TestImage.forContainer(PostgreSQLContainer.class);
 
 	@Autowired
 	private DataSource dataSource;
