@@ -59,10 +59,13 @@ class SecurityInterceptor {
 	}
 
 	Mono<SecurityResponse> preHandle(ServerWebExchange exchange, String id) {
-		ServerHttpRequest request = exchange.getRequest();
-		if (CorsUtils.isPreFlightRequest(request)) {
+		if (CorsUtils.isPreFlightRequest(exchange.getRequest())) {
 			return SUCCESS;
 		}
+		return doPreHandle(exchange, id).doOnError(this::logError).onErrorResume(this::getErrorResponse);
+	}
+
+	private Mono<SecurityResponse> doPreHandle(ServerWebExchange exchange, String id) {
 		if (!StringUtils.hasText(this.applicationId)) {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Application id is not available"));
@@ -71,7 +74,7 @@ class SecurityInterceptor {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Cloud controller URL is not available"));
 		}
-		return check(exchange, id).then(SUCCESS).doOnError(this::logError).onErrorResume(this::getErrorResponse);
+		return check(exchange, id).then(SUCCESS);
 	}
 
 	private void logError(Throwable ex) {
