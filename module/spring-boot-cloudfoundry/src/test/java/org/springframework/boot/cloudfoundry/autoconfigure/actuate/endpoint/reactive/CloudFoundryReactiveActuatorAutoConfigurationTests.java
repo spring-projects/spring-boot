@@ -31,7 +31,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -76,6 +75,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -88,7 +88,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 /**
@@ -197,7 +196,8 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void cloudFoundryPathsPermittedBySpringSecurity() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+		this.contextRunner.withUserConfiguration(SecurityConfiguration.class)
+			.withBean(TestEndpoint.class, TestEndpoint::new)
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 					"vcap.application.cf_api:https://my-cloud-controller.com")
 			.run((context) -> {
@@ -222,7 +222,8 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPathsPermittedWithCsrfBySpringSecurity() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+		this.contextRunner.withUserConfiguration(SecurityConfiguration.class)
+			.withBean(TestEndpoint.class, TestEndpoint::new)
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 			.run((context) -> {
 				WebTestClient client = WebTestClient.bindToApplicationContext(context).apply(springSecurity()).build();
@@ -241,11 +242,16 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	void crossOriginRequestToCloudFoundryPathsPermittedBySpringSecurity() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", new CorsConfiguration());
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+		this.contextRunner.withUserConfiguration(SecurityConfiguration.class)
+			.withBean(TestEndpoint.class, TestEndpoint::new)
 			.withBean("corsConfigurationSource", CorsConfigurationSource.class, () -> source)
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 			.run((context) -> {
-				WebTestClient client = WebTestClient.bindToApplicationContext(context).apply(springSecurity()).build();
+				WebTestClient client = WebTestClient.bindToApplicationContext(context)
+					.apply(springSecurity())
+					.configureClient()
+					.baseUrl("https://app.example.com")
+					.build();
 				client.get()
 					.uri(BASE_PATH + "/test")
 					.header(HttpHeaders.ORIGIN, "elsewhere.example.com")
@@ -258,19 +264,13 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	void userSecurityWebFilterChainIsPreserved() {
-		SecurityWebFilterChain userChain = mock(SecurityWebFilterChain.class);
-		this.contextRunner.withBean(SecurityWebFilterChain.class, () -> userChain)
-			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-					"vcap.application.cf_api:https://my-cloud-controller.com")
+	void otherPathsRejectedBySpringSecurity() {
+		this.contextRunner.withUserConfiguration(SecurityConfiguration.class)
+			.withBean(TestEndpoint.class, TestEndpoint::new)
+			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 			.run((context) -> {
-				assertThat(context.getBean(WebFilterChainProxy.class))
-					.extracting("filters", InstanceOfAssertFactories.list(SecurityWebFilterChain.class))
-					.hasSize(2)
-					.satisfies((filters) -> {
-						assertThat(getMatches(filters, BASE_PATH)).isTrue();
-						assertThat(filters.get(1)).isSameAs(userChain);
-					});
+				WebTestClient client = WebTestClient.bindToApplicationContext(context).apply(springSecurity()).build();
+				client.get().uri("/test").exchange().expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED);
 			});
 	}
 
@@ -317,7 +317,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 					.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId()))
 					.findFirst()
 					.get();
-				assertThat(endpoint.getOperations()).hasSize(1);
+				assertThat(endpoint.getOperations()).hasSize(2);
 				WebOperation operation = endpoint.getOperations().iterator().next();
 				assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
 			});
@@ -460,6 +460,16 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 		MapReactiveUserDetailsService userDetailsService() {
 			return new MapReactiveUserDetailsService(
 					User.withUsername("alice").password("secret").roles("admin").build());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SecurityConfiguration {
+
+		@Bean
+		SecurityWebFilterChain appSecurity(ServerHttpSecurity httpSecurity) {
+			return httpSecurity.authorizeExchange((spec) -> spec.anyExchange().denyAll()).build();
 		}
 
 	}

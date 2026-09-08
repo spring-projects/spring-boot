@@ -54,6 +54,7 @@ import org.springframework.boot.info.GitProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -159,9 +160,9 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ ServerHttpSecurity.class, SecurityWebFilterChain.class, WebFilterChainProxy.class })
-	static class IgnoredPathsSecurityConfiguration {
+	static class PermitAllCloudFoundrySecurityConfiguration {
 
-		private static final int FILTER_CHAIN_ORDER = -1;
+		private static final int FILTER_CHAIN_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 		@Bean
 		@Order(FILTER_CHAIN_ORDER)
