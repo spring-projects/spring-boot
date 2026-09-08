@@ -28,7 +28,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.AccessLevel;
-import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.CloudFoundryAuthorizationException.Reason;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -100,9 +99,11 @@ class SecurityInterceptorTests {
 			.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
 			.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
-			.consumeErrorWith((ex) -> assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE))
-			.verify();
+			.consumeNextWith(
+					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus())
+						.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus()))
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -111,9 +112,11 @@ class SecurityInterceptorTests {
 		MockServerWebExchange request = MockServerWebExchange
 			.from(MockServerHttpRequest.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
-			.consumeErrorWith((ex) -> assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE))
-			.verify();
+			.consumeNextWith(
+					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus())
+						.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus()))
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
