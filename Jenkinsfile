@@ -101,14 +101,15 @@ pipeline {
                     try {
                         sh '''
                             REPO_NAME=$(basename ${GIT_URL} .git)
+                            REPO_OWNER="Archana584-jpg"
                             
                             curl -X POST \
                               -H "Authorization: token ${GITHUB_TOKEN}" \
                               -H "Accept: application/vnd.github.v3+json" \
-                              https://api.github.com/repos/HELPIIndia/${REPO_NAME}/statuses/${GIT_COMMIT} \
+                              https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/statuses/${GIT_COMMIT} \
                               -d "{\\"state\\":\\"${status}\\",\\"description\\":\\"${description}\\",\\"context\\":\\"SonarQube/QualityGate\\",\\"target_url\\":\\"${SONAR_HOST}/dashboard?id=${PROJECT_KEY}\\"}"
                         '''
-                        echo "GitHub status posted"
+                        echo "GitHub status posted successfully"
                     } catch (Exception e) {
                         echo "⚠️ Warning: GitHub status post failed: ${e.message}"
                     }
