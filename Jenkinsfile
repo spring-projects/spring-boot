@@ -11,7 +11,8 @@ pipeline {
         SONAR_HOST = 'http://15.206.213.78:9000'
         SONAR_TOKEN = credentials('sonar-token')
         GITHUB_TOKEN = credentials('archana-sonar')
-        PROJECT_KEY = "ongrid-${env.JOB_NAME}"
+        // Replace slashes with dashes for valid project key
+        PROJECT_KEY = "ongrid-${env.JOB_NAME.replaceAll('/', '-')}"
         DOCKER_IMAGE = "ongrid-scan-${env.BUILD_NUMBER}"
     }
     
@@ -49,7 +50,7 @@ pipeline {
         stage('⏱️ Quality Gate Check') {
             steps {
                 script {
-                    echo "Checking Quality Gate status..."
+                    echo "Checking Quality Gate status for: ${PROJECT_KEY}"
                     
                     def qgStatus = ''
                     def attempts = 0
