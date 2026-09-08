@@ -42,7 +42,7 @@ class SampleDataElasticsearchApplicationTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticSearch = TestImage.forContainer(ElasticsearchContainer.class);
+	static final ElasticsearchContainer elasticSearch = TestImage.ELASTICSEARCH.container();
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;

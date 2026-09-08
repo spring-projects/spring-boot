@@ -46,7 +46,7 @@ class DataElasticsearchTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticsearch = TestImage.forContainer(ElasticsearchContainer.class);
+	static final ElasticsearchContainer elasticsearch = TestImage.ELASTICSEARCH.container();
 
 	@Autowired
 	private ExampleRepository exampleRepository;
