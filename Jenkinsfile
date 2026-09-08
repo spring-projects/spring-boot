@@ -11,14 +11,16 @@ pipeline {
         SONAR_HOST = 'http://15.206.213.78:9000'
         SONAR_TOKEN = credentials('sonar-token')
         GITHUB_TOKEN = credentials('archana-sonar')
-        PROJECT_KEY = "ongrid-${env.JOB_NAME.replaceAll('/', '-')}"
+        // Use BRANCH_NAME - automatically replaces slashes with dashes in multibranch
+        PROJECT_KEY = "ongrid-${env.BRANCH_NAME.replaceAll('/', '-')}"
         DOCKER_IMAGE = "ongrid-scan-${env.BUILD_NUMBER}"
     }
     
     stages {
         stage('📥 Checkout') {
             steps {
-                echo "Checking out code from: ${env.GIT_URL}"
+                echo "Branch: ${env.BRANCH_NAME}"
+                echo "Project Key: ${PROJECT_KEY}"
                 checkout scm
             }
         }
