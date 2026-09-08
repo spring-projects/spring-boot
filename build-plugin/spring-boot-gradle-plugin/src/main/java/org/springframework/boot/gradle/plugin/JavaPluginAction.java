@@ -281,40 +281,46 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		productionRuntimeClasspath.attributes((attributes) -> {
-			ProviderFactory providers = project.getProviders();
-			AttributeContainer sourceAttributes = runtimeClasspath.getAttributes();
-			for (Attribute attribute : sourceAttributes.keySet()) {
-				attributes.attributeProvider(attribute,
-						providers.provider(() -> sourceAttributes.getAttribute(attribute)));
-			}
-		});
+		copyAttributes(project, runtimeClasspath, productionRuntimeClasspath);
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
 		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
 		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
 		productionRuntimeClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void copyAttributes(Project project, Configuration sourceConfiguration, Configuration targetConfiguration) {
+		targetConfiguration.attributes((attributes) -> {
+			ProviderFactory providers = project.getProviders();
+			AttributeContainer sourceAttributes = sourceConfiguration.getAttributes();
+			for (Attribute attribute : sourceAttributes.keySet()) {
+				attributes.attributeProvider(attribute,
+						providers.provider(() -> sourceAttributes.getAttribute(attribute)));
+			}
+		});
+	}
+
 	private void configureDevelopmentOnlyConfiguration(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
 			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		developmentOnly.setCanBeConsumed(false);
 		developmentOnly
 			.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-
 		runtimeClasspath.extendsFrom(developmentOnly);
+		copyAttributes(project, runtimeClasspath, developmentOnly);
 	}
 
 	private void configureTestAndDevelopmentOnlyConfiguration(Project project) {
 		Configuration testAndDevelopmentOnly = project.getConfigurations()
 			.create(SpringBootPlugin.TEST_AND_DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		testAndDevelopmentOnly.setCanBeConsumed(false);
 		testAndDevelopmentOnly
 			.setDescription("Configuration for test and development-only dependencies such as Spring Boot's DevTools.");
 		Configuration runtimeClasspath = project.getConfigurations()
@@ -323,6 +329,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Configuration testImplementation = project.getConfigurations()
 			.getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME);
 		testImplementation.extendsFrom(testAndDevelopmentOnly);
+		copyAttributes(project, runtimeClasspath, testAndDevelopmentOnly);
 	}
 
 	private void configureSpringBootStarterTestToDependOnJUnitPlatformLauncher(Project project) {
