@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.SessionCookieConfig;
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -49,8 +48,6 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.util.Assert;
-import org.springframework.web.context.ServletContextAware;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -128,14 +125,7 @@ public final class SessionAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnWarDeployment
-		static class WarDeploymentConfiguration implements ServletContextAware {
-
-			private @Nullable ServletContext servletContext;
-
-			@Override
-			public void setServletContext(ServletContext servletContext) {
-				this.servletContext = servletContext;
-			}
+		static class WarDeploymentConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
@@ -146,12 +136,11 @@ public final class SessionAutoConfiguration {
 			@Bean
 			@Conditional(DefaultCookieSerializerCondition.class)
 			DefaultCookieSerializer cookieSerializer(
-					ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
+					ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers,
+					ServletContext servletContext) {
 				DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 				PropertyMapper map = PropertyMapper.get();
-				Assert.notNull(this.servletContext,
-						"ServletContext is required for session configuration in a war deployment");
-				SessionCookieConfig cookie = this.servletContext.getSessionCookieConfig();
+				SessionCookieConfig cookie = servletContext.getSessionCookieConfig();
 				map.from(cookie::getName).to(cookieSerializer::setCookieName);
 				map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
 				map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
