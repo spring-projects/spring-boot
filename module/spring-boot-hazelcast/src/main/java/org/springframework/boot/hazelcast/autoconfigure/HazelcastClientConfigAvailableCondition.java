@@ -78,7 +78,7 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 		private static String existingConfigurationOutcome(Resource resource, boolean client) throws IOException {
 			URL location = resource.getURL();
 			return client ? "Hazelcast client configuration detected at '" + location + "'"
-					: "Hazelcast server configuration detected  at '" + location + "'";
+					: "Hazelcast server configuration detected at '" + location + "'";
 		}
 
 	}
