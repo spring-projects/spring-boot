@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.springframework.util.Assert;
  * {@link AutoConfigureAfter @AutoConfigureAfter} annotations (without loading classes).
  *
  * @author Phillip Webb
+ * @author Junggi Kim
  */
 class AutoConfigurationSorter {
 
@@ -120,6 +122,8 @@ class AutoConfigurationSorter {
 
 		private final Map<String, AutoConfigurationClass> classes = new LinkedHashMap<>();
 
+		private final Map<String, Set<String>> classesRequestedAfterCache = new HashMap<>();
+
 		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				@Nullable AutoConfigurationMetadata autoConfigurationMetadata, Collection<String> classNames) {
 			addToClasses(metadataReaderFactory, autoConfigurationMetadata, classNames, true);
@@ -157,13 +161,17 @@ class AutoConfigurationSorter {
 		}
 
 		Set<String> getClassesRequestedAfter(String className) {
+			return this.classesRequestedAfterCache.computeIfAbsent(className, this::computeClassesRequestedAfter);
+		}
+
+		private Set<String> computeClassesRequestedAfter(String className) {
 			Set<String> classesRequestedAfter = new LinkedHashSet<>(get(className).getAfter());
 			this.classes.forEach((name, autoConfigurationClass) -> {
 				if (autoConfigurationClass.getBefore().contains(className)) {
 					classesRequestedAfter.add(name);
 				}
 			});
-			return classesRequestedAfter;
+			return Collections.unmodifiableSet(classesRequestedAfter);
 		}
 
 	}

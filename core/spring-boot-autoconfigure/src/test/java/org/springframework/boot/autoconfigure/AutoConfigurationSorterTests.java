@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Alexandre Baron
+ * @author Junggi Kim
  */
 class AutoConfigurationSorterTests {
 
@@ -186,6 +187,20 @@ class AutoConfigurationSorterTests {
 	void byAutoConfigureAfterWithMissing() {
 		List<String> actual = getInPriorityOrder(A, B);
 		assertThat(actual).containsExactly(B, A);
+	}
+
+	@Test
+	void orderIsStableForLargerMixedGraph() {
+		List<String> actual = getInPriorityOrder(LOWEST, HIGHEST, DEFAULT, A, A2, B, C, E, W, W2, X, Y, Z);
+		assertThat(actual).containsExactly(HIGHEST, C, E, W, W2, B, A, A2, Z, Y, X, DEFAULT, LOWEST);
+	}
+
+	@Test
+	void byAutoConfigureAfterWithCycleReportsTheSamePair() {
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata,
+				REPLACEMENT_MAPPER);
+		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(A, B, C, D))
+			.withMessage("AutoConfigure cycle detected between " + D + " and " + A);
 	}
 
 	@Test
