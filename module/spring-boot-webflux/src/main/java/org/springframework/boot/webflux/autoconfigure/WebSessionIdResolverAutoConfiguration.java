@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie;
-import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
@@ -76,7 +75,7 @@ public final class WebSessionIdResolverAutoConfiguration {
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
 		map.from(cookie::getPartitioned).to(builder::partitioned);
-		map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(builder::sameSite);
+		map.from(cookie::getSameSite).to((sameSite) -> builder.sameSite(sameSite.attributeValue()));
 	}
 
 }

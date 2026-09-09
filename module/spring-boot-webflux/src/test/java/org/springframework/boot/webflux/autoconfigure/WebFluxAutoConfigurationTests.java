@@ -88,6 +88,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -683,6 +684,16 @@ class WebFluxAutoConfigurationTests {
 	void defaultSessionMaxSessionsConfigurationShouldBeInSync() {
 		int defaultMaxSessions = new InMemoryWebSessionStore().getMaxSessions();
 		this.contextRunner.run(assertMaxSessionsWithWebSession(defaultMaxSessions));
+	}
+
+	@Test
+	void cookieSerializerUsesLaxSameSitePolicyByDefault() {
+		this.contextRunner.run(assertExchangeWithSession((exchange) -> {
+			MultiValueMap<String, ResponseCookie> stuff = exchange.getResponse().getCookies();
+			List<ResponseCookie> cookies = stuff.get("SESSION");
+			assertThat(cookies).isNotEmpty();
+			assertThat(cookies).extracting(ResponseCookie::getSameSite).containsOnly("Lax");
+		}));
 	}
 
 	@Test
