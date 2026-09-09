@@ -20,10 +20,12 @@ pluginManagement {
 		def properties = new Properties()
 		properties.load(it)
 		properties.forEach(settings.ext::set)
-		gradle.rootProject {
+		gradle.lifecycle.beforeProject {
 			properties.forEach(project.ext::set)
 		}
 	}
 }
+
+enableFeaturePreview("NO_IMPLICIT_LOOKUP_IN_PARENT_PROJECTS")
 
 include 'cycle-detection-plugin'
