@@ -35,11 +35,8 @@ tasks.register("syncMavenRepository", Sync) {
 
 systemTest {
 	dependsOn syncMavenRepository
-	if (project.hasProperty("springBootVersion")) {
-		systemProperty "springBootVersion", project.properties["springBootVersion"]
-	} else {
-		systemProperty "springBootVersion", project.getVersion()
-	}
+	systemProperty "springBootVersion",
+			providers.gradleProperty("springBootVersion").getOrElse(project.getVersion().toString())
 }
 
 dependencies {

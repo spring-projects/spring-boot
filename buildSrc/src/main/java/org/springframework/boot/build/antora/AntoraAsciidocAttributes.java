@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.ProviderFactory;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
@@ -59,7 +60,7 @@ public class AntoraAsciidocAttributes {
 
 	private final ResolvedBom resolvedBom;
 
-	private final Map<String, ?> projectProperties;
+	private final ProviderFactory providers;
 
 	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom, ResolvedBom resolvedBom) {
 		this.version = String.valueOf(project.getVersion());
@@ -68,7 +69,7 @@ public class AntoraAsciidocAttributes {
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.resolvedBom = resolvedBom;
-		this.projectProperties = project.getProperties();
+		this.providers = project.getProviders();
 	}
 
 	public Map<String, String> get() {
@@ -108,10 +109,11 @@ public class AntoraAsciidocAttributes {
 
 	private void addVersionAttributes(Map<String, String> attributes, Map<String, String> internal) {
 		this.libraries.forEach((library) -> addVersionAttributes(attributes, library));
-		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
-		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
+		attributes.put("version-native-build-tools",
+				this.providers.gradleProperty("nativeBuildToolsVersion").getOrNull());
+		attributes.put("version-graal", this.providers.gradleProperty("graalVersion").getOrNull());
 		attributes.put("version-protobuf-gradle-plugin",
-				(String) this.projectProperties.get("protobufGradlePluginVersion"));
+				this.providers.gradleProperty("protobufGradlePluginVersion").getOrNull());
 	}
 
 	private void addVersionAttributes(Map<String, String> attributes, Library library) {
