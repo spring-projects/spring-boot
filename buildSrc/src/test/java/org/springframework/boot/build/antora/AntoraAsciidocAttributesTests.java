@@ -26,6 +26,8 @@ import java.util.function.Function;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.BomExtension;
@@ -113,6 +115,13 @@ class AntoraAsciidocAttributesTests {
 		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), Map.of("nativeBuildToolsVersion", "3.4.5"));
 		assertThat(attributes.get()).containsEntry("version-native-build-tools", "3.4.5");
+	}
+
+	@Test
+	void versionGraal() {
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), Map.of("graalVersion", "25"));
+		assertThat(attributes.get()).containsEntry("version-graal", "25");
 	}
 
 	@Test
@@ -234,7 +243,6 @@ class AntoraAsciidocAttributesTests {
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private AntoraAsciidocAttributes attributes(String version, boolean latestVersion, BuildType buildType,
 			List<Library> libraries, Map<String, String> dependencyVersions, Map<String, ?> projectProperties) {
 		libraries = (libraries != null) ? libraries : Collections.emptyList();
@@ -246,7 +254,8 @@ class AntoraAsciidocAttributesTests {
 		given(project.findProperty("latestVersion")).willReturn(String.valueOf(latestVersion));
 		given(project.findProperty("spring.build-type"))
 			.willReturn((buildType == BuildType.OPEN_SOURCE) ? "oss" : "commercial");
-		given(project.getProperties()).willReturn((Map) projectProperties);
+		ProviderFactory providers = mockProviders(projectProperties);
+		given(project.getProviders()).willReturn(providers);
 		given(project.getExtensions()).willReturn(extensions);
 		given(extensions.getExtraProperties()).willReturn(extraPropertiesExtension);
 		BomExtension dependencyBom = mock();
@@ -260,6 +269,17 @@ class AntoraAsciidocAttributesTests {
 			return dependencyVersions.get(module.moduleNames().get(0));
 		});
 		return new AntoraAsciidocAttributes(project, dependencyBom, resolvedBom);
+	}
+
+	private ProviderFactory mockProviders(Map<String, ?> projectProperties) {
+		ProviderFactory providers = mock();
+		given(providers.gradleProperty(any(String.class))).willAnswer((invocation) -> {
+			String propertyName = invocation.getArgument(0);
+			Provider<Object> provider = mock();
+			given(provider.getOrNull()).willReturn(projectProperties.get(propertyName));
+			return provider;
+		});
+		return providers;
 	}
 
 	private Library mockLibrary(Map<LinkType, List<Link>> links) {
