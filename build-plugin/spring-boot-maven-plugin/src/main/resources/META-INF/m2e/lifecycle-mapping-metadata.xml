@@ -13,5 +13,18 @@
 				</execute>
 			</action>
 		</pluginExecution>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<goals>
+					<goal>process-aot</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute>
+					<runOnIncremental>false</runOnIncremental>
+					<runOnConfiguration>true</runOnConfiguration>
+				</execute>
+			</action>
+		</pluginExecution>
 	</pluginExecutions>
 </lifecycleMappingMetadata>
