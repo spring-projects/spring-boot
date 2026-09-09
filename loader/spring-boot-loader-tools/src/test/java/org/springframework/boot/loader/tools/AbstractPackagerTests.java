@@ -687,31 +687,26 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	}
 
 	@Test
-	void sbomManifestEntriesAreWritten() throws IOException {
-		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("META-INF/sbom/application.cdx.json", new ByteArrayInputStream(new byte[0]));
-		P packager = createPackager(this.testJarFile.getFile());
-		execute(packager, NO_LIBRARIES);
-		Manifest manifest = getPackagedManifest();
-		assertThat(manifest).isNotNull();
-		assertThat(manifest.getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
-		assertThat(manifest.getMainAttributes().getValue("Sbom-Location"))
-			.isEqualTo("META-INF/sbom/application.cdx.json");
+	void sbomManifestEntriesAreWrittenForJar() throws IOException {
+		sbomManifestEntriesAreWritten(new Layouts.Jar(), "");
 	}
 
 	@Test
 	void sbomManifestEntriesAreWrittenForWar() throws IOException {
-		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("WEB-INF/classes/META-INF/sbom/application.cdx.json",
-				new ByteArrayInputStream(new byte[0]));
+		sbomManifestEntriesAreWritten(new Layouts.War(), "WEB-INF/classes/");
+	}
+
+	private void sbomManifestEntriesAreWritten(Layout layout, String prefix) throws IOException {
+		this.testJarFile.addClass(prefix + "com/example/Application.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile(prefix + "META-INF/sbom/application.cdx.json", new ByteArrayInputStream(new byte[0]));
 		P packager = createPackager(this.testJarFile.getFile());
-		packager.setLayout(new Layouts.War());
+		packager.setLayout(layout);
 		execute(packager, NO_LIBRARIES);
 		Manifest manifest = getPackagedManifest();
 		assertThat(manifest).isNotNull();
 		assertThat(manifest.getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
 		assertThat(manifest.getMainAttributes().getValue("Sbom-Location"))
-			.isEqualTo("WEB-INF/classes/META-INF/sbom/application.cdx.json");
+			.isEqualTo(prefix + "META-INF/sbom/application.cdx.json");
 	}
 
 	private File createLibraryJar() throws IOException {
