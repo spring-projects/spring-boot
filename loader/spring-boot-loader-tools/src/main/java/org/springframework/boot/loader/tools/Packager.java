@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Cobi Eun
  * @since 2.3.0
  */
 public abstract class Packager {
@@ -422,7 +423,8 @@ public abstract class Packager {
 	}
 
 	private boolean isCycloneDxBom(JarEntry entry) {
-		if (!entry.getName().startsWith("META-INF/sbom/")) {
+		if (!entry.getName().startsWith("META-INF/sbom/")
+				&& !entry.getName().startsWith(getLayout().getClassesLocation() + "META-INF/sbom/")) {
 			return false;
 		}
 		return entry.getName().endsWith(".cdx.json") || entry.getName().endsWith("/bom.json");
