@@ -46,6 +46,7 @@ import org.jspecify.annotations.Nullable;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Wan bin yu
  * @see BootJar
  * @see BootWar
  */
@@ -81,6 +82,7 @@ class BootArchiveSupport {
 		this.librarySpec = librarySpec;
 		this.compressionResolver = compressionResolver;
 		this.requiresUnpack.include(Specs.satisfyNone());
+		this.exclusions.exclude("**/META-INF/additional-spring-configuration-metadata.json");
 	}
 
 	void configureManifest(Manifest manifest, String mainClass, String classes, String lib,
