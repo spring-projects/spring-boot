@@ -32,7 +32,6 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SslBundleKey}.
  *
  * @author Phillip Webb
- * @author Benedict
  */
 class SslBundleKeyTests {
 
@@ -72,7 +71,7 @@ class SslBundleKeyTests {
 		given(keyStore.containsAlias("alias")).willThrow(KeyStoreException.class);
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
 		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
-			.withMessage("Could not validate keystore alias 'alias'");
+			.withMessage("Could not determine if keystore contains alias 'alias'");
 	}
 
 	@Test
@@ -80,6 +79,16 @@ class SslBundleKeyTests {
 		KeyStore keyStore = mock(KeyStore.class);
 		given(keyStore.containsAlias("alias")).willReturn(true);
 		given(keyStore.isKeyEntry("alias")).willReturn(false);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Keystore alias 'alias' is not a key entry");
+	}
+
+	@Test
+	void assertContainsAliasWhenAliasIsTrustedCertificateEntryThrowsException() throws Exception {
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(null);
+		keyStore.setCertificateEntry("alias", mock(Certificate.class));
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
 		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
 			.withMessage("Keystore alias 'alias' is not a key entry");
@@ -115,6 +124,16 @@ class SslBundleKeyTests {
 		given(keyStore.getCertificateChain("alias")).willReturn(new Certificate[] { mock(Certificate.class) });
 		SslBundleKey key = SslBundleKey.of("secret", "alias");
 		assertThatNoException().isThrownBy(() -> key.assertContainsAlias(keyStore));
+	}
+
+	@Test
+	void assertContainsAliasWhenKeyEntryValidationFailsThrowsValidationException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(true);
+		given(keyStore.isKeyEntry("alias")).willThrow(KeyStoreException.class);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Could not validate keystore alias 'alias'");
 	}
 
 }

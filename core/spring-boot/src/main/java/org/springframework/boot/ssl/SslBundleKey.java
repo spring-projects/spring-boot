@@ -18,6 +18,7 @@ package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 
 import org.jspecify.annotations.Nullable;
 
@@ -29,7 +30,6 @@ import org.springframework.util.StringUtils;
  * A reference to a single key obtained via {@link SslBundle}.
  *
  * @author Phillip Webb
- * @author Benedict
  * @since 3.1.0
  */
 public interface SslBundleKey {
@@ -65,15 +65,21 @@ public interface SslBundleKey {
 			try {
 				Assert.state(keyStore.containsAlias(alias),
 						() -> String.format("Keystore does not contain alias '%s'", alias));
+			}
+			catch (KeyStoreException ex) {
+				throw new IllegalStateException(
+						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+			}
+			try {
 				Assert.state(keyStore.isKeyEntry(alias),
 						() -> String.format("Keystore alias '%s' is not a key entry", alias));
-				var chain = keyStore.getCertificateChain(alias);
+				Certificate[] chain = keyStore.getCertificateChain(alias);
 				Assert.state(chain != null && chain.length > 0,
 						() -> String.format("Keystore alias '%s' does not have a certificate chain", alias));
 			}
 			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not validate keystore alias '%s'", alias), ex);
+				throw new IllegalStateException(String.format("Could not validate keystore alias '%s'", alias),
+						ex);
 			}
 		}
 	}
