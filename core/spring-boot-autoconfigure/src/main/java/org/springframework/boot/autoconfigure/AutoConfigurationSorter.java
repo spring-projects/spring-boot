@@ -18,11 +18,14 @@ package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -86,27 +89,40 @@ class AutoConfigurationSorter {
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes, List<String> classNames) {
 		List<String> toSort = new ArrayList<>(classNames);
 		toSort.addAll(classes.getAllNames());
+		Map<String, Deque<Integer>> positions = new HashMap<>();
+		for (int i = 0; i < toSort.size(); i++) {
+			positions.computeIfAbsent(toSort.get(i), (name) -> new ArrayDeque<>()).addLast(i);
+		}
+		Deque<String> queue = new ArrayDeque<>(toSort);
 		Set<String> sorted = new LinkedHashSet<>();
 		Set<String> processing = new LinkedHashSet<>();
-		while (!toSort.isEmpty()) {
-			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
+		while (!queue.isEmpty()) {
+			doSortByAfterAnnotation(classes, queue, positions, sorted, processing, null);
 		}
-		sorted.retainAll(classNames);
+		sorted.retainAll(new HashSet<>(classNames));
 		return new ArrayList<>(sorted);
 	}
 
-	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, List<String> toSort, Set<String> sorted,
-			Set<String> processing, @Nullable String current) {
+	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, Deque<String> queue,
+			Map<String, Deque<Integer>> positions, Set<String> sorted, Set<String> processing,
+			@Nullable String current) {
 		if (current == null) {
-			current = toSort.remove(0);
+			current = queue.removeFirst();
+			positions.computeIfPresent(current, (name, remaining) -> {
+				remaining.removeFirst();
+				return (!remaining.isEmpty()) ? remaining : null;
+			});
 		}
 		processing.add(current);
-		Set<String> afters = new TreeSet<>(Comparator.comparing(toSort::indexOf));
+		Set<String> afters = new TreeSet<>(Comparator.comparingInt((String name) -> {
+			Deque<Integer> remaining = positions.get(name);
+			return (remaining != null) ? remaining.peekFirst() : -1;
+		}));
 		afters.addAll(classes.getClassesRequestedAfter(current));
 		for (String after : afters) {
 			checkForCycles(processing, current, after);
-			if (!sorted.contains(after) && toSort.contains(after)) {
-				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
+			if (!sorted.contains(after) && positions.containsKey(after)) {
+				doSortByAfterAnnotation(classes, queue, positions, sorted, processing, after);
 			}
 		}
 		processing.remove(current);

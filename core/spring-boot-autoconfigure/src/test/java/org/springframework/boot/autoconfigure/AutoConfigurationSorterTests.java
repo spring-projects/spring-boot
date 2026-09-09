@@ -204,6 +204,24 @@ class AutoConfigurationSorterTests {
 	}
 
 	@Test
+	void byAutoConfigureAfterWithDuplicatesInInput() {
+		List<String> actual = getInPriorityOrder(A, B, C, B, A, C);
+		assertThat(actual).containsExactly(C, B, A);
+	}
+
+	@Test
+	void byAutoConfigureAfterWithTransitivelyDiscoveredClassesNotRequested() {
+		List<String> actual = getInPriorityOrder(A, C);
+		assertThat(actual).containsExactly(C, A);
+	}
+
+	@Test
+	void orderIsStableForLargerMixedGraphWithReversedInput() {
+		List<String> actual = getInPriorityOrder(Z, Y, X, W2, W, E, C, B, A2, A, DEFAULT, HIGHEST, LOWEST);
+		assertThat(actual).containsExactly(HIGHEST, C, E, W, W2, B, A, A2, Z, Y, X, DEFAULT, LOWEST);
+	}
+
+	@Test
 	void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata,
 				REPLACEMENT_MAPPER);
