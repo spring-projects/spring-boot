@@ -38,6 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Junggi Kim
  */
 class IndexedLayersTests {
 
@@ -84,6 +85,13 @@ class IndexedLayersTests {
 	}
 
 	@Test
+	void getLayerWhenNameIsInMultipleLayersReturnsFirstLayer() {
+		IndexedLayers layers = new IndexedLayers(createIndexWithDuplicateName(), "BOOT-INF/classes");
+		assertThat(layers.getLayer(mockEntry("BOOT-INF/lib/a.jar"))).isEqualTo("first");
+		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("first");
+	}
+
+	@Test
 	void getLayerWhenFileHasSpaceReturnsLayer() throws Exception {
 		IndexedLayers layers = new IndexedLayers(getIndex(), "BOOT-INF/classes");
 		assertThat(layers.getLayer(mockEntry("a b/c d"))).isEqualTo("application");
@@ -100,6 +108,17 @@ class IndexedLayersTests {
 
 	private String getIndex() throws Exception {
 		return getFile("test-layers.idx");
+	}
+
+	private String createIndexWithDuplicateName() {
+		return """
+				- "first":
+				  - "BOOT-INF/lib/a.jar"
+				  - "META-INF/"
+				- "second":
+				  - "BOOT-INF/lib/a.jar"
+				  - "META-INF/"
+				""";
 	}
 
 	private String getFile(String fileName) throws Exception {
