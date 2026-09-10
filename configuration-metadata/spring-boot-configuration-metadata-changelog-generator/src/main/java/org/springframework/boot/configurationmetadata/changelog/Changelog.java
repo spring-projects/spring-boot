@@ -18,6 +18,7 @@ package org.springframework.boot.configurationmetadata.changelog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
@@ -34,6 +35,7 @@ import org.springframework.boot.configurationmetadata.Deprecation.Level;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yoobin Yoon
+ * @author Junggi Kim
  */
 record Changelog(String oldVersionNumber, String newVersionNumber, List<Difference> differences) {
 
@@ -44,19 +46,18 @@ record Changelog(String oldVersionNumber, String newVersionNumber, List<Differen
 
 	static List<Difference> computeDifferences(ConfigurationMetadataRepository oldMetadata,
 			ConfigurationMetadataRepository newMetadata) {
-		List<String> seenIds = new ArrayList<>();
+		Map<String, ConfigurationMetadataProperty> oldProperties = oldMetadata.getAllProperties();
+		Map<String, ConfigurationMetadataProperty> newProperties = newMetadata.getAllProperties();
 		List<Difference> differences = new ArrayList<>();
-		for (ConfigurationMetadataProperty oldProperty : oldMetadata.getAllProperties().values()) {
-			String id = oldProperty.getId();
-			seenIds.add(id);
-			ConfigurationMetadataProperty newProperty = newMetadata.getAllProperties().get(id);
+		for (ConfigurationMetadataProperty oldProperty : oldProperties.values()) {
+			ConfigurationMetadataProperty newProperty = newProperties.get(oldProperty.getId());
 			Difference difference = Difference.compute(oldProperty, newProperty);
 			if (difference != null) {
 				differences.add(difference);
 			}
 		}
-		for (ConfigurationMetadataProperty newProperty : newMetadata.getAllProperties().values()) {
-			if (!seenIds.contains(newProperty.getId())) {
+		for (ConfigurationMetadataProperty newProperty : newProperties.values()) {
+			if (!oldProperties.containsKey(newProperty.getId())) {
 				if (!newProperty.isDeprecated()) {
 					differences.add(new Difference(DifferenceType.ADDED, null, newProperty));
 				}
