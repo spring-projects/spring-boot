@@ -21,11 +21,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.util.LinkedMultiValueMap;
@@ -47,6 +48,7 @@ import org.springframework.util.MultiValueMap;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Junggi Kim
  * @since 2.3.0
  */
 public class LayersIndex {
@@ -116,28 +118,21 @@ public class LayersIndex {
 
 		private final Set<Layer> layers;
 
-		private final List<Node> children = new ArrayList<>();
+		private final Map<String, Node> children = new LinkedHashMap<>();
 
 		Node() {
-			this.name = "";
-			this.layers = new HashSet<>();
+			this("");
 		}
 
-		Node(String name, Layer layer) {
+		Node(String name) {
 			this.name = name;
-			this.layers = new HashSet<>(Collections.singleton(layer));
+			this.layers = new HashSet<>();
 		}
 
 		Node updateOrAddNode(String segment, boolean isDirectory, Layer layer) {
 			String name = segment + (isDirectory ? "/" : "");
-			for (Node child : this.children) {
-				if (name.equals(child.name)) {
-					child.layers.add(layer);
-					return child;
-				}
-			}
-			Node child = new Node(name, layer);
-			this.children.add(child);
+			Node child = this.children.computeIfAbsent(name, Node::new);
+			child.layers.add(layer);
 			return child;
 		}
 
@@ -147,7 +142,7 @@ public class LayersIndex {
 				index.add(this.layers.iterator().next(), name);
 			}
 			else {
-				for (Node child : this.children) {
+				for (Node child : this.children.values()) {
 					child.buildIndex(name, index);
 				}
 			}
