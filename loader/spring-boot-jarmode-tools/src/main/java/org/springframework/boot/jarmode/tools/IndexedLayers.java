@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,10 +43,15 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Moritz Halbritter
+ * @author Junggi Kim
  */
 class IndexedLayers implements Layers {
 
 	private final Map<String, List<String>> layers = new LinkedHashMap<>();
+
+	private final Map<String, String> layerByFileName = new HashMap<>();
+
+	private final Map<String, String> layerByDirectoryName = new LinkedHashMap<>();
 
 	private final String indexFileLocation;
 
@@ -70,6 +76,10 @@ class IndexedLayers implements Layers {
 			}
 		}
 		Assert.state(!this.layers.isEmpty(), "Empty layer index file loaded");
+		this.layers.forEach((layer, candidates) -> candidates.forEach((candidate) -> {
+			Map<String, String> index = candidate.endsWith("/") ? this.layerByDirectoryName : this.layerByFileName;
+			index.putIfAbsent(candidate, layer);
+		}));
 	}
 
 	@Override
@@ -84,11 +94,13 @@ class IndexedLayers implements Layers {
 
 	@Override
 	public String getLayer(String name) {
-		for (Map.Entry<String, List<String>> entry : this.layers.entrySet()) {
-			for (String candidate : entry.getValue()) {
-				if (candidate.equals(name) || (candidate.endsWith("/") && name.startsWith(candidate))) {
-					return entry.getKey();
-				}
+		String layer = this.layerByFileName.get(name);
+		if (layer != null) {
+			return layer;
+		}
+		for (Map.Entry<String, String> entry : this.layerByDirectoryName.entrySet()) {
+			if (name.startsWith(entry.getKey())) {
+				return entry.getValue();
 			}
 		}
 		throw new IllegalStateException("No layer defined in index for file '" + name + "'");
