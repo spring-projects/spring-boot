@@ -484,6 +484,21 @@ For details of how to configure an OAuth2 Resource Server to use with your gRPC 
 
 
 
+[[io.grpc.server.observability]]
+=== Observability
+
+Spring Boot provides auto-configuration of the javadoc:io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerInterceptor[] whenever Micrometer is available.
+This interceptor provides observability into your gRPC server applications.
+
+When Micrometer Tracing is also available, the observation carries the trace context and any xref:actuator/tracing.adoc#actuator.micrometer-tracing.baggage[baggage] found in the incoming gRPC metadata.
+This includes the W3C `baggage` header as well as the individual metadata keys listed in configprop:management.tracing.baggage.remote-fields[], so no additional interceptor is required to propagate baggage over gRPC.
+
+NOTE: The interceptor is provided by `micrometer-core`, so it is only auto-configured when that dependency is on the classpath (for example through `spring-boot-starter-actuator`).
+
+TIP: If you use Micrometer, but prefer to not to use it for gRPC, you can set configprop:spring.grpc.server.observation.enabled[] to `false`.
+
+
+
 [[io.grpc.client]]
 == Writing a gRPC Client Application
 
@@ -682,6 +697,10 @@ TIP: To disable the in-process channel factory, you can set the configprop:sprin
 
 Spring Boot provides auto-configuration of the javadoc:io.micrometer.core.instrument.binder.grpc.ObservationGrpcClientInterceptor[] whenever Micrometer is available.
 This interceptor provides observability into your gRPC client applications.
+
+When Micrometer Tracing is also available, the trace context and the current xref:actuator/tracing.adoc#actuator.micrometer-tracing.baggage[baggage] are written to the metadata of outgoing calls, using the W3C `baggage` header as well as the individual metadata keys listed in configprop:management.tracing.baggage.remote-fields[].
+
+NOTE: The interceptor is provided by `micrometer-core`, so it is only auto-configured when that dependency is on the classpath (for example through `spring-boot-starter-actuator`).
 
 TIP: If you use Micrometer, but prefer to not to use it for gRPC, you can set configprop:spring.grpc.client.observation.enabled[] to `false`.
 
