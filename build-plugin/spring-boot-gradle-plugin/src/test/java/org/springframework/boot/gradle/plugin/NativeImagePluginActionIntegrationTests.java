@@ -119,6 +119,11 @@ class NativeImagePluginActionIntegrationTests {
 	}
 
 	@TestTemplate
+	void bootBuildImageIsConfiguredWithNativeImageEnvironment() {
+		assertThat(this.gradleBuild.build("bootBuildImageEnvironment").getOutput()).contains("BP_NATIVE_IMAGE = true");
+	}
+
+	@TestTemplate
 	void nativeEntryIsAddedToManifest() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
 		BuildResult result = this.gradleBuild.build("bootJar");

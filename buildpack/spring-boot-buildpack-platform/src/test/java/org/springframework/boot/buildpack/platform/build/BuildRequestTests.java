@@ -170,6 +170,36 @@ class BuildRequestTests {
 	}
 
 	@Test
+	void getDefaultRunImageWhenNativeImageAndDefaultBuilderReturnsTinyRunImage() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withEnv("BP_NATIVE_IMAGE", "true");
+		assertThat(request.getDefaultRunImage())
+			.hasToString("docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest");
+	}
+
+	@Test
+	void getDefaultRunImageWhenNativeImageValueIsMixedCaseReturnsTinyRunImage() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withEnv("BP_NATIVE_IMAGE", "True");
+		assertThat(request.getDefaultRunImage())
+			.hasToString("docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest");
+	}
+
+	@Test
+	void getDefaultRunImageWhenNotNativeImageReturnsNull() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
+	void getDefaultRunImageWhenNativeImageAndCustomBuilderReturnsNull() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withBuilder(ImageReference.of("spring/builder"))
+			.withEnv("BP_NATIVE_IMAGE", "true");
+		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
 	void withRunImageUpdatesRunImage() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 			.withRunImage(ImageReference.of("example.com/custom/run-image:latest"));

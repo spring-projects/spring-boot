@@ -52,6 +52,8 @@ public class BuildRequest {
 
 	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
 
+	static final String DEFAULT_BUILDER_NATIVE_RUN_IMAGE_NAME = "paketobuildpacks/ubuntu-resolute-run-tiny";
+
 	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
 			ImageReference.of("paketobuildpacks/ubuntu-resolute-builder"),
 			ImageReference.of("paketobuildpacks/ubuntu-resolute-builder-buildpackless"),
@@ -545,6 +547,28 @@ public class BuildRequest {
 	 */
 	public @Nullable ImageReference getRunImage() {
 		return this.runImage;
+	}
+
+	/**
+	 * Return the run image that should be used by default when no run image has been
+	 * configured, or {@code null} if the builder's own default run image should be used.
+	 * A native image build ({@code BP_NATIVE_IMAGE=true}) that uses the default builder
+	 * defaults to a tiny run image.
+	 * @return the default run image or {@code null}
+	 */
+	@Nullable ImageReference getDefaultRunImage() {
+		if (isNativeImageBuild() && isDefaultBuilder()) {
+			return ImageReference.of(DEFAULT_BUILDER_NATIVE_RUN_IMAGE_NAME).inTaggedOrDigestForm();
+		}
+		return null;
+	}
+
+	private boolean isNativeImageBuild() {
+		return "true".equalsIgnoreCase(this.env.get("BP_NATIVE_IMAGE"));
+	}
+
+	private boolean isDefaultBuilder() {
+		return this.builder.getName().equals(DEFAULT_BUILDER.getName());
 	}
 
 	/**
