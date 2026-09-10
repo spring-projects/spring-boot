@@ -242,6 +242,7 @@ The baggage is automatically propagated over the network if you're using W3C pro
 If you're using B3 propagation, baggage is not automatically propagated.
 To manually propagate baggage over the network, use the configprop:management.tracing.baggage.remote-fields[] configuration property (this works for W3C, too).
 For the example above, setting this property to `baggage1` results in an HTTP header `baggage1: value1`.
+Baggage is propagated wherever Micrometer Observation instruments the transport, for example xref:io/grpc.adoc#io.grpc.server.observability[gRPC metadata] as well as HTTP headers.
 
 If you want to propagate the baggage to the MDC, use the configprop:management.tracing.baggage.correlation.fields[] configuration property.
 For the example above, setting this property to `baggage1` results in an MDC entry named `baggage1`.
