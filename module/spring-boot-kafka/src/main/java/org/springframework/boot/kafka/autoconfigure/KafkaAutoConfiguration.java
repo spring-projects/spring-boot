@@ -21,10 +21,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.config.SslConfigs;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -40,11 +36,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails.Configuration;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Jaas;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry.Topic.Backoff;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Template;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -64,7 +58,6 @@ import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.support.micrometer.KafkaTemplateObservationConvention;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.util.StringUtils;
 import org.springframework.util.backoff.BackOff;
 
 /**
@@ -131,8 +124,10 @@ public final class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(KafkaConnectionDetails connectionDetails,
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
-		Map<String, Object> properties = this.properties.buildConsumerProperties();
-		applyKafkaConnectionDetailsForConsumer(properties, connectionDetails);
+		Map<String, Object> properties = KafkaConfigBuilder.of(this.properties)
+			.consumer()
+			.withConnectionDetails(connectionDetails)
+			.build();
 		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(properties);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		return factory;
@@ -142,8 +137,10 @@ public final class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(KafkaConnectionDetails connectionDetails,
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers) {
-		Map<String, Object> properties = this.properties.buildProducerProperties();
-		applyKafkaConnectionDetailsForProducer(properties, connectionDetails);
+		Map<String, Object> properties = KafkaConfigBuilder.of(this.properties)
+			.producer()
+			.withConnectionDetails(connectionDetails)
+			.build();
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(properties);
 		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
 		if (transactionIdPrefix != null) {
@@ -179,8 +176,10 @@ public final class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	KafkaAdmin kafkaAdmin(KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = this.properties.buildAdminProperties();
-		applyKafkaConnectionDetailsForAdmin(properties, connectionDetails);
+		Map<String, Object> properties = KafkaConfigBuilder.of(this.properties)
+			.admin()
+			.withConnectionDetails(connectionDetails)
+			.build();
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
 		KafkaProperties.Admin admin = this.properties.getAdmin();
 		if (admin.getCloseTimeout() != null) {
@@ -209,30 +208,6 @@ public final class KafkaAutoConfiguration {
 		return builder.create(kafkaTemplate);
 	}
 
-	private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
-			KafkaConnectionDetails connectionDetails) {
-		Configuration consumer = connectionDetails.getConsumer();
-		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumer.getBootstrapServers());
-		applySecurityProtocol(properties, consumer.getSecurityProtocol());
-		applySslBundle(properties, consumer.getSslBundle());
-	}
-
-	private void applyKafkaConnectionDetailsForProducer(Map<String, Object> properties,
-			KafkaConnectionDetails connectionDetails) {
-		Configuration producer = connectionDetails.getProducer();
-		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producer.getBootstrapServers());
-		applySecurityProtocol(properties, producer.getSecurityProtocol());
-		applySslBundle(properties, producer.getSslBundle());
-	}
-
-	private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
-			KafkaConnectionDetails connectionDetails) {
-		Configuration admin = connectionDetails.getAdmin();
-		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, admin.getBootstrapServers());
-		applySecurityProtocol(properties, admin.getSecurityProtocol());
-		applySslBundle(properties, admin.getSslBundle());
-	}
-
 	static BackOff getBackOff(Backoff retryTopicBackoff) {
 		PropertyMapper map = PropertyMapper.get();
 		RetryPolicy.Builder builder = RetryPolicy.builder().maxRetries(Long.MAX_VALUE);
@@ -241,19 +216,6 @@ public final class KafkaAutoConfiguration {
 		map.from(retryTopicBackoff.getMultiplier()).to(builder::multiplier);
 		map.from(retryTopicBackoff.getJitter()).when((Predicate.not(Duration::isZero))).to(builder::jitter);
 		return builder.build().getBackOff();
-	}
-
-	static void applySslBundle(Map<String, Object> properties, @Nullable SslBundle sslBundle) {
-		if (sslBundle != null) {
-			properties.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, SslBundleSslEngineFactory.class);
-			properties.put(SslBundle.class.getName(), sslBundle);
-		}
-	}
-
-	static void applySecurityProtocol(Map<String, Object> properties, @Nullable String securityProtocol) {
-		if (StringUtils.hasLength(securityProtocol)) {
-			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
-		}
 	}
 
 	static class KafkaRuntimeHints implements RuntimeHintsRegistrar {

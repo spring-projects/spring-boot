@@ -18,7 +18,6 @@ package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.Map;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -61,8 +60,10 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
 			KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = this.properties.buildStreamsProperties();
-		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
+		Map<String, Object> properties = KafkaConfigBuilder.of(this.properties)
+			.streams()
+			.withConnectionDetails(connectionDetails)
+			.build();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
@@ -77,14 +78,6 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@Bean
 	StreamsBuilderFactoryBeanConfigurer kafkaPropertiesStreamsBuilderFactoryBeanConfigurer() {
 		return new KafkaPropertiesStreamsBuilderFactoryBeanConfigurer(this.properties);
-	}
-
-	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
-			KafkaConnectionDetails connectionDetails) {
-		KafkaConnectionDetails.Configuration streams = connectionDetails.getStreams();
-		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, streams.getBootstrapServers());
-		KafkaAutoConfiguration.applySecurityProtocol(properties, streams.getSecurityProtocol());
-		KafkaAutoConfiguration.applySslBundle(properties, streams.getSslBundle());
 	}
 
 	static class KafkaPropertiesStreamsBuilderFactoryBeanConfigurer implements StreamsBuilderFactoryBeanConfigurer {

@@ -41,7 +41,6 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -161,20 +160,15 @@ public class KafkaProperties {
 		return this.retry;
 	}
 
+	/**
+	 * Create an initial map of properties for common settings.
+	 * @return the consumer properties initialized with the customizations defined on this
+	 * instance
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link KafkaConfigBuilder}
+	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	private Map<String, Object> buildCommonProperties() {
-		Map<String, Object> properties = new LinkedHashMap<>();
-		if (this.bootstrapServers != null) {
-			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-		}
-		if (this.clientId != null) {
-			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
-		}
-		properties.putAll(this.ssl.buildProperties());
-		properties.putAll(this.security.buildProperties());
-		if (!CollectionUtils.isEmpty(this.properties)) {
-			properties.putAll(this.properties);
-		}
-		return properties;
+		return KafkaConfigBuilder.of(this).initializeKafkaConfig();
 	}
 
 	/**
@@ -182,13 +176,13 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaConsumerFactory} bean.
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
+	 * @return common and consumer properties initialized with the customizations defined
+	 * on this instance
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link KafkaConfigBuilder}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public Map<String, Object> buildConsumerProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.consumer.buildProperties());
-		return properties;
+		return KafkaConfigBuilder.of(this).consumer().build();
 	}
 
 	/**
@@ -196,13 +190,13 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaProducerFactory} bean.
-	 * @return the producer properties initialized with the customizations defined on this
-	 * instance
+	 * @return common and producer properties initialized with the customizations defined
+	 * on this instance
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link KafkaConfigBuilder}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public Map<String, Object> buildProducerProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.producer.buildProperties());
-		return properties;
+		return KafkaConfigBuilder.of(this).producer().build();
 	}
 
 	/**
@@ -210,26 +204,26 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaAdmin} bean.
-	 * @return the admin properties initialized with the customizations defined on this
-	 * instance
+	 * @return common and admin properties initialized with the customizations defined on
+	 * this instance
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link KafkaConfigBuilder}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public Map<String, Object> buildAdminProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.admin.buildProperties());
-		return properties;
+		return KafkaConfigBuilder.of(this).admin().build();
 	}
 
 	/**
 	 * Create an initial map of streams properties from the state of this instance.
 	 * <p>
 	 * This allows you to add additional properties, if necessary.
-	 * @return the streams properties initialized with the customizations defined on this
-	 * instance
+	 * @return common and streams properties initialized with the customizations defined
+	 * on this instance
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of {@link KafkaConfigBuilder}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public Map<String, Object> buildStreamsProperties() {
-		Map<String, Object> properties = buildCommonProperties();
-		properties.putAll(this.streams.buildProperties());
-		return properties;
+		return KafkaConfigBuilder.of(this).streams().build();
 	}
 
 	public static class Consumer {
@@ -444,6 +438,14 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
+		/**
+		 * Build the relevant consumer properties.
+		 * @return the consumer properties initialized with the customizations defined on
+		 * this instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get();
@@ -634,6 +636,14 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
+		/**
+		 * Build the relevant producer properties.
+		 * @return the producer properties initialized with the customizations defined on
+		 * this instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get();
@@ -755,6 +765,14 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
+		/**
+		 * Build the relevant admin properties.
+		 * @return the admin properties initialized with the customizations defined on
+		 * this instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get();
@@ -902,6 +920,14 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
+		/**
+		 * Build the relevant stream properties.
+		 * @return the stream properties initialized with the customizations defined on
+		 * this instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get();
@@ -1433,6 +1459,14 @@ public class KafkaProperties {
 			this.protocol = protocol;
 		}
 
+		/**
+		 * Build the relevant SSL properties.
+		 * @return the SSL properties initialized with the customizations defined on this
+		 * instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			validate();
 			String bundleName = getBundle();
@@ -1575,6 +1609,14 @@ public class KafkaProperties {
 			this.protocol = protocol;
 		}
 
+		/**
+		 * Build the relevant security properties.
+		 * @return the security properties initialized with the customizations defined on
+		 * this instance
+		 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+		 * {@link KafkaConfigBuilder}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get();

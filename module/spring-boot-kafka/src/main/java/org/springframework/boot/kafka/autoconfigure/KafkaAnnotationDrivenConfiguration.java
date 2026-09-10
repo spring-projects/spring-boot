@@ -161,8 +161,8 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
 			ObjectProvider<ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>>> kafkaContainerCustomizer) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-		configurer.configure(factory, kafkaConsumerFactory
-			.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
+		configurer.configure(factory, kafkaConsumerFactory.getIfAvailable(
+				() -> new DefaultKafkaConsumerFactory<>(KafkaConfigBuilder.of(this.properties).consumer().build())));
 		kafkaContainerCustomizer.ifAvailable(factory::setContainerCustomizer);
 		return factory;
 	}
