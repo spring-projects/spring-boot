@@ -392,7 +392,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		private Object getRemainingPathSegments(HttpServletRequest request) {
 			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
-			if (pathTokens.length == patternTokens.length) {
+			if (patternTokens.length > 0 && !"**".equals(patternTokens[patternTokens.length - 1])) {
 				return pathTokens;
 			}
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
