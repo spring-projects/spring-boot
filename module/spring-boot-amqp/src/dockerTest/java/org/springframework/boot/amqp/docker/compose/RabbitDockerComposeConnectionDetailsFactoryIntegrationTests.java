@@ -16,6 +16,9 @@
 
 package org.springframework.boot.amqp.docker.compose;
 
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -42,10 +45,26 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbit-ssl-compose.yaml", image = TestImage.RABBITMQ,
 			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key", "rabbitmq.conf" })
-	void runWithSslCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
+	void runWithSslCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) throws Exception {
 		assertConnectionDetails(connectionDetails);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
+		assertThatSslConnectionCanBeMade(connectionDetails, sslBundle);
+	}
+
+	private void assertThatSslConnectionCanBeMade(RabbitConnectionDetails connectionDetails, SslBundle sslBundle)
+			throws Exception {
+		ConnectionFactory connectionFactory = new ConnectionFactory();
+		Address address = connectionDetails.getFirstAddress();
+		connectionFactory.setHost(address.host());
+		connectionFactory.setPort(address.port());
+		connectionFactory.setUsername(connectionDetails.getUsername());
+		connectionFactory.setPassword(connectionDetails.getPassword());
+		connectionFactory.setVirtualHost(connectionDetails.getVirtualHost());
+		connectionFactory.useSslProtocol(sslBundle.createSslContext());
+		try (Connection connection = connectionFactory.newConnection()) {
+			assertThat(connection.isOpen()).isTrue();
+		}
 	}
 
 	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) {
