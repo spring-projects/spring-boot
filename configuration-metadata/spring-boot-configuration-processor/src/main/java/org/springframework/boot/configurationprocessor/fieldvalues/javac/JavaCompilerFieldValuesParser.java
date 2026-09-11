@@ -57,6 +57,16 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		return Collections.emptyMap();
 	}
 
+	@Override
+	public boolean hasSourceTree(TypeElement element) {
+		try {
+			return this.trees.getTree(element) != null;
+		}
+		catch (Exception ex) {
+			return true;
+		}
+	}
+
 	/**
 	 * {@link TreeVisitor} to collect fields.
 	 */
