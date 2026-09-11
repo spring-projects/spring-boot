@@ -62,6 +62,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Ondřej Světlík
+ * @author Wan bin yu
  */
 class ValueObjectBinder implements DataObjectBinder {
 
@@ -135,10 +136,20 @@ class ValueObjectBinder implements DataObjectBinder {
 				if (defaultValue.length == 0) {
 					return getNewDefaultValueInstanceIfPossible(context, type);
 				}
-				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
+				return convertDefaultValue(context.getConverter(),
+						resolveDefaultValue(context.getPlaceholdersResolver(), defaultValue), type, annotations);
 			}
 		}
 		return context.getConverter().convert(null, type);
+	}
+
+	private String[] resolveDefaultValue(PlaceholdersResolver resolver, String[] defaultValue) {
+		String[] resolved = new String[defaultValue.length];
+		for (int i = 0; i < defaultValue.length; i++) {
+			Object value = resolver.resolvePlaceholders(defaultValue[i]);
+			resolved[i] = String.valueOf(value);
+		}
+		return resolved;
 	}
 
 	private <T> @Nullable T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,

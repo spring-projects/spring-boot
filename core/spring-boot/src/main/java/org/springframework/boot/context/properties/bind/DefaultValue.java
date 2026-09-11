@@ -33,11 +33,12 @@ import java.lang.annotation.Target;
  * the default value for the property will not be used even if the property value is
  * empty.
  * <p>
- * NOTE: This annotation does not support property placeholder resolution and the value
- * must be constant.
+ * Property placeholders in the default value are resolved using the {@link Binder}'s
+ * {@link PlaceholdersResolver} before the value is converted to the property's type.
  *
  * @author Madhura Bhave
  * @author Pavel Anisimov
+ * @author Wan bin yu
  * @since 2.2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
