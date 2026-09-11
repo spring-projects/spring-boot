@@ -16,6 +16,10 @@
 
 package org.springframework.boot.amqp.rabbitmq.docker.compose;
 
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.SocketConfigurators;
+
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails;
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -36,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbitmq-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
+	void runCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
 		assertConnectionDetails(connectionDetails);
 		assertThat(connectionDetails.getSslBundle()).isNull();
 	}
@@ -44,19 +48,38 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "rabbitmq-ssl-compose.yaml", image = TestImage.RABBITMQ,
 			additionalResources = { "../../ca.crt", "../../server.crt", "../../server.key", "../../client.crt",
 					"../../client.key", "rabbitmq-ssl.conf" })
-	void runWithSslCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
+	void runWithSslCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
 		assertConnectionDetails(connectionDetails);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
 	}
 
-	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
+	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
 		Address address = connectionDetails.getAddress();
 		assertThat(address.host()).isNotNull();
 		assertThat(address.port()).isGreaterThan(0);
+		assertThatConnectionCanBeMade(connectionDetails);
+	}
+
+	private void assertThatConnectionCanBeMade(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
+		ConnectionFactory connectionFactory = new ConnectionFactory();
+		Address address = connectionDetails.getAddress();
+		connectionFactory.setHost(address.host());
+		connectionFactory.setPort(address.port());
+		connectionFactory.setUsername(connectionDetails.getUsername());
+		connectionFactory.setPassword(connectionDetails.getPassword());
+		connectionFactory.setVirtualHost(connectionDetails.getVirtualHost());
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			connectionFactory.useSslProtocol(sslBundle.createSslContext());
+			connectionFactory.setSocketConfigurator(SocketConfigurators.defaultConfigurator());
+		}
+		try (Connection connection = connectionFactory.newConnection()) {
+			assertThat(connection.isOpen()).isTrue();
+		}
 	}
 
 }

@@ -38,6 +38,8 @@ class RabbitMqDockerComposeConnectionDetailsFactory
 
 	private static final int RABBITMQ_PORT = 5672;
 
+	private static final int RABBITMQ_TLS_PORT = 5671;
+
 	protected RabbitMqDockerComposeConnectionDetailsFactory() {
 		super("rabbitmq");
 	}
@@ -70,7 +72,8 @@ class RabbitMqDockerComposeConnectionDetailsFactory
 			super(service);
 			this.environment = new RabbitMqEnvironment(service.env());
 			this.sslBundle = getSslBundle(service);
-			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
+			int containerPort = (this.sslBundle != null) ? RABBITMQ_TLS_PORT : RABBITMQ_PORT;
+			this.addresses = List.of(new Address(service.host(), service.ports().get(containerPort)));
 		}
 
 		@Override
