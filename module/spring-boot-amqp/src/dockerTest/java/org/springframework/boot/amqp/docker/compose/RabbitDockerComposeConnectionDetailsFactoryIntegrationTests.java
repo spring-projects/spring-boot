@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbit-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
+	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) throws Exception {
 		assertConnectionDetails(connectionDetails);
 		assertThat(connectionDetails.getSslBundle()).isNull();
 	}
@@ -47,27 +47,10 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key", "rabbitmq.conf" })
 	void runWithSslCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) throws Exception {
 		assertConnectionDetails(connectionDetails);
-		SslBundle sslBundle = connectionDetails.getSslBundle();
-		assertThat(sslBundle).isNotNull();
-		assertThatSslConnectionCanBeMade(connectionDetails, sslBundle);
+		assertThat(connectionDetails.getSslBundle()).isNotNull();
 	}
 
-	private void assertThatSslConnectionCanBeMade(RabbitConnectionDetails connectionDetails, SslBundle sslBundle)
-			throws Exception {
-		ConnectionFactory connectionFactory = new ConnectionFactory();
-		Address address = connectionDetails.getFirstAddress();
-		connectionFactory.setHost(address.host());
-		connectionFactory.setPort(address.port());
-		connectionFactory.setUsername(connectionDetails.getUsername());
-		connectionFactory.setPassword(connectionDetails.getPassword());
-		connectionFactory.setVirtualHost(connectionDetails.getVirtualHost());
-		connectionFactory.useSslProtocol(sslBundle.createSslContext());
-		try (Connection connection = connectionFactory.newConnection()) {
-			assertThat(connection.isOpen()).isTrue();
-		}
-	}
-
-	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) {
+	private void assertConnectionDetails(RabbitConnectionDetails connectionDetails) throws Exception {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
@@ -75,6 +58,24 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 		Address address = connectionDetails.getFirstAddress();
 		assertThat(address.host()).isNotNull();
 		assertThat(address.port()).isGreaterThan(0);
+		assertThatConnectionCanBeMade(connectionDetails);
+	}
+
+	private void assertThatConnectionCanBeMade(RabbitConnectionDetails connectionDetails) throws Exception {
+		ConnectionFactory connectionFactory = new ConnectionFactory();
+		Address address = connectionDetails.getFirstAddress();
+		connectionFactory.setHost(address.host());
+		connectionFactory.setPort(address.port());
+		connectionFactory.setUsername(connectionDetails.getUsername());
+		connectionFactory.setPassword(connectionDetails.getPassword());
+		connectionFactory.setVirtualHost(connectionDetails.getVirtualHost());
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			connectionFactory.useSslProtocol(sslBundle.createSslContext());
+		}
+		try (Connection connection = connectionFactory.newConnection()) {
+			assertThat(connection.isOpen()).isTrue();
+		}
 	}
 
 }
