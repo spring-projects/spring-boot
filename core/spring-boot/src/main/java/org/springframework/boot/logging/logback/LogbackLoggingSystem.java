@@ -76,6 +76,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Ben Hale
  * @author Dhruv Rastogi
+ * @author Rameel Rizvi
  * @since 1.0.0
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
@@ -113,6 +114,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private final StatusPrinter2 statusPrinter = new StatusPrinter2();
 
 	private boolean bridgeHandlerInstalled;
+
+	private boolean rootConsoleHandlerRemoved;
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
@@ -182,6 +185,23 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			Handler[] handlers = rootLogger.getHandlers();
 			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
 				rootLogger.removeHandler(handlers[0]);
+				this.rootConsoleHandlerRemoved = true;
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
+	}
+
+	private void restoreDefaultRootHandler() {
+		if (!this.rootConsoleHandlerRemoved) {
+			return;
+		}
+		this.rootConsoleHandlerRemoved = false;
+		try {
+			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+			if (rootLogger.getHandlers().length == 0) {
+				rootLogger.addHandler(new ConsoleHandler());
 			}
 		}
 		catch (Throwable ex) {
@@ -340,6 +360,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		super.cleanUp();
 		if (this.bridgeHandlerInstalled) {
 			removeJdkLoggingBridgeHandler();
+			// Restore the default JUL root handler that was removed when the bridge
+			// was installed. Without this, anything logged through JUL after cleanup
+			// (for example a startup failure reported via a JUL-backed commons-logging
+			// Log) would be silently discarded (see gh-50404).
+			restoreDefaultRootHandler();
 			this.bridgeHandlerInstalled = false;
 		}
 		context.getStatusManager().clear();
