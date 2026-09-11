@@ -754,8 +754,8 @@ public class TomcatServerProperties {
 		 * Internal proxies that are to be trusted. Can be set as a comma separate list of
 		 * CIDR or as a regular expression.
 		 */
-		private String internalProxies = "192.168.0.0/16, 172.16.0.0/12, 169.254.0.0/16, fc00::/7, "
-				+ "10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, fe80::/10, ::1/128";
+		private String internalProxies = "10.0.0.0/8, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10, "
+				+ "fc00::/7, 172.16.0.0/12, ::1/128, 127.0.0.0/8, fe80::/10";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".

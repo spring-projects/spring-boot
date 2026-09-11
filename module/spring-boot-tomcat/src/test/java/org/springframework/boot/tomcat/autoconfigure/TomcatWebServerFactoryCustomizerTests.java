@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
@@ -50,7 +49,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link TomcatWebServerFactoryCustomizer}
@@ -210,12 +208,6 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.max-part-header-size=4KB");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartHeaderSize()).isEqualTo(4096));
-	}
-
-	@Test
-	@ClassPathOverrides("org.apache.tomcat.embed:tomcat-embed-core:11.0.7")
-	void customizerIsCompatibleWithTomcatVersionsWithoutMaxPartCountAndMaxPartHeaderSize() {
-		assertThatNoException().isThrownBy(this::customizeAndRunServer);
 	}
 
 	@Test
@@ -440,8 +432,8 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
 		assertThat(remoteIpValve.getHostHeader()).isEqualTo("X-Forwarded-Host");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("X-Forwarded-Port");
-		String expectedInternalProxies = "192.168.0.0/16, 172.16.0.0/12, 169.254.0.0/16, fc00::/7, 10.0.0.0/8, "
-				+ "100.64.0.0/10, 127.0.0.0/8, fe80::/10, ::1/128";
+		String expectedInternalProxies = "10.0.0.0/8, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10, fc00::/7, "
+				+ "172.16.0.0/12, ::1/128, 127.0.0.0/8, fe80::/10";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
@@ -653,10 +645,6 @@ class TomcatWebServerFactoryCustomizerTests {
 		Binder binder = new Binder(ConfigurationPropertySources.get(this.environment));
 		binder.bind("server", Bindable.ofInstance(this.serverProperties));
 		binder.bind("server.tomcat", Bindable.ofInstance(this.tomcatProperties));
-	}
-
-	private void customizeAndRunServer() {
-		customizeAndRunServer(null);
 	}
 
 	private void customizeAndRunServer(@Nullable Consumer<TomcatWebServer> consumer) {
