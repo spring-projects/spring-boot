@@ -2535,7 +2535,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.46.0") {
+	library("Selenium", "4.49.0") {
 		group("org.seleniumhq.selenium") {
 			bom("selenium-bom")
 		}
