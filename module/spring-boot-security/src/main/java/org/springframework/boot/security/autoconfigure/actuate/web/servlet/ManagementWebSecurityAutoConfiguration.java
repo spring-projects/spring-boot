@@ -18,6 +18,7 @@ import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSec
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -63,11 +64,12 @@ public final class ManagementWebSecurityAutoConfiguration {
 	}
 
 	private RequestMatcher healthMatcher() {
-		return EndpointRequest.to(HealthEndpoint.class);
+		return EndpointRequest.to(HealthEndpoint.class).withHttpMethod(HttpMethod.GET);
 	}
 
 	private RequestMatcher additionalHealthPathsMatcher() {
-		return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class);
+		return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class)
+			.withHttpMethod(HttpMethod.GET);
 	}
 
 }
