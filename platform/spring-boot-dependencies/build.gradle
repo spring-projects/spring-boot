@@ -1403,7 +1403,7 @@ bom {
 			}
 		}
 	}
-	library("Logback", "1.6.1") {
+	library("Logback", "1.6.3") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
