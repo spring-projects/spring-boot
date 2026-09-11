@@ -1980,7 +1980,7 @@ bom {
 			}
 		}
 	}
-	library("Qpid ProtonJ2", "1.2.0") {
+	library("Qpid ProtonJ2", "1.3.0") {
 		group("org.apache.qpid") {
 			modules = [
 					"protonj2",
