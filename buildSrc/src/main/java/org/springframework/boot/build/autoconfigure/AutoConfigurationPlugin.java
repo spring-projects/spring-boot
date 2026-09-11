@@ -147,7 +147,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				ConfigurationContainer configurations,
 				TaskProvider<CheckAutoConfigurationClasses> checkAutoConfigurationClasses) {
 			checkAutoConfigurationClasses.configure((check) -> {
-				Configuration optionalClasspath = configurations.create("autoConfigurationOptionalClassPath")
+				Configuration optionalClasspath = configurations.create("autoConfigurationOptionalClasspath")
 					.extendsFrom(configurations.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME));
 				check.setOptionalDependencies(optionalClasspath);
 			});

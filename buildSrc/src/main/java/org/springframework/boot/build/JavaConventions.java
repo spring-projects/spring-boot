@@ -72,7 +72,6 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
-import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.springframework.CheckAotFactories;
 import org.springframework.boot.build.springframework.CheckSpringFactories;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
@@ -338,11 +337,6 @@ class JavaConventions {
 			.enforcedPlatform(project.getDependencies()
 				.project(Collections.singletonMap("path", ":platform:spring-boot-internal-dependencies")));
 		dependencyManagement.getDependencies().add(springBootParent);
-		project.getPlugins()
-			.withType(OptionalDependenciesPlugin.class,
-					(optionalDependencies) -> configurations
-						.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME)
-						.extendsFrom(dependencyManagement));
 	}
 
 	private void configureToolchain(Project project) {
