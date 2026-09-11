@@ -132,6 +132,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Vladislav Kisel
+ * @author Wan bin yu
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ConfigurationPropertiesTests {
@@ -1014,6 +1015,38 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getMap()).isEmpty();
 		assertThat(bean.getArray()).isEmpty();
 		assertThat(bean.getOptional()).isEmpty();
+	}
+
+	@Test
+	void loadWhenDefaultValuesContainPlaceholdersShouldResolveAndConvert() {
+		load(PlaceholderDefaultsConfiguration.class, "defaults.name=resolved", "defaults.duration=3d",
+				"defaults.count=7");
+		PlaceholderDefaultsProperties bean = this.context.getBean(PlaceholderDefaultsProperties.class);
+		assertThat(bean.name).isEqualTo("resolved/suffix");
+		assertThat(bean.duration).isEqualTo(Duration.ofDays(3));
+		assertThat(bean.counts).containsExactly(7, 2);
+		assertThat(bean.names).containsExactly("resolved", "fallback");
+	}
+
+	@Test
+	void loadWhenDefaultValuesContainPlaceholdersShouldUsePlaceholderDefaults() {
+		load(PlaceholderDefaultsConfiguration.class);
+		PlaceholderDefaultsProperties bean = this.context.getBean(PlaceholderDefaultsProperties.class);
+		assertThat(bean.name).isEqualTo("default/suffix");
+		assertThat(bean.duration).isEqualTo(Duration.ofDays(1));
+		assertThat(bean.counts).containsExactly(1, 2);
+		assertThat(bean.names).containsExactly("default", "fallback");
+	}
+
+	@Test
+	void loadWhenExplicitValuesOverridePlaceholderDefaultsShouldUseExplicitValues() {
+		load(PlaceholderDefaultsConfiguration.class, "test.name=explicit", "test.duration=5d", "test.counts=8,9",
+				"test.names=one,two");
+		PlaceholderDefaultsProperties bean = this.context.getBean(PlaceholderDefaultsProperties.class);
+		assertThat(bean.name).isEqualTo("explicit");
+		assertThat(bean.duration).isEqualTo(Duration.ofDays(5));
+		assertThat(bean.counts).containsExactly(8, 9);
+		assertThat(bean.names).containsExactly("one", "two");
 	}
 
 	@Test
@@ -2463,6 +2496,35 @@ class ConfigurationPropertiesTests {
 
 		int getBar() {
 			return this.bar;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(PlaceholderDefaultsProperties.class)
+	static class PlaceholderDefaultsConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class PlaceholderDefaultsProperties {
+
+		private final String name;
+
+		private final Duration duration;
+
+		private final int[] counts;
+
+		private final List<String> names;
+
+		PlaceholderDefaultsProperties(@DefaultValue("${defaults.name:default}/suffix") String name,
+				@DefaultValue("${defaults.duration:1d}") Duration duration,
+				@DefaultValue({ "${defaults.count:1}", "2" }) int[] counts,
+				@DefaultValue({ "${defaults.name:default}", "${defaults.other:fallback}" }) List<String> names) {
+			this.name = name;
+			this.duration = duration;
+			this.counts = counts;
+			this.names = names;
 		}
 
 	}

@@ -884,7 +884,7 @@ TIP: To use a reserved keyword in the name of a property, such as `my.service.im
 ==== @DefaultValue and Binding
 
 Default values can be specified using javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] on constructor parameters and record components.
-The conversion service will be applied to coerce the annotation's javadoc:java.lang.String[] value to the target type of a missing property.
+Property placeholders in the annotation's javadoc:java.lang.String[] value are replaced and the conversion service is applied to coerce it to the target type of a missing property.
 
 In the `MyProperties` example above, you can see the nested `Security` class uses `@DefaultValue("USER")` for the `roles` parameter.
 This means that if `security` properties are defined, but `roles` is not, the default of `"USER"` will be bound.

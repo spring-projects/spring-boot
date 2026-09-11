@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Yanming Zhou
  * @author Ondřej Světlík
+ * @author Wan bin yu
  */
 class ValueObjectBinderTests {
 
@@ -305,6 +307,26 @@ class ValueObjectBinderTests {
 		ConverterAnnotatedExampleBean bean = this.binder.bindOrCreate("foo",
 				Bindable.of(ConverterAnnotatedExampleBean.class));
 		assertThat(bean.getDate()).hasToString("2019-05-10");
+	}
+
+	@Test
+	void createWithDefaultValuePlaceholderAndNoResolverShouldRetainPlaceholder() {
+		PlaceholderDefaultValue bean = this.binder.bindOrCreate("foo", PlaceholderDefaultValue.class);
+		assertThat(bean.value()).isEqualTo("${value}");
+	}
+
+	@Test
+	void createWithUnresolvedDefaultValuePlaceholderShouldRetainPlaceholder() {
+		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(Collections.emptyList()));
+		PlaceholderDefaultValue bean = binder.bindOrCreate("foo", PlaceholderDefaultValue.class);
+		assertThat(bean.value()).isEqualTo("${value}");
+	}
+
+	@Test
+	void createWithDefaultValuePlaceholderResolvingToNonStringShouldConvert() {
+		Binder binder = new Binder(this.sources, (value) -> 42);
+		PlaceholderDefaultValue bean = binder.bindOrCreate("foo", PlaceholderDefaultValue.class);
+		assertThat(bean.value()).isEqualTo("42");
 	}
 
 	@Test
@@ -636,6 +658,10 @@ class ValueObjectBinderTests {
 		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
+
+	}
+
+	record PlaceholderDefaultValue(@DefaultValue("${value}") String value) {
 
 	}
 
