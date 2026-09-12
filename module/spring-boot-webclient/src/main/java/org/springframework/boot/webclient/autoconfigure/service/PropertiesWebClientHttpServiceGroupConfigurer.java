@@ -49,8 +49,22 @@ class PropertiesWebClientHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	/**
 	 * The default order for the PropertiesWebClientHttpServiceGroupConfigurer.
+	 * <p>
+	 * This must run after {@link WebClientCustomizerHttpServiceGroupConfigurer} (order
+	 * {@code 0}): that configurer re-applies every auto-configured
+	 * {@code WebClientCustomizer} bean to each group's builder, including
+	 * {@code WebClientAutoConfiguration.webClientHttpConnectorCustomizer}, which
+	 * unconditionally sets the connector built from the single, non-group-aware
+	 * {@code ClientHttpConnector} bean whenever one is present (which it is for any
+	 * typical reactive application). Running before it, as this configurer originally
+	 * did, meant that customizer would silently overwrite the connector this class builds
+	 * from group-specific {@code spring.http.serviceclient.*} settings - including
+	 * {@code read-timeout}, which would then be dropped entirely with no error. Running
+	 * after it lets an unordered user-defined {@link WebClientHttpServiceGroupConfigurer}
+	 * (default order {@link Ordered#LOWEST_PRECEDENCE}) still have the final say if it
+	 * wants it.
 	 */
-	private static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	private static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 10;
 
 	private final HttpServiceClientProperties properties;
 
