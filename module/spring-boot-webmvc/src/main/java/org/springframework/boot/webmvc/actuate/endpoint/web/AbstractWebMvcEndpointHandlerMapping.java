@@ -76,6 +76,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
+import org.springframework.web.util.ServletRequestPathUtils;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -85,6 +88,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Wan bin yu
  * @since 4.0.0
  */
 @ImportRuntimeHints(AbstractWebMvcEndpointHandlerMappingRuntimeHints.class)
@@ -192,7 +196,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
 			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
-				new ServletWebOperationAdapter(operation));
+				new ServletWebOperationAdapter(operation, getPatternParser()));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
@@ -333,8 +337,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private final WebOperation operation;
 
-		ServletWebOperationAdapter(WebOperation operation) {
+		private final @Nullable PathPatternParser patternParser;
+
+		ServletWebOperationAdapter(WebOperation operation, @Nullable PathPatternParser patternParser) {
 			this.operation = operation;
+			this.patternParser = patternParser;
 		}
 
 		@Override
@@ -390,27 +397,25 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
-			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
-			if (patternTokens.length > 0 && !"**".equals(patternTokens[patternTokens.length - 1])) {
-				return pathTokens;
+			Assert.state(this.patternParser != null, "'patternParser' must not be null");
+			String pattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+			Assert.state(pattern != null, "'pattern' must not be null");
+			PathPattern pathPattern = this.patternParser.parse(pattern);
+			if (pathPattern.hasPatternSyntax()) {
+				String remainingSegments = pathPattern
+					.extractPathWithinPattern(
+							ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication())
+					.value();
+				return tokenizePathSegments(remainingSegments);
 			}
-			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
-			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");
-			String[] remainingPathSegments = new String[numberOfRemainingPathSegments];
-			System.arraycopy(pathTokens, patternTokens.length - 1, remainingPathSegments, 0,
-					numberOfRemainingPathSegments);
-			return remainingPathSegments;
+			return tokenizePathSegments(pathPattern.toString());
 		}
 
-		private String[] tokenize(HttpServletRequest request, String attributeName, boolean decode) {
-			String value = (String) request.getAttribute(attributeName);
+		private String[] tokenizePathSegments(String value) {
 			String[] segments = StringUtils.tokenizeToStringArray(value, PATH_SEPARATOR, false, true);
-			if (decode) {
-				for (int i = 0; i < segments.length; i++) {
-					if (segments[i].contains("%")) {
-						segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
-					}
+			for (int i = 0; i < segments.length; i++) {
+				if (segments[i].contains("%")) {
+					segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
 				}
 			}
 			return segments;
