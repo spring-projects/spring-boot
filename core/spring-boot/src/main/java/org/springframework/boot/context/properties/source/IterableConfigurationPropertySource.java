@@ -17,6 +17,8 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -34,6 +36,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Tommy Karlsson
  * @since 2.0.0
  * @see ConfigurationPropertyName
  * @see OriginTrackedValue
@@ -64,6 +67,31 @@ public interface IterableConfigurationPropertySource
 	@Override
 	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
+	}
+
+	/**
+	 * Return the names directly beneath the given name. For example, if this source
+	 * contains {@code foo.bar} and {@code foo.baz[0]}, the children of {@code foo} are
+	 * {@code foo.bar} and {@code foo.baz}.
+	 * <p>
+	 * A returned name is not necessarily a name that this source has a value for. Given
+	 * only {@code foo.bar.baz}, the children of {@code foo} are {@code foo.bar}, for
+	 * which {@link #getConfigurationProperty(ConfigurationPropertyName)} returns
+	 * {@code null}.
+	 * <p>
+	 * Implementations that can answer without inspecting every name they contain should
+	 * override this method, since callers may ask about many names in turn.
+	 * @param name the name whose children should be returned
+	 * @return the child names (never {@code null})
+	 * @since 4.2.0
+	 */
+	default Set<ConfigurationPropertyName> getChildrenOf(ConfigurationPropertyName name) {
+		Set<ConfigurationPropertyName> children = new LinkedHashSet<>();
+		int childElements = name.getNumberOfElements() + 1;
+		for (ConfigurationPropertyName candidate : this.filter(name::isAncestorOf)) {
+			children.add(candidate.chop(childElements));
+		}
+		return children;
 	}
 
 	@Override
