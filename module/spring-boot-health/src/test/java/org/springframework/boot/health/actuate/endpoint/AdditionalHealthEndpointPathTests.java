@@ -66,15 +66,17 @@ class AdditionalHealthEndpointPathTests {
 	}
 
 	@Test
-	void fromPathWithMultipleSegmentsShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path"));
+	void fromPathWithMultipleSegmentsShouldCreatePath() {
+		AdditionalHealthEndpointPath path = AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path");
+		assertThat(path.getValue()).isEqualTo("/my-path/my-sub-path");
+		assertThat(path.getNamespace()).isEqualTo(WebServerNamespace.SERVER);
 	}
 
 	@Test
-	void fromPathWithMultipleSegmentsNotStartingWithSlashShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:my-path/my-sub-path"));
+	void fromPathWithMultipleSegmentsNotStartingWithSlashShouldCreatePath() {
+		AdditionalHealthEndpointPath path = AdditionalHealthEndpointPath.from("server:my-path/my-sub-path");
+		assertThat(path.getValue()).isEqualTo("my-path/my-sub-path");
+		assertThat(path.getNamespace()).isEqualTo(WebServerNamespace.SERVER);
 	}
 
 	@Test
@@ -109,9 +111,11 @@ class AdditionalHealthEndpointPathTests {
 	}
 
 	@Test
-	void ofWithMultipleSegmentValueShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, "/my-path/my-subpath"));
+	void ofWithMultipleSegmentValueShouldCreatePath() {
+		AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER,
+				"/my-path/my-subpath");
+		assertThat(additionalPath.getValue()).isEqualTo("/my-path/my-subpath");
+		assertThat(additionalPath.getNamespace()).isEqualTo(WebServerNamespace.SERVER);
 	}
 
 	@Test

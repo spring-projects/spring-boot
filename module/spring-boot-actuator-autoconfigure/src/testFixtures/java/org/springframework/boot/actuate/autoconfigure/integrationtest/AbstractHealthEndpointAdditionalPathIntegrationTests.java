@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * @param <C> the application context type
  * @param <A> the assertions
  * @author Madhura Bhave
+ * @author Wan bin yu
  */
 public abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<A, C>> {
 
@@ -55,6 +56,15 @@ public abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T ext
 	}
 
 	@Test
+	void groupIsAvailableAtAdditionalPathWithMultipleSegments() {
+		this.runner
+			.withPropertyValues("management.endpoint.health.group.live.include=diskSpace",
+					"management.endpoint.health.group.live.additional-path=server:/myBasePath/health",
+					"management.endpoint.health.group.live.show-components=always")
+			.run(withWebTestClient((client) -> testResponses(client, "/myBasePath/health"), "local.server.port"));
+	}
+
+	@Test
 	void multipleGroupsAreAvailableAtAdditionalPaths() {
 		this.runner
 			.withPropertyValues("management.endpoint.health.group.one.include=diskSpace",
@@ -64,6 +74,27 @@ public abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T ext
 					"management.endpoint.health.group.one.show-components=always",
 					"management.endpoint.health.group.two.show-components=always")
 			.run(withWebTestClient((client) -> testResponses(client, "/alpha", "/bravo"), "local.server.port"));
+	}
+
+	@Test
+	void healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured() {
+		this.runner
+			.withPropertyValues("management.endpoint.health.show-components=always",
+					"management.endpoint.health.group.live.include=diskSpace",
+					"management.endpoint.health.group.live.additional-path=server:/myBasePath/health",
+					"management.endpoint.health.group.live.show-components=always")
+			.run(withWebTestClient((client) -> {
+				testResponses(client, "/myBasePath/health");
+				client.get()
+					.uri("/actuator/health/diskSpace")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("status")
+					.isEqualTo("UP");
+			}, "local.server.port"));
 	}
 
 	@Test

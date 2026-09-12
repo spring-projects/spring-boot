@@ -354,6 +354,20 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<H, D>,
 	}
 
 	@Test
+	void getResultWhenGroupHasMultiSegmentAdditionalPath() {
+		R registry = createRegistry("test", createContributor(this.up));
+		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup((name) -> name.startsWith("test"));
+		testGroup.setAdditionalPath(AdditionalHealthEndpointPath.from("server:/myBasePath/health"));
+		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup, Map.of("testGroup", testGroup));
+		E endpoint = create(registry, groups);
+		Result<D> result = endpoint.getResult(ApiVersion.V3, WebServerNamespace.SERVER, SecurityContext.NONE, false,
+				"myBasePath", "health");
+		assertThat(result).isNotNull();
+		CompositeHealthDescriptor descriptor = (CompositeHealthDescriptor) getDescriptor(result);
+		assertThat(descriptor.getComponents()).containsKey("test");
+	}
+
+	@Test
 	void getResultWhenGroupHasAdditionalPathAndShowComponentsFalse() {
 		R registry = createRegistry("test", createContributor(this.up));
 		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup((name) -> name.startsWith("test"));
