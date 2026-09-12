@@ -111,6 +111,8 @@ class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void isEmbeddedWithDerbyDataSource() {
 		testEmbeddedDatabase(new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.DERBY).build());
 	}

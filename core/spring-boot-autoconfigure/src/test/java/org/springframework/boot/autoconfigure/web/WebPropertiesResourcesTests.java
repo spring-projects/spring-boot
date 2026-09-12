@@ -78,11 +78,19 @@ class WebPropertiesResourcesTests {
 	}
 
 	@Test
+	void cacheControlPublic() {
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		properties.setCachePublic(true);
+		CacheControl cacheControl = properties.toHttpCacheControl();
+		assertThat(cacheControl).isNotNull();
+		assertThat(cacheControl.getHeaderValue()).isEqualTo("public");
+	}
+
+	@Test
 	void cacheControlAllPropertiesSet() {
 		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
-		properties.setCachePublic(true);
 		properties.setMustRevalidate(true);
 		properties.setNoTransform(true);
 		properties.setProxyRevalidate(true);
@@ -92,7 +100,7 @@ class WebPropertiesResourcesTests {
 		CacheControl cacheControl = properties.toHttpCacheControl();
 		assertThat(cacheControl).isNotNull();
 		assertThat(cacheControl.getHeaderValue())
-			.isEqualTo("max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
+			.isEqualTo("max-age=4, must-revalidate, no-transform, private, proxy-revalidate,"
 					+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
 	}
 

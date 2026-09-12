@@ -100,6 +100,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the {@link EmbeddedDatabaseType} for the connection.
 	 * @return the database type
 	 */
+	@SuppressWarnings("removal")
 	public @Nullable EmbeddedDatabaseType getType() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
