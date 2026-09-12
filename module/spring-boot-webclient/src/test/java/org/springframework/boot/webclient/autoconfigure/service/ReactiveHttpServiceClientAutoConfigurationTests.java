@@ -43,6 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
@@ -130,6 +131,35 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(client, "httpClient");
 		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.connectTimeout()).contains(expectedReadTimeout);
+	}
+
+	@Test // gh-49279
+	void readTimeoutSurvivesWhenAutoConfiguredClientHttpConnectorBeanIsPresent() {
+		// Auto-configuring a ClientHttpConnector bean (as
+		// ReactiveHttpClientAutoConfiguration
+		// does by default) makes WebClientAutoConfiguration's
+		// webClientHttpConnectorCustomizer
+		// active. Before this was fixed, WebClientCustomizerHttpServiceGroupConfigurer
+		// re-applied that customizer to every group's builder *after*
+		// PropertiesWebClientHttpServiceGroupConfigurer had already set the group's own
+		// connector, silently overwriting it - and every property configured through that
+		// connector, including read-timeout, with the single, non-group-aware default.
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpClientAutoConfiguration.class))
+			.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com/one",
+					"spring.http.serviceclient.one.read-timeout=5s")
+			.withUserConfiguration(HttpClientConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClientHttpConnector.class);
+				TestClientOne clientOne = context.getBean(TestClientOne.class);
+				WebClient webClientOne = getWebClient(clientOne);
+				ClientHttpConnector connector = (ClientHttpConnector) Extractors.byName("exchangeFunction.connector")
+					.apply(webClientOne);
+				assertThat(connector).isInstanceOf(ReactorClientHttpConnector.class);
+				reactor.netty.http.client.HttpClient httpClient = (reactor.netty.http.client.HttpClient) ReflectionTestUtils
+					.getField(connector, "httpClient");
+				assertThat(httpClient).isNotNull();
+				assertThat(httpClient.configuration().responseTimeout()).isEqualTo(Duration.ofSeconds(5));
+			});
 	}
 
 	@Test
