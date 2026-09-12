@@ -28,6 +28,7 @@ import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.settings.DevToolsSettings;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
+import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebEnvironment;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -55,9 +56,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private static final String WEB_LOGGING = "logging.level.web";
 
-	private static final String[] WEB_ENVIRONMENT_CLASSES = {
-			"org.springframework.web.context.ConfigurableWebEnvironment",
-			"org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment" };
+	private static final String SERVLET_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final Map<String, Object> PROPERTIES;
 
@@ -112,13 +111,12 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isWebApplication(Environment environment) {
-		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
-			Class<?> environmentClass = resolveClassName(candidate, environment.getClass().getClassLoader());
-			if (environmentClass != null && environmentClass.isInstance(environment)) {
-				return true;
-			}
+		if (environment instanceof ConfigurableReactiveWebEnvironment) {
+			return true;
 		}
-		return false;
+		Class<?> servletWebEnvironmentClass = resolveClassName(SERVLET_WEB_ENVIRONMENT_CLASS,
+				environment.getClass().getClassLoader());
+		return servletWebEnvironmentClass != null && servletWebEnvironmentClass.isInstance(environment);
 	}
 
 	private @Nullable Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
