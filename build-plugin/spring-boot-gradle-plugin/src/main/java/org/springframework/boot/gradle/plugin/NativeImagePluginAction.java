@@ -32,6 +32,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 
 /**
@@ -59,6 +60,7 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			configureTestNativeBinaryClasspath(sourceSets, graalVmExtension);
 			copyReachabilityMetadataToBootJar(project);
 			configureJarManifestNativeAttribute(project);
+			configureBuildImageNativeEnvironment(project);
 		});
 	}
 
@@ -112,6 +114,12 @@ class NativeImagePluginAction implements PluginApplicationAction {
 
 	private void addNativeProcessedAttribute(Manifest manifest) {
 		manifest.getAttributes().put("Spring-Boot-Native-Processed", true);
+	}
+
+	private void configureBuildImageNativeEnvironment(Project project) {
+		project.getTasks()
+			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
+			.configure((buildImage) -> buildImage.getEnvironment().put("BP_NATIVE_IMAGE", "true"));
 	}
 
 }
