@@ -16,19 +16,31 @@
 
 package org.springframework.boot.http.client.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.MeterRegistry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.httpcomponents.hc5.PoolingHttpClientConnectionManagerMetricsBinder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties.Web.Client;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for HTTP client-related metrics.
@@ -56,6 +68,54 @@ public final class HttpClientMetricsAutoConfiguration {
 		String meterNamePrefix = observationProperties.getHttp().getClient().getRequests().getName();
 		int maxUriTags = clientProperties.getMaxUriTags();
 		return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags, "Are you using 'uriVariables'?");
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = { "org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager",
+			"io.micrometer.core.instrument.binder.httpcomponents.hc5.PoolingHttpClientConnectionManagerMetricsBinder" })
+	static HttpComponentsConnectionPoolMetricsBeanPostProcessor httpComponentsConnectionPoolMetricsBeanPostProcessor(
+			ObjectProvider<MeterRegistry> meterRegistry) {
+		return new HttpComponentsConnectionPoolMetricsBeanPostProcessor(meterRegistry);
+	}
+
+	/**
+	 * {@link BeanPostProcessor} that customizes every
+	 * {@link HttpComponentsClientHttpRequestFactoryBuilder} bean so that its
+	 * {@link PoolingHttpClientConnectionManager} is bound to the application's
+	 * {@link MeterRegistry}.
+	 */
+	@SuppressWarnings("deprecation")
+	static final class HttpComponentsConnectionPoolMetricsBeanPostProcessor implements BeanPostProcessor, Ordered {
+
+		private final Supplier<MeterRegistry> meterRegistry;
+
+		private final AtomicInteger poolCounter = new AtomicInteger();
+
+		HttpComponentsConnectionPoolMetricsBeanPostProcessor(ObjectProvider<MeterRegistry> meterRegistry) {
+			this.meterRegistry = SingletonSupplier.of(meterRegistry::getObject);
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof HttpComponentsClientHttpRequestFactoryBuilder builder) {
+				return builder.withConnectionManagerPostConfigurer(
+						(connectionManager) -> bindToMeterRegistry(beanName, connectionManager));
+			}
+			return bean;
+		}
+
+		private void bindToMeterRegistry(String beanName, PoolingHttpClientConnectionManager connectionManager) {
+			String poolName = beanName + ".pool-" + this.poolCounter.getAndIncrement();
+			new PoolingHttpClientConnectionManagerMetricsBinder(connectionManager, poolName)
+				.bindTo(this.meterRegistry.get());
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
 	}
 
 }

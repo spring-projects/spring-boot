@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client;
 
+import java.lang.reflect.Field;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.jspecify.annotations.Nullable;
@@ -37,6 +39,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Builder that can be used to create a
@@ -64,9 +67,11 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private final DnsResolver dnsResolver;
 
+	private final Consumer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer;
+
 	public HttpComponentsHttpClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
-				HttpComponentsSslBundleTlsStrategy::get, SystemDefaultDnsResolver.INSTANCE);
+				HttpComponentsSslBundleTlsStrategy::get, SystemDefaultDnsResolver.INSTANCE, Empty.consumer());
 	}
 
 	private HttpComponentsHttpClientBuilder(Consumer<HttpClientBuilder> customizer,
@@ -74,7 +79,8 @@ public final class HttpComponentsHttpClientBuilder {
 			Consumer<SocketConfig.Builder> socketConfigCustomizer,
 			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
-			TlsSocketStrategyFactory tlsSocketStrategyFactory, DnsResolver dnsResolver) {
+			TlsSocketStrategyFactory tlsSocketStrategyFactory, DnsResolver dnsResolver,
+			Consumer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.socketConfigCustomizer = socketConfigCustomizer;
@@ -82,6 +88,7 @@ public final class HttpComponentsHttpClientBuilder {
 		this.defaultRequestConfigCustomizer = defaultRequestConfigCustomizer;
 		this.tlsSocketStrategyFactory = tlsSocketStrategyFactory;
 		this.dnsResolver = dnsResolver;
+		this.connectionManagerPostConfigurer = connectionManagerPostConfigurer;
 	}
 
 	/**
@@ -94,7 +101,8 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(customizer, "'customizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer.andThen(customizer),
 				this.connectionManagerCustomizer, this.socketConfigCustomizer, this.connectionConfigCustomizer,
-				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver);
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver,
+				this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -109,7 +117,7 @@ public final class HttpComponentsHttpClientBuilder {
 		return new HttpComponentsHttpClientBuilder(this.customizer,
 				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.socketConfigCustomizer,
 				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory,
-				this.dnsResolver);
+				this.dnsResolver, this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -124,7 +132,8 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(socketConfigCustomizer, "'socketConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer.andThen(socketConfigCustomizer), this.connectionConfigCustomizer,
-				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver);
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver,
+				this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -139,7 +148,8 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer, this.connectionConfigCustomizer.andThen(connectionConfigCustomizer),
-				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver);
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver,
+				this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -156,7 +166,7 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
-				tlsSocketStrategyFactory, this.dnsResolver);
+				tlsSocketStrategyFactory, this.dnsResolver, this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -173,7 +183,7 @@ public final class HttpComponentsHttpClientBuilder {
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer, this.connectionConfigCustomizer,
 				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer),
-				this.tlsSocketStrategyFactory, this.dnsResolver);
+				this.tlsSocketStrategyFactory, this.dnsResolver, this.connectionManagerPostConfigurer);
 	}
 
 	/**
@@ -187,7 +197,25 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(dnsResolver, "'dnsResolver' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
-				this.tlsSocketStrategyFactory, dnsResolver);
+				this.tlsSocketStrategyFactory, dnsResolver, this.connectionManagerPostConfigurer);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpClientBuilder} that applies additional
+	 * customization to the {@link PoolingHttpClientConnectionManager} after it has been
+	 * built. This can be used, for example, to bind the connection pool to a metrics
+	 * registry.
+	 * @param connectionManagerPostConfigurer the post-configurer to apply
+	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
+	 * @since 4.0.0
+	 */
+	public HttpComponentsHttpClientBuilder withConnectionManagerPostConfigurer(
+			Consumer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer) {
+		Assert.notNull(connectionManagerPostConfigurer, "'connectionManagerPostConfigurer' must not be null");
+		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.socketConfigCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
+				this.tlsSocketStrategyFactory, this.dnsResolver,
+				this.connectionManagerPostConfigurer.andThen(connectionManagerPostConfigurer));
 	}
 
 	/**
@@ -203,7 +231,28 @@ public final class HttpComponentsHttpClientBuilder {
 			.setConnectionManager(createConnectionManager(settings))
 			.setDefaultRequestConfig(createDefaultRequestConfig(settings));
 		this.customizer.accept(builder);
-		return builder.build();
+		CloseableHttpClient httpClient = builder.build();
+		HttpClientConnectionManager connectionManager = getConnectionManager(builder);
+		if (connectionManager instanceof PoolingHttpClientConnectionManager poolingConnectionManager) {
+			this.connectionManagerPostConfigurer.accept(poolingConnectionManager);
+		}
+		return httpClient;
+	}
+
+	/**
+	 * {@link HttpClientBuilder#setConnectionManager} is {@code final} and does not
+	 * expose the configured manager, so we read it reflectively to capture the manager
+	 * that ends up being used by the built client (which may have been replaced by a
+	 * customizer).
+	 */
+	@Nullable
+	private static HttpClientConnectionManager getConnectionManager(HttpClientBuilder builder) {
+		Field field = ReflectionUtils.findField(HttpClientBuilder.class, "connManager");
+		if (field == null) {
+			return null;
+		}
+		ReflectionUtils.makeAccessible(field);
+		return (HttpClientConnectionManager) ReflectionUtils.getField(field, builder);
 	}
 
 	private PoolingHttpClientConnectionManager createConnectionManager(HttpClientSettings settings) {

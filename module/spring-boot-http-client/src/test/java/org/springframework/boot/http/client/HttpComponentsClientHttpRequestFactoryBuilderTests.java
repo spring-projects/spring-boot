@@ -18,6 +18,7 @@ package org.springframework.boot.http.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.HttpRoute;
@@ -26,6 +27,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
@@ -172,6 +174,27 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 			.getField(manager, "connectionConfigResolver");
 		assertThat(resolver).isNotNull();
 		return resolver.resolve(null);
+	}
+
+	@Test
+	void connectionManagerPostConfigurerIsCalledWithBuiltManager() {
+		AtomicReference<PoolingHttpClientConnectionManager> postConfigured = new AtomicReference<>();
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.withConnectionManagerPostConfigurer(postConfigured::set)
+			.build();
+		assertThat(postConfigured.get()).isNotNull();
+	}
+
+	@Test
+	void connectionManagerPostConfigurerIsCalledWithCustomizedManager() {
+		PoolingHttpClientConnectionManager customManager = PoolingHttpClientConnectionManagerBuilder.create()
+			.build();
+		AtomicReference<PoolingHttpClientConnectionManager> postConfigured = new AtomicReference<>();
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.withHttpClientCustomizer((builder) -> builder.setConnectionManager(customManager))
+			.withConnectionManagerPostConfigurer(postConfigured::set)
+			.build();
+		assertThat(postConfigured).hasValue(customManager);
 	}
 
 }

@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
@@ -169,6 +170,22 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(dnsResolver, "'dnsResolver' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withDnsResolver(dnsResolver));
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} that applies
+	 * additional customization to the {@link PoolingHttpClientConnectionManager} after it
+	 * has been built. This can be used, for example, to bind the connection pool to a
+	 * metrics registry.
+	 * @param connectionManagerPostConfigurer the post-configurer to apply
+	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder withConnectionManagerPostConfigurer(
+			Consumer<PoolingHttpClientConnectionManager> connectionManagerPostConfigurer) {
+		Assert.notNull(connectionManagerPostConfigurer, "'connectionManagerPostConfigurer' must not be null");
+		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withConnectionManagerPostConfigurer(connectionManagerPostConfigurer));
 	}
 
 	/**

@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -54,6 +56,24 @@ class HttpClientMetricsAutoConfigurationTests {
 				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
 				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
+			});
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	void httpComponentsConnectionPoolMetricsAreAutoConfigured() {
+		new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class, MetricsAutoConfiguration.class))
+			.withBean(SimpleMeterRegistry.class)
+			.withBean("httpComponentsBuilder", HttpComponentsClientHttpRequestFactoryBuilder.class,
+					() -> ClientHttpRequestFactoryBuilder.httpComponents())
+			.run((context) -> {
+				context.getBean("httpComponentsBuilder", HttpComponentsClientHttpRequestFactoryBuilder.class).build();
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThat(meterRegistry.find("httpcomponents.httpclient.pool.total.connections").gauge())
+					.as("connection pool metrics should be bound")
+					.isNotNull();
 			});
 	}
 
