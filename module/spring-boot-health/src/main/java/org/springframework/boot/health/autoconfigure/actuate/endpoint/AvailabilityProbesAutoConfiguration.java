@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.health.application.LivenessStateHealthIndicator;
 import org.springframework.boot.health.application.ReadinessStateHealthIndicator;
 import org.springframework.boot.health.autoconfigure.application.AvailabilityHealthContributorAutoConfiguration;
@@ -40,6 +41,7 @@ import org.springframework.core.env.Environment;
 		ApplicationAvailabilityAutoConfiguration.class })
 @ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
 @ConditionalOnBooleanProperty(name = "management.endpoint.health.probes.enabled", matchIfMissing = true)
+@EnableConfigurationProperties(HealthEndpointProperties.class)
 public final class AvailabilityProbesAutoConfiguration {
 
 	@Bean
@@ -56,8 +58,8 @@ public final class AvailabilityProbesAutoConfiguration {
 
 	@Bean
 	AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor(
-			Environment environment) {
-		return new AvailabilityProbesHealthEndpointGroupsPostProcessor(environment);
+			Environment environment, HealthEndpointProperties properties) {
+		return new AvailabilityProbesHealthEndpointGroupsPostProcessor(environment, properties);
 	}
 
 }
