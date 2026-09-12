@@ -2949,7 +2949,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
 		}
 	}
-	library("Spring WS", "5.0.2") {
+	library("Spring WS", "5.1.0-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.ws") {
 			bom("spring-ws-bom")
