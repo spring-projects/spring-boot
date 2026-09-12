@@ -706,7 +706,7 @@ class RabbitAutoConfigurationTests {
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain).hasSize(1);
 		Advice advice = adviceChain[0];
-		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryOperations");
+		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryTemplate");
 		assertThat(retryTemplate).hasFieldOrPropertyWithValue("retryPolicy", retryPolicy);
 	}
 
@@ -788,7 +788,7 @@ class RabbitAutoConfigurationTests {
 		Exception cause = new Exception("test");
 		invokeRecoverer(advice, new Object[] { "foo", message }, cause);
 		then(messageRecoverer).should().recover(message, cause);
-		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryOperations");
+		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryTemplate");
 		assertThat(retryTemplate).isNotNull();
 		RetryPolicy retryPolicy = (RetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
 		assertThat(retryPolicy).isNotNull();
