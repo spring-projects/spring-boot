@@ -58,7 +58,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
  * {@link TestTemplateInvocationContextProvider} for
  * {@link WebEndpointTest @WebEndpointTest}.
  *
- * @author Andy Wilkinson`
+ * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
 class WebEndpointTestInvocationContextProvider implements TestTemplateInvocationContextProvider {
