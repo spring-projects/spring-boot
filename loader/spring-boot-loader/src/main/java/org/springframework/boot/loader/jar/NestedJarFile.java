@@ -171,25 +171,30 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public Enumeration<JarEntry> entries() {
-		ZipContent zipContent = ensureOpen();
-		return new JarEntriesEnumeration(zipContent);
+		synchronized (this) {
+			ZipContent zipContent = ensureOpen();
+			return new JarEntriesEnumeration(zipContent);
+		}
 	}
 
 	@Override
 	public Stream<JarEntry> stream() {
-		ZipContent zipContent = ensureOpen();
-		return streamContentEntries(zipContent).map(NestedJarEntry::new);
+		synchronized (this) {
+			ZipContent zipContent = ensureOpen();
+			return streamContentEntries(zipContent).map(NestedJarEntry::new);
+		}
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-
-		ZipContent zipContent = ensureOpen();
-		return streamContentEntries(zipContent).map(this::getBaseName)
-			.filter(Objects::nonNull)
-			.distinct()
-			.map(this::getJarEntry)
-			.filter(Objects::nonNull);
+		synchronized (this) {
+			ZipContent zipContent = ensureOpen();
+			return streamContentEntries(zipContent).map(this::getBaseName)
+					.filter(Objects::nonNull)
+					.distinct()
+					.map(this::getJarEntry)
+					.filter(Objects::nonNull);
+		}
 
 	}
 
@@ -254,13 +259,17 @@ public class NestedJarFile extends JarFile {
 		if (lastEntry != null && name.equals(lastEntry.getName())) {
 			return lastEntry;
 		}
-		ZipContent.Entry entry = getVersionedContentEntry(name);
-		entry = (entry != null) ? entry : getContentEntry(null, name);
-		if (entry == null) {
-			return null;
+		NestedJarEntry nestedJarEntry;
+		synchronized (this) {
+			ZipContent.Entry entry = getVersionedContentEntry(name);
+			entry = (entry != null) ? entry : getContentEntry(null, name);
+
+			if (entry == null) {
+				return null;
+			}
+			nestedJarEntry = new NestedJarEntry(entry, name);
+			this.lastEntry = nestedJarEntry;
 		}
-		NestedJarEntry nestedJarEntry = new NestedJarEntry(entry, name);
-		this.lastEntry = nestedJarEntry;
 		return nestedJarEntry;
 	}
 
@@ -294,8 +303,10 @@ public class NestedJarFile extends JarFile {
 		if (manifestInfo != null) {
 			return manifestInfo;
 		}
-		ZipContent zipContent = ensureOpen();
-		manifestInfo = zipContent.getInfo(ManifestInfo.class, this::getManifestInfo);
+		synchronized (this) {
+			ZipContent zipContent = ensureOpen();
+			manifestInfo = zipContent.getInfo(ManifestInfo.class, this::getManifestInfo);
+		}
 		this.manifestInfo = manifestInfo;
 		return manifestInfo;
 	}
@@ -360,8 +371,10 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public String getComment() {
-		ZipContent zipContent = ensureOpen();
-		return zipContent.getComment();
+		synchronized (this) {
+			ZipContent zipContent = ensureOpen();
+			return zipContent.getComment();
+		}
 	}
 
 	@Override
@@ -670,8 +683,10 @@ public class NestedJarFile extends JarFile {
 		@Override
 		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
 			if (this.cursor < this.zipContent.size()) {
-				ensureOpen();
-				action.accept(this.zipContent.getEntry(this.cursor++));
+				synchronized (NestedJarFile.this) {
+					ensureOpen();
+					action.accept(this.zipContent.getEntry(this.cursor++));
+				}
 				return true;
 			}
 			return false;
