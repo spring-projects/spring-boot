@@ -116,7 +116,7 @@ class NestedJarFileResources implements Runnable {
 		Deque<Inflater> inflaterCache = this.inflaterCache;
 		if (inflaterCache != null) {
 			synchronized (inflaterCache) {
-				Inflater inflater = this.inflaterCache.poll();
+				Inflater inflater = inflaterCache.poll();
 				if (inflater != null) {
 					return inflater;
 				}
@@ -136,7 +136,7 @@ class NestedJarFileResources implements Runnable {
 			synchronized (inflaterCache) {
 				if (this.inflaterCache == inflaterCache && inflaterCache.size() < INFLATER_CACHE_LIMIT) {
 					inflater.reset();
-					this.inflaterCache.add(inflater);
+					inflaterCache.add(inflater);
 					return;
 				}
 			}
@@ -167,13 +167,13 @@ class NestedJarFileResources implements Runnable {
 	private IOException releaseInflators(IOException exceptionChain) {
 		Deque<Inflater> inflaterCache = this.inflaterCache;
 		if (inflaterCache != null) {
-			try {
-				synchronized (inflaterCache) {
+			synchronized (inflaterCache) {
+				try {
 					inflaterCache.forEach(Inflater::end);
 				}
-			}
-			finally {
-				this.inflaterCache = null;
+				finally {
+					this.inflaterCache = null;
+				}
 			}
 		}
 		return exceptionChain;
