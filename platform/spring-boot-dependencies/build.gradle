@@ -2804,10 +2804,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-grpc")
 			github("https://github.com/spring-projects/spring-grpc")
-			javadoc(version -> "https://docs.spring.io/spring-grpc/reference/%s/api/java/"
-					.formatted(version.forAntora()), "org.springframework.grpc")
-			docs(version -> "https://docs.spring.io/spring-grpc/reference/%s"
-					.formatted(version.forAntora()))
+			javadoc("https://docs.spring.io/spring-grpc/reference/api/java/", "org.springframework.grpc")
+			docs("https://docs.spring.io/spring-grpc/reference")
 			releaseNotes("https://github.com/spring-projects/spring-grpc/releases/tag/v{version}")
 		}
 	}
