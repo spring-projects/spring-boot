@@ -18,6 +18,7 @@ package org.springframework.boot.graphql.autoconfigure;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -70,6 +71,11 @@ public class GraphQlProperties {
 		 */
 		private String path = "/graphql";
 
+		/**
+		 * HTTP methods supported to make GraphQL requests.
+		 */
+		private Set<String> methods = Set.of("POST");
+
 		private final Sse sse = new Sse();
 
 		public String getPath() {
@@ -78,6 +84,14 @@ public class GraphQlProperties {
 
 		public void setPath(String path) {
 			this.path = path;
+		}
+
+		public Set<String> getMethods() {
+			return this.methods;
+		}
+
+		public void setMethods(Set<String> methods) {
+			this.methods = methods;
 		}
 
 		public Sse getSse() {
@@ -308,6 +322,11 @@ public class GraphQlProperties {
 		 */
 		private @Nullable Duration timeout;
 
+		/**
+		 * HTTP methods supported to establish a GraphQL SSE connection.
+		 */
+		private Set<String> methods = Set.of("POST");
+
 		public @Nullable Duration getKeepAlive() {
 			return this.keepAlive;
 		}
@@ -322,6 +341,14 @@ public class GraphQlProperties {
 
 		public void setTimeout(@Nullable Duration timeout) {
 			this.timeout = timeout;
+		}
+
+		public Set<String> getMethods() {
+			return this.methods;
+		}
+
+		public void setMethods(Set<String> methods) {
+			this.methods = methods;
 		}
 
 	}

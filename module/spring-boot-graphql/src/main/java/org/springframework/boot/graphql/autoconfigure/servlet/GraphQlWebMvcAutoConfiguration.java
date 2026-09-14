@@ -17,7 +17,9 @@
 package org.springframework.boot.graphql.autoconfigure.servlet;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import graphql.GraphQL;
 import jakarta.websocket.server.ServerContainer;
@@ -95,8 +97,10 @@ public final class GraphQlWebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
-		return GraphQlHttpHandler.builder(webGraphQlHandler).build();
+	GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
+		return GraphQlHttpHandler.builder(webGraphQlHandler)
+			.httpMethods(asHttpMethods(properties.getHttp().getMethods()))
+			.build();
 	}
 
 	@Bean
@@ -105,6 +109,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 		return GraphQlSseHandler.builder(webGraphQlHandler)
 			.timeout(properties.getHttp().getSse().getTimeout())
 			.keepAliveDuration(properties.getHttp().getSse().getKeepAlive())
+			.httpMethods(asHttpMethods(properties.getHttp().getSse().getMethods()))
 			.build();
 	}
 
@@ -120,12 +125,15 @@ public final class GraphQlWebMvcAutoConfiguration {
 	RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler, GraphQlSseHandler sseHandler,
 			ObjectProvider<GraphQlSource> graphQlSourceProvider, GraphQlProperties properties) {
 		String path = properties.getHttp().getPath();
-		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		Set<HttpMethod> allowedMethods = concat(httpHandler.getHttpMethods(), sseHandler.getHttpMethods());
+		logger.info(LogMessage.format("GraphQL endpoint HTTP %s %s", allowedMethods, path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
-		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
-		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlHttp(path, httpHandler.getHttpMethods()),
+				httpHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlSse(path, sseHandler.getHttpMethods()),
+				sseHandler::handleRequest);
 		builder.POST(path, this::unsupportedMediaType);
-		builder.GET(path, this::onlyAllowPost);
+		builder.GET(path, (request) -> methodNotAllowed(allowedMethods));
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = createGraphiQLHandler(properties, path);
 			builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
@@ -150,12 +158,20 @@ public final class GraphQlWebMvcAutoConfiguration {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 	}
 
-	private ServerResponse onlyAllowPost(ServerRequest request) {
-		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED).headers(this::onlyAllowPost).build();
+	private ServerResponse methodNotAllowed(Set<HttpMethod> allowedMethods) {
+		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED)
+			.headers((headers) -> headers.setAllow(allowedMethods))
+			.build();
 	}
 
-	private void onlyAllowPost(HttpHeaders headers) {
-		headers.setAllow(Collections.singleton(HttpMethod.POST));
+	private Set<HttpMethod> concat(Set<HttpMethod> methods, Set<HttpMethod> otherMethods) {
+		Set<HttpMethod> allowedMethods = new LinkedHashSet<>(methods);
+		allowedMethods.addAll(otherMethods);
+		return allowedMethods;
+	}
+
+	private static HttpMethod[] asHttpMethods(Set<String> methods) {
+		return methods.stream().map(HttpMethod::valueOf).toArray(HttpMethod[]::new);
 	}
 
 	@Configuration(proxyBeanMethods = false)

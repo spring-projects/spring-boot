@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -48,6 +49,7 @@ import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
 import org.springframework.graphql.server.webflux.GraphQlSseHandler;
 import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -298,6 +300,55 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureHttpMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST").run((context) -> {
+			GraphQlHttpHandler handler = context.getBean(GraphQlHttpHandler.class);
+			assertThat(handler.getHttpMethods()).containsExactlyInAnyOrder(HttpMethod.GET, HttpMethod.POST);
+		});
+	}
+
+	@Test
+	void shouldConfigureSseMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.methods=GET,POST").run((context) -> {
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler.getHttpMethods()).containsExactlyInAnyOrder(HttpMethod.GET, HttpMethod.POST);
+		});
+	}
+
+	@Test
+	void httpGetQueryShouldWorkWhenConfigured() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST")
+			.run((context) -> testWithWebClient(context, (client) -> {
+				String query = "{ bookById(id: \"book-1\"){ id name pageCount author } }";
+				client.get()
+					.uri("/graphql?query={query}", query)
+					.accept(MediaType.APPLICATION_GRAPHQL_RESPONSE)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("data.bookById.name")
+					.isEqualTo("GraphQL for beginners");
+			}));
+	}
+
+	@Test
+	void sseSubscriptionShouldWorkWithGetWhenConfigured() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.methods=GET,POST")
+			.run((context) -> testWithWebClient(context, (client) -> {
+				String query = "subscription TestSubscription { booksOnSale(minPages: 50){ id name pageCount author } }";
+				client.get()
+					.uri("/graphql?query={query}", query)
+					.accept(MediaType.TEXT_EVENT_STREAM)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM);
+			}));
+	}
+
+	@Test
 	void routerFunctionShouldHaveOrderZero() {
 		this.contextRunner.withUserConfiguration(CustomRouterFunctions.class).run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(RouterFunction.class);
@@ -316,17 +367,19 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
-		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context)
-				.configureClient()
-				.defaultHeaders((headers) -> {
-					headers.setContentType(MediaType.APPLICATION_JSON);
-					headers.setAccept(Collections.singletonList(MediaType.APPLICATION_GRAPHQL_RESPONSE));
-				})
-				.baseUrl(BASE_URL)
-				.build();
-			consumer.accept(client);
-		});
+		this.contextRunner.run((context) -> testWithWebClient(context, consumer));
+	}
+
+	private void testWithWebClient(ApplicationContext context, Consumer<WebTestClient> consumer) {
+		WebTestClient client = WebTestClient.bindToApplicationContext(context)
+			.configureClient()
+			.defaultHeaders((headers) -> {
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_GRAPHQL_RESPONSE));
+			})
+			.baseUrl(BASE_URL)
+			.build();
+		consumer.accept(client);
 	}
 
 	@Configuration(proxyBeanMethods = false)

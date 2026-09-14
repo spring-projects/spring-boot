@@ -31,6 +31,14 @@
       }
     },
     {
+      "name": "spring.graphql.http.methods",
+      "defaultValue": "POST"
+    },
+    {
+      "name": "spring.graphql.http.sse.methods",
+      "defaultValue": "POST"
+    },
+    {
       "name": "spring.graphql.path",
       "type": "java.lang.String",
       "deprecated": true,

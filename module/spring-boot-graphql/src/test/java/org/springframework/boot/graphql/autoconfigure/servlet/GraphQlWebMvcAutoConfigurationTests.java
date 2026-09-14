@@ -48,6 +48,7 @@ import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.graphql.server.webmvc.GraphQlSseHandler;
 import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -120,6 +121,46 @@ class GraphQlWebMvcAutoConfigurationTests {
 			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
 			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
 			assertThat(handler).hasFieldOrPropertyWithValue("keepAliveDuration", Duration.ofSeconds(5));
+		});
+	}
+
+	@Test
+	void shouldConfigureHttpMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST").run((context) -> {
+			GraphQlHttpHandler handler = context.getBean(GraphQlHttpHandler.class);
+			assertThat(handler.getHttpMethods()).containsExactlyInAnyOrder(HttpMethod.GET, HttpMethod.POST);
+		});
+	}
+
+	@Test
+	void shouldConfigureSseMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.methods=GET,POST").run((context) -> {
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler.getHttpMethods()).containsExactlyInAnyOrder(HttpMethod.GET, HttpMethod.POST);
+		});
+	}
+
+	@Test
+	void httpGetQueryShouldWorkWhenConfigured() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST").run((context) -> {
+			MockMvcTester mvc = MockMvcTester.from(context);
+			String query = "{ bookById(id: \"book-1\"){ id name pageCount author } }";
+			assertThat(mvc.get().uri("/graphql?query={query}", query).accept(MediaType.APPLICATION_GRAPHQL_RESPONSE))
+				.hasStatusOk()
+				.bodyJson()
+				.extractingPath("data.bookById.name")
+				.asString()
+				.isEqualTo("GraphQL for beginners");
+		});
+	}
+
+	@Test
+	void sseSubscriptionShouldWorkWithGetWhenConfigured() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.methods=GET,POST").run((context) -> {
+			MockMvcTester mvc = MockMvcTester.from(context);
+			String query = "subscription TestSubscription { booksOnSale(minPages: 50){ id name pageCount author } }";
+			assertThat(mvc.get().uri("/graphql?query={query}", query).accept(MediaType.TEXT_EVENT_STREAM)).hasStatusOk()
+				.hasContentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM);
 		});
 	}
 
