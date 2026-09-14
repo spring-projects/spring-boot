@@ -96,14 +96,16 @@ public final class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
-		return new GraphQlHttpHandler(webGraphQlHandler);
+		return GraphQlHttpHandler.builder(webGraphQlHandler).build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
-		return new GraphQlSseHandler(webGraphQlHandler, properties.getHttp().getSse().getTimeout(),
-				properties.getHttp().getSse().getKeepAlive());
+		return GraphQlSseHandler.builder(webGraphQlHandler)
+			.timeout(properties.getHttp().getSse().getTimeout())
+			.keepAliveDuration(properties.getHttp().getSse().getKeepAlive())
+			.build();
 	}
 
 	@Bean
@@ -188,16 +190,12 @@ public final class GraphQlWebMvcAutoConfiguration {
 		GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, GraphQlCorsProperties corsProperties,
 				ObjectProvider<ServerHttpMessageConvertersCustomizer> customizers) {
-			CorsConfiguration corsConfiguration = corsProperties.toCorsConfiguration();
-			if (corsConfiguration != null) {
-				return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(customizers),
-						properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive(),
-						corsConfiguration);
-			}
-			else {
-				return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(customizers),
-						properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
-			}
+			return GraphQlWebSocketHandler
+				.builder(webGraphQlHandler, getJsonConverter(customizers),
+						properties.getWebsocket().getConnectionInitTimeout())
+				.keepAliveDuration(properties.getWebsocket().getKeepAlive())
+				.corsConfiguration(corsProperties.toCorsConfiguration())
+				.build();
 		}
 
 		private HttpMessageConverter<Object> getJsonConverter(
