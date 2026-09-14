@@ -2825,67 +2825,70 @@ bom {
 				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
 			}
 			module("testcontainers-activemq") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-activemq/%s".formatted(version), "org.testcontainers.activemq")
 			}
 			module("testcontainers-cassandra") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-cassandra/%s".formatted(version), "org.testcontainers.cassandra")
 			}
 			module("testcontainers-clickhouse") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
 			}
 			module("testcontainers-couchbase") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-couchbase/%s".formatted(version), "org.testcontainers.couchbase")
 			}
 			module("testcontainers-elasticsearch") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
 			}
 			module("testcontainers-grafana") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-grafana/%s".formatted(version), "org.testcontainers.grafana")
 			}
 			module("testcontainers-jdbc") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-jdbc/%s".formatted(version))
 			}
 			module("testcontainers-junit-jupiter") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
 			}
 			module("testcontainers-kafka") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-kafka/%s".formatted(version), "org.testcontainers.kafka")
 			}
 			module("testcontainers-mariadb") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mariadb/%s".formatted(version))
 			}
 			module("testcontainers-mongodb") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mongodb/%s".formatted(version))
 			}
 			module("testcontainers-mssqlserver") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mssqlserver/%s".formatted(version))
 			}
 			module("testcontainers-mysql") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mysql/%s".formatted(version))
 			}
 			module("testcontainers-neo4j") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-neo4j/%s".formatted(version))
 			}
 			module("testcontainers-oracle-xe") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-xe/%s".formatted(version))
 			}
 			module("testcontainers-oracle-free") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-free/%s".formatted(version), "org.testcontainers.oracle")
 			}
 			module("testcontainers-postgresql") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-postgresql/%s".formatted(version))
 			}
 			module("testcontainers-pulsar") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-pulsar/%s".formatted(version))
 			}
 			module("testcontainers-rabbitmq") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-rabbitmq/%s".formatted(version))
 			}
 			module("testcontainers-redpanda") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-redpanda/%s".formatted(version), "org.testcontainers.redpanda")
 			}
 			module("testcontainers-r2dbc") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
+			}
+			module("testcontainers-ldap") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-ldap/%s".formatted(version), "org.testcontainers.ldap")
 			}
 
 		}
