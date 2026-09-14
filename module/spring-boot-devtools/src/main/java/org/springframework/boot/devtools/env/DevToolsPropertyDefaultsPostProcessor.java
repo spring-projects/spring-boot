@@ -28,7 +28,6 @@ import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.settings.DevToolsSettings;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
-import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebEnvironment;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -56,7 +55,9 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private static final String WEB_LOGGING = "logging.level.web";
 
-	private static final String SERVLET_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
+	private static final WebEnvironmentClassResolver[] WEB_ENVIRONMENT_CLASS_RESOLVERS = new WebEnvironmentClassResolver[] {
+			WebEnvironmentClassResolver.fromClassName("org.springframework.web.context.ConfigurableWebEnvironment"),
+			(classloader) -> org.springframework.boot.web.context.reactive.ConfigurableReactiveWebEnvironment.class };
 
 	private static final Map<String, Object> PROPERTIES;
 
@@ -111,21 +112,31 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isWebApplication(Environment environment) {
-		if (environment instanceof ConfigurableReactiveWebEnvironment) {
-			return true;
+		ClassLoader classLoader = environment.getClass().getClassLoader();
+		for (WebEnvironmentClassResolver resolver : WEB_ENVIRONMENT_CLASS_RESOLVERS) {
+			Class<?> environmentClass = resolver.resolve(classLoader);
+			if (environmentClass != null && environmentClass.isInstance(environment)) {
+				return true;
+			}
 		}
-		Class<?> servletWebEnvironmentClass = resolveClassName(SERVLET_WEB_ENVIRONMENT_CLASS,
-				environment.getClass().getClassLoader());
-		return servletWebEnvironmentClass != null && servletWebEnvironmentClass.isInstance(environment);
+		return false;
 	}
 
-	private @Nullable Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
-		try {
-			return ClassUtils.resolveClassName(candidate, classLoader);
+	private interface WebEnvironmentClassResolver {
+
+		@Nullable Class<?> resolve(ClassLoader classLoader);
+
+		static WebEnvironmentClassResolver fromClassName(String candidate) {
+			return (classLoader) -> {
+				try {
+					return ClassUtils.resolveClassName(candidate, classLoader);
+				}
+				catch (IllegalArgumentException ex) {
+					return null;
+				}
+			};
 		}
-		catch (IllegalArgumentException ex) {
-			return null;
-		}
+
 	}
 
 }
