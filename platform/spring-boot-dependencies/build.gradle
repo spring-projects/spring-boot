@@ -3177,7 +3177,7 @@ bom {
 			]
 		}
 	}
-	library("XML Maven Plugin", "1.2.1") {
+	library("XML Maven Plugin", "1.2.2") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"xml-maven-plugin"
