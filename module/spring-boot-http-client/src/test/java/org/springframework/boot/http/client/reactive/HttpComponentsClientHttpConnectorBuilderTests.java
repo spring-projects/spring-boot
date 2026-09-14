@@ -25,15 +25,19 @@ import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.async.HttpAsyncClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
@@ -127,6 +131,28 @@ class HttpComponentsClientHttpConnectorBuilderTests
 			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
 		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver.delegate")
 			.isSameAs(dnsResolver);
+	}
+
+	@Test
+	void defaultCookieHandling() {
+		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
+			.build(HttpClientSettings.defaults());
+		assertThat(connector).extracting("client.defaultConfig.cookieSpec").isNull();
+	}
+
+	@Test
+	void cookieHandlingDisabled() {
+		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
+			.build(HttpClientSettings.defaults().withCookieHandling(HttpCookieHandling.DISABLE));
+		assertThat(connector).extracting("client.defaultConfig.cookieSpec").isEqualTo(StandardCookieSpec.IGNORE);
+	}
+
+	@ParameterizedTest
+	@EnumSource(names = { "ENABLE", "ENABLE_WHEN_POSSIBLE" })
+	void cookieHandlingEnabled(HttpCookieHandling cookieHandling) {
+		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
+			.build(HttpClientSettings.defaults().withCookieHandling(cookieHandling));
+		assertThat(connector).extracting("client.defaultConfig.cookieSpec").isEqualTo(StandardCookieSpec.STRICT);
 	}
 
 	@Override
