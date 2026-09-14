@@ -55,9 +55,9 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private static final String WEB_LOGGING = "logging.level.web";
 
-	private static final String[] WEB_ENVIRONMENT_CLASSES = {
-			"org.springframework.web.context.ConfigurableWebEnvironment",
-			"org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment" };
+	private static final WebEnvironmentClassResolver[] WEB_ENVIRONMENT_CLASS_RESOLVERS = new WebEnvironmentClassResolver[] {
+			WebEnvironmentClassResolver.fromClassName("org.springframework.web.context.ConfigurableWebEnvironment"),
+			(classloader) -> org.springframework.boot.web.context.reactive.ConfigurableReactiveWebEnvironment.class };
 
 	private static final Map<String, Object> PROPERTIES;
 
@@ -112,8 +112,9 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isWebApplication(Environment environment) {
-		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
-			Class<?> environmentClass = resolveClassName(candidate, environment.getClass().getClassLoader());
+		ClassLoader classLoader = environment.getClass().getClassLoader();
+		for (WebEnvironmentClassResolver resolver : WEB_ENVIRONMENT_CLASS_RESOLVERS) {
+			Class<?> environmentClass = resolver.resolve(classLoader);
 			if (environmentClass != null && environmentClass.isInstance(environment)) {
 				return true;
 			}
@@ -121,13 +122,21 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		return false;
 	}
 
-	private @Nullable Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
-		try {
-			return ClassUtils.resolveClassName(candidate, classLoader);
+	private interface WebEnvironmentClassResolver {
+
+		@Nullable Class<?> resolve(ClassLoader classLoader);
+
+		static WebEnvironmentClassResolver fromClassName(String candidate) {
+			return (classLoader) -> {
+				try {
+					return ClassUtils.resolveClassName(candidate, classLoader);
+				}
+				catch (IllegalArgumentException ex) {
+					return null;
+				}
+			};
 		}
-		catch (IllegalArgumentException ex) {
-			return null;
-		}
+
 	}
 
 }
