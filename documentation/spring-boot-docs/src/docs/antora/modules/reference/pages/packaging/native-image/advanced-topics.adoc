@@ -166,7 +166,7 @@ include-code::MyRuntimeHints[]
 
 You can then use javadoc:org.springframework.context.annotation.ImportRuntimeHints[format=annotation] on any javadoc:org.springframework.context.annotation.Configuration[format=annotation] class (for example your javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotated application class) to activate those hints.
 
-If you have classes which need binding (mostly needed when serializing or deserializing JSON), you can use {url-spring-framework-docs}/core/aot.html#aot.hints.register-reflection-for-binding[`@RegisterReflectionForBinding`] on any bean.
+If you have classes which need binding (mostly needed when serializing or deserializing JSON), you can use {url-spring-framework-docs}/core/aot.html#aot.hints.register-reflection[`@RegisterReflectionForBinding`] on any bean.
 Most of the hints are automatically inferred, for example when accepting or returning data from a javadoc:org.springframework.web.bind.annotation.RestController[format=annotation] method.
 But when you work with javadoc:org.springframework.web.reactive.function.client.WebClient[] or javadoc:org.springframework.web.client.RestClient[] directly, you might need to use javadoc:org.springframework.aot.hint.annotation.RegisterReflectionForBinding[format=annotation].
 
