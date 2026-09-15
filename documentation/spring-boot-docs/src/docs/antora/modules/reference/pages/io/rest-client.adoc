@@ -307,6 +307,7 @@ You can use properties to configure aspects such as:
 * Any default headers that should be sent.
 * API versioning configuration.
 * Redirect settings.
+* Cookie handling settings.
 * Connection and read timeouts.
 * SSL bundles to use.
 
@@ -371,6 +372,7 @@ These include:
 * Connection Timeouts.
 * Read Timeouts.
 * How HTTP redirects should be handled.
+* How HTTP cookies should be handled.
 * Which SSL bundle should be used when connecting.
 
 These common settings are represented by the javadoc:org.springframework.boot.http.client.HttpClientSettings[] class which can be passed into the `build(...)` methods of javadoc:org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder[] and javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[].
@@ -385,7 +387,13 @@ spring:
       connect-timeout: 2s
       read-timeout: 1s
       redirects: dont-follow
+      cookie-handling: disable
 ----
+
+When `spring.http.clients.cookie-handling` is not set, the default cookie handling of the underlying HTTP client library is used.
+These defaults vary: for example, the Apache HttpComponents and Jetty clients store cookies and send them with subsequent requests whereas the JDK client ignores them.
+When cookie handling is enabled, each underlying HTTP client instance uses its own cookie store.
+Reactor Netty and the `simple` request factory do not support cookie handling so `enable` will fail with those clients and `enable-when-possible` will leave them unchanged.
 
 
 

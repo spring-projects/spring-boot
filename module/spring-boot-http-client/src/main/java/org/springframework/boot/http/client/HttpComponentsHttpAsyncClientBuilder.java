@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.async.HttpAsyncClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
@@ -178,7 +179,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 			.useSystemProperties()
 			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
 			.setConnectionManager(createConnectionManager(settings))
-			.setDefaultRequestConfig(createDefaultRequestConfig());
+			.setDefaultRequestConfig(createDefaultRequestConfig(settings));
 		this.customizer.accept(builder);
 		return builder.build();
 	}
@@ -211,8 +212,15 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		return builder.build();
 	}
 
-	private RequestConfig createDefaultRequestConfig() {
+	private RequestConfig createDefaultRequestConfig(HttpClientSettings settings) {
 		RequestConfig.Builder builder = RequestConfig.custom();
+		if (settings.cookieHandling() != null) {
+			String cookieSpec = switch (settings.cookieHandling()) {
+				case ENABLE_WHEN_POSSIBLE, ENABLE -> StandardCookieSpec.STRICT;
+				case DISABLE -> StandardCookieSpec.IGNORE;
+			};
+			builder.setCookieSpec(cookieSpec);
+		}
 		this.defaultRequestConfigCustomizer.accept(builder);
 		return builder.build();
 	}
