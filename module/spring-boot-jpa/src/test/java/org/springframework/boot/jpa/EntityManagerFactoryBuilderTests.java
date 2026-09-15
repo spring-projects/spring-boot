@@ -102,9 +102,16 @@ class EntityManagerFactoryBuilderTests {
 		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);
 	}
 
+	/**
+	 * @deprecated since 4.1.1 for removal in 4.3.0
+	 */
 	@Test
+	@Deprecated(since = "4.1.1", forRemoval = true)
+	@SuppressWarnings("removal")
 	void requireBootstrapExecutorWhenFallbackExecutorProvidesExecutorDoesNotThrow() {
-		EntityManagerFactoryBuilder builder = createEmptyBuilder(SimpleAsyncTaskExecutor::new);
+		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
+		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(),
+				jpaPropertiesFactory, null, null, new SimpleAsyncTaskExecutor());
 		builder.requireBootstrapExecutor(() -> new IllegalStateException("BAD"));
 		DataSource dataSource = mock();
 		assertThatNoException().isThrownBy(builder.dataSource(dataSource)::build);

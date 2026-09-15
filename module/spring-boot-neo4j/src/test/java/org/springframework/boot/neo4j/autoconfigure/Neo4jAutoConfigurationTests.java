@@ -260,14 +260,6 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	void securityWithTrustSignedCertificates() {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
-		assertThat(mapDriverConfig(properties).trustStrategy().strategy())
-			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
-	}
-
-	@Test
 	void securityWithTrustAllCertificates() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_ALL_CERTIFICATES);

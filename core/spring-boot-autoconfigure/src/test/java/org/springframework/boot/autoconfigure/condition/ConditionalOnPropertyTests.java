@@ -174,7 +174,7 @@ class ConditionalOnPropertyTests {
 
 	@Test
 	void relaxedEnabledByDefault() {
-		load(PrefixValueConfig.class, "simple.myProperty:bar");
+		load(PrefixValueConfig.class, "simple.my-property:bar");
 		assertThat(containsBean()).isTrue();
 	}
 

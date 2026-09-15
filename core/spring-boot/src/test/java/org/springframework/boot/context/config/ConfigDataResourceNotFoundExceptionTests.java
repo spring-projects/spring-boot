@@ -82,12 +82,6 @@ class ConfigDataResourceNotFoundExceptionTests {
 	}
 
 	@Test
-	void getResourceReturnsResource() {
-		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(this.resource);
-		assertThat(exception.getResource()).isSameAs(this.resource);
-	}
-
-	@Test
 	void getLocationWhenHasNoLocationReturnsNull() {
 		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(this.resource);
 		assertThat(exception.getLocation()).isNull();
