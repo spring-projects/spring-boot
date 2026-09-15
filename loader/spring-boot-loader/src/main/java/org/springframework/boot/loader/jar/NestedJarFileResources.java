@@ -37,6 +37,7 @@ import org.springframework.boot.loader.zip.ZipContent.Kind;
  * for registration with a {@link Cleaner}.
  *
  * @author Phillip Webb
+ * @author Ian Kettle
  */
 class NestedJarFileResources implements Runnable {
 
