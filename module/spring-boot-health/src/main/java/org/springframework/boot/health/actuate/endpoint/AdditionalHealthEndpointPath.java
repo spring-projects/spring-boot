@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Wan bin yu
  * @since 4.0.0
  */
 public final class AdditionalHealthEndpointPath {
@@ -99,8 +100,8 @@ public final class AdditionalHealthEndpointPath {
 
 	/**
 	 * Creates an {@link AdditionalHealthEndpointPath} from the given input. The input
-	 * must contain a prefix and value separated by a `:`. The value must be limited to
-	 * one path segment. For example, `server:/healthz`.
+	 * must contain a prefix and value separated by a `:`. The value can contain one or
+	 * more path segments. For example, `server:/healthz`.
 	 * @param value the value to parse
 	 * @return the new instance
 	 */
@@ -110,7 +111,6 @@ public final class AdditionalHealthEndpointPath {
 		Assert.isTrue(values.length == 2, "'value' must contain a valid namespace and value separated by ':'.");
 		Assert.isTrue(StringUtils.hasText(values[0]), "'value' must contain a valid namespace.");
 		WebServerNamespace namespace = WebServerNamespace.from(values[0]);
-		validateValue(values[1]);
 		return new AdditionalHealthEndpointPath(namespace, values[1]);
 	}
 
@@ -124,13 +124,7 @@ public final class AdditionalHealthEndpointPath {
 	public static AdditionalHealthEndpointPath of(WebServerNamespace webServerNamespace, String value) {
 		Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null.");
 		Assert.notNull(value, "'value' must not be null.");
-		validateValue(value);
 		return new AdditionalHealthEndpointPath(webServerNamespace, value);
-	}
-
-	private static void validateValue(String value) {
-		Assert.isTrue(StringUtils.countOccurrencesOf(value, "/") <= 1 && value.indexOf("/") <= 0,
-				"'value' must contain only one segment.");
 	}
 
 }
