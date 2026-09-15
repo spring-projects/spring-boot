@@ -821,7 +821,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.listener.immediate-stop=true", "spring.kafka.producer.transaction-id-prefix=foo",
 					"spring.kafka.jaas.login-module=foo", "spring.kafka.jaas.control-flag=REQUISITE",
 					"spring.kafka.jaas.options.useKeyTab=true", "spring.kafka.listener.async-acks=true",
-					"spring.kafka.listener.observation-enabled=true")
+					"spring.kafka.listener.observation-enabled=true",
+					"spring.kafka.listener.await-async-results-on-stop=true")
 			.run((context) -> {
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
@@ -847,6 +848,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(containerProperties.isLogContainerConfig()).isTrue();
 				assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 				assertThat(containerProperties.isStopImmediate()).isTrue();
+				assertThat(containerProperties.isAwaitAsyncResultsOnStop()).isTrue();
 				assertThat(containerProperties.isObservationEnabled()).isTrue();
 				assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 				assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
