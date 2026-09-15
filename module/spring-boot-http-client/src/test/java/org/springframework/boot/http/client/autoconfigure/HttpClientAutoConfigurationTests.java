@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpCookieHandling;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -52,9 +53,10 @@ class HttpClientAutoConfigurationTests {
 	void createsHttpClientSettingsFromProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.http.clients.redirects=dont-follow", "spring.http.clients.connect-timeout=1s",
-					"spring.http.clients.read-timeout=2s")
-			.run((context) -> assertThat(context.getBean(HttpClientSettings.class)).isEqualTo(new HttpClientSettings(
-					null, HttpRedirects.DONT_FOLLOW, Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
+					"spring.http.clients.read-timeout=2s", "spring.http.clients.cookie-handling=disable")
+			.run((context) -> assertThat(context.getBean(HttpClientSettings.class))
+				.isEqualTo(new HttpClientSettings(HttpCookieHandling.DISABLE, HttpRedirects.DONT_FOLLOW,
+						Duration.ofSeconds(1), Duration.ofSeconds(2), null)));
 	}
 
 	@Test
