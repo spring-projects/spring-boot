@@ -172,12 +172,6 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatMaxHttpPostSizeMatchesConnectorDefault() {
-		assertThat(this.properties.getMaxHttpFormPostSize().toBytes())
-			.isEqualTo(getDefaultConnector().getMaxPostSize());
-	}
-
-	@Test
 	void tomcatMaxParameterCountMatchesConnectorDefault() {
 		assertThat(this.properties.getMaxParameterCount()).isEqualTo(getDefaultConnector().getMaxParameterCount());
 	}

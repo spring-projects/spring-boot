@@ -294,16 +294,15 @@ class EnvironmentEndpointTests {
 
 	@Test
 	void propertyEntryWhenShowWhenAuthorized() {
-		testPropertyEntry(Show.ALWAYS, "bar", "another");
+		testPropertyEntry(Show.WHEN_AUTHORIZED, "bar", "another");
 	}
 
-	private void testPropertyEntry(Show always, String bar, String another) {
+	private void testPropertyEntry(Show show, String bar, String another) {
 		TestPropertyValues.of("my.foo=another").applyToSystemProperties(() -> {
 			StandardEnvironment environment = new StandardEnvironment();
 			TestPropertyValues.of("my.foo=bar", "my.foo2=bar2")
 				.applyTo(environment, TestPropertyValues.Type.MAP, "test");
-			EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(),
-					always)
+			EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(), show)
 				.environmentEntry("my.foo");
 			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getProperty()).isNotNull();

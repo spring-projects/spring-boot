@@ -58,7 +58,8 @@ class MongoAutoConfigurationTests {
 
 	@Test
 	void settingsAdded() {
-		this.contextRunner.withUserConfiguration(SettingsConfig.class)
+		this.contextRunner.withPropertyValues("spring.mongodb.host:localhost")
+			.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(
 					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
 				.isEqualTo(300));
@@ -66,7 +67,8 @@ class MongoAutoConfigurationTests {
 
 	@Test
 	void settingsAddedButNoHost() {
-		this.contextRunner.withUserConfiguration(SettingsConfig.class)
+		this.contextRunner.withPropertyValues("spring.mongodb.uri:mongodb://localhost/test")
+			.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(
 					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
 				.isEqualTo(300));
