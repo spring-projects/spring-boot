@@ -85,6 +85,7 @@ public final class MetricsAutoConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings("deprecation")
 	DefaultMeterObservationHandler defaultMeterObservationHandler(ObjectProvider<MeterRegistry> meterRegistryProvider,
 			Clock clock, MetricsProperties properties) {
 		MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable(() -> new CompositeMeterRegistry(clock));

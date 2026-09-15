@@ -270,6 +270,7 @@ public class MetricsProperties {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public static class Observations {
 
 		/**
