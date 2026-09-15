@@ -22,6 +22,7 @@ import javax.net.ssl.TrustManagerFactory;
 import io.grpc.TlsServerCredentials.ClientAuth;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.util.Assert;
@@ -49,18 +50,27 @@ record ServerCredentials(@Nullable KeyManagerFactory keyManagerFactory,
 	static ServerCredentials get(GrpcServerProperties.Ssl properties, SslBundles bundles,
 			TrustManagerFactory insecureTrustManagerFactory) {
 		Boolean enabled = properties.getEnabled();
-		String bundle = properties.getBundle();
+		String bundleName = properties.getBundle();
 		ClientAuth clientAuth = properties.getClientAuth();
-		if (Boolean.FALSE.equals(enabled) || (enabled == null && bundle == null)) {
+		if (Boolean.FALSE.equals(enabled) || (enabled == null && bundleName == null)) {
 			return new ServerCredentials(null, null, clientAuth);
 		}
-		Assert.state(bundle != null,
+		Assert.state(bundleName != null,
 				() -> "SSL bundle-name is requested when 'spring.grpc.server.ssl.enabled' is true");
-		SslManagerBundle managers = bundles.getBundle(bundle).getManagers();
-		KeyManagerFactory keyManagerFactory = managers.getKeyManagerFactory();
+		SslBundle bundle = bundles.getBundle(bundleName);
+		SslManagerBundle managers = bundle.getManagers();
+		KeyManagerFactory keyManagerFactory = getKeyManagerFactory(properties, bundles, bundleName, bundle, managers);
 		TrustManagerFactory trustManagerFactory = (!properties.isSecure()) ? insecureTrustManagerFactory
 				: managers.getTrustManagerFactory();
 		return new ServerCredentials(keyManagerFactory, trustManagerFactory, clientAuth);
+	}
+
+	private static KeyManagerFactory getKeyManagerFactory(GrpcServerProperties.Ssl properties, SslBundles bundles,
+			String bundleName, SslBundle bundle, SslManagerBundle managers) {
+		if (!properties.isReloadOnUpdate()) {
+			return managers.getKeyManagerFactory();
+		}
+		return ReloadableKeyManagerFactory.create(bundles, bundleName, bundle);
 	}
 
 }
