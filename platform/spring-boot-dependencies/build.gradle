@@ -1537,7 +1537,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Install Plugin", "3.1.4") {
+	library("Maven Install Plugin", "3.2.0") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
