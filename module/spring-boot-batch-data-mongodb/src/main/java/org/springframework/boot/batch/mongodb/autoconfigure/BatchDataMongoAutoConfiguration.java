@@ -49,12 +49,14 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch using Data MongoDB.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.1.0
  */
 @AutoConfiguration(before = { BatchAutoConfiguration.class, BatchJobLauncherAutoConfiguration.class },
@@ -93,15 +95,15 @@ public final class BatchDataMongoAutoConfiguration {
 
 		private final MongoOperations mongoOperations;
 
-		private final MongoTransactionManager transactionManager;
+		private final PlatformTransactionManager transactionManager;
 
 		private final @Nullable TaskExecutor taskExecutor;
 
 		private final BatchDataMongoProperties properties;
 
 		SpringBootBatchMongoConfiguration(MongoDatabaseFactory mongoDatabaseFactory,
-				ObjectProvider<MongoTransactionManager> transactionManager,
-				@BatchTransactionManager ObjectProvider<MongoTransactionManager> batchTransactionManager,
+				ObjectProvider<PlatformTransactionManager> transactionManager,
+				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
 				BatchDataMongoProperties properties) {
 			this.mongoOperations = createMongoOperations(mongoDatabaseFactory);
@@ -124,7 +126,7 @@ public final class BatchDataMongoAutoConfiguration {
 		}
 
 		@Override
-		protected MongoTransactionManager getTransactionManager() {
+		protected PlatformTransactionManager getTransactionManager() {
 			return this.transactionManager;
 		}
 

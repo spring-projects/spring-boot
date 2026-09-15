@@ -37,6 +37,7 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoExceptionTranslator;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.times;
  * Tests for {@link BatchDataMongoAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class BatchDataMongoAutoConfigurationTests {
 
@@ -69,7 +71,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationUsesMainTransactionManager() {
+	void autConfigurationUsesMainMongoTransactionManager() {
 		MongoTransactionManager transactionManager = mock(MongoTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(MongoTransactionManager.class, () -> transactionManager)
@@ -79,13 +81,36 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationFavorsBatchTransactionManager() {
+	void autConfigurationUsesMainPlatformTransactionManager() {
+		PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
+		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
+			.withBean(PlatformTransactionManager.class, () -> transactionManager)
+			.run((context) -> assertThat(
+					context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
+				.isSameAs(transactionManager));
+	}
+
+	@Test
+	void autConfigurationFavorsBatchMongoTransactionManager() {
 		MongoTransactionManager transactionManager = mock(MongoTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(MongoTransactionManager.class, () -> transactionManager)
-			.withUserConfiguration(BatchTransactionManagerConfiguration.class)
+			.withUserConfiguration(BatchMongoTransactionManagerConfiguration.class)
 			.run((context) -> {
 				assertThat(context.getBeansOfType(MongoTransactionManager.class)).hasSize(2);
+				assertThat(context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
+					.isSameAs(context.getBean("customTransactionManager"));
+			});
+	}
+
+	@Test
+	void autConfigurationFavorsBatchPlatformTransactionManager() {
+		PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
+		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
+			.withBean(PlatformTransactionManager.class, () -> transactionManager)
+			.withUserConfiguration(BatchPlatformTransactionManagerConfiguration.class)
+			.run((context) -> {
+				assertThat(context.getBeansOfType(PlatformTransactionManager.class)).hasSize(2);
 				assertThat(context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
 					.isSameAs(context.getBean("customTransactionManager"));
 			});
@@ -97,8 +122,9 @@ class BatchDataMongoAutoConfigurationTests {
 		this.contextRunner.withBean(MongoDatabaseFactory.class, () -> mongoDatabaseFactory).run((context) -> {
 			assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
 			assertThat(context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
-				.satisfies((mongoTransactionManager) -> assertThat(mongoTransactionManager.getDatabaseFactory())
-					.isSameAs(mongoDatabaseFactory));
+				.isInstanceOfSatisfying(MongoTransactionManager.class,
+						(mongoTransactionManager) -> assertThat(mongoTransactionManager.getDatabaseFactory())
+							.isSameAs(mongoDatabaseFactory));
 		});
 	}
 
@@ -197,12 +223,23 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class BatchTransactionManagerConfiguration {
+	static class BatchMongoTransactionManagerConfiguration {
 
 		@Bean
 		@BatchTransactionManager
 		MongoTransactionManager customTransactionManager() {
 			return mock(MongoTransactionManager.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BatchPlatformTransactionManagerConfiguration {
+
+		@Bean
+		@BatchTransactionManager
+		PlatformTransactionManager customTransactionManager() {
+			return mock(PlatformTransactionManager.class);
 		}
 
 	}
