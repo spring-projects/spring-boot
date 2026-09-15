@@ -190,10 +190,10 @@ public class NestedJarFile extends JarFile {
 		synchronized (this) {
 			ZipContent zipContent = ensureOpen();
 			return streamContentEntries(zipContent).map(this::getBaseName)
-					.filter(Objects::nonNull)
-					.distinct()
-					.map(this::getJarEntry)
-					.filter(Objects::nonNull);
+				.filter(Objects::nonNull)
+				.distinct()
+				.map(this::getJarEntry)
+				.filter(Objects::nonNull);
 		}
 
 	}
