@@ -35,7 +35,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails.Configuration;
-import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Admin;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Producer;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Security;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Ssl;
@@ -76,7 +75,17 @@ public class KafkaConfigBuilder {
 	 * @see AdminClientConfig
 	 */
 	public ConfigBuilder admin() {
-		return new AdminConfigBuilder(initializeKafkaConfig(), this.kafkaProperties.getAdmin(), null);
+		return admin(this.kafkaProperties.getAdmin());
+	}
+
+	/**
+	 * Return a builder for Admin-related configuration.
+	 * @param adminProperties the admin properties to map
+	 * @return an admin config builder
+	 * @see AdminClientConfig
+	 */
+	public ConfigBuilder admin(KafkaProperties.SimpleAdmin adminProperties) {
+		return new AdminConfigBuilder(initializeKafkaConfig(), adminProperties, null);
 	}
 
 	/**
@@ -175,11 +184,11 @@ public class KafkaConfigBuilder {
 
 		private final KafkaConfig kafkaConfig;
 
-		private final KafkaProperties.Admin admin;
+		private final KafkaProperties.SimpleAdmin admin;
 
 		private final @Nullable KafkaConnectionDetails connectionDetails;
 
-		private AdminConfigBuilder(KafkaConfig kafkaConfig, Admin admin,
+		private AdminConfigBuilder(KafkaConfig kafkaConfig, KafkaProperties.SimpleAdmin admin,
 				@Nullable KafkaConnectionDetails connectionDetails) {
 			this.kafkaConfig = kafkaConfig;
 			this.admin = admin;

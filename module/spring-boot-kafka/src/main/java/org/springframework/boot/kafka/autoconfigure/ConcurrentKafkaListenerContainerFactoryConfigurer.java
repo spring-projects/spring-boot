@@ -26,6 +26,7 @@ import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Listener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchInterceptor;
@@ -59,6 +60,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private @Nullable KafkaProperties properties;
 
+	private @Nullable KafkaAdmin kafkaAdmin;
+
 	private @Nullable BatchMessageConverter batchMessageConverter;
 
 	private @Nullable RecordMessageConverter recordMessageConverter;
@@ -91,6 +94,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 */
 	void setKafkaProperties(@Nullable KafkaProperties properties) {
 		this.properties = properties;
+	}
+
+	/**
+	 * Set the {@link KafkaAdmin} to use.
+	 * @param kafkaAdmin the Kafka admin
+	 */
+	void setKafkaAdmin(@Nullable KafkaAdmin kafkaAdmin) {
+		this.kafkaAdmin = kafkaAdmin;
 	}
 
 	/**
@@ -217,6 +228,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
 		map.from(properties::isAutoStartup).to(factory::setAutoStartup);
+		map.from(this.kafkaAdmin).to(factory::setKafkaAdmin);
 		map.from(this.batchMessageConverter).to(factory::setBatchMessageConverter);
 		map.from(this.recordMessageConverter).to(factory::setRecordMessageConverter);
 		map.from(this.recordFilterStrategy).to(factory::setRecordFilterStrategy);

@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.IsolationLevel;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Security;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.SimpleAdmin;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.unit.DataSize;
@@ -262,6 +263,17 @@ class KafkaConfigBuilderTests {
 			Map<String, Object> config = build(properties);
 			assertThat(config).containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "admin-client")
 				.containsEntry("admin.custom", "value");
+		}
+
+		@Test
+		void adminOverloadUsesGivenAdminProperties() {
+			KafkaProperties properties = new KafkaProperties();
+			SimpleAdmin adminProperties = new SimpleAdmin();
+			adminProperties.setClientId("other-admin");
+			adminProperties.getProperties().put("other.custom", "value");
+			Map<String, Object> config = KafkaConfigBuilder.of(properties).admin(adminProperties).build();
+			assertThat(config).containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "other-admin")
+				.containsEntry("other.custom", "value");
 		}
 
 	}

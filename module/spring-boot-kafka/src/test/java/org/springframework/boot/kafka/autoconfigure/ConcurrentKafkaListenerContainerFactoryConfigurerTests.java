@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.support.micrometer.KafkaListenerObservation.DefaultKafkaListenerObservationConvention;
 
@@ -56,7 +58,15 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.configurer.setKafkaProperties(this.properties);
 		this.factory = spy(new ConcurrentKafkaListenerContainerFactory<>());
 		this.consumerFactory = mock(ConsumerFactory.class);
+	}
 
+	@Test
+	void shouldApplyKafkaAdmin() {
+		KafkaAdmin kafkaAdmin = mock();
+		this.configurer.setKafkaAdmin(kafkaAdmin);
+		this.configurer.configure(this.factory, this.consumerFactory);
+		ConcurrentMessageListenerContainer<Object, Object> container = this.factory.createContainer("test");
+		assertThat(container.getKafkaAdmin()).isSameAs(kafkaAdmin);
 	}
 
 	@Test

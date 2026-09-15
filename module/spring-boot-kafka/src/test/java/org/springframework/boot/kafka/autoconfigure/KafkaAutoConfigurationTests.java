@@ -779,11 +779,30 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.template.allow-non-transactional=true", "spring.kafka.template.observation-enabled=true")
 			.run((context) -> {
 				KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
+				assertThat(kafkaTemplate.getKafkaAdmin()).isSameAs(context.getBean(KafkaAdmin.class));
 				assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("transactionIdPrefix", "txOverride");
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("closeTimeout", Duration.ofMinutes(3));
 				assertThat(kafkaTemplate.isAllowNonTransactional()).isTrue();
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("observationEnabled", true);
+			});
+	}
+
+	@Test
+	void templatePropertiesWithAdmin() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.template.admin.client-id=template",
+					"spring.kafka.template.admin.operation-timeout=2m",
+					"spring.kafka.template.admin.properties.fiz.buz=fix.fox")
+			.run((context) -> {
+				KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
+				assertThat(kafkaTemplate.getKafkaAdmin()).satisfies((kafkaAdmin) -> {
+					assertThat(kafkaAdmin).isNotSameAs(context.getBean(KafkaAdmin.class));
+					assertThat(kafkaAdmin.getConfigurationProperties())
+						.containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "template")
+						.containsEntry("fiz.buz", "fix.fox");
+					assertThat(kafkaAdmin.getOperationTimeout()).isEqualTo(120);
+				});
 			});
 	}
 
@@ -807,6 +826,7 @@ class KafkaAutoConfigurationTests {
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
 				KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
+				assertThat(kafkaTemplate.getKafkaAdmin()).isNull();
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("producerFactory", producerFactory);
 				AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
 					.getBean(KafkaListenerContainerFactory.class);
@@ -839,6 +859,25 @@ class KafkaAutoConfigurationTests {
 				assertThat(context.getBeansOfType(KafkaTransactionManager.class)).hasSize(1);
 				assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas, "options")))
 					.containsExactly(entry("useKeyTab", "true"));
+			});
+	}
+
+	@Test
+	void listenerPropertiesWithAdmin() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.listener.admin.client-id=listener",
+					"spring.kafka.listener.admin.operation-timeout=2m",
+					"spring.kafka.listener.admin.properties.fiz.buz=fix.fox")
+			.run((context) -> {
+				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+				ConcurrentMessageListenerContainer<?, ?> container = factory.createContainer("someTopic");
+				assertThat(container.getKafkaAdmin()).satisfies((kafkaAdmin) -> {
+					assertThat(kafkaAdmin.getConfigurationProperties())
+						.containsEntry(AdminClientConfig.CLIENT_ID_CONFIG, "listener")
+						.containsEntry("fiz.buz", "fix.fox");
+					assertThat(kafkaAdmin.getOperationTimeout()).isEqualTo(120);
+				});
 			});
 	}
 

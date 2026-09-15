@@ -36,8 +36,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Admin;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Jaas;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry.Topic.Backoff;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.SimpleAdmin;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Template;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -99,7 +101,8 @@ public final class KafkaAutoConfiguration {
 	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter,
-			ObjectProvider<KafkaTemplateObservationConvention> observationConvention) {
+			ObjectProvider<KafkaTemplateObservationConvention> observationConvention,
+			KafkaConnectionDetails kafkaConnectionDetails) {
 		PropertyMapper map = PropertyMapper.get();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
@@ -111,6 +114,11 @@ public final class KafkaAutoConfiguration {
 		map.from(templateProperties.getCloseTimeout()).to(kafkaTemplate::setCloseTimeout);
 		map.from(templateProperties.isAllowNonTransactional()).to(kafkaTemplate::setAllowNonTransactional);
 		map.from(templateProperties.isObservationEnabled()).to(kafkaTemplate::setObservationEnabled);
+		SimpleAdmin adminProperties = templateProperties.getAdmin();
+		if (adminProperties != null) {
+			kafkaTemplate
+				.setKafkaAdmin(new KafkaAdminBuilder(this.properties, kafkaConnectionDetails).build(adminProperties));
+		}
 		return kafkaTemplate;
 	}
 
@@ -176,21 +184,10 @@ public final class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	KafkaAdmin kafkaAdmin(KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = KafkaConfigBuilder.of(this.properties)
-			.admin()
-			.withConnectionDetails(connectionDetails)
-			.build();
-		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
-		KafkaProperties.Admin admin = this.properties.getAdmin();
-		if (admin.getCloseTimeout() != null) {
-			kafkaAdmin.setCloseTimeout((int) admin.getCloseTimeout().getSeconds());
-		}
-		if (admin.getOperationTimeout() != null) {
-			kafkaAdmin.setOperationTimeout((int) admin.getOperationTimeout().getSeconds());
-		}
-		kafkaAdmin.setFatalIfBrokerNotAvailable(admin.isFailFast());
-		kafkaAdmin.setModifyTopicConfigs(admin.isModifyTopicConfigs());
-		kafkaAdmin.setAutoCreate(admin.isAutoCreate());
+		Admin adminProperties = this.properties.getAdmin();
+		KafkaAdmin kafkaAdmin = new KafkaAdminBuilder(this.properties, connectionDetails).build(adminProperties);
+		kafkaAdmin.setModifyTopicConfigs(adminProperties.isModifyTopicConfigs());
+		kafkaAdmin.setAutoCreate(adminProperties.isAutoCreate());
 		return kafkaAdmin;
 	}
 

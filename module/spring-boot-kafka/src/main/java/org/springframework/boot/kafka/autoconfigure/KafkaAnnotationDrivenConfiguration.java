@@ -24,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.SimpleAdmin;
 import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchInterceptor;
@@ -69,6 +71,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final @Nullable RecordFilterStrategy<Object, Object> recordFilterStrategy;
 
+	private final KafkaConnectionDetails kafkaConnectionDetails;
+
 	private final BatchMessageConverter batchMessageConverter;
 
 	private final @Nullable KafkaTemplate<Object, Object> kafkaTemplate;
@@ -92,7 +96,7 @@ class KafkaAnnotationDrivenConfiguration {
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
-			ObjectProvider<BatchMessageConverter> batchMessageConverter,
+			KafkaConnectionDetails kafkaConnectionDetails, ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
 			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener,
@@ -107,6 +111,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
 			.getIfUnique(() -> new BatchMessagingMessageConverter(this.recordMessageConverter));
+		this.kafkaConnectionDetails = kafkaConnectionDetails;
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
@@ -139,6 +144,7 @@ class KafkaAnnotationDrivenConfiguration {
 	private ConcurrentKafkaListenerContainerFactoryConfigurer configurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
+		configurer.setKafkaAdmin(createKafkaAdmin());
 		configurer.setBatchMessageConverter(this.batchMessageConverter);
 		configurer.setRecordMessageConverter(this.recordMessageConverter);
 		configurer.setRecordFilterStrategy(this.recordFilterStrategy);
@@ -152,6 +158,12 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setThreadNameSupplier(this.threadNameSupplier);
 		configurer.setObservationConvention(this.observationConvention);
 		return configurer;
+	}
+
+	private @Nullable KafkaAdmin createKafkaAdmin() {
+		SimpleAdmin adminProperties = this.properties.getListener().getAdmin();
+		return (adminProperties != null)
+				? new KafkaAdminBuilder(this.properties, this.kafkaConnectionDetails).build(adminProperties) : null;
 	}
 
 	@Bean

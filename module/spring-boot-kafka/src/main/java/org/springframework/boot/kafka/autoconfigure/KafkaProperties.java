@@ -663,7 +663,7 @@ public class KafkaProperties {
 
 	}
 
-	public static class Admin {
+	public static class SimpleAdmin {
 
 		private final Ssl ssl = new Ssl();
 
@@ -693,17 +693,6 @@ public class KafkaProperties {
 		 * Whether to fail fast if the broker is not available on startup.
 		 */
 		private boolean failFast;
-
-		/**
-		 * Whether to enable modification of existing topic configuration.
-		 */
-		private boolean modifyTopicConfigs;
-
-		/**
-		 * Whether to automatically create topics during context initialization. When set
-		 * to false, disables automatic topic creation during context initialization.
-		 */
-		private boolean autoCreate = true;
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -745,22 +734,6 @@ public class KafkaProperties {
 			this.failFast = failFast;
 		}
 
-		public boolean isModifyTopicConfigs() {
-			return this.modifyTopicConfigs;
-		}
-
-		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
-			this.modifyTopicConfigs = modifyTopicConfigs;
-		}
-
-		public boolean isAutoCreate() {
-			return this.autoCreate;
-		}
-
-		public void setAutoCreate(boolean autoCreate) {
-			this.autoCreate = autoCreate;
-		}
-
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
@@ -778,6 +751,37 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
+		}
+
+	}
+
+	public static class Admin extends SimpleAdmin {
+
+		/**
+		 * Whether to enable modification of existing topic configuration.
+		 */
+		private boolean modifyTopicConfigs;
+
+		/**
+		 * Whether to automatically create topics during context initialization. When set
+		 * to false, disables automatic topic creation during context initialization.
+		 */
+		private boolean autoCreate = true;
+
+		public boolean isModifyTopicConfigs() {
+			return this.modifyTopicConfigs;
+		}
+
+		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
+			this.modifyTopicConfigs = modifyTopicConfigs;
+		}
+
+		public boolean isAutoCreate() {
+			return this.autoCreate;
+		}
+
+		public void setAutoCreate(boolean autoCreate) {
+			this.autoCreate = autoCreate;
 		}
 
 	}
@@ -946,6 +950,8 @@ public class KafkaProperties {
 
 	public static class Template {
 
+		private @Nullable SimpleAdmin admin;
+
 		/**
 		 * Default topic to which messages are sent.
 		 */
@@ -971,6 +977,14 @@ public class KafkaProperties {
 		 * Whether to enable observation.
 		 */
 		private boolean observationEnabled;
+
+		public @Nullable SimpleAdmin getAdmin() {
+			return this.admin;
+		}
+
+		public void setAdmin(@Nullable SimpleAdmin admin) {
+			this.admin = admin;
+		}
 
 		public @Nullable String getDefaultTopic() {
 			return this.defaultTopic;
@@ -1029,6 +1043,8 @@ public class KafkaProperties {
 			BATCH
 
 		}
+
+		private @Nullable SimpleAdmin admin;
 
 		/**
 		 * Listener type.
@@ -1138,6 +1154,14 @@ public class KafkaProperties {
 		 * Time between retries after authentication exceptions.
 		 */
 		private @Nullable Duration authExceptionRetryInterval;
+
+		public @Nullable SimpleAdmin getAdmin() {
+			return this.admin;
+		}
+
+		public void setAdmin(@Nullable SimpleAdmin admin) {
+			this.admin = admin;
+		}
 
 		public Type getType() {
 			return this.type;
