@@ -1251,3 +1251,13 @@ If you wanted to see only the maximum size for the "`Metaspace`", you could add 
 == Integration with Micrometer Observation
 
 A javadoc:io.micrometer.core.instrument.observation.DefaultMeterObservationHandler[] is automatically registered on the javadoc:io.micrometer.observation.ObservationRegistry[], which creates metrics for every completed observation.
+
+By default, the handler does not create a `LongTaskTimer` for active observations.
+To track observations while they are in progress, set configprop:management.metrics.observations.include-active-observation-long-task-timer[] to `true`.
+The timer is named `<observation-name>.active` and includes only the low-cardinality tags available when the observation starts.
+For example, the URI pattern for an HTTP server request is not yet available at that point, so its `uri` tag can be `UNKNOWN`.
+
+This default differs from earlier Spring Boot versions, which enabled the active observation timer by default.
+Set the new property to `true` to retain that behavior.
+The deprecated configprop:management.metrics.observations.ignored-meters[] property continues to suppress the timer when it contains `long-task-timer`, even if the new property is set to `true`.
+Remove that ignored entry when opting in.

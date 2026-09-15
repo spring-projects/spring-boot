@@ -26,7 +26,9 @@ import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Michael Berry
  * @author Phillip Webb
+ * @author Hyun Lee
  */
 class MetricsAutoConfigurationTests {
 
@@ -153,19 +156,71 @@ class MetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldEnableLongTaskTimerByDefault() {
-		this.contextRunner.run((context) -> {
-			DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
-			assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", true);
-		});
+	void shouldDisableLongTaskTimerByDefault() {
+		assertObservationMeters(false);
 	}
 
 	@Test
-	void shouldDisableLongTaskTimerIfPropertyIsSet() {
-		this.contextRunner.withPropertyValues("management.metrics.observations.ignored-meters=long-task-timer")
+	void shouldEnableLongTaskTimerWhenEnabled() {
+		assertObservationMeters(true,
+				"management.metrics.observations.include-active-observation-long-task-timer=true");
+	}
+
+	@Test
+	void shouldDisableLongTaskTimerWhenDisabled() {
+		assertObservationMeters(false,
+				"management.metrics.observations.include-active-observation-long-task-timer=false");
+	}
+
+	@Test
+	void shouldDisableLongTaskTimerIfIgnored() {
+		assertObservationMeters(false, "management.metrics.observations.ignored-meters=long-task-timer");
+	}
+
+	@Test
+	void shouldDisableLongTaskTimerWhenEnabledButIgnored() {
+		assertObservationMeters(false,
+				"management.metrics.observations.include-active-observation-long-task-timer=true",
+				"management.metrics.observations.ignored-meters=long-task-timer");
+	}
+
+	@Test
+	void shouldDisableLongTaskTimerWithEmptyIgnoredMeters() {
+		assertObservationMeters(false, "management.metrics.observations.ignored-meters=");
+	}
+
+	@Test
+	void shouldEnableLongTaskTimerWhenEnabledWithEmptyIgnoredMeters() {
+		assertObservationMeters(true, "management.metrics.observations.include-active-observation-long-task-timer=true",
+				"management.metrics.observations.ignored-meters=");
+	}
+
+	private void assertObservationMeters(boolean includeLongTaskTimer, String... propertyValues) {
+		this.contextRunner.withBean(MeterRegistry.class, SimpleMeterRegistry::new)
+			.withPropertyValues(propertyValues)
 			.run((context) -> {
-				DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
-				assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", false);
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				ObservationRegistry observationRegistry = ObservationRegistry.create();
+				observationRegistry.observationConfig()
+					.observationHandler(context.getBean(DefaultMeterObservationHandler.class));
+				Observation observation = Observation.start("test.observation", observationRegistry);
+				try {
+					if (includeLongTaskTimer) {
+						assertThat(meterRegistry.get("test.observation.active").longTaskTimer().activeTasks()).isOne();
+					}
+					else {
+						assertThat(meterRegistry.find("test.observation.active").longTaskTimer()).isNull();
+					}
+					observation.event(Observation.Event.of("event"));
+				}
+				finally {
+					observation.stop();
+				}
+				assertThat(meterRegistry.get("test.observation").timer().count()).isOne();
+				assertThat(meterRegistry.get("test.observation.event").counter().count()).isOne();
+				if (includeLongTaskTimer) {
+					assertThat(meterRegistry.get("test.observation.active").longTaskTimer().activeTasks()).isZero();
+				}
 			});
 	}
 

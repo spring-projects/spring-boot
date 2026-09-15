@@ -45,6 +45,7 @@ import org.springframework.core.annotation.Order;
  * @author Moritz Halbritter
  * @author Michael Berry
  * @author Phillip Webb
+ * @author Hyun Lee
  * @since 4.0.0
  */
 @AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
@@ -85,11 +86,15 @@ public final class MetricsAutoConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings({ "deprecation", "removal" })
 	DefaultMeterObservationHandler defaultMeterObservationHandler(ObjectProvider<MeterRegistry> meterRegistryProvider,
 			Clock clock, MetricsProperties properties) {
 		MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable(() -> new CompositeMeterRegistry(clock));
-		return new DefaultMeterObservationHandler(meterRegistry,
-				properties.getObservations().getIgnoredMeters().toArray(IgnoredMeters[]::new));
+		MetricsProperties.Observations observations = properties.getObservations();
+		return DefaultMeterObservationHandler.builder(meterRegistry)
+			.includeActiveObservationLongTaskTimer(observations.isIncludeActiveObservationLongTaskTimer()
+					&& !observations.getIgnoredMeters().contains(IgnoredMeters.LONG_TASK_TIMER))
+			.build();
 	}
 
 }

@@ -29,6 +29,7 @@ import java.util.Set;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring
@@ -38,6 +39,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Alexander Abramov
  * @author Tadaya Tsuyukubo
  * @author Chris Bono
+ * @author Hyun Lee
  * @since 4.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -270,17 +272,48 @@ public class MetricsProperties {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public static class Observations {
 
 		/**
-		 * Meters that should be ignored when recoding observations.
+		 * Whether to include a long task timer that tracks active observations. Only tags
+		 * available when an observation starts are included in the timer.
+		 */
+		private boolean includeActiveObservationLongTaskTimer;
+
+		/**
+		 * Meters that should be ignored when recording observations.
 		 */
 		private Set<IgnoredMeters> ignoredMeters = new LinkedHashSet<>();
 
+		public boolean isIncludeActiveObservationLongTaskTimer() {
+			return this.includeActiveObservationLongTaskTimer;
+		}
+
+		public void setIncludeActiveObservationLongTaskTimer(boolean includeActiveObservationLongTaskTimer) {
+			this.includeActiveObservationLongTaskTimer = includeActiveObservationLongTaskTimer;
+		}
+
+		/**
+		 * Return the meters that should be ignored when recording observations.
+		 * @return the ignored meters
+		 * @deprecated since 4.2.0 in favor of
+		 * {@link #isIncludeActiveObservationLongTaskTimer()}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(since = "4.2.0",
+				reason = "Use management.metrics.observations.include-active-observation-long-task-timer to opt in instead.")
 		public Set<IgnoredMeters> getIgnoredMeters() {
 			return this.ignoredMeters;
 		}
 
+		/**
+		 * Set the meters that should be ignored when recording observations.
+		 * @param ignoredMeters the ignored meters
+		 * @deprecated since 4.2.0 in favor of
+		 * {@link #setIncludeActiveObservationLongTaskTimer(boolean)}
+		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public void setIgnoredMeters(Set<IgnoredMeters> ignoredMeters) {
 			this.ignoredMeters = ignoredMeters;
 		}
