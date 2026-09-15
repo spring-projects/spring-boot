@@ -58,6 +58,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author Nikita Kibitkin
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.kafka")
@@ -1135,6 +1136,12 @@ public class KafkaProperties {
 		private boolean immediateStop;
 
 		/**
+		 * Whether the container waits for in-flight asynchronous listener results to
+		 * complete, within its shutdown timeout, when it stops.
+		 */
+		private boolean awaitAsyncResultsOnStop;
+
+		/**
 		 * Whether to auto start the container.
 		 */
 		private boolean autoStartup = true;
@@ -1289,6 +1296,14 @@ public class KafkaProperties {
 
 		public void setImmediateStop(boolean immediateStop) {
 			this.immediateStop = immediateStop;
+		}
+
+		public boolean isAwaitAsyncResultsOnStop() {
+			return this.awaitAsyncResultsOnStop;
+		}
+
+		public void setAwaitAsyncResultsOnStop(boolean awaitAsyncResultsOnStop) {
+			this.awaitAsyncResultsOnStop = awaitAsyncResultsOnStop;
 		}
 
 		public boolean isAutoStartup() {
