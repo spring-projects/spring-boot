@@ -41,8 +41,9 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @param id the ID of the resolved bom
  * @param libraries the libraries declared in the bom
+ * @param offlineJavadocLinks offline javadoc links
  */
-public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
+public record ResolvedBom(Id id, List<ResolvedLibrary> libraries, Map<URI, List<String>> offlineJavadocLinks) {
 
 	private static final JsonMapper jsonMapper;
 
@@ -53,13 +54,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public ResolvedLibrary library(Library library) {
-		String name = library.getName();
-		List<ResolvedLibrary> matching = libraries().stream()
-			.filter((candidate) -> candidate.name().equals(name))
-			.toList();
-		Assert.state(!matching.isEmpty(), () -> "No library found with name '%s'".formatted(name));
-		Assert.state(matching.size() == 1, () -> "Multiple libraries found with name '%s'".formatted(name));
-		return matching.get(0);
+		return ResolvedLibrary.find(libraries(), library);
 	}
 
 	public Map<String, String> dependencyVersions() {
@@ -71,6 +66,10 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 		return libraries().stream().flatMap(ResolvedLibrary::allDependencies);
 	}
 
+	public void writeTo(Writer writer) {
+		jsonMapper.writeValue(writer, this);
+	}
+
 	public static ResolvedBom readFrom(File file) {
 		try (FileReader reader = new FileReader(file)) {
 			return jsonMapper.readValue(reader, ResolvedBom.class);
@@ -80,12 +79,8 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 		}
 	}
 
-	public void writeTo(Writer writer) {
-		jsonMapper.writeValue(writer, this);
-	}
-
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
-			List<Bom> importedBoms, Links links) {
+			List<Bom> importedBoms) {
 
 		public String moduleVersion(LinkedModule linkedModule) {
 			Set<String> matching = allDependencies()
@@ -100,6 +95,16 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
 		public Stream<Id> allDependencies() {
 			return Stream.concat(managedDependencies().stream(), importedBoms().stream().flatMap(Bom::allDependencies));
+		}
+
+		public static ResolvedLibrary find(List<ResolvedLibrary> libraries, Library library) {
+			String name = library.getName();
+			List<ResolvedLibrary> matching = libraries.stream()
+				.filter((candidate) -> candidate.name().equals(name))
+				.toList();
+			Assert.state(!matching.isEmpty(), () -> "No library found with name '%s'".formatted(name));
+			Assert.state(matching.size() == 1, () -> "Multiple libraries found with name '%s'".formatted(name));
+			return matching.get(0);
 		}
 
 	}
@@ -153,13 +158,10 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 			return groupId() + ":" + artifactId();
 		}
 
-	}
-
-	public record Links(List<JavadocLink> javadoc) {
-
-	}
-
-	public record JavadocLink(URI uri, List<String> packages) {
+		public static Id parse(String value) {
+			String[] components = value.split(":");
+			return new Id(components[0], components[1], components[2]);
+		}
 
 	}
 

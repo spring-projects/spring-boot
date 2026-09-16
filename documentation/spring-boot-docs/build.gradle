@@ -17,7 +17,7 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
-import org.springframework.boot.build.docs.ConfigureJavadocLinks
+import org.springframework.boot.build.docs.AggregatedJavadoc
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
@@ -34,6 +34,7 @@ plugins {
 description = "Spring Boot Docs"
 
 configurations {
+	doclet
 	remoteSpringApplicationExample
 	resolvedBom
 	springApplicationExample
@@ -82,6 +83,8 @@ plugins.withType(EclipsePlugin) {
 
 dependencies {
 	compileOnly("org.hamcrest:hamcrest-core")
+
+	doclet("io.spring.javaformat:spring-javaformat-doclet:${javaFormatVersion}")
 
 	dokka(project(":core:spring-boot"))
 	dokka(project(":module:spring-boot-resttestclient"))
@@ -142,7 +145,7 @@ configurations {
 		attributes {
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 		}
-		extendsFrom configurations.javadoc
+		extendsFrom configurations.runtimeClasspath
 	}
 	configureEach {
 		resolutionStrategy {
@@ -160,13 +163,24 @@ configurations {
 	}
 }
 
-def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
-	dependsOn configurations.resolvedBom
+def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
+    resolvedBom.from(configurations.resolvedBom)
+    javadocJars.from(configurations.runtimeClasspath.incoming.artifactView {
+		withVariantReselection()
+		attributes {
+			lenient = true
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "implicitjavadoc"));
+		}
+	}.files)
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	source = configurations.javadocSource
-	classpath = configurations.javadocClasspath
+	classpath = configurations.runtimeClasspath
 	include("**/*.java")
 	options {
+		docletpath = configurations.doclet.files.toList()
 		author = true
 		docTitle = "Spring Boot ${project.version} API"
 		memberLevel = "protected"
@@ -175,7 +189,6 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 		use = true
 		windowTitle = "Spring Boot ${project.version} API"
 	}
-	doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
 }
 
 project.rootProject.gradle.projectsEvaluated {

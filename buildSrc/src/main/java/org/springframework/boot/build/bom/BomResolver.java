@@ -24,7 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -43,13 +46,13 @@ import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.LinkType;
+import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
-import org.springframework.boot.build.bom.ResolvedBom.JavadocLink;
-import org.springframework.boot.build.bom.ResolvedBom.Links;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.xml.XmlDocument;
+import org.springframework.util.Assert;
 
 /**
  * Creates a {@link ResolvedBom resolved bom}.
@@ -57,6 +60,8 @@ import org.springframework.boot.build.xml.XmlDocument;
  * @author Andy Wilkinson
  */
 class BomResolver {
+
+	private static final Set<String> SKIPPED_OFFLINE_JAVADOC_LIBRARIES = Set.of("Spring Boot");
 
 	private final ConfigurationContainer configurations;
 
@@ -70,51 +75,37 @@ class BomResolver {
 		this.documentBuilder = XmlDocument.builder();
 	}
 
-	ResolvedBom resolve(BomExtension bomExtension) {
-		List<ResolvedLibrary> libraries = new ArrayList<>();
-		for (Library library : bomExtension.getLibraries()) {
-			List<Id> managedDependencies = new ArrayList<>();
-			List<Bom> imports = new ArrayList<>();
-			for (Group group : library.getGroups()) {
-				for (Module module : group.getModules()) {
-					Id id = new Id(group.getId(), module.getName(), library.getVersion().toString());
-					managedDependencies.add(id);
-				}
-				for (ImportedBom imported : group.getBoms()) {
-					Bom bom = bomFrom(
-							resolveBom("%s:%s:%s".formatted(group.getId(), imported.name(), library.getVersion())));
-					imports.add(bom);
-				}
+	ResolvedBom resolve(BomExtension bom) {
+		Id id = Id.parse(bom.getId());
+		List<ResolvedLibrary> resolvedLibraries = bom.getLibraries().stream().map(this::resolve).toList();
+		Map<URI, List<String>> offlineJavadocLinks = getOfflineJavadocLinks(bom, resolvedLibraries);
+		return new ResolvedBom(id, resolvedLibraries, offlineJavadocLinks);
+	}
+
+	private ResolvedLibrary resolve(Library library) {
+		List<Id> managedDependencies = new ArrayList<>();
+		List<Bom> imports = new ArrayList<>();
+		for (Group group : library.getGroups()) {
+			for (Module module : group.getModules()) {
+				Id managedDependency = new Id(group.getId(), module.getName(), library.getVersion().toString());
+				managedDependencies.add(managedDependency);
 			}
-			List<JavadocLink> javadocLinks = javadocLinksOf(library).stream()
-				.map((link) -> new JavadocLink(URI.create(link.url(library.getVersion())), link.packages()))
-				.toList();
-			ResolvedLibrary resolvedLibrary = new ResolvedLibrary(library.getName(), library.getVersion().toString(),
-					library.getVersionProperty(), managedDependencies, imports, new Links(javadocLinks));
-			libraries.add(resolvedLibrary);
+			for (ImportedBom importedBom : group.getBoms()) {
+				String importedId = "%s:%s:%s".formatted(group.getId(), importedBom.name(), library.getVersion());
+				imports.add(resolveBom(importedId));
+			}
 		}
-		String[] idComponents = bomExtension.getId().split(":");
-		return new ResolvedBom(new Id(idComponents[0], idComponents[1], idComponents[2]), libraries);
+		return new ResolvedLibrary(library.getName(), library.getVersion().toString(), library.getVersionProperty(),
+				managedDependencies, imports);
 	}
 
-	private List<Link> javadocLinksOf(Library library) {
-		List<Link> javadocLinks = library.getLinks(LinkType.JAVADOC);
-		return (javadocLinks != null) ? javadocLinks : Collections.emptyList();
-	}
-
-	Bom resolveMavenBom(String coordinates) {
-		return bomFrom(resolveBom(coordinates));
-	}
-
-	private File resolveBom(String coordinates) {
+	private File resolveBomFile(String coordinates) {
 		Set<ResolvedArtifact> artifacts = this.configurations
 			.detachedConfiguration(this.dependencies.create(coordinates + "@pom"))
 			.getResolvedConfiguration()
 			.getResolvedArtifacts();
-		if (artifacts.size() != 1) {
-			throw new IllegalStateException("Expected a single artifact but '%s' resolved to %d artifacts"
-				.formatted(coordinates, artifacts.size()));
-		}
+		Assert.state(artifacts.size() == 1, "Expected a single artifact but '%s' resolved to %d artifacts"
+			.formatted(coordinates, artifacts.size()));
 		return artifacts.iterator().next().getFile();
 	}
 
@@ -122,52 +113,61 @@ class BomResolver {
 		try {
 			Node bom = nodeFrom(bomFile);
 			File parentBomFile = parentBomFile(bom);
-			Bom parent = null;
-			if (parentBomFile != null) {
-				parent = bomFrom(parentBomFile);
-			}
+			Bom parent = (parentBomFile != null) ? bomFrom(parentBomFile) : null;
 			Properties properties = Properties.from(bom, this::nodeFrom);
 			List<Node> dependencyNodes = bom.nodesAt("/project/dependencyManagement/dependencies/dependency");
 			List<Id> managedDependencies = new ArrayList<>();
 			List<Bom> imports = new ArrayList<>();
 			for (Node dependency : dependencyNodes) {
-				String groupId = properties.replace(dependency.textAt("groupId"));
-				String artifactId = properties.replace(dependency.textAt("artifactId"));
-				String version = properties.replace(dependency.textAt("version"));
-				String classifier = properties.replace(dependency.textAt("classifier"));
-				String scope = properties.replace(dependency.textAt("scope"));
-				Bom importedBom = null;
-				if ("import".equals(scope)) {
-					String type = properties.replace(dependency.textAt("type"));
-					if ("pom".equals(type)) {
-						importedBom = bomFrom(resolveBom(groupId + ":" + artifactId + ":" + version));
-					}
-				}
+				Id dependencyId = getDependencyId(dependency, properties);
+				Bom importedBom = (isPomImport(properties, dependency)) ? resolveBom(dependencyId.toString()) : null;
 				if (importedBom != null) {
 					imports.add(importedBom);
 				}
 				else {
-					managedDependencies.add(new Id(groupId, artifactId, version, classifier));
+					managedDependencies.add(dependencyId);
 				}
 			}
-			String groupId = bom.textAt("/project/groupId");
-			if ((groupId == null || groupId.isEmpty()) && parent != null) {
-				groupId = parent.id().groupId();
-			}
-			String artifactId = bom.textAt("/project/artifactId");
-			String version = bom.textAt("/project/version");
-			if ((version == null || version.isEmpty()) && parent != null) {
-				version = parent.id().version();
-			}
-			return new Bom(new Id(groupId, artifactId, version), parent, managedDependencies, imports);
+			Id bomId = getBomId(bom, parent);
+			return new Bom(bomId, parent, managedDependencies, imports);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
+	private Id getDependencyId(Node dependency, Properties properties) {
+		String groupId = properties.replace(dependency.textAt("groupId"));
+		String artifactId = properties.replace(dependency.textAt("artifactId"));
+		String version = properties.replace(dependency.textAt("version"));
+		String classifier = properties.replace(dependency.textAt("classifier"));
+		return new Id(groupId, artifactId, version, classifier);
+	}
+
+	private boolean isPomImport(Properties properties, Node dependency) {
+		String scope = properties.replace(dependency.textAt("scope"));
+		return "import".equals(scope) && "pom".equals(properties.replace(dependency.textAt("type")));
+	}
+
+	private Id getBomId(Node bom, Bom parent) {
+		String groupId = bom.textAt("/project/groupId");
+		if ((groupId == null || groupId.isEmpty()) && parent != null) {
+			groupId = parent.id().groupId();
+		}
+		String artifactId = bom.textAt("/project/artifactId");
+		String version = bom.textAt("/project/version");
+		if ((version == null || version.isEmpty()) && parent != null) {
+			version = parent.id().version();
+		}
+		return new Id(groupId, artifactId, version);
+	}
+
+	Bom resolveBom(String coordinates) {
+		return bomFrom(resolveBomFile(coordinates));
+	}
+
 	private Node nodeFrom(String coordinates) {
-		return nodeFrom(resolveBom(coordinates));
+		return nodeFrom(resolveBomFile(coordinates));
 	}
 
 	private Node nodeFrom(File bomFile) {
@@ -186,9 +186,42 @@ class BomResolver {
 			String parentGroupId = parent.textAt("groupId");
 			String parentArtifactId = parent.textAt("artifactId");
 			String parentVersion = parent.textAt("version");
-			return resolveBom(parentGroupId + ":" + parentArtifactId + ":" + parentVersion);
+			return resolveBomFile(parentGroupId + ":" + parentArtifactId + ":" + parentVersion);
 		}
 		return null;
+	}
+
+	private Map<URI, List<String>> getOfflineJavadocLinks(BomExtension bom, List<ResolvedLibrary> resolvedLibraries) {
+		Map<URI, List<String>> offlineJavadocLinks = new TreeMap<>();
+		for (Library library : bom.getLibraries()) {
+			if (SKIPPED_OFFLINE_JAVADOC_LIBRARIES.contains(library.getName())) {
+				continue;
+			}
+			ResolvedLibrary resolvedLibrary = ResolvedLibrary.find(resolvedLibraries, library);
+			Set<Id> linkedDependencies = new TreeSet<>(resolvedLibrary.allDependencies().toList());
+			library.getModuleLinks().forEach((module, moduleLinks) -> {
+				moduleLinks.byType().getOrDefault(LinkType.JAVADOC, Collections.emptyList()).forEach((link) -> {
+					String version = resolvedLibrary.moduleVersion(module);
+					List<String> moduleNames = module.moduleNames();
+					addOfflineJavadocLink(offlineJavadocLinks, link, version, moduleNames.stream());
+					module.moduleNames()
+						.forEach((moduleName) -> linkedDependencies
+							.removeIf((candidate) -> candidate.artifactId().equals(moduleName)));
+				});
+			});
+			library.getLinks().byType().getOrDefault(LinkType.JAVADOC, Collections.emptyList()).forEach((link) -> {
+				Stream<String> modulesNames = linkedDependencies.stream().map(Id::artifactId);
+				addOfflineJavadocLink(offlineJavadocLinks, link, library.getVersion(), modulesNames);
+			});
+		}
+		return offlineJavadocLinks;
+	}
+
+	private void addOfflineJavadocLink(Map<URI, List<String>> offlineJavadocLinks, Link link, Object version,
+			Stream<String> moduleNames) {
+		URI uri = URI.create(link.url(new LinkedVersion(version)));
+		offlineJavadocLinks.computeIfAbsent(uri, (key) -> new ArrayList<>())
+			.addAll(moduleNames.map((name) -> "%s-%s-javadoc.jar".formatted(name, version)).toList());
 	}
 
 	private static final class Node {
