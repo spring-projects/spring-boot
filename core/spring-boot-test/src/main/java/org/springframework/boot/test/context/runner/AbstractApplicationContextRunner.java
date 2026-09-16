@@ -96,7 +96,6 @@ import org.springframework.util.CollectionUtils;
  *         // other assertions
  *     });
  * }</pre>
- * <p>
  *
  * @param <SELF> the "self" type for this runner
  * @param <C> the context type
