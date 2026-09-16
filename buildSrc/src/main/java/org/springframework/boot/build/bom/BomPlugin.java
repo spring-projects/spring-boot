@@ -26,6 +26,7 @@ import groovy.util.Node;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.PluginContainer;
@@ -63,19 +64,22 @@ public class BomPlugin implements Plugin<Project> {
 		TaskProvider<CreateResolvedBom> createResolvedBom = project.getTasks()
 			.register("createResolvedBom", CreateResolvedBom.class, bom);
 		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
-		checkBom.configure(
-				(task) -> task.getResolvedBomFile().set(createResolvedBom.flatMap(CreateResolvedBom::getOutputFile)));
+		checkBom.configure((task) -> setResolvedBom(task.getResolvedBomFile(), createResolvedBom));
+		TaskProvider<CheckLinks> checkLinks = project.getTasks().register("checkLinks", CheckLinks.class, bom);
+		checkLinks.configure((task) -> setResolvedBom(task.getResolvedBomFile(), createResolvedBom));
 		Configuration resolvedBom = project.getConfigurations().create("resolvedBom");
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
 		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
-		project.getTasks()
-			.register("checkLinks", CheckLinks.class, bom, resolvedBom)
-			.configure((task) -> task.dependsOn(resolvedBom));
 		project.getArtifacts()
 			.add(resolvedBom.getName(), createResolvedBom.map(CreateResolvedBom::getOutputFile),
 					(artifact) -> artifact.builtBy(createResolvedBom));
 		new PublishingCustomizer(project, bom).customize();
+	}
+
+	private void setResolvedBom(RegularFileProperty resolvedBomFile,
+			TaskProvider<CreateResolvedBom> createResolvedBom) {
+		resolvedBomFile.set(createResolvedBom.flatMap(CreateResolvedBom::getOutputFile));
 	}
 
 	private void createApiEnforcedConfiguration(Project project) {
