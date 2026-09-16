@@ -1855,7 +1855,7 @@ bom {
 			releaseNotes("https://github.com/netty/netty/releases/tag/netty-{version}")
 		}
 	}
-	library("OpenTelemetry", "1.64.0") {
+	library("OpenTelemetry", "1.65.0") {
 		group("io.opentelemetry") {
 			bom("opentelemetry-bom")
 		}
