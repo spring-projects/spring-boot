@@ -153,19 +153,19 @@ class MetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldEnableLongTaskTimerByDefault() {
+	void shouldDisableLongTaskTimerByDefault() {
 		this.contextRunner.run((context) -> {
 			DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
-			assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", true);
+			assertThat(handler).hasFieldOrPropertyWithValue("includeActiveObservationLongTaskTimer", false);
 		});
 	}
 
 	@Test
-	void shouldDisableLongTaskTimerIfPropertyIsSet() {
-		this.contextRunner.withPropertyValues("management.metrics.observations.ignored-meters=long-task-timer")
+	void shouldEnableLongTaskTimerIfPropertyIsSet() {
+		this.contextRunner.withPropertyValues("management.metrics.observations.include-active-long-task-timer=true")
 			.run((context) -> {
 				DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
-				assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", false);
+				assertThat(handler).hasFieldOrPropertyWithValue("includeActiveObservationLongTaskTimer", true);
 			});
 	}
 

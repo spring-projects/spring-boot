@@ -21,7 +21,11 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuLoadMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuTimeMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmCpuMeterConventions;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -35,7 +39,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link SystemMetricsAutoConfiguration}.
@@ -74,12 +81,75 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void allowsCustomJvmCpuMeterConventionsToBeUsed() {
-		JvmCpuMeterConventions jvmCpuMeterConventions = mock(JvmCpuMeterConventions.class);
-		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> jvmCpuMeterConventions)
+		JvmCpuMeterConventions conventions = spy(new MicrometerJvmCpuMeterConventions(Tags.empty()));
+		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> conventions).run((context) -> {
+			assertThat(context).hasSingleBean(ProcessorMetrics.class);
+			then(conventions).should(atLeast(1)).cpuTimeConvention();
+			then(conventions).should(atLeast(1)).cpuCountConvention();
+			then(conventions).should(atLeast(1)).processCpuLoadConvention();
+		});
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmCpuMeterConventionsAndJvmCpuTimeMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> mock(JvmCpuMeterConventions.class))
+			.withBean(JvmCpuTimeMeterConvention.class, () -> mock(JvmCpuTimeMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmCpuMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmCpuMeterConventionsAndJvmCpuCountMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> mock(JvmCpuMeterConventions.class))
+			.withBean(JvmCpuCountMeterConvention.class, () -> mock(JvmCpuCountMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmCpuMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmCpuMeterConventionsAndJvmCpuLoadMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> mock(JvmCpuMeterConventions.class))
+			.withBean(JvmCpuLoadMeterConvention.class, () -> mock(JvmCpuLoadMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmCpuMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	void allowsCustomJvmCpuTimeMeterConventionToBeUsed() {
+		JvmCpuTimeMeterConvention cpuTimeConvention = mock(JvmCpuTimeMeterConvention.class);
+		this.contextRunner.withBean(JvmCpuTimeMeterConvention.class, () -> cpuTimeConvention)
 			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 				.getBean(ProcessorMetrics.class)
-				.hasFieldOrPropertyWithValue("conventions", jvmCpuMeterConventions));
+				.hasFieldOrPropertyWithValue("cpuTimeConvention", cpuTimeConvention));
+	}
+
+	@Test
+	void allowsCustomJvmCpuCountMeterConventionToBeUsed() {
+		JvmCpuCountMeterConvention cpuCountConvention = mock(JvmCpuCountMeterConvention.class);
+		this.contextRunner.withBean(JvmCpuCountMeterConvention.class, () -> cpuCountConvention)
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.getBean(ProcessorMetrics.class)
+				.hasFieldOrPropertyWithValue("cpuCountConvention", cpuCountConvention));
+	}
+
+	@Test
+	void allowsCustomJvmCpuLoadMeterConventionToBeUsed() {
+		JvmCpuLoadMeterConvention cpuLoadConvention = mock(JvmCpuLoadMeterConvention.class);
+		this.contextRunner.withBean(JvmCpuLoadMeterConvention.class, () -> cpuLoadConvention)
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.getBean(ProcessorMetrics.class)
+				.hasFieldOrPropertyWithValue("cpuLoadConvention", cpuLoadConvention));
 	}
 
 	@Test

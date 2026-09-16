@@ -27,8 +27,15 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadingMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassUnloadedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryCommittedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMaxMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
 import org.jspecify.annotations.Nullable;
 
@@ -42,6 +49,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -77,26 +85,58 @@ public final class JvmMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmMemoryMetrics jvmMemoryMetrics(ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions) {
-		JvmMemoryMeterConventions conventions = jvmMemoryMeterConventions.getIfAvailable();
-		return (conventions != null) ? new JvmMemoryMetrics(Collections.emptyList(), conventions)
-				: new JvmMemoryMetrics();
+	@SuppressWarnings("deprecation")
+	JvmMemoryMetrics jvmMemoryMetrics(ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions,
+			ObjectProvider<JvmMemoryUsedMeterConvention> jvmMemoryUsedMeterConvention,
+			ObjectProvider<JvmMemoryCommittedMeterConvention> jvmMemoryCommittedMeterConvention,
+			ObjectProvider<JvmMemoryMaxMeterConvention> jvmMemoryMaxMeterConvention) {
+		JvmMemoryMetricsFactory factory = new JvmMemoryMetricsFactory(jvmMemoryUsedMeterConvention.getIfAvailable(),
+				jvmMemoryCommittedMeterConvention.getIfAvailable(), jvmMemoryMaxMeterConvention.getIfAvailable());
+		JvmMemoryMeterConventions deprecatedConventions = jvmMemoryMeterConventions.getIfAvailable();
+		if (deprecatedConventions != null && factory.hasConvention()) {
+			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
+				.formatted(JvmMemoryMeterConventions.class.getSimpleName()));
+		}
+		return (deprecatedConventions != null) ? new JvmMemoryMetrics(Collections.emptyList(), deprecatedConventions)
+				: factory.create();
+
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmThreadMetrics jvmThreadMetrics(ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions) {
-		JvmThreadMeterConventions conventions = jvmThreadMeterConventions.getIfAvailable();
-		return (conventions != null) ? new JvmThreadMetrics(Collections.emptyList(), conventions)
+	@SuppressWarnings("deprecation")
+	JvmThreadMetrics jvmThreadMetrics(ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions,
+			ObjectProvider<JvmThreadCountMeterConvention> jvmThreadCountMeterConvention) {
+		JvmThreadMeterConventions deprecatedConventions = jvmThreadMeterConventions.getIfAvailable();
+		JvmThreadCountMeterConvention convention = jvmThreadCountMeterConvention.getIfAvailable();
+		if (deprecatedConventions != null && convention != null) {
+			throw new IllegalStateException(
+					"Either %s or %s should be set".formatted(JvmMemoryMeterConventions.class.getSimpleName(),
+							JvmThreadCountMeterConvention.class.getSimpleName()));
+		}
+		if (deprecatedConventions != null) {
+			return new JvmThreadMetrics(Collections.emptyList(), deprecatedConventions);
+		}
+		return (convention != null) ? JvmThreadMetrics.builder().threadCountConvention(convention).build()
 				: new JvmThreadMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("deprecation")
 	ClassLoaderMetrics classLoaderMetrics(
-			ObjectProvider<JvmClassLoadingMeterConventions> jvmClassLoadingMeterConventions) {
-		JvmClassLoadingMeterConventions conventions = jvmClassLoadingMeterConventions.getIfAvailable();
-		return (conventions != null) ? new ClassLoaderMetrics(conventions) : new ClassLoaderMetrics();
+			ObjectProvider<JvmClassLoadingMeterConventions> jvmClassLoadingMeterConventions,
+			ObjectProvider<JvmClassCountMeterConvention> jvmClassCountMeterConvention,
+			ObjectProvider<JvmClassLoadedMeterConvention> jvmClassLoadedMeterConvention,
+			ObjectProvider<JvmClassUnloadedMeterConvention> jvmClassUnloadedMeterConvention) {
+		ClassLoaderMetricsFactory factory = new ClassLoaderMetricsFactory(jvmClassCountMeterConvention.getIfAvailable(),
+				jvmClassLoadedMeterConvention.getIfAvailable(), jvmClassUnloadedMeterConvention.getIfAvailable());
+		JvmClassLoadingMeterConventions deprecatedConventions = jvmClassLoadingMeterConventions.getIfAvailable();
+		if (deprecatedConventions != null && factory.hasConvention()) {
+			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
+				.formatted(JvmClassLoadingMeterConventions.class.getSimpleName()));
+		}
+		return (deprecatedConventions != null) ? new ClassLoaderMetrics(deprecatedConventions) : factory.create();
 	}
 
 	@Bean
@@ -122,6 +162,46 @@ public final class JvmMetricsAutoConfiguration {
 			Class<?> virtualThreadMetricsClass = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS,
 					getClass().getClassLoader());
 			return (MeterBinder) BeanUtils.instantiateClass(virtualThreadMetricsClass);
+		}
+
+	}
+
+	private record JvmMemoryMetricsFactory(@Nullable JvmMemoryUsedMeterConvention memoryUsedConvention,
+			@Nullable JvmMemoryCommittedMeterConvention memoryCommittedConvention,
+			@Nullable JvmMemoryMaxMeterConvention memoryMaxConvention) {
+
+		boolean hasConvention() {
+			return this.memoryUsedConvention != null || this.memoryCommittedConvention != null
+					|| this.memoryMaxConvention != null;
+		}
+
+		JvmMemoryMetrics create() {
+			JvmMemoryMetrics.Builder builder = JvmMemoryMetrics.builder();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this.memoryUsedConvention).to(builder::memoryUsedConvention);
+			map.from(this.memoryCommittedConvention).to(builder::memoryCommittedConvention);
+			map.from(this.memoryMaxConvention).to(builder::memoryMaxConvention);
+			return builder.build();
+		}
+
+	}
+
+	private record ClassLoaderMetricsFactory(@Nullable JvmClassCountMeterConvention classCountConvention,
+			@Nullable JvmClassLoadedMeterConvention classLoadedConvention,
+			@Nullable JvmClassUnloadedMeterConvention classUnloadedConvention) {
+
+		boolean hasConvention() {
+			return this.classCountConvention != null || this.classLoadedConvention != null
+					|| this.classUnloadedConvention != null;
+		}
+
+		ClassLoaderMetrics create() {
+			ClassLoaderMetrics.Builder builder = ClassLoaderMetrics.builder();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this.classCountConvention).to(builder::classCountConvention);
+			map.from(this.classLoadedConvention).to(builder::classLoadedConvention);
+			map.from(this.classUnloadedConvention).to(builder::classUnloadedConvention);
+			return builder.build();
 		}
 
 	}

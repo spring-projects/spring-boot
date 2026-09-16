@@ -149,7 +149,7 @@ class OtlpExemplarsAutoConfigurationTests {
 		@Bean
 		TracingAwareMeterObservationHandler<Context> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry,
 				Tracer tracer) {
-			DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
+			DefaultMeterObservationHandler delegate = DefaultMeterObservationHandler.builder(meterRegistry).build();
 			return new TracingAwareMeterObservationHandler<>(delegate, tracer);
 		}
 

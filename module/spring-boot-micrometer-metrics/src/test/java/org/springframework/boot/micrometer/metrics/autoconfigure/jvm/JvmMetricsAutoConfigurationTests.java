@@ -17,6 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.jvm;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics;
@@ -25,9 +26,19 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadingMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassUnloadedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryCommittedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMaxMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmClassLoadingMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.micrometer.MicrometerJvmThreadMeterConventions;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -47,7 +58,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link JvmMetricsAutoConfiguration}.
@@ -59,7 +72,7 @@ import static org.mockito.Mockito.mock;
 class JvmMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withBean(MeterRegistry.class, () -> new SimpleMeterRegistry())
+		.withBean(MeterRegistry.class, SimpleMeterRegistry::new)
 		.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
 
 	@Test
@@ -87,12 +100,75 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void allowCustomJvmMemoryMeterConventionsToBeUsed() {
-		JvmMemoryMeterConventions jvmMemoryMeterConventions = mock(JvmMemoryMeterConventions.class);
-		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> jvmMemoryMeterConventions)
+		JvmMemoryMeterConventions conventions = spy(new MicrometerJvmMemoryMeterConventions());
+		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> conventions).run((context) -> {
+			assertThat(context).hasSingleBean(JvmMemoryMetrics.class);
+			then(conventions).should().getMemoryUsedConvention();
+			then(conventions).should().getMemoryCommittedConvention();
+			then(conventions).should().getMemoryMaxConvention();
+		});
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmMemoryMeterConventionsAndJvmMemoryUsedMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> mock(JvmMemoryMeterConventions.class))
+			.withBean(JvmMemoryUsedMeterConvention.class, () -> mock(JvmMemoryUsedMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmMemoryMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmMemoryMeterConventionsAndJvmMemoryCommittedMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> mock(JvmMemoryMeterConventions.class))
+			.withBean(JvmMemoryCommittedMeterConvention.class, () -> mock(JvmMemoryCommittedMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmMemoryMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmMemoryMeterConventionsAndJvmMemoryMaxMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> mock(JvmMemoryMeterConventions.class))
+			.withBean(JvmMemoryMaxMeterConvention.class, () -> mock(JvmMemoryMaxMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmMemoryMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	void allowCustomJvmMemoryUsedMeterConventionToBeUsed() {
+		JvmMemoryUsedMeterConvention memoryUsedConvention = mock(JvmMemoryUsedMeterConvention.class);
+		this.contextRunner.withBean(JvmMemoryUsedMeterConvention.class, () -> memoryUsedConvention)
 			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
 				.getBean(JvmMemoryMetrics.class)
-				.hasFieldOrPropertyWithValue("conventions", jvmMemoryMeterConventions));
+				.hasFieldOrPropertyWithValue("memoryUsedConvention", memoryUsedConvention));
+	}
+
+	@Test
+	void allowCustomJvmMemoryCommittedMeterConventionToBeUsed() {
+		JvmMemoryCommittedMeterConvention memoryCommittedConvention = mock(JvmMemoryCommittedMeterConvention.class);
+		this.contextRunner.withBean(JvmMemoryCommittedMeterConvention.class, () -> memoryCommittedConvention)
+			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+				.getBean(JvmMemoryMetrics.class)
+				.hasFieldOrPropertyWithValue("memoryCommittedConvention", memoryCommittedConvention));
+	}
+
+	@Test
+	void allowCustomJvmMemoryMaxMeterConventionToBeUsed() {
+		JvmMemoryMaxMeterConvention memoryMaxConvention = mock(JvmMemoryMaxMeterConvention.class);
+		this.contextRunner.withBean(JvmMemoryMaxMeterConvention.class, () -> memoryMaxConvention)
+			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
+				.getBean(JvmMemoryMetrics.class)
+				.hasFieldOrPropertyWithValue("memoryMaxConvention", memoryMaxConvention));
 	}
 
 	@Test
@@ -102,12 +178,33 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void allowCustomJvmThreadMeterConventionsToBeUsed() {
-		JvmThreadMeterConventions jvmThreadMeterConventions = mock(JvmThreadMeterConventions.class);
-		this.contextRunner.withBean(JvmThreadMeterConventions.class, () -> jvmThreadMeterConventions)
+		JvmThreadMeterConventions conventions = spy(new MicrometerJvmThreadMeterConventions(Tags.empty()));
+		this.contextRunner.withBean(JvmThreadMeterConventions.class, () -> conventions).run((context) -> {
+			assertThat(context).hasSingleBean(JvmThreadMetrics.class);
+			then(conventions).should().threadCountConvention();
+		});
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmThreadMeterConventionsAndJvmThreadCountMeterConventionAreSet() {
+		this.contextRunner.withBean(JvmThreadMeterConventions.class, () -> mock(JvmThreadMeterConventions.class))
+			.withBean(JvmThreadCountMeterConvention.class, () -> mock(JvmThreadCountMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmMemoryMeterConventions or JvmThreadCountMeterConvention should be set"));
+	}
+
+	@Test
+	void allowCustomJJvmThreadCountMeterConventionToBeUsed() {
+		JvmThreadCountMeterConvention threadCountConvention = mock(JvmThreadCountMeterConvention.class);
+		this.contextRunner.withBean(JvmThreadCountMeterConvention.class, () -> threadCountConvention)
 			.run((context) -> assertThat(context).hasSingleBean(JvmThreadMetrics.class)
 				.getBean(JvmThreadMetrics.class)
-				.hasFieldOrPropertyWithValue("conventions", jvmThreadMeterConventions));
+				.hasFieldOrPropertyWithValue("threadCountConvention", threadCountConvention));
 	}
 
 	@Test
@@ -117,12 +214,78 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void allowCustomJvmClassLoadingMeterConventionsToBeUsed() {
-		JvmClassLoadingMeterConventions jvmClassLoadingMeterConventions = mock(JvmClassLoadingMeterConventions.class);
-		this.contextRunner.withBean(JvmClassLoadingMeterConventions.class, () -> jvmClassLoadingMeterConventions)
+		JvmClassLoadingMeterConventions conventions = spy(new MicrometerJvmClassLoadingMeterConventions());
+		this.contextRunner.withBean(JvmClassLoadingMeterConventions.class, () -> conventions).run((context) -> {
+			assertThat(context).hasSingleBean(ClassLoaderMetrics.class);
+			then(conventions).should().currentClassCountConvention();
+			then(conventions).should().loadedConvention();
+			then(conventions).should().unloadedConvention();
+		});
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmClassLoadingMeterConventionsAndJvmClassCountMeterConventionAreSet() {
+		this.contextRunner
+			.withBean(JvmClassLoadingMeterConventions.class, () -> mock(JvmClassLoadingMeterConventions.class))
+			.withBean(JvmClassCountMeterConvention.class, () -> mock(JvmClassCountMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmClassLoadingMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmClassLoadingMeterConventionsAndJvmClassLoadedMeterConventionAreSet() {
+		this.contextRunner
+			.withBean(JvmClassLoadingMeterConventions.class, () -> mock(JvmClassLoadingMeterConventions.class))
+			.withBean(JvmClassLoadedMeterConvention.class, () -> mock(JvmClassLoadedMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmClassLoadingMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	void shouldFailIfBothJvmClassLoadingMeterConventionsAndJvmClassUnloadedMeterConventionAreSet() {
+		this.contextRunner
+			.withBean(JvmClassLoadingMeterConventions.class, () -> mock(JvmClassLoadingMeterConventions.class))
+			.withBean(JvmClassUnloadedMeterConvention.class, () -> mock(JvmClassUnloadedMeterConvention.class))
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasMessageContaining(
+						"Either JvmClassLoadingMeterConventions or the interfaces that supersede it should be set"));
+	}
+
+	@Test
+	void allowCustomJvmClassCountMeterConventionToBeUsed() {
+		JvmClassCountMeterConvention classCountConvention = mock(JvmClassCountMeterConvention.class);
+		this.contextRunner.withBean(JvmClassCountMeterConvention.class, () -> classCountConvention)
 			.run((context) -> assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
 				.getBean(ClassLoaderMetrics.class)
-				.hasFieldOrPropertyWithValue("conventions", jvmClassLoadingMeterConventions));
+				.hasFieldOrPropertyWithValue("classCountConvention", classCountConvention));
+	}
+
+	@Test
+	void allowCustomJvmClassLoadedMeterConventionToBeUsed() {
+		JvmClassLoadedMeterConvention classLoadedConvention = mock(JvmClassLoadedMeterConvention.class);
+		this.contextRunner.withBean(JvmClassLoadedMeterConvention.class, () -> classLoadedConvention)
+			.run((context) -> assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
+				.getBean(ClassLoaderMetrics.class)
+				.hasFieldOrPropertyWithValue("classLoadedConvention", classLoadedConvention));
+	}
+
+	@Test
+	void allowCustomJvmClassUnloadedMeterConventionToBeUsed() {
+		JvmClassUnloadedMeterConvention classUnloadedConvention = mock(JvmClassUnloadedMeterConvention.class);
+		this.contextRunner.withBean(JvmClassUnloadedMeterConvention.class, () -> classUnloadedConvention)
+			.run((context) -> assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
+				.getBean(ClassLoaderMetrics.class)
+				.hasFieldOrPropertyWithValue("classUnloadedConvention", classUnloadedConvention));
 	}
 
 	@Test

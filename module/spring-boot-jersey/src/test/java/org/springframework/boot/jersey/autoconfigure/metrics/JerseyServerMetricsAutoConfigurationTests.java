@@ -142,7 +142,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 		@Bean
 		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
-			return new DefaultMeterObservationHandler(registry);
+			return DefaultMeterObservationHandler.builder(registry).build();
 		}
 
 	}

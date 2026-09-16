@@ -21,12 +21,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -273,16 +269,16 @@ public class MetricsProperties {
 	public static class Observations {
 
 		/**
-		 * Meters that should be ignored when recoding observations.
+		 * Whether to create the active observation LongTaskTimer.
 		 */
-		private Set<IgnoredMeters> ignoredMeters = new LinkedHashSet<>();
+		private boolean includeActiveLongTaskTimer;
 
-		public Set<IgnoredMeters> getIgnoredMeters() {
-			return this.ignoredMeters;
+		public boolean isIncludeActiveLongTaskTimer() {
+			return this.includeActiveLongTaskTimer;
 		}
 
-		public void setIgnoredMeters(Set<IgnoredMeters> ignoredMeters) {
-			this.ignoredMeters = ignoredMeters;
+		public void setIncludeActiveLongTaskTimer(boolean includeActiveLongTaskTimer) {
+			this.includeActiveLongTaskTimer = includeActiveLongTaskTimer;
 		}
 
 	}

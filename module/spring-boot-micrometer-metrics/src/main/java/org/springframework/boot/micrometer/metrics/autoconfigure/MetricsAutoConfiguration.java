@@ -23,7 +23,6 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
-import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -88,8 +87,9 @@ public final class MetricsAutoConfiguration {
 	DefaultMeterObservationHandler defaultMeterObservationHandler(ObjectProvider<MeterRegistry> meterRegistryProvider,
 			Clock clock, MetricsProperties properties) {
 		MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable(() -> new CompositeMeterRegistry(clock));
-		return new DefaultMeterObservationHandler(meterRegistry,
-				properties.getObservations().getIgnoredMeters().toArray(IgnoredMeters[]::new));
+		return DefaultMeterObservationHandler.builder(meterRegistry)
+			.includeActiveObservationLongTaskTimer(properties.getObservations().isIncludeActiveLongTaskTimer())
+			.build();
 	}
 
 }

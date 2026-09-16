@@ -1703,6 +1703,14 @@
       }
     },
     {
+      "name": "management.metrics.observations.ignored-meters",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.observations.include-active-long-task-timer",
+        "since": "4.2.0"
+      }
+    },
+    {
       "name": "management.metrics.system.diskspace.paths",
       "type": "java.util.List<java.io.File>",
       "defaultValue": [

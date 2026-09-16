@@ -22,10 +22,14 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuCountMeterConvention;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuLoadMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuTimeMeterConvention;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
@@ -61,10 +66,20 @@ public final class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ProcessorMetrics processorMetrics(ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions) {
-		JvmCpuMeterConventions conventions = jvmCpuMeterConventions.getIfAvailable();
-		return (conventions != null) ? new ProcessorMetrics(Collections.emptyList(), conventions)
-				: new ProcessorMetrics();
+	@SuppressWarnings("deprecation")
+	ProcessorMetrics processorMetrics(ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions,
+			ObjectProvider<JvmCpuTimeMeterConvention> jvmCpuTimeMeterConvention,
+			ObjectProvider<JvmCpuCountMeterConvention> jvmCpuCountMeterConvention,
+			ObjectProvider<JvmCpuLoadMeterConvention> jvmCpuLoadMeterConvention) {
+		JvmCpuMeterConventions deprecatedConventions = jvmCpuMeterConventions.getIfAvailable();
+		ProcessorMetricsFactory factory = new ProcessorMetricsFactory(jvmCpuTimeMeterConvention.getIfAvailable(),
+				jvmCpuCountMeterConvention.getIfAvailable(), jvmCpuLoadMeterConvention.getIfAvailable());
+		if (deprecatedConventions != null && factory.hasConvention()) {
+			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
+				.formatted(JvmCpuMeterConventions.class.getSimpleName()));
+		}
+		return (deprecatedConventions != null) ? new ProcessorMetrics(Collections.emptyList(), deprecatedConventions)
+				: factory.create();
 	}
 
 	@Bean
@@ -78,6 +93,25 @@ public final class SystemMetricsAutoConfiguration {
 	DiskSpaceMetricsBinder diskSpaceMetrics(MetricsProperties properties) {
 		List<File> paths = properties.getSystem().getDiskspace().getPaths();
 		return new DiskSpaceMetricsBinder(paths, Tags.empty());
+	}
+
+	private record ProcessorMetricsFactory(@Nullable JvmCpuTimeMeterConvention cpuTimeConvention,
+			@Nullable JvmCpuCountMeterConvention cpuCountConvention,
+			@Nullable JvmCpuLoadMeterConvention cpuLoadConvention) {
+
+		boolean hasConvention() {
+			return this.cpuTimeConvention != null || this.cpuCountConvention != null || this.cpuLoadConvention != null;
+		}
+
+		ProcessorMetrics create() {
+			PropertyMapper map = PropertyMapper.get();
+			ProcessorMetrics.Builder builder = ProcessorMetrics.builder();
+			map.from(this.cpuTimeConvention).to(builder::cpuTimeConvention);
+			map.from(this.cpuCountConvention).to(builder::cpuCountConvention);
+			map.from(this.cpuLoadConvention).to(builder::cpuLoadConvention);
+			return builder.build();
+		}
+
 	}
 
 }

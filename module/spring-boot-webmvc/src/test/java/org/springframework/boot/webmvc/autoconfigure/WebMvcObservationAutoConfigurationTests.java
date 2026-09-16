@@ -20,7 +20,6 @@ import java.util.EnumSet;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
-import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.Observation.Context;
@@ -263,7 +262,7 @@ class WebMvcObservationAutoConfigurationTests {
 
 		@Bean
 		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
-			return new DefaultMeterObservationHandler(registry, IgnoredMeters.LONG_TASK_TIMER);
+			return DefaultMeterObservationHandler.builder(registry).build();
 		}
 
 	}
