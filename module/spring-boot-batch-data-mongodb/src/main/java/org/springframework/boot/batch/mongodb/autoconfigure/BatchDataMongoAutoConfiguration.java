@@ -56,7 +56,6 @@ import org.springframework.transaction.annotation.Isolation;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch using Data MongoDB.
  *
  * @author Stephane Nicoll
- * @author Yanming Zhou
  * @since 4.1.0
  */
 @AutoConfiguration(before = { BatchAutoConfiguration.class, BatchJobLauncherAutoConfiguration.class },
