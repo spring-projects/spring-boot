@@ -42,7 +42,6 @@ import org.springframework.test.context.TestPropertySource;
  * }
  * </pre> will result in a {@literal my.example.name} property being added with the value
  * {@literal "Spring"}.
- * <p>
  *
  * @author Phillip Webb
  * @since 4.0.0

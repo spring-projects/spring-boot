@@ -42,6 +42,7 @@ bom {
 		links {
 			site("https://activemq.apache.org")
 			docs("https://activemq.apache.org/components/classic/documentation")
+			javadoc("https://javadoc.io/doc/org.apache.activemq/activemq-client/{version}")
 			releaseNotes(version -> "https://activemq.apache.org/components/classic/download/classic-%02d-%02d-%02d"
 				.formatted(version.componentInts()))
 		}
@@ -111,8 +112,16 @@ bom {
 		}
 		links {
 			site("https://activemq.apache.org/components/artemis")
-			javadoc("https://javadoc.io/doc/org.apache.activemq/artemis-jms-server/{version}", "org.apache.activemq.artemis.jms.server")
 			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-{version}")
+			module("artemis-server") {
+				javadoc("https://javadoc.io/doc/org.apache.activemq/artemis-server/{version}")
+			}
+			module("artemis-jms-server") {
+				javadoc("https://javadoc.io/doc/org.apache.activemq/artemis-jms-server/{version}", "org.apache.activemq.artemis.jms.server")
+			}
+			module("artemis-core-client") {
+				javadoc("https://javadoc.io/doc/org.apache.activemq/artemis-core-client/{version}")
+			}
 		}
 	}
 	library("AspectJ", "1.9.25.1") {
@@ -141,6 +150,7 @@ bom {
 		links {
 			site("https://assertj.github.io/doc")
 			releaseNotes("https://github.com/assertj/assertj/releases/tag/assertj-build-{version}")
+			javadoc("https://www.javadoc.io/doc/org.assertj/assertj-core/{version}", "org.assertj")
 		}
 	}
 	library("Awaitility", "4.3.0") {
@@ -164,6 +174,9 @@ bom {
 		links {
 			site("https://github.com/openzipkin/zipkin-reporter-java")
 			releaseNotes("https://github.com/openzipkin/zipkin-reporter-java/releases/tag/{version}")
+			module("zipkin-reporter") {
+				javadoc("https://javadoc.io/doc/io.zipkin.reporter2/zipkin-reporter/{version}")
+			}
 		}
 	}
 	library("Brave", "6.3.1") {
@@ -293,6 +306,7 @@ bom {
 		links {
 			site("https://commons.apache.org/proper/commons-logging")
 			releaseNotes("https://commons.apache.org/proper/commons-logging/changes-report.html#a{version}")
+			javadoc("https://javadoc.io/doc/commons-logging/commons-logging/{version}", "org.apache.commons.logging")
 		}
 	}
 	library("Commons Pool", "1.6") {
@@ -423,7 +437,10 @@ bom {
 		links {
 			releaseNotes(version -> "https://www.elastic.co/docs/release-notes/elasticsearch/clients/java/%s".formatted(version.toString("-")))
 			module("elasticsearch-java") {
-				javadoc(version -> "https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/%s/index.html".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/{version}/index.html", "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+			}
+			module("elasticsearch-rest5-client") {
+				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-rest5-client/{version}")
 			}
 		}
 	}
@@ -558,6 +575,9 @@ bom {
 		}
 		links {
 			site("https://groovy-lang.org")
+			module("groovy-templates") {
+				javadoc("https://docs.groovy-lang.org/docs/groovy-{version}/html/api")
+			}
 		}
 	}
 	library("Grpc Java", "1.83.1") {
@@ -715,6 +735,7 @@ bom {
 		links {
 			site("https://www.htmlunit.org")
 			releaseNotes("https://github.com/HtmlUnit/htmlunit/releases/tag/{version}")
+			javadoc("https://javadoc.io/doc/org.htmlunit/htmlunit/{version}", "org.htmlunit")
 		}
 	}
 	library("HttpAsyncClient", "4.1.5") {
@@ -728,6 +749,9 @@ bom {
 			modules = [
 				"httpasyncclient"
 			]
+		}
+		links {
+			javadoc("https://javadoc.io/doc/org.apache.httpcomponents/httpasyncclient/{version}")
 		}
 	}
 	library("HttpClient5", "5.6.4") {
@@ -744,6 +768,9 @@ bom {
 				"httpclient5-fluent",
 				"httpclient5-observation"
 			]
+		}
+		links {
+			javadoc("https://javadoc.io/doc/org.apache.httpcomponents/httpclient/{version}")
 		}
 	}
 	library("HttpCore", "4.4.16") {
@@ -813,8 +840,11 @@ bom {
 			module("jackson-databind") {
 				javadoc("https://javadoc.io/doc/tools.jackson.core/jackson-databind/{version}/tools.jackson.databind", "tools.jackson.databind")
 			}
+			module("jackson-dataformat-cbor") {
+				javadoc("https://javadoc.io/doc/tools.jackson.dataformat/jackson-dataformat-cbor/{version}", "tools.jackson.dataformat.cbor")
+			}
 			module("jackson-dataformat-xml") {
-				javadoc("https://javadoc.io/doc/tools.jackson.dataformat/jackson-dataformat-xml/{version}/tools.jackson.dataformat.xml", "tools.jackson.dataformat.xml")
+				javadoc("https://javadoc.io/doc/tools.jackson.dataformat/jackson-dataformat-xml/{version}", "tools.jackson.dataformat.xml")
 			}
 		}
 	}
@@ -1166,6 +1196,10 @@ bom {
 				"jmustache"
 			]
 		}
+		links {
+			site("https://github.com/samskivert/jmustache")
+			javadoc("https://javadoc.io/doc/com.samskivert/jmustache/{version}", "com.samskivert.mustache")
+		}
 	}
 	library("jOOQ", "3.21.7") {
 		group("org.jooq") {
@@ -1247,6 +1281,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/junit-team/junit4/blob/HEAD/doc/ReleaseNotes{version}.md")
+			javadoc(version -> "https://junit.org/junit4/javadoc/%s%s".formatted(version.major(), version.minor()))
 		}
 	}
 	library("JUnit Jupiter", "${junitJupiterVersion}") {
@@ -1261,11 +1296,8 @@ bom {
 			site("https://junit.org/junit5")
 			docs("https://junit.org/junit5/docs/{version}/user-guide")
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
-			module("junit-platform-engine") {
-				javadoc(version -> "https://junit.org/junit5/docs/%s/api/org.junit.platform.engine".formatted(version), "org.junit.platform")
-			}
-			module("junit-jupiter-api") {
-				javadoc(version -> "https://junit.org/junit5/docs/%s/api/org.junit.jupiter.api".formatted(version), "org.junit.jupiter.api")
+			module("junit", ["junit-platform-engine", "junit-jupiter-api", "junit-platform-launcher"]) {
+				javadoc("https://junit.org/junit5/docs/{version}/api", "org.junit.platform",  "org.junit.jupiter.api")
 			}
 		}
 	}
@@ -1661,22 +1693,28 @@ bom {
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 			module("micrometer-core") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-core/%s".formatted(version), "io.micrometer.core")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-core/{version}", "io.micrometer.core")
 			}
 			module("micrometer-observation") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-observation/%s".formatted(version), "io.micrometer.observation")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-observation/{version}", "io.micrometer.observation")
 			}
 			module("micrometer-registry-graphite") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-graphite/%s".formatted(version), "io.micrometer.graphite")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-graphite/{version}", "io.micrometer.graphite")
 			}
 			module("micrometer-registry-otlp") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-otlp/%s".formatted(version), "io.micrometer.registry.otlp")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-otlp/{version}", "io.micrometer.registry.otlp")
 			}
 			module("micrometer-registry-jmx") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/%s".formatted(version), "io.micrometer.jmx")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/{version}", "io.micrometer.jmx")
 			}
 			module("micrometer-registry-new-relic") {
-				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/%s".formatted(version), "io.micrometer.newrelic")
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/{version}", "io.micrometer.newrelic")
+			}
+			module("micrometer-registry-stackdriver") {
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-stackdriver/{version}", "io.micrometer.stackdriver")
+			}
+			module("micrometer-registry-statsd") {
+				javadoc("https://javadoc.io/doc/io.micrometer/micrometer-registry-statsd/{version}", "io.micrometer.statsd")
 			}
 		}
 	}
@@ -1722,6 +1760,9 @@ bom {
 			}
 			module("mongodb-driver-sync") {
 				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-sync".formatted(version.major(), version.minor()))
+			}
+			module("mongodb-driver-reactivestreams") {
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-reactivestreams".formatted(version.major(), version.minor()))
 			}
 		}
 	}
@@ -1831,22 +1872,25 @@ bom {
 			site("https://github.com/open-telemetry/opentelemetry-java")
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 			module("opentelemetry-api") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/{version}", "io.opentelemetry.api")
 			}
 			module("opentelemetry-context") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/%s".formatted(version), "io.opentelemetry.context")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/{version}", "io.opentelemetry.context")
 			}
 			module("opentelemetry-sdk-common") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common", "io.opentelemetry.sdk.resources")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/{version}", "io.opentelemetry.sdk.common", "io.opentelemetry.sdk.resources")
 			}
 			module("opentelemetry-sdk-logs") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/{version}", "io.opentelemetry.sdk.logs")
 			}
 			module("opentelemetry-sdk-metrics") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/{version}", "io.opentelemetry.sdk.metrics")
 			}
 			module("opentelemetry-sdk-trace") {
-				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/{version}", "io.opentelemetry.sdk.trace")
+			}
+			module("opentelemetry-exporter-otlp") {
+				javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-exporter-otlp/{version}", "io.opentelemetry.exporter.otlp")
 			}
 			module("opentelemetry-exporter-otlp") {
 				javadoc(version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-exporter-otlp/%s".formatted(version), "io.opentelemetry.exporter.otlp")
@@ -1952,7 +1996,10 @@ bom {
 			site("https://github.com/prometheus/client_java")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/v{version}")
 			module("prometheus-metrics-tracer-common") {
-				javadoc((version) -> "https://javadoc.io/doc/io.prometheus/prometheus-metrics-tracer-common/%s".formatted(version), "io.prometheus.metrics.tracer.common")
+				javadoc("https://javadoc.io/doc/io.prometheus/prometheus-metrics-tracer-common/{version}", "io.prometheus.metrics.tracer.common")
+			}
+			module("prometheus-metrics-exporter-pushgateway") {
+				javadoc("https://javadoc.io/doc/io.prometheus/prometheus-metrics-exporter-pushgateway/{version}", "io.prometheus.metrics.exporter.pushgateway")
 			}
 		}
 	}
@@ -1964,7 +2011,7 @@ bom {
 			site("https://github.com/prometheus/client_java")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 			module("simpleclient_tracer_common") {
-				javadoc((version) -> "https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/%s".formatted(version), "io.prometheus.client.exemplars.tracer.common")
+				javadoc("https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/{version}", "io.prometheus.client.exemplars.tracer.common")
 			}
 		}
 	}
@@ -2085,6 +2132,7 @@ bom {
 		links {
 			site("https://github.com/r2dbc/r2dbc-pool")
 			releaseNotes("https://github.com/r2dbc/r2dbc-pool/releases/tag/v{version}")
+			javadoc("https://javadoc.io/doc/io.r2dbc/r2dbc-pool/{version}")
 		}
 	}
 	library("R2DBC Postgresql", "1.1.2.RELEASE") {
@@ -2107,6 +2155,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/r2dbc/r2dbc-proxy/releases/tag/v{version}")
+			javadoc("https://javadoc.io/doc/io.r2dbc/r2dbc-proxy/{version}")
 		}
 	}
 	library("R2DBC SPI", "1.0.0.RELEASE") {
@@ -2142,6 +2191,7 @@ bom {
 		}
 		links {
 			site("https://github.com/rabbitmq/rabbitmq-stream-java-client")
+			javadoc("https://javadoc.io/doc/com.rabbitmq/stream-client/{version}")
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-stream-java-client/releases/tag/v{version}")
 		}
 	}
@@ -2161,6 +2211,9 @@ bom {
 		links {
 			site("https://projectreactor.io")
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
+			module("reactor-netty", ["reactor-netty", "reactor-netty", "reactor-netty-core", "reactor-netty-http"]) {
+				javadoc("https://projectreactor.io/docs/netty/{version}/api", "reactor.netty")
+			}
 		}
 	}
 	library("RSocket", "1.1.5") {
@@ -2537,6 +2590,7 @@ bom {
 		}
 		links {
 			site("https://github.com/SeleniumHQ/htmlunit-driver")
+			javadoc("https://www.selenium.dev/htmlunit-driver")
 			releaseNotes("https://github.com/SeleniumHQ/htmlunit-driver/releases/tag/{version}")
 		}
 	}
@@ -2968,73 +3022,73 @@ bom {
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 			site("https://java.testcontainers.org")
 			module("testcontainers") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers/{version}", "org.testcontainers")
 			}
 			module("testcontainers-activemq") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-activemq/%s".formatted(version), "org.testcontainers.activemq")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-activemq/{version}", "org.testcontainers.activemq")
 			}
 			module("testcontainers-cassandra") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-cassandra/%s".formatted(version), "org.testcontainers.cassandra")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-cassandra/{version}", "org.testcontainers.cassandra")
 			}
 			module("testcontainers-clickhouse") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-clickhouse/{version}", "org.testcontainers.clickhouse")
 			}
 			module("testcontainers-couchbase") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-couchbase/%s".formatted(version), "org.testcontainers.couchbase")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-couchbase/{version}", "org.testcontainers.couchbase")
 			}
 			module("testcontainers-elasticsearch") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-elasticsearch/{version}", "org.testcontainers.elasticsearch")
 			}
 			module("testcontainers-grafana") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-grafana/%s".formatted(version), "org.testcontainers.grafana")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-grafana/{version}", "org.testcontainers.grafana")
 			}
 			module("testcontainers-jdbc") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-jdbc/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-jdbc/{version}")
 			}
 			module("testcontainers-junit-jupiter") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-junit-jupiter/{version}", "org.testcontainers.junit.jupiter")
 			}
 			module("testcontainers-kafka") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-kafka/%s".formatted(version), "org.testcontainers.kafka")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-kafka/{version}", "org.testcontainers.kafka")
 			}
 			module("testcontainers-mariadb") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mariadb/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-mariadb/{version}")
 			}
 			module("testcontainers-mongodb") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mongodb/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-mongodb/{version}")
 			}
 			module("testcontainers-mssqlserver") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mssqlserver/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-mssqlserver/{version}")
 			}
 			module("testcontainers-mysql") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-mysql/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-mysql/{version}")
 			}
 			module("testcontainers-neo4j") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-neo4j/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-neo4j/{version}")
 			}
 			module("testcontainers-oracle-xe") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-xe/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-xe/{version}")
 			}
 			module("testcontainers-oracle-free") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-free/%s".formatted(version), "org.testcontainers.oracle")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-oracle-free/{version}", "org.testcontainers.oracle")
 			}
 			module("testcontainers-postgresql") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-postgresql/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-postgresql/{version}")
 			}
 			module("testcontainers-pulsar") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-pulsar/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-pulsar/{version}")
 			}
 			module("testcontainers-rabbitmq") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-rabbitmq/%s".formatted(version))
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-rabbitmq/{version}")
 			}
 			module("testcontainers-redpanda") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-redpanda/%s".formatted(version), "org.testcontainers.redpanda")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-redpanda/{version}", "org.testcontainers.redpanda")
 			}
 			module("testcontainers-r2dbc") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-r2dbc/{version}", "org.testcontainers.r2dbc")
 			}
 			module("testcontainers-ldap") {
-				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers-ldap/%s".formatted(version), "org.testcontainers.ldap")
+				javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers-ldap/{version}", "org.testcontainers.ldap")
 			}
 
 		}
@@ -3061,10 +3115,10 @@ bom {
 			site("https://www.thymeleaf.org")
 			releaseNotes("https://github.com/thymeleaf/thymeleaf/releases/tag/thymeleaf-{version}")
 			module("thymeleaf") {
-				javadoc(version -> "https://www.thymeleaf.org/apidocs/thymeleaf/%s".formatted(version), "org.thymeleaf")
+				javadoc("https://www.thymeleaf.org/apidocs/thymeleaf/{version}", "org.thymeleaf")
 			}
 			module("thymeleaf-spring6") {
-				javadoc(version -> "https://www.thymeleaf.org/apidocs/thymeleaf-spring6/%s".formatted(version), "org.thymeleaf.spring6")
+				javadoc("https://www.thymeleaf.org/apidocs/thymeleaf-spring6/{version}", "org.thymeleaf.spring6")
 			}
 		}
 	}
