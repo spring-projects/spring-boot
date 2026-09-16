@@ -16,9 +16,6 @@
 
 package org.springframework.boot.build.bom;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.inject.Inject;
 
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -37,7 +34,6 @@ import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
@@ -90,15 +86,20 @@ public abstract class CheckLinks extends DefaultTask {
 	}
 
 	private void check(RestClient restClient, LinkType type, Link link, String name, Object version) {
-		try {
-			URI uri = new URI(link.url(new LinkedVersion(version)));
-			ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
-			int statusCode = response.getStatusCode().value();
-			System.out.printf("[%3d] %s - %s (%s)%n", statusCode, name, type, uri);
+		String url = link.url(new LinkedVersion(version));
+		int statusCode = restClient.head().uri(url).retrieve().toEntity(String.class).getStatusCode().value();
+		if (statusCode != 200) {
+			int altStatusCode = restClient.head()
+				.uri(url + "/'")
+				.retrieve()
+				.toEntity(String.class)
+				.getStatusCode()
+				.value();
+			if (altStatusCode == 200) {
+				statusCode = 200;
+			}
 		}
-		catch (URISyntaxException ex) {
-			throw new RuntimeException(ex);
-		}
+		System.out.printf("[%3d] %s - %s (%s)%n", statusCode, name, type, url);
 	}
 
 }
