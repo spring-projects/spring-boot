@@ -28,9 +28,7 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-micrometer-observation"))
 	api(project(":module:spring-boot-micrometer-tracing"))
-	api("io.micrometer:micrometer-tracing") {
-		exclude(group: "aopalliance", module: "aopalliance")
-	}
+	api("io.micrometer:micrometer-tracing")
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-zipkin"))
 	optional("io.micrometer:micrometer-tracing-bridge-brave")

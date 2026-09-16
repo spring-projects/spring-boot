@@ -27,8 +27,6 @@ dependencies {
 	api(project(":module:spring-boot-opentelemetry"))
 
 	runtimeOnly 'io.micrometer:micrometer-registry-otlp'
-	runtimeOnly('io.micrometer:micrometer-tracing-bridge-otel') {
-		exclude(group: "aopalliance", module: "aopalliance")
-	}
+	runtimeOnly('io.micrometer:micrometer-tracing-bridge-otel')
 	runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp'
 }

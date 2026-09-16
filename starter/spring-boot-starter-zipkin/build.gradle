@@ -26,7 +26,5 @@ dependencies {
 	api(project(":module:spring-boot-micrometer-tracing-brave"))
 	api(project(":module:spring-boot-zipkin"))
 
-	runtimeOnly("io.micrometer:micrometer-tracing-bridge-brave") {
-		exclude(group: "aopalliance", module: "aopalliance")
-	}
+	runtimeOnly("io.micrometer:micrometer-tracing-bridge-brave")
 }

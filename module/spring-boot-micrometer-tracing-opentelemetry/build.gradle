@@ -30,9 +30,7 @@ dependencies {
 	api(project(":module:spring-boot-micrometer-observation"))
 	api(project(":module:spring-boot-micrometer-tracing"))
 	api(project(":module:spring-boot-opentelemetry"))
-	api("io.micrometer:micrometer-tracing") {
-		exclude(group: "aopalliance", module: "aopalliance")
-	}
+	api("io.micrometer:micrometer-tracing")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
