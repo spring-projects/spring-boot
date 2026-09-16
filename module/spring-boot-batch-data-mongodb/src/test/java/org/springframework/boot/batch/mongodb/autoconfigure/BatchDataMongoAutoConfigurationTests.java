@@ -37,6 +37,7 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoExceptionTranslator;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -70,9 +71,9 @@ class BatchDataMongoAutoConfigurationTests {
 
 	@Test
 	void autConfigurationUsesMainTransactionManager() {
-		MongoTransactionManager transactionManager = mock(MongoTransactionManager.class);
+		PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
-			.withBean(MongoTransactionManager.class, () -> transactionManager)
+			.withBean(PlatformTransactionManager.class, () -> transactionManager)
 			.run((context) -> assertThat(
 					context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
 				.isSameAs(transactionManager));
@@ -85,7 +86,7 @@ class BatchDataMongoAutoConfigurationTests {
 			.withBean(MongoTransactionManager.class, () -> transactionManager)
 			.withUserConfiguration(BatchTransactionManagerConfiguration.class)
 			.run((context) -> {
-				assertThat(context.getBeansOfType(MongoTransactionManager.class)).hasSize(2);
+				assertThat(context.getBeansOfType(PlatformTransactionManager.class)).hasSize(2);
 				assertThat(context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
 					.isSameAs(context.getBean("customTransactionManager"));
 			});
@@ -97,8 +98,9 @@ class BatchDataMongoAutoConfigurationTests {
 		this.contextRunner.withBean(MongoDatabaseFactory.class, () -> mongoDatabaseFactory).run((context) -> {
 			assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
 			assertThat(context.getBean(SpringBootBatchMongoConfiguration.class).getTransactionManager())
-				.satisfies((mongoTransactionManager) -> assertThat(mongoTransactionManager.getDatabaseFactory())
-					.isSameAs(mongoDatabaseFactory));
+				.isInstanceOfSatisfying(MongoTransactionManager.class,
+						(transactionManager) -> assertThat(transactionManager.getDatabaseFactory())
+							.isSameAs(mongoDatabaseFactory));
 		});
 	}
 
@@ -201,8 +203,8 @@ class BatchDataMongoAutoConfigurationTests {
 
 		@Bean
 		@BatchTransactionManager
-		MongoTransactionManager customTransactionManager() {
-			return mock(MongoTransactionManager.class);
+		PlatformTransactionManager customTransactionManager() {
+			return mock(PlatformTransactionManager.class);
 		}
 
 	}

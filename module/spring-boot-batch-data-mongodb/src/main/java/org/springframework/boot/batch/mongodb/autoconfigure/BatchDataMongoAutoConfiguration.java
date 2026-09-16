@@ -49,6 +49,7 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
 /**
@@ -93,15 +94,15 @@ public final class BatchDataMongoAutoConfiguration {
 
 		private final MongoOperations mongoOperations;
 
-		private final MongoTransactionManager transactionManager;
+		private final PlatformTransactionManager transactionManager;
 
 		private final @Nullable TaskExecutor taskExecutor;
 
 		private final BatchDataMongoProperties properties;
 
 		SpringBootBatchMongoConfiguration(MongoDatabaseFactory mongoDatabaseFactory,
-				ObjectProvider<MongoTransactionManager> transactionManager,
-				@BatchTransactionManager ObjectProvider<MongoTransactionManager> batchTransactionManager,
+				ObjectProvider<PlatformTransactionManager> transactionManager,
+				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
 				BatchDataMongoProperties properties) {
 			this.mongoOperations = createMongoOperations(mongoDatabaseFactory);
@@ -124,7 +125,7 @@ public final class BatchDataMongoAutoConfiguration {
 		}
 
 		@Override
-		protected MongoTransactionManager getTransactionManager() {
+		protected PlatformTransactionManager getTransactionManager() {
 			return this.transactionManager;
 		}
 
