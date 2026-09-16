@@ -267,6 +267,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getLogContainerConfig).to(container::setLogContainerConfig);
 		map.from(properties::isMissingTopicsFatal).to(container::setMissingTopicsFatal);
 		map.from(properties::isImmediateStop).to(container::setStopImmediate);
+		map.from(properties::isAwaitAsyncResultsOnStop).to(container::setAwaitAsyncResultsOnStop);
 		map.from(properties::isObservationEnabled).to(container::setObservationEnabled);
 		map.from(properties::getAuthExceptionRetryInterval).to(container::setAuthExceptionRetryInterval);
 		map.from(this.transactionManager).to(container::setKafkaAwareTransactionManager);
