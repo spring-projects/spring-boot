@@ -2593,15 +2593,6 @@ bom {
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-envers/releases/tag/{version}")
 			}
-			module("spring-data-jdbc") {
-				site("https://spring.io/projects/spring-data-jdbc")
-				github("https://github.com/spring-projects/spring-data-jdbc")
-				javadoc(version -> "https://docs.spring.io/spring-data-jdbc/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.jdbc")
-				docs(version -> "https://docs.spring.io/spring-data-jdbc/reference/%s"
-					.formatted(version.forAntora()))
-				releaseNotes("https://github.com/spring-projects/spring-data-jdbc/releases/tag/{version}")
-			}
 			module("spring-data-jpa") {
 				site("https://spring.io/projects/spring-data-jpa")
 				github("https://github.com/spring-projects/spring-data-jpa")
@@ -2638,14 +2629,15 @@ bom {
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-neo4j/releases/tag/{version}")
 			}
-			module("spring-data-r2dbc") {
-				site("https://spring.io/projects/spring-data-r2dbc")
-				github("https://github.com/spring-projects/spring-data-r2dbc")
-				javadoc(version -> "https://docs.spring.io/spring-data-r2dbc/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.r2dbc")
-				docs(version -> "https://docs.spring.io/spring-data-r2dbc/reference/%s"
+			module("spring-data-relational") {
+				site("https://spring.io/projects/spring-data-relational")
+				github("https://github.com/spring-projects/spring-data-relational")
+				javadoc(version -> "https://docs.spring.io/spring-data-relational/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()),
+						"org.springframework.data.jdbc", "org.springframework.data.r2dbc")
+				docs(version -> "https://docs.spring.io/spring-data-relational/reference/%s"
 					.formatted(version.forAntora()))
-				releaseNotes("https://github.com/spring-projects/spring-data-r2dbc/releases/tag/{version}")
+				releaseNotes("https://github.com/spring-projects/spring-data-relational/releases/tag/{version}")
 			}
 			module("spring-data-redis") {
 				site("https://spring.io/projects/spring-data-redis")

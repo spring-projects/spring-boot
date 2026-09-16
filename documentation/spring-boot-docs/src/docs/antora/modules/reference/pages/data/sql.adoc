@@ -335,7 +335,7 @@ If you're using Spring Data JDBC with xref:packaging/aot.adoc[ahead-of-time proc
 To prevent the need for a DB connection during AOT processing, define a `JdbcDialect` bean that's appropriate for your application's database.
 For example, if you're using Postgres, define a `JdbcPostgresDialect` bean.
 
-TIP: For complete details of Spring Data JDBC, see the {url-spring-data-jdbc-docs}[reference documentation].
+TIP: For complete details of Spring Data JDBC, see the {url-spring-data-relational-docs}[reference documentation].
 
 
 
@@ -544,7 +544,7 @@ include-code::MyBean[]
 [[data.sql.r2dbc.repositories]]
 === Spring Data R2DBC Repositories
 
-https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are interfaces that you can define to access data.
+https://spring.io/projects/spring-data-relational[Spring Data R2DBC] repositories are interfaces that you can define to access data.
 Queries are created automatically from your method names.
 For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
 
@@ -557,4 +557,4 @@ The following example shows a typical Spring Data repository interface definitio
 
 include-code::CityRepository[]
 
-TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {url-spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
+TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {url-spring-data-relational-docs}[Spring Data R2DBC reference documentation].
