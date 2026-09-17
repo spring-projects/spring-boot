@@ -283,7 +283,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-dbcp")
-			releaseNotes("https://commons.apache.org/proper/commons-dbcp/changes-report.html#a{version}")
+			releaseNotes("https://commons.apache.org/proper/commons-dbcp/changes.html#a{version}")
 		}
 	}
 	library("Commons Lang3", "3.20.0") {
@@ -305,7 +305,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-logging")
-			releaseNotes("https://commons.apache.org/proper/commons-logging/changes-report.html#a{version}")
+			releaseNotes("https://commons.apache.org/proper/commons-logging/changes.html#a{version}")
 			javadoc("https://javadoc.io/doc/commons-logging/commons-logging/{version}", "org.apache.commons.logging")
 		}
 	}
@@ -435,7 +435,7 @@ bom {
 			]
 		}
 		links {
-			releaseNotes(version -> "https://www.elastic.co/docs/release-notes/elasticsearch/clients/java/%s".formatted(version.toString("-")))
+			releaseNotes(version -> "https://www.elastic.co/docs/release-notes/elasticsearch/clients/java/%s-%s-0".formatted(version.major(), version.minor()))
 			module("elasticsearch-java") {
 				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/{version}/index.html", "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 			}
@@ -899,7 +899,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/messaging/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs/jakarta.messaging"
+			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()), "jakarta.jms")
 		}
 	}
@@ -956,7 +956,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/persistence/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs/jakarta.persistence"
+			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()), "jakarta.persistence")
 			releaseNotes(version -> "https://github.com/jakartaee/persistence/releases/tag/%s.%s-%s-RELEASE"
 				.formatted(version.major(), version.minor(), version))
@@ -971,7 +971,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/servlet/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs/jakarta.servlet"
+			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()), "jakarta.servlet")
 		}
 	}
@@ -1050,7 +1050,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
-			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs/jakarta.xml.bind"
+			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()), "jakarta.xml.bind")
 		}
 	}
@@ -1123,7 +1123,7 @@ bom {
 			]
 		}
 		links {
-			releaseNotes("https://github.com/jboss-logging/jboss-logging/releases/tag/{version}")
+			releaseNotes("https://github.com/jboss-logging/jboss-logging/releases/tag/v{version}")
 		}
 	}
 	library("JDOM2", "2.0.6.1") {
@@ -1161,7 +1161,6 @@ bom {
 		links {
 			site("https://github.com/eclipse-ee4j/jersey")
 			javadoc("https://javadoc.io/doc/org.glassfish.jersey.core/jersey-server/{version}", "org.glassfish.jersey.server")
-			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
 		}
 	}
 	library("Jetty Reactive HTTPClient", "4.1.5") {
@@ -1233,7 +1232,7 @@ bom {
 		}
 		links {
 			site("https://github.com/netplex/json-smart-v2")
-			releaseNotes("https://github.com/netplex/json-smart-v2/releases/tag/{version}")
+			releaseNotes("https://github.com/netplex/json-smart-v2/releases/tag/v{version}")
 		}
 	}
 	library("JsonAssert", "1.5.3") {
@@ -1279,7 +1278,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/junit-team/junit4/blob/HEAD/doc/ReleaseNotes{version}.md")
-			javadoc(version -> "https://junit.org/junit4/javadoc/%s%s".formatted(version.major(), version.minor()))
+			javadoc(version -> "https://junit.org/junit4/javadoc/%s.%s".formatted(version.major(), version.minor()))
 		}
 	}
 	library("JUnit Jupiter", "${junitJupiterVersion}") {
@@ -1291,11 +1290,11 @@ bom {
 			bom("junit-bom")
 		}
 		links {
-			site("https://junit.org/junit5")
-			docs("https://junit.org/junit5/docs/{version}/user-guide")
-			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
+			site("https://junit.org")
+			docs("https://docs.junit.org/{version}/overview.html")
+			releaseNotes("https://docs.junit.org/{version}/release-notes.html")
 			module("junit", ["junit-platform-engine", "junit-jupiter-api", "junit-platform-launcher"]) {
-				javadoc("https://junit.org/junit5/docs/{version}/api", "org.junit.platform",  "org.junit.jupiter.api")
+				javadoc("https://docs.junit.org/{version}/api", "org.junit.platform",  "org.junit.jupiter.api")
 			}
 		}
 	}
@@ -1754,13 +1753,13 @@ bom {
 			releaseNotes("https://github.com/mongodb/mongo-java-driver/releases/tag/r{version}")
 			// Mongo has split packages so we can't link by package name
 			module("mongodb-driver-core") {
-				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-core".formatted(version.major(), version.minor()))
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-core/index.html".formatted(version.major(), version.minor()))
 			}
 			module("mongodb-driver-sync") {
-				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-sync".formatted(version.major(), version.minor()))
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-sync".formatted(version.major(), version.minor()))
 			}
 			module("mongodb-driver-reactivestreams") {
-				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-reactivestreams".formatted(version.major(), version.minor()))
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-reactive-streams".formatted(version.major(), version.minor()))
 			}
 		}
 	}
@@ -2696,91 +2695,89 @@ bom {
 			module("spring-data-cassandra") {
 				site("https://spring.io/projects/spring-data-cassandra")
 				github("https://github.com/spring-projects/spring-data-cassandra")
-				javadoc(version -> "https://docs.spring.io/spring-data-cassandra/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.cassandra")
-				docs(version -> "https://docs.spring.io/spring-data-cassandra/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/cassandra/reference/{version}/api",
+					"org.springframework.data.cassandra")
+				docs(version -> "https://docs.spring.io/spring-data/cassandra/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-cassandra/releases/tag/{version}")
 			}
 			module("spring-data-commons") {
 				site("https://spring.io/projects/spring-data-commons")
 				github("https://github.com/spring-projects/spring-data-commons")
-				javadoc(version -> "https://docs.spring.io/spring-data-commons/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.[convert|querydsl|repository]")
-				docs(version -> "https://docs.spring.io/spring-data-commons/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/commons/reference/{version}/api/java",
+					"org.springframework.data.[convert|querydsl|repository]")
+				docs(version -> "https://docs.spring.io/spring-data/commons/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-commons/releases/tag/{version}")
 			}
 			module("spring-data-couchbase") {
 				site("https://spring.io/projects/spring-data-couchbase")
 				github("https://github.com/spring-projects/spring-data-couchbase")
-				javadoc(version -> "https://docs.spring.io/spring-data-couchbase/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.couchbase")
-				docs(version -> "https://docs.spring.io/spring-data-couchbase/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/couchbase/reference/{version}/api/java",
+					"org.springframework.data.couchbase")
+				docs(version -> "https://docs.spring.io/spring-data/couchbase/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-couchbase/releases/tag/{version}")
 			}
 			module("spring-data-elasticsearch") {
 				site("https://spring.io/projects/spring-data-elasticsearch")
 				github("https://github.com/spring-projects/spring-data-elasticsearch")
-				javadoc(version -> "https://docs.spring.io/spring-data-elasticsearch/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.elasticsearch")
-				docs(version -> "https://docs.spring.io/spring-data-elasticsearch/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/elasticsearch/reference/{version}/api/java",
+					"org.springframework.data.elasticsearch")
+				docs(version -> "https://docs.spring.io/spring-data/elasticsearch/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-elasticsearch/releases/tag/{version}")
 			}
 			module("spring-data-jpa") {
 				site("https://spring.io/projects/spring-data-jpa")
 				github("https://github.com/spring-projects/spring-data-jpa")
-				javadoc(version -> "https://docs.spring.io/spring-data-jpa/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()),
-					"org.springframework.data.jpa", "org.springframework.data.envers")
-				docs(version -> "https://docs.spring.io/spring-data-jpa/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/jpa/reference/{version}/api/java",
+					"org.springframework.data.jpa")
+				docs(version -> "https://docs.spring.io/spring-data/jpa/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-jpa/releases/tag/{version}")
 			}
 			module("spring-data-ldap") {
 				site("https://spring.io/projects/spring-data-ldap")
 				github("https://github.com/spring-projects/spring-data-ldap")
-				javadoc(version -> "https://docs.spring.io/spring-data-ldap/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.ldap")
-				docs(version -> "https://docs.spring.io/spring-data-ldap/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/ldap/reference/{version}/api/java",
+					"org.springframework.data.ldap")
+				docs(version -> "https://docs.spring.io/spring-data/ldap/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-ldap/releases/tag/{version}")
 			}
 			module("spring-data-mongodb") {
 				site("https://spring.io/projects/spring-data-mongodb")
 				github("https://github.com/spring-projects/spring-data-mongodb")
-				javadoc(version -> "https://docs.spring.io/spring-data-mongodb/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.mongodb")
-				docs(version -> "https://docs.spring.io/spring-data-mongodb/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/mongodb/reference/{version}/api/java",
+					"org.springframework.data.mongodb")
+				docs(version -> "https://docs.spring.io/spring-data/mongodb/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-mongodb/releases/tag/{version}")
 			}
 			module("spring-data-neo4j") {
 				site("https://spring.io/projects/spring-data-neo4j")
 				github("https://github.com/spring-projects/spring-data-neo4j")
-				javadoc(version -> "https://docs.spring.io/spring-data-neo4j/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.neo4j")
-				docs(version -> "https://docs.spring.io/spring-data-neo4j/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/neo4j/reference/{version}/api/java",
+					"org.springframework.data.neo4j")
+				docs(version -> "https://docs.spring.io/spring-data/neo4j/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-neo4j/releases/tag/{version}")
 			}
 			module("spring-data-relational") {
 				site("https://spring.io/projects/spring-data-relational")
 				github("https://github.com/spring-projects/spring-data-relational")
-				javadoc(version -> "https://docs.spring.io/spring-data-relational/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()),
-						"org.springframework.data.jdbc", "org.springframework.data.r2dbc")
-				docs(version -> "https://docs.spring.io/spring-data-relational/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/relational/reference/{version}/api/java",
+					"org.springframework.data.jdbc", "org.springframework.data.r2dbc")
+				docs(version -> "https://docs.spring.io/spring-data/relational/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-relational/releases/tag/{version}")
 			}
 			module("spring-data-redis") {
 				site("https://spring.io/projects/spring-data-redis")
 				github("https://github.com/spring-projects/spring-data-redis")
-				javadoc(version -> "https://docs.spring.io/spring-data-redis/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.redis")
+				javadoc("https://docs.spring.io/spring-data/redis/reference/{version}/api",
+					"org.springframework.data.redis")
 				docs(version -> "https://docs.spring.io/spring-data-redis/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-redis/releases/tag/{version}")
@@ -2788,9 +2785,9 @@ bom {
 			module("spring-data-rest", ["spring-data-rest-core", "spring-data-rest-webmvc"]) {
 				site("https://spring.io/projects/spring-data-rest")
 				github("https://github.com/spring-projects/spring-data-rest")
-				javadoc(version -> "https://docs.spring.io/spring-data-rest/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.rest")
-				docs(version -> "https://docs.spring.io/spring-data-rest/reference/%s"
+				javadoc("https://docs.spring.io/spring-data/rest/reference/{version}/api/java",
+					"org.springframework.data.rest")
+				docs(version -> "https://docs.spring.io/spring-data/rest/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-rest/releases/tag/{version}")
 			}
@@ -2995,10 +2992,9 @@ bom {
 		links("spring-webservices") {
 			site("https://spring.io/projects/spring-ws")
 			github("https://github.com/spring-projects/spring-ws")
-			javadoc(version -> "https://docs.spring.io/spring-ws/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.ws", "org.springframework.xml")
-			docs(version -> "https://docs.spring.io/spring-ws/docs/%s/reference/html"
-				.formatted(version.forMajorMinorGeneration()))
+			javadoc("https://docs.spring.io/spring-ws/docs/{version}/api",
+				"org.springframework.ws", "org.springframework.xml")
+			docs("https://docs.spring.io/spring-ws/docs/{version}/reference/html")
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
 		}
 	}
@@ -3225,7 +3221,7 @@ bom {
 			]
 		}
 		links {
-			releaseNotes("https://github.com/mojohaus/xml-maven-plugin/releases/tag/{version}")
+			releaseNotes("https://github.com/mojohaus/xml-maven-plugin/releases/tag/xml-maven-plugin-{version}")
 		}
 	}
 	library("XmlUnit2", "2.13.0") {
