@@ -44,6 +44,14 @@ final class JarFileUrlKey {
 		this.runtimeRef = "runtime".equals(url.getRef());
 	}
 
+	JarFileUrlKey(String protocol, String host, int port, String file, boolean runtimeRef) {
+		this.protocol = protocol;
+		this.host = host;
+		this.port = port;
+		this.file = file;
+		this.runtimeRef = runtimeRef;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
