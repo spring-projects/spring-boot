@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Micrometer
@@ -45,6 +46,11 @@ public class ObservationProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
+	/**
+	 * Semantic conventions to use when configuring observations and metrics.
+	 */
+	private SemanticConventions conventions = SemanticConventions.MICROMETER;
+
 	public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
@@ -63,6 +69,14 @@ public class ObservationProperties {
 
 	public void setKeyValues(Map<String, String> keyValues) {
 		this.keyValues = keyValues;
+	}
+
+	public SemanticConventions getConventions() {
+		return this.conventions;
+	}
+
+	public void setConventions(SemanticConventions conventions) {
+		this.conventions = conventions;
 	}
 
 	public static class Http {

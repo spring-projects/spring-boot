@@ -21,11 +21,11 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.servlet.DispatcherType;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -33,12 +33,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.ConditionalOnSemanticConventions;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.OpenTelemetryServerRequestObservationConvention;
 import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -66,16 +69,31 @@ public final class WebMvcObservationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingFilterBean
 	FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
-			ObjectProvider<ServerRequestObservationConvention> customConvention,
-			ObservationProperties observationProperties) {
-		String name = observationProperties.getHttp().getServer().getRequests().getName();
-		ServerRequestObservationConvention convention = customConvention
-			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
+			ServerRequestObservationConvention convention) {
 		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
 		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		return registration;
+	}
+
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	static class ServerRequestObservationConventionConfiguration {
+
+		@Bean
+		@ConditionalOnSemanticConventions(SemanticConventions.MICROMETER)
+		DefaultServerRequestObservationConvention micrometerServerRequestObservationConvention(
+				ObservationProperties observationProperties) {
+			String name = observationProperties.getHttp().getServer().getRequests().getName();
+			return new DefaultServerRequestObservationConvention(name);
+		}
+
+		@Bean
+		@ConditionalOnSemanticConventions(SemanticConventions.OPEN_TELEMETRY)
+		OpenTelemetryServerRequestObservationConvention openTelemetryServerRequestObservationConvention() {
+			return new OpenTelemetryServerRequestObservationConvention();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

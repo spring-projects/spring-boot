@@ -101,14 +101,26 @@ In that case you can either disable the automatic instrumentation using xref:ref
 
 
 
+[[actuator.observability.semantic-conventions]]
+== Semantic Conventions
+
+Semantic conventions govern things like metric names and tag names and values.
+By default, the conventions defined by Micrometer and the various Spring projects are used.
+To switch to OpenTelemetry's conventions, set configprop:management.observations.conventions[] to `open-telemetry`.
+OpenTelemetry conventions are limited to those that are stable.
+When using OpenTelemetry's conventions, note that certain properties for customizing meter names and the like will no longer take effect.
+
+
+
 [[actuator.observability.opentelemetry]]
 == OpenTelemetry Support
 
 NOTE: There are several ways to support https://opentelemetry.io/[OpenTelemetry] in your application.
 You can use the https://opentelemetry.io/docs/zero-code/java/agent/[OpenTelemetry Java Agent] or the https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/[OpenTelemetry Spring Boot Starter],
-which are supported by the OTel community; the metrics and traces use the semantic conventions defined by OTel libraries.
-This documentation describes OpenTelemetry as officially supported by the Spring team, using Micrometer and the OTLP exporter;
-the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {url-spring-framework-docs}/integration/observability.html[Spring Framework].
+which are supported by the OTel community.
+In this case, the metrics and traces always use the semantic conventions defined by OTel libraries.
+This documentation describes OpenTelemetry as officially supported by the Spring team, using Micrometer and the OTLP exporter.
+In this case, the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {url-spring-framework-docs}/integration/observability.html[Spring Framework], but can be <<actuator.observability.semantic-conventions, configured>> to use OpenTelemetry's stable conventions.
 
 Spring Boot's actuator module includes basic support for OpenTelemetry.
 

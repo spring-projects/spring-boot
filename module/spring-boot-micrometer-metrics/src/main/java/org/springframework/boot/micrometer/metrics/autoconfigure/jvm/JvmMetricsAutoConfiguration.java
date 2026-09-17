@@ -34,6 +34,7 @@ import io.micrometer.core.instrument.binder.jvm.convention.JvmClassUnloadedMeter
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryCommittedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMaxMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedAfterLastGcMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryUsedMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadCountMeterConvention;
 import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
@@ -49,9 +50,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -67,6 +71,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
+@EnableConfigurationProperties(ObservationProperties.class)
 public final class JvmMetricsAutoConfiguration {
 
 	private static final String VIRTUAL_THREAD_METRICS_CLASS = "io.micrometer.java21.instrument.binder.jdk.VirtualThreadMetrics";
@@ -86,26 +91,29 @@ public final class JvmMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("deprecation")
-	JvmMemoryMetrics jvmMemoryMetrics(ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions,
+	JvmMemoryMetrics jvmMemoryMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions,
 			ObjectProvider<JvmMemoryUsedMeterConvention> jvmMemoryUsedMeterConvention,
 			ObjectProvider<JvmMemoryCommittedMeterConvention> jvmMemoryCommittedMeterConvention,
-			ObjectProvider<JvmMemoryMaxMeterConvention> jvmMemoryMaxMeterConvention) {
+			ObjectProvider<JvmMemoryMaxMeterConvention> jvmMemoryMaxMeterConvention,
+			ObjectProvider<JvmMemoryUsedAfterLastGcMeterConvention> jvmMemoryUsedAfterLastGcMeterConvention) {
 		JvmMemoryMetricsFactory factory = new JvmMemoryMetricsFactory(jvmMemoryUsedMeterConvention.getIfAvailable(),
-				jvmMemoryCommittedMeterConvention.getIfAvailable(), jvmMemoryMaxMeterConvention.getIfAvailable());
+				jvmMemoryCommittedMeterConvention.getIfAvailable(), jvmMemoryMaxMeterConvention.getIfAvailable(),
+				jvmMemoryUsedAfterLastGcMeterConvention.getIfAvailable());
 		JvmMemoryMeterConventions deprecatedConventions = jvmMemoryMeterConventions.getIfAvailable();
 		if (deprecatedConventions != null && factory.hasConvention()) {
 			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
 				.formatted(JvmMemoryMeterConventions.class.getSimpleName()));
 		}
 		return (deprecatedConventions != null) ? new JvmMemoryMetrics(Collections.emptyList(), deprecatedConventions)
-				: factory.create();
-
+				: factory.create(observationProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("deprecation")
-	JvmThreadMetrics jvmThreadMetrics(ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions,
+	JvmThreadMetrics jvmThreadMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions,
 			ObjectProvider<JvmThreadCountMeterConvention> jvmThreadCountMeterConvention) {
 		JvmThreadMeterConventions deprecatedConventions = jvmThreadMeterConventions.getIfAvailable();
 		JvmThreadCountMeterConvention convention = jvmThreadCountMeterConvention.getIfAvailable();
@@ -117,14 +125,19 @@ public final class JvmMetricsAutoConfiguration {
 		if (deprecatedConventions != null) {
 			return new JvmThreadMetrics(Collections.emptyList(), deprecatedConventions);
 		}
-		return (convention != null) ? JvmThreadMetrics.builder().threadCountConvention(convention).build()
-				: new JvmThreadMetrics();
+		JvmThreadMetrics.Builder builder = JvmThreadMetrics.builder();
+		if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
+			builder.openTelemetryConventions();
+		}
+		PropertyMapper map = PropertyMapper.get();
+		map.from(convention).to(builder::threadCountConvention);
+		return builder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("deprecation")
-	ClassLoaderMetrics classLoaderMetrics(
+	ClassLoaderMetrics classLoaderMetrics(ObservationProperties observationProperties,
 			ObjectProvider<JvmClassLoadingMeterConventions> jvmClassLoadingMeterConventions,
 			ObjectProvider<JvmClassCountMeterConvention> jvmClassCountMeterConvention,
 			ObjectProvider<JvmClassLoadedMeterConvention> jvmClassLoadedMeterConvention,
@@ -136,7 +149,8 @@ public final class JvmMetricsAutoConfiguration {
 			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
 				.formatted(JvmClassLoadingMeterConventions.class.getSimpleName()));
 		}
-		return (deprecatedConventions != null) ? new ClassLoaderMetrics(deprecatedConventions) : factory.create();
+		return (deprecatedConventions != null) ? new ClassLoaderMetrics(deprecatedConventions)
+				: factory.create(observationProperties);
 	}
 
 	@Bean
@@ -168,19 +182,24 @@ public final class JvmMetricsAutoConfiguration {
 
 	private record JvmMemoryMetricsFactory(@Nullable JvmMemoryUsedMeterConvention memoryUsedConvention,
 			@Nullable JvmMemoryCommittedMeterConvention memoryCommittedConvention,
-			@Nullable JvmMemoryMaxMeterConvention memoryMaxConvention) {
+			@Nullable JvmMemoryMaxMeterConvention memoryMaxConvention,
+			@Nullable JvmMemoryUsedAfterLastGcMeterConvention memoryUsedAfterLastGcConvention) {
 
 		boolean hasConvention() {
 			return this.memoryUsedConvention != null || this.memoryCommittedConvention != null
-					|| this.memoryMaxConvention != null;
+					|| this.memoryMaxConvention != null || this.memoryUsedAfterLastGcConvention != null;
 		}
 
-		JvmMemoryMetrics create() {
+		JvmMemoryMetrics create(ObservationProperties observationProperties) {
 			JvmMemoryMetrics.Builder builder = JvmMemoryMetrics.builder();
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
+				builder.openTelemetryConventions();
+			}
 			PropertyMapper map = PropertyMapper.get();
 			map.from(this.memoryUsedConvention).to(builder::memoryUsedConvention);
 			map.from(this.memoryCommittedConvention).to(builder::memoryCommittedConvention);
 			map.from(this.memoryMaxConvention).to(builder::memoryMaxConvention);
+			map.from(this.memoryUsedAfterLastGcConvention).to(builder::memoryUsedAfterLastGcConvention);
 			return builder.build();
 		}
 
@@ -195,8 +214,11 @@ public final class JvmMetricsAutoConfiguration {
 					|| this.classUnloadedConvention != null;
 		}
 
-		ClassLoaderMetrics create() {
+		ClassLoaderMetrics create(ObservationProperties observationProperties) {
 			ClassLoaderMetrics.Builder builder = ClassLoaderMetrics.builder();
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
+				builder.openTelemetryConventions();
+			}
 			PropertyMapper map = PropertyMapper.get();
 			map.from(this.classCountConvention).to(builder::classCountConvention);
 			map.from(this.classLoadedConvention).to(builder::classLoadedConvention);

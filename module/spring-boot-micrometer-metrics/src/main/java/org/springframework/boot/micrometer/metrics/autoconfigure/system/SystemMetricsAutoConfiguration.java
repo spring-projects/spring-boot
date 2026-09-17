@@ -43,6 +43,8 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterR
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.system.DiskSpaceMetricsBinder;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -55,7 +57,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-@EnableConfigurationProperties(MetricsProperties.class)
+@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public final class SystemMetricsAutoConfiguration {
 
 	@Bean
@@ -67,7 +69,8 @@ public final class SystemMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("deprecation")
-	ProcessorMetrics processorMetrics(ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions,
+	ProcessorMetrics processorMetrics(ObservationProperties observationProperties,
+			ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions,
 			ObjectProvider<JvmCpuTimeMeterConvention> jvmCpuTimeMeterConvention,
 			ObjectProvider<JvmCpuCountMeterConvention> jvmCpuCountMeterConvention,
 			ObjectProvider<JvmCpuLoadMeterConvention> jvmCpuLoadMeterConvention) {
@@ -79,7 +82,7 @@ public final class SystemMetricsAutoConfiguration {
 				.formatted(JvmCpuMeterConventions.class.getSimpleName()));
 		}
 		return (deprecatedConventions != null) ? new ProcessorMetrics(Collections.emptyList(), deprecatedConventions)
-				: factory.create();
+				: factory.create(observationProperties);
 	}
 
 	@Bean
@@ -103,9 +106,12 @@ public final class SystemMetricsAutoConfiguration {
 			return this.cpuTimeConvention != null || this.cpuCountConvention != null || this.cpuLoadConvention != null;
 		}
 
-		ProcessorMetrics create() {
-			PropertyMapper map = PropertyMapper.get();
+		ProcessorMetrics create(ObservationProperties observationProperties) {
 			ProcessorMetrics.Builder builder = ProcessorMetrics.builder();
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
+				builder.openTelemetryConventions();
+			}
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this.cpuTimeConvention).to(builder::cpuTimeConvention);
 			map.from(this.cpuCountConvention).to(builder::cpuCountConvention);
 			map.from(this.cpuLoadConvention).to(builder::cpuLoadConvention);

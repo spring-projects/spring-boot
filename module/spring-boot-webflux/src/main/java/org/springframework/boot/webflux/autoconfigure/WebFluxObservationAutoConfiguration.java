@@ -31,9 +31,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.ConditionalOnSemanticConventions;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.OpenTelemetryServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 
 /**
@@ -69,11 +72,23 @@ public final class WebFluxObservationAutoConfiguration {
 		return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags);
 	}
 
-	@Bean
 	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
-	DefaultServerRequestObservationConvention defaultServerRequestObservationConvention() {
-		return new DefaultServerRequestObservationConvention(
-				this.observationProperties.getHttp().getServer().getRequests().getName());
+	static class ServerRequestObservationConventionConfiguration {
+
+		@Bean
+		@ConditionalOnSemanticConventions(SemanticConventions.MICROMETER)
+		DefaultServerRequestObservationConvention micrometerServerRequestObservationConvention(
+				ObservationProperties observationProperties) {
+			return new DefaultServerRequestObservationConvention(
+					observationProperties.getHttp().getServer().getRequests().getName());
+		}
+
+		@Bean
+		@ConditionalOnSemanticConventions(SemanticConventions.OPEN_TELEMETRY)
+		OpenTelemetryServerRequestObservationConvention openTelemetryServerRequestObservationConvention() {
+			return new OpenTelemetryServerRequestObservationConvention();
+		}
+
 	}
 
 }
