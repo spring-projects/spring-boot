@@ -25,7 +25,11 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.properti
  * Adapter to convert {@link AppOpticsProperties} to an {@link AppOpticsConfig}.
  *
  * @author Stephane Nicoll
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement as AppOptics has
+ * retired
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<AppOpticsProperties>
 		implements AppOpticsConfig {
 

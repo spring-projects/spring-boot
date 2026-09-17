@@ -29,8 +29,11 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.properti
  *
  * @author Stephane Nicoll
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement as AppOptics has
+ * retired
  */
 @ConfigurationProperties("management.appoptics.metrics.export")
+@Deprecated(since = "4.2.0", forRemoval = true)
 public class AppOpticsProperties extends StepRegistryProperties {
 
 	/**

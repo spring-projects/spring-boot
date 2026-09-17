@@ -26,7 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AppOpticsPropertiesConfigAdapter}.
  *
  * @author Stephane Nicoll
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement as AppOptics has
+ * retired
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class AppOpticsPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<AppOpticsProperties, AppOpticsPropertiesConfigAdapter> {
 

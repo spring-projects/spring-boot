@@ -39,6 +39,8 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement as AppOptics has
+ * retired
  */
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
@@ -47,6 +49,8 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(AppOpticsMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("appoptics")
 @EnableConfigurationProperties(AppOpticsProperties.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class AppOpticsMetricsExportAutoConfiguration {
 
 	private final AppOpticsProperties properties;
