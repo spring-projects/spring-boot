@@ -44,7 +44,7 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConf
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties.ConventionsVariant;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -108,7 +108,7 @@ public final class SystemMetricsAutoConfiguration {
 
 		ProcessorMetrics create(ObservationProperties observationProperties) {
 			ProcessorMetrics.Builder builder = ProcessorMetrics.builder();
-			if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
 				builder.openTelemetryConventions();
 			}
 			PropertyMapper map = PropertyMapper.get();

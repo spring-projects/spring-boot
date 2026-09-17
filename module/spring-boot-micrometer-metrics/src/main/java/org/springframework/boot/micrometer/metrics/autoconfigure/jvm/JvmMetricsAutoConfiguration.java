@@ -55,7 +55,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties.ConventionsVariant;
+import org.springframework.boot.micrometer.observation.autoconfigure.condition.SemanticConventions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -126,7 +126,7 @@ public final class JvmMetricsAutoConfiguration {
 			return new JvmThreadMetrics(Collections.emptyList(), deprecatedConventions);
 		}
 		JvmThreadMetrics.Builder builder = JvmThreadMetrics.builder();
-		if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+		if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
 			builder.openTelemetryConventions();
 		}
 		PropertyMapper map = PropertyMapper.get();
@@ -192,7 +192,7 @@ public final class JvmMetricsAutoConfiguration {
 
 		JvmMemoryMetrics create(ObservationProperties observationProperties) {
 			JvmMemoryMetrics.Builder builder = JvmMemoryMetrics.builder();
-			if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
 				builder.openTelemetryConventions();
 			}
 			PropertyMapper map = PropertyMapper.get();
@@ -216,7 +216,7 @@ public final class JvmMetricsAutoConfiguration {
 
 		ClassLoaderMetrics create(ObservationProperties observationProperties) {
 			ClassLoaderMetrics.Builder builder = ClassLoaderMetrics.builder();
-			if (observationProperties.getConventions() == ConventionsVariant.OPENTELEMETRY) {
+			if (observationProperties.getConventions() == SemanticConventions.OPEN_TELEMETRY) {
 				builder.openTelemetryConventions();
 			}
 			PropertyMapper map = PropertyMapper.get();

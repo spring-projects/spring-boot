@@ -731,7 +731,8 @@ NOTE: javadoc:org.springframework.jms.core.JmsClient[] and javadoc:org.springfra
 
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
+If you are xref:actuator/observability.adoc#actuator.observability.semantic-conventions[using Micrometer's semantic conventions], set the configprop:management.observations.http.server.requests.name[] property to customize the name.
+If you are using OpenTelemtry's semantic conventions, the name cannot be customized.
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
 
@@ -751,7 +752,8 @@ To customize the filter, provide a javadoc:org.springframework.context.annotatio
 
 Auto-configuration enables the instrumentation of all requests handled by Spring WebFlux controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
+If you are xref:actuator/observability.adoc#actuator.observability.semantic-conventions[using Micrometer's semantic conventions], set the configprop:management.observations.http.server.requests.name[] property to customize the name.
+If you are using OpenTelemtry's semantic conventions, the name cannot be customized.
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
 
