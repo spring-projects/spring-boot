@@ -21,8 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -60,7 +60,7 @@ class IndexedJarStructure implements JarStructure {
 
 	private final String classesLocation;
 
-	private final List<String> classpathEntries;
+	private final Set<String> classpathEntries;
 
 	IndexedJarStructure(Manifest originalManifest, String indexFile) {
 		this.originalManifest = originalManifest;
@@ -74,12 +74,12 @@ class IndexedJarStructure implements JarStructure {
 		return (!location.endsWith("/")) ? location + "/" : location;
 	}
 
-	private static List<String> readIndexFile(String indexFile) {
+	private static Set<String> readIndexFile(String indexFile) {
 		String[] lines = Arrays.stream(indexFile.split("\n"))
 			.map((line) -> line.replace("\r", ""))
 			.filter(StringUtils::hasText)
 			.toArray(String[]::new);
-		List<String> classpathEntries = new ArrayList<>();
+		Set<String> classpathEntries = new LinkedHashSet<>();
 		for (String line : lines) {
 			Assert.state(line.startsWith("- "), "Classpath index file is malformed");
 			classpathEntries.add(line.substring(3, line.length() - 1));
