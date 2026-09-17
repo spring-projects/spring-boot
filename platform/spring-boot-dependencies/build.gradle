@@ -2762,7 +2762,7 @@ bom {
 				github("https://github.com/spring-projects/spring-data-redis")
 				javadoc("https://docs.spring.io/spring-data/redis/reference/{version}/api/java",
 					"org.springframework.data.redis")
-				docs(version -> "https://docs.spring.io/spring-data-redis/reference/%s"
+				docs(version -> "https://docs.spring.io/spring-data/redis/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-redis/releases/tag/{version}")
 			}
@@ -2897,7 +2897,7 @@ bom {
 				.formatted(version.forMajorMinorGeneration()), "org.springframework.ldap")
 			docs(version -> "https://docs.spring.io/spring-ldap/reference/%s"
 				.formatted(version.forAntora()))
-			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
+			releaseNotes("https://docs.spring.io/spring-ldap/reference/{version}/api/java")
 		}
 	}
 	library("Spring Pulsar", "2.0.7") {
@@ -2961,8 +2961,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-session")
 			github("https://github.com/spring-projects/spring-session")
-			javadoc(version -> "https://docs.spring.io/spring-session/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.session")
+			javadoc("https://docs.spring.io/spring-session/reference/{version}/api/java",
+				"org.springframework.session")
 			docs(version -> "https://docs.spring.io/spring-session/reference/%s"
 				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
