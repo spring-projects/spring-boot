@@ -2584,20 +2584,12 @@ bom {
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-elasticsearch/releases/tag/{version}")
 			}
-			module("spring-data-envers") {
-				site("https://spring.io/projects/spring-data-envers")
-				github("https://github.com/spring-projects/spring-data-envers")
-				javadoc(version -> "https://docs.spring.io/spring-data-envers/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.envers")
-				docs(version -> "https://docs.spring.io/spring-data-envers/reference/%s"
-					.formatted(version.forAntora()))
-				releaseNotes("https://github.com/spring-projects/spring-data-envers/releases/tag/{version}")
-			}
 			module("spring-data-jpa") {
 				site("https://spring.io/projects/spring-data-jpa")
 				github("https://github.com/spring-projects/spring-data-jpa")
 				javadoc(version -> "https://docs.spring.io/spring-data-jpa/docs/%s/api"
-					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.jpa")
+					.formatted(version.forMajorMinorGeneration()),
+					"org.springframework.data.jpa", "org.springframework.data.envers")
 				docs(version -> "https://docs.spring.io/spring-data-jpa/reference/%s"
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-jpa/releases/tag/{version}")
