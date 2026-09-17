@@ -292,7 +292,7 @@ For complete details, see the {url-spring-data-jpa-docs}[Spring Data JPA referen
 [[data.sql.jpa-and-spring-data.envers-repositories]]
 === Spring Data Envers Repositories
 
-If {url-spring-data-envers-site}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
+If the {url-spring-data-jpa-site}[`spring-data-envers`] module from Spring Data JPA is available, JPA repositories are auto-configured to support typical Envers queries.
 
 To use Spring Data Envers, make sure your repository extends from javadoc:org.springframework.data.repository.history.RevisionRepository[] as shown in the following example:
 
