@@ -3,7 +3,6 @@
 
 Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-site}[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
 
-- xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.atlas[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.datadog[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.dynatrace[]
@@ -83,23 +82,6 @@ Spring Boot also xref:actuator/metrics.adoc#actuator.metrics.supported[configure
 == Supported Monitoring Systems
 
 This section briefly describes each of the supported monitoring systems.
-
-
-
-[[actuator.metrics.export.appoptics]]
-=== AppOptics
-
-By default, the AppOptics registry periodically pushes metrics to `https://api.appoptics.com/v1/measurements`.
-To export metrics to SaaS {url-micrometer-docs-implementations}/appOptics[AppOptics], your API token must be provided:
-
-[configprops,yaml]
-----
-management:
-  appoptics:
-    metrics:
-      export:
-        api-token: "YOUR_TOKEN"
-----
 
 
 
