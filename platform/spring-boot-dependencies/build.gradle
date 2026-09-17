@@ -437,7 +437,7 @@ bom {
 		links {
 			releaseNotes(version -> "https://www.elastic.co/docs/release-notes/elasticsearch/clients/java/%s-%s-0".formatted(version.major(), version.minor()))
 			module("elasticsearch-java") {
-				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/{version}/index.html", "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-java/{version}", "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
 			}
 			module("elasticsearch-rest5-client") {
 				javadoc("https://javadoc.io/doc/co.elastic.clients/elasticsearch-rest5-client/{version}")
@@ -868,7 +868,7 @@ bom {
 			]
 		}
 		links {
-			javadoc(version -> "https://jakarta.ee/specifications/annotations/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/annotations/%s.%s/apidocs/jakarta.annotation"
 				.formatted(version.major(), version.minor()), "jakarta.annotation")
 		}
 	}
@@ -892,7 +892,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/messaging/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs/jakarta.messaging"
 				.formatted(version.major(), version.minor()), "jakarta.jms")
 		}
 	}
@@ -915,7 +915,7 @@ bom {
 			]
 		}
 		links {
-			javadoc(version -> "https://jakarta.ee/specifications/jsonb/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/jsonb/%s.%s/apidocs/jakarta.json.bind"
 				.formatted(version.major(), version.minor()), "jakarta.json.bind")
 		}
 	}
@@ -928,7 +928,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/mail/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/mail/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/mail/%s.%s/apidocs/jakarta.mail"
 				.formatted(version.major(), version.minor()), "jakarta.mail")
 			releaseNotes("https://github.com/jakartaee/mail-api/releases/tag/{version}")
 		}
@@ -949,7 +949,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/persistence/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs/jakarta.persistence"
 				.formatted(version.major(), version.minor()), "jakarta.persistence")
 			releaseNotes(version -> "https://github.com/jakartaee/persistence/releases/tag/%s.%s-%s-RELEASE"
 				.formatted(version.major(), version.minor(), version))
@@ -964,7 +964,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/servlet/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs/jakarta.servlet"
 				.formatted(version.major(), version.minor()), "jakarta.servlet")
 		}
 	}
@@ -1026,7 +1026,7 @@ bom {
 			]
 		}
 		links {
-			javadoc(version -> "https://jakarta.ee/specifications/restful-ws/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/restful-ws/%s.%s/apidocs/jakarta.ws.rs"
 				.formatted(version.major(), version.minor()), "jakarta.ws.rs")
 		}
 	}
@@ -1043,7 +1043,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
-			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs/jakarta.xml.bind"
 				.formatted(version.major(), version.minor()), "jakarta.xml.bind")
 		}
 	}
@@ -1755,7 +1755,7 @@ bom {
 			releaseNotes("https://github.com/mongodb/mongo-java-driver/releases/tag/r{version}")
 			// Mongo has split packages so we can't link by package name
 			module("mongodb-driver-core") {
-				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-core/index.html".formatted(version.major(), version.minor()))
+				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-core".formatted(version.major(), version.minor()))
 			}
 			module("mongodb-driver-sync") {
 				javadoc(version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/driver-sync".formatted(version.major(), version.minor()))
@@ -2679,7 +2679,7 @@ bom {
 			module("spring-data-cassandra") {
 				site("https://spring.io/projects/spring-data-cassandra")
 				github("https://github.com/spring-projects/spring-data-cassandra")
-				javadoc("https://docs.spring.io/spring-data/cassandra/reference/{version}/api",
+				javadoc("https://docs.spring.io/spring-data/cassandra/reference/{version}/api/java",
 					"org.springframework.data.cassandra")
 				docs(version -> "https://docs.spring.io/spring-data/cassandra/reference/%s"
 					.formatted(version.forAntora()))
@@ -2760,7 +2760,7 @@ bom {
 			module("spring-data-redis") {
 				site("https://spring.io/projects/spring-data-redis")
 				github("https://github.com/spring-projects/spring-data-redis")
-				javadoc("https://docs.spring.io/spring-data/redis/reference/{version}/api",
+				javadoc("https://docs.spring.io/spring-data/redis/reference/{version}/api/java",
 					"org.springframework.data.redis")
 				docs(version -> "https://docs.spring.io/spring-data-redis/reference/%s"
 					.formatted(version.forAntora()))
