@@ -35,6 +35,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * support for slicing.
  *
  * @author Phillip Webb
+ * @author Ian Kettle
  */
 class FileDataBlock implements CloseableDataBlock {
 
@@ -81,7 +82,7 @@ class FileDataBlock implements CloseableDataBlock {
 			long updatedLimit = dst.position() + remaining;
 			dst.limit((updatedLimit > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) updatedLimit);
 		}
-		int result = this.fileAccess.read(dst, this.offset + pos);
+		int result = this.fileAccess.read(dst, this.offset + pos, ClosedChannelException::new);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -160,7 +161,7 @@ class FileDataBlock implements CloseableDataBlock {
 
 		private final Path path;
 
-		private int referenceCount;
+		private volatile int referenceCount;
 
 		private FileChannel fileChannel;
 
@@ -183,8 +184,12 @@ class FileDataBlock implements CloseableDataBlock {
 			this.path = path;
 		}
 
-		int read(ByteBuffer dst, long position) throws IOException {
+		int read(ByteBuffer dst, long position, Supplier<? extends IOException> closedExceptionSupplier)
+				throws IOException {
 			synchronized (this.lock) {
+				if (this.referenceCount == 0) {
+					throw closedExceptionSupplier.get();
+				}
 				if (position < this.bufferPosition || position >= this.bufferPosition + this.bufferSize) {
 					fillBuffer(position);
 				}
@@ -243,24 +248,26 @@ class FileDataBlock implements CloseableDataBlock {
 
 		void open() throws IOException {
 			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
+				int localReferenceCount = this.referenceCount;
+				if (localReferenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
 					this.buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 					tracker.openedFileChannel(this.path);
 				}
-				this.referenceCount++;
-				debug.log("Reference count for '%s' incremented to %s", this.path, this.referenceCount);
+				this.referenceCount = ++localReferenceCount;
+				debug.log("Reference count for '%s' incremented to %s", this.path, localReferenceCount);
 			}
 		}
 
 		void close() throws IOException {
 			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
+				int localReferenceCount = this.referenceCount;
+				if (localReferenceCount == 0) {
 					return;
 				}
-				this.referenceCount--;
-				if (this.referenceCount == 0) {
+				this.referenceCount = --localReferenceCount;
+				if (localReferenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
 					this.buffer = null;
 					this.bufferPosition = -1;
@@ -274,15 +281,13 @@ class FileDataBlock implements CloseableDataBlock {
 						this.randomAccessFile = null;
 					}
 				}
-				debug.log("Reference count for '%s' decremented to %s", this.path, this.referenceCount);
+				debug.log("Reference count for '%s' decremented to %s", this.path, localReferenceCount);
 			}
 		}
 
 		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
-			synchronized (this.lock) {
-				if (this.referenceCount == 0) {
-					throw exceptionSupplier.get();
-				}
+			if (this.referenceCount == 0) {
+				throw exceptionSupplier.get();
 			}
 		}
 
