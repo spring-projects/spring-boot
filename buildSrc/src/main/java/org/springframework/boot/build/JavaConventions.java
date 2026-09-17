@@ -408,19 +408,17 @@ class JavaConventions {
 
 	private void configureDependencyFixes(Project project) {
 		project.getDependencies().getComponents().all((details) -> {
-			// https://github.com/spring-projects/spring-framework/issues/37209
-			// https://github.com/spring-projects/spring-graphql/issues/1515
-			String group = details.getId().getGroup();
-			if ("org.springframework".equals(group) || "org.springframework.graphql".equals(group)) {
-				addDocumentationVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
-				addDocumentationVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
-			}
+			addDocumentationVariant(project, details, "implicitjavadoc", "implicitjavadoc", "javadoc");
+			addDocumentationVariant(project, details, "implicitsources", "implicitsources", "sources");
 		});
 	}
 
 	private void addDocumentationVariant(Project project, ComponentMetadataDetails details, String name,
 			String docsType, String classifier) {
 		ModuleVersionIdentifier id = details.getId();
+		if ("org.nodejs".equals(id.getGroup())) {
+			return;
+		}
 		String file = "%s-%s-%s.jar".formatted(id.getName(), id.getVersion(), classifier);
 		details.addVariant(name, (variant) -> {
 			variant.attributes((attributes) -> addDocumentationAttributes(project, attributes, docsType));

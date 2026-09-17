@@ -597,6 +597,12 @@ bom {
 			module("grpc-api") {
 				javadoc("https://javadoc.io/doc/io.grpc/grpc-api/{version}", "io.grpc")
 			}
+			module("grpc-services") {
+				javadoc("https://javadoc.io/doc/io.grpc/grpc-services/{version}", "io.grpc.health", "io.grpc.reflection")
+			}
+			module("grpc-servlet-jakarta") {
+				javadoc("https://javadoc.io/doc/io.grpc/grpc-servlet-jakarta/{version}", "io.grpc.health", "io.grpc.servlet.jakarta")
+			}
 		}
 	}
 	library("Grpc Kotlin", "1.5.0") {
@@ -2717,7 +2723,7 @@ bom {
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-elasticsearch/releases/tag/{version}")
 			}
-			module("spring-data-jpa") {
+			module("spring-data-jpa", ["spring-data-jpa", "spring-data-envers"]) {
 				site("https://spring.io/projects/spring-data-jpa")
 				github("https://github.com/spring-projects/spring-data-jpa")
 				javadoc("https://docs.spring.io/spring-data/jpa/reference/{version}/api/java",
@@ -2753,7 +2759,7 @@ bom {
 					.formatted(version.forAntora()))
 				releaseNotes("https://github.com/spring-projects/spring-data-neo4j/releases/tag/{version}")
 			}
-			module("spring-data-relational") {
+			module("spring-data-relational", ["spring-data-relational", "spring-data-jdbc", "spring-data-r2dbc"]) {
 				site("https://spring.io/projects/spring-data-relational")
 				github("https://github.com/spring-projects/spring-data-relational")
 				javadoc("https://docs.spring.io/spring-data/relational/reference/{version}/api/java",

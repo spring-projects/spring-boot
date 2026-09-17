@@ -295,8 +295,7 @@ public abstract class CheckBom extends DefaultTask {
 			List<String> errors = new ArrayList<>();
 			BomAlignment alignsWithBom = library.getAlignsWithBom();
 			if (alignsWithBom != null) {
-				Bom mavenBom = this.bomResolver
-					.resolveMavenBom(alignsWithBom.getCoordinates() + ":" + library.getVersion());
+				Bom mavenBom = this.bomResolver.resolveBom(alignsWithBom.getCoordinates() + ":" + library.getVersion());
 				checkDependencyManagementAlignment(resolvedLibrary, mavenBom, errors, alignsWithBom::exclude);
 			}
 			return errors;
