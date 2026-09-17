@@ -796,8 +796,13 @@ bom {
 		}
 		links {
 			site("https://infinispan.org")
-			javadoc(version -> "https://docs.jboss.org/infinispan/%s.%s/apidocs".formatted(version.major(), version.minor()), "org.infinispan")
 			releaseNotes("https://github.com/infinispan/infinispan/releases/tag/{version}")
+			module("infinispan-api") {
+				javadoc("https://javadoc.io/doc/org.infinispan/infinispan-api/{version}", "org.influxdb.api")
+			}
+			module("infinispan-core") {
+				javadoc("https://javadoc.io/doc/org.infinispan/infinispan-core/{version}", "org.infinispan.configuration")
+			}
 		}
 	}
 	library("InfluxDB Java", "2.25") {
