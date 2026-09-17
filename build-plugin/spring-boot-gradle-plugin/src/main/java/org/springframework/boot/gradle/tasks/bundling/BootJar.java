@@ -131,7 +131,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
+		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY, null,
 				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX,
 				this.getTargetJavaVersion().get().getMajorVersion(), this.projectName.get(), this.projectVersion.get());
 		super.copy();
