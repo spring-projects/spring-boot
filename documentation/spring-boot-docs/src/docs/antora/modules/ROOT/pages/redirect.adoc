@@ -1074,8 +1074,6 @@
 * xref:reference:actuator/metrics.adoc#actuator.metrics.customizing[#production-ready-metrics-customizing]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.endpoint[#actuator.metrics.endpoint]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.endpoint[#production-ready-metrics-endpoint]
-* xref:reference:actuator/metrics.adoc#actuator.metrics.export.appoptics[#actuator.metrics.export.appoptics]
-* xref:reference:actuator/metrics.adoc#actuator.metrics.export.appoptics[#production-ready-metrics-export-appoptics]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.atlas[#actuator.metrics.export.atlas]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.atlas[#production-ready-metrics-export-atlas]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.datadog[#actuator.metrics.export.datadog]
