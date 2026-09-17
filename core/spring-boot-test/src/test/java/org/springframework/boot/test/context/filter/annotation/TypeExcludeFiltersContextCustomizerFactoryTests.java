@@ -116,25 +116,25 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 	@Test
 	void getContextCustomizerWhenEnclosingClassHasAnnotationsTypeExcludeFilters() throws Exception {
 		typeExcludeFiltersFor(WithMultipleExcludeFilterAnnotations.WithEnclosingClassExcludeFilters.class)
-			.matches(FirstSliceExclude.class, SecondSliceExclude.class);
+			.matches(SliceExclude.class, SecondExclude.class);
 
 	}
 
 	@Test
 	void getContextCustomizerWhenSuperclassHasAnnotationShouldIncludeTypeExcludeFilters() throws Exception {
-		typeExcludeFiltersFor(WithMixedInheritance.class).matches(TestClassAwareExclude.class, FirstSliceExclude.class,
-				SecondSliceExclude.class, ThirdSliceExclude.class);
+		typeExcludeFiltersFor(WithMixedInheritance.class).matches(TestClassAwareExclude.class, SliceExclude.class,
+				SecondExclude.class, ThirdExclude.class);
 	}
 
 	@Test
 	void getContextCustomizerWhenHasNestedComposedAnnotationShouldIncludeTypeExcludeFilters() throws Exception {
-		typeExcludeFiltersFor(WithComposedAnnotation.class).matches(FirstSliceExclude.class);
+		typeExcludeFiltersFor(WithComposedAnnotation.class).matches(SliceExclude.class);
 	}
 
 	@Test
 	void getContextCustomizerWhenDeeplyNestedShouldIncludeAllEnclosingExcludeFilters() throws Exception {
-		typeExcludeFiltersFor(GrandparentEnclosing.ParentEnclosing.DeepInnerClass.class)
-			.matches(FirstSliceExclude.class, SecondSliceExclude.class, ThirdSliceExclude.class);
+		typeExcludeFiltersFor(GrandparentEnclosing.ParentEnclosing.DeepInnerClass.class).matches(SliceExclude.class,
+				SecondExclude.class, ThirdExclude.class);
 	}
 
 	private TypeExcludeFilterAssert typeExcludeFiltersFor(Class<?> testClass) {
@@ -200,8 +200,8 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	}
 
-	@FirstTestSlice
-	@TypeExcludeFilters(SecondSliceExclude.class)
+	@TestSlice
+	@TypeExcludeFilters(SecondExclude.class)
 	static class WithMultipleExcludeFilterAnnotations {
 
 		class WithEnclosingClassExcludeFilters {
@@ -215,17 +215,17 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	}
 
-	@FirstTestSlice
+	@TestSlice
 	static class WithFirstTestSliceExclude implements WithSecondTestSliceExclude {
 
 	}
 
-	@SecondTestSlice
+	@TypeExcludeFilters(SecondExclude.class)
 	interface WithSecondTestSliceExclude extends WithThirdTestSliceExclude {
 
 	}
 
-	@TypeExcludeFilters(ThirdSliceExclude.class)
+	@TypeExcludeFilters(ThirdExclude.class)
 	interface WithThirdTestSliceExclude {
 
 	}
@@ -235,34 +235,27 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	}
 
-	@FirstTestSlice
-	@TypeExcludeFilters(FirstSliceExclude.class)
+	@TestSlice
+	@TypeExcludeFilters(SliceExclude.class)
 	static class WithDuplicateSliceExclude {
 
 	}
 
 	@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
-	@TypeExcludeFilters(FirstSliceExclude.class)
-	@interface FirstTestSlice {
-
-	}
-
-	@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-	@Retention(RetentionPolicy.RUNTIME)
-	@TypeExcludeFilters(SecondSliceExclude.class)
-	@interface SecondTestSlice {
+	@TypeExcludeFilters(SliceExclude.class)
+	@interface TestSlice {
 
 	}
 
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
-	@FirstTestSlice
+	@TestSlice
 	@interface ComposedFirstTestSlice {
 
 	}
 
-	@TypeExcludeFilters(FirstSliceExclude.class)
+	@TypeExcludeFilters(SliceExclude.class)
 	static class EnclosingWithOverride {
 
 		@NestedTestConfiguration(EnclosingConfiguration.OVERRIDE)
@@ -272,13 +265,13 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	}
 
-	@TypeExcludeFilters(FirstSliceExclude.class)
+	@TypeExcludeFilters(SliceExclude.class)
 	static class GrandparentEnclosing {
 
-		@TypeExcludeFilters(SecondSliceExclude.class)
+		@TypeExcludeFilters(SecondExclude.class)
 		class ParentEnclosing {
 
-			@TypeExcludeFilters(ThirdSliceExclude.class)
+			@TypeExcludeFilters(ThirdExclude.class)
 			class DeepInnerClass {
 
 			}
@@ -287,25 +280,25 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	}
 
-	static class FirstSliceExclude extends TestClassAwareExclude {
+	static class SliceExclude extends TestClassAwareExclude {
 
-		FirstSliceExclude(Class<?> testClass) {
+		SliceExclude(Class<?> testClass) {
 			super(testClass);
 		}
 
 	}
 
-	static class SecondSliceExclude extends TestClassAwareExclude {
+	static class SecondExclude extends TestClassAwareExclude {
 
-		SecondSliceExclude(Class<?> testClass) {
+		SecondExclude(Class<?> testClass) {
 			super(testClass);
 		}
 
 	}
 
-	static class ThirdSliceExclude extends TestClassAwareExclude {
+	static class ThirdExclude extends TestClassAwareExclude {
 
-		ThirdSliceExclude(Class<?> testClass) {
+		ThirdExclude(Class<?> testClass) {
 			super(testClass);
 		}
 
