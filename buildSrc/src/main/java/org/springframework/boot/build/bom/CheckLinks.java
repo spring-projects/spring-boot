@@ -16,6 +16,10 @@
 
 package org.springframework.boot.build.bom;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -48,6 +52,8 @@ public abstract class CheckLinks extends DefaultTask {
 
 	private static final ErrorHandler NOOP_ERROR_HANDLER = (request, response) -> {
 	};
+
+	private static final List<String> URL_ALTERNATIVES = List.of("index.html", "module-summary.html");
 
 	private final BomExtension bom;
 
@@ -87,19 +93,29 @@ public abstract class CheckLinks extends DefaultTask {
 
 	private void check(RestClient restClient, LinkType type, Link link, String name, Object version) {
 		String url = link.url(new LinkedVersion(version));
-		int statusCode = restClient.head().uri(url).retrieve().toEntity(String.class).getStatusCode().value();
-		if (statusCode != 200) {
-			int altStatusCode = restClient.head()
-				.uri(url + "/'")
-				.retrieve()
-				.toEntity(String.class)
-				.getStatusCode()
-				.value();
-			if (altStatusCode == 200) {
-				statusCode = 200;
-			}
-		}
+		int statusCode = getStatusCode(restClient, url);
 		System.out.printf("[%3d] %s - %s (%s)%n", statusCode, name, type, url);
+	}
+
+	private int getStatusCode(RestClient restClient, String url) {
+		Set<String> urls = new LinkedHashSet<>();
+		urls.add(url);
+		if (!url.endsWith("/")) {
+			url = url + "/";
+			urls.add(url);
+		}
+		for (String alternative : URL_ALTERNATIVES) {
+			urls.add(url + alternative);
+		}
+		Integer firstStatusCode = null;
+		for (String candidate : urls) {
+			int statusCode = restClient.head().uri(candidate).retrieve().toEntity(String.class).getStatusCode().value();
+			if (statusCode == 200) {
+				return statusCode;
+			}
+			firstStatusCode = (firstStatusCode != null) ? firstStatusCode : statusCode;
+		}
+		return firstStatusCode;
 	}
 
 }
