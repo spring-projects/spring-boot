@@ -82,6 +82,15 @@ class UrlJarFiles {
 	}
 
 	/**
+	 * Return the cached {@link JarFile} if available.
+	 * @param urlKey the jar file URL key
+	 * @return the cached jar or {@code null}
+	 */
+	JarFile getCached(JarFileUrlKey urlKey) {
+		return this.cache.get(urlKey);
+	}
+
+	/**
 	 * Cache the given {@link JarFile} if caching can be used and there is no existing
 	 * entry.
 	 * @param useCaches if caches can be used
@@ -154,7 +163,15 @@ class UrlJarFiles {
 		 * @return the cached {@link JarFile} or {@code null}
 		 */
 		JarFile get(URL jarFileUrl) {
-			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
+			return get(new JarFileUrlKey(jarFileUrl));
+		}
+
+		/**
+		 * Get a {@link JarFile} from the cache given a jar file URL key.
+		 * @param urlKey the jar file URL key
+		 * @return the cached {@link JarFile} or {@code null}
+		 */
+		JarFile get(JarFileUrlKey urlKey) {
 			synchronized (this) {
 				return this.jarFileUrlToJarFile.get(urlKey);
 			}

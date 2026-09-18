@@ -337,13 +337,19 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 			int separator = spec.indexOf("!/");
 			boolean specHasEntry = (separator != -1) && (separator + 2 != spec.length());
 			if (specHasEntry) {
-				URL jarFileUrl = new URL(spec.substring(0, separator));
-				if ("runtime".equals(url.getRef())) {
-					jarFileUrl = new URL(jarFileUrl, "#runtime");
+				String jarFileSpec = spec.substring(0, separator);
+				boolean runtimeRef = "runtime".equals(url.getRef());
+				JarFileUrlKey urlKey = new JarFileUrlKey("jar", "", -1, jarFileSpec, runtimeRef);
+				JarFile jarFile = jarFiles.getCached(urlKey);
+				if (jarFile == null) {
+					URL jarFileUrl = new URL(jarFileSpec);
+					if (runtimeRef) {
+						jarFileUrl = new URL(jarFileUrl, "#runtime");
+					}
+					jarFile = jarFiles.getOrCreate(true, jarFileUrl);
+					jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
 				}
 				String entryName = UrlDecoder.decode(spec.substring(separator + 2));
-				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
-				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
 				if (!hasEntry(jarFile, entryName)) {
 					return notFoundConnection(jarFile.getName(), entryName);
 				}
