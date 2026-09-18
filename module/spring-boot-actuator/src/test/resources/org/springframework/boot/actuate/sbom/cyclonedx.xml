@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.6" serialNumber="urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79" version="1">
+	<metadata>
+		<timestamp>2026-09-18T00:00:00Z</timestamp>
+		<component type="application" bom-ref="pkg:maven/org.example/example@0.0.1-SNAPSHOT">
+			<name>example</name>
+			<version>0.0.1-SNAPSHOT</version>
+		</component>
+	</metadata>
+	<components/>
+</bom>

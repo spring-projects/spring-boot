@@ -73,6 +73,13 @@ class SbomEndpointWebExtensionTests {
 	}
 
 	@Test
+	void shouldAutoDetectContentTypeForCycloneDxXml() {
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.xml");
+		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
+		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("application/vnd.cyclonedx+xml"));
+	}
+
+	@Test
 	void shouldAutoDetectContentTypeForSpdx() {
 		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/spdx.json");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
@@ -124,6 +131,7 @@ class SbomEndpointWebExtensionTests {
 	private String getSbomContent(SbomType type) throws IOException {
 		return switch (type) {
 			case CYCLONE_DX -> readResource("cyclonedx.json");
+			case CYCLONE_DX_XML -> readResource("cyclonedx.xml");
 			case SPDX -> readResource("spdx.json");
 			case SYFT -> readResource("syft.json");
 			case UNKNOWN -> throw new IllegalArgumentException("UNKNOWN is not supported");

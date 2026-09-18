@@ -98,6 +98,17 @@ public class SbomEndpointWebExtension {
 				return content.replaceAll("\\s", "").contains("\"bomFormat\":\"CycloneDX\"");
 			}
 		},
+		CYCLONE_DX_XML(MimeType.valueOf("application/vnd.cyclonedx+xml")) {
+			@Override
+			boolean matches(String content) {
+				// The CycloneDX XML namespace (bom/1.x). The JSON variant advertises its
+				// schema as
+				// "http://cyclonedx.org/schema/bom-<version>.schema.json", so the
+				// trailing slash
+				// keeps the two formats apart.
+				return content.contains("http://cyclonedx.org/schema/bom/");
+			}
+		},
 		SPDX(MimeType.valueOf("application/spdx+json")) {
 			@Override
 			boolean matches(String content) {
