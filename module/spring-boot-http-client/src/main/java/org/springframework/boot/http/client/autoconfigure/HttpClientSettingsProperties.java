@@ -100,9 +100,22 @@ public abstract class HttpClientSettingsProperties {
 	public static class Ssl {
 
 		/**
+		 * Whether SSL is enabled.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
 		 * SSL bundle to use.
 		 */
 		private @Nullable String bundle;
+
+		public @Nullable Boolean getEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(@Nullable Boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public @Nullable String getBundle() {
 			return this.bundle;

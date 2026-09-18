@@ -102,6 +102,52 @@ class HttpClientSettingsPropertyMapperTests {
 	}
 
 	@Test
+	void mapWhenSslEnabledWithNoBundleDoesNotSetSslBundle() {
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.getSsl().setEnabled(true);
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.sslBundle()).isNull();
+	}
+
+	@Test
+	void mapWhenSslEnabledUsesBundle() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(sslBundles, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.getSsl().setEnabled(true);
+		properties.getSsl().setBundle("test-bundle");
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.sslBundle()).isSameAs(sslBundle);
+	}
+
+	@Test
+	void mapWhenSslDisabledDoesNotSetSslBundle() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(sslBundles, null);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.getSsl().setEnabled(false);
+		properties.getSsl().setBundle("test-bundle");
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.sslBundle()).isNull();
+	}
+
+	@Test
+	void mapWhenSslDisabledOverridesBaseSettingsSslBundle() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		HttpClientSettings baseSettings = HttpClientSettings.defaults().withSslBundle(sslBundle);
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, baseSettings);
+		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
+		properties.getSsl().setEnabled(false);
+		HttpClientSettings result = mapper.map(properties);
+		assertThat(result.sslBundle()).isNull();
+	}
+
+	@Test
 	void mapUsesBaseSettingsForMissingProperties() {
 		HttpClientSettings baseSettings = new HttpClientSettings(null, HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				Duration.ofSeconds(15), Duration.ofSeconds(25), null);

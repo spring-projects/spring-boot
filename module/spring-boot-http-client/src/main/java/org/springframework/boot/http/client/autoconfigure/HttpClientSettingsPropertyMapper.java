@@ -55,7 +55,11 @@ public class HttpClientSettingsPropertyMapper {
 				.as(this::getSslBundle)
 				.to(settings, HttpClientSettings::withSslBundle);
 		}
-		return settings.orElse(this.settings);
+		settings = settings.orElse(this.settings);
+		if (properties != null && Boolean.FALSE.equals(properties.getSsl().getEnabled())) {
+			settings = settings.withSslBundle(null);
+		}
+		return settings;
 	}
 
 	private SslBundle getSslBundle(String name) {
