@@ -33,12 +33,14 @@ import org.springframework.util.Assert;
  * Configure common {@link JmsListenerContainerFactory} settings with sensible defaults.
  * <p>
  * This includes:
+ * <ul>
  * <li>A {@link DestinationResolver} is such a component is present.</li>
  * <li>A {@link MessageConverter} is such a component is present.</li>
  * <li>An {@link ExceptionListener} is such a component is present.</li>
  * <li>An {@link ObservationRegistry} is such a component is present.</li>
  * <li>Configuration properties of the {@code spring.jms} namespace that are common to all
  * implementations.</li>
+ * </ul>
  *
  * @param <T> the connection factory type.
  * @author Stephane Nicoll
