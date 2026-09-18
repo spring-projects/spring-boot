@@ -165,7 +165,7 @@ configurations {
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     resolvedBom.from(configurations.resolvedBom)
-    javadocJars.from(configurations.runtimeClasspath.incoming.artifactView {
+    javadocJars(configurations.runtimeClasspath.incoming.artifactView {
 		withVariantReselection()
 		attributes {
 			lenient = true
@@ -174,7 +174,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
 			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "implicitjavadoc"));
 		}
-	}.files)
+	}.artifacts.resolvedArtifacts)
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	source = configurations.javadocSource
 	classpath = configurations.runtimeClasspath
