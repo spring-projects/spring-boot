@@ -31,10 +31,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.gradle.api.UncheckedIOException;
+import org.gradle.api.artifacts.component.ComponentIdentifier;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.logging.LogLevel;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
@@ -72,13 +78,36 @@ public abstract class AggregatedJavadoc extends Javadoc {
 		IGNORED_PACKAGES = Collections.unmodifiableList(ignoredPackages);
 	}
 
+	public void javadocJars(Provider<Set<ResolvedArtifactResult>> artifacts) {
+		getJavadocJarFiles().set(artifacts.map(this::asJavadocJarFiles));
+		getJavadocJarNames().set(artifacts.map(this::asJavadocJarNames));
+	}
+
+	private List<File> asJavadocJarFiles(Set<ResolvedArtifactResult> artifacts) {
+		return artifacts.stream().map(ResolvedArtifactResult::getFile).toList();
+	}
+
+	private List<String> asJavadocJarNames(Set<ResolvedArtifactResult> artifacts) {
+		return artifacts.stream().map(this::asJavadocJarName).toList();
+	}
+
+	private String asJavadocJarName(ResolvedArtifactResult artifact) {
+		ComponentIdentifier identifier = artifact.getId().getComponentIdentifier();
+		if (identifier instanceof ModuleComponentIdentifier moduleIdentifier) {
+			return "%s-%s-javadoc.jar".formatted(moduleIdentifier.getModule(), moduleIdentifier.getVersion());
+		}
+		return identifier.getDisplayName();
+	}
+
 	@Classpath
 	@InputFiles
 	public abstract ConfigurableFileCollection getResolvedBom();
 
-	@Classpath
 	@InputFiles
-	public abstract ConfigurableFileCollection getJavadocJars();
+	abstract ListProperty<File> getJavadocJarFiles();
+
+	@Input
+	abstract ListProperty<String> getJavadocJarNames();
 
 	@Override
 	protected void generate() {
@@ -147,11 +176,13 @@ public abstract class AggregatedJavadoc extends Javadoc {
 	}
 
 	private void extractJavdocListFiles(File javadocListsDir) {
-		getJavadocJars().forEach((javadocJar) -> {
-			FileCollection source = getProject().zipTree(javadocJar).filter(this::isJavadocListFile);
-			File destination = new File(javadocListsDir, javadocJar.getName());
+		List<File> files = getJavadocJarFiles().get();
+		List<String> names = getJavadocJarNames().get();
+		for (int i = 0; i < files.size(); i++) {
+			FileCollection source = getProject().zipTree(files.get(i)).filter(this::isJavadocListFile);
+			File destination = new File(javadocListsDir, names.get(i));
 			getProject().copy((copy) -> copy.from(source).into(destination));
-		});
+		}
 	}
 
 	private boolean isJavadocListFile(File file) {

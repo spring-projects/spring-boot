@@ -220,8 +220,8 @@ class BomResolver {
 	private void addOfflineJavadocLink(Map<URI, List<String>> offlineJavadocLinks, Link link, Object version,
 			Stream<String> moduleNames) {
 		URI uri = URI.create(link.url(new LinkedVersion(version)));
-		offlineJavadocLinks.computeIfAbsent(uri, (key) -> new ArrayList<>())
-			.addAll(moduleNames.map((name) -> "%s-%s-javadoc.jar".formatted(name, version)).toList());
+		List<String> jars = moduleNames.map((name) -> "%s-%s-javadoc.jar".formatted(name, version)).toList();
+		offlineJavadocLinks.computeIfAbsent(uri, (key) -> new ArrayList<>()).addAll(jars);
 	}
 
 	private static final class Node {
