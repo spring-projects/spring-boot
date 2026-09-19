@@ -4,10 +4,14 @@
 
 package org.springframework.boot.http.client;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.ProxySelector;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -31,15 +35,30 @@ import org.springframework.util.Assert;
  */
 public final class JdkHttpClientBuilder {
 
-	private final Consumer<HttpClient.Builder> customizer;
+	private static final Method builderProxyMethod;
 
-	private final ProxySelector proxySelector;
+	private static final Method builderCookieHandlerMethod;
 
-	public JdkHttpClientBuilder() {
-		this(Empty.consumer(), ProxySelector.getDefault());
+	static {
+		try {
+			builderProxyMethod = HttpClient.Builder.class.getDeclaredMethod("proxy", ProxySelector.class);
+			builderCookieHandlerMethod = HttpClient.Builder.class.getDeclaredMethod("cookieHandler",
+					CookieHandler.class);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
-	private JdkHttpClientBuilder(Consumer<HttpClient.Builder> customizer, ProxySelector proxySelector) {
+	private final Consumer<HttpClient.Builder> customizer;
+
+	private final @Nullable ProxySelector proxySelector;
+
+	public JdkHttpClientBuilder() {
+		this(Empty.consumer(), null);
+	}
+
+	private JdkHttpClientBuilder(Consumer<HttpClient.Builder> customizer, @Nullable ProxySelector proxySelector) {
 		this.customizer = customizer;
 		this.proxySelector = proxySelector;
 	}
@@ -86,16 +105,38 @@ public final class JdkHttpClientBuilder {
 	public HttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
-		HttpClient.Builder builder = HttpClient.newBuilder();
+		Builder builder = getBuilder(settings.inetAddressFilter());
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::cookieHandling).as(this::asCookieHandler).to(builder::cookieHandler);
 		map.from(settings::redirects).always().as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
-		map.from(proxySelector(settings.inetAddressFilter())).to(builder::proxy);
+		map.from(this.proxySelector).to(builder::proxy);
 		this.customizer.accept(builder);
 		return builder.build();
+	}
+
+	private HttpClient.Builder getBuilder(@Nullable InetAddressFilter inetAddressFilter) {
+		if (inetAddressFilter == null) {
+			return HttpClient.newBuilder();
+		}
+		HttpClient.Builder delegate = HttpClient.newBuilder();
+		UrlHostFilter urlHostFilter = new UrlHostFilter(inetAddressFilter);
+		InvocationHandler invocationHandler = (proxy, method, args) -> {
+			if (builderProxyMethod.equals(method)) {
+				args[0] = new JdkFilteredProxySelector((ProxySelector) args[0], urlHostFilter);
+			}
+			if (builderCookieHandlerMethod.equals(method)) {
+				args[0] = new JdkFilteredCookieHandler((CookieHandler) args[0], urlHostFilter);
+			}
+			return method.invoke(delegate, args);
+		};
+		HttpClient.Builder builder = (HttpClient.Builder) Proxy.newProxyInstance(getClass().getClassLoader(),
+				new Class<?>[] { HttpClient.Builder.class }, invocationHandler);
+		builder.proxy(ProxySelector.getDefault());
+		builder.cookieHandler(CookieHandler.getDefault());
+		return builder;
 	}
 
 	private SSLParameters asSslParameters(SslBundle sslBundle) {
@@ -121,10 +162,6 @@ public final class JdkHttpClientBuilder {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;
 		};
-	}
-
-	private @Nullable ProxySelector proxySelector(@Nullable InetAddressFilter filter) {
-		return (filter != null) ? new JdkFilteredProxySelector(this.proxySelector, filter) : this.proxySelector;
 	}
 
 }
