@@ -79,6 +79,10 @@ class SimpleClientHttpRequestFactoryBuilderTests
 			.withMessage("Simple HTTP request factory does not support InetAddress filtering");
 	}
 
+	@Override
+	void filteredInetAddressWhenRedirected() throws Exception {
+	}
+
 	@Test
 	void throwsWhenCookieHandlingEnabled() {
 		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactoryBuilder.simple()
