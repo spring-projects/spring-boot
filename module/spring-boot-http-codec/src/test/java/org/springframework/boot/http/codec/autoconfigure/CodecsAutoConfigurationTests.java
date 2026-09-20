@@ -27,6 +27,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.kotlinx.serialization.json.autoconfigure.KotlinxSerializationJsonAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -167,6 +168,15 @@ class CodecsAutoConfigurationTests {
 				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
 				assertThat(codecCustomizers).hasSize(3);
 				assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
+			});
+	}
+
+	@Test
+	void applyKotlinxSerializationJsonAutoConfigurationBeforeCodecsAutoConfiguration() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KotlinxSerializationJsonAutoConfiguration.class))
+			.run((context) -> {
+				Map<String, CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class);
+				assertThat(codecCustomizers).containsKey("kotlinxJsonCodecCustomizer");
 			});
 	}
 
