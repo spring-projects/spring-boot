@@ -223,6 +223,8 @@ If a javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] bean is defined, i
 Since the javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
 The auto-configuration ignores any other generic type.
 
+To expose asynchronous caches backed by Caffeine's javadoc:com.github.benmanes.caffeine.cache.AsyncCache[], adding support for `Cache.retrieve`, set configprop:spring.cache.caffeine.async[] to `true`.
+
 
 
 [[io.caching.provider.cache2k]]

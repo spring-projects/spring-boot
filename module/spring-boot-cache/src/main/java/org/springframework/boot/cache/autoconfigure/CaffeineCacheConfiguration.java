@@ -61,6 +61,7 @@ class CaffeineCacheConfiguration {
 			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
 			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+		cacheManager.setAsyncCacheMode(cacheProperties.getCaffeine().isAsync());
 		setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
 		cacheLoader.ifAvailable(cacheManager::setCacheLoader);
 		return cacheManager;
