@@ -33,6 +33,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.AbstractResource;
@@ -58,6 +59,7 @@ import org.springframework.web.context.support.ServletContextResourcePatternReso
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author DongHoon Lee
  */
 final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternResolver {
 
@@ -146,20 +148,33 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	private boolean isDeleted(Resource resource) {
-		for (Entry<String, ClassLoaderFile> entry : this.classLoaderFiles.getFileEntries()) {
-			try {
-				String name = entry.getKey();
-				ClassLoaderFile file = entry.getValue();
-				if (file.getKind() == Kind.DELETED && resource.exists()
-						&& resource.getURI().toString().endsWith(name)) {
+		String uri = null;
+		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
+			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
+				if (entry.getValue().getKind() != Kind.DELETED) {
+					continue;
+				}
+				if (uri == null) {
+					if (!resource.exists()) {
+						return false;
+					}
+					uri = getUri(resource);
+				}
+				if (uri.endsWith(entry.getKey())) {
 					return true;
 				}
 			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
-			}
 		}
 		return false;
+	}
+
+	private String getUri(Resource resource) {
+		try {
+			return resource.getURI().toString();
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
+		}
 	}
 
 	/**
