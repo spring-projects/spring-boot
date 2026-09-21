@@ -78,7 +78,6 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.util.ServletRequestPathUtils;
 import org.springframework.web.util.pattern.PathPattern;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -196,7 +195,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
 			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
-				new ServletWebOperationAdapter(operation, getPatternParser()));
+				new ServletWebOperationAdapter(operation));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
@@ -337,11 +336,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private final WebOperation operation;
 
-		private final @Nullable PathPatternParser patternParser;
-
-		ServletWebOperationAdapter(WebOperation operation, @Nullable PathPatternParser patternParser) {
+		ServletWebOperationAdapter(WebOperation operation) {
 			this.operation = operation;
-			this.patternParser = patternParser;
 		}
 
 		@Override
@@ -397,10 +393,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			Assert.state(this.patternParser != null, "'patternParser' must not be null");
-			String pattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-			Assert.state(pattern != null, "'pattern' must not be null");
-			PathPattern pathPattern = this.patternParser.parse(pattern);
+			PathPattern pathPattern = (PathPattern) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATH_PATTERN_ATTRIBUTE);
+			Assert.state(pathPattern != null, "'pathPattern' must not be null");
+
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
 					.extractPathWithinPattern(
@@ -408,6 +404,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 					.value();
 				return tokenizePathSegments(remainingSegments);
 			}
+
 			return tokenizePathSegments(pathPattern.toString());
 		}
 
