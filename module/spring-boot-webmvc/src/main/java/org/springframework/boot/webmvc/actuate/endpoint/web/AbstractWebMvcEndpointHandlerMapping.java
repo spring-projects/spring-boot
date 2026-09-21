@@ -397,10 +397,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			Assert.state(this.patternParser != null, "'patternParser' must not be null");
-			String pattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-			Assert.state(pattern != null, "'pattern' must not be null");
-			PathPattern pathPattern = this.patternParser.parse(pattern);
+			PathPattern pathPattern = (PathPattern) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATH_PATTERN_ATTRIBUTE);
+			Assert.state(pathPattern != null, "'pathPattern' must not be null");
+
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
 					.extractPathWithinPattern(
