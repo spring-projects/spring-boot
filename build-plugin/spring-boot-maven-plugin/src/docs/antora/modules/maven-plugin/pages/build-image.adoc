@@ -149,12 +149,12 @@ The following table summarizes the available parameters and their default values
 | `builder` +
 (`spring-boot.build-image.builder`)
 | Name of the builder image to use.
-| `paketobuildpacks/builder-noble-java-tiny:latest`
+| `paketobuildpacks/ubuntu-resolute-builder:latest`
 
 | `trustBuilder` +
 (`spring-boot.build-image.trustBuilder`)
 | Whether to treat the builder as {url-buildpacks-docs}/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
-| `true` if the builder is one of `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
+| `true` if the builder is one of `paketobuildpacks/ubuntu-resolute-builder`, `paketobuildpacks/ubuntu-resolute-builder-buildpackless`, `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
 
 | `imagePlatform` +
 (`spring-boot.build-image.imagePlatform`)
@@ -166,7 +166,7 @@ Refer to documentation of the builder being used to determine the image OS and a
 | `runImage` +
 (`spring-boot.build-image.runImage`)
 | Name of the run image to use.
-| No default value, indicating the run image specified in Builder metadata should be used.
+| `paketobuildpacks/ubuntu-resolute-run-tiny:latest` if `builder` is not set, otherwise the run image specified in Builder metadata.
 
 | `name` +
 (`spring-boot.build-image.imageName`)
@@ -270,6 +270,10 @@ Application contents will also be in this location in the generated image.
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
 You can override this behaviour as shown in the xref:build-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+
+NOTE: When `builder` is not set, the run image defaults to `paketobuildpacks/ubuntu-resolute-run-tiny:latest`, which contains a reduced set of system libraries and does not include a shell.
+If `builder` is set, the run image from the builder metadata is used.
+Applications that require a shell, or that depend upon a system library that is not present, should override the `runImage` parameter to use one that includes a shell and a broader set of system libraries, such as `paketobuildpacks/ubuntu-resolute-run:latest`.
 
 For more details, see also xref:build-image.adoc#build-image.examples[examples].
 

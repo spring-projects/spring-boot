@@ -175,9 +175,9 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT",
-				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2",
-				"--trustBuilder", "--runImage=paketobuildpacks/run-noble-tiny", "--createdDate=2020-07-01T12:34:56Z",
-				"--applicationDirectory=/application");
+				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4",
+				"--trustBuilder", "--runImage=paketobuildpacks/ubuntu-resolute-run-tiny",
+				"--createdDate=2020-07-01T12:34:56Z", "--applicationDirectory=/application");
 		BuildTask task = result.task(":bootBuildImage");
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -445,9 +445,9 @@ class BootBuildImageIntegrationTests {
 	void buildsImageOnLinuxArmWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
-		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4";
+		String runImage = "docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.4";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
@@ -489,9 +489,9 @@ class BootBuildImageIntegrationTests {
 	void failsWhenBuildingOnLinuxAmdWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
-		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4";
+		String runImage = "docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.4";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
@@ -579,8 +579,8 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.getOutput()).containsAnyOf(
-				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'",
-				"image with reference ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64 was found but its platform (linux/amd64) does not match the specified platform (linux/arm64)");
+				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'",
+				"image with reference ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4-amd64 was found but its platform (linux/amd64) does not match the specified platform (linux/arm64)");
 	}
 
 	private void writeMainClass() throws IOException {

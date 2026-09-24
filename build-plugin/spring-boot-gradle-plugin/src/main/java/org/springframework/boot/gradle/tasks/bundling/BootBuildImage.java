@@ -167,7 +167,8 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	/**
 	 * Returns the run image that will be included in the built image. When {@code null},
-	 * the run image bundled with the builder will be used.
+	 * a default run image is used if no builder has been configured, otherwise the run
+	 * image bundled with the builder is used.
 	 * @return the run image
 	 */
 	@Input

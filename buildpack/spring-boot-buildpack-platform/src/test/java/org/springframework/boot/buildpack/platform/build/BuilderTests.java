@@ -76,6 +76,9 @@ class BuilderTests {
 
 	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF);
 
+	private static final ImageReference DEFAULT_RUN_IMAGE = ImageReference
+		.of("docker.io/" + BuildRequest.DEFAULT_RUN_IMAGE_NAME + ":latest");
+
 	private static final ImageReference BASE_CNB = ImageReference.of("docker.io/cloudfoundry/run:base-cnb");
 
 	private static final ImageReference PLATFORM_CNB = ImageReference
@@ -125,7 +128,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
@@ -135,13 +138,53 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull());
+		then(docker.image()).should().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull());
 		then(docker.image()).should().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
 		ImageReference tag = archive.getValue().getTag();
 		assertThat(tag).isNotNull();
 		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
+	}
+
+	@Test
+	void shouldUseTinyRunImageWhenBuilderIsNotConfigured() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(DEFAULT_RUN_IMAGE), eq(ImagePlatform.from(builderImage)), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = BuildRequest.of(ImageReference.of("my-application"), (owner) -> mock(TarArchive.class))
+			.withTrustBuilder(true);
+		builder.build(request);
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should()
+			.pull(eq(DEFAULT_RUN_IMAGE), eq(ImagePlatform.from(builderImage)), any(), isNull());
+	}
+
+	@Test
+	void shouldUseConfiguredRunImageWhenBuilderIsNotConfigured() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		ImageReference customRunImage = ImageReference.of("example.com/custom/run:latest");
+		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(customRunImage), eq(ImagePlatform.from(builderImage)), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = BuildRequest.of(ImageReference.of("my-application"), (owner) -> mock(TarArchive.class))
+			.withTrustBuilder(true)
+			.withRunImage(customRunImage);
+		builder.build(request);
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should().pull(eq(customRunImage), eq(ImagePlatform.from(builderImage)), any(), isNull());
+		then(docker.image()).should(never()).pull(eq(DEFAULT_RUN_IMAGE), any(), any(), any());
 	}
 
 	@Test
@@ -155,7 +198,7 @@ class BuilderTests {
 		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration()
 			.withBuilderRegistryAuthentication(builderToken)
 			.withPublishRegistryAuthentication(publishToken);
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), regAuthEq(builderToken)))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), regAuthEq(builderToken)))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), regAuthEq(builderToken)))
 			.willAnswer(withPulledImage(runImage));
@@ -165,7 +208,8 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), isNull(), any(), regAuthEq(builderToken));
+		then(docker.image()).should()
+			.pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), regAuthEq(builderToken));
 		then(docker.image()).should()
 			.pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), regAuthEq(builderToken));
 		then(docker.image()).should().push(eq(request.getName()), any(), regAuthEq(publishToken));
@@ -206,7 +250,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image-with-run-image-digest.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference
@@ -253,7 +297,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference.of("example.com/custom/run:latest")), eq(ImagePlatform.from(builderImage)), any(),
@@ -277,11 +321,11 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER), any())).willReturn(builderImage);
+		given(docker.image().inspect(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), any())).willReturn(builderImage);
 		given(docker.image().inspect(eq(BASE_CNB), any())).willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.NEVER);
@@ -303,11 +347,11 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER))).willReturn(builderImage);
+		given(docker.image().inspect(eq(LATEST_PAKETO_BUILDPACKS_BUILDER))).willReturn(builderImage);
 		given(docker.image().inspect(eq(BASE_CNB))).willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.ALWAYS);
@@ -329,11 +373,11 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER), any()))
+		given(docker.image().inspect(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), any()))
 			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
 					null, null))
 			.willReturn(builderImage);
@@ -361,7 +405,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
@@ -390,7 +434,7 @@ class BuilderTests {
 		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration()
 			.withBuilderRegistryAuthentication(builderToken)
 			.withPublishRegistryAuthentication(publishToken);
-		ImageReference defaultBuilderImageReference = DEFAULT_BUILDER;
+		ImageReference defaultBuilderImageReference = LATEST_PAKETO_BUILDPACKS_BUILDER;
 		given(docker.image().pull(eq(defaultBuilderImageReference), isNull(), any(), regAuthEq(builderToken)))
 			.willAnswer(withPulledImage(builderImage));
 		ImageReference baseImageReference = BASE_CNB;
@@ -425,7 +469,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi(platform);
 		Image builderImage = loadImage("image-with-platform.json");
 		Image runImage = loadImage("run-image-with-platform.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), eq(platform), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(platform), any(), isNull())).willAnswer(withPulledImage(runImage));
 		given(docker.image().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull()))
@@ -436,7 +480,7 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull());
+		then(docker.image()).should().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), eq(platform), any(), isNull());
 		then(docker.image()).should().pull(eq(BASE_CNB), eq(platform), any(), isNull());
 		then(docker.image()).should().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
@@ -452,7 +496,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image-with-bad-stack.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
@@ -471,7 +515,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
@@ -487,7 +531,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), any(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), any(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), any(), any(), isNull())).willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
@@ -504,7 +548,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
@@ -550,7 +594,7 @@ class BuilderTests {
 	private BuildRequest getTestRequest() {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
-		return BuildRequest.of(name, (owner) -> content).withTrustBuilder(true);
+		return BuildRequest.of(name, (owner) -> content).withBuilder(PAKETO_BUILDPACKS_BUILDER).withTrustBuilder(true);
 	}
 
 	private Image loadImage(String name) throws IOException {

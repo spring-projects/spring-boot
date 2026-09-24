@@ -146,7 +146,8 @@ public class Builder {
 		if (request.getRunImage() != null) {
 			return request;
 		}
-		return request.withRunImage(getRunImageReference(metadata));
+		ImageReference defaultRunImage = request.getDefaultRunImage();
+		return request.withRunImage((defaultRunImage != null) ? defaultRunImage : getRunImageReference(metadata));
 	}
 
 	private ImageReference getRunImageReference(BuilderMetadata metadata) {

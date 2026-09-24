@@ -20,6 +20,6 @@ plugins {
 }
 
 bootBuildImage {
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4"
 	publish = true
 }
