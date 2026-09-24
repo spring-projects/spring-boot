@@ -28,7 +28,7 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
  * subclasses, such as
  * {@link org.springframework.security.provisioning.JdbcUserDetailsManager}.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  */
 class JdbcUserDetailsServiceDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {

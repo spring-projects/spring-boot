@@ -22,7 +22,7 @@ import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 /**
  * Configuration properties for the JDBC-backed registered client repository.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 @ConfigurationProperties("spring.security.oauth2.authorizationserver.client.jdbc")

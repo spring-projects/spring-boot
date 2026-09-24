@@ -28,7 +28,7 @@ import org.springframework.security.oauth2.server.authorization.client.JdbcRegis
  * {@link DependsOnDatabaseInitializationDetector} for Spring Authorization Server's
  * JDBC-backed services.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  */
 class OAuth2AuthorizationServerDependsOnDatabaseInitializationDetector
 		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {

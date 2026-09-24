@@ -1,9 +1,4 @@
 {
   "groups": [],
-  "properties": [
-    {
-      "name": "spring.security.jdbc.initialize-schema",
-      "defaultValue": "never"
-    }
-  ]
+  "properties": []
 }

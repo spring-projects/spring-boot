@@ -37,22 +37,32 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 /**
  * Tests for {@link SecurityJdbcAutoConfiguration}.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  */
 class SecurityJdbcAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, SecurityJdbcAutoConfiguration.class))
+		.withConfiguration(
+				AutoConfigurations.of(DataSourceAutoConfiguration.class, SecurityJdbcAutoConfiguration.class))
 		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	void byDefaultTheSchemaIsNotInitialized() {
+	void withAnEmbeddedDataSourceTheSchemaIsInitializedByDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBean(SecurityJdbcProperties.class).getInitializeSchema())
-				.isEqualTo(DatabaseInitializationMode.NEVER);
+				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+			assertThat(context).hasSingleBean(SecurityDataSourceScriptDatabaseInitializer.class);
+			assertThat(new JdbcTemplate(context.getBean(DataSource.class)).queryForList("select * from users"))
+				.isEmpty();
+		});
+	}
+
+	@Test
+	void whenInitializeSchemaIsNeverThenSchemaIsNotInitialized() {
+		this.contextRunner.withPropertyValues("spring.security.jdbc.initialize-schema=never").run((context) -> {
 			assertThat(context).doesNotHaveBean(SecurityDataSourceScriptDatabaseInitializer.class);
-			assertThatExceptionOfType(BadSqlGrammarException.class)
-				.isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class)).queryForList("select * from users"));
+			assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
+					() -> new JdbcTemplate(context.getBean(DataSource.class)).queryForList("select * from users"));
 		});
 	}
 
@@ -77,9 +87,8 @@ class SecurityJdbcAutoConfigurationTests {
 
 	@Test
 	void whenCustomSchemaIsConfiguredThenItIsUsed() {
-		this.contextRunner
-			.withPropertyValues("spring.security.jdbc.initialize-schema=always",
-					"spring.security.jdbc.schema=classpath:org/springframework/boot/security/jdbc/autoconfigure/custom-schema.sql")
+		this.contextRunner.withPropertyValues("spring.security.jdbc.initialize-schema=always",
+				"spring.security.jdbc.schema=classpath:org/springframework/boot/security/jdbc/autoconfigure/custom-schema.sql")
 			.run((context) -> assertThat(
 					new JdbcTemplate(context.getBean(DataSource.class)).queryForList("select * from custom_users"))
 				.isEmpty());
@@ -87,8 +96,7 @@ class SecurityJdbcAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoDataSourceThenAutoConfigurationBacksOff() {
-		new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SecurityJdbcAutoConfiguration.class))
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(SecurityJdbcAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(SecurityDataSourceScriptDatabaseInitializer.class));
 	}
 

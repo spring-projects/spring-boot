@@ -38,10 +38,11 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
  * Authorization Server's JDBC-backed services.
  * <p>
  * Only the schemas are initialized. The {@code JdbcRegisteredClientRepository},
- * {@code JdbcOAuth2AuthorizationService} and {@code JdbcOAuth2AuthorizationConsentService}
- * beans themselves are left to the application to declare.
+ * {@code JdbcOAuth2AuthorizationService} and
+ * {@code JdbcOAuth2AuthorizationConsentService} beans themselves are left to the
+ * application to declare.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)

@@ -96,8 +96,8 @@ Spring Boot can create those tables for you, using the schema scripts shipped by
 Note that Spring Boot only initializes the schema.
 The components themselves, such as javadoc:org.springframework.security.provisioning.JdbcUserDetailsManager[], are left for you to declare as beans.
 
-For the `users` and `authorities` tables, initialization is off by default, as those are common table names that may clash with your own schema.
-Enable it explicitly, as shown in the following example:
+If you use an embedded database, the `users` and `authorities` tables are created by default.
+You can also enable this for any database type, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -106,6 +106,8 @@ spring:
     jdbc:
       initialize-schema: "always"
 ----
+
+Because `users` and `authorities` are common table names, you may want to switch this off explicitly by setting `spring.security.jdbc.initialize-schema` to `never`.
 
 Spring Authorization Server's three tables are configured independently, so you can initialize only the ones you need:
 
@@ -126,7 +128,7 @@ spring:
             initialize-schema: "always"
 ----
 
-Unlike the `users` table, these default to `embedded`, so they are initialized automatically when an embedded database is in use.
+Each of these defaults to `embedded`, so they are initialized automatically when an embedded database is in use.
 
 
 

@@ -22,7 +22,7 @@ import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 /**
  * Configuration properties for the JDBC-backed OAuth2 authorization service.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 @ConfigurationProperties("spring.security.oauth2.authorizationserver.authorization.jdbc")

@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 /**
  * Tests for {@link OAuth2AuthorizationServerJdbcAutoConfiguration}.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  */
 class OAuth2AuthorizationServerJdbcAutoConfigurationTests {
 

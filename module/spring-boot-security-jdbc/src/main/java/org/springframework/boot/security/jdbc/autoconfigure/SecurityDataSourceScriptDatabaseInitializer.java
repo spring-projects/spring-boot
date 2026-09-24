@@ -25,7 +25,7 @@ import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabas
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Security user details
  * database. May be registered as a bean to override auto-configuration.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 public class SecurityDataSourceScriptDatabaseInitializer

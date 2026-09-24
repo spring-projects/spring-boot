@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link SecurityDataSourceScriptDatabaseInitializer}.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  */
 class SecurityDataSourceScriptDatabaseInitializerTests {
 

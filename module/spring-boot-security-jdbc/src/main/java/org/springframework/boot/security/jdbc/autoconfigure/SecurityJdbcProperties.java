@@ -18,12 +18,11 @@ package org.springframework.boot.security.jdbc.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
  * Configuration properties for JDBC-backed Spring Security user details.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 @ConfigurationProperties("spring.security.jdbc")
@@ -31,13 +30,6 @@ public class SecurityJdbcProperties extends DatabaseInitializationProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "security/core/userdetails/jdbc/users.ddl";
-
-	// Unlike other modules this defaults to NEVER. "users" and "authorities" are common
-	// table names, so creating them without being asked risks colliding with an
-	// application's own schema.
-	public SecurityJdbcProperties() {
-		setInitializeSchema(DatabaseInitializationMode.NEVER);
-	}
 
 	@Override
 	public String getDefaultSchemaLocation() {

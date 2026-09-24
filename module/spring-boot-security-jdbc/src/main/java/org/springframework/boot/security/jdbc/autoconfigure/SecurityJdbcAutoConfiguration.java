@@ -41,7 +41,7 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
  * {@link org.springframework.security.provisioning.JdbcUserDetailsManager} bean itself is
  * left to the application to declare.
  *
- * @author Chaitanya
+ * @author Chaitanya Pawar
  * @since 4.2.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
