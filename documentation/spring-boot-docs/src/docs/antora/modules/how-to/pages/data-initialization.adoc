@@ -87,6 +87,49 @@ You can also switch off the initialization explicitly by setting `spring.batch.j
 
 
 
+[[howto.data-initialization.security]]
+== Initialize a Spring Security Database
+
+Spring Security's JDBC-backed components store their state in SQL tables.
+Spring Boot can create those tables for you, using the schema scripts shipped by Spring Security.
+
+Note that Spring Boot only initializes the schema.
+The components themselves, such as javadoc:org.springframework.security.provisioning.JdbcUserDetailsManager[], are left for you to declare as beans.
+
+For the `users` and `authorities` tables, initialization is off by default, as those are common table names that may clash with your own schema.
+Enable it explicitly, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  security:
+    jdbc:
+      initialize-schema: "always"
+----
+
+Spring Authorization Server's three tables are configured independently, so you can initialize only the ones you need:
+
+[configprops,yaml]
+----
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          jdbc:
+            initialize-schema: "always"
+        authorization:
+          jdbc:
+            initialize-schema: "always"
+        consent:
+          jdbc:
+            initialize-schema: "always"
+----
+
+Unlike the `users` table, these default to `embedded`, so they are initialized automatically when an embedded database is in use.
+
+
+
 [[howto.data-initialization.migration-tool]]
 == Use a Higher-level Database Migration Tool
 
