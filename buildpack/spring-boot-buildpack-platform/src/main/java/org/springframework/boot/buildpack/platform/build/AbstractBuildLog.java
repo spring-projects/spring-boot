@@ -129,9 +129,9 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public void stackIdsDoNotMatch(String runImageStackId, String builderImageStackId) {
-		log("Warning: Run image stack '%s' does not match builder stack '%s'. Stack IDs are deprecated, but the images may not be compatible."
-			.formatted(runImageStackId, builderImageStackId));
+	public void distrosDoNotMatch(String runImageDistro, String builderImageDistro) {
+		log("Warning: Run image distribution '%s' does not match builder distribution '%s'. The images may not be compatible."
+			.formatted(runImageDistro, builderImageDistro));
 		log();
 	}
 

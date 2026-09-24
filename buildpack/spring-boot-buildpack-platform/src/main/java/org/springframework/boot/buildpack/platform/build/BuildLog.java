@@ -141,8 +141,21 @@ public interface BuildLog {
 	 * @param runImageStackId the stack ID of the run image
 	 * @param builderImageStackId the stack ID of the builder image
 	 * @since 4.0.9
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #distrosDoNotMatch(String, String)}. This method is no longer called.
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	default void stackIdsDoNotMatch(String runImageStackId, String builderImageStackId) {
+	}
+
+	/**
+	 * Log that the OS distribution of the run image does not match the OS distribution of
+	 * the builder image.
+	 * @param runImageDistro the OS distribution of the run image
+	 * @param builderImageDistro the OS distribution of the builder image
+	 * @since 4.2.0
+	 */
+	default void distrosDoNotMatch(String runImageDistro, String builderImageDistro) {
 	}
 
 	/**

@@ -120,7 +120,7 @@ public class Builder {
 			request = request.withRunImage(request.getRunImage().withDigest(runImage.getPrimaryDigest()));
 			runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage(), platform);
 		}
-		warnIfStackIdsDoNotMatch(runImage, builderImage);
+		warnIfDistrosDoNotMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
 		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, platform, builderMetadata,
@@ -160,11 +160,11 @@ public class Builder {
 		return ImageReference.of(runImageName).inTaggedOrDigestForm();
 	}
 
-	private void warnIfStackIdsDoNotMatch(Image runImage, Image builderImage) {
-		StackId runImageStackId = StackId.fromImage(runImage);
-		StackId builderImageStackId = StackId.fromImage(builderImage);
-		if (runImageStackId.hasId() && builderImageStackId.hasId() && !runImageStackId.equals(builderImageStackId)) {
-			this.log.stackIdsDoNotMatch(runImageStackId.toString(), builderImageStackId.toString());
+	private void warnIfDistrosDoNotMatch(Image runImage, Image builderImage) {
+		Distro runImageDistro = Distro.fromImage(runImage);
+		Distro builderImageDistro = Distro.fromImage(builderImage);
+		if (!runImageDistro.matches(builderImageDistro)) {
+			this.log.distrosDoNotMatch(runImageDistro.toString(), builderImageDistro.toString());
 		}
 	}
 

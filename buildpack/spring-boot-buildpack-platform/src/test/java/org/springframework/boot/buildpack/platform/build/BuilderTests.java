@@ -491,22 +491,25 @@ class BuilderTests {
 	}
 
 	@Test
-	void buildWhenStackIdDoesNotMatchLogsWarning() throws Exception {
-		TestPrintStream out = new TestPrintStream();
-		DockerApi docker = mockDockerApi();
-		Image builderImage = loadImage("image.json");
-		Image runImage = loadImage("run-image-with-bad-stack.json");
-		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
-			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
-			.willAnswer(withPulledImage(runImage));
-		Builder builder = new Builder(BuildLog.to(out), docker, null);
-		BuildRequest request = getTestRequest();
-		builder.build(request);
-		assertThat(out.toString()).contains(
-				"Warning: Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'io.buildpacks.stacks.bionic'");
-		assertThat(out.toString()).contains("Running creator");
-		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	void shouldNotWarnWhenStackIdsDifferWithoutDistro() throws Exception {
+		String output = buildWith("image.json", "run-image-with-bad-stack.json");
+		assertThat(output).doesNotContain("Warning");
+		assertThat(output).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void shouldNotWarnWhenStackIdsDifferButDistrosMatch() throws Exception {
+		String output = buildWith("image-with-distro.json", "run-image-with-same-distro.json");
+		assertThat(output).doesNotContain("Warning");
+		assertThat(output).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void shouldWarnWhenDistrosDoNotMatch() throws Exception {
+		String output = buildWith("image-with-distro.json", "run-image-with-other-distro.json");
+		assertThat(output).contains(
+				"Warning: Run image distribution 'ubuntu 24.04' does not match builder distribution 'ubuntu 26.04'");
+		assertThat(output).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
 	@Test
@@ -595,6 +598,20 @@ class BuilderTests {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
 		return BuildRequest.of(name, (owner) -> content).withBuilder(PAKETO_BUILDPACKS_BUILDER).withTrustBuilder(true);
+	}
+
+	private String buildWith(String builderImageName, String runImageName) throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage(builderImageName);
+		Image runImage = loadImage(runImageName);
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		builder.build(getTestRequest());
+		return out.toString();
 	}
 
 	private Image loadImage(String name) throws IOException {
