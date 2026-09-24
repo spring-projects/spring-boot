@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -164,33 +163,9 @@ public class Builder {
 	private void warnIfStackIdsDoNotMatch(Image runImage, Image builderImage) {
 		StackId runImageStackId = StackId.fromImage(runImage);
 		StackId builderImageStackId = StackId.fromImage(builderImage);
-		if (runImageStackId.hasId() && builderImageStackId.hasId() && !runImageStackId.equals(builderImageStackId)
-				&& !haveSameDistro(runImage, builderImage)) {
+		if (runImageStackId.hasId() && builderImageStackId.hasId() && !runImageStackId.equals(builderImageStackId)) {
 			this.log.stackIdsDoNotMatch(runImageStackId.toString(), builderImageStackId.toString());
 		}
-	}
-
-	private boolean haveSameDistro(Image runImage, Image builderImage) {
-		String runImageDistro = getDistro(runImage);
-		String builderImageDistro = getDistro(builderImage);
-		return runImageDistro != null && runImageDistro.equals(builderImageDistro);
-	}
-
-	private @Nullable String getDistro(Image image) {
-		Map<String, String> labels = image.getConfig().getLabels();
-		String name = getLabel(labels, "io.buildpacks.base.distro.name", "io.buildpacks.stack.distro.name");
-		String version = getLabel(labels, "io.buildpacks.base.distro.version", "io.buildpacks.stack.distro.version");
-		return (name != null && version != null) ? name + "@" + version : null;
-	}
-
-	private @Nullable String getLabel(Map<String, String> labels, String... keys) {
-		for (String key : keys) {
-			String value = labels.get(key);
-			if (StringUtils.hasText(value)) {
-				return value;
-			}
-		}
-		return null;
 	}
 
 	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, ImagePlatform platform,

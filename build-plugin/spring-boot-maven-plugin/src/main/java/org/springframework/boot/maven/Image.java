@@ -126,8 +126,10 @@ public class Image {
 	}
 
 	/**
-	 * The name of the run image to use to create the image.
-	 * @return the builder image name
+	 * The name of the run image to use to create the image. When {@code null}, a default
+	 * run image is used if no builder has been configured, otherwise the run image
+	 * bundled with the builder is used.
+	 * @return the run image name
 	 */
 	public @Nullable String getRunImage() {
 		return this.runImage;

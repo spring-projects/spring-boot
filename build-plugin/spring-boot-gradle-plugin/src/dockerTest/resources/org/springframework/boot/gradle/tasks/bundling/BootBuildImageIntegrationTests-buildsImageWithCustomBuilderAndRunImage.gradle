@@ -21,7 +21,7 @@ plugins {
 
 bootBuildImage {
 	imageName = "example/test-image-custom"
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
-	runImage = "paketobuildpacks/run-noble-tiny"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4"
+	runImage = "paketobuildpacks/ubuntu-resolute-run-tiny"
 	pullPolicy = "IF_NOT_PRESENT"
 }

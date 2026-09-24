@@ -24,7 +24,7 @@ if (project.hasProperty('applyWarPlugin')) {
 }
 
 bootBuildImage {
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4"
 	pullPolicy = "IF_NOT_PRESENT"
 	network = "none"
 }

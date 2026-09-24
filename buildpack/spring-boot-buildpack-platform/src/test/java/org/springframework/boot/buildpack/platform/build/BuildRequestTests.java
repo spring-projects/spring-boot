@@ -170,17 +170,40 @@ class BuildRequestTests {
 	}
 
 	@Test
-	void getDefaultRunImageWhenDefaultBuilderReturnsTinyRunImage() throws IOException {
+	void shouldUseDefaultRunImageWhenBuilderIsNotConfigured() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThat(request.getDefaultRunImage())
 			.hasToString("docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest");
 	}
 
 	@Test
-	void getDefaultRunImageWhenCustomBuilderReturnsNull() throws IOException {
+	void shouldNotUseDefaultRunImageWhenCustomBuilderIsConfigured() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 			.withBuilder(ImageReference.of("spring/builder"));
 		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
+	void shouldNotUseDefaultRunImageWhenDefaultBuilderIsConfigured() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withBuilder(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF));
+		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
+	void shouldNotUseDefaultRunImageWhenDefaultBuilderWithOtherTagIsConfigured() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withBuilder(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME + ":0.1.20"));
+		assertThat(request.getDefaultRunImage()).isNull();
+	}
+
+	@Test
+	void shouldUseDefaultRunImageWhenOtherRequestPropertiesChanged() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+			.withTrustBuilder(true)
+			.withPublish(true);
+		assertThat(request.getDefaultRunImage())
+			.hasToString("docker.io/paketobuildpacks/ubuntu-resolute-run-tiny:latest");
 	}
 
 	@Test

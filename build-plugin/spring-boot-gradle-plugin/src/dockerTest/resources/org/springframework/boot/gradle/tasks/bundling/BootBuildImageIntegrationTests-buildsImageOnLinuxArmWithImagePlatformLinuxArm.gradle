@@ -20,8 +20,8 @@ plugins {
 }
 
 bootBuildImage {
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
-	runImage = "paketobuildpacks/run-noble-tiny"
-	buildpacks = ["ghcr.io/spring-io/spring-boot-test-info:0.0.2"]
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.4"
+	runImage = "paketobuildpacks/ubuntu-resolute-run-tiny"
+	buildpacks = ["ghcr.io/spring-io/spring-boot-test-info:0.0.4"]
 	imagePlatform = "linux/arm64"
 }

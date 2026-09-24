@@ -77,7 +77,7 @@ class BuilderTests {
 	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF);
 
 	private static final ImageReference DEFAULT_RUN_IMAGE = ImageReference
-		.of("docker.io/" + BuildRequest.DEFAULT_BUILDER_RUN_IMAGE_NAME + ":latest");
+		.of("docker.io/" + BuildRequest.DEFAULT_RUN_IMAGE_NAME + ":latest");
 
 	private static final ImageReference BASE_CNB = ImageReference.of("docker.io/cloudfoundry/run:base-cnb");
 
@@ -148,7 +148,7 @@ class BuilderTests {
 	}
 
 	@Test
-	void buildWithDefaultBuilderUsesTinyRunImage() throws Exception {
+	void shouldUseTinyRunImageWhenBuilderIsNotConfigured() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
@@ -164,6 +164,27 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		then(docker.image()).should()
 			.pull(eq(DEFAULT_RUN_IMAGE), eq(ImagePlatform.from(builderImage)), any(), isNull());
+	}
+
+	@Test
+	void shouldUseConfiguredRunImageWhenBuilderIsNotConfigured() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		ImageReference customRunImage = ImageReference.of("example.com/custom/run:latest");
+		given(docker.image().pull(eq(DEFAULT_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(customRunImage), eq(ImagePlatform.from(builderImage)), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = BuildRequest.of(ImageReference.of("my-application"), (owner) -> mock(TarArchive.class))
+			.withTrustBuilder(true)
+			.withRunImage(customRunImage);
+		builder.build(request);
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should().pull(eq(customRunImage), eq(ImagePlatform.from(builderImage)), any(), isNull());
+		then(docker.image()).should(never()).pull(eq(DEFAULT_RUN_IMAGE), any(), any(), any());
 	}
 
 	@Test

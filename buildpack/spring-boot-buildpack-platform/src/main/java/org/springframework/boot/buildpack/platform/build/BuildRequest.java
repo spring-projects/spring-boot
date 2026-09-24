@@ -52,7 +52,7 @@ public class BuildRequest {
 
 	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
 
-	static final String DEFAULT_BUILDER_RUN_IMAGE_NAME = "paketobuildpacks/ubuntu-resolute-run-tiny";
+	static final String DEFAULT_RUN_IMAGE_NAME = "paketobuildpacks/ubuntu-resolute-run-tiny";
 
 	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
 			ImageReference.of("paketobuildpacks/ubuntu-resolute-builder"),
@@ -68,6 +68,9 @@ public class BuildRequest {
 			ImageReference.of("gcr.io/buildpacks/builder"), ImageReference.of("heroku/builder"));
 
 	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_REF);
+
+	private static final ImageReference DEFAULT_RUN_IMAGE = ImageReference.of(DEFAULT_RUN_IMAGE_NAME)
+		.inTaggedOrDigestForm();
 
 	private final ImageReference name;
 
@@ -550,22 +553,15 @@ public class BuildRequest {
 	}
 
 	/**
-	 * Return the run image that should be used by default when no run image has been
-	 * configured, or {@code null} if the builder's own default run image should be used.
-	 * The default builder uses a tiny run image, which does not include a shell, so that
-	 * the resulting application image stays small. Applications that need a shell should
-	 * configure a run image that includes one.
+	 * Return the run image that should be used when no run image has been configured, or
+	 * {@code null} if the run image from the builder metadata should be used.
 	 * @return the default run image or {@code null}
 	 */
 	@Nullable ImageReference getDefaultRunImage() {
-		if (isDefaultBuilder()) {
-			return ImageReference.of(DEFAULT_BUILDER_RUN_IMAGE_NAME).inTaggedOrDigestForm();
+		if (this.builder == DEFAULT_BUILDER) {
+			return DEFAULT_RUN_IMAGE;
 		}
 		return null;
-	}
-
-	private boolean isDefaultBuilder() {
-		return this.builder.getName().equals(DEFAULT_BUILDER.getName());
 	}
 
 	/**

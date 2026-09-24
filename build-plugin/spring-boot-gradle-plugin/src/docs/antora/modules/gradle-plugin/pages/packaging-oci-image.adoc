@@ -148,7 +148,7 @@ Refer to documentation of the builder being used to determine the image OS and a
 | `runImage`
 | `--runImage`
 | Name of the run image to use.
-| No default value, indicating the run image specified in Builder metadata should be used.
+| `paketobuildpacks/ubuntu-resolute-run-tiny:latest` if `builder` is not set, otherwise the run image specified in Builder metadata.
 
 | `imageName`
 | `--imageName`
@@ -263,7 +263,8 @@ NOTE: The plugin detects the target Java compatibility of the project using the 
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
 You can override this behavior as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
 
-NOTE: With the default builder `paketobuildpacks/ubuntu-resolute-builder:latest`, the run image defaults to `paketobuildpacks/ubuntu-resolute-run-tiny:latest`, which contains a reduced set of system libraries and does not include a shell.
+NOTE: When `builder` is not set, the run image defaults to `paketobuildpacks/ubuntu-resolute-run-tiny:latest`, which contains a reduced set of system libraries and does not include a shell.
+If `builder` is set, the run image from the builder metadata is used.
 Applications that require a shell to run a start script, as might be the case when the {url-gradle-docs-application-plugin}[`application` plugin] has been applied to generate a distribution zip archive, or that depend upon a system library that is not present, should override the `runImage` configuration to use one that includes a shell and a broader set of system libraries, such as `paketobuildpacks/ubuntu-resolute-run:latest`.
 
 
