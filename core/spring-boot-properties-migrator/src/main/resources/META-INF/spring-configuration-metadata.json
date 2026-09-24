@@ -1,0 +1,11 @@
+{
+  "properties": [
+    {
+      "name": "spring.tools.properties-migrator.fail",
+      "type": "org.springframework.boot.context.properties.migrator.PropertiesMigrationListener$Fail",
+      "description": "When the application should fail to start because of configuration keys that need to be migrated.",
+      "sourceType": "org.springframework.boot.context.properties.migrator.PropertiesMigrationListener",
+      "defaultValue": "never"
+    }
+  ]
+}
