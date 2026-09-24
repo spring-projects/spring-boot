@@ -1366,6 +1366,24 @@ class ConfigurationPropertiesTests {
 		assertThat(this.context.getBean(SetterBoundCustomListProperties.class).getValues()).containsExactly("a", "b");
 	}
 
+	@Test
+	void loadWhenBindingCollectionsShouldBeUnmodifiableByDefault() {
+		load(CollectionPropertiesConfiguration.class, "test.values=a,b", "test.map.key=value");
+		CollectionProperties bean = this.context.getBean(CollectionProperties.class);
+		assertThat(bean.getValues()).isUnmodifiable();
+		assertThat(bean.getMap()).isUnmodifiable();
+	}
+
+	@Test
+	void loadWhenMutableCollectionsTrueShouldBindMutableCollections() {
+		load(MutableCollectionsPropertiesConfiguration.class, "test.values=a,b", "test.map.key=value");
+		MutableCollectionsProperties bean = this.context.getBean(MutableCollectionsProperties.class);
+		bean.getValues().add("c");
+		bean.getMap().put("key2", "value2");
+		assertThat(bean.getValues()).containsExactly("a", "b", "c");
+		assertThat(bean.getMap()).containsEntry("key2", "value2");
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
 	}
@@ -3435,6 +3453,68 @@ class ConfigurationPropertiesTests {
 
 		CustomList(List<E> delegate) {
 			super(delegate);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(CollectionProperties.class)
+	static class CollectionPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class CollectionProperties {
+
+		private List<String> values = new ArrayList<>();
+
+		private Map<String, String> map = new HashMap<>();
+
+		List<String> getValues() {
+			return this.values;
+		}
+
+		void setValues(List<String> values) {
+			this.values = values;
+		}
+
+		Map<String, String> getMap() {
+			return this.map;
+		}
+
+		void setMap(Map<String, String> map) {
+			this.map = map;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(MutableCollectionsProperties.class)
+	static class MutableCollectionsPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(value = "test", mutableCollections = true)
+	static class MutableCollectionsProperties {
+
+		private List<String> values = new ArrayList<>();
+
+		private Map<String, String> map = new HashMap<>();
+
+		List<String> getValues() {
+			return this.values;
+		}
+
+		void setValues(List<String> values) {
+			this.values = values;
+		}
+
+		Map<String, String> getMap() {
+			return this.map;
+		}
+
+		void setMap(Map<String, String> map) {
+			this.map = map;
 		}
 
 	}
