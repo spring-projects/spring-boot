@@ -49,7 +49,7 @@ To enable that feature, add the following dependency to your project:
 </dependency>
 ----
 
-The configprop:spring.tools.properties-migrator.fail[] property controls whether migration warnings or errors cause the application to fail to start:
+The configprop:spring.properties.migrator.fail[] property controls whether migration warnings or errors cause the application to fail to start:
 
 * `never`: do not fail application startup because of migration warnings or errors (default).
 * `on-error`: fail when properties that are no longer supported are found.

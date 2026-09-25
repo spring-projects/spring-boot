@@ -61,37 +61,37 @@ class PropertiesMigrationListenerTests {
 	@Test
 	void failNeverWithRenamedKeyStarts() {
 		assertThatNoException().isThrownBy(() -> this.context = createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=never", "--logging.file=test.log"));
+			.run("--spring.properties.migrator.fail=never", "--logging.file=test.log"));
 	}
 
 	@Test
 	void failNeverWithUnsupportedKeyStarts() {
 		assertThatNoException().isThrownBy(() -> this.context = createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=never", "--spring.banner.image.width=10"));
+			.run("--spring.properties.migrator.fail=never", "--spring.banner.image.width=10"));
 	}
 
 	@Test
 	void failOnErrorWithRenamedKeyStarts() {
 		assertThatNoException().isThrownBy(() -> this.context = createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=on-error", "--logging.file=test.log"));
+			.run("--spring.properties.migrator.fail=on-error", "--logging.file=test.log"));
 	}
 
 	@Test
 	void failOnErrorWithUnsupportedKeyFails() {
 		assertThatIllegalStateException().isThrownBy(() -> createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=on-error", "--spring.banner.image.width=10"));
+			.run("--spring.properties.migrator.fail=on-error", "--spring.banner.image.width=10"));
 	}
 
 	@Test
 	void failOnWarningWithRenamedKeyFails() {
 		assertThatIllegalStateException().isThrownBy(() -> createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=on-warning", "--logging.file=test.log"));
+			.run("--spring.properties.migrator.fail=on-warning", "--logging.file=test.log"));
 	}
 
 	@Test
 	void failOnWarningWithUnsupportedKeyFails() {
 		assertThatIllegalStateException().isThrownBy(() -> createSampleApplication()
-			.run("--spring.tools.properties-migrator.fail=on-warning", "--spring.banner.image.width=10"));
+			.run("--spring.properties.migrator.fail=on-warning", "--spring.banner.image.width=10"));
 	}
 
 	private SpringApplication createSampleApplication() {

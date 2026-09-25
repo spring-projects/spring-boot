@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.migrator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.util.Assert;
 
 /**
  * An {@link ApplicationListener} that inspects the {@link ConfigurableEnvironment
@@ -49,7 +50,7 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 
 	private static final Log logger = LogFactory.getLog(PropertiesMigrationListener.class);
 
-	private static final String FAIL_PROPERTY = "spring.tools.properties-migrator.fail";
+	private static final String FAIL_PROPERTY = "spring.properties.migrator.fail";
 
 	private @Nullable PropertiesMigrationReport report;
 
@@ -67,10 +68,10 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getApplicationContext().getEnvironment();
+		Fail fail = Binder.get(environment).bind(FAIL_PROPERTY, Fail.class).orElse(Fail.NEVER);
 		PropertiesMigrationReport report = new PropertiesMigrationReporter(loadRepository(), environment).getReport();
 		this.report = report;
-		Fail fail = Binder.get(environment).bind(FAIL_PROPERTY, Fail.class).orElse(Fail.NEVER);
-		failIfNecessary(report, fail);
+		fail.check(report);
 	}
 
 	private ConfigurationMetadataRepository loadRepository() {
@@ -109,40 +110,36 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 		this.reported = true;
 	}
 
-	private void failIfNecessary(PropertiesMigrationReport report, Fail fail) {
-		if (shouldFail(report, fail)) {
-			throw new IllegalStateException("Found configuration keys that need to be migrated (%s=%s)"
-				.formatted(FAIL_PROPERTY, fail.name().toLowerCase(Locale.ROOT).replace('_', '-')));
-		}
-	}
-
-	private static boolean shouldFail(PropertiesMigrationReport report, Fail fail) {
-		return switch (fail) {
-			case NEVER -> false;
-			case ON_ERROR -> report.getErrorReport() != null;
-			case ON_WARNING -> report.getErrorReport() != null || report.getWarningReport() != null;
-		};
-	}
-
 	/**
 	 * Conditions under which property migration should cause application startup to fail.
 	 */
-	enum Fail {
+	public enum Fail {
 
 		/**
 		 * Do not fail application startup due to migration warnings or errors.
 		 */
-		NEVER,
+		NEVER((report) -> false),
 
 		/**
 		 * Fail application startup if the migration report contains errors.
 		 */
-		ON_ERROR,
+		ON_ERROR((report) -> report.getErrorReport() != null),
 
 		/**
 		 * Fail application startup if the migration report contains warnings or errors.
 		 */
-		ON_WARNING
+		ON_WARNING((report) -> report.getErrorReport() != null || report.getWarningReport() != null);
+
+		private final Predicate<PropertiesMigrationReport> predicate;
+
+		Fail(Predicate<PropertiesMigrationReport> predicate) {
+			this.predicate = predicate;
+		}
+
+		void check(PropertiesMigrationReport report) {
+			boolean failed = this.predicate.test(report);
+			Assert.state(!failed, "Found configuration keys that need to be migrated");
+		}
 
 	}
 
