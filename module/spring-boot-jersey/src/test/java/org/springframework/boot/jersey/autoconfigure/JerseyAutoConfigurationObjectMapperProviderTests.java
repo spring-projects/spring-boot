@@ -27,6 +27,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.xml.bind.annotation.XmlTransient;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,31 +90,31 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	public static class Message {
 
-		private String subject;
+		private @Nullable String subject;
 
-		private String body;
+		private @Nullable String body;
 
 		Message() {
 		}
 
-		Message(String subject, String body) {
+		Message(@Nullable String subject, @Nullable String body) {
 			this.subject = subject;
 			this.body = body;
 		}
 
-		public String getSubject() {
+		public @Nullable String getSubject() {
 			return this.subject;
 		}
 
-		public void setSubject(String subject) {
+		public void setSubject(@Nullable String subject) {
 			this.subject = subject;
 		}
 
-		public String getBody() {
+		public @Nullable String getBody() {
 			return this.body;
 		}
 
-		public void setBody(String body) {
+		public void setBody(@Nullable String body) {
 			this.body = body;
 		}
 

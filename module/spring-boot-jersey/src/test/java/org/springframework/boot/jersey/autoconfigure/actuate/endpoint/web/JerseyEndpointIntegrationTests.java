@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,9 +66,11 @@ class JerseyEndpointIntegrationTests {
 		getContextRunner(new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class })
 			.withPropertyValues("management.endpoints.web.discovery.enabled:false")
 			.run((context) -> {
-				int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-					.getWebServer()
-					.getPort();
+				WebServer webServer = context
+					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer();
+				assertThat(webServer).isNotNull();
+				int port = webServer.getPort();
 				WebTestClient client = WebTestClient.bindToServer()
 					.baseUrl("http://localhost:" + port)
 					.responseTimeout(Duration.ofMinutes(5))
@@ -86,9 +89,11 @@ class JerseyEndpointIntegrationTests {
 		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
 				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
 		contextRunner.run((context) -> {
-			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer()
-				.getPort();
+			WebServer webServer = context
+				.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+				.getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			WebTestClient client = WebTestClient.bindToServer()
 				.baseUrl("http://localhost:" + port)
 				.responseTimeout(Duration.ofMinutes(5))
@@ -102,9 +107,11 @@ class JerseyEndpointIntegrationTests {
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
 		getContextRunner(userConfigurations).run((context) -> {
-			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer()
-				.getPort();
+			WebServer webServer = context
+				.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+				.getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			WebTestClient client = WebTestClient.bindToServer()
 				.baseUrl("http://localhost:" + port)
 				.responseTimeout(Duration.ofMinutes(5))
