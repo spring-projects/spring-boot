@@ -413,3 +413,16 @@ include-code::MyService[]
 Or you can also define one as a javadoc:org.springframework.context.annotation.Bean[format=annotation] if you want to apply it to all auto-configured HTTP client builders:
 
 include-code::MyHttpClientConfiguration[]
+
+[NOTE]
+====
+The javadoc:org.springframework.boot.http.client.InetAddressFilter[] can only be used to filter requests that originate from your Spring Boot application.
+If your HTTP client is configured to use a proxy, for example if you're using the Jetty HTTP Client and configure a javadoc:org.eclipse.jetty.client.HttpProxy[], the filter will not restrict calls that the proxy makes on your behalf.
+
+This is due to the fact that the `InetAddressFilter` only filters IP addresses.
+When a proxy server is used, the requested host is sent as an HTTP header and the proxy server performs the IP resolution.
+The Spring Boot application may not be able to resolve the host, or may get a different IP address than the proxy server if the a load balancing DNS is being used.
+
+If you use a proxy, you should add the restrictions you need on the proxy server iteself.
+In your Spring Boot application, you can use an javadoc:org.springframework.boot.http.client.InetAddressFilter[] to ensure that only the proxy server can be reached.
+====
