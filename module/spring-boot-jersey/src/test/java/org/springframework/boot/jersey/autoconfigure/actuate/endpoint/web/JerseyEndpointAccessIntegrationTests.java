@@ -35,6 +35,7 @@ import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.http.HttpMethod;
@@ -139,9 +140,10 @@ class JerseyEndpointAccessIntegrationTests {
 	}
 
 	private WebTestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 			.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1))
 			.build();
