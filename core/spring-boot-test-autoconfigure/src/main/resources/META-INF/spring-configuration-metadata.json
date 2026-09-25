@@ -19,6 +19,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether the condition evaluation report should be printed when the ApplicationContext fails to start.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.test.xmltesters.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of XML testers is enabled.",
+      "defaultValue": "true"
     }
   ]
 }
