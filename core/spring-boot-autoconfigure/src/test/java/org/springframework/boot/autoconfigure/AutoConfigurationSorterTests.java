@@ -189,6 +189,38 @@ class AutoConfigurationSorterTests {
 	}
 
 	@Test
+	void orderIsStableForLargerMixedGraph() {
+		List<String> actual = getInPriorityOrder(LOWEST, HIGHEST, DEFAULT, A, A2, B, C, E, W, W2, X, Y, Z);
+		assertThat(actual).containsExactly(HIGHEST, C, E, W, W2, B, A, A2, Z, Y, X, DEFAULT, LOWEST);
+	}
+
+	@Test
+	void orderIsStableForLargerMixedGraphWithReversedInput() {
+		List<String> actual = getInPriorityOrder(Z, Y, X, W2, W, E, C, B, A2, A, DEFAULT, HIGHEST, LOWEST);
+		assertThat(actual).containsExactly(HIGHEST, C, E, W, W2, B, A, A2, Z, Y, X, DEFAULT, LOWEST);
+	}
+
+	@Test
+	void duplicateInputDoesNotChangeResult() {
+		List<String> actual = getInPriorityOrder(A, B, C, B, A, C);
+		assertThat(actual).containsExactly(C, B, A);
+	}
+
+	@Test
+	void transitivelyDiscoveredClassesAreNotIncludedInResult() {
+		List<String> actual = getInPriorityOrder(A, C);
+		assertThat(actual).containsExactly(C, A);
+	}
+
+	@Test
+	void cycleReportsSameClasses() {
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata,
+				REPLACEMENT_MAPPER);
+		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(A, B, C, D))
+			.withMessage("AutoConfigure cycle detected between " + D + " and " + A);
+	}
+
+	@Test
 	void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata,
 				REPLACEMENT_MAPPER);
