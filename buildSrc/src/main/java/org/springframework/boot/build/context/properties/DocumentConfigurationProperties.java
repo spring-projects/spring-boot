@@ -106,6 +106,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.ssl");
 		config.accept("spring.task");
 		config.accept("spring.threads");
+		config.accept("spring.properties");
 		config.accept("spring.validation");
 		config.accept("spring.mandatory-file-encoding");
 		config.accept("info");

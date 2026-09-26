@@ -49,6 +49,14 @@ To enable that feature, add the following dependency to your project:
 </dependency>
 ----
 
+The configprop:spring.properties.migrator.fail[] property controls whether migration warnings or errors cause the application to fail to start:
+
+* `never`: do not fail application startup because of migration warnings or errors (default).
+* `on-error`: fail when properties that are no longer supported are found.
+* `on-warning`: fail when properties that have been renamed or are no longer supported are found.
+
+Migration diagnostics are logged regardless of this setting.
+
 WARNING: Properties that are added late to the environment, such as when using javadoc:org.springframework.context.annotation.PropertySource[format=annotation], will not be taken into account.
 
 NOTE: Once you finish the migration, please make sure to remove this module from your project's dependencies.

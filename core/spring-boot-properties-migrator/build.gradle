@@ -16,6 +16,7 @@
 
 plugins {
 	id "java"
+	id "org.springframework.boot.configuration-metadata"
 	id "org.springframework.boot.deployed"
 }
 
