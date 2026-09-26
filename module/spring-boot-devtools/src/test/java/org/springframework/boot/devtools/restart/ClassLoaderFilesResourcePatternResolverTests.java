@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link ClassLoaderFilesResourcePatternResolver}.
@@ -50,6 +52,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author DongHoon Lee
  */
 class ClassLoaderFilesResourcePatternResolverTests {
 
@@ -88,6 +91,41 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
 		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
 		assertThat(resource).isInstanceOf(DeletedClassLoaderFileResource.class);
+	}
+
+	@Test
+	void getResourceWhenDeletedInAnotherSourceDirectoryShouldReturnDeletedResource(@TempDir File directory)
+			throws Exception {
+		File file = createFile(directory, "name.class");
+		this.files.addFile("one", "other.class", new ClassLoaderFile(Kind.ADDED, new byte[0]));
+		this.files.addFile("two", "name.class", new ClassLoaderFile(Kind.DELETED, null));
+		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
+		assertThat(resource).isInstanceOf(DeletedClassLoaderFileResource.class);
+	}
+
+	@Test
+	void getResourceWhenManyFilesAreDeletedShouldCheckResourceOnlyOnce() throws Exception {
+		Resource resource = mock(Resource.class);
+		given(resource.exists()).willReturn(true);
+		given(resource.getURI()).willReturn(URI.create("file:/app/classes/three.class"));
+		this.resolver = createResolverResolving("foo:some-file.txt", resource);
+		this.files.addFile("one", "one.class", new ClassLoaderFile(Kind.DELETED, null));
+		this.files.addFile("one", "two.class", new ClassLoaderFile(Kind.DELETED, null));
+		this.files.addFile("two", "three.class", new ClassLoaderFile(Kind.DELETED, null));
+		assertThat(this.resolver.getResource("foo:some-file.txt")).isInstanceOf(DeletedClassLoaderFileResource.class);
+		then(resource).should().exists();
+		then(resource).should().getURI();
+	}
+
+	@Test
+	void getResourceWhenNoFileIsDeletedShouldNotCheckResource() throws Exception {
+		Resource resource = mock(Resource.class);
+		this.resolver = createResolverResolving("foo:some-file.txt", resource);
+		this.files.addFile("one", "one.class", new ClassLoaderFile(Kind.ADDED, new byte[0]));
+		this.files.addFile("two", "two.class", new ClassLoaderFile(Kind.MODIFIED, new byte[0]));
+		assertThat(this.resolver.getResource("foo:some-file.txt")).isSameAs(resource);
+		then(resource).should(never()).exists();
+		then(resource).should(never()).getURI();
 	}
 
 	@Test
@@ -171,6 +209,12 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
 		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+	}
+
+	private ClassLoaderFilesResourcePatternResolver createResolverResolving(String location, Resource resource) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.addProtocolResolver(mockProtocolResolver(location, resource));
+		return new ClassLoaderFilesResourcePatternResolver(context, this.files);
 	}
 
 	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {
