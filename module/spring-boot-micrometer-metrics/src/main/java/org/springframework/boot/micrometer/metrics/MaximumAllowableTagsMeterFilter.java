@@ -63,7 +63,7 @@ public final class MaximumAllowableTagsMeterFilter implements MeterFilter {
 	 * @param maximumTagValues the total number of tag values that are allowable
 	 */
 	public MaximumAllowableTagsMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues) {
-		this(meterNamePrefix, tagKey, maximumTagValues, (String) null);
+		this(meterNamePrefix, tagKey, maximumTagValues, null);
 	}
 
 	/**
