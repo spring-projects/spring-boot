@@ -122,12 +122,26 @@ public class CacheProperties {
 		 */
 		private @Nullable String spec;
 
+		/**
+		 * Whether to expose asynchronous caches backed by Caffeine's AsyncCache, adding
+		 * support for Cache.retrieve.
+		 */
+		private boolean async;
+
 		public @Nullable String getSpec() {
 			return this.spec;
 		}
 
 		public void setSpec(@Nullable String spec) {
 			this.spec = spec;
+		}
+
+		public boolean isAsync() {
+			return this.async;
+		}
+
+		public void setAsync(boolean async) {
+			this.async = async;
 		}
 
 	}
