@@ -25,7 +25,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -224,6 +228,20 @@ public class Binder {
 	}
 
 	/**
+	 * Set whether bound collections and maps should remain mutable for the current bind
+	 * operation. This is an internal API used by
+	 * {@code ConfigurationPropertiesBinder} to support the
+	 * {@code mutableCollections} attribute of {@code @ConfigurationProperties}.
+	 * @param context the bind context
+	 * @param mutableCollections whether collections and maps should remain mutable
+	 */
+	public static void setMutableCollections(BindContext context, boolean mutableCollections) {
+		if (context instanceof Context binderContext) {
+			binderContext.setMutableCollections(mutableCollections);
+		}
+	}
+
+	/**
 	 * Bind the specified target {@link Class} using this binder's
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
@@ -402,7 +420,65 @@ public class Binder {
 			result = context.getConverter().convert(result, target);
 		}
 		handler.onFinish(name, target, context, result);
-		return context.getConverter().convert(result, target);
+		result = context.getConverter().convert(result, target);
+		return makeImmutableIfNeeded(result, target, context);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> @Nullable T makeImmutableIfNeeded(@Nullable Object result, Bindable<T> target, Context context) {
+		if (result == null || context.mutableCollections) {
+			return (T) result;
+		}
+		boolean isCollection = result instanceof Collection<?>;
+		boolean isMap = result instanceof Map<?, ?>;
+		if (!isCollection && !isMap) {
+			return (T) result;
+		}
+		Class<?> targetType = target.getType().resolve(Object.class);
+		if (isCollection && isImmutableCollectionTarget(targetType)) {
+			return (T) immutableCollection((Collection<?>) result);
+		}
+		if (isMap && isImmutableMapTarget(targetType)) {
+			return (T) immutableMap((Map<?, ?>) result);
+		}
+		return (T) result;
+	}
+
+	private boolean isImmutableCollectionTarget(Class<?> type) {
+		return Collection.class.equals(type) || List.class.equals(type) || Set.class.equals(type)
+				|| SortedSet.class.equals(type) || NavigableSet.class.equals(type);
+	}
+
+	private boolean isImmutableMapTarget(Class<?> type) {
+		return Map.class.equals(type) || SortedMap.class.equals(type) || NavigableMap.class.equals(type);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Collection<Object> immutableCollection(Collection<?> collection) {
+		if (collection instanceof NavigableSet<?> navigableSet) {
+			return Collections.unmodifiableNavigableSet((NavigableSet<Object>) navigableSet);
+		}
+		if (collection instanceof SortedSet<?> sortedSet) {
+			return Collections.unmodifiableSortedSet((SortedSet<Object>) sortedSet);
+		}
+		if (collection instanceof Set<?> set) {
+			return Collections.unmodifiableSet((Set<Object>) set);
+		}
+		if (collection instanceof List<?> list) {
+			return Collections.unmodifiableList((List<Object>) list);
+		}
+		return Collections.unmodifiableCollection((Collection<Object>) collection);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<Object, Object> immutableMap(Map<?, ?> map) {
+		if (map instanceof NavigableMap<?, ?> navigableMap) {
+			return Collections.unmodifiableNavigableMap((NavigableMap<Object, Object>) navigableMap);
+		}
+		if (map instanceof SortedMap<?, ?> sortedMap) {
+			return Collections.unmodifiableSortedMap((SortedMap<Object, Object>) sortedMap);
+		}
+		return Collections.unmodifiableMap((Map<Object, Object>) map);
 	}
 
 	private <T> @Nullable T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
@@ -591,6 +667,8 @@ public class Binder {
 
 		private @Nullable ConfigurationProperty configurationProperty;
 
+		private boolean mutableCollections;
+
 		private void increaseDepth() {
 			this.depth++;
 		}
@@ -641,6 +719,10 @@ public class Binder {
 
 		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
+		}
+
+		void setMutableCollections(boolean mutableCollections) {
+			this.mutableCollections = mutableCollections;
 		}
 
 		void clearConfigurationProperty() {

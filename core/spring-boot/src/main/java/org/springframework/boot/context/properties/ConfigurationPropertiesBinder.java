@@ -113,7 +113,7 @@ class ConfigurationPropertiesBinder {
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
 		BindHandler handler = getHandler();
-		handler = new ConfigurationPropertiesBindHandler(handler);
+		handler = new ConfigurationPropertiesBindHandler(handler, annotation.mutableCollections());
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -231,14 +231,20 @@ class ConfigurationPropertiesBinder {
 	 */
 	private static class ConfigurationPropertiesBindHandler extends AbstractBindHandler {
 
-		ConfigurationPropertiesBindHandler(BindHandler handler) {
+		private final boolean mutableCollections;
+
+		ConfigurationPropertiesBindHandler(BindHandler handler, boolean mutableCollections) {
 			super(handler);
+			this.mutableCollections = mutableCollections;
 		}
 
 		@Override
 		public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
-			return isConfigurationProperties(target.getType().resolve())
-					? target.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY) : target;
+			if (isConfigurationProperties(target.getType().resolve())) {
+				Binder.setMutableCollections(context, this.mutableCollections);
+				return target.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+			}
+			return target;
 		}
 
 		private boolean isConfigurationProperties(@Nullable Class<?> target) {

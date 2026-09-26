@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -24,7 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -223,8 +226,8 @@ class CollectionBinderTests {
 		existing.add(1000);
 		existing.add(1001);
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
-		assertThat(result).isExactlyInstanceOf(LinkedList.class);
 		assertThat(result).containsExactly(1);
+		assertThat(result).isUnmodifiable();
 	}
 
 	@Test
@@ -334,6 +337,138 @@ class CollectionBinderTests {
 		this.sources.add(source);
 		Set<String> result = this.binder.bind("foo.values", STRING_SET.withExistingValue(Collections.emptySet())).get();
 		assertThat(result).hasSize(3);
+	}
+
+	@Test
+	void bindToListShouldReturnUnmodifiableCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "1");
+		source.put("foo[1]", "2");
+		this.sources.add(source);
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
+		assertThat(result).containsExactly(1, 2);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add(3));
+	}
+
+	@Test
+	void bindToSetShouldReturnUnmodifiableCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "a");
+		source.put("foo[1]", "b");
+		this.sources.add(source);
+		Set<String> result = this.binder.bind("foo", STRING_SET).get();
+		assertThat(result).containsExactly("a", "b");
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add("c"));
+	}
+
+	@Test
+	void bindToConcreteCollectionTypeShouldReturnModifiableCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "1");
+		this.sources.add(source);
+		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class, Integer.class);
+		@SuppressWarnings("unchecked")
+		LinkedList<Integer> result = (LinkedList<Integer>) this.binder.bind("foo", Bindable.of(type)).get();
+		assertThat(result).containsExactly(1);
+		result.add(2);
+		assertThat(result).containsExactly(1, 2);
+	}
+
+	@Test
+	void bindToNestedCollectionShouldReturnUnmodifiableInnerCollections() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0][0]", "1");
+		source.put("foo[0][1]", "2");
+		this.sources.add(source);
+		Bindable<List<List<Integer>>> target = Bindable
+			.of(ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
+		List<List<Integer>> result = this.binder.bind("foo", target).get();
+		assertThat(result).hasSize(1);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.get(0).add(3));
+	}
+
+	@Test
+	void bindToNavigableSetShouldReturnUnmodifiableNavigableSet() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "b");
+		source.put("foo[1]", "a");
+		source.put("foo[2]", "c");
+		this.sources.add(source);
+		Bindable<NavigableSet<String>> target = Bindable
+			.of(ResolvableType.forClassWithGenerics(NavigableSet.class, String.class));
+		NavigableSet<String> result = this.binder.bind("foo", target).get();
+		assertThat(result).containsExactly("a", "b", "c");
+		assertThat(result).isInstanceOf(NavigableSet.class);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add("d"));
+	}
+
+	@Test
+	void bindToCollectionInterfaceShouldReturnUnmodifiableCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "1");
+		source.put("foo[1]", "2");
+		this.sources.add(source);
+		Bindable<Collection<Integer>> target = Bindable
+			.of(ResolvableType.forClassWithGenerics(Collection.class, Integer.class));
+		Collection<Integer> result = this.binder.bind("foo", target).get();
+		assertThat(result).containsExactly(1, 2);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add(3));
+	}
+
+	@Test
+	void bindToEmptyListShouldReturnUnmodifiableEmptyList() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "");
+		this.sources.add(source);
+		List<String> result = this.binder.bind("foo", STRING_LIST).get();
+		assertThat(result).isEmpty();
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add("a"));
+	}
+
+	@Test
+	void bindToSortedSetShouldReturnUnmodifiableSortedSet() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "b");
+		source.put("foo[1]", "a");
+		this.sources.add(source);
+		Bindable<java.util.SortedSet<String>> target = Bindable
+			.of(ResolvableType.forClassWithGenerics(java.util.SortedSet.class, String.class));
+		java.util.SortedSet<String> result = this.binder.bind("foo", target).get();
+		assertThat(result).containsExactly("a", "b");
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.add("c"));
+	}
+
+	@Test
+	void bindToJavaBeanWithUninitializedCollectionShouldBindImmutable() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items[0]", "a");
+		source.put("foo.items[1]", "b");
+		source.put("foo.mappings.key1", "value1");
+		this.sources.add(source);
+		BeanWithUninitializedCollection result = this.binder.bind("foo", BeanWithUninitializedCollection.class).get();
+		List<String> items = result.getItems();
+		Map<String, String> mappings = result.getMappings();
+		assertThat(items).isNotNull();
+		assertThat(mappings).isNotNull();
+		assertThat(items).containsExactly("a", "b");
+		assertThat(mappings).containsEntry("key1", "value1");
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> items.add("c"));
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> mappings.put("key2", "value2"));
+	}
+
+	@Test
+	void bindToRecordWithCollectionShouldBindImmutable() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items[0]", "a");
+		source.put("foo.items[1]", "b");
+		source.put("foo.mappings.key1", "value1");
+		this.sources.add(source);
+		RecordWithCollection result = this.binder.bind("foo", RecordWithCollection.class).get();
+		assertThat(result.items()).containsExactly("a", "b");
+		assertThat(result.mappings()).containsEntry("key1", "value1");
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.items().add("c"));
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> result.mappings().put("key2", "value2"));
 	}
 
 	@Test
@@ -652,6 +787,34 @@ class CollectionBinderTests {
 	}
 
 	record BeanWithCamelCaseNameList(List<Name> theNames) {
+
+	}
+
+	static class BeanWithUninitializedCollection {
+
+		private @Nullable List<String> items;
+
+		private @Nullable Map<String, String> mappings;
+
+		@Nullable List<String> getItems() {
+			return this.items;
+		}
+
+		void setItems(@Nullable List<String> items) {
+			this.items = items;
+		}
+
+		@Nullable Map<String, String> getMappings() {
+			return this.mappings;
+		}
+
+		void setMappings(@Nullable Map<String, String> mappings) {
+			this.mappings = mappings;
+		}
+
+	}
+
+	record RecordWithCollection(List<String> items, Map<String, String> mappings) {
 
 	}
 
