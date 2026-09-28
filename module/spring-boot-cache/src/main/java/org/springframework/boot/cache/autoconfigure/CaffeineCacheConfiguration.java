@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.cache.autoconfigure.CacheProperties.Caffeine.CacheMode;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -61,14 +62,18 @@ class CaffeineCacheConfiguration {
 			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
 			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-		setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
+		CacheProperties.Caffeine caffeineProperties = cacheProperties.getCaffeine();
+		if (caffeineProperties.getCacheMode() == CacheMode.ASYNC) {
+			cacheManager.setAsyncCacheMode(true);
+		}
+		setCacheBuilder(caffeineProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
 		cacheLoader.ifAvailable(cacheManager::setCacheLoader);
 		return cacheManager;
 	}
 
-	private void setCacheBuilder(CacheProperties cacheProperties, @Nullable CaffeineSpec caffeineSpec,
+	private void setCacheBuilder(CacheProperties.Caffeine caffeineProperties, @Nullable CaffeineSpec caffeineSpec,
 			@Nullable Caffeine<Object, Object> caffeine, CaffeineCacheManager cacheManager) {
-		String specification = cacheProperties.getCaffeine().getSpec();
+		String specification = caffeineProperties.getSpec();
 		if (StringUtils.hasText(specification)) {
 			cacheManager.setCacheSpecification(specification);
 		}

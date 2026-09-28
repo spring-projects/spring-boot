@@ -117,10 +117,23 @@ public class CacheProperties {
 	public static class Caffeine {
 
 		/**
+		 * Mode to use for configured cache names or caches created on demand.
+		 */
+		private CacheMode cacheMode = CacheMode.NATIVE;
+
+		/**
 		 * The spec to use to create caches. See CaffeineSpec for more details on the spec
 		 * format.
 		 */
 		private @Nullable String spec;
+
+		public CacheMode getCacheMode() {
+			return this.cacheMode;
+		}
+
+		public void setCacheMode(CacheMode cacheMode) {
+			this.cacheMode = cacheMode;
+		}
 
 		public @Nullable String getSpec() {
 			return this.spec;
@@ -128,6 +141,21 @@ public class CacheProperties {
 
 		public void setSpec(@Nullable String spec) {
 			this.spec = spec;
+		}
+
+		public enum CacheMode {
+
+			/**
+			 * Use regular caches backed by Caffeine's Cache.
+			 */
+			NATIVE,
+
+			/**
+			 * Use asynchronous caches backed by Caffeine's AsyncCache, adding support for
+			 * Cache.retrieve.
+			 */
+			ASYNC
+
 		}
 
 	}
