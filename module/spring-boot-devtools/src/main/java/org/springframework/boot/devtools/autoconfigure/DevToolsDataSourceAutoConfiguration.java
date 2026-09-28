@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.3
  */
-@ConditionalOnClass(DataSource.class)
+@ConditionalOnClass({ DataSource.class, DataSourceProperties.class })
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsDataSourceCondition.class)
 @AutoConfiguration(afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
