@@ -151,29 +151,29 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		String uri = null;
 		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
 			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
-				if (entry.getValue().getKind() != Kind.DELETED) {
-					continue;
-				}
-				if (uri == null) {
-					if (!resource.exists()) {
-						return false;
+				ClassLoaderFile file = entry.getValue();
+				if (file.getKind() == Kind.DELETED) {
+					if (uri == null) {
+						uri = resolveUri(resource);
 					}
-					uri = getUri(resource);
-				}
-				if (uri.endsWith(entry.getKey())) {
-					return true;
+					if (uri != null && uri.endsWith(entry.getKey())) {
+						return true;
+					}
 				}
 			}
 		}
 		return false;
 	}
 
-	private String getUri(Resource resource) {
+	private @Nullable String resolveUri(Resource resource) {
+		if (!resource.exists()) {
+			return null;
+		}
 		try {
 			return resource.getURI().toString();
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
+			throw new IllegalStateException("Failed to resolve URI from '" + resource + "'", ex);
 		}
 	}
 
