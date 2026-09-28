@@ -393,10 +393,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			PathPattern pathPattern = (PathPattern) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATH_PATTERN_ATTRIBUTE);
-			Assert.state(pathPattern != null, "'pathPattern' must not be null");
-
+			PathPattern pathPattern = getPathPattern(request);
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
 					.extractPathWithinPattern(
@@ -404,8 +401,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 					.value();
 				return tokenizePathSegments(remainingSegments);
 			}
-
 			return tokenizePathSegments(pathPattern.toString());
+		}
+
+		private PathPattern getPathPattern(HttpServletRequest request) {
+			PathPattern pathPattern = (PathPattern) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATH_PATTERN_ATTRIBUTE);
+			Assert.state(pathPattern != null, "'pathPattern' must not be null");
+			return pathPattern;
 		}
 
 		private String[] tokenizePathSegments(String value) {
