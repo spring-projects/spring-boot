@@ -86,7 +86,7 @@ public enum PeriodStyle {
 		@Override
 		public String print(Period value, @Nullable ChronoUnit unit) {
 			if (value.isZero()) {
-				return "0" + Unit.fromChronoUnit(unit).suffix;
+				return Unit.fromChronoUnit(unit).print(value);
 			}
 			StringBuilder result = new StringBuilder();
 			append(result, value, Unit.YEARS);
@@ -263,10 +263,13 @@ public enum PeriodStyle {
 		}
 
 		private boolean isZero(Period value) {
-			return intValue(value) == 0;
+			return value.isZero() || intValue(value) == 0;
 		}
 
 		private int intValue(Period value) {
+			if (value.isZero()) {
+				return 0;
+			}
 			Assert.state(this.intValue != null, () -> "intValue cannot be extracted from " + name());
 			return this.intValue.apply(value);
 		}
