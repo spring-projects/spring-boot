@@ -349,7 +349,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	static void addBean(FormatterRegistry registry, Object bean, @Nullable ResolvableType beanType) {
 		if (bean instanceof GenericConverter converterBean) {
-			addBean(registry, converterBean, beanType, GenericConverter.class, registry::addConverter, (Runnable) null);
+			addBean(registry, converterBean, beanType, GenericConverter.class, registry::addConverter, null);
 		}
 		else if (bean instanceof Converter<?, ?> converterBean) {
 			Assert.state(beanType != null, "beanType is missing");
