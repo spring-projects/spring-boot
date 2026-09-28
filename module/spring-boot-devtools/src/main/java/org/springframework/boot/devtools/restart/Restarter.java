@@ -371,8 +371,9 @@ public class Restarter {
 		}
 	}
 
-	private boolean isFromRestartClassLoader(Object object) {
-		return (object instanceof Class<?> cls && cls.getClassLoader() instanceof RestartClassLoader);
+	private boolean isFromRestartClassLoader(Object candidate) {
+		return (candidate instanceof Class<?> candidateClass
+				&& candidateClass.getClassLoader() instanceof RestartClassLoader);
 	}
 
 	/**
