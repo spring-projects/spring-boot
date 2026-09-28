@@ -20,8 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -38,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
@@ -51,7 +48,7 @@ import static org.mockito.Mockito.spy;
  *
  * @author Andy Wilkinson
  */
-abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
+abstract class AbstractDevToolsDataSourceAutoConfigurationTests extends AbstractDevToolsAutoConfigurationTests {
 
 	@Test
 	void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
@@ -92,20 +89,6 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		willReturn(connection).given(dataSource).getConnection();
 		given(connection.createStatement()).willReturn(statement);
 		return statement;
-	}
-
-	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)
-			throws Exception {
-		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
-		Thread thread = new Thread(() -> {
-			ConfigurableApplicationContext context = supplier.get();
-			atomicReference.getAndSet(context);
-		});
-		thread.start();
-		thread.join();
-		ConfigurableApplicationContext context = atomicReference.get();
-		assertThat(context).isNotNull();
-		return context;
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {

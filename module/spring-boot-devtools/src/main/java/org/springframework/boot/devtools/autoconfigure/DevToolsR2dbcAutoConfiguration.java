@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.5.6
  */
-@ConditionalOnClass(ConnectionFactory.class)
+@ConditionalOnClass({ ConnectionFactory.class, R2dbcAutoConfiguration.class })
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsConnectionFactoryCondition.class)
 @AutoConfiguration(afterName = "org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration")
