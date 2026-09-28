@@ -77,34 +77,35 @@ class AutoConfigurationSorter {
 			return Integer.compare(i1, i2);
 		});
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
-		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
+		orderedClassNames = sortByAnnotation(new LinkedHashSet<>(orderedClassNames), classes);
 		return orderedClassNames;
 	}
 
-	private List<String> sortByAnnotation(AutoConfigurationClasses classes, List<String> classNames) {
-		List<String> toSort = new ArrayList<>(classNames);
-		toSort.addAll(classes.getAllNames());
+	private List<String> sortByAnnotation(Set<String> classNames, AutoConfigurationClasses classes) {
+		Map<String, Integer> sortOrder = new LinkedHashMap<>();
+		classNames.forEach((className) -> sortOrder.putIfAbsent(className, sortOrder.size()));
+		classes.getAllNames().forEach((className) -> sortOrder.putIfAbsent(className, sortOrder.size()));
 		Set<String> sorted = new LinkedHashSet<>();
 		Set<String> processing = new LinkedHashSet<>();
-		while (!toSort.isEmpty()) {
-			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
+		for (String className : sortOrder.keySet()) {
+			doSortByAfterAnnotation(classes, sortOrder, sorted, processing, className);
 		}
 		sorted.retainAll(classNames);
 		return new ArrayList<>(sorted);
 	}
 
-	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, List<String> toSort, Set<String> sorted,
-			Set<String> processing, @Nullable String current) {
-		if (current == null) {
-			current = toSort.remove(0);
+	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, Map<String, Integer> sortOrder,
+			Set<String> sorted, Set<String> processing, String current) {
+		if (sorted.contains(current)) {
+			return;
 		}
 		processing.add(current);
-		Set<String> afters = new TreeSet<>(Comparator.comparing(toSort::indexOf));
+		Set<String> afters = new TreeSet<>(Comparator.comparingInt((String name) -> sortOrder.getOrDefault(name, -1)));
 		afters.addAll(classes.getClassesRequestedAfter(current));
 		for (String after : afters) {
 			checkForCycles(processing, current, after);
-			if (!sorted.contains(after) && toSort.contains(after)) {
-				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
+			if (sortOrder.containsKey(after)) {
+				doSortByAfterAnnotation(classes, sortOrder, sorted, processing, after);
 			}
 		}
 		processing.remove(current);
@@ -119,6 +120,8 @@ class AutoConfigurationSorter {
 	private class AutoConfigurationClasses {
 
 		private final Map<String, AutoConfigurationClass> classes = new LinkedHashMap<>();
+
+		private final Map<String, Set<String>> classesRequestedAfter = new LinkedHashMap<>();
 
 		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				@Nullable AutoConfigurationMetadata autoConfigurationMetadata, Collection<String> classNames) {
@@ -141,8 +144,12 @@ class AutoConfigurationSorter {
 						this.classes.put(className, autoConfigurationClass);
 					}
 					if (available) {
-						addToClasses(metadataReaderFactory, autoConfigurationMetadata,
-								autoConfigurationClass.getBefore(), false);
+						Set<String> before = autoConfigurationClass.getBefore();
+						for (String name : before) {
+							this.classesRequestedAfter.computeIfAbsent(name, (key) -> new LinkedHashSet<>())
+								.add(className);
+						}
+						addToClasses(metadataReaderFactory, autoConfigurationMetadata, before, false);
 						addToClasses(metadataReaderFactory, autoConfigurationMetadata,
 								autoConfigurationClass.getAfter(), false);
 					}
@@ -158,11 +165,7 @@ class AutoConfigurationSorter {
 
 		Set<String> getClassesRequestedAfter(String className) {
 			Set<String> classesRequestedAfter = new LinkedHashSet<>(get(className).getAfter());
-			this.classes.forEach((name, autoConfigurationClass) -> {
-				if (autoConfigurationClass.getBefore().contains(className)) {
-					classesRequestedAfter.add(name);
-				}
-			});
+			classesRequestedAfter.addAll(this.classesRequestedAfter.getOrDefault(className, Collections.emptySet()));
 			return classesRequestedAfter;
 		}
 
