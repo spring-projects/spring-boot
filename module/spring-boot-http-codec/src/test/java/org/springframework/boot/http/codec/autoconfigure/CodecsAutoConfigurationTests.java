@@ -27,6 +27,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration.KotlinxSerializationJsonCodecConfiguration;
+import org.springframework.boot.kotlinx.serialization.json.autoconfigure.KotlinxSerializationJsonAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -157,6 +159,17 @@ class CodecsAutoConfigurationTests {
 			.run((context) -> {
 				KotlinSerializationJsonEncoder encoder = findEncoder(context, KotlinSerializationJsonEncoder.class);
 				assertThat(encoder.canEncode(ResolvableType.forClass(Map.class), MediaType.APPLICATION_JSON)).isTrue();
+			});
+	}
+
+	@Test
+	void kotlinSerializationAppliesKotlinxJsonCodecCustomizer() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KotlinxSerializationJsonAutoConfiguration.class))
+			.run((context) -> {
+				String kotlinJsonCodeCustomizerBeanName = "kotlinxJsonCodecCustomizer";
+				assertThat(context).hasSingleBean(KotlinxSerializationJsonCodecConfiguration.class)
+					.hasBean(kotlinJsonCodeCustomizerBeanName);
+				assertThat(context.getBean(kotlinJsonCodeCustomizerBeanName)).isInstanceOf(CodecCustomizer.class);
 			});
 	}
 
