@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.R2dbcDatabaseShutdownEvent;
 import org.springframework.boot.r2dbc.SimpleConnectionFactoryProvider.SimpleTestConnectionFactory;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
@@ -40,6 +42,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -163,6 +166,35 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 	@Nested
 	class Pooled extends Common {
+
+	}
+
+	@Nested
+	@ClassPathExclusions(packages = "org.springframework.boot.r2dbc.autoconfigure")
+	class WithoutSpringBootR2dbc {
+
+		@Test
+		void backsOffWithSingleManuallyConfiguredConnectionFactory() throws Exception {
+			// DevTools is disabled when JUnit is on the stack so refresh on a new thread
+			FutureTask<ConfigurableApplicationContext> task = new FutureTask<>(() -> {
+				AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+				context.register(SingleConnectionFactoryWithDevToolsConfiguration.class);
+				context.refresh();
+				return context;
+			});
+			new Thread(task).start();
+			try (ConfigurableApplicationContext context = task.get()) {
+				assertThat(context.getBeansOfType(ConnectionFactory.class)).hasSize(1);
+				assertThat(context.containsBean("inMemoryR2dbcDatabaseShutdownExecutor")).isFalse();
+			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(SingleConnectionFactoryConfiguration.class)
+	@ImportAutoConfiguration(DevToolsR2dbcAutoConfiguration.class)
+	static class SingleConnectionFactoryWithDevToolsConfiguration {
 
 	}
 
