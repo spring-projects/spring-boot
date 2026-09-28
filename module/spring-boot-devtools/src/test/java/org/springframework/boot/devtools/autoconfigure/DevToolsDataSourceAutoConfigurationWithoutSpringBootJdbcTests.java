@@ -16,15 +16,14 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import java.util.concurrent.FutureTask;
-
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.NonEmbeddedInMemoryDatabaseShutdownExecutor;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,21 +38,14 @@ import static org.mockito.Mockito.mock;
  * @author Kosuke Yanagihara
  */
 @ClassPathExclusions(packages = "org.springframework.boot.jdbc.autoconfigure")
-class DevToolsDataSourceAutoConfigurationWithoutSpringBootJdbcTests {
+class DevToolsDataSourceAutoConfigurationWithoutSpringBootJdbcTests extends AbstractDevToolsAutoConfigurationTests {
 
 	@Test
 	void backsOffWithSingleManuallyConfiguredDataSource() throws Exception {
-		// DevTools is disabled when JUnit is on the stack so refresh on a new thread
-		FutureTask<ConfigurableApplicationContext> task = new FutureTask<>(() -> {
-			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-			context.register(SingleDataSourceConfiguration.class);
-			context.refresh();
-			return context;
-		});
-		new Thread(task).start();
-		try (ConfigurableApplicationContext context = task.get()) {
-			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
-			assertThat(context.containsBean("inMemoryDatabaseShutdownExecutor")).isFalse();
+		try (AssertableApplicationContext context = getContext(
+				() -> new AnnotationConfigApplicationContext(SingleDataSourceConfiguration.class))) {
+			assertThat(context).hasSingleBean(DataSource.class)
+				.doesNotHaveBean(NonEmbeddedInMemoryDatabaseShutdownExecutor.class);
 		}
 	}
 
