@@ -177,8 +177,7 @@ public class Binder {
 			@Nullable Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			@Nullable BindHandler defaultBindHandler, @Nullable BindConstructorProvider constructorProvider) {
 		this(sources, placeholdersResolver,
-				(conversionService != null) ? Collections.singletonList(conversionService)
-						: (List<ConversionService>) null,
+				(conversionService != null) ? Collections.singletonList(conversionService) : null,
 				propertyEditorInitializer, defaultBindHandler, constructorProvider);
 	}
 
