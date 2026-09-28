@@ -39,6 +39,13 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "mariadb-with-empty-root-password-compose.yaml", image = TestImage.MARIADB)
+	void runWithEmptyRootPasswordCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
+		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
+		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=mariadb", "user=root");
+		assertThat(connectionFactoryOptions.hasOption(ConnectionFactoryOptions.PASSWORD)).isFalse();
+	}
+
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=mariadb",

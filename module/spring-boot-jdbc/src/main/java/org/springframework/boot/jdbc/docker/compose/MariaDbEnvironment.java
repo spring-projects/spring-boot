@@ -57,7 +57,7 @@ class MariaDbEnvironment {
 		Assert.state(!env.containsKey("MARIADB_RANDOM_ROOT_PASSWORD"), "MARIADB_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_HASH"), "MARIADB_ROOT_PASSWORD_HASH is not supported");
-		boolean allowEmpty = env.containsKey("MARIADB_ALLOW_EMPTY_PASSWORD")
+		boolean allowEmpty = env.containsKey("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD")
 				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MARIADB_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_PASSWORD");
