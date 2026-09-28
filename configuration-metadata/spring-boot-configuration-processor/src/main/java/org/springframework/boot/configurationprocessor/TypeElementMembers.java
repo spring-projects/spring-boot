@@ -80,9 +80,9 @@ class TypeElementMembers {
 			processMethod(method);
 		}
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
+		if (superType instanceof TypeElement typeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
 				&& !RECORD_CLASS_NAME.equals(superType.toString())) {
-			process((TypeElement) superType);
+			process(typeElement);
 		}
 	}
 

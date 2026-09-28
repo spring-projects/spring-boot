@@ -104,8 +104,8 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		Map<String, DispatcherServlet> dispatcherServlets = new LinkedHashMap<>();
 		context.getBeansOfType(ServletRegistrationBean.class).values().forEach((registration) -> {
 			Servlet servlet = registration.getServlet();
-			if (servlet instanceof DispatcherServlet && !dispatcherServlets.containsValue(servlet)) {
-				dispatcherServlets.put(registration.getServletName(), (DispatcherServlet) servlet);
+			if (servlet instanceof DispatcherServlet dispatcherServlet && !dispatcherServlets.containsValue(servlet)) {
+				dispatcherServlets.put(registration.getServletName(), dispatcherServlet);
 			}
 		});
 		context.getBeansOfType(DispatcherServlet.class).forEach((name, dispatcherServlet) -> {
