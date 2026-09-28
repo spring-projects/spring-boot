@@ -30,9 +30,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.InMemoryR2dbcDatabaseShutdownExecutor;
 import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.R2dbcDatabaseShutdownEvent;
 import org.springframework.boot.r2dbc.SimpleConnectionFactoryProvider.SimpleTestConnectionFactory;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.ApplicationListener;
@@ -40,6 +43,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-class DevToolsR2dbcAutoConfigurationTests {
+class DevToolsR2dbcAutoConfigurationTests extends AbstractDevToolsAutoConfigurationTests {
 
 	static List<ConnectionFactory> shutdowns = Collections.synchronizedList(new ArrayList<>());
 
@@ -163,6 +167,28 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 	@Nested
 	class Pooled extends Common {
+
+	}
+
+	@Nested
+	@ClassPathExclusions(packages = "org.springframework.boot.r2dbc.autoconfigure")
+	class WithoutSpringBootR2dbc {
+
+		@Test
+		void backsOffWithSingleManuallyConfiguredConnectionFactory() throws Exception {
+			try (AssertableApplicationContext context = getContext(() -> new AnnotationConfigApplicationContext(
+					SingleConnectionFactoryWithDevToolsConfiguration.class))) {
+				assertThat(context).hasSingleBean(ConnectionFactory.class)
+					.doesNotHaveBean(InMemoryR2dbcDatabaseShutdownExecutor.class);
+			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(SingleConnectionFactoryConfiguration.class)
+	@ImportAutoConfiguration(DevToolsR2dbcAutoConfiguration.class)
+	static class SingleConnectionFactoryWithDevToolsConfiguration {
 
 	}
 
