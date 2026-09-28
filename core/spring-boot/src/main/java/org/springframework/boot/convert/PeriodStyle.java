@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
+ * @author Yingzi Zhang
  * @author Valentine Wu
  * @since 2.3.0
  * @see Period
@@ -262,10 +263,13 @@ public enum PeriodStyle {
 		}
 
 		private boolean isZero(Period value) {
-			return intValue(value) == 0;
+			return value.isZero() || intValue(value) == 0;
 		}
 
 		private int intValue(Period value) {
+			if (value.isZero()) {
+				return 0;
+			}
 			Assert.state(this.intValue != null, () -> "intValue cannot be extracted from " + name());
 			return this.intValue.apply(value);
 		}
