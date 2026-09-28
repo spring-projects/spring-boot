@@ -139,9 +139,9 @@ class MariaDbEnvironmentTests {
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndMariadbAllowEmptyPassword() {
+	void getPasswordWhenHasNoPasswordAndMariadbAllowEmptyRootPassword() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
-				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
+				Map.of("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "true", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEmpty();
 	}
 
@@ -155,21 +155,21 @@ class MariaDbEnvironmentTests {
 	@Test
 	void getDatabaseWhenHasMariadbDatabase() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
-				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
+				Map.of("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "true", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
 	@Test
 	void getDatabaseWhenHasMysqlDatabase() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
-				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MYSQL_DATABASE", "db"));
+				Map.of("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "true", "MYSQL_DATABASE", "db"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
 	@Test
 	void getDatabaseWhenHasMariadbAndMysqlDatabase() {
-		MariaDbEnvironment environment = new MariaDbEnvironment(
-				Map.of("MARIADB_ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db", "MYSQL_DATABASE", "otherdb"));
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", "true",
+				"MARIADB_DATABASE", "db", "MYSQL_DATABASE", "otherdb"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
