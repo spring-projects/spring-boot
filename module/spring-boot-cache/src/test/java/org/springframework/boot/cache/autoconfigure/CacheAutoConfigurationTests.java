@@ -81,6 +81,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -815,27 +816,25 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
-	void caffeineCacheWithAsyncCacheMode() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.caffeine.async=true",
-					"spring.cache.cacheNames=foo")
-			.run((context) -> {
-				CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
-				CaffeineCache foo = (CaffeineCache) manager.getCache("foo");
-				assertThat(foo).isNotNull();
-				assertThat(foo.getAsyncCache()).isNotNull();
-			});
-	}
-
-	@Test
-	void caffeineCacheWithoutAsyncCacheModeByDefault() {
+	void caffeineCacheUsesNativeModeByDefault() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cacheNames=foo")
 			.run((context) -> {
 				CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
-				CaffeineCache foo = (CaffeineCache) manager.getCache("foo");
-				assertThat(foo).isNotNull();
-				assertThatIllegalStateException().isThrownBy(foo::getAsyncCache);
+				assertThat(manager.getCache("foo")).isInstanceOfSatisfying(CaffeineCache.class,
+						(cache) -> assertThatIllegalStateException().isThrownBy(cache::getAsyncCache));
+			});
+	}
+
+	@Test
+	void caffeineCacheWithAsyncCacheMode() {
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.caffeine.cache-mode=async",
+					"spring.cache.cacheNames=foo")
+			.run((context) -> {
+				CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
+				assertThat(manager.getCache("foo")).isInstanceOfSatisfying(CaffeineCache.class,
+						(cache) -> assertThatNoException().isThrownBy(cache::getAsyncCache));
 			});
 	}
 
