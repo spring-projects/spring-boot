@@ -77,38 +77,34 @@ class AutoConfigurationSorter {
 			return Integer.compare(i1, i2);
 		});
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
-		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
+		orderedClassNames = sortByAnnotation(new LinkedHashSet<>(orderedClassNames), classes);
 		return orderedClassNames;
 	}
 
-	private List<String> sortByAnnotation(AutoConfigurationClasses classes, List<String> classNames) {
-		Set<String> requestedClassNames = new LinkedHashSet<>(classNames);
+	private List<String> sortByAnnotation(Set<String> classNames, AutoConfigurationClasses classes) {
 		Map<String, Integer> sortOrder = new LinkedHashMap<>();
-		for (String className : classNames) {
-			sortOrder.putIfAbsent(className, sortOrder.size());
-		}
-		for (String className : classes.getAllNames()) {
-			sortOrder.putIfAbsent(className, sortOrder.size());
-		}
+		classNames.forEach((className) -> sortOrder.putIfAbsent(className, sortOrder.size()));
+		classes.getAllNames().forEach((className) -> sortOrder.putIfAbsent(className, sortOrder.size()));
 		Set<String> sorted = new LinkedHashSet<>();
 		Set<String> processing = new LinkedHashSet<>();
 		for (String className : sortOrder.keySet()) {
-			if (!sorted.contains(className)) {
-				doSortByAfterAnnotation(classes, sortOrder, sorted, processing, className);
-			}
+			doSortByAfterAnnotation(classes, sortOrder, sorted, processing, className);
 		}
-		sorted.retainAll(requestedClassNames);
+		sorted.retainAll(classNames);
 		return new ArrayList<>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes, Map<String, Integer> sortOrder,
 			Set<String> sorted, Set<String> processing, String current) {
+		if (sorted.contains(current)) {
+			return;
+		}
 		processing.add(current);
 		Set<String> afters = new TreeSet<>(Comparator.comparingInt((String name) -> sortOrder.getOrDefault(name, -1)));
 		afters.addAll(classes.getClassesRequestedAfter(current));
 		for (String after : afters) {
 			checkForCycles(processing, current, after);
-			if (!sorted.contains(after) && sortOrder.containsKey(after)) {
+			if (sortOrder.containsKey(after)) {
 				doSortByAfterAnnotation(classes, sortOrder, sorted, processing, after);
 			}
 		}
