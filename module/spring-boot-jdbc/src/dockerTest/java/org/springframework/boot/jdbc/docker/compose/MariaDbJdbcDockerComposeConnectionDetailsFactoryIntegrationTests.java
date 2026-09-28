@@ -37,6 +37,13 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "mariadb-with-empty-root-password-compose.yaml", image = TestImage.MARIADB)
+	void runWithEmptyRootPasswordCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUsername()).isEqualTo("root");
+		assertThat(connectionDetails.getPassword()).isEmpty();
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");
+	}
+
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
