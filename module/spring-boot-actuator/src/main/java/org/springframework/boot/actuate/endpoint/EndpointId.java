@@ -117,7 +117,7 @@ public final class EndpointId {
 
 	/**
 	 * Factory method to create a new {@link EndpointId} of the specified value. This
-	 * variant will respect the {@code management.endpoints.migrate-legacy-names} property
+	 * variant will respect the {@code management.endpoints.migrate-legacy-ids} property
 	 * if it has been set in the {@link Environment}.
 	 * @param environment the Spring environment
 	 * @param value the endpoint ID value

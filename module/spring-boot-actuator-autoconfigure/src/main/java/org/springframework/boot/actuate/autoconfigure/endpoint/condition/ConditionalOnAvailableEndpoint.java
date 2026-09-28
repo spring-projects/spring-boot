@@ -35,7 +35,7 @@ import org.springframework.core.env.Environment;
  * technologies.
  * <p>
  * Matches access according to the endpoint's specific {@link Environment} property,
- * falling back to {@code management.endpoints.default-access} or failing that
+ * falling back to {@code management.endpoints.access.default} or failing that
  * {@link Endpoint#defaultAccess()}.
  * <p>
  * Matches exposure according to any of the {@code management.endpoints.web.exposure.<id>}
