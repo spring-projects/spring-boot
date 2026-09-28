@@ -27,6 +27,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration.KotlinxSerializationJsonCodecConfiguration;
 import org.springframework.boot.kotlinx.serialization.json.autoconfigure.KotlinxSerializationJsonAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -162,21 +163,23 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
+	void kotlinSerializationAppliesKotlinxJsonCodecCustomizer() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KotlinxSerializationJsonAutoConfiguration.class))
+			.run((context) -> {
+				String kotlinJsonCodeCustomizerBeanName = "kotlinxJsonCodecCustomizer";
+				assertThat(context).hasSingleBean(KotlinxSerializationJsonCodecConfiguration.class)
+					.hasBean(kotlinJsonCodeCustomizerBeanName);
+				assertThat(context.getBean(kotlinJsonCodeCustomizerBeanName)).isInstanceOf(CodecCustomizer.class);
+			});
+	}
+
+	@Test
 	void userProvidedCustomizerCanOverrideKotlinxJsonCodecCustomizer() {
 		this.contextRunner.withUserConfiguration(KotlinxJsonConfiguration.class, CodecCustomizerConfiguration.class)
 			.run((context) -> {
 				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
 				assertThat(codecCustomizers).hasSize(3);
 				assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
-			});
-	}
-
-	@Test
-	void applyKotlinxSerializationJsonAutoConfigurationBeforeCodecsAutoConfiguration() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(KotlinxSerializationJsonAutoConfiguration.class))
-			.run((context) -> {
-				Map<String, CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class);
-				assertThat(codecCustomizers).containsKey("kotlinxJsonCodecCustomizer");
 			});
 	}
 
