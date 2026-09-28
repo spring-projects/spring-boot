@@ -319,6 +319,54 @@ class DockerRegistryConfigAuthenticationTests {
 
 	@WithResource(name = "config.json", content = """
 			{
+			  "auths": {
+			    "https://index.docker.io/v1/": {}
+			  },
+			  "credsStore": "desktop"
+			}
+			""")
+	@Test
+	void getAuthHeaderWhenUsingHelperThatFailsAndAuthHasNoCredentialsLogsErrorAndReturnsFallback(
+			@ResourcesRoot Path directory) throws Exception {
+		this.environment.put("DOCKER_CONFIG", directory.toString());
+		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
+		CredentialHelper helper = mockHelper("desktop");
+		given(helper.get("https://index.docker.io/v1/"))
+			.willThrow(new IOException("Failed to obtain credentials for registry"));
+		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
+		assertThat(this.helperExceptions).hasSize(1);
+		assertThat(decode(authHeader)).hasSize(4)
+			.containsEntry("serveraddress", "")
+			.containsEntry("username", "")
+			.containsEntry("password", "")
+			.containsEntry("email", "");
+	}
+
+	@WithResource(name = "config.json", content = """
+			{
+			  "auths": {
+			    "https://index.docker.io/v1/": {}
+			  },
+			  "credsStore": "desktop"
+			}
+			""")
+	@Test
+	void getAuthHeaderWhenHelperIsNotAvailableAndAuthHasNoCredentialsReturnsFallback(@ResourcesRoot Path directory) {
+		this.environment.put("DOCKER_CONFIG", directory.toString());
+		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
+		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(authHeader).isNotNull();
+		assertThat(this.helperExceptions).isEmpty();
+		assertThat(decode(authHeader)).hasSize(4)
+			.containsEntry("serveraddress", "")
+			.containsEntry("username", "")
+			.containsEntry("password", "")
+			.containsEntry("email", "");
+	}
+
+	@WithResource(name = "config.json", content = """
+			{
 			  "credsStore": "desktop",
 			  "credHelpers": {
 			    "gcr.io": ""

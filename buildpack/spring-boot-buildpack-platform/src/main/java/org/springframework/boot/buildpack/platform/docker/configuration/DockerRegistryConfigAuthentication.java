@@ -96,10 +96,10 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 			Assert.state(authConfigEntry != null, "'authConfigEntry' must not be null");
 			String username = authConfig.getUsername();
 			String password = authConfig.getPassword();
-			Assert.state(username != null, "'username' must not be null");
-			Assert.state(password != null, "'password' must not be null");
-			return DockerRegistryAuthentication.user(username, password, authConfigEntry.getKey(),
-					authConfig.getEmail());
+			if (username != null && password != null) {
+				return DockerRegistryAuthentication.user(username, password, authConfigEntry.getKey(),
+						authConfig.getEmail());
+			}
 		}
 		return this.fallback;
 	}
