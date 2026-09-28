@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Melendez
  * @author Edson Chávez
+ * @author Yingzi Zhang
  */
 class PeriodToStringConverterTests {
 
@@ -61,6 +62,14 @@ class PeriodToStringConverterTests {
 				MockPeriodTypeDescriptor.get(ChronoUnit.YEARS, PeriodStyle.SIMPLE),
 				TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("0y");
+	}
+
+	@ConversionServiceTest
+	void convertWithFormatAndWeeksUnitWhenZeroShouldUseFormatAndUnit(ConversionService conversionService) {
+		String converted = (String) conversionService.convert(Period.ZERO,
+				MockPeriodTypeDescriptor.get(ChronoUnit.WEEKS, PeriodStyle.SIMPLE),
+				TypeDescriptor.valueOf(String.class));
+		assertThat(converted).isEqualTo("0w");
 	}
 
 	@ConversionServiceTest

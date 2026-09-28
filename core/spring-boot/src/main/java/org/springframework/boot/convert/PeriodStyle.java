@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
+ * @author Yingzi Zhang
  * @author Valentine Wu
  * @since 2.3.0
  * @see Period
@@ -85,7 +86,7 @@ public enum PeriodStyle {
 		@Override
 		public String print(Period value, @Nullable ChronoUnit unit) {
 			if (value.isZero()) {
-				return Unit.fromChronoUnit(unit).print(value);
+				return "0" + Unit.fromChronoUnit(unit).suffix;
 			}
 			StringBuilder result = new StringBuilder();
 			append(result, value, Unit.YEARS);
