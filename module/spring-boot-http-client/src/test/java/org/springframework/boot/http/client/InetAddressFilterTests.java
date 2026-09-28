@@ -545,6 +545,20 @@ class InetAddressFilterTests {
 			assertThat(filter).doesNotMatch("::");
 		}
 
+		@Test
+		void ipv4TestingIpv6() {
+			InetAddressFilter filter = InetAddressFilter.of("0.0.0.0/0");
+			assertThat(filter).matches("0.0.0.0");
+			assertThat(filter).doesNotMatch("::1");
+		}
+
+		@Test
+		void ipv6TestingIpv4() {
+			InetAddressFilter filter = InetAddressFilter.of("::0/0");
+			assertThat(filter).matches("::1");
+			assertThat(filter).doesNotMatch("0.0.0.0");
+		}
+
 	}
 
 	@Nested
