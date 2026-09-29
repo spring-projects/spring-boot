@@ -31,6 +31,7 @@ import java.util.jar.JarFile;
  * instances.
  *
  * @author Phillip Webb
+ * @author Sharan Bharmshetty
  */
 class UrlJarFiles {
 
@@ -51,6 +52,20 @@ class UrlJarFiles {
 	 */
 	UrlJarFiles(UrlJarFileFactory factory) {
 		this.factory = factory;
+	}
+
+	JarFile getOrCreateAndCache(String jarFileSpec, boolean runtimeRef) throws IOException {
+		JarFileUrlKey jarFileUrlKey = new JarFileUrlKey("jar", "", -1, jarFileSpec, runtimeRef);
+		JarFile jarFile = this.cache.get(jarFileUrlKey);
+		if (jarFile == null) {
+			URL jarFileUrl = new URL(jarFileSpec);
+			if (runtimeRef) {
+				jarFileUrl = new URL(jarFileUrl, "#runtime");
+			}
+			jarFile = this.factory.createJarFile(jarFileUrl, this::onClose);
+			this.cache.putIfAbsent(jarFileUrlKey, jarFile, jarFileUrl);
+		}
+		return jarFile;
 	}
 
 	/**
@@ -79,15 +94,6 @@ class UrlJarFiles {
 	 */
 	JarFile getCached(URL jarFileUrl) {
 		return this.cache.get(jarFileUrl);
-	}
-
-	/**
-	 * Return the cached {@link JarFile} if available.
-	 * @param urlKey the jar file URL key
-	 * @return the cached jar or {@code null}
-	 */
-	JarFile getCached(JarFileUrlKey urlKey) {
-		return this.cache.get(urlKey);
 	}
 
 	/**
@@ -168,12 +174,12 @@ class UrlJarFiles {
 
 		/**
 		 * Get a {@link JarFile} from the cache given a jar file URL key.
-		 * @param urlKey the jar file URL key
+		 * @param jarFileUrlKey the jar file URL key
 		 * @return the cached {@link JarFile} or {@code null}
 		 */
-		JarFile get(JarFileUrlKey urlKey) {
+		JarFile get(JarFileUrlKey jarFileUrlKey) {
 			synchronized (this) {
-				return this.jarFileUrlToJarFile.get(urlKey);
+				return this.jarFileUrlToJarFile.get(jarFileUrlKey);
 			}
 		}
 
@@ -197,11 +203,23 @@ class UrlJarFiles {
 		 * they were already there
 		 */
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
-			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
+			return putIfAbsent(new JarFileUrlKey(jarFileUrl), jarFile, jarFileUrl);
+		}
+
+		/**
+		 * Put the given jar file URL and jar file into the cache if they aren't already
+		 * there.
+		 * @param jarFileUrlKey the jar file URL key
+		 * @param jarFileUrl the jar file URL
+		 * @param jarFile the jar file
+		 * @return {@code true} if the items were added to the cache or {@code false} if
+		 * they were already there
+		 */
+		boolean putIfAbsent(JarFileUrlKey jarFileUrlKey, JarFile jarFile, URL jarFileUrl) {
 			synchronized (this) {
-				JarFile cached = this.jarFileUrlToJarFile.get(urlKey);
+				JarFile cached = this.jarFileUrlToJarFile.get(jarFileUrlKey);
 				if (cached == null) {
-					this.jarFileUrlToJarFile.put(urlKey, jarFile);
+					this.jarFileUrlToJarFile.put(jarFileUrlKey, jarFile);
 					this.jarFileToJarFileUrl.put(jarFile, jarFileUrl);
 					return true;
 				}

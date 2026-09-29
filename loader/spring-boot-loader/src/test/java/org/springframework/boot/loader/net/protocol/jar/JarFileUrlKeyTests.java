@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JarFileUrlKey}.
  *
  * @author Phillip Webb
+ * @author Sharan Bharmshetty
  */
 class JarFileUrlKeyTests {
 
