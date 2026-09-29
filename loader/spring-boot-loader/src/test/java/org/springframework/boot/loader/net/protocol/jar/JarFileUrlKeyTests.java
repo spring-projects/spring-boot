@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JarFileUrlKey}.
  *
  * @author Phillip Webb
+ * @author Sharan Bharmshetty
  */
 class JarFileUrlKeyTests {
 
@@ -99,6 +100,29 @@ class JarFileUrlKeyTests {
 
 	private JarFileUrlKey key(String spec) throws MalformedURLException {
 		return new JarFileUrlKey(new URL(spec));
+	}
+
+	@Test
+	void directKeyEqualsUrlKey() throws Exception {
+		JarFileUrlKey fromUrl = key("jar:nested:/my.jar/!mynested.jar!/my/path");
+		JarFileUrlKey direct = new JarFileUrlKey("jar", "", -1, "nested:/my.jar/!mynested.jar!/my/path", false);
+		assertThat(direct).isEqualTo(fromUrl);
+		assertThat(direct.hashCode()).isEqualTo(fromUrl.hashCode());
+	}
+
+	@Test
+	void directKeyWithRuntimeRefEqualsUrlKey() throws Exception {
+		JarFileUrlKey fromUrl = key("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+		JarFileUrlKey direct = new JarFileUrlKey("jar", "", -1, "nested:/my.jar/!mynested.jar!/my/path", true);
+		assertThat(direct).isEqualTo(fromUrl);
+		assertThat(direct.hashCode()).isEqualTo(fromUrl.hashCode());
+	}
+
+	@Test
+	void directKeyWithRuntimeRefNotEqualToKeyWithout() {
+		JarFileUrlKey k1 = new JarFileUrlKey("jar", "", -1, "nested:/my.jar/!mynested.jar!/my/path", true);
+		JarFileUrlKey k2 = new JarFileUrlKey("jar", "", -1, "nested:/my.jar/!mynested.jar!/my/path", false);
+		assertThat(k1).isNotEqualTo(k2);
 	}
 
 }
