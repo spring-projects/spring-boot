@@ -24,6 +24,11 @@ public final class QuadraticEquationVariantsTest {
 					coefficients[2]);
 			return new double[] { roots.first(), roots.second() };
 		});
+		QuadraticEquationV3.Roots cancellationRoots = QuadraticEquationV3.solve(1.0, 1.0e16, 1.0);
+		assertRelative(cancellationRoots.first(), -1.0e16);
+		assertRelative(cancellationRoots.second(), -1.0e-16);
+		QuadraticEquationV3.Roots scaledRoots = QuadraticEquationV3.solve(1.0e200, -3.0e200, 2.0e200);
+		assertRoots(new double[] { scaledRoots.first(), scaledRoots.second() }, 2, 1);
 		System.out.println("All quadratic variants passed");
 	}
 
@@ -33,7 +38,13 @@ public final class QuadraticEquationVariantsTest {
 		assertNoRealRoots(solver.apply(new double[] { 1, 0, 1 }));
 		assertRoots(solver.apply(new double[] { 0, 2, -4 }), 2, Double.NaN);
 		assertThrows(() -> solver.apply(new double[] { 0, 0, 1 }));
-		System.out.println(name + " passed SC/BC fixture cases");
+		System.out.println(name + " passed functional input-partition cases");
+	}
+
+	private static void assertRelative(double actual, double expected) {
+		if (Math.abs(actual - expected) / Math.abs(expected) > 1.0e-12) {
+			throw new AssertionError("Expected " + expected + " but got " + actual);
+		}
 	}
 
 	private static void assertRoots(double[] actual, double expectedFirst, double expectedSecond) {

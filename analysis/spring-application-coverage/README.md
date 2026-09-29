@@ -19,7 +19,8 @@ current source and identifies feasible and infeasible paths.
 * [`quadratic/QuadraticEquationV2.java`](quadratic/QuadraticEquationV2.java) -
   guard-clause version.
 * [`quadratic/QuadraticEquationV3.java`](quadratic/QuadraticEquationV3.java) -
-  sign-classification/switch version.
+  scaled-discriminant, cancellation-resistant roots with sign-classification
+  and `switch`.
 * [`quadratic/QuadraticEquationProgram.java`](quadratic/QuadraticEquationProgram.java) -
   runnable command-line entry point selecting V1, V2, or V3.
 * [`quadratic/QuadraticEquationVariantsTest.java`](quadratic/QuadraticEquationVariantsTest.java) -
