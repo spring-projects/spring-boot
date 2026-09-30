@@ -42,6 +42,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.SpringBootMockMvcBuild
 import org.springframework.boot.webmvc.test.autoconfigure.SpringBootMockMvcBuilderCustomizer.LinesWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -67,7 +68,9 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(context);
 		SpringBootMockMvcBuilderCustomizer customizer = new SpringBootMockMvcBuilderCustomizer(context);
 		customizer.customize(builder);
-		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context.getBean("otherTestFilter");
+		FilterRegistrationBean<?> registrationBean = context.getBean("otherTestFilter",
+				new ParameterizedTypeReference<>() {
+				});
 		TestFilter testFilter = context.getBean("testFilter", TestFilter.class);
 		OtherTestFilter otherTestFilter = (OtherTestFilter) registrationBean.getFilter();
 		assertThat(otherTestFilter).isNotNull();

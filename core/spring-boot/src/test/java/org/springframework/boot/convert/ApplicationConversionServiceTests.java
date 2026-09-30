@@ -33,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -116,11 +117,11 @@ class ApplicationConversionServiceTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void addBeansWhenHasConverterBeanMethodAddConverter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				ConverterBeanMethodConfiguration.class)) {
-			Converter<String, Integer> converter = (Converter<String, Integer>) context.getBean("converter");
+			Converter<String, Integer> converter = context.getBean("converter", new ParameterizedTypeReference<>() {
+			});
 			willThrow(IllegalArgumentException.class).given(this.registry).addConverter(converter);
 			ApplicationConversionService.addBeans(this.registry, context);
 			then(this.registry).should().addConverter(any(ConverterBeanAdapter.class));
@@ -129,11 +130,11 @@ class ApplicationConversionServiceTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void addBeansWhenHasPrinterBeanMethodAddPrinter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				PrinterBeanMethodConfiguration.class)) {
-			Printer<Integer> printer = (Printer<Integer>) context.getBean("printer");
+			Printer<Integer> printer = context.getBean("printer", new ParameterizedTypeReference<>() {
+			});
 			willThrow(IllegalArgumentException.class).given(this.registry).addPrinter(printer);
 			ApplicationConversionService.addBeans(this.registry, context);
 			then(this.registry).should(never()).addPrinter(printer);
@@ -143,11 +144,11 @@ class ApplicationConversionServiceTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void addBeansWhenHasParserBeanMethodAddParser() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				ParserBeanMethodConfiguration.class)) {
-			Parser<Integer> parser = (Parser<Integer>) context.getBean("parser");
+			Parser<Integer> parser = context.getBean("parser", new ParameterizedTypeReference<>() {
+			});
 			willThrow(IllegalArgumentException.class).given(this.registry).addParser(parser);
 			ApplicationConversionService.addBeans(this.registry, context);
 			then(this.registry).should(never()).addParser(parser);
