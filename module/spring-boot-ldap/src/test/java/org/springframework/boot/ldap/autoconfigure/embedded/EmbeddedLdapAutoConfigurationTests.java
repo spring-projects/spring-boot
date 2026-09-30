@@ -20,6 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link EmbeddedLdapAutoConfiguration}
  *
  * @author Eddú Meléndez
+ * @author Wan bin yu
  */
 class EmbeddedLdapAutoConfigurationTests {
 
@@ -78,6 +80,36 @@ class EmbeddedLdapAutoConfigurationTests {
 				assertThat(server.getListenPort()).isEqualTo(1234);
 				InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
 				assertThat(config.getListenerName()).isEqualTo("LDAP");
+				assertThat(server.getListenAddress()).isNull();
+			});
+	}
+
+	@Test
+	void listensOnConfiguredAddress() {
+		this.contextRunner
+			.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+					"spring.ldap.embedded.address:127.0.0.1")
+			.run((context) -> {
+				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				assertThat(server.getListenAddress()).isEqualTo(InetAddress.getByName("127.0.0.1"));
+				try (LDAPConnection connection = new LDAPConnection("127.0.0.1", server.getListenPort())) {
+					assertThat(connection.isConnected()).isTrue();
+				}
+				assertThat(context.getBean(LdapConnectionDetails.class).getUrls())
+					.containsExactly("ldap://localhost:" + server.getListenPort());
+			});
+	}
+
+	@Test
+	void ldapsListenerUsesConfiguredAddress() {
+		this.contextRunner
+			.withPropertyValues(sslBundleProperties("spring.ldap.embedded.ssl.bundle:test",
+					"spring.ldap.embedded.address:127.0.0.1"))
+			.run((context) -> {
+				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+				assertThat(config.getListenerName()).isEqualTo("LDAPS");
+				assertThat(server.getListenAddress()).isEqualTo(InetAddress.getByName("127.0.0.1"));
 			});
 	}
 

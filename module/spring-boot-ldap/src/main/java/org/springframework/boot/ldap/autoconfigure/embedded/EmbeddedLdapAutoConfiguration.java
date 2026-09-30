@@ -17,6 +17,7 @@
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Raja Kolli
  * @author Moritz Halbritter
  * @author Sean Xu
+ * @author Wan bin yu
  * @since 4.0.0
  */
 @AutoConfiguration(before = LdapAutoConfiguration.class)
@@ -129,14 +131,15 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private InMemoryListenerConfig createListenerConfig(ObjectProvider<SslBundles> sslBundles) throws LDAPException {
 		SslBundle sslBundle = getSslBundle(sslBundles.getIfAvailable());
+		InetAddress address = this.embeddedProperties.getAddress();
 		if (sslBundle != null) {
 			SSLContext sslContext = sslBundle.createSslContext();
 			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
 			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
-			return InMemoryListenerConfig.createLDAPSConfig("LDAPS", null, this.embeddedProperties.getPort(),
+			return InMemoryListenerConfig.createLDAPSConfig("LDAPS", address, this.embeddedProperties.getPort(),
 					serverSocketFactory, clientSocketFactory);
 		}
-		return InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+		return InMemoryListenerConfig.createLDAPConfig("LDAP", address, this.embeddedProperties.getPort(), null);
 	}
 
 	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {

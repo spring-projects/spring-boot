@@ -16,6 +16,7 @@
 
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
  * @author Sean Xu
+ * @author Wan bin yu
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.ldap.embedded")
@@ -44,6 +46,12 @@ public class EmbeddedLdapProperties {
 	 * Embedded LDAP port.
 	 */
 	private int port;
+
+	/**
+	 * Network address to which the embedded LDAP server should bind. All interfaces are
+	 * used when unset.
+	 */
+	private @Nullable InetAddress address;
 
 	/**
 	 * LDAP operation types that require authentication.
@@ -82,6 +90,14 @@ public class EmbeddedLdapProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public @Nullable InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(@Nullable InetAddress address) {
+		this.address = address;
 	}
 
 	public Set<OperationType> getAuthenticationRequiredOperationTypes() {
