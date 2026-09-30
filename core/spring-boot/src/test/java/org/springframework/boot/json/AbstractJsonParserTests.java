@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Dave Syer
  * @author Jean de Klerk
  * @author Stephane Nicoll
+ * @author Yingzi Zhang
  */
 abstract class AbstractJsonParserTests {
 
@@ -179,6 +180,29 @@ abstract class AbstractJsonParserTests {
 		String input = "{\"foo\": \"\\\"bar\\\"\"}";
 		Map<String, Object> map = this.parser.parseMap(input);
 		assertThat(map).containsEntry("foo", "\"bar\"");
+	}
+
+	@Test
+	void escapeBackslashInNestedMap() {
+		String input = "{\"foo\": {\"bar\": \"a\\\\b\"}}";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("foo", InstanceOfAssertFactories.MAP).containsEntry("bar", "a\\b");
+	}
+
+	@Test
+	void escapeBackslashInListOfMaps() {
+		String input = "[{\"foo\": \"a\\\\b\"}]";
+		List<Object> list = this.parser.parseList(input);
+		assertThat(list).singleElement(InstanceOfAssertFactories.MAP).containsEntry("foo", "a\\b");
+	}
+
+	@Test
+	void escapeDoubleQuoteAndCommaInNestedMap() {
+		String input = "{\"foo\": {\"bar\": \"a\\\",\\\"b\", \"spam\": \"eggs\"}}";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("foo", InstanceOfAssertFactories.MAP)
+			.containsEntry("bar", "a\",\"b")
+			.containsEntry("spam", "eggs");
 	}
 
 	@Test

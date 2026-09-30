@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Jean de Klerk
  * @author Stephane Nicoll
+ * @author Yingzi Zhang
  * @since 1.2.0
  * @see JsonParserFactory
  */
@@ -73,7 +74,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return parseMapInternal(nesting + 1, json);
 		}
 		if (json.startsWith("\"")) {
-			return trimEdges(json, '"', '"');
+			return unescape(trimEdges(json, '"', '"'));
 		}
 		return parseNumber(json);
 	}
@@ -90,7 +91,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			Assert.state(rawKey != null, () -> "rawKey is null in '%s'".formatted(pair));
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
-			String key = trimEdges(rawKey, '"', '"');
+			String key = unescape(trimEdges(rawKey, '"', '"'));
 			Assert.state(rawValue != null, () -> "rawValue is null in '%s'".formatted(pair));
 			Object value = parseInternal(nesting, rawValue);
 			map.put(key, value);
@@ -130,6 +131,21 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return trimTrailingCharacter(trimLeadingCharacter(string, leadingChar), trailingChar);
 	}
 
+	private static String unescape(String string) {
+		if (string.indexOf('\\') == -1) {
+			return string;
+		}
+		StringBuilder result = new StringBuilder(string.length());
+		for (int i = 0; i < string.length(); i++) {
+			char ch = string.charAt(i);
+			if (ch == '\\' && i + 1 < string.length()) {
+				ch = string.charAt(++i);
+			}
+			result.append(ch);
+		}
+		return result.toString();
+	}
+
 	private List<String> tokenize(String json) {
 		List<String> list = new ArrayList<>();
 		Tracking tracking = new Tracking();
@@ -156,6 +172,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			}
 			else if (ch == '\\') {
 				tracking.set(Tracked.ESCAPE, 1);
+				build.append(ch);
 			}
 			else {
 				build.append(ch);
