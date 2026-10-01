@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,18 +39,17 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession.CloseableSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.supplier.RepositorySystemSupplier;
+import org.eclipse.aether.supplier.SessionBuilderSupplier;
 
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -64,6 +64,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Christoph Dreis
+ * @author Moritz Halbritter
  */
 final class ModifiedClassPathClassLoader extends URLClassLoader {
 
@@ -241,27 +242,29 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	private static List<URL> resolveCoordinates(String[] coordinates) {
 		return doWithRepositorySystem((repositorySystem) -> {
 			Exception latestFailure = null;
-			DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-			session.setSystemProperties(System.getProperties());
-			LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
+			Path localRepository = Path.of(System.getProperty("user.home"), ".m2", "repository");
 			RemoteRepository remoteRepository = new RemoteRepository.Builder("central", "default",
 					"https://repo.maven.apache.org/maven2")
 				.build();
-			session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
-			for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
-				CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
-				collectRequest.setDependencies(createDependencies(coordinates));
-				DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
-				try {
-					DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
-					List<URL> resolvedArtifacts = new ArrayList<>();
-					for (ArtifactResult artifact : result.getArtifactResults()) {
-						resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+			try (CloseableSession session = new SessionBuilderSupplier(repositorySystem).get()
+				.setSystemProperties(System.getProperties())
+				.withLocalRepositoryBaseDirectories(localRepository)
+				.build()) {
+				for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
+					CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
+					collectRequest.setDependencies(createDependencies(coordinates));
+					DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+					try {
+						DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
+						List<URL> resolvedArtifacts = new ArrayList<>();
+						for (ArtifactResult artifact : result.getArtifactResults()) {
+							resolvedArtifacts.add(artifact.getArtifact().getPath().toUri().toURL());
+						}
+						return resolvedArtifacts;
 					}
-					return resolvedArtifacts;
-				}
-				catch (Exception ex) {
-					latestFailure = ex;
+					catch (Exception ex) {
+						latestFailure = ex;
+					}
 				}
 			}
 			throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
