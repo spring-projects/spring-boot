@@ -16,6 +16,8 @@
 
 package smoketest.jackson2.only;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * POJO for serialization to JSON.
  *
@@ -23,23 +25,23 @@ package smoketest.jackson2.only;
  */
 class JsonPojo {
 
-	private String alpha;
+	private @Nullable String alpha;
 
-	private String bravo;
+	private @Nullable String bravo;
 
-	String getAlpha() {
+	@Nullable String getAlpha() {
 		return this.alpha;
 	}
 
-	void setAlpha(String alpha) {
+	void setAlpha(@Nullable String alpha) {
 		this.alpha = alpha;
 	}
 
-	String getBravo() {
+	@Nullable String getBravo() {
 		return this.bravo;
 	}
 
-	void setBravo(String bravo) {
+	void setBravo(@Nullable String bravo) {
 		this.bravo = bravo;
 	}
 
