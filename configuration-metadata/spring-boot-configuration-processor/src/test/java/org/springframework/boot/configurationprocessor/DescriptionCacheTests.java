@@ -81,10 +81,9 @@ class DescriptionCacheTests {
 		Files.deleteIfExists(classOutput.resolve(METADATA_PATH));
 
 		String incrementalCp = classpath + File.pathSeparator + classOutput;
-		List<JavaFileObject> barOnly = List.of(
-				inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
-		List<String> fooAsClass = List
-			.of("org.springframework.boot.configurationsample.incremental.FooProperties");
+		List<JavaFileObject> barOnly = List
+			.of(inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
+		List<String> fooAsClass = List.of("org.springframework.boot.configurationsample.incremental.FooProperties");
 
 		ok = compile(classOutput, sourceOutput, incrementalCp, null, barOnly, fooAsClass);
 		assertThat(ok).as("Incremental compilation").isTrue();
@@ -119,10 +118,9 @@ class DescriptionCacheTests {
 		Files.deleteIfExists(classOutput.resolve(METADATA_PATH));
 
 		String incrementalCp = classpath + File.pathSeparator + classOutput;
-		List<JavaFileObject> barOnly = List.of(
-				inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
-		List<String> fooAsClass = List
-			.of("org.springframework.boot.configurationsample.incremental.FooProperties");
+		List<JavaFileObject> barOnly = List
+			.of(inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
+		List<String> fooAsClass = List.of("org.springframework.boot.configurationsample.incremental.FooProperties");
 
 		ok = compile(classOutput, sourceOutput, incrementalCp, cacheFile, barOnly, fooAsClass);
 		assertThat(ok).as("Incremental compilation").isTrue();
@@ -158,8 +156,8 @@ class DescriptionCacheTests {
 
 		Files.deleteIfExists(classOutput.resolve(METADATA_PATH));
 
-		List<JavaFileObject> barOnly = List.of(
-				inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
+		List<JavaFileObject> barOnly = List
+			.of(inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
 		ok = compile(classOutput, sourceOutput, classpath, cacheFile, barOnly, null);
 		assertThat(ok).as("Compile without FooProperties").isTrue();
 
@@ -192,10 +190,9 @@ class DescriptionCacheTests {
 		Files.deleteIfExists(classOutput.resolve(METADATA_PATH));
 
 		String incrementalCp = classpath + File.pathSeparator + classOutput;
-		List<JavaFileObject> barOnly = List.of(
-				inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
-		List<String> recordAsClass = List
-			.of("org.springframework.boot.configurationsample.record.ExampleRecord");
+		List<JavaFileObject> barOnly = List
+			.of(inMemorySource("org.springframework.boot.configurationsample.incremental.BarProperties", barSource));
+		List<String> recordAsClass = List.of("org.springframework.boot.configurationsample.record.ExampleRecord");
 
 		ok = compile(classOutput, sourceOutput, incrementalCp, cacheFile, barOnly, recordAsClass);
 		assertThat(ok).as("Incremental compilation").isTrue();
@@ -219,8 +216,8 @@ class DescriptionCacheTests {
 		String classpath = System.getProperty("java.class.path");
 		String fooSource = SourceFile.forTestClass(FooProperties.class).getContent();
 
-		List<JavaFileObject> sources = List.of(
-				inMemorySource("org.springframework.boot.configurationsample.incremental.FooProperties", fooSource));
+		List<JavaFileObject> sources = List
+			.of(inMemorySource("org.springframework.boot.configurationsample.incremental.FooProperties", fooSource));
 
 		boolean ok = compile(classOutput, sourceOutput, classpath, cacheFile, sources, null);
 		assertThat(ok).as("Compilation with corrupt cache").isTrue();
