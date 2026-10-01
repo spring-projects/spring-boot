@@ -155,7 +155,12 @@ public class BasicJsonParser extends AbstractJsonParser {
 				build.setLength(0);
 			}
 			else if (ch == '\\') {
-				tracking.set(Tracked.ESCAPE, 1);
+				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
+					build.append(ch);
+				}
+				else {
+					tracking.set(Tracked.ESCAPE, 1);
+				}
 			}
 			else {
 				build.append(ch);
