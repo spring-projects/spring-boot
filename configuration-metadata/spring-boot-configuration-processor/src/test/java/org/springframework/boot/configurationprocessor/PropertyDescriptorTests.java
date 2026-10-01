@@ -18,11 +18,9 @@ package org.springframework.boot.configurationprocessor;
 
 import java.util.function.BiConsumer;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
-
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 import org.springframework.boot.configurationprocessor.test.ItemMetadataAssert;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
@@ -43,20 +41,12 @@ public abstract class PropertyDescriptorTests {
 		return prefix + new String(chars, 0, chars.length);
 	}
 
-	protected ExecutableElement getMethod(TypeElement element, String name) {
-		return ElementFilter.methodsIn(element.getEnclosedElements())
-			.stream()
-			.filter((method) -> method.getSimpleName().toString().equals(name))
-			.findFirst()
-			.orElse(null);
+	protected MethodDeclaration getMethod(TypeDeclaration element, String name) {
+		return element.getMethods().stream().filter((method) -> method.getName().equals(name)).findFirst().orElse(null);
 	}
 
-	protected VariableElement getField(TypeElement element, String name) {
-		return ElementFilter.fieldsIn(element.getEnclosedElements())
-			.stream()
-			.filter((method) -> method.getSimpleName().toString().equals(name))
-			.findFirst()
-			.orElse(null);
+	protected VariableDeclaration getField(TypeDeclaration element, String name) {
+		return element.getFields().stream().filter((field) -> field.getName().equals(name)).findFirst().orElse(null);
 	}
 
 	protected ItemMetadataAssert assertItemMetadata(MetadataGenerationEnvironment metadataEnv,
@@ -64,15 +54,32 @@ public abstract class PropertyDescriptorTests {
 		return new ItemMetadataAssert(property.resolveItemMetadata("test", metadataEnv));
 	}
 
-	protected void process(Class<?> target,
-			BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> consumer) {
+	protected void process(Class<?> target, BiConsumer<RootElements, MetadataGenerationEnvironment> consumer) {
+		BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> internalConsumer = (roundEnv,
+				metadataEnv) -> consumer.accept((type) -> metadataEnv.getContext().getTypeDeclaration(type.getName()),
+						metadataEnv);
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
-				consumer, new MetadataGenerationEnvironmentFactory());
+				internalConsumer, new MetadataGenerationEnvironmentFactory());
 		TestCompiler compiler = TestCompiler.forSystem()
 			.withProcessors(processor)
 			.withSources(SourceFile.forTestClass(target));
 		compiler.compile((compiled) -> {
 		});
+	}
+
+	/**
+	 * Provides access to the root elements of the compilation.
+	 */
+	@FunctionalInterface
+	protected interface RootElements {
+
+		/**
+		 * Return the root {@link TypeDeclaration} for the specified {@code type}.
+		 * @param type the type of the class
+		 * @return the {@link TypeDeclaration}
+		 */
+		TypeDeclaration getRootElement(Class<?> type);
+
 	}
 
 }

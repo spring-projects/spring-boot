@@ -16,13 +16,12 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * A {@link PropertyDescriptor} for a standard JavaBean property.
@@ -32,14 +31,15 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
-	private final ExecutableElement setter;
+	private final MethodDeclaration setter;
 
-	private final VariableElement field;
+	private final VariableDeclaration field;
 
-	private final ExecutableElement factoryMethod;
+	private final MethodDeclaration factoryMethod;
 
-	JavaBeanPropertyDescriptor(String name, TypeMirror type, TypeElement declaringElement, ExecutableElement getter,
-			ExecutableElement setter, VariableElement field, ExecutableElement factoryMethod) {
+	JavaBeanPropertyDescriptor(String name, TypeReference type, TypeDeclaration declaringElement,
+			MethodDeclaration getter, MethodDeclaration setter, VariableDeclaration field,
+			MethodDeclaration factoryMethod) {
 		super(name, type, declaringElement, getter);
 		this.setter = setter;
 		this.field = field;
@@ -47,11 +47,11 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 	}
 
 	@Override
-	protected Element getSourceElement() {
+	protected Declaration getSourceElement() {
 		return getGetter();
 	}
 
-	ExecutableElement getSetter() {
+	MethodDeclaration getSetter() {
 		return this.setter;
 	}
 
@@ -63,7 +63,7 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
 	@Override
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
-		return environment.getTypeUtils().getJavaDoc(this.field);
+		return environment.getDescription(this.field);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
 	@Override
 	public boolean isProperty(MetadataGenerationEnvironment env) {
-		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
+		boolean isCollection = getType().isCollectionOrMap();
 		boolean hasGetter = getGetter() != null;
 		boolean hasSetter = getSetter() != null;
 		return !env.isExcluded(getType()) && hasGetter && (hasSetter || isCollection);

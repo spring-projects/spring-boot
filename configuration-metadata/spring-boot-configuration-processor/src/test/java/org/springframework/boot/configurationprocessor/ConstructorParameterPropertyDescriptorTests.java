@@ -19,14 +19,11 @@ package org.springframework.boot.configurationprocessor;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
-
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 import org.springframework.boot.configurationsample.immutable.ImmutableCollectionProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableInnerClassProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutablePrimitiveProperties;
@@ -46,11 +43,11 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterSimpleProperty() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
 			assertThat(property.getName()).isEqualTo("theName");
 			assertThat(property.getParameter()).hasToString("theName");
-			assertThat(property.getGetter().getSimpleName()).hasToString("getTheName");
+			assertThat(property.getGetter().getName()).isEqualTo("getTheName");
 			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
 		});
@@ -59,10 +56,9 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void getSourceElementReturnsBackingField() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
-			assertThat(property.getSourceElement().getKind()).isEqualTo(ElementKind.FIELD);
-			assertThat(property.getSourceElement().getSimpleName()).hasToString("theName");
+			assertThat(property.getSourceElement()).isEqualTo(getField(ownerElement, "theName"));
 			assertThat(property.getSourceElement()).isNotSameAs(property.getGetter());
 		});
 	}
@@ -70,11 +66,11 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterNestedPropertySameClass() {
 		process(ImmutableInnerClassProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertThat(property.getName()).isEqualTo("first");
 			assertThat(property.getParameter()).hasToString("first");
-			assertThat(property.getGetter().getSimpleName()).hasToString("getFirst");
+			assertThat(property.getGetter().getName()).isEqualTo("getFirst");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
 			assertThat(property.isNested(metadataEnv)).isTrue();
 		});
@@ -83,11 +79,11 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterNestedPropertyWithAnnotation() {
 		process(ImmutableInnerClassProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "third");
 			assertThat(property.getName()).isEqualTo("third");
 			assertThat(property.getParameter()).hasToString("third");
-			assertThat(property.getGetter().getSimpleName()).hasToString("getThird");
+			assertThat(property.getGetter().getName()).isEqualTo("getThird");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
 			assertThat(property.isNested(metadataEnv)).isTrue();
 		});
@@ -96,7 +92,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterSimplePropertyWithNoAccessorShouldBeExposed() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "counter");
 			assertThat(property.getName()).isEqualTo("counter");
 			assertThat(property.getParameter()).hasToString("counter");
@@ -109,7 +105,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterMetadataSimpleProperty() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "counter");
 			assertItemMetadata(metadataEnv, property).isProperty()
 				.hasName("test.counter")
@@ -123,7 +119,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterMetadataNestedGroup() {
 		process(ImmutableInnerClassProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertItemMetadata(metadataEnv, property).isGroup()
 				.hasName("test.first")
@@ -138,12 +134,12 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterDeprecatedPropertyOnGetter() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
-			ExecutableElement getter = getMethod(ownerElement, "isFlag");
-			VariableElement field = getField(ownerElement, "flag");
-			VariableElement constructorParameter = getConstructorParameter(ownerElement, "flag");
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			MethodDeclaration getter = getMethod(ownerElement, "isFlag");
+			VariableDeclaration field = getField(ownerElement, "flag");
+			VariableDeclaration constructorParameter = getConstructorParameter(ownerElement, "flag");
 			ConstructorParameterPropertyDescriptor property = new ConstructorParameterPropertyDescriptor("flag",
-					field.asType(), constructorParameter, ownerElement, getter, null, field);
+					field.getType(), constructorParameter, ownerElement, getter, null, field);
 			assertItemMetadata(metadataEnv, property).isProperty().isDeprecatedWithNoInformation();
 		});
 	}
@@ -151,7 +147,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithDescription() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
 			assertItemMetadata(metadataEnv, property).isProperty()
 				.hasDescription("The name of this simple properties.");
@@ -161,7 +157,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithDefaultValue() {
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
 			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue("boot");
 		});
@@ -170,7 +166,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithPrimitiveTypes() {
 		process(ImmutablePrimitiveProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutablePrimitiveProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(false);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet")).hasDefaultValue((byte) 0);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "letter")).hasDefaultValue(null);
@@ -186,7 +182,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithPrimitiveTypesAndDefaultValues() {
 		process(ImmutablePrimitiveWithDefaultsProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveWithDefaultsProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutablePrimitiveWithDefaultsProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(true);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet"))
 				.hasDefaultValue((byte) 120);
@@ -203,7 +199,8 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithPrimitiveWrapperTypesAndDefaultValues() {
 		process(ImmutablePrimitiveWrapperWithDefaultsProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveWrapperWithDefaultsProperties.class);
+			TypeDeclaration ownerElement = roundEnv
+				.getRootElement(ImmutablePrimitiveWrapperWithDefaultsProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(true);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet"))
 				.hasDefaultValue((byte) 120);
@@ -220,7 +217,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	@Test
 	void constructorParameterPropertyWithCollectionTypesAndDefaultValues() {
 		process(ImmutableCollectionProperties.class, (roundEnv, metadataEnv) -> {
-			TypeElement ownerElement = roundEnv.getRootElement(ImmutableCollectionProperties.class);
+			TypeDeclaration ownerElement = roundEnv.getRootElement(ImmutableCollectionProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "names")).hasDefaultValue(null);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flags"))
 				.hasDefaultValue(Arrays.asList(true, false));
@@ -229,17 +226,18 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		});
 	}
 
-	protected ConstructorParameterPropertyDescriptor createPropertyDescriptor(TypeElement ownerElement, String name) {
-		VariableElement constructorParameter = getConstructorParameter(ownerElement, name);
-		VariableElement field = getField(ownerElement, name);
-		ExecutableElement getter = getMethod(ownerElement, createAccessorMethodName("get", name));
-		ExecutableElement setter = getMethod(ownerElement, createAccessorMethodName("set", name));
-		return new ConstructorParameterPropertyDescriptor(name, field.asType(), constructorParameter, ownerElement,
+	protected ConstructorParameterPropertyDescriptor createPropertyDescriptor(TypeDeclaration ownerElement,
+			String name) {
+		VariableDeclaration constructorParameter = getConstructorParameter(ownerElement, name);
+		VariableDeclaration field = getField(ownerElement, name);
+		MethodDeclaration getter = getMethod(ownerElement, createAccessorMethodName("get", name));
+		MethodDeclaration setter = getMethod(ownerElement, createAccessorMethodName("set", name));
+		return new ConstructorParameterPropertyDescriptor(name, field.getType(), constructorParameter, ownerElement,
 				getter, setter, field);
 	}
 
-	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {
-		List<ExecutableElement> constructors = ElementFilter.constructorsIn(ownerElement.getEnclosedElements())
+	private VariableDeclaration getConstructorParameter(TypeDeclaration ownerElement, String name) {
+		List<? extends MethodDeclaration> constructors = ownerElement.getConstructors()
 			.stream()
 			.filter((constructor) -> !constructor.getParameters().isEmpty())
 			.toList();
@@ -249,7 +247,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		return constructors.get(0)
 			.getParameters()
 			.stream()
-			.filter((parameter) -> parameter.getSimpleName().toString().equals(name))
+			.filter((parameter) -> parameter.getName().equals(name))
 			.findFirst()
 			.orElse(null);
 	}

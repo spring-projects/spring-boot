@@ -24,27 +24,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 
 import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
-import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
-import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.model.AnnotationReference;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * Provide utilities to detect and validate configuration properties.
@@ -55,7 +44,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class MetadataGenerationEnvironment {
 
-	private static final String NULLABLE_ANNOTATION = "org.jspecify.annotations.Nullable";
+	private static final String INHERITED_ANNOTATION = "java.lang.annotation.Inherited";
 
 	private static final Set<String> TYPE_EXCLUDES = Set.of("com.zaxxer.hikari.IConnectionCustomizer",
 			"groovy.lang.MetaClass", "groovy.text.markup.MarkupTemplateEngine", "java.io.Writer", "java.io.PrintWriter",
@@ -68,19 +57,13 @@ class MetadataGenerationEnvironment {
 			"org.apache.commons.dbcp2.BasicDataSource#getPassword",
 			"org.apache.commons.dbcp2.BasicDataSource#getUsername");
 
-	private final TypeUtils typeUtils;
-
-	private final Elements elements;
-
-	private final Messager messager;
-
-	private final FieldValuesParser fieldValuesParser;
+	private final ProcessingContext context;
 
 	private final ConfigurationPropertiesSourceResolver sourceResolver;
 
-	private final Map<TypeElement, Map<String, Object>> defaultValues = new HashMap<>();
+	private final Map<TypeDeclaration, Map<String, Object>> defaultValues = new HashMap<>();
 
-	private final Map<TypeElement, SourceMetadata> sources = new HashMap<>();
+	private final Map<TypeDeclaration, SourceMetadata> sources = new HashMap<>();
 
 	private final String configurationPropertiesAnnotation;
 
@@ -102,16 +85,13 @@ class MetadataGenerationEnvironment {
 
 	private final String autowiredAnnotation;
 
-	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
+	MetadataGenerationEnvironment(ProcessingContext context, String configurationPropertiesAnnotation,
 			String configurationPropertiesSourceAnnotation, String nestedConfigurationPropertyAnnotation,
 			String deprecatedConfigurationPropertyAnnotation, String constructorBindingAnnotation,
 			String autowiredAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
 			String readOperationAnnotation, String nameAnnotation) {
-		this.typeUtils = new TypeUtils(environment);
-		this.elements = environment.getElementUtils();
-		this.messager = environment.getMessager();
-		this.fieldValuesParser = resolveFieldValuesParser(environment);
-		this.sourceResolver = new ConfigurationPropertiesSourceResolver(environment, this.typeUtils);
+		this.context = context;
+		this.sourceResolver = new ConfigurationPropertiesSourceResolver(context);
 		this.configurationPropertiesAnnotation = configurationPropertiesAnnotation;
 		this.configurationPropertiesSourceAnnotation = configurationPropertiesSourceAnnotation;
 		this.nestedConfigurationPropertyAnnotation = nestedConfigurationPropertyAnnotation;
@@ -124,25 +104,8 @@ class MetadataGenerationEnvironment {
 		this.nameAnnotation = nameAnnotation;
 	}
 
-	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
-		try {
-			return new JavaCompilerFieldValuesParser(env);
-		}
-		catch (Throwable ex) {
-			return FieldValuesParser.NONE;
-		}
-	}
-
-	TypeUtils getTypeUtils() {
-		return this.typeUtils;
-	}
-
-	boolean hasSourceTree(TypeElement element) {
-		return this.fieldValuesParser.hasSourceTree(element);
-	}
-
-	Messager getMessager() {
-		return this.messager;
+	ProcessingContext getContext() {
+		return this.context;
 	}
 
 	/**
@@ -152,9 +115,9 @@ class MetadataGenerationEnvironment {
 	 * @return the default value or {@code null} if the field does not exist or no default
 	 * value has been detected
 	 */
-	Object getFieldDefaultValue(TypeElement type, VariableElement field) {
-		return (field != null) ? this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
-			.get(field.getSimpleName().toString()) : null;
+	Object getFieldDefaultValue(TypeDeclaration type, VariableDeclaration field) {
+		return (field != null) ? this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(field.getName())
+				: null;
 	}
 
 	/**
@@ -163,17 +126,43 @@ class MetadataGenerationEnvironment {
 	 * @param getter the getter of the property (can be {@code null})
 	 * @return the {@link SourceMetadata} for the specified property
 	 */
-	SourceMetadata resolveSourceMetadata(VariableElement field, ExecutableElement getter) {
-		if (field != null && field.getEnclosingElement() instanceof TypeElement type) {
-			return this.sources.computeIfAbsent(type, this.sourceResolver::resolveSource);
+	SourceMetadata resolveSourceMetadata(VariableDeclaration field, MethodDeclaration getter) {
+		if (field != null && field.getEnclosingType() != null) {
+			return this.sources.computeIfAbsent(field.getEnclosingType(), this.sourceResolver::resolveSource);
 		}
-		if (getter != null && getter.getEnclosingElement() instanceof TypeElement type) {
-			return this.sources.computeIfAbsent(type, this.sourceResolver::resolveSource);
+		if (getter != null && getter.getEnclosingType() != null) {
+			return this.sources.computeIfAbsent(getter.getEnclosingType(), this.sourceResolver::resolveSource);
 		}
 		return SourceMetadata.EMPTY;
 	}
 
-	boolean isExcluded(TypeMirror type) {
+	/**
+	 * Return the description of the given {@code element}.
+	 * @param element the element or {@code null} if it is not available
+	 * @return the description or {@code null} if the element is not documented
+	 */
+	String getDescription(Declaration element) {
+		String javadoc = (element != null) ? element.getDocComment() : null;
+		javadoc = (javadoc != null) ? cleanUpJavaDoc(javadoc) : null;
+		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
+	}
+
+	private String cleanUpJavaDoc(String javadoc) {
+		StringBuilder result = new StringBuilder(javadoc.length());
+		char lastChar = '.';
+		for (int i = 0; i < javadoc.length(); i++) {
+			char ch = javadoc.charAt(i);
+			ch = (ch == '\r' || ch == '\n') ? ' ' : ch;
+			boolean repeatedSpace = (ch == ' ' && lastChar == ' ');
+			if (!repeatedSpace) {
+				result.append(ch);
+				lastChar = ch;
+			}
+		}
+		return result.toString().trim();
+	}
+
+	boolean isExcluded(TypeReference type) {
 		if (type == null) {
 			return false;
 		}
@@ -184,25 +173,28 @@ class MetadataGenerationEnvironment {
 		return TYPE_EXCLUDES.contains(typeName);
 	}
 
-	boolean isDeprecated(Element element) {
+	boolean isDeprecated(Declaration element) {
 		if (element == null) {
 			return false;
 		}
-		String elementName = element.getEnclosingElement() + "#" + element.getSimpleName();
-		if (DEPRECATION_EXCLUDES.contains(elementName)) {
-			return false;
+		TypeDeclaration enclosingType = element.getEnclosingType();
+		if (enclosingType != null) {
+			String elementName = enclosingType.getQualifiedName() + "#" + element.getName();
+			if (DEPRECATION_EXCLUDES.contains(elementName)) {
+				return false;
+			}
 		}
 		if (isElementDeprecated(element)) {
 			return true;
 		}
-		if (element instanceof VariableElement || element instanceof ExecutableElement) {
-			return isElementDeprecated(element.getEnclosingElement());
+		if (element instanceof VariableDeclaration || element instanceof MethodDeclaration) {
+			return isElementDeprecated(enclosingType);
 		}
 		return false;
 	}
 
-	ItemDeprecation resolveItemDeprecation(Element element) {
-		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
+	ItemDeprecation resolveItemDeprecation(Declaration element) {
+		AnnotationReference annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
 		String since = null;
@@ -214,29 +206,27 @@ class MetadataGenerationEnvironment {
 		return new ItemDeprecation(reason, replacement, since);
 	}
 
-	boolean hasConstructorBindingAnnotation(ExecutableElement element) {
+	boolean hasConstructorBindingAnnotation(MethodDeclaration element) {
 		return hasAnnotation(element, this.constructorBindingAnnotation, true);
 	}
 
-	boolean hasAutowiredAnnotation(ExecutableElement element) {
+	boolean hasAutowiredAnnotation(MethodDeclaration element) {
 		return hasAnnotation(element, this.autowiredAnnotation);
 	}
 
-	boolean hasAnnotation(Element element, String type) {
+	boolean hasAnnotation(Declaration element, String type) {
 		return hasAnnotation(element, type, false);
 	}
 
-	boolean hasAnnotation(Element element, String type, boolean considerMetaAnnotations) {
+	boolean hasAnnotation(Declaration element, String type, boolean considerMetaAnnotations) {
 		if (element != null) {
-			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
-				if (type.equals(annotation.getAnnotationType().toString())) {
-					return true;
-				}
+			if (getAnnotation(element, type) != null) {
+				return true;
 			}
 			if (considerMetaAnnotations) {
-				Set<Element> seen = new HashSet<>();
-				for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
-					if (hasMetaAnnotation(annotation.getAnnotationType().asElement(), type, seen)) {
+				Set<TypeDeclaration> seen = new HashSet<>();
+				for (AnnotationReference annotation : element.getAnnotations()) {
+					if (hasMetaAnnotation(annotation.getType(), type, seen)) {
 						return true;
 					}
 				}
@@ -246,12 +236,11 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	private boolean hasMetaAnnotation(Element annotationElement, String type, Set<Element> seen) {
+	private boolean hasMetaAnnotation(TypeDeclaration annotationElement, String type, Set<TypeDeclaration> seen) {
 		if (seen.add(annotationElement)) {
-			for (AnnotationMirror annotation : annotationElement.getAnnotationMirrors()) {
-				DeclaredType annotationType = annotation.getAnnotationType();
-				if (type.equals(annotationType.toString())
-						|| hasMetaAnnotation(annotationType.asElement(), type, seen)) {
+			for (AnnotationReference annotation : annotationElement.getAnnotations()) {
+				TypeDeclaration annotationType = annotation.getType();
+				if (type.equals(annotationType.getQualifiedName()) || hasMetaAnnotation(annotationType, type, seen)) {
 					return true;
 				}
 			}
@@ -259,21 +248,10 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	AnnotationMirror getAnnotation(Element element, String type) {
+	AnnotationReference getAnnotation(Declaration element, String type) {
 		if (element != null) {
-			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
-				if (type.equals(annotation.getAnnotationType().toString())) {
-					return annotation;
-				}
-			}
-		}
-		return null;
-	}
-
-	private AnnotationMirror getTypeUseAnnotation(Element element, String type) {
-		if (element != null) {
-			for (AnnotationMirror annotation : element.asType().getAnnotationMirrors()) {
-				if (type.equals(annotation.getAnnotationType().toString())) {
+			for (AnnotationReference annotation : element.getAnnotations()) {
+				if (type.equals(annotation.getType().getQualifiedName())) {
 					return annotation;
 				}
 			}
@@ -283,26 +261,27 @@ class MetadataGenerationEnvironment {
 
 	/**
 	 * Collect the annotations that are annotated or meta-annotated with the specified
-	 * {@link TypeElement annotation}.
+	 * annotation.
 	 * @param element the element to inspect
 	 * @param annotationType the annotation to discover
 	 * @return the annotations that are annotated or meta-annotated with this annotation
 	 */
-	List<Element> getElementsAnnotatedOrMetaAnnotatedWith(Element element, TypeElement annotationType) {
-		LinkedList<Element> stack = new LinkedList<>();
+	List<TypeDeclaration> getElementsAnnotatedOrMetaAnnotatedWith(TypeDeclaration element, String annotationType) {
+		LinkedList<TypeDeclaration> stack = new LinkedList<>();
 		stack.push(element);
 		collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack);
 		stack.removeFirst();
 		return Collections.unmodifiableList(stack);
 	}
 
-	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(TypeElement annotationType, LinkedList<Element> stack) {
-		Element element = stack.peekLast();
-		for (AnnotationMirror annotation : this.elements.getAllAnnotationMirrors(element)) {
-			Element annotationElement = annotation.getAnnotationType().asElement();
+	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(String annotationType,
+			LinkedList<TypeDeclaration> stack) {
+		TypeDeclaration element = stack.peekLast();
+		for (AnnotationReference annotation : getAllAnnotations(element)) {
+			TypeDeclaration annotationElement = annotation.getType();
 			if (!stack.contains(annotationElement)) {
 				stack.addLast(annotationElement);
-				if (annotationElement.equals(annotationType)) {
+				if (annotationElement.getQualifiedName().equals(annotationType)) {
 					return true;
 				}
 				if (!collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack)) {
@@ -313,101 +292,93 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
-		Map<String, Object> values = new LinkedHashMap<>();
-		annotation.getElementValues()
-			.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
-		return values;
-	}
-
-	String getAnnotationElementStringValue(AnnotationMirror annotation, String name) {
-		return annotation.getElementValues()
-			.entrySet()
-			.stream()
-			.filter((element) -> element.getKey().getSimpleName().toString().equals(name))
-			.map((element) -> asString(getAnnotationValue(element.getValue())))
-			.findFirst()
-			.orElse(null);
-	}
-
-	private Object getAnnotationValue(AnnotationValue annotationValue) {
-		Object value = annotationValue.getValue();
-		if (value instanceof List) {
-			List<Object> values = new ArrayList<>();
-			((List<?>) value).forEach((v) -> values.add(((AnnotationValue) v).getValue()));
-			return values;
+	/**
+	 * Return the annotations that are present on the given {@code element}, either
+	 * directly or because they are inherited from a superclass.
+	 * @param element the element to inspect
+	 * @return the annotations of the element
+	 */
+	private List<AnnotationReference> getAllAnnotations(TypeDeclaration element) {
+		List<AnnotationReference> annotations = new ArrayList<>(element.getAnnotations());
+		Set<TypeDeclaration> annotationTypes = new HashSet<>();
+		annotations.forEach((annotation) -> annotationTypes.add(annotation.getType()));
+		TypeDeclaration superType = element.getSuperclass();
+		while (superType != null) {
+			for (AnnotationReference annotation : superType.getAnnotations()) {
+				TypeDeclaration annotationType = annotation.getType();
+				if (hasAnnotation(annotationType, INHERITED_ANNOTATION) && annotationTypes.add(annotationType)) {
+					annotations.add(annotation);
+				}
+			}
+			superType = superType.getSuperclass();
 		}
-		return value;
+		return annotations;
+	}
+
+	Map<String, Object> getAnnotationElementValues(AnnotationReference annotation) {
+		return annotation.getValues();
+	}
+
+	String getAnnotationElementStringValue(AnnotationReference annotation, String name) {
+		return asString(annotation.getValues().get(name));
 	}
 
 	private String asString(Object value) {
 		return (value == null || value.toString().isEmpty()) ? null : (String) value;
 	}
 
-	TypeElement getConfigurationPropertiesAnnotationElement() {
-		return this.elements.getTypeElement(this.configurationPropertiesAnnotation);
+	String getConfigurationPropertiesAnnotationName() {
+		return this.configurationPropertiesAnnotation;
 	}
 
-	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
+	AnnotationReference getConfigurationPropertiesAnnotation(Declaration element) {
 		return getAnnotation(element, this.configurationPropertiesAnnotation);
 	}
 
-	TypeElement getConfigurationPropertiesSourceAnnotationElement() {
-		return this.elements.getTypeElement(this.configurationPropertiesSourceAnnotation);
+	String getConfigurationPropertiesSourceAnnotationName() {
+		return this.configurationPropertiesSourceAnnotation;
 	}
 
-	AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
+	AnnotationReference getNestedConfigurationPropertyAnnotation(Declaration element) {
 		return getAnnotation(element, this.nestedConfigurationPropertyAnnotation);
 	}
 
-	AnnotationMirror getDefaultValueAnnotation(Element element) {
+	AnnotationReference getDefaultValueAnnotation(Declaration element) {
 		return getAnnotation(element, this.defaultValueAnnotation);
 	}
 
-	Set<TypeElement> getEndpointAnnotationElements() {
-		return this.endpointAnnotations.stream()
-			.map(this.elements::getTypeElement)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toSet());
+	Set<String> getEndpointAnnotationNames() {
+		return this.endpointAnnotations;
 	}
 
-	AnnotationMirror getReadOperationAnnotation(Element element) {
+	AnnotationReference getReadOperationAnnotation(Declaration element) {
 		return getAnnotation(element, this.readOperationAnnotation);
 	}
 
-	AnnotationMirror getNameAnnotation(Element element) {
+	AnnotationReference getNameAnnotation(Declaration element) {
 		return getAnnotation(element, this.nameAnnotation);
 	}
 
-	boolean hasNullableAnnotation(Element element) {
-		return getTypeUseAnnotation(element, NULLABLE_ANNOTATION) != null;
+	private boolean isElementDeprecated(Declaration element) {
+		return element != null
+				&& (element.isDeprecated() || hasAnnotation(element, this.deprecatedConfigurationPropertyAnnotation));
 	}
 
-	private boolean isElementDeprecated(Element element) {
-		return hasAnnotation(element, "java.lang.Deprecated")
-				|| hasAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
-	}
-
-	private Map<String, Object> resolveFieldValues(TypeElement element) {
+	private Map<String, Object> resolveFieldValues(TypeDeclaration element) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		resolveFieldValuesFor(values, element);
 		return values;
 	}
 
-	private void resolveFieldValuesFor(Map<String, Object> values, TypeElement element) {
-		try {
-			this.fieldValuesParser.getFieldValues(element).forEach((name, value) -> {
-				if (!values.containsKey(name)) {
-					values.put(name, value);
-				}
-			});
-		}
-		catch (Exception ex) {
-			// continue
-		}
-		Element superType = this.typeUtils.asElement(element.getSuperclass());
-		if (superType instanceof TypeElement typeElement && superType.asType().getKind() != TypeKind.NONE) {
-			resolveFieldValuesFor(values, typeElement);
+	private void resolveFieldValuesFor(Map<String, Object> values, TypeDeclaration element) {
+		element.getFieldValues().forEach((name, value) -> {
+			if (!values.containsKey(name)) {
+				values.put(name, value);
+			}
+		});
+		TypeDeclaration superType = element.getSuperclass();
+		if (superType != null) {
+			resolveFieldValuesFor(values, superType);
 		}
 	}
 
