@@ -54,6 +54,7 @@ dependencies {
 	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
+		exclude(group: "org.slf4j", module: "jcl-over-slf4j")
 	}
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 

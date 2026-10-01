@@ -67,6 +67,7 @@ dependencies {
 	testImplementation("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
+		exclude(group: "org.slf4j", module: "jcl-over-slf4j")
 	}
 	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")

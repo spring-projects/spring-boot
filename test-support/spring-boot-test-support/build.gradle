@@ -47,7 +47,7 @@ dependencies {
 	compileOnly("org.springframework.data:spring-data-redis")
 
 	implementation("jakarta.inject:jakarta.inject-api")
-	implementation("org.apache.maven.resolver:maven-resolver-supplier") {
+	implementation("org.apache.maven.resolver:maven-resolver-supplier-mvn3") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 
