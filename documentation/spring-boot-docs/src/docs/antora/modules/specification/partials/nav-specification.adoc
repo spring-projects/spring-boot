@@ -4,6 +4,7 @@
 *** xref:specification:configuration-metadata/format.adoc[]
 *** xref:specification:configuration-metadata/manual-hints.adoc[]
 *** xref:specification:configuration-metadata/annotation-processor.adoc[]
+*** xref:specification:configuration-metadata/symbol-processor.adoc[]
 
 ** xref:specification:executable-jar/index.adoc[]
 *** xref:specification:executable-jar/nested-jars.adoc[]

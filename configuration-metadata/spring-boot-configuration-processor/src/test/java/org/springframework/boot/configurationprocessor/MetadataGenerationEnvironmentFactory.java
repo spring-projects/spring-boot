@@ -40,7 +40,7 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 						TestConfigurationMetadataAnnotationProcessor.REST_CONTROLLER_ENDPOINT_ANNOTATION,
 						TestConfigurationMetadataAnnotationProcessor.SERVLET_ENDPOINT_ANNOTATION,
 						TestConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION));
-		return new MetadataGenerationEnvironment(environment,
+		return new MetadataGenerationEnvironment(new JavaProcessingContext(environment),
 				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NESTED_CONFIGURATION_PROPERTY_ANNOTATION,

@@ -23,18 +23,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
-import javax.lang.model.element.RecordComponentElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
-import javax.tools.Diagnostic.Kind;
-
 import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
+import org.springframework.boot.configurationprocessor.model.AnnotationReference;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * Resolve {@link PropertyDescriptor} instances.
@@ -53,15 +47,15 @@ class PropertyDescriptorResolver {
 
 	/**
 	 * Return the {@link PropertyDescriptor} instances that are valid candidates for the
-	 * specified {@link TypeElement type} based on the specified {@link ExecutableElement
-	 * factory method}, if any.
+	 * specified {@link TypeDeclaration type} based on the specified
+	 * {@link MethodDeclaration factory method}, if any.
 	 * @param type the target type
 	 * @param factoryMethod the method that triggered the metadata for that {@code type}
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	Stream<PropertyDescriptor> resolve(TypeElement type, ExecutableElement factoryMethod) {
-		TypeElementMembers members = new TypeElementMembers(this.environment, type);
+	Stream<PropertyDescriptor> resolve(TypeDeclaration type, MethodDeclaration factoryMethod) {
+		TypeElementMembers members = new TypeElementMembers(type);
 		if (factoryMethod != null) {
 			return resolveJavaBeanProperties(type, members, factoryMethod);
 		}
@@ -70,15 +64,15 @@ class PropertyDescriptorResolver {
 
 	private Stream<PropertyDescriptor> resolve(Bindable bindable, TypeElementMembers members) {
 		if (bindable.isConstructorBindingEnabled()) {
-			ExecutableElement bindConstructor = bindable.getBindConstructor();
+			MethodDeclaration bindConstructor = bindable.getBindConstructor();
 			return (bindConstructor != null)
 					? resolveConstructorBoundProperties(bindable.getType(), members, bindConstructor) : Stream.empty();
 		}
 		return resolveJavaBeanProperties(bindable.getType(), members, null);
 	}
 
-	private Stream<PropertyDescriptor> resolveConstructorBoundProperties(TypeElement declaringElement,
-			TypeElementMembers members, ExecutableElement bindConstructor) {
+	private Stream<PropertyDescriptor> resolveConstructorBoundProperties(TypeDeclaration declaringElement,
+			TypeElementMembers members, MethodDeclaration bindConstructor) {
 		Map<String, PropertyDescriptor> candidates = new LinkedHashMap<>();
 		bindConstructor.getParameters().forEach((parameter) -> {
 			PropertyDescriptor descriptor = extracted(declaringElement, members, parameter);
@@ -87,15 +81,15 @@ class PropertyDescriptorResolver {
 		return candidates.values().stream();
 	}
 
-	private PropertyDescriptor extracted(TypeElement declaringElement, TypeElementMembers members,
-			VariableElement parameter) {
-		String parameterName = parameter.getSimpleName().toString();
+	private PropertyDescriptor extracted(TypeDeclaration declaringElement, TypeElementMembers members,
+			VariableDeclaration parameter) {
+		String parameterName = parameter.getName();
 		String name = getPropertyName(parameter, parameterName);
-		TypeMirror type = parameter.asType();
-		ExecutableElement getter = members.getPublicGetter(parameterName, type);
-		ExecutableElement setter = members.getPublicSetter(parameterName, type);
-		VariableElement field = members.getFields().get(parameterName);
-		RecordComponentElement recordComponent = members.getRecordComponents().get(parameterName);
+		TypeReference type = parameter.getType();
+		MethodDeclaration getter = members.getPublicGetter(parameterName, type);
+		MethodDeclaration setter = members.getPublicSetter(parameterName, type);
+		VariableDeclaration field = members.getFields().get(parameterName);
+		VariableDeclaration recordComponent = members.getRecordComponents().get(parameterName);
 		SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
 		PropertyDescriptor propertyDescriptor = (recordComponent != null)
 				? new RecordParameterPropertyDescriptor(name, type, parameter, declaringElement, getter,
@@ -105,22 +99,22 @@ class PropertyDescriptorResolver {
 		return sourceMetadata.createPropertyDescriptor(name, propertyDescriptor);
 	}
 
-	private String getPropertyName(VariableElement parameter, String fallback) {
-		AnnotationMirror nameAnnotation = this.environment.getNameAnnotation(parameter);
+	private String getPropertyName(VariableDeclaration parameter, String fallback) {
+		AnnotationReference nameAnnotation = this.environment.getNameAnnotation(parameter);
 		if (nameAnnotation != null) {
 			return this.environment.getAnnotationElementStringValue(nameAnnotation, "value");
 		}
 		return fallback;
 	}
 
-	private Stream<PropertyDescriptor> resolveJavaBeanProperties(TypeElement declaringElement,
-			TypeElementMembers members, ExecutableElement factoryMethod) {
+	private Stream<PropertyDescriptor> resolveJavaBeanProperties(TypeDeclaration declaringElement,
+			TypeElementMembers members, MethodDeclaration factoryMethod) {
 		// First check if we have regular java bean properties there
 		Map<String, PropertyDescriptor> candidates = new LinkedHashMap<>();
 		members.getPublicGetters().forEach((name, getters) -> {
-			VariableElement field = members.getFields().get(name);
-			ExecutableElement getter = findMatchingGetter(members, getters, field);
-			TypeMirror propertyType = getter.getReturnType();
+			VariableDeclaration field = members.getFields().get(name);
+			MethodDeclaration getter = findMatchingGetter(members, getters, field);
+			TypeReference propertyType = getter.getReturnType();
 			SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
 			register(candidates,
 					sourceMetadata.createPropertyDescriptor(getPropertyName(field, name),
@@ -130,9 +124,9 @@ class PropertyDescriptorResolver {
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
-			TypeMirror propertyType = field.asType();
-			ExecutableElement getter = members.getPublicGetter(name, propertyType);
-			ExecutableElement setter = members.getPublicSetter(name, propertyType);
+			TypeReference propertyType = field.getType();
+			MethodDeclaration getter = members.getPublicGetter(name, propertyType);
+			MethodDeclaration setter = members.getPublicSetter(name, propertyType);
 			SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
 			register(candidates,
 					sourceMetadata.createPropertyDescriptor(getPropertyName(field, name),
@@ -142,10 +136,10 @@ class PropertyDescriptorResolver {
 		return candidates.values().stream();
 	}
 
-	private ExecutableElement findMatchingGetter(TypeElementMembers members, List<ExecutableElement> candidates,
-			VariableElement field) {
+	private MethodDeclaration findMatchingGetter(TypeElementMembers members, List<MethodDeclaration> candidates,
+			VariableDeclaration field) {
 		if (candidates.size() > 1 && field != null) {
-			return members.getMatchingGetter(candidates, field.asType());
+			return members.getMatchingGetter(candidates, field.getType());
 		}
 		return candidates.get(0);
 	}
@@ -159,10 +153,9 @@ class PropertyDescriptorResolver {
 			candidates.put(descriptor.getName(), descriptor);
 		}
 		else if (isDistinctDescriptor(existing, descriptor)) {
-			this.environment.getMessager()
-				.printMessage(Kind.ERROR,
-						"Property name '%s' maps to distinct properties in type %s".formatted(descriptor.getName(),
-								this.environment.getTypeUtils().getQualifiedName(descriptor.getDeclaringElement())));
+			this.environment.getContext()
+				.error("Property name '%s' maps to distinct properties in type %s".formatted(descriptor.getName(),
+						descriptor.getDeclaringElement().getQualifiedName()), null, null);
 		}
 	}
 
@@ -176,23 +169,24 @@ class PropertyDescriptorResolver {
 	}
 
 	/**
-	 * Wrapper around a {@link TypeElement} that could be bound.
+	 * Wrapper around a {@link TypeDeclaration} that could be bound.
 	 */
 	private static class Bindable {
 
-		private final TypeElement type;
+		private final TypeDeclaration type;
 
-		private final List<ExecutableElement> constructors;
+		private final List<MethodDeclaration> constructors;
 
-		private final List<ExecutableElement> boundConstructors;
+		private final List<MethodDeclaration> boundConstructors;
 
-		Bindable(TypeElement type, List<ExecutableElement> constructors, List<ExecutableElement> boundConstructors) {
+		Bindable(TypeDeclaration type, List<MethodDeclaration> constructors,
+				List<MethodDeclaration> boundConstructors) {
 			this.type = type;
 			this.constructors = constructors;
 			this.boundConstructors = boundConstructors;
 		}
 
-		TypeElement getType() {
+		TypeDeclaration getType() {
 			return this.type;
 		}
 
@@ -200,7 +194,7 @@ class PropertyDescriptorResolver {
 			return !this.boundConstructors.isEmpty();
 		}
 
-		ExecutableElement getBindConstructor() {
+		MethodDeclaration getBindConstructor() {
 			if (this.boundConstructors.isEmpty()) {
 				return findBoundConstructor();
 			}
@@ -210,9 +204,9 @@ class PropertyDescriptorResolver {
 			return null;
 		}
 
-		private ExecutableElement findBoundConstructor() {
-			ExecutableElement boundConstructor = null;
-			for (ExecutableElement candidate : this.constructors) {
+		private MethodDeclaration findBoundConstructor() {
+			MethodDeclaration boundConstructor = null;
+			for (MethodDeclaration candidate : this.constructors) {
 				if (!candidate.getParameters().isEmpty()) {
 					if (boundConstructor != null) {
 						return null;
@@ -223,28 +217,27 @@ class PropertyDescriptorResolver {
 			return boundConstructor;
 		}
 
-		static Bindable of(TypeElement type, MetadataGenerationEnvironment env) {
-			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
-			List<ExecutableElement> boundConstructors = getBoundConstructors(type, env, constructors);
+		static Bindable of(TypeDeclaration type, MetadataGenerationEnvironment env) {
+			List<MethodDeclaration> constructors = List.copyOf(type.getConstructors());
+			List<MethodDeclaration> boundConstructors = getBoundConstructors(type, env, constructors);
 			return new Bindable(type, constructors, boundConstructors);
 		}
 
-		private static List<ExecutableElement> getBoundConstructors(TypeElement type, MetadataGenerationEnvironment env,
-				List<ExecutableElement> constructors) {
-			ExecutableElement bindConstructor = deduceBindConstructor(type, constructors, env);
+		private static List<MethodDeclaration> getBoundConstructors(TypeDeclaration type,
+				MetadataGenerationEnvironment env, List<MethodDeclaration> constructors) {
+			MethodDeclaration bindConstructor = deduceBindConstructor(type, constructors, env);
 			if (bindConstructor != null) {
 				return Collections.singletonList(bindConstructor);
 			}
 			return constructors.stream().filter(env::hasConstructorBindingAnnotation).toList();
 		}
 
-		private static ExecutableElement deduceBindConstructor(TypeElement type, List<ExecutableElement> constructors,
-				MetadataGenerationEnvironment env) {
+		private static MethodDeclaration deduceBindConstructor(TypeDeclaration type,
+				List<MethodDeclaration> constructors, MetadataGenerationEnvironment env) {
 			if (constructors.size() == 1) {
-				ExecutableElement candidate = constructors.get(0);
+				MethodDeclaration candidate = constructors.get(0);
 				if (!candidate.getParameters().isEmpty() && !env.hasAutowiredAnnotation(candidate)) {
-					if (type.getNestingKind() == NestingKind.MEMBER
-							&& candidate.getModifiers().contains(Modifier.PRIVATE)) {
+					if (type.getEnclosingType() != null && candidate.isPrivate()) {
 						return null;
 					}
 					return candidate;

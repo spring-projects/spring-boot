@@ -16,14 +16,12 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.RecordComponentElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * A {@link PropertyDescriptor} for a record parameter.
@@ -34,16 +32,16 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 
-	private final RecordComponentElement recordComponent;
+	private final VariableDeclaration recordComponent;
 
-	RecordParameterPropertyDescriptor(String name, TypeMirror type, VariableElement parameter,
-			TypeElement declaringElement, ExecutableElement getter, RecordComponentElement recordComponent) {
+	RecordParameterPropertyDescriptor(String name, TypeReference type, VariableDeclaration parameter,
+			TypeDeclaration declaringElement, MethodDeclaration getter, VariableDeclaration recordComponent) {
 		super(name, type, parameter, declaringElement, getter);
 		this.recordComponent = recordComponent;
 	}
 
 	@Override
-	protected Element getSourceElement() {
+	protected Declaration getSourceElement() {
 		return this.recordComponent;
 	}
 
@@ -60,7 +58,7 @@ class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 
 	@Override
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
-		return environment.getTypeUtils().getJavaDoc(this.recordComponent);
+		return environment.getDescription(this.recordComponent);
 	}
 
 }

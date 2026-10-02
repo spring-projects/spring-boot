@@ -31,7 +31,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * compilation does not delete it.
  *
  * @author Agustin Palazzo
- * @see ConfigurationMetadataAnnotationProcessor
+ * @see ConfigurationMetadataGenerator
  */
 class DescriptionCache {
 
@@ -63,9 +63,9 @@ class DescriptionCache {
 
 	/**
 	 * Replace the cache with the given metadata. After
-	 * {@link ConfigurationMetadataAnnotationProcessor#fillCachedDescriptions} has
-	 * restored descriptions from the cache, the metadata is the complete picture of the
-	 * current build. Replacing (instead of merging) ensures that entries for deleted or
+	 * {@link ConfigurationMetadataGenerator#fillCachedDescriptions} has restored
+	 * descriptions from the cache, the metadata is the complete picture of the current
+	 * build. Replacing (instead of merging) ensures that entries for deleted or
 	 * de-annotated types are automatically pruned.
 	 * @param metadata the current build's metadata with descriptions already filled
 	 */
