@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE example [<!ELEMENT example (name,age,active)><!ELEMENT name (#PCDATA)><!ELEMENT age (#PCDATA)><!ELEMENT active (#PCDATA)><!ENTITY who "Spring">]>
+<example><name>&who;</name><age>100</age><active>true</active></example>
