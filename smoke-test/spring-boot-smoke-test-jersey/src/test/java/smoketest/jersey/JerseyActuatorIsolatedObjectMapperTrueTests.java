@@ -4,8 +4,8 @@
 
 package smoketest.jersey;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -19,12 +19,14 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for Jersey actuator when using an isolated {@link ObjectMapper}.
+ * Integration test for Jersey actuator when using an isolated {@link JsonMapper}.
  *
  * @author Phillip Webb
+ * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "management.endpoints.jackson.isolated-json-mapper=true")
+		properties = { "management.endpoints.jackson.isolated-json-mapper=true",
+				"spring.jackson.mapper.require-setters-for-getters=true", "spring.jackson.visibility.field=none" })
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
 class JerseyActuatorIsolatedObjectMapperTrueTests {
 
