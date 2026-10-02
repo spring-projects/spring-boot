@@ -23,18 +23,14 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
-import jakarta.ws.rs.ext.ContextResolver;
-import jakarta.xml.bind.annotation.XmlElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,7 +46,6 @@ import org.springframework.boot.web.servlet.DynamicRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
@@ -66,9 +60,11 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Kristoffer Larsen Hopland
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -171,61 +167,6 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 				// will try and register a ContextLoaderListener which we don't need
 				servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 			}
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(JacksonFeature.class)
-	@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
-	static class Jackson2ResourceConfigCustomizerConfiguration {
-
-		@Bean
-		ResourceConfigCustomizer jacksonResourceConfigCustomizer(
-				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
-			return (ResourceConfig config) -> {
-				config.register(JacksonFeature.class);
-				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
-			};
-		}
-
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass({ com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector.class,
-				XmlElement.class })
-		static class JaxbJackson2ObjectMapperCustomizerConfiguration {
-
-			@Autowired
-			void addJaxbAnnotationIntrospector(com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
-				com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector(
-						objectMapper.getTypeFactory());
-				objectMapper.setAnnotationIntrospectors(
-						createPair(objectMapper.getSerializationConfig(), jaxbAnnotationIntrospector),
-						createPair(objectMapper.getDeserializationConfig(), jaxbAnnotationIntrospector));
-			}
-
-			private com.fasterxml.jackson.databind.AnnotationIntrospector createPair(
-					com.fasterxml.jackson.databind.cfg.MapperConfig<?> config,
-					com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
-				return com.fasterxml.jackson.databind.AnnotationIntrospector.pair(config.getAnnotationIntrospector(),
-						jaxbAnnotationIntrospector);
-			}
-
-		}
-
-		private static final class ObjectMapperContextResolver
-				implements ContextResolver<com.fasterxml.jackson.databind.ObjectMapper> {
-
-			private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
-
-			private ObjectMapperContextResolver(com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
-				this.objectMapper = objectMapper;
-			}
-
-			@Override
-			public com.fasterxml.jackson.databind.ObjectMapper getContext(Class<?> type) {
-				return this.objectMapper;
-			}
-
 		}
 
 	}

@@ -506,6 +506,14 @@ To avoid this limitation, the `packages` method should not be used, and endpoint
 
 For more advanced customizations, you can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer[].
 
+Jersey uses Jackson 3 for JSON serialization and deserialization by default.
+The auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] is registered with Jersey and can be customized using `spring.jackson.*` properties or javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
+See xref:features/json.adoc#features.json.jackson[] for more details.
+
+To use the deprecated Jackson 2 support, set configprop:spring.jersey.preferred-json-mapper[] to `jackson2`.
+Jersey then uses the auto-configured Jackson 2 `ObjectMapper`, including `spring.jackson2.*` settings and Jackson 2 customizations.
+Both Jackson versions are included in the starter; dependency exclusions are not required to select a mapper.
+
 All the registered endpoints should be a javadoc:org.springframework.stereotype.Component[format=annotation] with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
 include-code::MyEndpoint[]
