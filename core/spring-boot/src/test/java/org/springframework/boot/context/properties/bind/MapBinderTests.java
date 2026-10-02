@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
@@ -253,10 +255,78 @@ class MapBinderTests {
 		existing.put("baz", 1001);
 		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP.withExistingValue(existing);
 		Map<String, Integer> result = this.binder.bind("foo", target).get();
-		assertThat(result).isExactlyInstanceOf(HashMap.class);
 		assertThat(result).hasSize(2);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("baz", 1001);
+		assertThat(result).isUnmodifiable();
+	}
+
+	@Test
+	void bindToMapShouldReturnUnmodifiableMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "1");
+		source.put("foo.baz", "2");
+		this.sources.add(source);
+		Map<String, Integer> result = this.binder.bind("foo", STRING_INTEGER_MAP).get();
+		assertThat(result).hasSize(2);
+		assertThat(result).containsEntry("bar", 1);
+		assertThat(result).containsEntry("baz", 2);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.put("qux", 3));
+	}
+
+	@Test
+	void bindToConcreteMapTypeShouldReturnModifiableMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "1");
+		this.sources.add(source);
+		ResolvableType type = ResolvableType.forClassWithGenerics(HashMap.class, String.class, Integer.class);
+		@SuppressWarnings("unchecked")
+		HashMap<String, Integer> result = (HashMap<String, Integer>) this.binder.bind("foo", Bindable.of(type)).get();
+		assertThat(result).containsEntry("bar", 1);
+		result.put("baz", 2);
+		assertThat(result).containsEntry("baz", 2);
+	}
+
+	@Test
+	void bindToNavigableMapShouldReturnUnmodifiableNavigableMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.b", "2");
+		source.put("foo.a", "1");
+		this.sources.add(source);
+		Bindable<NavigableMap<String, Integer>> target = Bindable
+			.of(ResolvableType.forClassWithGenerics(NavigableMap.class, String.class, Integer.class));
+		NavigableMap<String, Integer> result = this.binder.bind("foo", target).get();
+		assertThat(result).containsExactly(entry("a", 1), entry("b", 2));
+		assertThat(result).isInstanceOf(NavigableMap.class);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.put("c", 3));
+	}
+
+	@Test
+	void bindToMapWithCollectionValuesShouldReturnUnmodifiableValues() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar[0]", "1");
+		source.put("foo.bar[1]", "2");
+		source.put("foo.baz[0]", "3");
+		this.sources.add(source);
+		Bindable<Map<String, List<Integer>>> target = Bindable.of(ResolvableType.forClassWithGenerics(Map.class,
+				ResolvableType.forClass(String.class), ResolvableType.forClassWithGenerics(List.class, Integer.class)));
+		Map<String, List<Integer>> result = this.binder.bind("foo", target).get();
+		List<Integer> barValues = result.get("bar");
+		assertThat(result).hasSize(2);
+		assertThat(barValues).isNotNull();
+		assertThat(barValues).containsExactly(1, 2);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.put("qux", List.of(4)));
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> barValues.add(3));
+	}
+
+	@Test
+	void bindToEmptyMapShouldReturnUnmodifiableEmptyMap() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "");
+		this.sources.add(source);
+		Map<String, String> result = this.binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(result).isEmpty();
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> result.put("a", "b"));
 	}
 
 	@Test
