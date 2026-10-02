@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.xml.bind.annotation.XmlTransient;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
@@ -47,20 +49,21 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using custom ObjectMapper.
+ * Tests for {@link JerseyAutoConfiguration} with a JsonMapper.
  *
  * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson2.default-property-inclusion=non_null")
+		properties = "spring.jackson.default-property-inclusion:non-null")
 @DirtiesContext
-class JerseyAutoConfigurationCustomObjectMapperProviderTests {
+class JerseyAutoConfigurationJsonMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void contextLoads() {
+	void responseIsSerializedUsingAutoConfiguredJsonMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -89,20 +92,23 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	public static class Message {
 
-		private String subject;
+		private @Nullable String subject;
 
 		private @Nullable String body;
 
-		Message(String subject, @Nullable String body) {
+		Message() {
+		}
+
+		Message(@Nullable String subject, @Nullable String body) {
 			this.subject = subject;
 			this.body = body;
 		}
 
-		public String getSubject() {
+		public @Nullable String getSubject() {
 			return this.subject;
 		}
 
-		public void setSubject(String subject) {
+		public void setSubject(@Nullable String subject) {
 			this.subject = subject;
 		}
 
@@ -114,15 +120,18 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 			this.body = body;
 		}
 
+		@XmlTransient
+		public String getFoo() {
+			return "foo";
+		}
+
 	}
 
-	@SuppressWarnings("removal")
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ TomcatServletWebServerAutoConfiguration.class,
-			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+	@Import({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 

@@ -16,27 +16,28 @@
 
 package org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.std.StdScalarSerializer;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -85,9 +86,9 @@ class JerseyEndpointIntegrationTests {
 	}
 
 	@Test
-	void endpointObjectMapperCanBeApplied() {
+	void endpointJsonMapperCanBeApplied() {
 		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
-				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
+				ResourceConfigConfiguration.class, EndpointJsonMapperConfiguration.class });
 		contextRunner.run((context) -> {
 			WebServer webServer = context
 				.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
@@ -139,13 +140,11 @@ class JerseyEndpointIntegrationTests {
 			.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0");
 	}
 
-	@SuppressWarnings("removal")
 	private Class<?>[] getAutoconfigurations(Class<?>... additional) {
-		List<Class<?>> autoconfigurations = new ArrayList<>(
-				Arrays.asList(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-						JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
-						TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
+		List<Class<?>> autoconfigurations = new ArrayList<>(Arrays.asList(JacksonAutoConfiguration.class,
+				JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
+				TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
 		autoconfigurations.addAll(Arrays.asList(additional));
 		return autoconfigurations.toArray(new Class<?>[0]);
 	}
@@ -187,17 +186,15 @@ class JerseyEndpointIntegrationTests {
 
 	}
 
-	@Configuration
-	@SuppressWarnings({ "deprecation", "removal" })
-	static class EndpointObjectMapperConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class EndpointJsonMapperConfiguration {
 
 		@Bean
-		org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper() {
+		EndpointJsonMapper endpointJsonMapper() {
 			SimpleModule module = new SimpleModule();
 			module.addSerializer(String.class, new ReverseStringSerializer());
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.registerModule(module);
-			return () -> objectMapper;
+			JsonMapper jsonMapper = JsonMapper.builder().addModule(module).build();
+			return () -> jsonMapper;
 		}
 
 		static class ReverseStringSerializer extends StdScalarSerializer<Object> {
@@ -207,22 +204,22 @@ class JerseyEndpointIntegrationTests {
 			}
 
 			@Override
-			public boolean isEmpty(SerializerProvider provider, Object value) {
+			public boolean isEmpty(SerializationContext context, Object value) {
 				return ((String) value).isEmpty();
 			}
 
 			@Override
-			public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+			public void serialize(Object value, JsonGenerator gen, SerializationContext context) {
 				serialize(value, gen);
 			}
 
 			@Override
-			public final void serializeWithType(Object value, JsonGenerator gen, SerializerProvider provider,
-					TypeSerializer typeSer) throws IOException {
+			public final void serializeWithType(Object value, JsonGenerator gen, SerializationContext context,
+					TypeSerializer typeSer) {
 				serialize(value, gen);
 			}
 
-			private void serialize(Object value, JsonGenerator gen) throws IOException {
+			private void serialize(Object value, JsonGenerator gen) {
 				StringBuilder builder = new StringBuilder((String) value);
 				gen.writeString(builder.reverse().toString());
 			}

@@ -61,7 +61,7 @@ abstract class AbstractJerseyApplicationTests {
 	void actuatorStatus() {
 		ResponseEntity<String> entity = getForEntity("/actuator/health");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\",\"groups\":[\"liveness\",\"readiness\"]}");
+		assertThat(entity.getBody()).isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}");
 	}
 
 	private ResponseEntity<String> getForEntity(String path) {

@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.application.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.HealthEndpointJerseyExtensionAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
@@ -43,13 +44,10 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
-	@SuppressWarnings("removal")
 	JerseyHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(
-					org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-					JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
-					TomcatServletWebServerAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
+					EndpointAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
 					TomcatServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					JerseyAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class,

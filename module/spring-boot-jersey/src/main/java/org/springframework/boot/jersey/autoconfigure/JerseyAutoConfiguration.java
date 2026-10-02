@@ -32,6 +32,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +67,11 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Rene Schakmann
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -171,6 +174,36 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 				// will try and register a ContextLoaderListener which we don't need
 				servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ org.glassfish.jersey.jackson3.JacksonFeature.class, JsonMapper.class })
+	@ConditionalOnSingleCandidate(JsonMapper.class)
+	static class JacksonResourceConfigCustomizerConfiguration {
+
+		@Bean
+		ResourceConfigCustomizer jacksonResourceConfigCustomizer(JsonMapper jsonMapper) {
+			return (ResourceConfig config) -> {
+				config.register(org.glassfish.jersey.jackson3.JacksonFeature.class);
+				config.register(new JsonMapperContextResolver(jsonMapper), ContextResolver.class);
+			};
+		}
+
+		private static final class JsonMapperContextResolver implements ContextResolver<JsonMapper> {
+
+			private final JsonMapper jsonMapper;
+
+			private JsonMapperContextResolver(JsonMapper jsonMapper) {
+				this.jsonMapper = jsonMapper;
+			}
+
+			@Override
+			public JsonMapper getContext(Class<?> type) {
+				return this.jsonMapper;
+			}
+
 		}
 
 	}

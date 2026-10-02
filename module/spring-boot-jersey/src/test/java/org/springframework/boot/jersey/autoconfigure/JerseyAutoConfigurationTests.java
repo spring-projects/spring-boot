@@ -18,16 +18,16 @@ package org.springframework.boot.jersey.autoconfigure;
 
 import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.ws.rs.ext.ContextResolver;
+import org.glassfish.jersey.jackson3.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration.JerseyWebApplicationInitializer;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JerseyAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Rene Schakmann
  */
 class JerseyAutoConfigurationTests {
 
@@ -75,53 +76,20 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsAvailableTheObjectMapperIsCustomizedWithAnAnnotationIntrospector() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
-					.getAnnotationIntrospector()
-					.allIntrospectors()
-					.stream()
-					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).hasSize(1);
-			});
+	void jacksonFeatureAndJsonMapperContextResolverAreRegistered() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			assertThat(config.isRegistered(JacksonFeature.class)).isTrue();
+			assertThat(config.getInstances()).anyMatch(ContextResolver.class::isInstance);
+		});
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsNotAvailableTheObjectMapperCustomizationBacksOff() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader("jakarta.xml.bind.annotation"))
-			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
-					.getAnnotationIntrospector()
-					.allIntrospectors()
-					.stream()
-					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).isEmpty();
-			});
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void whenJacksonJaxbModuleIsNotAvailableTheObjectMapperCustomizationBacksOff() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(JakartaXmlBindAnnotationIntrospector.class))
-			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
-					.getAnnotationIntrospector()
-					.allIntrospectors()
-					.stream()
-					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).isEmpty();
-			});
+	void whenJsonMapperIsNotAvailableJacksonFeatureIsNotRegistered() {
+		this.contextRunner.run((context) -> {
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			assertThat(config.isRegistered(JacksonFeature.class)).isFalse();
+		});
 	}
 
 	@Test
