@@ -25,6 +25,7 @@ dependencies {
 	api(project(":starter:spring-boot-starter-tomcat"))
 	api(project(":starter:spring-boot-starter-validation"))
 
+	api(project(":module:spring-boot-jackson"))
 	api(project(":module:spring-boot-jackson2"))
 	api(project(":module:spring-boot-jersey"))
 

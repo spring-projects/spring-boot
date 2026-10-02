@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -61,7 +62,8 @@ abstract class AbstractJerseyApplicationTests {
 	void actuatorStatus() {
 		ResponseEntity<String> entity = getForEntity("/actuator/health");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\",\"groups\":[\"liveness\",\"readiness\"]}");
+		assertThat(new JsonContent<>(getClass(), null, entity.getBody()))
+			.isEqualToJson("{\"status\":\"UP\",\"groups\":[\"liveness\",\"readiness\"]}");
 	}
 
 	private ResponseEntity<String> getForEntity(String path) {
