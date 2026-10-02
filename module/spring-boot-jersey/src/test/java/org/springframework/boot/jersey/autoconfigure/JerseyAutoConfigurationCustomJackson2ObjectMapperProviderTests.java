@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -31,7 +32,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -55,25 +55,27 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using a custom JsonMapper.
+ * Tests for {@link JerseyAutoConfiguration} when using a custom Jackson 2 ObjectMapper.
  *
  * @author Eddú Meléndez
  * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson.default-property-inclusion=always")
+		properties = { "spring.jersey.preferred-json-mapper=jackson2",
+				"spring.jackson2.default-property-inclusion=always",
+				"spring.jackson.default-property-inclusion=always" })
 @DirtiesContext
 @SuppressWarnings("removal")
-class JerseyAutoConfigurationCustomObjectMapperProviderTests {
+class JerseyAutoConfigurationCustomJackson2ObjectMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void responseIsSerializedUsingCustomJsonMapper() {
+	void responseIsSerializedUsingCustomJackson2ObjectMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
-		assertThat(this.applicationContext.getBeansOfType(JsonMapper.class)).hasSize(1);
+		assertThat(this.applicationContext.getBeansOfType(ObjectMapper.class)).hasSize(1);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
 		ServletContainer servlet = (ServletContainer) this.applicationContext
@@ -92,16 +94,13 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 		Application() {
 			register(Application.class);
-			register(new org.glassfish.jersey.jackson3.JacksonFeature().maxStringLength(1024));
-			register(new org.glassfish.jersey.jackson.JacksonFeature(), Ordered.HIGHEST_PRECEDENCE);
+			register(new org.glassfish.jersey.jackson.JacksonFeature().maxStringLength(1024));
+			register(new org.glassfish.jersey.jackson3.JacksonFeature(), Ordered.HIGHEST_PRECEDENCE);
 		}
 
 		@Bean
-		JsonMapper jsonMapper() {
-			return JsonMapper.builder()
-				.changeDefaultPropertyInclusion(
-						(inclusion) -> inclusion.withValueInclusion(JsonInclude.Include.NON_NULL))
-				.build();
+		ObjectMapper objectMapper() {
+			return new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 		}
 
 		@GET

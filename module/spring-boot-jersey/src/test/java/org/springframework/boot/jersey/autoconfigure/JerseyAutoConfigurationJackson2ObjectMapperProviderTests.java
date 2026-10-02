@@ -22,30 +22,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import org.glassfish.jersey.message.MessageProperties;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.servlet.ServletContainer;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,34 +51,29 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using a custom JsonMapper.
+ * Tests for {@link JerseyAutoConfiguration} with a Jackson 2 ObjectMapper.
  *
  * @author Eddú Meléndez
+ * @author Andy Wilkinson
  * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson.default-property-inclusion=always")
+		properties = { "spring.jersey.preferred-json-mapper=jackson2",
+				"spring.jackson2.default-property-inclusion=non-null",
+				"spring.jackson.default-property-inclusion=always" })
 @DirtiesContext
 @SuppressWarnings("removal")
-class JerseyAutoConfigurationCustomObjectMapperProviderTests {
+class JerseyAutoConfigurationJackson2ObjectMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void responseIsSerializedUsingCustomJsonMapper() {
+	void responseIsSerializedUsingAutoConfiguredJackson2ObjectMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
-		assertThat(this.applicationContext.getBeansOfType(JsonMapper.class)).hasSize(1);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
-		ServletContainer servlet = (ServletContainer) this.applicationContext
-			.getBean("jerseyServletRegistration", ServletRegistrationBean.class)
-			.getServlet();
-		assertThat(servlet).isNotNull();
-		assertThat(servlet.getApplicationHandler()
-			.getConfiguration()
-			.getProperty(MessageProperties.JSON_MAX_STRING_LENGTH)).isEqualTo(1024);
 	}
 
 	@MinimalWebConfiguration
@@ -92,16 +83,7 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 		Application() {
 			register(Application.class);
-			register(new org.glassfish.jersey.jackson3.JacksonFeature().maxStringLength(1024));
-			register(new org.glassfish.jersey.jackson.JacksonFeature(), Ordered.HIGHEST_PRECEDENCE);
-		}
-
-		@Bean
-		JsonMapper jsonMapper() {
-			return JsonMapper.builder()
-				.changeDefaultPropertyInclusion(
-						(inclusion) -> inclusion.withValueInclusion(JsonInclude.Include.NON_NULL))
-				.build();
+			register(org.glassfish.jersey.jackson3.JacksonFeature.class, Ordered.HIGHEST_PRECEDENCE);
 		}
 
 		@GET
@@ -117,20 +99,25 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	public static class Message {
 
-		private String subject;
+		private @Nullable String subject;
 
 		private @Nullable String body;
 
-		Message(String subject, @Nullable String body) {
+		Message() {
+		}
+
+		Message(@Nullable String subject, @Nullable String body) {
 			this.subject = subject;
 			this.body = body;
 		}
 
-		public String getSubject() {
+		@JsonProperty("subject")
+		@XmlElement(name = "title")
+		public @Nullable String getSubject() {
 			return this.subject;
 		}
 
-		public void setSubject(String subject) {
+		public void setSubject(@Nullable String subject) {
 			this.subject = subject;
 		}
 
@@ -142,13 +129,19 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 			this.body = body;
 		}
 
+		@XmlTransient
+		public String getFoo() {
+			return "foo";
+		}
+
 	}
 
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@ImportAutoConfiguration({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
+	@Import({ TomcatServletWebServerAutoConfiguration.class,
+			org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.class,
 			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
 			JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
