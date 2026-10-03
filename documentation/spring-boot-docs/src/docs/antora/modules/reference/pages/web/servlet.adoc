@@ -506,20 +506,24 @@ To avoid this limitation, the `packages` method should not be used, and endpoint
 
 For more advanced customizations, you can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer[].
 
-Jersey uses Jackson 3 for JSON serialization and deserialization by default.
-The auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] is registered with Jersey and can be customized using `spring.jackson.*` properties or javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
+Jersey uses Jackson 2 for JSON serialization and deserialization by default.
+Your existing Jackson 2 `ObjectMapper` bean, `spring.jackson2.*` settings, and Jackson 2 customizations continue to apply.
+The starter includes support for both Jackson versions.
+
+To opt in to Jackson 3, set configprop:spring.jersey.preferred-json-mapper[] to `jackson`.
+You can also select Jackson 3 by excluding `org.glassfish.jersey.media:jersey-media-json-jackson` from the starter, without setting the property.
+An explicit property value takes precedence over dependency-based selection.
+To explicitly select Jackson 2, set the property to `jackson2`.
+
+When Jackson 3 is selected, Jersey uses your javadoc:tools.jackson.databind.json.JsonMapper[] bean or the auto-configured mapper, including `spring.jackson.*` settings and javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 See xref:features/json.adoc#features.json.jackson[] for more details.
+Jackson 2 `ObjectMapper` customizations are not converted to Jackson 3; migrate them before opting in.
+Also update any explicitly registered Jackson 2 Jersey features and providers to their Jackson 3 equivalents.
 
 If you provide your own `JsonMapper` bean, Jersey retains its configuration and adds JAXB annotation support when needed.
 JAXB annotations take secondary priority unless you explicitly configure a `JakartaXmlBindAnnotationModule` with a different priority.
 Jersey-specific string-length limits are applied to a derived mapper, leaving the shared mapper bean unchanged.
-If there is no unique mapper bean, Jersey uses the configured provider's default mapper.
-
-To continue using Jackson 2, exclude `org.glassfish.jersey.media:jersey-media-json-jackson3` from the starter and add dependencies on `org.springframework.boot:spring-boot-jackson2` and `org.glassfish.jersey.media:jersey-media-json-jackson`.
-Jersey then uses your existing Jackson 2 `ObjectMapper` bean, or the auto-configured mapper if you have not defined one.
-The `spring.jackson2.*` settings and Jackson 2 customizations continue to apply.
-Jackson 2 and Jackson 3 Jersey providers should not be included together.
-Changing to Jackson 3 also requires migrating Jackson 2 databind imports and customizations; the starter does not convert custom Jackson 2 mappers to Jackson 3.
+If there is no unique mapper bean, Jersey uses the selected provider's default mapper.
 
 All the registered endpoints should be a javadoc:org.springframework.stereotype.Component[format=annotation] with HTTP resource annotations (`@GET` and others), as shown in the following example:
 

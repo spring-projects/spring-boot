@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jersey.autoconfigure;
 
+import java.util.Collections;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 import jakarta.ws.rs.core.Context;
@@ -46,18 +48,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -78,13 +84,29 @@ import org.springframework.util.function.SingletonSupplier;
 @Conditional(JerseyJacksonAutoConfiguration.JerseyResourcesAvailable.class)
 public final class JerseyJacksonAutoConfiguration {
 
+	private static void disableJsonProvider(ResourceConfig config, String featureName, String providerName) {
+		if (ClassUtils.isPresent(featureName, null)) {
+			// An empty contract map keeps discovery from enabling the other provider.
+			// Already registered features retain Jersey's normal initialization
+			// lifecycle.
+			config.register(ClassUtils.resolveClassName(providerName, null), Collections.emptyMap());
+			Class<?> featureClass = ClassUtils.resolveClassName(featureName, null);
+			if (!config.isRegistered(featureClass)) {
+				config.register(featureClass, Collections.emptyMap());
+			}
+		}
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JacksonFeature.class, JsonMapper.class })
+	@Conditional(JacksonPreferred.class)
 	static class JacksonResourceConfigCustomizerConfiguration {
 
 		@Bean
 		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectProvider<JsonMapper> jsonMappers) {
 			return (ResourceConfig config) -> {
+				disableJsonProvider(config, "org.glassfish.jersey.jackson.JacksonFeature",
+						"org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider");
 				config.register(JacksonFeature.class);
 				config.register(JacksonExceptionMapperFeature.class, Ordered.LOWEST_PRECEDENCE);
 				JsonMapper jsonMapper = jsonMappers.getIfUnique();
@@ -178,17 +200,21 @@ public final class JerseyJacksonAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ org.glassfish.jersey.jackson.JacksonFeature.class,
 			com.fasterxml.jackson.databind.ObjectMapper.class })
-	@ConditionalOnMissingClass("org.glassfish.jersey.jackson3.JacksonFeature")
-	@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
+	@Conditional(Jackson2Preferred.class)
 	@SuppressWarnings("removal")
 	static class Jackson2ResourceConfigCustomizerConfiguration {
 
 		@Bean
 		ResourceConfigCustomizer jackson2ResourceConfigCustomizer(
-				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+				ObjectProvider<com.fasterxml.jackson.databind.ObjectMapper> objectMappers) {
 			return (ResourceConfig config) -> {
+				disableJsonProvider(config, "org.glassfish.jersey.jackson3.JacksonFeature",
+						"org.glassfish.jersey.jackson3.internal.jackson.jakarta.rs.json.JacksonXmlBindJsonProvider");
 				config.register(org.glassfish.jersey.jackson.JacksonFeature.class);
-				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
+				com.fasterxml.jackson.databind.ObjectMapper objectMapper = objectMappers.getIfUnique();
+				if (objectMapper != null) {
+					config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
+				}
 			};
 		}
 
@@ -230,6 +256,60 @@ public final class JerseyJacksonAutoConfiguration {
 				return this.objectMapper;
 			}
 
+		}
+
+	}
+
+	static class JacksonPreferred extends PreferredJsonMapperCondition {
+
+		JacksonPreferred() {
+			super("jackson");
+		}
+
+	}
+
+	static class Jackson2Preferred extends PreferredJsonMapperCondition {
+
+		Jackson2Preferred() {
+			super("jackson2");
+		}
+
+	}
+
+	private abstract static class PreferredJsonMapperCondition extends SpringBootCondition {
+
+		private final String mapper;
+
+		PreferredJsonMapperCondition(String mapper) {
+			this.mapper = mapper;
+		}
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			boolean jackson2Available = ClassUtils.isPresent("org.glassfish.jersey.jackson.JacksonFeature",
+					context.getClassLoader())
+					&& ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", context.getClassLoader());
+			String preferred = context.getEnvironment().getProperty("spring.jersey.preferred-json-mapper");
+			if (preferred == null) {
+				preferred = jackson2Available ? "jackson2" : "jackson";
+			}
+			else {
+				preferred = preferred.toLowerCase(Locale.ROOT);
+				if (!preferred.equals("jackson") && !preferred.equals("jackson2")) {
+					throw new IllegalStateException(
+							"spring.jersey.preferred-json-mapper must be 'jackson' or 'jackson2'");
+				}
+				boolean available = preferred.equals("jackson2") ? jackson2Available
+						: ClassUtils.isPresent("org.glassfish.jersey.jackson3.JacksonFeature", context.getClassLoader())
+								&& ClassUtils.isPresent("tools.jackson.databind.json.JsonMapper",
+										context.getClassLoader());
+				if (!available) {
+					throw new IllegalStateException(
+							"The Jersey JSON provider selected by spring.jersey.preferred-json-mapper=" + preferred
+									+ " is not available");
+				}
+			}
+			return new ConditionOutcome(this.mapper.equals(preferred), "Preferred Jersey JSON mapper is " + preferred);
 		}
 
 	}

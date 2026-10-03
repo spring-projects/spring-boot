@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "spring.jersey.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson2",
+      "description": "Preferred JSON mapper to use for Jersey. Supported values are 'jackson' (Jackson 3) and 'jackson2'. Jackson 3 is used if the Jackson 2 Jersey provider is excluded."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.jersey.preferred-json-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jackson2"
+        }
+      ]
+    }
+  ]
+}

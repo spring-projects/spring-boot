@@ -47,7 +47,8 @@ class JerseyAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class))
-		.withUserConfiguration(ResourceConfigConfiguration.class);
+		.withUserConfiguration(ResourceConfigConfiguration.class)
+		.withPropertyValues("spring.jersey.preferred-json-mapper=jackson");
 
 	@Test
 	void requestContextFilterRegistrationIsAutoConfigured() {
@@ -109,10 +110,10 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	void jsonMapperCustomizerBacksOffWithoutJacksonFeature() {
+	void explicitJackson3PreferenceFailsWithoutJacksonFeature() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(JacksonFeature.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(ResourceConfigCustomizer.class));
+			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
