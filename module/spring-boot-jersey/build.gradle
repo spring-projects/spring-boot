@@ -30,7 +30,6 @@ dependencies {
 	api("org.glassfish.jersey.containers:jersey-container-servlet")
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-spring6")
-	api("org.glassfish.jersey.media:jersey-media-json-jackson")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson3")
 
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
@@ -43,6 +42,7 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-jackson2"))
+	optional("org.glassfish.jersey.media:jersey-media-json-jackson")
 	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.projectreactor:reactor-core")
@@ -65,4 +65,23 @@ dependencies {
 
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
+}
+
+// Exercise each provider with the dependency set that applications actually use.
+tasks.named("test") {
+	classpath = classpath.filter { !it.name.startsWith("jersey-media-json-jackson-") }
+	exclude "**/*Jackson2*Tests.class"
+}
+
+tasks.register("jackson2Test", Test) {
+	description = "Runs Jersey tests with the Jackson 2 provider instead of Jackson 3"
+	group = "verification"
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath.filter { !it.name.startsWith("jersey-media-json-jackson3-") }
+	include "**/*Jackson2*Tests.class"
+	shouldRunAfter tasks.named("test")
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("jackson2Test")
 }

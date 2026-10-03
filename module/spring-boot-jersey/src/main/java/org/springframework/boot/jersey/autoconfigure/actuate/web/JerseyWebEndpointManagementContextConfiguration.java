@@ -100,50 +100,31 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnBean(EndpointJsonMapper.class)
-	EndpointMapperResourceConfigCustomizer endpointJsonMapperResourceConfigCustomizer(
+	ManagementContextResourceConfigCustomizer endpointJsonMapperResourceConfigCustomizer(
 			EndpointJsonMapper endpointJsonMapper) {
-		return new EndpointMapperResourceConfigCustomizer(new EndpointJsonMapperContextResolver(endpointJsonMapper));
+		return (config) -> config.register(new EndpointJsonMapperContextResolver(endpointJsonMapper),
+				ContextResolver.class);
 	}
 
 	@Bean
 	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
 	@SuppressWarnings("removal")
-	EndpointMapperResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
+	ResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
 			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper) {
-		return new EndpointMapperResourceConfigCustomizer(
-				new EndpointJackson2ObjectMapperContextResolver(endpointJackson2ObjectMapper));
+		return (config) -> config.register(
+				new EndpointJackson2ObjectMapperContextResolver(endpointJackson2ObjectMapper), ContextResolver.class);
 	}
 
 	@Bean
 	ManagementContextResourceConfigCustomizer managementJsonMapperResourceConfigCustomizer(
-			@Qualifier("jacksonResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jacksonCustomizer,
-			@Qualifier("jackson2ResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jackson2Customizer) {
-		return (config) -> {
-			jacksonCustomizer.ifAvailable((customizer) -> customizer.customize(config));
-			jackson2Customizer.ifAvailable((customizer) -> customizer.customize(config));
-		};
+			@Qualifier("jacksonResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jacksonCustomizer) {
+		return (config) -> jacksonCustomizer.ifAvailable((customizer) -> customizer.customize(config));
 	}
 
 	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
 			String basePath) {
 		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
-	}
-
-	static final class EndpointMapperResourceConfigCustomizer
-			implements ResourceConfigCustomizer, ManagementContextResourceConfigCustomizer {
-
-		private final ContextResolver<?> resolver;
-
-		EndpointMapperResourceConfigCustomizer(ContextResolver<?> resolver) {
-			this.resolver = resolver;
-		}
-
-		@Override
-		public void customize(ResourceConfig config) {
-			config.register(this.resolver, ContextResolver.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

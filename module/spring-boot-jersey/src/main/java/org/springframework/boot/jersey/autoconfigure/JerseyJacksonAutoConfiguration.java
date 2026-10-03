@@ -16,16 +16,28 @@
 
 package org.springframework.boot.jersey.autoconfigure;
 
+import java.util.function.Supplier;
+
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.xml.bind.annotation.XmlElement;
-import org.glassfish.jersey.internal.InternalProperties;
 import org.glassfish.jersey.internal.util.PropertiesHelper;
 import org.glassfish.jersey.jackson3.JacksonFeature;
+import org.glassfish.jersey.jackson3.internal.jackson.jakarta.rs.base.StreamReadExceptionMapper;
+import org.glassfish.jersey.message.MessageProperties;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.exc.StreamConstraintsException;
+import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule.Priority;
 
@@ -37,7 +49,6 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -46,6 +57,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * Jackson configuration shared by Jersey applications and management contexts.
@@ -64,31 +78,19 @@ import org.springframework.core.Ordered;
 @Conditional(JerseyJacksonAutoConfiguration.JerseyResourcesAvailable.class)
 public final class JerseyJacksonAutoConfiguration {
 
-	private static void registerPreferredFeature(ResourceConfig config, Feature feature) {
-		Feature delegate = config.getInstances()
-			.stream()
-			.filter(feature.getClass()::isInstance)
-			.map(Feature.class::cast)
-			.findFirst()
-			.orElse(feature);
-		String propertyName = PropertiesHelper.getPropertyNameForRuntime(InternalProperties.JSON_FEATURE,
-				config.getRuntimeType());
-		// Disable the discovered features before any of them can configure providers.
-		config.property(propertyName, PreferredJacksonFeature.class.getName());
-		config.register(new PreferredJacksonFeature(delegate), Ordered.HIGHEST_PRECEDENCE);
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JacksonFeature.class, JsonMapper.class })
-	@ConditionalOnProperty(name = "spring.jersey.preferred-json-mapper", havingValue = "jackson", matchIfMissing = true)
-	@ConditionalOnSingleCandidate(JsonMapper.class)
 	static class JacksonResourceConfigCustomizerConfiguration {
 
 		@Bean
-		ResourceConfigCustomizer jacksonResourceConfigCustomizer(JsonMapper jsonMapper) {
+		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectProvider<JsonMapper> jsonMappers) {
 			return (ResourceConfig config) -> {
-				registerPreferredFeature(config, new JacksonFeature());
-				config.register(new JsonMapperContextResolver(jsonMapper), ContextResolver.class);
+				config.register(JacksonFeature.class);
+				config.register(JacksonExceptionMapperFeature.class, Ordered.LOWEST_PRECEDENCE);
+				JsonMapper jsonMapper = jsonMappers.getIfUnique();
+				if (jsonMapper != null) {
+					config.register(new JsonMapperContextResolver(jsonMapper), ContextResolver.class);
+				}
 			};
 		}
 
@@ -98,6 +100,7 @@ public final class JerseyJacksonAutoConfiguration {
 		static class JaxbJsonMapperBuilderCustomizerConfiguration {
 
 			@Bean
+			@Order(1)
 			JsonMapperBuilderCustomizer jaxbJsonMapperBuilderCustomizer(ObjectProvider<JacksonModule> modules) {
 				return (builder) -> {
 					if (modules.stream().noneMatch(JakartaXmlBindAnnotationModule.class::isInstance)) {
@@ -112,13 +115,60 @@ public final class JerseyJacksonAutoConfiguration {
 
 			private final JsonMapper jsonMapper;
 
+			@Context
+			private jakarta.ws.rs.core.@Nullable Configuration configuration;
+
+			private final Supplier<JsonMapper> jerseyJsonMapper;
+
 			private JsonMapperContextResolver(JsonMapper jsonMapper) {
 				this.jsonMapper = jsonMapper;
+				this.jerseyJsonMapper = SingletonSupplier.of(this::createJerseyJsonMapper);
 			}
 
 			@Override
 			public JsonMapper getContext(Class<?> type) {
-				return this.jsonMapper;
+				return this.jerseyJsonMapper.get();
+			}
+
+			private JsonMapper createJerseyJsonMapper() {
+				JsonMapper.Builder builder = this.jsonMapper.rebuild();
+				boolean customized = false;
+				if (ClassUtils.isPresent("tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule", null)
+						&& ClassUtils.isPresent("jakarta.xml.bind.annotation.XmlElement", null)
+						&& this.jsonMapper.serializationConfig()
+							.getAnnotationIntrospector()
+							.allIntrospectors()
+							.stream()
+							.noneMatch(JakartaXmlBindAnnotationIntrospector.class::isInstance)) {
+					builder.addModule(new JakartaXmlBindAnnotationModule().setPriority(Priority.SECONDARY));
+					customized = true;
+				}
+				if (this.configuration != null) {
+					Integer maxStringLength = PropertiesHelper.convertValue(
+							this.configuration.getProperty(MessageProperties.JSON_MAX_STRING_LENGTH), Integer.class);
+					if (maxStringLength != null && maxStringLength != StreamReadConstraints.DEFAULT_MAX_STRING_LEN) {
+						JsonFactory factory = this.jsonMapper.tokenStreamFactory();
+						StreamReadConstraints constraints = factory.streamReadConstraints()
+							.rebuild()
+							.maxStringLength(maxStringLength)
+							.build();
+						builder = new JerseyJsonMapperBuilder(builder,
+								factory.rebuild().streamReadConstraints(constraints).build());
+						customized = true;
+					}
+				}
+				return customized ? builder.build() : this.jsonMapper;
+			}
+
+		}
+
+		private static final class JerseyJsonMapperBuilder extends JsonMapper.Builder {
+
+			private JerseyJsonMapperBuilder(JsonMapper.Builder builder, JsonFactory factory) {
+				super(new StateImpl(builder));
+				// Jackson 3's builder has no public setter for its immutable stream
+				// factory.
+				this._streamFactory = factory;
 			}
 
 		}
@@ -128,16 +178,16 @@ public final class JerseyJacksonAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ org.glassfish.jersey.jackson.JacksonFeature.class,
 			com.fasterxml.jackson.databind.ObjectMapper.class })
-	@Conditional(NoJacksonOrJackson2Preferred.class)
-	@SuppressWarnings("removal")
+	@ConditionalOnMissingClass("org.glassfish.jersey.jackson3.JacksonFeature")
 	@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
+	@SuppressWarnings("removal")
 	static class Jackson2ResourceConfigCustomizerConfiguration {
 
 		@Bean
 		ResourceConfigCustomizer jackson2ResourceConfigCustomizer(
 				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
-				registerPreferredFeature(config, new org.glassfish.jersey.jackson.JacksonFeature());
+				config.register(org.glassfish.jersey.jackson.JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
 			};
 		}
@@ -145,6 +195,7 @@ public final class JerseyJacksonAutoConfiguration {
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass({ com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector.class,
 				XmlElement.class })
+		@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
 		static class JaxbJackson2ObjectMapperCustomizerConfiguration {
 
 			@Autowired
@@ -202,43 +253,26 @@ public final class JerseyJacksonAutoConfiguration {
 
 	}
 
-	static class NoJacksonOrJackson2Preferred extends AnyNestedCondition {
+	private static final class JacksonExceptionMapperFeature implements Feature {
 
-		NoJacksonOrJackson2Preferred() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnMissingClass("tools.jackson.databind.json.JsonMapper")
-		static class NoJackson {
-
-		}
-
-		@ConditionalOnProperty(name = "spring.jersey.preferred-json-mapper", havingValue = "jackson2")
-		static class Jackson2Preferred {
-
+		@Override
+		public boolean configure(FeatureContext context) {
+			if (context.getConfiguration().isRegistered(StreamReadExceptionMapper.class)) {
+				context.register(StreamConstraintsExceptionMapper.class);
+			}
+			return true;
 		}
 
 	}
 
-	static final class PreferredJacksonFeature implements Feature {
-
-		private final Feature delegate;
-
-		PreferredJacksonFeature(Feature delegate) {
-			this.delegate = delegate;
-		}
+	private static final class StreamConstraintsExceptionMapper implements ExceptionMapper<StreamConstraintsException> {
 
 		@Override
-		public boolean configure(FeatureContext context) {
-			String propertyName = PropertiesHelper.getPropertyNameForRuntime(InternalProperties.JSON_FEATURE,
-					context.getConfiguration().getRuntimeType());
-			context.property(propertyName, "JacksonFeature");
-			boolean configured = this.delegate.configure(context);
-			// Both Jersey Jackson features use the same JSON feature name. Configure
-			// the preferred provider first, then prevent the other features from running,
-			// including features that the application has already registered.
-			context.property(propertyName, PreferredJacksonFeature.class.getName());
-			return configured;
+		public Response toResponse(StreamConstraintsException exception) {
+			return Response.status(Response.Status.BAD_REQUEST)
+				.type(MediaType.TEXT_PLAIN)
+				.entity(exception.getMessage())
+				.build();
 		}
 
 	}

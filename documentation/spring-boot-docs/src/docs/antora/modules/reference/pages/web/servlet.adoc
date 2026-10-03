@@ -510,9 +510,16 @@ Jersey uses Jackson 3 for JSON serialization and deserialization by default.
 The auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] is registered with Jersey and can be customized using `spring.jackson.*` properties or javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 See xref:features/json.adoc#features.json.jackson[] for more details.
 
-To use the deprecated Jackson 2 support, set configprop:spring.jersey.preferred-json-mapper[] to `jackson2`.
-Jersey then uses the auto-configured Jackson 2 `ObjectMapper`, including `spring.jackson2.*` settings and Jackson 2 customizations.
-Both Jackson versions are included in the starter; dependency exclusions are not required to select a mapper.
+If you provide your own `JsonMapper` bean, Jersey retains its configuration and adds JAXB annotation support when needed.
+JAXB annotations take secondary priority unless you explicitly configure a `JakartaXmlBindAnnotationModule` with a different priority.
+Jersey-specific string-length limits are applied to a derived mapper, leaving the shared mapper bean unchanged.
+If there is no unique mapper bean, Jersey uses the configured provider's default mapper.
+
+To continue using Jackson 2, exclude `org.glassfish.jersey.media:jersey-media-json-jackson3` from the starter and add dependencies on `org.springframework.boot:spring-boot-jackson2` and `org.glassfish.jersey.media:jersey-media-json-jackson`.
+Jersey then uses your existing Jackson 2 `ObjectMapper` bean, or the auto-configured mapper if you have not defined one.
+The `spring.jackson2.*` settings and Jackson 2 customizations continue to apply.
+Jackson 2 and Jackson 3 Jersey providers should not be included together.
+Changing to Jackson 3 also requires migrating Jackson 2 databind imports and customizations; the starter does not convert custom Jackson 2 mappers to Jackson 3.
 
 All the registered endpoints should be a javadoc:org.springframework.stereotype.Component[format=annotation] with HTTP resource annotations (`@GET` and others), as shown in the following example:
 

@@ -46,7 +46,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -93,7 +92,6 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 		Application() {
 			register(Application.class);
 			register(new org.glassfish.jersey.jackson3.JacksonFeature().maxStringLength(1024));
-			register(new org.glassfish.jersey.jackson.JacksonFeature(), Ordered.HIGHEST_PRECEDENCE);
 		}
 
 		@Bean

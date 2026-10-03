@@ -42,7 +42,6 @@ import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebSer
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -58,8 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.jersey.preferred-json-mapper=jackson2",
-				"spring.jackson2.default-property-inclusion=non-null",
+		properties = { "spring.jackson2.default-property-inclusion=non-null",
 				"spring.jackson.default-property-inclusion=always" })
 @DirtiesContext
 @SuppressWarnings("removal")
@@ -83,7 +81,6 @@ class JerseyAutoConfigurationJackson2ObjectMapperProviderTests {
 
 		Application() {
 			register(Application.class);
-			register(org.glassfish.jersey.jackson3.JacksonFeature.class, Ordered.HIGHEST_PRECEDENCE);
 		}
 
 		@GET

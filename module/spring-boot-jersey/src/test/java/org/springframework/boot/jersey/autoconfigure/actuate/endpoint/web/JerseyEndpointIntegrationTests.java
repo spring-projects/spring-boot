@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.json.JsonMapper;
@@ -96,49 +97,16 @@ class JerseyEndpointIntegrationTests {
 		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class });
 	}
 
-	@Test
-	void endpointJsonMapperCanBeApplied() {
-		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
-				ResourceConfigConfiguration.class, EndpointJsonMapperConfiguration.class });
-		contextRunner.run((context) -> {
-			WebServer webServer = context
-				.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer();
-			assertThat(webServer).isNotNull();
-			int port = webServer.getPort();
-			WebTestClient client = WebTestClient.bindToServer()
-				.baseUrl("http://localhost:" + port)
-				.responseTimeout(Duration.ofMinutes(5))
-				.build();
-			client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody().consumeWith((result) -> {
-				String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
-				assertThat(json).contains("\"scope\":\"notelgnis\"");
-			});
-		});
-	}
-
 	@ParameterizedTest
-	@CsvSource({ "jackson,false,false", "jackson,false,true", "jackson,true,false", "jackson,true,true",
-			"jackson2,false,false", "jackson2,false,true", "jackson2,true,false", "jackson2,true,true" })
-	@SuppressWarnings("removal")
-	void actuatorOnlyApplicationUsesPreferredJsonMapper(String preferredMapper, boolean separateManagementPort,
-			boolean isolatedMapper) {
-		getContextRunner(new Class<?>[] { MapperEndpointConfiguration.class },
-				org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-				JacksonEndpointAutoConfiguration.class,
-				org.springframework.boot.actuate.autoconfigure.endpoint.jackson.Jackson2EndpointAutoConfiguration.class,
+	@ValueSource(booleans = { false, true })
+	void endpointJsonMapperCanBeApplied(boolean separateManagementPort) {
+		getContextRunner(
+				new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class,
+						EndpointJsonMapperConfiguration.class },
 				TomcatServletManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class)
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
-			.withPropertyValues("management.server.port=" + (separateManagementPort ? "0" : ""),
-					"management.endpoints.jackson.isolated-json-mapper=" + isolatedMapper,
-					"management.endpoints.jackson2.isolated-object-mapper=" + isolatedMapper,
-					"spring.jackson.default-property-inclusion=non-null",
-					"spring.jackson2.default-property-inclusion=always",
-					"spring.jersey.preferred-json-mapper=" + preferredMapper)
+			.withPropertyValues("management.server.port=" + (separateManagementPort ? "0" : ""))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(JerseyAutoConfiguration.class);
-				assertThat(context).hasBean(preferredMapper.equals("jackson") ? "jacksonResourceConfigCustomizer"
-						: "jackson2ResourceConfigCustomizer");
 				WebServer webServer = context
 					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 					.getWebServer();
@@ -147,12 +115,43 @@ class JerseyEndpointIntegrationTests {
 						? context.getEnvironment().getProperty("local.management.port", Integer.class)
 						: webServer.getPort();
 				assertThat(port).isNotNull();
-				String property = preferredMapper.equals("jackson") ? "first_name" : "FirstName";
-				String json = "{\"" + property + "\":\"Jersey\"";
-				if (preferredMapper.equals("jackson2") && !isolatedMapper) {
-					json += ",\"Body\":null";
-				}
-				json += "}";
+				WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.build()
+					.get()
+					.uri("/actuator/beans")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.consumeWith((result) -> {
+						String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+						assertThat(json).contains("\"scope\":\"notelgnis\"");
+					});
+			});
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "false,false", "false,true", "true,false", "true,true" })
+	void actuatorOnlyApplicationUsesJsonMapper(boolean separateManagementPort, boolean isolatedMapper) {
+		getContextRunner(new Class<?>[] { MapperEndpointConfiguration.class }, JacksonEndpointAutoConfiguration.class,
+				TomcatServletManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class)
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("management.server.port=" + (separateManagementPort ? "0" : ""),
+					"management.endpoints.jackson.isolated-json-mapper=" + isolatedMapper,
+					"spring.jackson.default-property-inclusion=non-null")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(JerseyAutoConfiguration.class);
+				assertThat(context).hasBean("jacksonResourceConfigCustomizer");
+				WebServer webServer = context
+					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer();
+				assertThat(webServer).isNotNull();
+				Integer port = separateManagementPort
+						? context.getEnvironment().getProperty("local.management.port", Integer.class)
+						: webServer.getPort();
+				assertThat(port).isNotNull();
+				String json = "{\"first_name\":\"Jersey\"}";
 				WebTestClient.bindToServer()
 					.baseUrl("http://localhost:" + port)
 					.build()
@@ -230,7 +229,6 @@ class JerseyEndpointIntegrationTests {
 	}
 
 	@tools.jackson.databind.annotation.JsonNaming(tools.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy.class)
-	@com.fasterxml.jackson.databind.annotation.JsonNaming(com.fasterxml.jackson.databind.PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 	record MapperResponse(String firstName, @Nullable String body) implements OperationResponseBody {
 
 	}

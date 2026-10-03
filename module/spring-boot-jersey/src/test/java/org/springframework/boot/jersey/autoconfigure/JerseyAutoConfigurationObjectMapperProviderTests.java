@@ -42,7 +42,6 @@ import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebSer
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -81,7 +80,6 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 
 		Application() {
 			register(Application.class);
-			register(org.glassfish.jersey.jackson.JacksonFeature.class, Ordered.HIGHEST_PRECEDENCE);
 		}
 
 		@GET
