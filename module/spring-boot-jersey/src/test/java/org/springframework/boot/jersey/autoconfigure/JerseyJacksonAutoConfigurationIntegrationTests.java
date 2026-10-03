@@ -118,15 +118,26 @@ class JerseyJacksonAutoConfigurationIntegrationTests {
 	}
 
 	@ParameterizedTest
-	@MethodSource("mapperCandidates")
-	void jackson3ProviderIsSelectedRegardlessOfMapperCandidates(int candidates) {
-		WebApplicationContextRunner runner = runner(new ResourceConfig(Endpoint.class), candidates != 0);
+	@MethodSource("providerSelections")
+	void preferredProviderIsSelectedRegardlessOfMapperCandidates(String preference, int candidates,
+			boolean registerOtherFeature) {
+		boolean jackson3 = preference.equals("jackson");
+		ResourceConfig config = new ResourceConfig(Endpoint.class);
+		if (registerOtherFeature) {
+			config.register(jackson3 ? org.glassfish.jersey.jackson.JacksonFeature.class : JacksonFeature.class);
+		}
+		WebApplicationContextRunner runner = baseRunner(config);
+		if (!preference.isEmpty()) {
+			runner = runner.withPropertyValues("spring.jersey.preferred-json-mapper=" + preference);
+		}
 		for (int i = 0; i < candidates; i++) {
-			runner = runner.withBean("jsonMapper" + i, JsonMapper.class, JsonMapper::new);
+			runner = runner.withBean("jsonMapper" + i, JsonMapper.class, JsonMapper::new)
+				.withBean("objectMapper" + i, com.fasterxml.jackson.databind.ObjectMapper.class,
+						com.fasterxml.jackson.databind.ObjectMapper::new);
 		}
 		runner.run((context) -> {
 			assertThat(client(context).get().uri("/engine").retrieve().body(String.class))
-				.isEqualTo("{\"first_name\":\"value\"}");
+				.isEqualTo(jackson3 ? "{\"first_name\":\"value\"}" : "{\"FirstName\":\"value\"}");
 			ServletContainer servlet = (ServletContainer) context
 				.getBean("jerseyServletRegistration", ServletRegistrationBean.class)
 				.getServlet();
@@ -134,12 +145,15 @@ class JerseyJacksonAutoConfigurationIntegrationTests {
 			assertThat(servlet.getApplicationHandler().getConfiguration().getClasses())
 				.filteredOn((type) -> type.getSimpleName().startsWith("DefaultJackson"))
 				.singleElement()
-				.satisfies((type) -> assertThat(type.getName()).contains(".jackson3."));
+				.satisfies((type) -> assertThat(type.getName()).contains(jackson3 ? ".jackson3." : ".jackson."));
 		});
 	}
 
-	static Stream<Arguments> mapperCandidates() {
-		return Stream.of(0, 1, 2).map(Arguments::of);
+	static Stream<Arguments> providerSelections() {
+		return Stream.of("", "jackson2", "jackson")
+			.flatMap((preference) -> Stream.of(0, 1, 2)
+				.flatMap((candidates) -> Stream.of(false, true)
+					.map((registered) -> Arguments.of(preference, candidates, registered))));
 	}
 
 	@Test
@@ -221,14 +235,18 @@ class JerseyJacksonAutoConfigurationIntegrationTests {
 	}
 
 	private WebApplicationContextRunner runner(ResourceConfig config, boolean autoConfigureMappers) {
-		WebApplicationContextRunner runner = new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
+		WebApplicationContextRunner runner = baseRunner(config)
+			.withPropertyValues("spring.jersey.preferred-json-mapper=jackson");
+		return autoConfigureMappers ? runner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+				: runner;
+	}
+
+	private WebApplicationContextRunner baseRunner(ResourceConfig config) {
+		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(TomcatServletWebServerAutoConfiguration.class,
 					JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class))
 			.withBean(ResourceConfig.class, () -> config)
 			.withPropertyValues("server.port=0");
-		return autoConfigureMappers ? runner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				: runner;
 	}
 
 	private RestClient client(AssertableWebApplicationContext context) {

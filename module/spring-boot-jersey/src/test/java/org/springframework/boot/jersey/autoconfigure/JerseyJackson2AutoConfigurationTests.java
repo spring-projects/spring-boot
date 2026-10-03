@@ -42,11 +42,10 @@ class JerseyJackson2AutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("removal")
-	void jackson2IsUsedWhenJackson3IsNotAvailable() {
+	void jackson2IsUsedByDefaultWithBothProvidersAvailable() {
 		this.contextRunner
 			.withConfiguration(AutoConfigurations
 				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
 				assertThat(context.getBean(ResourceConfig.class)
@@ -55,9 +54,28 @@ class JerseyJackson2AutoConfigurationTests {
 	}
 
 	@Test
-	void jackson2CustomizerBacksOffWithoutObjectMapper() {
+	void jackson3IsUsedByDefaultWithoutJackson2Provider() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader((name) -> name.startsWith("org.glassfish.jersey.jackson.")))
+			.run((context) -> {
+				assertThat(context).hasNotFailed().hasSingleBean(ResourceConfigCustomizer.class);
+				assertThat(context.getBean(ResourceConfig.class)
+					.isRegistered(org.glassfish.jersey.jackson3.JacksonFeature.class)).isTrue();
+			});
+	}
+
+	@Test
+	void invalidPreferredJsonMapperFails() {
+		this.contextRunner.withPropertyValues("spring.jersey.preferred-json-mapper=unknown")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasRootCauseMessage("spring.jersey.preferred-json-mapper must be 'jackson' or 'jackson2'"));
+	}
+
+	@Test
+	void jackson2ProviderIsSelectedWithoutObjectMapper() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(ResourceConfigCustomizer.class);
+			assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
 			assertThat(context.getBean(ResourceConfig.class).getInstances())
 				.noneMatch(ContextResolver.class::isInstance);
 		});
@@ -65,23 +83,23 @@ class JerseyJackson2AutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("removal")
-	void jackson2CustomizerBacksOffWithoutJacksonFeature() {
-		this.contextRunner
+	void explicitJackson2PreferenceFailsWithoutJacksonFeature() {
+		this.contextRunner.withPropertyValues("spring.jersey.preferred-json-mapper=jackson2")
 			.withConfiguration(AutoConfigurations
 				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader("org.glassfish.jersey.jackson"))
-			.run((context) -> assertThat(context).doesNotHaveBean(ResourceConfigCustomizer.class));
+			.withClassLoader(new FilteredClassLoader((name) -> name.startsWith("org.glassfish.jersey.jackson.")))
+			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	void jackson2CustomizerBacksOffWithMultipleObjectMappers() {
+	void jackson2ProviderIsSelectedWithMultipleObjectMappers() {
 		this.contextRunner
 			.withBean("first", com.fasterxml.jackson.databind.ObjectMapper.class,
 					com.fasterxml.jackson.databind.ObjectMapper::new)
 			.withBean("second", com.fasterxml.jackson.databind.ObjectMapper.class,
 					com.fasterxml.jackson.databind.ObjectMapper::new)
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(ResourceConfigCustomizer.class);
+				assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
 				assertThat(context.getBean(ResourceConfig.class).getInstances())
 					.noneMatch(ContextResolver.class::isInstance);
 			});

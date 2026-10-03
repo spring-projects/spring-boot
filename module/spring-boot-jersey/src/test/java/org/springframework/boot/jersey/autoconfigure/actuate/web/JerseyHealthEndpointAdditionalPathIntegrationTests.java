@@ -56,7 +56,7 @@ class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 					HealthEndpointJerseyExtensionAutoConfiguration.class,
 					DiskSpaceHealthContributorAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
-			.withPropertyValues("server.port=0"));
+			.withPropertyValues("server.port=0", "spring.jersey.preferred-json-mapper=jackson"));
 	}
 
 }

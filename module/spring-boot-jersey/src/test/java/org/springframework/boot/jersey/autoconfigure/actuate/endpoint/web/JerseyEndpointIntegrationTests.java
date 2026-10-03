@@ -165,6 +165,44 @@ class JerseyEndpointIntegrationTests {
 			});
 	}
 
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	@SuppressWarnings("removal")
+	void actuatorOnlyApplicationUsesJackson2ByDefault(boolean separateManagementPort) {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(getAutoconfigurations(
+					org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class)))
+			.withUserConfiguration(MapperEndpointConfiguration.class)
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("management.endpoints.web.exposure.include=*", "server.port=0",
+					"management.server.port=" + (separateManagementPort ? "0" : ""),
+					"spring.jackson2.default-property-inclusion=non-null")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(JerseyAutoConfiguration.class);
+				assertThat(context).hasBean("jackson2ResourceConfigCustomizer");
+				WebServer webServer = context
+					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer();
+				assertThat(webServer).isNotNull();
+				Integer port = separateManagementPort
+						? context.getEnvironment().getProperty("local.management.port", Integer.class)
+						: webServer.getPort();
+				assertThat(port).isNotNull();
+				WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.build()
+					.get()
+					.uri("/actuator/mapper")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.json("{\"FirstName\":\"Jersey\"}", JsonCompareMode.STRICT);
+			});
+	}
+
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
 		getContextRunner(userConfigurations).run((context) -> {
 			WebServer webServer = context
@@ -196,7 +234,8 @@ class JerseyEndpointIntegrationTests {
 		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(getAutoconfigurations(additionalAutoConfigurations)))
 			.withUserConfiguration(userConfigurations)
-			.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0");
+			.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0",
+					"spring.jersey.preferred-json-mapper=jackson");
 	}
 
 	private Class<?>[] getAutoconfigurations(Class<?>... additional) {
@@ -229,6 +268,7 @@ class JerseyEndpointIntegrationTests {
 	}
 
 	@tools.jackson.databind.annotation.JsonNaming(tools.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy.class)
+	@com.fasterxml.jackson.databind.annotation.JsonNaming(com.fasterxml.jackson.databind.PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 	record MapperResponse(String firstName, @Nullable String body) implements OperationResponseBody {
 
 	}

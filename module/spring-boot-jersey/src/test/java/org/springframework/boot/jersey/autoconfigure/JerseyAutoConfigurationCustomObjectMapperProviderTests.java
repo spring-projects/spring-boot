@@ -60,7 +60,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson.default-property-inclusion=always")
+		properties = { "spring.jackson.default-property-inclusion=always",
+				"spring.jersey.preferred-json-mapper=jackson" })
 @DirtiesContext
 @SuppressWarnings("removal")
 class JerseyAutoConfigurationCustomObjectMapperProviderTests {

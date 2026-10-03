@@ -21,19 +21,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.ext.ContextResolver;
-import org.glassfish.jersey.jackson3.JacksonFeature;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -61,7 +61,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Integration tests for web endpoints exposed using Jersey.
  *
  * @author Andy Wilkinson
- * @author Kristoffer Larsen Hopland
  * @see JerseyEndpointResourceFactory
  */
 class JerseyWebEndpointIntegrationTests
@@ -122,7 +121,7 @@ class JerseyWebEndpointIntegrationTests
 					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath));
 			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
-			resourceConfig.register(new JsonMapperContextResolver(JsonMapper.builder().build()), ContextResolver.class);
+			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()), ContextResolver.class);
 			return resourceConfig;
 		}
 
@@ -155,17 +154,17 @@ class JerseyWebEndpointIntegrationTests
 
 	}
 
-	private static final class JsonMapperContextResolver implements ContextResolver<JsonMapper> {
+	private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
-		private final JsonMapper jsonMapper;
+		private final ObjectMapper objectMapper;
 
-		private JsonMapperContextResolver(JsonMapper jsonMapper) {
-			this.jsonMapper = jsonMapper;
+		private ObjectMapperContextResolver(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
 		}
 
 		@Override
-		public JsonMapper getContext(Class<?> type) {
-			return this.jsonMapper;
+		public ObjectMapper getContext(Class<?> type) {
+			return this.objectMapper;
 		}
 
 	}

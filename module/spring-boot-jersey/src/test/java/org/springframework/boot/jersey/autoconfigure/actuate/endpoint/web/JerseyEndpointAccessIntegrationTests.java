@@ -62,7 +62,7 @@ class JerseyEndpointAccessIntegrationTests {
 				TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
 		.withUserConfiguration(CustomServletEndpoint.class)
-		.withPropertyValues("server.port:0");
+		.withPropertyValues("server.port:0", "spring.jersey.preferred-json-mapper=jackson");
 
 	@Test
 	void accessIsUnrestrictedByDefault() {

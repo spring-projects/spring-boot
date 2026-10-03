@@ -117,8 +117,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	ManagementContextResourceConfigCustomizer managementJsonMapperResourceConfigCustomizer(
-			@Qualifier("jacksonResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jacksonCustomizer) {
-		return (config) -> jacksonCustomizer.ifAvailable((customizer) -> customizer.customize(config));
+			@Qualifier("jacksonResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jacksonCustomizer,
+			@Qualifier("jackson2ResourceConfigCustomizer") ObjectProvider<ResourceConfigCustomizer> jackson2Customizer) {
+		return (config) -> {
+			jacksonCustomizer.ifAvailable((customizer) -> customizer.customize(config));
+			jackson2Customizer.ifAvailable((customizer) -> customizer.customize(config));
+		};
 	}
 
 	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
