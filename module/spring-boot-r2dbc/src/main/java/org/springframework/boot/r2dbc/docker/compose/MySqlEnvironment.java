@@ -51,12 +51,17 @@ class MySqlEnvironment {
 	}
 
 	private String extractPassword(Map<String, @Nullable String> env) {
-		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD") || hasUserAndPassword(env),
+				"MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
 		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MySQL password found");
 		return (password != null) ? password : "";
+	}
+
+	private boolean hasUserAndPassword(Map<String, @Nullable String> env) {
+		return StringUtils.hasLength(env.get("MYSQL_USER")) && StringUtils.hasLength(env.get("MYSQL_PASSWORD"));
 	}
 
 	private String extractDatabase(Map<String, @Nullable String> env) {

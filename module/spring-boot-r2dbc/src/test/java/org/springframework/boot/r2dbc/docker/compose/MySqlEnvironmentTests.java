@@ -39,7 +39,23 @@ class MySqlEnvironmentTests {
 	void createWhenHasMysqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MySqlEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
-			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
+	}
+
+	@Test
+	void createWhenHasMysqlRandomRootPasswordAndMysqlUserWithoutPasswordThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MySqlEnvironment(
+					Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true", "MYSQL_USER", "myself", "MYSQL_DATABASE", "db")))
+			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
+	}
+
+	@Test
+	void getUsernameAndPasswordWhenHasMysqlRandomRootPasswordAndMysqlUserAndPassword() {
+		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true", "MYSQL_USER",
+				"myself", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
+		assertThat(environment.getUsername()).isEqualTo("myself");
+		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
