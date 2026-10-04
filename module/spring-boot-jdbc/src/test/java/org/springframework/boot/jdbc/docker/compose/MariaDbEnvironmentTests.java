@@ -39,14 +39,38 @@ class MariaDbEnvironmentTests {
 	void createWhenHasMariadbRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true")))
-			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported");
+			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported without MARIADB_USER and MARIADB_PASSWORD");
 	}
 
 	@Test
 	void createWhenHasMysqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
-			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
+	}
+
+	@Test
+	void createWhenHasMariadbRandomRootPasswordAndMariadbUserWithoutPasswordThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(
+					Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true", "MARIADB_USER", "myself", "MARIADB_DATABASE", "db")))
+			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported without MARIADB_USER and MARIADB_PASSWORD");
+	}
+
+	@Test
+	void getUsernameAndPasswordWhenHasMariadbRandomRootPasswordAndMariadbUserAndPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true",
+				"MARIADB_USER", "myself", "MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
+		assertThat(environment.getUsername()).isEqualTo("myself");
+		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getUsernameAndPasswordWhenHasMysqlRandomRootPasswordAndMysqlUserAndPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true",
+				"MYSQL_USER", "myself", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
+		assertThat(environment.getUsername()).isEqualTo("myself");
+		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
