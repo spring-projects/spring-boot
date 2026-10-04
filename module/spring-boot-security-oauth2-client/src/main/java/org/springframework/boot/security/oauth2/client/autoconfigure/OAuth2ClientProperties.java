@@ -39,251 +39,264 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.security.oauth2.client")
 public class OAuth2ClientProperties implements InitializingBean {
 
-	/**
-	 * OAuth provider details.
-	 */
-	private final Map<String, Provider> provider = new LinkedHashMap<>();
+    /**
+     * OAuth provider details.
+     */
+    private final Map<String, Provider> provider = new LinkedHashMap<>();
 
-	/**
-	 * OAuth client registrations.
-	 */
-	private final Map<String, Registration> registration = new LinkedHashMap<>();
+    /**
+     * OAuth client registrations.
+     */
+    private final Map<String, Registration> registration = new LinkedHashMap<>();
 
-	public Map<String, Provider> getProvider() {
-		return this.provider;
-	}
+    public Map<String, Provider> getProvider() {
+        return this.provider;
+    }
 
-	public Map<String, Registration> getRegistration() {
-		return this.registration;
-	}
+    public Map<String, Registration> getRegistration() {
+        return this.registration;
+    }
 
-	@Override
-	public void afterPropertiesSet() {
-		validate();
-	}
+    @Override
+    public void afterPropertiesSet() {
+        validate();
+    }
 
-	public void validate() {
-		getRegistration().forEach(this::validateRegistration);
-	}
+    public void validate() {
+        getRegistration().forEach(this::validateRegistration);
+    }
 
-	private void validateRegistration(String id, Registration registration) {
-		if (!StringUtils.hasText(registration.getClientId())) {
-			throw new IllegalStateException("Client id of registration '%s' must not be empty.".formatted(id));
-		}
-	}
+    private void validateRegistration(String id, Registration registration) {
+        if (!StringUtils.hasText(registration.getClientId())) {
+            throw new IllegalStateException("Client id of registration '%s' must not be empty.".formatted(id));
+        }
+    }
 
-	/**
-	 * A single client registration.
-	 */
-	public static class Registration {
+    /**
+     * A single client registration.
+     */
+    public static class Registration {
 
-		/**
-		 * Reference to the OAuth 2.0 provider to use. May reference one of the common
-		 * providers (google, github, facebook, x, okta) or the ID of a custom provider
-		 * configured using 'spring.security.oauth2.client.provider.&lt;id&gt;.*'
-		 * properties. When not set, the ID of this registration is used to identify the
-		 * provider.
-		 */
-		private @Nullable String provider;
+        /**
+         * Reference to the OAuth 2.0 provider to use. May reference one of the common
+         * providers (google, github, facebook, x, okta) or the ID of a custom provider
+         * configured using 'spring.security.oauth2.client.provider.&lt;id&gt;.*'
+         * properties. When not set, the ID of this registration is used to identify the
+         * provider.
+         */
+        private @Nullable String provider;
 
-		/**
-		 * Client ID for the registration.
-		 */
-		private @Nullable String clientId;
+        /**
+         * Client ID for the registration.
+         */
+        private @Nullable String clientId;
 
-		/**
-		 * Client secret of the registration.
-		 */
-		private @Nullable String clientSecret;
+        /**
+         * Client secret of the registration.
+         */
+        private @Nullable String clientSecret;
 
-		/**
-		 * Client authentication method. May be left blank when using a pre-defined
-		 * provider.
-		 */
-		private @Nullable String clientAuthenticationMethod;
+        /**
+         * Client authentication method. May be left blank when using a pre-defined
+         * provider.
+         */
+        private @Nullable String clientAuthenticationMethod;
 
-		/**
-		 * Authorization grant type. May be left blank when using a pre-defined provider.
-		 */
-		private @Nullable String authorizationGrantType;
+        /**
+         * Authorization grant type. May be left blank when using a pre-defined provider.
+         */
+        private @Nullable String authorizationGrantType;
 
-		/**
-		 * Redirect URI. May be left blank when using a pre-defined provider.
-		 */
-		private @Nullable String redirectUri;
+        /**
+         * Redirect URI. May be left blank when using a pre-defined provider.
+         */
+        private @Nullable String redirectUri;
 
-		/**
-		 * Authorization scopes. When left blank the provider's default scopes, if any,
-		 * will be used.
-		 */
-		private @Nullable Set<String> scope;
+        /**
+         * Authorization scopes. When left blank the provider's default scopes, if any,
+         * will be used.
+         */
+        private @Nullable Set<String> scope;
 
-		/**
-		 * Client name. May be left blank when using a pre-defined provider.
-		 */
-		private @Nullable String clientName;
+        /**
+         * Client name. May be left blank when using a pre-defined provider.
+         */
+        private @Nullable String clientName;
 
-		public @Nullable String getProvider() {
-			return this.provider;
-		}
+        public @Nullable String getProvider() {
+            return this.provider;
+        }
 
-		public void setProvider(@Nullable String provider) {
-			this.provider = provider;
-		}
+        public void setProvider(@Nullable String provider) {
+            this.provider = provider;
+        }
 
-		public @Nullable String getClientId() {
-			return this.clientId;
-		}
+        public @Nullable String getClientId() {
+            return this.clientId;
+        }
 
-		public void setClientId(@Nullable String clientId) {
-			this.clientId = clientId;
-		}
+        public void setClientId(@Nullable String clientId) {
+            this.clientId = clientId;
+        }
 
-		public @Nullable String getClientSecret() {
-			return this.clientSecret;
-		}
+        public @Nullable String getClientSecret() {
+            return this.clientSecret;
+        }
 
-		public void setClientSecret(@Nullable String clientSecret) {
-			this.clientSecret = clientSecret;
-		}
+        public void setClientSecret(@Nullable String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
 
-		public @Nullable String getClientAuthenticationMethod() {
-			return this.clientAuthenticationMethod;
-		}
+        public @Nullable String getClientAuthenticationMethod() {
+            return this.clientAuthenticationMethod;
+        }
 
-		public void setClientAuthenticationMethod(@Nullable String clientAuthenticationMethod) {
-			this.clientAuthenticationMethod = clientAuthenticationMethod;
-		}
+        public void setClientAuthenticationMethod(@Nullable String clientAuthenticationMethod) {
+            this.clientAuthenticationMethod = clientAuthenticationMethod;
+        }
 
-		public @Nullable String getAuthorizationGrantType() {
-			return this.authorizationGrantType;
-		}
+        public @Nullable String getAuthorizationGrantType() {
+            return this.authorizationGrantType;
+        }
 
-		public void setAuthorizationGrantType(@Nullable String authorizationGrantType) {
-			this.authorizationGrantType = authorizationGrantType;
-		}
+        public void setAuthorizationGrantType(@Nullable String authorizationGrantType) {
+            this.authorizationGrantType = authorizationGrantType;
+        }
 
-		public @Nullable String getRedirectUri() {
-			return this.redirectUri;
-		}
+        public @Nullable String getRedirectUri() {
+            return this.redirectUri;
+        }
 
-		public void setRedirectUri(@Nullable String redirectUri) {
-			this.redirectUri = redirectUri;
-		}
+        public void setRedirectUri(@Nullable String redirectUri) {
+            this.redirectUri = redirectUri;
+        }
 
-		public @Nullable Set<String> getScope() {
-			return this.scope;
-		}
+        public @Nullable Set<String> getScope() {
+            return this.scope;
+        }
 
-		public void setScope(@Nullable Set<String> scope) {
-			this.scope = scope;
-		}
+        public void setScope(@Nullable Set<String> scope) {
+            this.scope = scope;
+        }
 
-		public @Nullable String getClientName() {
-			return this.clientName;
-		}
+        public @Nullable String getClientName() {
+            return this.clientName;
+        }
 
-		public void setClientName(@Nullable String clientName) {
-			this.clientName = clientName;
-		}
+        public void setClientName(@Nullable String clientName) {
+            this.clientName = clientName;
+        }
 
-	}
+    }
 
-	public static class Provider {
+    public static class Provider {
 
-		/**
-		 * Authorization URI for the provider.
-		 */
-		private @Nullable String authorizationUri;
+        /**
+         * Authorization URI for the provider.
+         */
+        private @Nullable String authorizationUri;
 
-		/**
-		 * Token URI for the provider.
-		 */
-		private @Nullable String tokenUri;
+        /**
+         * Token URI for the provider.
+         */
+        private @Nullable String tokenUri;
 
-		/**
-		 * User info URI for the provider.
-		 */
-		private @Nullable String userInfoUri;
+        /**
+         * User info URI for the provider.
+         */
+        private @Nullable String userInfoUri;
 
-		/**
-		 * User info authentication method for the provider.
-		 */
-		private @Nullable String userInfoAuthenticationMethod;
+        /**
+         * User info authentication method for the provider.
+         */
+        private @Nullable String userInfoAuthenticationMethod;
 
-		/**
-		 * Name of the attribute that will be used to extract the username from the call
-		 * to 'userInfoUri'.
-		 */
-		private @Nullable String userNameAttribute;
+        /**
+         * Name of the attribute that will be used to extract the username from the call
+         * to 'userInfoUri'.
+         */
+        private @Nullable String userNameAttribute;
 
-		/**
-		 * JWK set URI for the provider.
-		 */
-		private @Nullable String jwkSetUri;
+        /**
+         * JWK set URI for the provider.
+         */
+        private @Nullable String jwkSetUri;
 
-		/**
-		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
-		 * Authorization Server Metadata endpoint defined by RFC 8414.
-		 */
-		private @Nullable String issuerUri;
+        /**
+         * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+         * Authorization Server Metadata endpoint defined by RFC 8414.
+         */
+        private @Nullable String issuerUri;
 
-		public @Nullable String getAuthorizationUri() {
-			return this.authorizationUri;
-		}
+        /**
+         * Whether provider discovery is enabled.
+         */
+        private boolean discovery = true;
 
-		public void setAuthorizationUri(@Nullable String authorizationUri) {
-			this.authorizationUri = authorizationUri;
-		}
+        public @Nullable String getAuthorizationUri() {
+            return this.authorizationUri;
+        }
 
-		public @Nullable String getTokenUri() {
-			return this.tokenUri;
-		}
+        public void setAuthorizationUri(@Nullable String authorizationUri) {
+            this.authorizationUri = authorizationUri;
+        }
 
-		public void setTokenUri(@Nullable String tokenUri) {
-			this.tokenUri = tokenUri;
-		}
+        public @Nullable String getTokenUri() {
+            return this.tokenUri;
+        }
 
-		public @Nullable String getUserInfoUri() {
-			return this.userInfoUri;
-		}
+        public void setTokenUri(@Nullable String tokenUri) {
+            this.tokenUri = tokenUri;
+        }
 
-		public void setUserInfoUri(@Nullable String userInfoUri) {
-			this.userInfoUri = userInfoUri;
-		}
+        public @Nullable String getUserInfoUri() {
+            return this.userInfoUri;
+        }
 
-		public @Nullable String getUserInfoAuthenticationMethod() {
-			return this.userInfoAuthenticationMethod;
-		}
+        public void setUserInfoUri(@Nullable String userInfoUri) {
+            this.userInfoUri = userInfoUri;
+        }
 
-		public void setUserInfoAuthenticationMethod(@Nullable String userInfoAuthenticationMethod) {
-			this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
-		}
+        public @Nullable String getUserInfoAuthenticationMethod() {
+            return this.userInfoAuthenticationMethod;
+        }
 
-		public @Nullable String getUserNameAttribute() {
-			return this.userNameAttribute;
-		}
+        public void setUserInfoAuthenticationMethod(@Nullable String userInfoAuthenticationMethod) {
+            this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
+        }
 
-		public void setUserNameAttribute(@Nullable String userNameAttribute) {
-			this.userNameAttribute = userNameAttribute;
-		}
+        public @Nullable String getUserNameAttribute() {
+            return this.userNameAttribute;
+        }
 
-		public @Nullable String getJwkSetUri() {
-			return this.jwkSetUri;
-		}
+        public void setUserNameAttribute(@Nullable String userNameAttribute) {
+            this.userNameAttribute = userNameAttribute;
+        }
 
-		public void setJwkSetUri(@Nullable String jwkSetUri) {
-			this.jwkSetUri = jwkSetUri;
-		}
+        public @Nullable String getJwkSetUri() {
+            return this.jwkSetUri;
+        }
 
-		public @Nullable String getIssuerUri() {
-			return this.issuerUri;
-		}
+        public void setJwkSetUri(@Nullable String jwkSetUri) {
+            this.jwkSetUri = jwkSetUri;
+        }
 
-		public void setIssuerUri(@Nullable String issuerUri) {
-			this.issuerUri = issuerUri;
-		}
+        public @Nullable String getIssuerUri() {
+            return this.issuerUri;
+        }
 
-	}
+        public void setIssuerUri(@Nullable String issuerUri) {
+            this.issuerUri = issuerUri;
+        }
+
+        public boolean isDiscovery() {
+            return this.discovery;
+        }
+
+        public void setDiscovery(boolean discovery) {
+            this.discovery = discovery;
+        }
+
+    }
 
 }

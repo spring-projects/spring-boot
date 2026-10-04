@@ -46,103 +46,103 @@ import org.springframework.util.StringUtils;
  */
 public final class OAuth2ClientPropertiesMapper {
 
-	private final OAuth2ClientProperties properties;
+    private final OAuth2ClientProperties properties;
 
-	/**
-	 * Creates a new mapper for the given {@code properties}.
-	 * @param properties the properties to map
-	 */
-	public OAuth2ClientPropertiesMapper(OAuth2ClientProperties properties) {
-		this.properties = properties;
-	}
+    /**
+     * Creates a new mapper for the given {@code properties}.
+     * @param properties the properties to map
+     */
+    public OAuth2ClientPropertiesMapper(OAuth2ClientProperties properties) {
+        this.properties = properties;
+    }
 
-	/**
-	 * Maps the properties to {@link ClientRegistration ClientRegistrations}.
-	 * @return the mapped {@code ClientRegistrations}
-	 */
-	public Map<String, ClientRegistration> asClientRegistrations() {
-		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		this.properties.getRegistration()
-			.forEach((key, value) -> clientRegistrations.put(key,
-					getClientRegistration(key, value, this.properties.getProvider())));
-		return clientRegistrations;
-	}
+    /**
+     * Maps the properties to {@link ClientRegistration ClientRegistrations}.
+     * @return the mapped {@code ClientRegistrations}
+     */
+    public Map<String, ClientRegistration> asClientRegistrations() {
+        Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
+        this.properties.getRegistration()
+            .forEach((key, value) -> clientRegistrations.put(key,
+                    getClientRegistration(key, value, this.properties.getProvider())));
+        return clientRegistrations;
+    }
 
-	private static ClientRegistration getClientRegistration(String registrationId,
-			OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
-		Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
-		if (builder == null) {
-			builder = getBuilder(registrationId, properties.getProvider(), providers);
-		}
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties::getClientId).to(builder::clientId);
-		map.from(properties::getClientSecret).to(builder::clientSecret);
-		map.from(properties::getClientAuthenticationMethod)
-			.as(ClientAuthenticationMethod::new)
-			.to(builder::clientAuthenticationMethod);
-		map.from(properties::getAuthorizationGrantType)
-			.as(AuthorizationGrantType::new)
-			.to(builder::authorizationGrantType);
-		map.from(properties::getRedirectUri).to(builder::redirectUri);
-		map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
-		map.from(properties::getClientName).to(builder::clientName);
-		return builder.build();
-	}
+    private static ClientRegistration getClientRegistration(String registrationId,
+            OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
+        Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
+        if (builder == null) {
+            builder = getBuilder(registrationId, properties.getProvider(), providers);
+        }
+        PropertyMapper map = PropertyMapper.get();
+        map.from(properties::getClientId).to(builder::clientId);
+        map.from(properties::getClientSecret).to(builder::clientSecret);
+        map.from(properties::getClientAuthenticationMethod)
+            .as(ClientAuthenticationMethod::new)
+            .to(builder::clientAuthenticationMethod);
+        map.from(properties::getAuthorizationGrantType)
+            .as(AuthorizationGrantType::new)
+            .to(builder::authorizationGrantType);
+        map.from(properties::getRedirectUri).to(builder::redirectUri);
+        map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
+        map.from(properties::getClientName).to(builder::clientName);
+        return builder.build();
+    }
 
-	private static @Nullable Builder getBuilderFromIssuerIfPossible(String registrationId,
-			@Nullable String configuredProviderId, Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
-		if (providers.containsKey(providerId)) {
-			Provider provider = providers.get(providerId);
-			String issuer = provider.getIssuerUri();
-			if (issuer != null) {
-				Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
-				return getBuilder(builder, provider);
-			}
-		}
-		return null;
-	}
+    private static @Nullable Builder getBuilderFromIssuerIfPossible(String registrationId,
+            @Nullable String configuredProviderId, Map<String, Provider> providers) {
+        String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
+        if (providers.containsKey(providerId)) {
+            Provider provider = providers.get(providerId);
+            String issuer = provider.getIssuerUri();
+            if (issuer != null && provider.isDiscovery()) {
+                Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
+                return getBuilder(builder, provider);
+            }
+        }
+        return null;
+    }
 
-	private static Builder getBuilder(String registrationId, @Nullable String configuredProviderId,
-			Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
-		CommonOAuth2Provider provider = getCommonProvider(providerId);
-		if (provider == null && !providers.containsKey(providerId)) {
-			throw new IllegalStateException(getErrorMessage(configuredProviderId, registrationId));
-		}
-		Builder builder = (provider != null) ? provider.getBuilder(registrationId)
-				: ClientRegistration.withRegistrationId(registrationId);
-		if (providers.containsKey(providerId)) {
-			return getBuilder(builder, providers.get(providerId));
-		}
-		return builder;
-	}
+    private static Builder getBuilder(String registrationId, @Nullable String configuredProviderId,
+            Map<String, Provider> providers) {
+        String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
+        CommonOAuth2Provider provider = getCommonProvider(providerId);
+        if (provider == null && !providers.containsKey(providerId)) {
+            throw new IllegalStateException(getErrorMessage(configuredProviderId, registrationId));
+        }
+        Builder builder = (provider != null) ? provider.getBuilder(registrationId)
+                : ClientRegistration.withRegistrationId(registrationId);
+        if (providers.containsKey(providerId)) {
+            return getBuilder(builder, providers.get(providerId));
+        }
+        return builder;
+    }
 
-	private static String getErrorMessage(@Nullable String configuredProviderId, String registrationId) {
-		return ((configuredProviderId != null) ? "Unknown provider ID '" + configuredProviderId + "'"
-				: "Provider ID must be specified for client registration '" + registrationId + "'");
-	}
+    private static String getErrorMessage(@Nullable String configuredProviderId, String registrationId) {
+        return ((configuredProviderId != null) ? "Unknown provider ID '" + configuredProviderId + "'"
+                : "Provider ID must be specified for client registration '" + registrationId + "'");
+    }
 
-	private static Builder getBuilder(Builder builder, Provider provider) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
-		map.from(provider::getTokenUri).to(builder::tokenUri);
-		map.from(provider::getUserInfoUri).to(builder::userInfoUri);
-		map.from(provider::getUserInfoAuthenticationMethod)
-			.as(AuthenticationMethod::new)
-			.to(builder::userInfoAuthenticationMethod);
-		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
-		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
-		return builder;
-	}
+    private static Builder getBuilder(Builder builder, Provider provider) {
+        PropertyMapper map = PropertyMapper.get();
+        map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
+        map.from(provider::getTokenUri).to(builder::tokenUri);
+        map.from(provider::getUserInfoUri).to(builder::userInfoUri);
+        map.from(provider::getUserInfoAuthenticationMethod)
+            .as(AuthenticationMethod::new)
+            .to(builder::userInfoAuthenticationMethod);
+        map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
+        map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
+        return builder;
+    }
 
-	private static @Nullable CommonOAuth2Provider getCommonProvider(String providerId) {
-		try {
-			return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
-		}
-		catch (ConversionException ex) {
-			return null;
-		}
-	}
+    private static @Nullable CommonOAuth2Provider getCommonProvider(String providerId) {
+        try {
+            return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
+        }
+        catch (ConversionException ex) {
+            return null;
+        }
+    }
 
 }
