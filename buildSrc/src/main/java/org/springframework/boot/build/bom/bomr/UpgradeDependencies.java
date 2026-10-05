@@ -43,6 +43,7 @@ import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
@@ -215,7 +216,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		return issueLabels;
 	}
 
-	private GitHub createGitHub(String passwordProperty) {
+	protected GitHub createGitHub(String passwordProperty) {
 		Properties bomrProperties = new Properties();
 		try (Reader reader = new FileReader(new File(System.getProperty("user.home"), ".bomr.properties"))) {
 			bomrProperties.load(reader);
@@ -268,11 +269,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		return new MultithreadedLibraryUpdateResolver(getThreads().get(), libraryResolver);
 	}
 
-	private VersionResolver getVersionResolver() {
-		String releaseTrain = getReleaseTrain().getOrNull();
-		return (releaseTrain != null)
-				? new ReleaseTrainVersionResolver(createGitHub("bomr.github.release-train-token"), releaseTrain)
-				: new MavenMetadataVersionResolver(getRepositories());
+	@Internal
+	protected VersionResolver getVersionResolver() {
+		return new MavenMetadataVersionResolver(getRepositories());
 	}
 
 	private Collection<MavenArtifactRepository> getRepositories() {

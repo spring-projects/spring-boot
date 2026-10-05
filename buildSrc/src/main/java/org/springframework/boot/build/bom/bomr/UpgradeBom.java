@@ -88,4 +88,12 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 		System.out.println();
 	}
 
+	@Override
+	protected VersionResolver getVersionResolver() {
+		String releaseTrain = getReleaseTrain().getOrNull();
+		return (releaseTrain != null)
+				? new ReleaseTrainVersionResolver(createGitHub("bomr.github.release-train-token"), releaseTrain)
+				: super.getVersionResolver();
+	}
+
 }
