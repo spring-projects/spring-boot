@@ -1,0 +1,3 @@
+maven-central:
+  excludes:
+    - "org/springframework/boot/spring-boot-docs/**"
