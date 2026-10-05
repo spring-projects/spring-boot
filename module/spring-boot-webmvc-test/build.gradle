@@ -48,6 +48,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
 

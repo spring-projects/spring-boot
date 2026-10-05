@@ -1,3 +1,4 @@
+org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.servlet.autoconfigure.HttpEncodingAutoConfiguration
