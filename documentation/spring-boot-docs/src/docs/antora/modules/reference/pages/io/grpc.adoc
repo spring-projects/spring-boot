@@ -309,7 +309,7 @@ Gradle::
 [source,gradle]
 ----
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+	implementation('org.springframework.boot:spring-boot-starter-webmvc')
 	implementation('org.springframework.boot:spring-boot-starter-grpc-server') {
 		// Exclude the gRPC Netty dependency
 		exclude group: 'io.grpc', module: 'grpc-netty'
