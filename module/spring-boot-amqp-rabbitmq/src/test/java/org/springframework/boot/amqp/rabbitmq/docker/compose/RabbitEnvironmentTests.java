@@ -96,4 +96,30 @@ class RabbitEnvironmentTests {
 		assertThat(environment.getUsername()).isEqualTo("me");
 	}
 
+	@Test
+	void getVirtualHostWhenNoRabbitmqDefaultVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
+		assertThat(environment.getVirtualHost()).isEqualTo("/");
+	}
+
+	@Test
+	void getVirtualHostWhenHasRabbitmqDefaultVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_DEFAULT_VHOST", "app"));
+		assertThat(environment.getVirtualHost()).isEqualTo("app");
+	}
+
+	@Test
+	void getVirtualHostWhenHasRabbitmqVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_VHOST", "app"));
+		assertThat(environment.getVirtualHost()).isEqualTo("app");
+	}
+
+	@Test
+	void getVirtualHostWhenRabbitmqDefaultVhostHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_VHOST", null);
+		RabbitEnvironment environment = new RabbitEnvironment(env);
+		assertThat(environment.getVirtualHost()).isEqualTo("/");
+	}
+
 }
