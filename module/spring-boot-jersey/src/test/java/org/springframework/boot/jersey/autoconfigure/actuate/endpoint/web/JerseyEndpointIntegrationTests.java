@@ -97,8 +97,7 @@ class JerseyEndpointIntegrationTests {
 				new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class,
 						EndpointObjectMapperConfiguration.class },
 				TomcatServletManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class)
-			.withInitializer(new ServerPortInfoApplicationContextInitializer())
-			.withPropertyValues("management.server.port=" + (separateManagementPort ? "0" : ""))
+			.with((runner) -> setUpManagementPort(runner, separateManagementPort))
 			.run((context) -> {
 				WebServer webServer = context
 					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
@@ -108,10 +107,11 @@ class JerseyEndpointIntegrationTests {
 						? context.getEnvironment().getProperty("local.management.port", Integer.class)
 						: webServer.getPort();
 				assertThat(port).isNotNull();
-				WebTestClient.bindToServer()
+				WebTestClient client = WebTestClient.bindToServer()
 					.baseUrl("http://localhost:" + port)
-					.build()
-					.get()
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
+				client.get()
 					.uri("/actuator/beans")
 					.exchange()
 					.expectStatus()
@@ -122,6 +122,12 @@ class JerseyEndpointIntegrationTests {
 						assertThat(json).contains("\"scope\":\"notelgnis\"");
 					});
 			});
+	}
+
+	private WebApplicationContextRunner setUpManagementPort(WebApplicationContextRunner runner,
+			boolean separateManagementPort) {
+		return (separateManagementPort) ? runner.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("management.server.port=0") : runner;
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
