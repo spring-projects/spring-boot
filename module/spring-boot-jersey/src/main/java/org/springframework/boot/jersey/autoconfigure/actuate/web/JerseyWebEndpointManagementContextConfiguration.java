@@ -56,7 +56,6 @@ import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups;
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyEndpointResourceFactory;
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyHealthEndpointAdditionalPathResourceFactory;
-import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -71,6 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Michael Simons
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Kristoffer Larsen Hopland
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -96,7 +96,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
 	@SuppressWarnings("removal")
-	ResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
+	ManagementContextResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
 			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper) {
 		return (config) -> config.register(
 				new EndpointJackson2ObjectMapperContextResolver(endpointJackson2ObjectMapper), ContextResolver.class);
