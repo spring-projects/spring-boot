@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @SpringBootApplication
 public class Example {
 
-	@RequestMapping("/")
+	@RequestMapping( value = "/") // key, value paired is required for the path when using @RequestMapping annotation.
 	String home() {
 		return "Hello World!";
 	}
