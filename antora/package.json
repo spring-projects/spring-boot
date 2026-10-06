@@ -3,9 +3,9 @@
     "antora": "node npm/antora.js"
   },
   "dependencies": {
-    "@antora/cli": "3.2.0",
-    "@antora/logger": "3.2.0",
-    "@antora/site-generator": "3.2.0",
+    "@antora/cli": "3.2.1",
+    "@antora/logger": "3.2.1",
+    "@antora/site-generator": "3.2.1",
     "@antora/atlas-extension": "1.0.0-alpha.6",
     "@springio/antora-extensions": "1.14.13",
     "@springio/antora-xref-extension": "1.0.0-alpha.5",
