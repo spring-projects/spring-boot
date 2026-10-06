@@ -31,6 +31,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -38,9 +40,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
+import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Kristoffer Larsen Hopland
  */
 class JerseyEndpointIntegrationTests {
 
@@ -84,25 +90,44 @@ class JerseyEndpointIntegrationTests {
 		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class });
 	}
 
-	@Test
-	void endpointObjectMapperCanBeApplied() {
-		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
-				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
-		contextRunner.run((context) -> {
-			WebServer webServer = context
-				.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer();
-			assertThat(webServer).isNotNull();
-			int port = webServer.getPort();
-			WebTestClient client = WebTestClient.bindToServer()
-				.baseUrl("http://localhost:" + port)
-				.responseTimeout(Duration.ofMinutes(5))
-				.build();
-			client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody().consumeWith((result) -> {
-				String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
-				assertThat(json).contains("\"scope\":\"notelgnis\"");
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	void endpointObjectMapperCanBeApplied(boolean separateManagementPort) {
+		getContextRunner(
+				new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class,
+						EndpointObjectMapperConfiguration.class },
+				TomcatServletManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class)
+			.with((runner) -> setUpManagementPort(runner, separateManagementPort))
+			.run((context) -> {
+				WebServer webServer = context
+					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer();
+				assertThat(webServer).isNotNull();
+				Integer port = separateManagementPort
+						? context.getEnvironment().getProperty("local.management.port", Integer.class)
+						: webServer.getPort();
+				assertThat(port).isNotNull();
+				WebTestClient client = WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
+				client.get()
+					.uri("/actuator/beans")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.consumeWith((result) -> {
+						String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+						assertThat(json).contains("\"scope\":\"notelgnis\"");
+					});
 			});
-		});
+	}
+
+	private WebApplicationContextRunner setUpManagementPort(WebApplicationContextRunner runner,
+			boolean separateManagementPort) {
+		return (separateManagementPort) ? runner.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("management.server.port=0") : runner;
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
