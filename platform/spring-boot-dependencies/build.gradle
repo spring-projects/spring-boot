@@ -2858,7 +2858,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "7.1.1") {
+	library("Spring Integration", "7.1.2-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
