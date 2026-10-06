@@ -100,7 +100,7 @@ class JerseyAutoConfigurationServletContainerTests {
 					jerseyServlet.setOverridable(false);
 					context.addChild(jerseyServlet);
 					String pattern = UDecoder.URLDecode("/*", StandardCharsets.UTF_8);
-					context.addServletMappingDecoded(pattern, servletName);
+					context.addServletMapping(pattern, servletName);
 				}
 
 			};
