@@ -92,7 +92,7 @@ class RabbitMqStreamDockerComposeConnectionDetailsFactory
 
 		@Override
 		public String getVirtualHost() {
-			return "/";
+			return this.environment.getVirtualHost();
 		}
 
 		@Override

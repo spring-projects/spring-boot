@@ -34,15 +34,19 @@ class RabbitMqEnvironment {
 
 	private final @Nullable String password;
 
+	private final String virtualHost;
+
 	RabbitMqEnvironment(Map<String, @Nullable String> env) {
-		this.username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME");
-		this.password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD");
+		this.username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME", "guest");
+		this.password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD", "guest");
+		this.virtualHost = extract(env, "RABBITMQ_DEFAULT_VHOST", "RABBITMQ_VHOST", "/");
 	}
 
-	private static String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
+	private static String extract(Map<String, @Nullable String> env, String key, String fallbackKey,
+			String defaultValue) {
 		String value = env.get(key);
 		value = (value != null) ? value : env.get(fallbackKey);
-		return (value != null) ? value : "guest";
+		return (value != null) ? value : defaultValue;
 	}
 
 	@Nullable String getUsername() {
@@ -51,6 +55,10 @@ class RabbitMqEnvironment {
 
 	@Nullable String getPassword() {
 		return this.password;
+	}
+
+	String getVirtualHost() {
+		return this.virtualHost;
 	}
 
 }
