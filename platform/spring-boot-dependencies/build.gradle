@@ -2679,7 +2679,6 @@ bom {
 	}
 	library("Spring Data Bom", "2026.0.2-SNAPSHOT") {
 		firstParty()
-		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
 			bom("spring-data-bom")
 		}
