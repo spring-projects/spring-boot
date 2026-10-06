@@ -174,7 +174,7 @@ class RSocketServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(NoSuchSslBundleException.class)
-					.withFailMessage("SSL bundle name 'test-bundle' is not valid");
+					.hasRootCauseMessage("SSL bundle name 'test-bundle' cannot be found");
 			});
 	}
 
