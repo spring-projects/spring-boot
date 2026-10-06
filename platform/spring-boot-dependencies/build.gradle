@@ -2992,7 +2992,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
 		}
 	}
-	library("SQLite JDBC", "3.53.2.1") {
+	library("SQLite JDBC", "3.53.4.0") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
