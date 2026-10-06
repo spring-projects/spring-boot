@@ -93,6 +93,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 		return result;
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void addMarkers(Set<String> result, Iterator<Marker> iterator) {
 		while (iterator.hasNext()) {
 			Marker marker = iterator.next();

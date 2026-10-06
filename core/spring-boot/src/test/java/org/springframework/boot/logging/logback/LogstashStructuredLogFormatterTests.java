@@ -62,6 +62,23 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Map.of("mdc-1", "mdc-v-1"));
 		event.setKeyValuePairs(keyValuePairs("kv-1", "kv-v-1"));
+		event.addMarker(getMarker("marker-1"));
+		event.addMarker(getMarker("marker-2"));
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		String timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+			.format(OffsetDateTime.ofInstant(EVENT_TIME, ZoneId.systemDefault()));
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", timestamp, "@version", "1",
+				"message", "message", "logger_name", "org.example.Test", "thread_name", "main", "level", "INFO",
+				"level_value", 20000, "mdc-1", "mdc-v-1", "kv-1", "kv-v-1", "tags", List.of("marker-1", "marker-2")));
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	void shouldFormatWithNestedMarker() {
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Map.of("mdc-1", "mdc-v-1"));
 		Marker marker1 = getMarker("marker-1");
 		marker1.add(getMarker("marker-2"));
 		event.addMarker(marker1);
@@ -72,7 +89,7 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 			.format(OffsetDateTime.ofInstant(EVENT_TIME, ZoneId.systemDefault()));
 		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", timestamp, "@version", "1",
 				"message", "message", "logger_name", "org.example.Test", "thread_name", "main", "level", "INFO",
-				"level_value", 20000, "mdc-1", "mdc-v-1", "kv-1", "kv-v-1", "tags", List.of("marker-1", "marker-2")));
+				"level_value", 20000, "mdc-1", "mdc-v-1", "tags", List.of("marker-1", "marker-2")));
 	}
 
 	@Test
