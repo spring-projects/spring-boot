@@ -158,9 +158,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
 					build.append(ch);
 				}
-				else {
-					tracking.set(Tracked.ESCAPE, 1);
-				}
+				tracking.set(Tracked.ESCAPE, 1);
 			}
 			else {
 				build.append(ch);
