@@ -50,16 +50,15 @@ public class ReactiveMultipartProperties {
 	private DataSize maxHeadersSize = DataSize.ofKilobytes(10);
 
 	/**
-	 * Maximum amount of disk space allowed per part. Default is -1 which enforces no
-	 * limits.
+	 * Maximum amount of disk space allowed per part. Set to -1 to enforce no limits.
 	 */
-	private DataSize maxDiskUsagePerPart = DataSize.ofBytes(-1);
+	private DataSize maxDiskUsagePerPart = DataSize.ofMegabytes(1);
 
 	/**
-	 * Maximum number of parts allowed in a given multipart request. Default is -1 which
-	 * enforces no limits.
+	 * Maximum number of parts allowed in a given multipart request. Set to -1 to enforce
+	 * no limits.
 	 */
-	private Integer maxParts = -1;
+	private Integer maxParts = 50;
 
 	/**
 	 * Directory used to store file parts larger than 'maxInMemorySize'. Default is a
