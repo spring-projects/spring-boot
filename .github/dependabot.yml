@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    exclude-paths:
+      - ".github/workflows/release-train*"
     labels:
       - "type: task"
       - "status: waiting-for-triage"
