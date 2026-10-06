@@ -2619,7 +2619,7 @@ bom {
 			releaseNotes("https://github.com/sendgrid/sendgrid-java/releases/tag/{version}")
 		}
 	}
-	library("SLF4J", "2.0.18") {
+	library("SLF4J", "2.0.20") {
 		prohibit {
 			contains "-alpha"
 			because "we don't want alphas"
