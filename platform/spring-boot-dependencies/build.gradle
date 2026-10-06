@@ -2665,7 +2665,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2026.0.2-SNAPSHOT") {
+	library("Spring Data Bom", "2026.0.2") {
 		firstParty()
 		group("org.springframework.data") {
 			bom("spring-data-bom")
