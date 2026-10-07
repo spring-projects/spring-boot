@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.jspecify.annotations.Nullable;
 
@@ -160,7 +161,7 @@ public class InspectedContent implements Content {
 		}
 
 		private void convertToTempFile() throws IOException {
-			this.tempFile = File.createTempFile("buildpack", ".tmp");
+			this.tempFile = Files.createTempFile("buildpack", ".tmp").toFile();
 			byte[] bytes = ((ByteArrayOutputStream) this.delegate).toByteArray();
 			this.delegate = new FileOutputStream(this.tempFile);
 			StreamUtils.copy(bytes, this.delegate);
