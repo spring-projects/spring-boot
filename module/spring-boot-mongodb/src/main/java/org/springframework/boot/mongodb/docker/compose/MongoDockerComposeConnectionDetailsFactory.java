@@ -88,7 +88,7 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			return new ConnectionString(builder.toString());
 		}
 
-		private String encode(String input) {
+		private static String encode(String input) {
 			return URLEncoder.encode(input, StandardCharsets.UTF_8).replace("+", "%20");
 		}
 

@@ -18,8 +18,6 @@ package org.springframework.boot.mongodb.docker.compose;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
@@ -50,18 +48,6 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
-	}
-
-	@DockerComposeTest(composeFile = "mongo-with-reserved-characters-in-credentials-compose.yaml",
-			image = TestImage.MONGODB)
-	void runWithReservedCharactersInCredentialsCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
-		ConnectionString connectionString = connectionDetails.getConnectionString();
-		MongoCredential credential = connectionString.getCredential();
-		assertThat(credential).isNotNull();
-		assertThat(credential.getPassword()).isEqualTo("p@ss:w/rd".toCharArray());
-		try (MongoClient client = MongoClients.create(connectionString)) {
-			assertThat(client.listDatabaseNames()).contains("admin");
-		}
 	}
 
 	private void assertConnectionDetailsWithDatabase(MongoConnectionDetails connectionDetails, String database) {

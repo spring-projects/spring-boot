@@ -32,28 +32,19 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for
- * {@link MongoDockerComposeConnectionDetailsFactory.MongoDockerComposeConnectionDetails}.
+ * Tests for {@link MongoDockerComposeConnectionDetailsFactory}.
  *
  * @author Iram Tazim Hoque
  */
-class MongoDockerComposeConnectionDetailsFactoryConnectionDetailsTests {
-
-	private final RunningService service = mock(RunningService.class);
-
-	MongoDockerComposeConnectionDetailsFactoryConnectionDetailsTests() {
-		given(this.service.labels()).willReturn(Collections.emptyMap());
-		ConnectionPorts connectionPorts = mock(ConnectionPorts.class);
-		given(this.service.ports()).willReturn(connectionPorts);
-		given(this.service.host()).willReturn("localhost");
-		given(connectionPorts.get(27017)).willReturn(30001);
-	}
+class MongoDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void createConnectionDetails() {
-		given(this.service.env()).willReturn(Map.of("MONGO_INITDB_ROOT_USERNAME", "root", "MONGO_INITDB_ROOT_PASSWORD",
-				"secret", "MONGO_INITDB_DATABASE", "mydatabase"));
-		ConnectionString connectionString = getConnectionString();
+		RunningService runningService = mockRunningService();
+		given(runningService.env()).willReturn(Map.of("MONGO_INITDB_ROOT_USERNAME", "root",
+				"MONGO_INITDB_ROOT_PASSWORD", "secret", "MONGO_INITDB_DATABASE", "mydatabase"));
+		ConnectionString connectionString = new MongoDockerComposeConnectionDetails(runningService)
+			.getConnectionString();
 		assertThat(connectionString.getHosts()).containsExactly("localhost:30001");
 		assertThat(connectionString.getDatabase()).isEqualTo("mydatabase");
 		MongoCredential credential = connectionString.getCredential();
@@ -65,9 +56,11 @@ class MongoDockerComposeConnectionDetailsFactoryConnectionDetailsTests {
 
 	@Test
 	void createConnectionDetailsWhenCredentialsContainReservedCharacters() {
-		given(this.service.env()).willReturn(Map.of("MONGO_INITDB_ROOT_USERNAME", "us@r:name",
+		RunningService runningService = mockRunningService();
+		given(runningService.env()).willReturn(Map.of("MONGO_INITDB_ROOT_USERNAME", "us@r:name",
 				"MONGO_INITDB_ROOT_PASSWORD", "p@ss:w/rd%?#[] +", "MONGO_INITDB_DATABASE", "mydatabase"));
-		ConnectionString connectionString = getConnectionString();
+		ConnectionString connectionString = new MongoDockerComposeConnectionDetails(runningService)
+			.getConnectionString();
 		assertThat(connectionString.getHosts()).containsExactly("localhost:30001");
 		assertThat(connectionString.getDatabase()).isEqualTo("mydatabase");
 		MongoCredential credential = connectionString.getCredential();
@@ -79,15 +72,23 @@ class MongoDockerComposeConnectionDetailsFactoryConnectionDetailsTests {
 
 	@Test
 	void createConnectionDetailsWithoutCredentials() {
-		given(this.service.env()).willReturn(Collections.emptyMap());
-		ConnectionString connectionString = getConnectionString();
+		RunningService runningService = mockRunningService();
+		given(runningService.env()).willReturn(Collections.emptyMap());
+		ConnectionString connectionString = new MongoDockerComposeConnectionDetails(runningService)
+			.getConnectionString();
 		assertThat(connectionString.getHosts()).containsExactly("localhost:30001");
 		assertThat(connectionString.getDatabase()).isEqualTo("test");
 		assertThat(connectionString.getCredential()).isNull();
 	}
 
-	private ConnectionString getConnectionString() {
-		return new MongoDockerComposeConnectionDetails(this.service).getConnectionString();
+	private static RunningService mockRunningService() {
+		RunningService service = mock(RunningService.class);
+		given(service.labels()).willReturn(Collections.emptyMap());
+		ConnectionPorts connectionPorts = mock(ConnectionPorts.class);
+		given(service.ports()).willReturn(connectionPorts);
+		given(service.host()).willReturn("localhost");
+		given(connectionPorts.get(27017)).willReturn(30001);
+		return service;
 	}
 
 }
