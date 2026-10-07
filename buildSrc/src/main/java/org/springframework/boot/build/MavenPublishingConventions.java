@@ -58,6 +58,7 @@ import org.springframework.boot.build.properties.BuildType;
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
+ * @author Stephane Nicoll
  */
 class MavenPublishingConventions {
 
@@ -91,16 +92,18 @@ class MavenPublishingConventions {
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
+		BuildType buildType = BuildProperties.get(project).buildType();
+		String projectName = project.getName();
 		pom.getUrl().set("https://spring.io/projects/spring-boot");
 		pom.getName().set(project.provider(project::getName));
 		pom.getDescription().set(project.provider(project::getDescription));
-		if (!isUserInherited(project)) {
+		if (!isUserInherited(projectName)) {
 			pom.organization(this::customizeOrganization);
 		}
-		pom.licenses(this::customizeLicences);
+		pom.licenses((licenses) -> customizeLicences(licenses, buildType));
 		pom.developers(this::customizeDevelopers);
-		pom.scm((scm) -> customizeScm(scm, project));
-		pom.issueManagement((issueManagement) -> customizeIssueManagement(issueManagement, project));
+		pom.scm((scm) -> customizeScm(scm, buildType, projectName));
+		pom.issueManagement((issueManagement) -> customizeIssueManagement(issueManagement, buildType, projectName));
 	}
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
@@ -115,10 +118,15 @@ class MavenPublishingConventions {
 		organization.getUrl().set("https://spring.io");
 	}
 
-	private void customizeLicences(MavenPomLicenseSpec licences) {
+	private void customizeLicences(MavenPomLicenseSpec licences, BuildType buildType) {
 		licences.license((licence) -> {
-			licence.getName().set("Apache License, Version 2.0");
-			licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
+			if (buildType == BuildType.OPEN_SOURCE) {
+				licence.getName().set("Apache License, Version 2.0");
+				licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
+			}
+			else {
+				licence.getName().set("Broadcom Foundation License");
+			}
 		});
 	}
 
@@ -131,32 +139,32 @@ class MavenPublishingConventions {
 		});
 	}
 
-	private void customizeScm(MavenPomScm scm, Project project) {
-		if (BuildProperties.get(project).buildType() != BuildType.OPEN_SOURCE) {
+	private void customizeScm(MavenPomScm scm, BuildType buildType, String projectName) {
+		if (buildType != BuildType.OPEN_SOURCE) {
 			logger.debug("Skipping Maven POM SCM for non open source build type");
 			return;
 		}
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
-		if (!isUserInherited(project)) {
+		if (!isUserInherited(projectName)) {
 			scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
 			scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
 		}
 	}
 
-	private void customizeIssueManagement(MavenPomIssueManagement issueManagement, Project project) {
-		if (BuildProperties.get(project).buildType() != BuildType.OPEN_SOURCE) {
+	private void customizeIssueManagement(MavenPomIssueManagement issueManagement, BuildType buildType,
+			String projectName) {
+		if (buildType != BuildType.OPEN_SOURCE) {
 			logger.debug("Skipping Maven POM SCM for non open source build type");
 			return;
 		}
-		if (!isUserInherited(project)) {
+		if (!isUserInherited(projectName)) {
 			issueManagement.getSystem().set("GitHub");
 			issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
 		}
 	}
 
-	private boolean isUserInherited(Project project) {
-		return "spring-boot-starter-parent".equals(project.getName())
-				|| "spring-boot-dependencies".equals(project.getName());
+	private boolean isUserInherited(String projectName) {
+		return "spring-boot-starter-parent".equals(projectName) || "spring-boot-dependencies".equals(projectName);
 	}
 
 }
