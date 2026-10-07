@@ -71,6 +71,8 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
+import org.springframework.boot.build.properties.BuildProperties;
+import org.springframework.boot.build.properties.BuildType;
 import org.springframework.boot.build.springframework.CheckAotFactories;
 import org.springframework.boot.build.springframework.CheckSpringFactories;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
@@ -164,12 +166,16 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
+		BuildType buildType = BuildProperties.get(project).buildType();
+		String license = (buildType == BuildType.OPEN_SOURCE) ? "Apache License, Version 2.0"
+				: "Broadcom Foundation License";
 		TaskProvider<ExtractResources> extractLegalResources = project.getTasks()
 			.register("extractLegalResources", ExtractResources.class, (task) -> {
 				task.getPackageName().set("org.springframework.boot.build.legal");
 				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 				task.getProperties().put("version", project.getVersion().toString());
+				task.getProperties().put("license", license);
 			});
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		Set<String> sourceJarTaskNames = sourceSets.stream()
