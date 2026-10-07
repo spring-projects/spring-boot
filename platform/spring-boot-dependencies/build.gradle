@@ -2179,7 +2179,7 @@ bom {
 			releaseNotes("https://github.com/r2dbc/r2dbc-spi/releases/tag/v{version}")
 		}
 	}
-	library("RabbitMQ Client", "5.36.0") {
+	library("RabbitMQ Client", "5.37.0") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
