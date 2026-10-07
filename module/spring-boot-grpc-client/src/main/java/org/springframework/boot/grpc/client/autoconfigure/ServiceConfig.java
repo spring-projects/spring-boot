@@ -87,7 +87,8 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 	}
 
 	static String durationString(Duration duration) {
-		return duration.getSeconds() + "." + duration.getNano() + "s";
+		return (duration.getNano() == 0) ? "%ds".formatted(duration.getSeconds())
+				: "%d.%09ds".formatted(duration.getSeconds(), duration.getNano());
 	}
 
 	static String bytesString(DataSize dataSize) {
