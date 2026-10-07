@@ -174,6 +174,22 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void configureUriWithUsernameAndPasswordContainingColons() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user:pass:with:colons@localhost:9200")
+			.run((context) -> {
+				Rest5Client client = context.getBean(Rest5Client.class);
+				assertThat(client)
+					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+					.satisfies((credentialsProvider) -> {
+						UsernamePasswordCredentials credentials = (UsernamePasswordCredentials) credentialsProvider
+							.getCredentials(new AuthScope("localhost", 9200), null);
+						assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
+						assertThat(credentials.getUserPassword()).containsExactly("pass:with:colons".toCharArray());
+					});
+			});
+	}
+
+	@Test
 	void configureUriWithUsernameAndPasswordWhenUsernameAndPasswordPropertiesSet() {
 		this.contextRunner
 			.withPropertyValues("spring.elasticsearch.uris=http://user:password@localhost:9200,localhost:9201",
