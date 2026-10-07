@@ -340,8 +340,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	void causesManagementWebSecurityAutoConfigurationToBackOff() {
 		WebApplicationContextRunner contextRunner = this.contextRunner.withConfiguration(
 				AutoConfigurations.of(ManagementWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class));
-		assertThat(contextRunner
-			.run((context) -> assertThat(context).hasSingleBean(ManagementWebSecurityAutoConfiguration.class)));
+		contextRunner.run((context) -> assertThat(context).hasSingleBean(ManagementWebSecurityAutoConfiguration.class));
 		contextRunner.withPropertyValues(PREFIX
 				+ ".simplesamlphp.assertingparty.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
 				PREFIX + ".simplesamlphp.assertingparty.single-sign-on.sign-request=false",

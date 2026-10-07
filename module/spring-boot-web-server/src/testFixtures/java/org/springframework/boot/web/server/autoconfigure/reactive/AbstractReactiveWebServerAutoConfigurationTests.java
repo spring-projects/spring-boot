@@ -108,7 +108,7 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context.getStartupFailure().getCause()).isInstanceOf(NoSuchSslBundleException.class)
-					.withFailMessage("test");
+					.hasMessage("SSL bundle name 'test-bundle' cannot be found");
 			});
 	}
 
