@@ -1445,7 +1445,7 @@ bom {
 			}
 		}
 	}
-	library("Logback", "1.6.3") {
+	library("Logback", "1.6.5") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
