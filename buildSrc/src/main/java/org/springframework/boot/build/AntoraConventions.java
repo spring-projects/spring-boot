@@ -103,8 +103,10 @@ public class AntoraConventions {
 					task.getOutputDirectory().set(project.getLayout().getBuildDirectory().dir(task.getName()));
 				});
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
-			Configuration implementation = project.getConfigurations().getByName("implementation");
-			checkAntoraJavadocMacros.configure((macrosTask) -> macrosTask.setClasspath(implementation));
+			Configuration runtimeClasspath = project.getConfigurations()
+				.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			checkAntoraJavadocMacros.configure((macrosTask) -> macrosTask.setClasspath(runtimeClasspath));
+			tasks.withType(AntoraTask.class).configureEach((antora) -> antora.dependsOn(checkAntoraJavadocMacros));
 		});
 	}
 

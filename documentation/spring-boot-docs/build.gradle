@@ -101,6 +101,8 @@ dependencies {
 
 	resolvedBom(project(path: ":platform:spring-boot-dependencies", configuration: "resolvedBom"))
 
+	runtimeOnly("org.projectlombok:lombok")
+
 	springApplicationExample(platform(project(":platform:spring-boot-dependencies")))
 	springApplicationExample(project(":starter:spring-boot-starter-webmvc"))
 
