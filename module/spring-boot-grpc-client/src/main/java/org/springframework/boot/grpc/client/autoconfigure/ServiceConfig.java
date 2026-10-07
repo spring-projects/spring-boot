@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -88,7 +87,8 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 	}
 
 	static String durationString(Duration duration) {
-		return String.format(Locale.ROOT, "%d.%09ds", duration.getSeconds(), duration.getNano());
+		return (duration.getNano() == 0) ? "%ds".formatted(duration.getSeconds())
+				: "%d.%09ds".formatted(duration.getSeconds(), duration.getNano());
 	}
 
 	static String bytesString(DataSize dataSize) {
