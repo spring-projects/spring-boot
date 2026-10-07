@@ -16,6 +16,9 @@
 
 package org.springframework.boot.mongodb.docker.compose;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import com.mongodb.ConnectionString;
 import org.jspecify.annotations.Nullable;
 
@@ -69,9 +72,9 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			MongoEnvironment environment = new MongoEnvironment(service.env());
 			StringBuilder builder = new StringBuilder("mongodb://");
 			if (environment.getUsername() != null) {
-				builder.append(environment.getUsername());
+				builder.append(encode(environment.getUsername()));
 				builder.append(":");
-				builder.append((environment.getPassword() != null) ? environment.getPassword() : "");
+				builder.append((environment.getPassword() != null) ? encode(environment.getPassword()) : "");
 				builder.append("@");
 			}
 			builder.append(service.host());
@@ -83,6 +86,10 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 				builder.append("?authSource=admin");
 			}
 			return new ConnectionString(builder.toString());
+		}
+
+		private static String encode(String input) {
+			return URLEncoder.encode(input, StandardCharsets.UTF_8).replace("+", "%20");
 		}
 
 		@Override
