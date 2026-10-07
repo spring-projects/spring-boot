@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
+import org.springframework.boot.test.context.LoggingApplicationListenerWithContextPausingTests.TestConfig;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Raphael Vullriede
  */
-@SpringBootTest
+@SpringBootTest(classes = TestConfig.class)
 @ExtendWith(OutputCaptureExtension.class)
 @TestClassOrder(ClassOrderer.ClassName.class)
-class LoggingApplicationListenerTcfCacheContextPausingTests {
+class LoggingApplicationListenerWithContextPausingTests {
 
 	private static void assertJulOutputIsLogged(CapturedOutput output) {
 		Logger.getLogger("test").severe("Hello from JUL");
@@ -50,7 +50,6 @@ class LoggingApplicationListenerTcfCacheContextPausingTests {
 	}
 
 	@Nested
-	@Import(TestConfig.class)
 	@TestPropertySource(properties = "context=one")
 	class ContextOne {
 
@@ -62,7 +61,6 @@ class LoggingApplicationListenerTcfCacheContextPausingTests {
 	}
 
 	@Nested
-	@Import(TestConfig.class)
 	@TestPropertySource(properties = "context=two")
 	class ContextTwo {
 
@@ -74,7 +72,6 @@ class LoggingApplicationListenerTcfCacheContextPausingTests {
 	}
 
 	@Nested
-	@Import(TestConfig.class)
 	@TestPropertySource(properties = "context=one")
 	class ReuseContextOne {
 
@@ -85,7 +82,7 @@ class LoggingApplicationListenerTcfCacheContextPausingTests {
 
 	}
 
-	@SpringBootConfiguration(proxyBeanMethods = false)
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfig {
 
 	}
