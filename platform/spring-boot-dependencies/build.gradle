@@ -1209,7 +1209,7 @@ bom {
 			javadoc("https://javadoc.io/doc/com.samskivert/jmustache/{version}", "com.samskivert.mustache")
 		}
 	}
-	library("jOOQ", "3.21.8") {
+	library("jOOQ", "3.21.9") {
 		group("org.jooq") {
 			bom("jooq-bom")
 			plugins = [
