@@ -2023,7 +2023,7 @@ bom {
 			}
 		}
 	}
-	library("Pulsar", "4.2.4") {
+	library("Pulsar", "4.2.5") {
 		group("org.apache.pulsar") {
 			bom("pulsar-bom")
 		}
