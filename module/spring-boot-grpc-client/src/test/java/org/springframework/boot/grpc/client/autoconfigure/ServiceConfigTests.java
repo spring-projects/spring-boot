@@ -255,7 +255,7 @@ class ServiceConfigTests {
 			      method: m-one
 			    retry:
 			      max-attempts: 2
-			      initial-backoff: 1m
+			      initial-backoff: 50ms
 			      max-backoff: 1h
 			      backoff-multiplier: 2.5
 			      per-attempt-receive-timeout: 2s
@@ -268,7 +268,7 @@ class ServiceConfigTests {
 		Map<String, ?> serviceMethodMap = getServiceMethodMap(map, true);
 		Object methodInfo = serviceMethodMap.get("s-one/m-one");
 		assertThat(methodInfo).extracting("retryPolicy.maxAttempts").isEqualTo(2);
-		assertThat(methodInfo).extracting("retryPolicy.initialBackoffNanos").isEqualTo(Duration.ofMinutes(1).toNanos());
+		assertThat(methodInfo).extracting("retryPolicy.initialBackoffNanos").isEqualTo(Duration.ofMillis(50).toNanos());
 		assertThat(methodInfo).extracting("retryPolicy.maxBackoffNanos").isEqualTo(Duration.ofHours(1).toNanos());
 		assertThat(methodInfo).extracting("retryPolicy.backoffMultiplier").isEqualTo(2.5);
 		assertThat(methodInfo).extracting("retryPolicy.perAttemptRecvTimeoutNanos")
