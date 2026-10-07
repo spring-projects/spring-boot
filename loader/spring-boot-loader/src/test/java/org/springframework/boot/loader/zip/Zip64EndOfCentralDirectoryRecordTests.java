@@ -52,7 +52,7 @@ class Zip64EndOfCentralDirectoryRecordTests {
 		assertThat(eocd.numberOfCentralDirectoryEntriesOnThisDisk()).isEqualTo(6);
 		assertThat(eocd.totalNumberOfCentralDirectoryEntries()).isEqualTo(7);
 		assertThat(eocd.sizeOfCentralDirectory()).isEqualTo(8);
-		assertThat(eocd.offsetToStartOfCentralDirectory());
+		assertThat(eocd.offsetToStartOfCentralDirectory()).isEqualTo(9);
 	}
 
 	@Test

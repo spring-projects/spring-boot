@@ -203,8 +203,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			Rest5Client client = context.getBean(Rest5Client.class);
 			assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
 				.satisfiesOnlyOnce((header) -> {
-					assertThat(header.getName().equals("Authorization"));
-					assertThat(header.getValue().equals("ApiKey some-api-key"));
+					assertThat(header.getName()).isEqualTo("Authorization");
+					assertThat(header.getValue()).isEqualTo("ApiKey some-api-key");
 				});
 		});
 	}
@@ -218,8 +218,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				Rest5Client client = context.getBean(Rest5Client.class);
 				assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
 					.satisfiesOnlyOnce((header) -> {
-						assertThat(header.getName().equals("Authorization"));
-						assertThat(header.getValue().equals("ApiKey some-api-key"));
+						assertThat(header.getName()).isEqualTo("Authorization");
+						assertThat(header.getValue()).isEqualTo("ApiKey some-api-key");
 					});
 				assertThat(client)
 					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
