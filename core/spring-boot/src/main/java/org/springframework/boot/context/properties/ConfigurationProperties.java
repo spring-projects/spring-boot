@@ -84,4 +84,17 @@ public @interface ConfigurationProperties {
 	 */
 	boolean ignoreUnknownFields() default true;
 
+	/**
+	 * Flag to indicate that bound collections and maps should remain mutable. By default,
+	 * properties declared as collection or map interfaces (such as {@link java.util.List},
+	 * {@link java.util.Set}, {@link java.util.Map}) are bound as unmodifiable instances.
+	 * Set this flag to {@code true} to restore the previous behavior where bound collections
+	 * and maps are mutable. Note that properties declared as concrete mutable types (such as
+	 * {@link java.util.LinkedList} or {@link java.util.HashMap}) are always mutable regardless
+	 * of this flag.
+	 * @return the flag value (default false)
+	 * @since 4.0.0
+	 */
+	boolean mutableCollections() default false;
+
 }
