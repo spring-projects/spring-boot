@@ -79,8 +79,14 @@ abstract class AbstractJarModeTests {
 
 	File createArchive(Manifest manifest, @Nullable Instant creationTime, @Nullable Instant lastModifiedTime,
 			@Nullable Instant lastAccessTime, String... entries) throws IOException {
+		return createArchive("test.jar", manifest, creationTime, lastModifiedTime, lastAccessTime, entries);
+	}
+
+	File createArchive(String filename, Manifest manifest, @Nullable Instant creationTime,
+			@Nullable Instant lastModifiedTime, @Nullable Instant lastAccessTime, String... entries)
+			throws IOException {
 		Assert.state(entries.length % 2 == 0, "Entries must be key value pairs");
-		File file = new File(this.tempDir, "test.jar");
+		File file = new File(this.tempDir, filename);
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			ZipEntry manifestEntry = createEntry(JarFile.MANIFEST_NAME, creationTime, lastModifiedTime, lastAccessTime);
 			jar.putNextEntry(manifestEntry);

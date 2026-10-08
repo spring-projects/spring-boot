@@ -55,6 +55,7 @@ import org.gradle.api.internal.file.archive.ZipEntryConstants;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -88,6 +89,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	private final String libPath;
 
+	private final @Nullable String libProvidedPath;
+
 	private final String classesPath;
 
 	private final String indexPath;
@@ -96,11 +99,12 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	private T task;
 
-	protected AbstractBootArchiveTests(Class<T> taskClass, String launcherClass, String libPath, String classesPath,
-			String indexPath) {
+	protected AbstractBootArchiveTests(Class<T> taskClass, String launcherClass, String libPath,
+			@Nullable String libProvidedPath, String classesPath, String indexPath) {
 		this.taskClass = taskClass;
 		this.launcherClass = launcherClass;
 		this.libPath = libPath;
+		this.libProvidedPath = libProvidedPath;
 		this.classesPath = classesPath;
 		this.indexPath = indexPath;
 	}
@@ -124,6 +128,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes"))
 				.isEqualTo(this.classesPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(this.libPath);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib-Provided"))
+				.isEqualTo(this.libProvidedPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Version")).isNotNull();
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Title"))
 				.isEqualTo(this.project.getName());

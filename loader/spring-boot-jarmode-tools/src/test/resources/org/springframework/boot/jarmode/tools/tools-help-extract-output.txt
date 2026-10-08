@@ -8,5 +8,5 @@ Options:
   --layers string list           Layers to extract
   --destination string           Directory to extract files to. Defaults to a directory named after the uber JAR (without the file extension)
   --libraries string             Name of the libraries directory. Only applicable when not using --launcher. Defaults to lib/
-  --application-filename string  Name of the application JAR file. Only applicable when not using --launcher. Defaults to the uber JAR filename
+  --application-filename string  Name of the application JAR file. Only applicable when not using --launcher. Defaults to the uber JAR filename, with the extension replaced by .jar
   --force                        Whether to ignore non-empty directories, extract anyway

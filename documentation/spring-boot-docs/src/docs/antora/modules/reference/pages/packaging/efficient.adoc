@@ -33,6 +33,10 @@ $ java -jar my-app/my-app.jar
 
 After startup, you should not expect any differences in execution time between running an executable jar and running an extracted jar.
 
+NOTE: An executable war can be extracted in the same way.
+The result is a jar, for example `my-app/my-app.jar`, that is meant to be run with `java -jar`.
+Content from the root of the war, such as static files and JSPs from `src/main/webapp`, is moved to `META-INF/resources/` in the extracted jar.
+
 TIP: Run `java -Djarmode=tools -jar my-app.jar help extract` to see all possible options.
 
 

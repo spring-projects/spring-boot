@@ -416,9 +416,9 @@ public abstract class Packager {
 		else {
 			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());
 		}
-		String libraryLocation = getLayout().getLibraryLocation("", LibraryScope.COMPILE);
+		String libraryLocation = layout.getLibraryLocation("", LibraryScope.COMPILE);
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, libraryLocation);
-		String providedLibraryLocation = getLayout().getLibraryLocation("", LibraryScope.PROVIDED);
+		String providedLibraryLocation = layout.getLibraryLocation("", LibraryScope.PROVIDED);
 		if (!ObjectUtils.nullSafeEquals(providedLibraryLocation, libraryLocation)) {
 			putIfHasLength(attributes, BOOT_LIB_PROVIDED_ATTRIBUTE, providedLibraryLocation);
 		}

@@ -33,9 +33,10 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.jarmode.tools.JarStructure.Entry;
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link IndexedJarStructure}.
@@ -43,6 +44,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  */
 class IndexedJarStructureTests {
+
+	private static final String WAR_MANIFEST = """
+			Manifest-Version: 1.0
+			Main-Class: org.springframework.boot.loader.launch.WarLauncher
+			Start-Class: org.springframework.boot.jarmode.tools.IndexedJarStructureTests
+			Spring-Boot-Version: 3.3.0-SNAPSHOT
+			Spring-Boot-Classes: WEB-INF/classes/
+			Spring-Boot-Lib: WEB-INF/lib/
+			Spring-Boot-Lib-Provided: WEB-INF/lib-provided/
+			Spring-Boot-Classpath-Index: WEB-INF/classpath.idx
+			Spring-Boot-Layers-Index: WEB-INF/layers.idx
+			""";
+
+	private static final String WAR_INDEX_FILE = """
+			- "WEB-INF/lib/spring-webmvc-6.1.4.jar"
+			- "WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"
+			""";
 
 	@Test
 	void shouldResolveLibraryEntry() throws IOException {
@@ -68,8 +86,42 @@ class IndexedJarStructureTests {
 	void shouldCreateLauncherManifestForWarWithProvidedLibraries() throws IOException {
 		IndexedJarStructure structure = createWarStructure();
 		Manifest manifest = structure.createLauncherManifest(UnaryOperator.identity());
-		assertThat(getAttributes(manifest)).containsEntry("Class-Path",
-				"spring-webmvc-6.1.4.jar tomcat-embed-core-10.1.19.jar");
+		assertThat(getAttributes(manifest))
+			.containsEntry("Class-Path", "spring-webmvc-6.1.4.jar tomcat-embed-core-10.1.19.jar")
+			.doesNotContainKey("Spring-Boot-Lib-Provided");
+	}
+
+	@Test
+	void shouldResolveWarRootEntryAsWebResource() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		Entry entry = structure.resolve("WEB-INF/jsp/hello.jsp");
+		assertThat(entry).isNotNull();
+		assertThat(entry.location()).isEqualTo("META-INF/resources/WEB-INF/jsp/hello.jsp");
+		assertThat(entry.originalLocation()).isEqualTo("WEB-INF/jsp/hello.jsp");
+		assertThat(entry.type()).isEqualTo(Type.WEB_RESOURCE);
+	}
+
+	@Test
+	void shouldNotResolveWarIndexFilesAsWebResources() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		assertThat(structure.resolve("WEB-INF/classpath.idx")).isNull();
+		assertThat(structure.resolve("WEB-INF/layers.idx")).isNull();
+	}
+
+	@Test
+	void shouldNotResolveWarLibraryOrLoaderDirectoriesAsWebResources() throws IOException {
+		IndexedJarStructure structure = createWarStructure();
+		assertThat(structure.resolve("WEB-INF/lib/")).isNull();
+		assertThat(structure.resolve("WEB-INF/lib/doesnt-exist.jar")).isNull();
+		assertThat(structure.resolve("WEB-INF/lib-provided/")).isNull();
+		assertThat(structure.resolve("org/")).isNull();
+		assertThat(structure.resolve("org/springframework/boot/")).isNull();
+	}
+
+	@Test
+	void shouldNotResolveJarRootEntry() throws IOException {
+		IndexedJarStructure structure = createStructure();
+		assertThat(structure.resolve("index.html")).isNull();
 	}
 
 	@Test
@@ -132,66 +184,34 @@ class IndexedJarStructureTests {
 			.isEqualTo(Type.APPLICATION_CLASS_OR_RESOURCE);
 	}
 
+	@Test
+	void shouldFailWhenLibraryAndProvidedLibraryHaveSameName() {
+		String indexFile = """
+				- "WEB-INF/lib/utils-1.0.jar"
+				- "WEB-INF/lib-provided/utils-1.0.jar"
+				""";
+		assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> createWarStructure(indexFile))
+			.withMessage("Library name 'utils-1.0.jar' is used by both 'WEB-INF/lib/utils-1.0.jar' and "
+					+ "'WEB-INF/lib-provided/utils-1.0.jar'");
+	}
+
 	private Map<String, String> getAttributes(Manifest manifest) {
 		Map<String, String> result = new HashMap<>();
 		manifest.getMainAttributes().forEach((key, value) -> result.put(key.toString(), value.toString()));
 		return result;
 	}
 
-	@Test
-	void shouldFailToResolveProvidedLibraryWhenAttributeIsMissing() throws IOException {
-		// an archive whose index references lib-provided but whose manifest does not
-		// record the location has nothing to flatten the entry against
-		IndexedJarStructure structure = createWarStructureWithoutProvidedLibAttribute();
-		assertThatIllegalStateException()
-			.isThrownBy(() -> structure.resolve("WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"))
-			.withMessageContaining("Invalid library location");
-	}
-
-	@Test
-	void launcherManifestShouldNotContainProvidedLibAttribute() throws IOException {
-		IndexedJarStructure structure = createWarStructure();
-		Manifest manifest = structure.createLauncherManifest(UnaryOperator.identity());
-		assertThat(getAttributes(manifest)).doesNotContainKey("Spring-Boot-Lib-Provided");
-	}
-
 	private IndexedJarStructure createStructure() throws IOException {
-		return new IndexedJarStructure(createManifest(), createIndexFile());
+		return new IndexedJarStructure(createManifest(), createIndexFile(), ArchiveType.JAR);
 	}
 
 	private IndexedJarStructure createWarStructure() throws IOException {
-		Manifest manifest = new Manifest(new ByteArrayInputStream("""
-				Manifest-Version: 1.0
-				Main-Class: org.springframework.boot.loader.launch.WarLauncher
-				Start-Class: org.springframework.boot.jarmode.tools.IndexedJarStructureTests
-				Spring-Boot-Version: 3.3.0-SNAPSHOT
-				Spring-Boot-Classes: WEB-INF/classes/
-				Spring-Boot-Lib: WEB-INF/lib/
-				Spring-Boot-Lib-Provided: WEB-INF/lib-provided/
-				Spring-Boot-Classpath-Index: WEB-INF/classpath.idx
-				""".getBytes(StandardCharsets.UTF_8)));
-		String indexFile = """
-				- "WEB-INF/lib/spring-webmvc-6.1.4.jar"
-				- "WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"
-				""";
-		return new IndexedJarStructure(manifest, indexFile);
+		return createWarStructure(WAR_INDEX_FILE);
 	}
 
-	private IndexedJarStructure createWarStructureWithoutProvidedLibAttribute() throws IOException {
-		Manifest manifest = new Manifest(new ByteArrayInputStream("""
-				Manifest-Version: 1.0
-				Main-Class: org.springframework.boot.loader.launch.WarLauncher
-				Start-Class: org.springframework.boot.jarmode.tools.IndexedJarStructureTests
-				Spring-Boot-Version: 3.3.0-SNAPSHOT
-				Spring-Boot-Classes: WEB-INF/classes/
-				Spring-Boot-Lib: WEB-INF/lib/
-				Spring-Boot-Classpath-Index: WEB-INF/classpath.idx
-				""".getBytes(StandardCharsets.UTF_8)));
-		String indexFile = """
-				- "WEB-INF/lib/spring-webmvc-6.1.4.jar"
-				- "WEB-INF/lib-provided/tomcat-embed-core-10.1.19.jar"
-				""";
-		return new IndexedJarStructure(manifest, indexFile);
+	private IndexedJarStructure createWarStructure(String indexFile) throws IOException {
+		Manifest manifest = new Manifest(new ByteArrayInputStream(WAR_MANIFEST.getBytes(StandardCharsets.UTF_8)));
+		return new IndexedJarStructure(manifest, indexFile, ArchiveType.WAR);
 	}
 
 	private String createIndexFile() {
