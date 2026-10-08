@@ -1,0 +1,12 @@
+- "dependencies":
+  - "WEB-INF/lib/dependency-1.jar"
+  - "WEB-INF/lib-provided/"
+- "spring-boot-loader":
+  - "org/"
+- "application":
+  - "META-INF/"
+  - "WEB-INF/classes/"
+  - "WEB-INF/classpath.idx"
+  - "WEB-INF/jsp/"
+  - "WEB-INF/layers.idx"
+  - "index.html"

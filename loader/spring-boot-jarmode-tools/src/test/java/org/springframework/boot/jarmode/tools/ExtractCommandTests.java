@@ -137,6 +137,12 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		}
 
 		@Test
+		void shouldWriteMetaInfDirectoryBeforeManifest() throws IOException {
+			run(ExtractCommandTests.this.archive);
+			assertThat(getJarEntryNames(file("test/test.jar"))).startsWith("META-INF/", "META-INF/MANIFEST.MF");
+		}
+
+		@Test
 		void applicationContainsApplicationClassesAndResources() throws IOException {
 			run(ExtractCommandTests.this.archive);
 			File application = file("test/test.jar");
@@ -260,7 +266,8 @@ class ExtractCommandTests extends AbstractJarModeTests {
 			run(file);
 			File application = file("test/test.jar");
 			List<String> entryNames = getJarEntryNames(application);
-			assertThat(entryNames).containsExactlyInAnyOrder("META-INF/native-image/", "META-INF/MANIFEST.MF");
+			assertThat(entryNames).containsExactlyInAnyOrder("META-INF/", "META-INF/native-image/",
+					"META-INF/MANIFEST.MF");
 		}
 
 		@Test
@@ -269,9 +276,82 @@ class ExtractCommandTests extends AbstractJarModeTests {
 					"/jar-contents/classpath.idx", "META-INF/native-image/native-image.properties",
 					"/jar-contents/empty-file", "BOOT-INF/classes/META-INF/native-image/native-image.properties",
 					"/jar-contents/empty-file");
-			assertThatIllegalStateException().isThrownBy(() -> run(file))
+			assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(file))
 				.withMessage(
 						"Duplicate jar entry 'META-INF/native-image/native-image.properties' from original location 'BOOT-INF/classes/META-INF/native-image/native-image.properties'");
+		}
+
+	}
+
+	@Nested
+	class ExtractWar {
+
+		private Manifest manifest;
+
+		private File war;
+
+		@BeforeEach
+		void setUp() throws IOException {
+			this.manifest = createManifest("Spring-Boot-Classpath-Index: WEB-INF/classpath.idx",
+					"Spring-Boot-Lib: WEB-INF/lib/", "Spring-Boot-Lib-Provided: WEB-INF/lib-provided/",
+					"Spring-Boot-Classes: WEB-INF/classes/", "Start-Class: org.example.Main",
+					"Spring-Boot-Layers-Index: WEB-INF/layers.idx");
+			this.war = createArchive("test.war", this.manifest, null, null, null, "WEB-INF/classpath.idx",
+					"/jar-contents/war-classpath.idx", "WEB-INF/layers.idx", "/jar-contents/war-layers.idx",
+					"WEB-INF/lib/dependency-1.jar", "/jar-contents/dependency-1",
+					"WEB-INF/lib-provided/dependency-2.jar", "/jar-contents/dependency-2",
+					"org/springframework/boot/loader/launch/WarLauncher.class", "/jar-contents/JarLauncher",
+					"WEB-INF/classes/application.properties", "/jar-contents/application.properties", "index.html",
+					"/jar-contents/empty-file", "WEB-INF/jsp/", "/jar-contents/empty-file", "WEB-INF/jsp/hello.jsp",
+					"/jar-contents/empty-file");
+		}
+
+		@Test
+		void shouldCreateApplicationJar() throws IOException {
+			run(this.war);
+			assertThat(listFilenames())
+				.contains("test/test.jar", "test/lib/dependency-1.jar", "test/lib/dependency-2.jar")
+				.doesNotContain("test/test.war");
+		}
+
+		@Test
+		void shouldMoveWebResourcesToMetaInfResources() throws IOException {
+			run(this.war);
+			assertThat(getJarEntryNames(file("test/test.jar"))).containsExactlyInAnyOrder("META-INF/MANIFEST.MF",
+					"application.properties", "META-INF/", "META-INF/resources/", "META-INF/resources/index.html",
+					"META-INF/resources/WEB-INF/", "META-INF/resources/WEB-INF/jsp/",
+					"META-INF/resources/WEB-INF/jsp/hello.jsp");
+		}
+
+		@Test
+		void shouldMoveWebResourcesToMetaInfResourcesWhenUsingLayers() throws IOException {
+			run(this.war, "--layers");
+			assertThat(listFilenames()).contains("test/dependencies/lib/dependency-1.jar",
+					"test/dependencies/lib/dependency-2.jar");
+			assertThat(getJarEntryNames(file("test/application/test.jar"))).contains("META-INF/resources/index.html",
+					"META-INF/resources/WEB-INF/jsp/hello.jsp");
+		}
+
+		@Test
+		void shouldFailWhenWebResourceCollidesWithClassesResource() throws IOException {
+			File war = createArchive("test.war", this.manifest, null, null, null, "WEB-INF/classpath.idx",
+					"/jar-contents/war-classpath.idx", "WEB-INF/lib/dependency-1.jar", "/jar-contents/dependency-1",
+					"index.html", "/jar-contents/empty-file", "WEB-INF/classes/META-INF/resources/index.html",
+					"/jar-contents/empty-file");
+			assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(war))
+				.withMessage("Duplicate jar entry 'META-INF/resources/index.html' from original location "
+						+ "'WEB-INF/classes/META-INF/resources/index.html'");
+		}
+
+		@Test
+		void shouldFailWhenLibraryAndProvidedLibraryHaveSameName() throws IOException {
+			File war = createArchive("test.war", this.manifest, null, null, null, "WEB-INF/classpath.idx",
+					"/jar-contents/war-duplicate-classpath.idx", "WEB-INF/lib/dependency-1.jar",
+					"/jar-contents/dependency-1", "WEB-INF/lib-provided/dependency-1.jar",
+					"/jar-contents/dependency-1");
+			assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(war))
+				.withMessage("Library name 'dependency-1.jar' is used by both 'WEB-INF/lib/dependency-1.jar' and "
+						+ "'WEB-INF/lib-provided/dependency-1.jar'");
 		}
 
 	}

@@ -396,6 +396,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(actualManifest).isNotNull();
 		assertThat(actualManifest.getMainAttributes()).containsEntry(new Attributes.Name("Spring-Boot-Lib"),
 				"BOOT-INF/lib/");
+		assertThat(actualManifest.getMainAttributes())
+			.doesNotContainKey(new Attributes.Name("Spring-Boot-Lib-Provided"));
 		assertThat(actualManifest.getMainAttributes()).containsEntry(new Attributes.Name("Spring-Boot-Classes"),
 				"BOOT-INF/classes/");
 	}
@@ -409,6 +411,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(actualManifest).isNotNull();
 		assertThat(actualManifest.getMainAttributes()).containsEntry(new Attributes.Name("Spring-Boot-Lib"),
 				"WEB-INF/lib/");
+		assertThat(actualManifest.getMainAttributes()).containsEntry(new Attributes.Name("Spring-Boot-Lib-Provided"),
+				"WEB-INF/lib-provided/");
 		assertThat(actualManifest.getMainAttributes()).containsEntry(new Attributes.Name("Spring-Boot-Classes"),
 				"WEB-INF/classes/");
 	}

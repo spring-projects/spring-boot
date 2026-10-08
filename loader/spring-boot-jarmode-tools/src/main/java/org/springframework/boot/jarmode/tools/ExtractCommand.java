@@ -87,7 +87,9 @@ class ExtractCommand extends Command {
 			"Name of the libraries directory. Only applicable when not using --launcher. Defaults to lib/");
 
 	private static final Option APPLICATION_FILENAME_OPTION = Option.of("application-filename", "string",
-			"Name of the application JAR file. Only applicable when not using --launcher. Defaults to the uber JAR filename");
+			"Name of the application JAR file. Only applicable when not using --launcher. Defaults to the uber JAR filename, with the extension replaced by .jar");
+
+	private static final String META_INF_DIRECTORY = "META-INF/";
 
 	private final Context context;
 
@@ -248,18 +250,25 @@ class ExtractCommand extends Command {
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkdirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+			Set<String> writtenEntries = new HashSet<>();
 			ManifestWriter manifestWriter = (sourceJarFile) -> {
 				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
 						sourceJarFile.getJarEntry(JarFile.MANIFEST_NAME));
+				output.putNextEntry(createJarEntry(META_INF_DIRECTORY, entry));
+				output.closeEntry();
+				writtenEntries.add(META_INF_DIRECTORY);
 				output.putNextEntry(entry);
 				manifest.write(new BufferedOutputStream(output));
 				output.closeEntry();
 			};
-			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
-			Set<String> writtenEntries = new HashSet<>();
+			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF,
+					Type.WEB_RESOURCE);
 			withJarEntries(this.context.getArchiveFile(), manifestWriter, ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
 				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
+					if (entry.type() == Type.WEB_RESOURCE) {
+						writeParentDirectories(output, writtenEntries, entry.location(), jarEntry);
+					}
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
 					if (writtenEntries.add(newJarEntry.getName())) {
 						output.putNextEntry(newJarEntry);
@@ -268,7 +277,7 @@ class ExtractCommand extends Command {
 					}
 					else {
 						if (!newJarEntry.isDirectory()) {
-							throw new IllegalStateException("Duplicate jar entry '%s' from original location '%s'"
+							throw new JarModeErrorException("Duplicate jar entry '%s' from original location '%s'"
 								.formatted(newJarEntry.getName(), entry.originalLocation()));
 						}
 					}
@@ -276,6 +285,19 @@ class ExtractCommand extends Command {
 			}));
 		}
 		copyTimestamps(this.context.getArchiveFile(), file);
+	}
+
+	private void writeParentDirectories(JarOutputStream output, Set<String> writtenEntries, String location,
+			JarEntry originalEntry) throws IOException {
+		int index = location.indexOf('/');
+		while (index != -1 && index < location.length() - 1) {
+			String directory = location.substring(0, index + 1);
+			if (writtenEntries.add(directory)) {
+				output.putNextEntry(createJarEntry(directory, originalEntry));
+				output.closeEntry();
+			}
+			index = location.indexOf('/', index + 1);
+		}
 	}
 
 	private void copyTimestamps(File source, File destination) throws IOException {
@@ -291,7 +313,11 @@ class ExtractCommand extends Command {
 		if (value != null) {
 			return value;
 		}
-		return this.context.getArchiveFile().getName();
+		File archiveFile = this.context.getArchiveFile();
+		if (ArchiveType.of(archiveFile) == ArchiveType.WAR) {
+			return stripExtension(archiveFile.getName()) + ".jar";
+		}
+		return archiveFile.getName();
 	}
 
 	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {

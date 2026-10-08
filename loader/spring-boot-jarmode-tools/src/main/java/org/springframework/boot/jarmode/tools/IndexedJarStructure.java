@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.jar.Attributes;
@@ -31,11 +33,13 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -49,28 +53,73 @@ import org.springframework.util.StringUtils;
 class IndexedJarStructure implements JarStructure {
 
 	private static final List<String> MANIFEST_DENY_LIST = List.of("Start-Class", "Spring-Boot-Classes",
-			"Spring-Boot-Lib", "Spring-Boot-Classpath-Index", "Spring-Boot-Layers-Index");
+			"Spring-Boot-Lib", "Spring-Boot-Lib-Provided", "Spring-Boot-Classpath-Index", "Spring-Boot-Layers-Index");
 
 	private static final Set<String> ENTRY_IGNORE_LIST = Set.of("META-INF/", "META-INF/MANIFEST.MF",
 			"META-INF/services/java.nio.file.spi.FileSystemProvider");
+
+	private static final String LOADER_LOCATION = "org/springframework/boot/loader/";
+
+	private static final String WEB_RESOURCES_LOCATION = "META-INF/resources/";
 
 	private final Manifest originalManifest;
 
 	private final String libLocation;
 
+	private final @Nullable String providedLibLocation;
+
 	private final String classesLocation;
 
 	private final Set<String> classpathEntries;
 
-	IndexedJarStructure(Manifest originalManifest, String indexFile) {
+	private final Set<String> indexLocations;
+
+	private final ArchiveType archiveType;
+
+	IndexedJarStructure(Manifest originalManifest, String indexFile, ArchiveType archiveType) {
 		this.originalManifest = originalManifest;
 		this.libLocation = getLocation(originalManifest, "Spring-Boot-Lib");
+		this.providedLibLocation = getOptionalLocation(originalManifest, "Spring-Boot-Lib-Provided");
 		this.classesLocation = getLocation(originalManifest, "Spring-Boot-Classes");
 		this.classpathEntries = readIndexFile(indexFile);
+		this.indexLocations = getIndexLocations(originalManifest);
+		this.archiveType = archiveType;
+		checkForDuplicateLibraryNames();
+	}
+
+	private void checkForDuplicateLibraryNames() {
+		Map<String, String> libraries = new HashMap<>();
+		for (String classpathEntry : this.classpathEntries) {
+			String name = stripLibraryLocation(classpathEntry);
+			if (name == null) {
+				continue;
+			}
+			String existing = libraries.putIfAbsent(name, classpathEntry);
+			if (existing != null) {
+				throw new JarModeErrorException(
+						"Library name '%s' is used by both '%s' and '%s'".formatted(name, existing, classpathEntry));
+			}
+		}
+	}
+
+	private static Set<String> getIndexLocations(Manifest manifest) {
+		Attributes attributes = manifest.getMainAttributes();
+		return Stream
+			.of(attributes.getValue("Spring-Boot-Classpath-Index"), attributes.getValue("Spring-Boot-Layers-Index"))
+			.filter(StringUtils::hasLength)
+			.collect(Collectors.toSet());
 	}
 
 	private static String getLocation(Manifest manifest, String attribute) {
 		String location = getMandatoryAttribute(manifest, attribute);
+		return (!location.endsWith("/")) ? location + "/" : location;
+	}
+
+	private static @Nullable String getOptionalLocation(Manifest manifest, String attribute) {
+		String location = manifest.getMainAttributes().getValue(attribute);
+		if (!StringUtils.hasLength(location)) {
+			return null;
+		}
 		return (!location.endsWith("/")) ? location + "/" : location;
 	}
 
@@ -110,7 +159,24 @@ class IndexedJarStructure implements JarStructure {
 		if (name.startsWith("META-INF/")) {
 			return new Entry(name, name, Type.META_INF);
 		}
-		return null;
+		return resolveWebResource(name);
+	}
+
+	private @Nullable Entry resolveWebResource(String name) {
+		if (this.archiveType != ArchiveType.WAR || isWarPackagingEntry(name)) {
+			return null;
+		}
+		return new Entry(name, WEB_RESOURCES_LOCATION + name, Type.WEB_RESOURCE);
+	}
+
+	private boolean isWarPackagingEntry(String name) {
+		if (this.indexLocations.contains(name) || name.startsWith(this.libLocation)) {
+			return true;
+		}
+		if (this.providedLibLocation != null && name.startsWith(this.providedLibLocation)) {
+			return true;
+		}
+		return name.endsWith("/") && LOADER_LOCATION.startsWith(name);
 	}
 
 	@Override
@@ -130,8 +196,19 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	private String toStructureDependency(String libEntryName) {
-		Assert.state(libEntryName.startsWith(this.libLocation), () -> "Invalid library location " + libEntryName);
-		return libEntryName.substring(this.libLocation.length());
+		String name = stripLibraryLocation(libEntryName);
+		Assert.state(name != null, () -> "Invalid library location " + libEntryName);
+		return name;
+	}
+
+	private @Nullable String stripLibraryLocation(String libEntryName) {
+		if (libEntryName.startsWith(this.libLocation)) {
+			return libEntryName.substring(this.libLocation.length());
+		}
+		if (this.providedLibLocation != null && libEntryName.startsWith(this.providedLibLocation)) {
+			return libEntryName.substring(this.providedLibLocation.length());
+		}
+		return null;
 	}
 
 	private static String getMandatoryAttribute(Manifest manifest, String attribute) {
@@ -148,7 +225,7 @@ class IndexedJarStructure implements JarStructure {
 				ZipEntry entry = jarFile.getEntry(location);
 				if (entry != null) {
 					String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
-					return new IndexedJarStructure(manifest, indexFile);
+					return new IndexedJarStructure(manifest, indexFile, ArchiveType.of(file));
 				}
 			}
 			return null;
