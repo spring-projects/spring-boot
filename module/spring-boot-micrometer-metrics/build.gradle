@@ -54,9 +54,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-new-relic")
 	optional("io.micrometer:micrometer-registry-otlp")
 	optional("io.micrometer:micrometer-registry-prometheus")
-	optional("io.micrometer:micrometer-registry-stackdriver") {
-		exclude group: "javax.annotation", module: "javax.annotation-api"
-	}
+	optional("io.micrometer:micrometer-registry-stackdriver")
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("org.apache.kafka:kafka-streams")

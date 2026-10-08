@@ -1688,11 +1688,6 @@ bom {
 	library("Micrometer", "1.18.0-SNAPSHOT") {
 		firstParty()
 		group("io.micrometer") {
-			modules = [
-				"micrometer-registry-stackdriver" {
-					exclude group: "javax.annotation", module: "javax.annotation-api"
-				}
-			]
 			bom("micrometer-bom")
 		}
 		links {
@@ -1836,6 +1831,7 @@ bom {
 		}
 		group("org.neo4j.driver") {
 			bom("neo4j-java-driver-bom") {
+				permit("org.neo4j.bolt:neo4j-bolt-connection-codec")
 				permit("org.neo4j.bolt:neo4j-bolt-connection-netty")
 				permit("org.neo4j.bolt:neo4j-bolt-connection-pooled")
 				permit("org.neo4j.bolt:neo4j-bolt-connection-query-api")
