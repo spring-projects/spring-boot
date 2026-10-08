@@ -53,3 +53,64 @@ tasks.withType(org.springframework.boot.gradle.tasks.aot.ProcessAot).configureEa
 ----
 
 Profiles which only change configuration properties that don't influence conditions are supported without limitations when running ahead-of-time optimized applications.
+
+
+
+[[howto.aot.logging]]
+== Logging
+
+Ahead-of-time processing runs your application's initialization at build time, in a dedicated JVM, and the logging output of that process is part of your build output.
+If you want to understand why a bean or an auto-configuration was or was not included in the optimized application, you can log the xref:reference:using/auto-configuration.adoc[condition evaluation report] at `DEBUG` level during ahead-of-time processing.
+
+As the process runs at build time, logging is configured through the build tool rather than through your application's configuration.
+The following example uses a dedicated Logback configuration that writes everything to a file and enables debug logging of the condition evaluation report:
+
+[source,xml]
+----
+<configuration>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>target/logs/process-aot.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger" level="DEBUG"/>
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+----
+
+You can then point the ahead-of-time processing to this file by setting the configprop:logging.config[] system property.
+Save the configuration above as `src/main/aot/logback.xml` (and, if you use Gradle, change the log file location to `build/logs/process-aot.log`).
+
+For Maven, set the `systemPropertyVariables` of the `spring-boot-maven-plugin:process-aot` execution:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>process-aot</id>
+            <configuration>
+                <systemPropertyVariables>
+                    <logging.config>${project.basedir}/src/main/aot/logback.xml</logging.config>
+                </systemPropertyVariables>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
+For Gradle, set the system property on the `ProcessAot` task:
+
+[source,gradle]
+----
+tasks.named('processAot') {
+    systemProperty 'logging.config', file('src/main/aot/logback.xml').absolutePath
+}
+----
+
+If your tests are also processed ahead-of-time, you can configure the `processTestAot` task (Gradle) or the `process-test-aot` execution (Maven) in the same way, using a separate configuration file.
