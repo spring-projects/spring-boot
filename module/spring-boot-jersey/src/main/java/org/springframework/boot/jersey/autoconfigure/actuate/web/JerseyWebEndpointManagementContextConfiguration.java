@@ -109,7 +109,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
 	@SuppressWarnings("removal")
-	ResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
+	ManagementContextResourceConfigCustomizer endpointJackson2ObjectMapperResourceConfigCustomizer(
 			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper) {
 		return (config) -> config.register(
 				new EndpointJackson2ObjectMapperContextResolver(endpointJackson2ObjectMapper), ContextResolver.class);

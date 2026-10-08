@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -119,6 +120,44 @@ class JerseyEndpointIntegrationTests {
 					.baseUrl("http://localhost:" + port)
 					.build()
 					.get()
+					.uri("/actuator/beans")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.consumeWith((result) -> {
+						String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+						assertThat(json).contains("\"scope\":\"notelgnis\"");
+					});
+			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	@SuppressWarnings("removal")
+	void endpointJackson2ObjectMapperCanBeApplied(boolean separateManagementPort) {
+		getContextRunner(
+				new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class,
+						EndpointJackson2ObjectMapperConfiguration.class },
+				org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+				TomcatServletManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class)
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("management.server.port=" + (separateManagementPort ? "0" : ""),
+					"spring.jersey.preferred-json-mapper=jackson2")
+			.run((context) -> {
+				WebServer webServer = context
+					.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer();
+				assertThat(webServer).isNotNull();
+				Integer port = separateManagementPort
+						? context.getEnvironment().getProperty("local.management.port", Integer.class)
+						: webServer.getPort();
+				assertThat(port).isNotNull();
+				WebTestClient client = WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
+				client.get()
 					.uri("/actuator/beans")
 					.exchange()
 					.expectStatus()
@@ -344,6 +383,53 @@ class JerseyEndpointIntegrationTests {
 			}
 
 			private void serialize(Object value, JsonGenerator gen) {
+				StringBuilder builder = new StringBuilder((String) value);
+				gen.writeString(builder.reverse().toString());
+			}
+
+		}
+
+	}
+
+	@Configuration
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class EndpointJackson2ObjectMapperConfiguration {
+
+		@Bean
+		org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJackson2ObjectMapper() {
+			com.fasterxml.jackson.databind.module.SimpleModule module = new com.fasterxml.jackson.databind.module.SimpleModule();
+			module.addSerializer(String.class, new ReverseStringSerializer());
+			com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			objectMapper.registerModule(module);
+			return () -> objectMapper;
+		}
+
+		static class ReverseStringSerializer
+				extends com.fasterxml.jackson.databind.ser.std.StdScalarSerializer<Object> {
+
+			ReverseStringSerializer() {
+				super(String.class, false);
+			}
+
+			@Override
+			public boolean isEmpty(com.fasterxml.jackson.databind.SerializerProvider provider, Object value) {
+				return ((String) value).isEmpty();
+			}
+
+			@Override
+			public void serialize(Object value, com.fasterxml.jackson.core.JsonGenerator gen,
+					com.fasterxml.jackson.databind.SerializerProvider provider) throws IOException {
+				serialize(value, gen);
+			}
+
+			@Override
+			public final void serializeWithType(Object value, com.fasterxml.jackson.core.JsonGenerator gen,
+					com.fasterxml.jackson.databind.SerializerProvider provider,
+					com.fasterxml.jackson.databind.jsontype.TypeSerializer typeSer) throws IOException {
+				serialize(value, gen);
+			}
+
+			private void serialize(Object value, com.fasterxml.jackson.core.JsonGenerator gen) throws IOException {
 				StringBuilder builder = new StringBuilder((String) value);
 				gen.writeString(builder.reverse().toString());
 			}
