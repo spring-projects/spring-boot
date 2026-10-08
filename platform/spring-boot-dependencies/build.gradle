@@ -2926,7 +2926,7 @@ bom {
 			releaseNotes("https://docs.spring.io/spring-ldap/reference/{version}/api/java")
 		}
 	}
-	library("Spring Pulsar", "2.0.7") {
+	library("Spring Pulsar", "2.0.8-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
