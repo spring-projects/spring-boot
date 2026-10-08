@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
+import java.net.InetAddress;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
@@ -30,14 +32,15 @@ import org.springframework.util.StringUtils;
 /**
  * {@link LdapConnectionDetails} for the embedded LDAP server. Everything that describes
  * the connection comes from {@code spring.ldap.embedded}, as only the server can decide
- * what a connection to it looks like: the URL from the port it is listening on and its
- * SSL configuration, the credentials from {@code spring.ldap.embedded.credential}. The
- * equivalent client properties, {@code spring.ldap.urls}, {@code spring.ldap.username},
- * {@code spring.ldap.password} and {@code spring.ldap.ssl}, are ignored, so a
- * configuration meant for production does not have to be unset to run against the
- * embedded server.
+ * what a connection to it looks like: the URL from the address and port it is listening
+ * on and its SSL configuration, the credentials from
+ * {@code spring.ldap.embedded.credential}. The equivalent client properties,
+ * {@code spring.ldap.urls}, {@code spring.ldap.username}, {@code spring.ldap.password}
+ * and {@code spring.ldap.ssl}, are ignored, so a configuration meant for production does
+ * not have to be unset to run against the embedded server.
  *
  * @author Moritz Halbritter
+ * @author Wan bin yu
  */
 class EmbeddedLdapConnectionDetails implements LdapConnectionDetails {
 
@@ -62,7 +65,23 @@ class EmbeddedLdapConnectionDetails implements LdapConnectionDetails {
 	@Override
 	public String[] getUrls() {
 		String protocol = this.embeddedProperties.getSsl().isEnabled() ? "ldaps" : "ldap";
-		return new String[] { protocol + "://localhost:" + this.environment.getRequiredProperty("local.ldap.port") };
+		String port = this.environment.getRequiredProperty("local.ldap.port");
+		return new String[] { protocol + "://" + getHost() + ":" + port };
+	}
+
+	/**
+	 * Loopback and wildcard addresses stay on {@code localhost}, which is what a client
+	 * on this machine can connect to. Any other address is used directly so the client
+	 * reaches the interface the server actually bound.
+	 * @return the host to use in the client URL
+	 */
+	private String getHost() {
+		InetAddress address = this.embeddedProperties.getAddress();
+		if (address == null || address.isAnyLocalAddress() || address.isLoopbackAddress()) {
+			return "localhost";
+		}
+		String hostAddress = address.getHostAddress().replace("%", "%25");
+		return (hostAddress.indexOf(':') != -1) ? "[" + hostAddress + "]" : hostAddress;
 	}
 
 	@Override
