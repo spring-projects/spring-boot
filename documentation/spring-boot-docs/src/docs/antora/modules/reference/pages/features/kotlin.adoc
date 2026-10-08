@@ -128,6 +128,7 @@ In such cases, a data class should be used instead.
 
 TIP: To generate xref:specification:configuration-metadata/annotation-processor.adoc[your own metadata] using the annotation processor, {url-kotlin-docs}/kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
+Alternatively, the metadata can be generated with KSP by using the xref:specification:configuration-metadata/symbol-processor.adoc[symbol processor].
 
 
 
