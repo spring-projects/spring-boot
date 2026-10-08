@@ -45,7 +45,9 @@ dependencies {
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.skyscreamer:jsonassert")
 	optional("org.springframework:spring-web")
+	optional("org.xmlunit:xmlunit-core")
 	optional("tools.jackson.core:jackson-databind")
+	optional("tools.jackson.dataformat:jackson-dataformat-xml")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
