@@ -40,6 +40,7 @@ import org.springframework.core.ResolvableType;
  * @param <T> the type being bound
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Tommy Karlsson
  */
 abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
@@ -129,10 +130,9 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private Set<String> getKnownIndexedChildren(IterableConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
 		Set<String> knownIndexedChildren = new HashSet<>();
-		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
-			ConfigurationPropertyName choppedName = name.chop(root.getNumberOfElements() + 1);
-			if (choppedName.isLastElementIndexed()) {
-				knownIndexedChildren.add(choppedName.getLastElement(Form.UNIFORM));
+		for (ConfigurationPropertyName child : source.getChildrenOf(root)) {
+			if (child.isLastElementIndexed()) {
+				knownIndexedChildren.add(child.getLastElement(Form.UNIFORM));
 			}
 		}
 		return knownIndexedChildren;
