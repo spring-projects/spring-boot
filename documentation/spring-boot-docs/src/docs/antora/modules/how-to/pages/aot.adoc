@@ -53,3 +53,38 @@ tasks.withType(org.springframework.boot.gradle.tasks.aot.ProcessAot).configureEa
 ----
 
 Profiles which only change configuration properties that don't influence conditions are supported without limitations when running ahead-of-time optimized applications.
+
+
+[[howto.aot.logging]]
+== Logging
+
+The condition evaluation report is logged at `DEBUG` level during ahead-of-time processing.
+To see the report, configure the `org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger` logger at `DEBUG` level when running the AOT processing.
+
+For Maven, configure the `process-aot` execution with the logging level as an application argument:
+
+[source,xml]
+----
+<execution>
+    <id>process-aot</id>
+    <goals>
+        <goal>process-aot</goal>
+    </goals>
+    <configuration>
+        <arguments>
+            <argument>--logging.level.org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger=DEBUG</argument>
+        </arguments>
+    </configuration>
+</execution>
+----
+
+For Gradle, configure the `ProcessAot` task:
+
+[source,gradle]
+----
+tasks.withType(org.springframework.boot.gradle.tasks.aot.ProcessAot).configureEach {
+    args('--logging.level.org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger=DEBUG')
+}
+----
+
+This logs the condition evaluation report while the application is being processed ahead-of-time, which can be useful when diagnosing why a condition was evaluated differently than expected.
