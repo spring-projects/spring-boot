@@ -249,6 +249,37 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void escapeDoubleQuoteInNestedMapWithSiblingEntry() {
+		String input = """
+				{
+				  "a": {
+				    "x\\"y": "v"
+				  },
+				  "c": "d"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("a", InstanceOfAssertFactories.MAP).containsEntry("x\"y", "v");
+		assertThat(map).containsEntry("c", "d");
+	}
+
+	@Test
+	void escapeDoubleQuoteInNestedListWithSiblingEntry() {
+		String input = """
+				{
+				  "a": [
+				    "x\\"y",
+				    "z"
+				  ],
+				  "c": "d"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("a", InstanceOfAssertFactories.LIST).containsExactly("x\"y", "z");
+		assertThat(map).containsEntry("c", "d");
+	}
+
+	@Test
 	void listWithMalformedMap() {
 		assertThatExceptionOfType(JsonParseException.class)
 			.isThrownBy(() -> this.parser.parseList("[tru,erqett,{\"foo\":fatrue,true,true,true,tr''ue}]"));
