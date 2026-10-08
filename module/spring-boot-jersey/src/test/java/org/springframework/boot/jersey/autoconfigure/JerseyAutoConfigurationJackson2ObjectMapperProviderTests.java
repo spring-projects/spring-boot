@@ -50,24 +50,24 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} with a JsonMapper.
+ * Tests for {@link JerseyAutoConfiguration} with a Jackson 2 ObjectMapper.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.jackson.default-property-inclusion:non-null",
-				"spring.jersey.preferred-json-mapper=jackson" })
+		properties = { "spring.jackson2.default-property-inclusion=non-null",
+				"spring.jackson.default-property-inclusion=always" })
 @DirtiesContext
 @SuppressWarnings("removal")
-class JerseyAutoConfigurationObjectMapperProviderTests {
+class JerseyAutoConfigurationJackson2ObjectMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void responseIsSerializedUsingAutoConfiguredJsonMapper() {
+	void responseIsSerializedUsingAutoConfiguredJackson2ObjectMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -18,14 +18,24 @@ package org.springframework.boot.jersey.autoconfigure;
 
 import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.xml.bind.annotation.XmlElement;
+import org.glassfish.jersey.jackson3.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule.Priority;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration.JerseyWebApplicationInitializer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -33,6 +43,7 @@ import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.filter.RequestContextFilter;
 
@@ -42,12 +53,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JerseyAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Kristoffer Larsen Hopland
  */
 class JerseyAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class))
-		.withUserConfiguration(ResourceConfigConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class))
+		.withUserConfiguration(ResourceConfigConfiguration.class)
+		.withPropertyValues("spring.jersey.preferred-json-mapper=jackson");
 
 	@Test
 	void requestContextFilterRegistrationIsAutoConfigured() {
@@ -75,31 +88,116 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsAvailableTheObjectMapperIsCustomizedWithAnAnnotationIntrospector() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+	void jacksonCustomizationBacksOffWithoutApplicationOrManagementResources() {
+		new WebApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(JerseyJacksonAutoConfiguration.class, JacksonAutoConfiguration.class))
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
-					.getAnnotationIntrospector()
-					.allIntrospectors()
-					.stream()
-					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).hasSize(1);
+				assertThat(context).hasSingleBean(JsonMapper.class);
+				assertThat(context).doesNotHaveBean(ResourceConfigCustomizer.class);
 			});
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsNotAvailableTheObjectMapperCustomizationBacksOff() {
+	void jsonMapperIsRegisteredWithJersey() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			assertThat(config.isRegistered(JacksonFeature.class)).isTrue();
+			ContextResolver<?> resolver = (ContextResolver<?>) config.getInstances()
+				.stream()
+				.filter(ContextResolver.class::isInstance)
+				.findFirst()
+				.orElseThrow();
+			assertThat(resolver.getContext(Object.class)).isSameAs(context.getBean(JsonMapper.class));
+		});
+	}
+
+	@Test
+	void jackson3ProviderIsSelectedWithoutJsonMapper() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
+			assertThat(context.getBean(ResourceConfig.class).getInstances())
+				.noneMatch(ContextResolver.class::isInstance);
+		});
+	}
+
+	@Test
+	void explicitJackson3PreferenceFailsWithoutJacksonFeature() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(JacksonFeature.class))
+			.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	void jackson3ProviderIsSelectedWithMultipleJsonMappers() {
+		this.contextRunner.withUserConfiguration(MultipleJsonMappersConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
+			assertThat(context.getBean(ResourceConfig.class).getInstances())
+				.noneMatch(ContextResolver.class::isInstance);
+		});
+	}
+
+	@Test
+	void primaryJsonMapperIsRegisteredWithJersey() {
 		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+			.withUserConfiguration(MultipleJsonMappersConfiguration.class, PrimaryJsonMapperConfiguration.class)
+			.run((context) -> {
+				ResourceConfig config = context.getBean(ResourceConfig.class);
+				ContextResolver<?> resolver = (ContextResolver<?>) config.getInstances()
+					.stream()
+					.filter(ContextResolver.class::isInstance)
+					.findFirst()
+					.orElseThrow();
+				JsonMapper mapper = (JsonMapper) resolver.getContext(Object.class);
+				assertThat(mapper).isNotSameAs(context.getBean("primaryJsonMapper"));
+				assertThat(mapper.writeValueAsString(new JaxbAnnotatedBean())).isEqualTo("{\"jackson\":\"value\"}");
+				assertThat(mapper.serializationConfig().getAnnotationIntrospector().allIntrospectors())
+					.anyMatch(JakartaXmlBindAnnotationIntrospector.class::isInstance);
+			});
+	}
+
+	@Test
+	void jsonMapperIsRegisteredWithoutJacksonAutoConfigurationModule() {
+		this.contextRunner.withUserConfiguration(PrimaryJsonMapperConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("org.springframework.boot.jackson"))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ResourceConfigCustomizer.class);
+				assertThat(context.getBean(ResourceConfig.class).isRegistered(JacksonFeature.class)).isTrue();
+			});
+	}
+
+	@Test
+	void whenJaxbIsAvailableTheJsonMapperIsCustomizedWithAnAnnotationIntrospector() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
+			JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+			assertThat(jsonMapper.serializationConfig()
+				.getAnnotationIntrospector()
+				.allIntrospectors()
+				.stream()
+				.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).hasSize(1);
+		});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void userProvidedJaxbModuleIsUsed(boolean findAndAddModules) {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withUserConfiguration(CustomJaxbModuleConfiguration.class)
+			.withPropertyValues("spring.jackson.find-and-add-modules=" + findAndAddModules)
+			.run((context) -> {
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				assertThat(jsonMapper.writeValueAsString(new JaxbAnnotatedBean())).isEqualTo("{\"jaxb\":\"value\"}");
+			});
+	}
+
+	@Test
+	void whenJaxbIsNotAvailableTheJsonMapperCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withPropertyValues("spring.jackson.find-and-add-modules=false")
 			.withClassLoader(new FilteredClassLoader("jakarta.xml.bind.annotation"))
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				assertThat(jsonMapper.serializationConfig()
 					.getAnnotationIntrospector()
 					.allIntrospectors()
 					.stream()
@@ -108,15 +206,13 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJacksonJaxbModuleIsNotAvailableTheObjectMapperCustomizationBacksOff() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(JakartaXmlBindAnnotationIntrospector.class))
+	void whenJacksonJaxbModuleIsNotAvailableTheJsonMapperCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withPropertyValues("spring.jackson.find-and-add-modules=false")
+			.withClassLoader(new FilteredClassLoader("tools.jackson.module.jakarta.xmlbind"))
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				assertThat(jsonMapper.serializationConfig()
 					.getAnnotationIntrospector()
 					.allIntrospectors()
 					.stream()
@@ -137,6 +233,52 @@ class JerseyAutoConfigurationTests {
 		ServletContext context = new MockServletContext();
 		new JerseyWebApplicationInitializer().onStartup(context);
 		assertThat(Collections.list(context.getInitParameterNames())).isEmpty();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJaxbModuleConfiguration {
+
+		@Bean
+		JacksonModule customJaxbModule() {
+			return new JakartaXmlBindAnnotationModule().setPriority(Priority.PRIMARY);
+		}
+
+	}
+
+	static class JaxbAnnotatedBean {
+
+		@JsonProperty("jackson")
+		@XmlElement(name = "jaxb")
+		String getValue() {
+			return "value";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleJsonMappersConfiguration {
+
+		@Bean
+		JsonMapper firstJsonMapper() {
+			return JsonMapper.builder().build();
+		}
+
+		@Bean
+		JsonMapper secondJsonMapper() {
+			return JsonMapper.builder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryJsonMapperConfiguration {
+
+		@Bean
+		@Primary
+		JsonMapper primaryJsonMapper() {
+			return JsonMapper.builder().build();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -22,23 +22,30 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import org.glassfish.jersey.message.MessageProperties;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,24 +54,35 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using custom ObjectMapper.
+ * Tests for {@link JerseyAutoConfiguration} when using a custom JsonMapper.
  *
  * @author Eddú Meléndez
+ * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson2.default-property-inclusion=non_null")
+		properties = { "spring.jackson.default-property-inclusion=always",
+				"spring.jersey.preferred-json-mapper=jackson" })
 @DirtiesContext
+@SuppressWarnings("removal")
 class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void contextLoads() {
+	void responseIsSerializedUsingCustomJsonMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
+		assertThat(this.applicationContext.getBeansOfType(JsonMapper.class)).hasSize(1);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
+		ServletContainer servlet = (ServletContainer) this.applicationContext
+			.getBean("jerseyServletRegistration", ServletRegistrationBean.class)
+			.getServlet();
+		assertThat(servlet).isNotNull();
+		assertThat(servlet.getApplicationHandler()
+			.getConfiguration()
+			.getProperty(MessageProperties.JSON_MAX_STRING_LENGTH)).isEqualTo(1024);
 	}
 
 	@MinimalWebConfiguration
@@ -74,6 +92,15 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 		Application() {
 			register(Application.class);
+			register(new org.glassfish.jersey.jackson3.JacksonFeature().maxStringLength(1024));
+		}
+
+		@Bean
+		JsonMapper jsonMapper() {
+			return JsonMapper.builder()
+				.changeDefaultPropertyInclusion(
+						(inclusion) -> inclusion.withValueInclusion(JsonInclude.Include.NON_NULL))
+				.build();
 		}
 
 		@GET
@@ -116,14 +143,14 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	}
 
-	@SuppressWarnings("removal")
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ TomcatServletWebServerAutoConfiguration.class,
+	@ImportAutoConfiguration({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
 			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

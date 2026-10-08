@@ -31,7 +31,9 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
+import org.springframework.boot.jersey.autoconfigure.JerseyJacksonAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -53,16 +55,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JerseyEndpointAccessIntegrationTests {
 
-	@SuppressWarnings("removal")
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(
-				AutoConfigurations.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-						JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
-						TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
+				JerseyJacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+				TomcatServletWebServerAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
 		.withUserConfiguration(CustomServletEndpoint.class)
-		.withPropertyValues("server.port:0");
+		.withPropertyValues("server.port:0", "spring.jersey.preferred-json-mapper=jackson");
 
 	@Test
 	void accessIsUnrestrictedByDefault() {
