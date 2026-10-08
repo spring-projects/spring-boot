@@ -68,10 +68,15 @@ class ConnectionDetailsRegistrar {
 	}
 
 	void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
+		registerBeanDefinitions(registry, source, this::createBeanDefinition);
+	}
+
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source,
+			BiFunction<Class<?>, ConnectionDetails, RootBeanDefinition> beanDefinitionFactory) {
 		try {
 			this.connectionDetailsFactories.getConnectionDetails(source, true)
 				.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
-						connectionDetailsType, connectionDetails));
+						connectionDetailsType, connectionDetails, beanDefinitionFactory));
 		}
 		catch (ConnectionDetailsFactoryNotFoundException ex) {
 			rethrowConnectionDetails(source, ex, ConnectionDetailsFactoryNotFoundException::new);
@@ -92,9 +97,9 @@ class ConnectionDetailsRegistrar {
 		throw ex;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source,
-			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
+	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source,
+			Class<?> connectionDetailsType, ConnectionDetails connectionDetails,
+			BiFunction<Class<?>, ConnectionDetails, RootBeanDefinition> beanDefinitionFactory) {
 		String[] existingBeans = this.beanFactory.getBeanNamesForType(connectionDetailsType);
 		if (!ObjectUtils.isEmpty(existingBeans)) {
 			logger.debug(LogMessage.of(() -> "Skipping registration of %s due to existing beans %s".formatted(source,
@@ -103,13 +108,20 @@ class ConnectionDetailsRegistrar {
 		}
 		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(source.getContainerImageName());
 		String beanName = getBeanName(source, connectionDetails);
-		Class<T> beanType = (Class<T>) connectionDetails.getClass();
-		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		logger.debug(LogMessage.of(() -> "Registering '%s' for %s".formatted(beanName, source)));
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
-		beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
+		RootBeanDefinition beanDefinition = beanDefinitionFactory.apply(connectionDetailsType, connectionDetails);
 		containerMetadata.addTo(beanDefinition);
 		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> RootBeanDefinition createBeanDefinition(Class<?> connectionDetailsType,
+			ConnectionDetails connectionDetails) {
+		Class<T> beanType = (Class<T>) connectionDetails.getClass();
+		Supplier<T> beanSupplier = () -> (T) connectionDetails;
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
+		return beanDefinition;
 	}
 
 	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
