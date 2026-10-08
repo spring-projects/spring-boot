@@ -34,7 +34,7 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_27)) {
-			return Arrays.asList("9.8.0");
+			return Arrays.asList(GradleVersion.current().getVersion());
 		}
 		if (isJavaVersion(JavaVersion.VERSION_26)) {
 			return Arrays.asList("9.4.0", GradleVersion.current().getVersion());
