@@ -61,6 +61,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Loïc Lefèvre
  */
 public enum TestImage {
 
@@ -206,14 +207,14 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Oracle Free.
 	 */
-	ORACLE_FREE("gvenzl/oracle-free", "23.6-slim", () -> org.testcontainers.oracle.OracleContainer.class,
+	ORACLE_FREE("gvenzl/oracle-free", "23.26.3-slim", () -> org.testcontainers.oracle.OracleContainer.class,
 			(container) -> ((org.testcontainers.oracle.OracleContainer) container)
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
-	 * A container image suitable for testing Oracle XA.
+	 * A container image suitable for testing Oracle XE.
 	 */
-	ORACLE_XE("gvenzl/oracle-xe", "18.4.0-slim", () -> org.testcontainers.containers.OracleContainer.class,
+	ORACLE_XE("gvenzl/oracle-xe", "21.3.0-slim", () -> org.testcontainers.containers.OracleContainer.class,
 			(container) -> ((org.testcontainers.containers.OracleContainer) container)
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
