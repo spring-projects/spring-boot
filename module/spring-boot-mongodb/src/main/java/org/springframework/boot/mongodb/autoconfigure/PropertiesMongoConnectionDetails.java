@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jialin Chen
  * @since 4.0.0
  */
 public class PropertiesMongoConnectionDetails implements MongoConnectionDetails {
@@ -93,11 +94,11 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	}
 
 	private String encode(String input) {
-		return URLEncoder.encode(input, StandardCharsets.UTF_8);
+		return URLEncoder.encode(input, StandardCharsets.UTF_8).replace("+", "%20");
 	}
 
 	private char[] encode(char[] input) {
-		return URLEncoder.encode(new String(input), StandardCharsets.UTF_8).toCharArray();
+		return encode(new String(input)).toCharArray();
 	}
 
 	@Override
