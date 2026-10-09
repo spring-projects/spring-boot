@@ -16,7 +16,9 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -25,9 +27,12 @@ import org.testcontainers.containers.Container;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
@@ -64,18 +69,59 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
 				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
-			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			MergedAnnotations annotations = getAnnotations(beanDefinition);
-			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
-				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
-						serviceConnection);
-				registrar.registerBeanDefinitions(registry, source);
+			for (ContainerConnectionSource<?> source : getSources(beanFactory, beanName)) {
+				registrar.registerBeanDefinitions(registry, source, (connectionDetailsType,
+						connectionDetails) -> createBeanDefinition(beanName, connectionDetailsType));
 			}
 		}
 	}
 
-	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
-			@Nullable MergedAnnotations annotations) {
+	/**
+	 * Create a bean definition that obtains the {@link ConnectionDetails} from the
+	 * container bean when it is instantiated. Unlike a definition with an instance
+	 * supplier, it can be processed ahead-of-time so the same path is used at AOT runtime
+	 * where this registrar does not run again.
+	 * @param containerBeanName the name of the container bean
+	 * @param connectionDetailsType the connection details type
+	 * @return the bean definition
+	 */
+	private RootBeanDefinition createBeanDefinition(String containerBeanName, Class<?> connectionDetailsType) {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(ServiceConnectionAutoConfigurationRegistrar.class);
+		beanDefinition.setTargetType(connectionDetailsType);
+		beanDefinition.setFactoryMethodName("getConnectionDetails");
+		beanDefinition.setAutowireMode(AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, containerBeanName);
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(2, connectionDetailsType);
+		return beanDefinition;
+	}
+
+	static ConnectionDetails getConnectionDetails(ConfigurableListableBeanFactory beanFactory, String containerBeanName,
+			Class<?> connectionDetailsType) {
+		ConnectionDetailsFactories connectionDetailsFactories = new ConnectionDetailsFactories(null);
+		for (ContainerConnectionSource<?> source : getSources(beanFactory, containerBeanName)) {
+			ConnectionDetails connectionDetails = connectionDetailsFactories.getConnectionDetails(source, false)
+				.get(connectionDetailsType);
+			if (connectionDetails != null) {
+				return connectionDetails;
+			}
+		}
+		throw new IllegalStateException(
+				"No %s found for container bean '%s'".formatted(connectionDetailsType.getName(), containerBeanName));
+	}
+
+	private static List<ContainerConnectionSource<?>> getSources(ConfigurableListableBeanFactory beanFactory,
+			String beanName) {
+		BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
+		MergedAnnotations annotations = getAnnotations(beanDefinition);
+		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
+		for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
+			sources.add(createSource(beanFactory, beanName, beanDefinition, annotations, serviceConnection));
+		}
+		return sources;
+	}
+
+	private static Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory,
+			String beanName, @Nullable MergedAnnotations annotations) {
 		Set<ServiceConnection> serviceConnections = beanFactory.findAllAnnotationsOnBean(beanName,
 				ServiceConnection.class, false);
 		if (annotations != null) {
@@ -87,7 +133,8 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		return serviceConnections;
 	}
 
-	private @Nullable BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	private static @Nullable BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory,
+			String beanName) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
@@ -96,7 +143,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		}
 	}
 
-	private @Nullable MergedAnnotations getAnnotations(@Nullable BeanDefinition beanDefinition) {
+	private static @Nullable MergedAnnotations getAnnotations(@Nullable BeanDefinition beanDefinition) {
 		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
 			return testcontainerBeanDefinition.getAnnotations();
 		}
@@ -108,7 +155,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 	}
 
 	@SuppressWarnings("unchecked")
-	private <C extends Container<?>> ContainerConnectionSource<C> createSource(
+	private static <C extends Container<?>> ContainerConnectionSource<C> createSource(
 			ConfigurableListableBeanFactory beanFactory, String beanName, @Nullable BeanDefinition beanDefinition,
 			@Nullable MergedAnnotations annotations, ServiceConnection serviceConnection) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);

@@ -33,15 +33,20 @@ import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.test.tools.CompileWithForkedClassLoader;
+import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.javapoet.ClassName;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -114,6 +119,32 @@ class ServiceConnectionAutoConfigurationTests {
 			TestGenerationContext generationContext = new TestGenerationContext();
 			assertThatNoException().isThrownBy(() -> new ApplicationContextAotGenerator()
 				.processAheadOfTime(applicationContext, generationContext));
+		}
+	}
+
+	@Test
+	@CompileWithForkedClassLoader
+	@SuppressWarnings("unchecked")
+	void whenAotProcessedRegistersServiceConnection() {
+		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
+			applicationContext.register(WithNoExtraAutoConfiguration.class, ContainerConfiguration.class);
+			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+			TestGenerationContext generationContext = new TestGenerationContext();
+			ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(applicationContext,
+					generationContext);
+			generationContext.writeGeneratedContent();
+			TestCompiler.forSystem().with(generationContext).compile((compiled) -> {
+				try (GenericApplicationContext freshApplicationContext = new GenericApplicationContext()) {
+					ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+						.getInstance(ApplicationContextInitializer.class, className.toString());
+					initializer.initialize(freshApplicationContext);
+					new TestcontainersLifecycleApplicationContextInitializer().initialize(freshApplicationContext);
+					freshApplicationContext.refresh();
+					DatabaseConnectionDetails connectionDetails = freshApplicationContext
+						.getBean(DatabaseConnectionDetails.class);
+					assertThat(connectionDetails.getClass().getName()).isEqualTo(DATABASE_CONTAINER_CONNECTION_DETAILS);
+				}
+			});
 		}
 	}
 
