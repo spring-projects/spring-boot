@@ -55,8 +55,18 @@ class ClickHouseEnvironment {
 	private String extractPassword(Map<String, @Nullable String> env) {
 		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("CLICKHOUSE_PASSWORD");
+		if (password == null) {
+			assertNoFileVariant(env, "CLICKHOUSE_PASSWORD");
+		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No ClickHouse password found");
 		return (password != null) ? password : "";
+	}
+
+	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
+		for (String key : keys) {
+			String fileKey = key + "_FILE";
+			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
+		}
 	}
 
 	String getUsername() {

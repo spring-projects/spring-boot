@@ -62,6 +62,7 @@ class PostgresEnvironment {
 				return value;
 			}
 		}
+		assertNoFileVariant(env, keys[0]);
 		return defaultValue;
 	}
 
@@ -70,6 +71,9 @@ class PostgresEnvironment {
 			return null;
 		}
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
+		if (password == null) {
+			assertNoFileVariant(env, "POSTGRES_PASSWORD");
+		}
 		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
 		Assert.state(allowEmpty || StringUtils.hasLength(password), "No PostgreSQL password found");
 		return (password != null) ? password : "";
@@ -78,6 +82,13 @@ class PostgresEnvironment {
 	private boolean isUsingTrustHostAuthMethod(Map<String, @Nullable String> env) {
 		String hostAuthMethod = env.get("POSTGRES_HOST_AUTH_METHOD");
 		return "trust".equals(hostAuthMethod);
+	}
+
+	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
+		for (String key : keys) {
+			String fileKey = key + "_FILE";
+			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
+		}
 	}
 
 	String getUsername() {

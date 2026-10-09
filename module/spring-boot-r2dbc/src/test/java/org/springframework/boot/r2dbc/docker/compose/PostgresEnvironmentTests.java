@@ -153,4 +153,34 @@ class PostgresEnvironmentTests {
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
+	@Test
+	void createWhenHasPostgresPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PostgresEnvironment(Map.of("POSTGRES_PASSWORD_FILE", "/run/secrets/password")))
+			.withMessage("POSTGRES_PASSWORD_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasPostgresUserFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PostgresEnvironment(
+					Map.of("POSTGRES_USER_FILE", "/run/secrets/user", "POSTGRES_PASSWORD", "secret")))
+			.withMessage("POSTGRES_USER_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasPostgresDbFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PostgresEnvironment(
+					Map.of("POSTGRES_DB_FILE", "/run/secrets/db", "POSTGRES_PASSWORD", "secret")))
+			.withMessage("POSTGRES_DB_FILE is not supported");
+	}
+
+	@Test
+	void getPasswordWhenHasTrustHostAuthMethodAndPostgresPasswordFile() {
+		PostgresEnvironment environment = new PostgresEnvironment(
+				Map.of("POSTGRES_HOST_AUTH_METHOD", "trust", "POSTGRES_PASSWORD_FILE", "/run/secrets/password"));
+		assertThat(environment.getPassword()).isNull();
+	}
+
 }
