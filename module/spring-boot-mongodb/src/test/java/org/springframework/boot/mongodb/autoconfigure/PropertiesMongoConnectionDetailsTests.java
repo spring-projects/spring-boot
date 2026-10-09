@@ -22,6 +22,8 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.mock;
  * @author Christoph Dreis
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Jialin Chen
  */
 class PropertiesMongoConnectionDetailsTests {
 
@@ -76,6 +79,29 @@ class PropertiesMongoConnectionDetailsTests {
 		assertThat(credential.getUserName()).isEqualTo("user");
 		assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 		assertThat(credential.getSource()).isEqualTo("test");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "my secret", "my+secret", "my + secret", "p@ss:w/rd" })
+	void credentialsCanBeConfiguredWithSpecialCharactersInUsername(String username) {
+		this.properties.setUsername(username);
+		ConnectionString connectionString = this.connectionDetails.getConnectionString();
+		assertThat(connectionString.getUsername()).isEqualTo(username);
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getUserName()).isEqualTo(username);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "my secret", "my+secret", "my + secret", "p@ss:w/rd" })
+	void credentialsCanBeConfiguredWithSpecialCharactersInPassword(String password) {
+		this.properties.setUsername("user");
+		this.properties.setPassword(password.toCharArray());
+		ConnectionString connectionString = this.connectionDetails.getConnectionString();
+		assertThat(connectionString.getPassword()).isEqualTo(password.toCharArray());
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getPassword()).isEqualTo(password.toCharArray());
 	}
 
 	@Test
