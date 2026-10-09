@@ -173,4 +173,43 @@ class MariaDbEnvironmentTests {
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
+	@Test
+	void createWhenHasMariadbPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MARIADB_PASSWORD_FILE",
+					"/run/secrets/password", "MARIADB_DATABASE", "db")))
+			.withMessage("MARIADB_PASSWORD_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMysqlRootPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(
+					Map.of("MYSQL_ROOT_PASSWORD_FILE", "/run/secrets/password", "MARIADB_DATABASE", "db")))
+			.withMessage("MYSQL_ROOT_PASSWORD_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMariadbUserFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_USER_FILE", "/run/secrets/user",
+					"MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db")))
+			.withMessage("MARIADB_USER_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMariadbDatabaseFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(
+					Map.of("MARIADB_PASSWORD", "secret", "MARIADB_DATABASE_FILE", "/run/secrets/db")))
+			.withMessage("MARIADB_DATABASE_FILE is not supported");
+	}
+
+	@Test
+	void getPasswordWhenHasMariadbPasswordAndMariadbRootPasswordFile() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MARIADB_PASSWORD",
+				"secret", "MARIADB_ROOT_PASSWORD_FILE", "/run/secrets/root", "MARIADB_DATABASE", "db"));
+		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
 }

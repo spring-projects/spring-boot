@@ -50,6 +50,9 @@ class MariaDbEnvironment {
 		if (user == null) {
 			user = env.get("MYSQL_USER");
 		}
+		if (user == null) {
+			assertNoFileVariant(env, "MARIADB_USER", "MYSQL_USER");
+		}
 		return (user != null) ? user : "root";
 	}
 
@@ -61,8 +64,14 @@ class MariaDbEnvironment {
 				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MARIADB_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_PASSWORD");
+		if (password == null) {
+			assertNoFileVariant(env, "MARIADB_PASSWORD", "MYSQL_PASSWORD");
+		}
 		password = (password != null) ? password : env.get("MARIADB_ROOT_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
+		if (password == null) {
+			assertNoFileVariant(env, "MARIADB_ROOT_PASSWORD", "MYSQL_ROOT_PASSWORD");
+		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MariaDB password found");
 		return (password != null) ? password : "";
 	}
@@ -70,8 +79,18 @@ class MariaDbEnvironment {
 	private String extractDatabase(Map<String, @Nullable String> env) {
 		String database = env.get("MARIADB_DATABASE");
 		database = (database != null) ? database : env.get("MYSQL_DATABASE");
+		if (database == null) {
+			assertNoFileVariant(env, "MARIADB_DATABASE", "MYSQL_DATABASE");
+		}
 		Assert.state(database != null, "No MARIADB_DATABASE defined");
 		return database;
+	}
+
+	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
+		for (String key : keys) {
+			String fileKey = key + "_FILE";
+			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
+		}
 	}
 
 	String getUsername() {

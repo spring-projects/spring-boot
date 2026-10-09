@@ -22,6 +22,8 @@ import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
 
+import org.springframework.util.Assert;
+
 /**
  * Neo4j environment details.
  *
@@ -37,6 +39,7 @@ class Neo4jEnvironment {
 		if (authToken == null && env.containsKey("NEO4J_PASSWORD")) {
 			authToken = parse("neo4j/" + env.get("NEO4J_PASSWORD"));
 		}
+		Assert.state(authToken != null || !env.containsKey("NEO4J_AUTH_FILE"), "NEO4J_AUTH_FILE is not supported");
 		this.authToken = authToken;
 	}
 

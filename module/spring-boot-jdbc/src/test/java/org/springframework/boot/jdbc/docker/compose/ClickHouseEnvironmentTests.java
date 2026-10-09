@@ -81,4 +81,11 @@ class ClickHouseEnvironmentTests {
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
+	@Test
+	void createWhenHasClickHousePasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new ClickHouseEnvironment(Map.of("CLICKHOUSE_PASSWORD_FILE", "/run/secrets/password")))
+			.withMessage("CLICKHOUSE_PASSWORD_FILE is not supported");
+	}
+
 }

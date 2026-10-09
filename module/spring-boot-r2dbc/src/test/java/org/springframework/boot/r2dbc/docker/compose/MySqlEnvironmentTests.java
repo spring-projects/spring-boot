@@ -101,4 +101,43 @@ class MySqlEnvironmentTests {
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
+	@Test
+	void createWhenHasMysqlPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MySqlEnvironment(Map.of("MYSQL_USER", "myself", "MYSQL_PASSWORD_FILE",
+					"/run/secrets/password", "MYSQL_DATABASE", "db")))
+			.withMessage("MYSQL_PASSWORD_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMysqlRootPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MySqlEnvironment(
+					Map.of("MYSQL_ROOT_PASSWORD_FILE", "/run/secrets/password", "MYSQL_DATABASE", "db")))
+			.withMessage("MYSQL_ROOT_PASSWORD_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMysqlUserFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MySqlEnvironment(
+					Map.of("MYSQL_USER_FILE", "/run/secrets/user", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db")))
+			.withMessage("MYSQL_USER_FILE is not supported");
+	}
+
+	@Test
+	void createWhenHasMysqlDatabaseFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MySqlEnvironment(
+					Map.of("MYSQL_PASSWORD", "secret", "MYSQL_DATABASE_FILE", "/run/secrets/db")))
+			.withMessage("MYSQL_DATABASE_FILE is not supported");
+	}
+
+	@Test
+	void getPasswordWhenHasMysqlPasswordAndMysqlRootPasswordFile() {
+		MySqlEnvironment environment = new MySqlEnvironment(Map.of("MYSQL_USER", "myself", "MYSQL_PASSWORD", "secret",
+				"MYSQL_ROOT_PASSWORD_FILE", "/run/secrets/root", "MYSQL_DATABASE", "db"));
+		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
 }

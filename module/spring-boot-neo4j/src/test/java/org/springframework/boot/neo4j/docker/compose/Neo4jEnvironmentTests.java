@@ -63,4 +63,11 @@ class Neo4jEnvironmentTests {
 		assertThat(environment.getAuthToken()).isEqualTo(AuthTokens.basic("neo4j", "custom-password"));
 	}
 
+	@Test
+	void whenNeo4jAuthFileIsSetThenThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new Neo4jEnvironment(Map.of("NEO4J_AUTH_FILE", "/run/secrets/auth")))
+			.withMessage("NEO4J_AUTH_FILE is not supported");
+	}
+
 }
