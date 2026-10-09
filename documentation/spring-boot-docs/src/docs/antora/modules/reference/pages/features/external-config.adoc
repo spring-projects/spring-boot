@@ -40,6 +40,7 @@ Config data files are considered in the following order:
 
 NOTE: It is recommended to stick with one format for your entire application.
 If you have configuration files with both `.properties` and YAML format in the same location, `.properties` takes precedence.
+A `.env` file in the same location takes precedence over both.
 
 NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
 See xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[] for details.
@@ -458,6 +459,58 @@ spring:
 
 TIP: This feature also supports xref:reference:features/external-config.adoc#features.external-config.files.importing-extensionless[specifying the extension].
 The default extension is `.properties`.
+
+
+
+[[features.external-config.files.dotenv]]
+=== Importing `.env` Files
+
+A `.env` file is a text file that defines environment variables, one per line.
+It is often used to configure an application for local development without setting the variables in the shell.
+To import such a file, add it to configprop:spring.config.import[]:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "optional:file:.env"
+----
+
+TIP: The `optional:` prefix lets the application start when the file does not exist, for example in production, where the platform provides the variables.
+Do not commit a `.env` file that contains secrets to source control.
+
+The variables are treated like system environment variables.
+For example, `SPRING_DATASOURCE_URL` in a `.env` file sets `spring.datasource.url`, and any variable can be used in a xref:features/external-config.adoc#features.external-config.files.property-placeholders[property placeholder] such as `${DATABASE_PASSWORD}`.
+As is the case for every imported file, the variables take precedence over the properties of the file that imports them.
+Real system environment variables take precedence over the variables of the `.env` file.
+
+The following example shows the supported syntax:
+
+[source,properties]
+----
+# Lines that start with a hash are comments
+SPRING_APPLICATION_NAME=my-app
+export SERVER_PORT=8081
+DATABASE_PASSWORD='p@ss#word'  # a comment after a value
+GREETING="Hello,\nWorld"
+CERTIFICATE="-----BEGIN CERTIFICATE-----
+MIIB...
+-----END CERTIFICATE-----"
+----
+
+* Blank lines and comments are ignored, and an optional `export` keyword at the start of a line is ignored so that the file can also be used by a shell.
+* An unquoted value is trimmed and ends at the end of the line or at a `#` that follows whitespace.
+* A value in double quotes can contain leading and trailing whitespace and a `#`, can span multiple lines, and supports the `\n`, `\r`, `\t`, `\"` and `\\` escape sequences.
+* A value in single quotes is taken literally and can span multiple lines.
+* Only whitespace or a comment can follow a quoted value.
+* If a variable is defined more than once, the last definition wins.
+
+NOTE: The quotes only affect how the file is read.
+Spring Boot resolves property placeholders in all values, so a value such as `'${HOME}/data'` is still resolved.
+
+The `.env` format is also supported by the other ways to import data.
+Files named `application.env` and `application-\{profile}.env` are also found in the same locations as `application.properties`, and take precedence over it.
+You can also store the content of a whole `.env` file in an environment variable and xref:reference:features/external-config.adoc#features.external-config.files.importing-extensionless[specify the extension] when you import it, as in `env:MY_ENV_FILE[.env]`.
 
 
 

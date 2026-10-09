@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.env.DotEnvPropertySourceLoader;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 
@@ -48,8 +49,8 @@ class SystemEnvironmentConfigDataLocationResolverTests {
 	void setUp() {
 		this.context = mock(ConfigDataLocationResolverContext.class);
 		this.environment = new HashMap<>();
-		this.resolver = new SystemEnvironmentConfigDataLocationResolver(
-				List.of(new PropertiesPropertySourceLoader(), new YamlPropertySourceLoader()), this.environment::get);
+		this.resolver = new SystemEnvironmentConfigDataLocationResolver(List.of(new PropertiesPropertySourceLoader(),
+				new YamlPropertySourceLoader(), new DotEnvPropertySourceLoader()), this.environment::get);
 	}
 
 	@Test
@@ -115,6 +116,17 @@ class SystemEnvironmentConfigDataLocationResolverTests {
 		SystemEnvironmentConfigDataResource resource = resolved.get(0);
 		assertThat(resource.getVariableName()).isEqualTo("VAR1");
 		assertThat(resource.getLoader()).isInstanceOf(YamlPropertySourceLoader.class);
+	}
+
+	@Test
+	void resolveWhenHasEnvExtensionHintResolves() {
+		this.environment.put("VAR1", "VALUE1");
+		ConfigDataLocation location = ConfigDataLocation.of("env:VAR1[.env]");
+		List<SystemEnvironmentConfigDataResource> resolved = this.resolver.resolve(this.context, location);
+		assertThat(resolved).hasSize(1);
+		SystemEnvironmentConfigDataResource resource = resolved.get(0);
+		assertThat(resource.getVariableName()).isEqualTo("VAR1");
+		assertThat(resource.getLoader()).isInstanceOf(DotEnvPropertySourceLoader.class);
 	}
 
 	@Test
