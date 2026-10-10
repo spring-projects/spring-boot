@@ -240,6 +240,19 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void matchAllRemainingPathsSelectorShouldNotUseQueryParameterForPath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("/matchallremaining/?selection=one")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("selection")
+					.isEqualTo(""));
+	}
+
+	@Test
 	void readOperationWithSingleQueryParameters() {
 		load(QueryEndpointConfiguration.class,
 				(client) -> client.get()
