@@ -8,10 +8,8 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperationInvocationArguments;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.webmvc.actuate.endpoint.web.AbstractWebMvcEndpointHandlerMapping.AbstractWebMvcEndpointHandlerMappingRuntimeHints;
@@ -362,22 +361,17 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Map<String, Object> getArguments(HttpServletRequest request, @Nullable Map<String, String> body) {
-			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(request));
-			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
-				.getMatchAllRemainingPathSegmentsVariable();
-			if (matchAllRemainingPathSegmentsVariable != null) {
-				arguments.put(matchAllRemainingPathSegmentsVariable, getRemainingPathSegments(request));
-			}
-			if (body != null && HttpMethod.POST.name().equals(request.getMethod())) {
-				arguments.putAll(body);
-			}
-			request.getParameterMap()
-				.forEach((name, values) -> arguments.put(name,
-						(values.length != 1) ? Arrays.asList(values) : values[0]));
-			return arguments;
+			return WebOperationInvocationArguments.get(this.operation, (invocationArguments) -> {
+				invocationArguments.queryParameters(request.getParameterMap());
+				invocationArguments.pathParameters(getTemplateVariables(request));
+				if (HttpMethod.POST.name().equals(request.getMethod())) {
+					invocationArguments.body(body);
+				}
+				invocationArguments.remainPathSegments((variable) -> getRemainingPathSegments(request));
+			});
 		}
 
-		private Object getRemainingPathSegments(HttpServletRequest request) {
+		private String[] getRemainingPathSegments(HttpServletRequest request) {
 			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;

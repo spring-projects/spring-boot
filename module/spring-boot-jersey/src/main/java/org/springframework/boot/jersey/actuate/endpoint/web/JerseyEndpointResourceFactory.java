@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperationInvocationArguments;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.core.ParameterizedTypeReference;
@@ -158,12 +159,7 @@ public class JerseyEndpointResourceFactory {
 
 		@Override
 		public Response apply(ContainerRequestContext data) {
-			Map<String, Object> arguments = new HashMap<>();
-			if (this.readBody) {
-				arguments.putAll(extractBodyArguments(data));
-			}
-			arguments.putAll(extractPathParameters(data));
-			arguments.putAll(extractQueryParameters(data));
+			Map<String, Object> arguments = getArguments(data);
 			try {
 				JerseySecurityContext securityContext = new JerseySecurityContext(data.getSecurityContext());
 				OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
@@ -179,24 +175,25 @@ public class JerseyEndpointResourceFactory {
 			}
 		}
 
+		private Map<String, Object> getArguments(ContainerRequestContext requestContext) {
+			return WebOperationInvocationArguments.get(this.operation, (arguments) -> {
+				Map<String, Object> pathParameters = extract(requestContext.getUriInfo().getPathParameters());
+				arguments.queryParameters(extractQueryParameters(requestContext));
+				arguments.pathParameters(pathParameters);
+				if (this.readBody && "POST".equals(requestContext.getMethod())) {
+					arguments.body(extractBodyArguments(requestContext));
+				}
+				arguments.remainPathSegments((variable) -> tokenizePathSegments(
+						getRemainingPathSegments(requestContext, pathParameters, variable)));
+			});
+		}
+
 		@SuppressWarnings("unchecked")
 		private Map<String, String> extractBodyArguments(ContainerRequestContext data) {
 			Map<String, String> entity = ((ContainerRequest) data).readEntity(Map.class,
 					new ParameterizedTypeReference<Map<String, String>>() {
 					}.getType());
 			return (entity != null) ? entity : Collections.emptyMap();
-		}
-
-		private Map<String, Object> extractPathParameters(ContainerRequestContext requestContext) {
-			Map<String, Object> pathParameters = extract(requestContext.getUriInfo().getPathParameters());
-			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
-				.getMatchAllRemainingPathSegmentsVariable();
-			if (matchAllRemainingPathSegmentsVariable != null) {
-				String remainingPathSegments = getRemainingPathSegments(requestContext, pathParameters,
-						matchAllRemainingPathSegmentsVariable);
-				pathParameters.put(matchAllRemainingPathSegmentsVariable, tokenizePathSegments(remainingPathSegments));
-			}
-			return pathParameters;
 		}
 
 		private @Nullable String getRemainingPathSegments(ContainerRequestContext requestContext,
