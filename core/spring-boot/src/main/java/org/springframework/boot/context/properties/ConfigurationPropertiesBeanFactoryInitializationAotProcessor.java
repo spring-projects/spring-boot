@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -30,6 +31,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
@@ -43,6 +45,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link BeanFactoryInitializationAotProcessor} that contributes runtime hints for
@@ -119,10 +122,18 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		 * @param hints the hints to contribute to
 		 */
 		private void registerConfiguredClassHints(RuntimeHints hints) {
-			if (this.environment == null) {
-				return;
+			Set<Class<?>> classValues = new LinkedHashSet<>();
+			this.bindablesByPrefix.values().forEach((bindable) -> classValues.addAll(getDefaultClassValues(bindable)));
+			if (this.environment != null) {
+				classValues.addAll(getConfiguredClassValues(this.environment));
 			}
-			Binder binder = Binder.get(this.environment);
+			for (Class<?> type : classValues) {
+				hints.reflection().registerType(type, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+			}
+		}
+
+		private Set<Class<?>> getConfiguredClassValues(Environment environment) {
+			Binder binder = Binder.get(environment);
 			ClassValueBindHandler handler = new ClassValueBindHandler();
 			this.bindablesByPrefix.forEach((prefix, bindable) -> {
 				try {
@@ -132,8 +143,28 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 					logger.debug("Skipping class value hints for '" + prefix + "'", ex);
 				}
 			});
-			for (Class<?> type : handler.getClassValues()) {
-				hints.reflection().registerType(type, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+			return handler.getClassValues();
+		}
+
+		private List<Class<?>> getDefaultClassValues(Bindable<?> bindable) {
+			Class<?> type = bindable.getType().resolve();
+			if (type == null) {
+				return List.of();
+			}
+			try {
+				Object instance = BeanUtils.instantiateClass(type);
+				List<Class<?>> classValues = new ArrayList<>();
+				ReflectionUtils.doWithFields(type, (field) -> {
+					ReflectionUtils.makeAccessible(field);
+					if (ReflectionUtils.getField(field, instance) instanceof Class<?> classValue) {
+						classValues.add(classValue);
+					}
+				}, (field) -> field.getType() == Class.class && !Modifier.isStatic(field.getModifiers()));
+				return classValues;
+			}
+			catch (Exception ex) {
+				logger.debug("Skipping default class value hints for '" + type.getName() + "'", ex);
+				return List.of();
 			}
 		}
 
