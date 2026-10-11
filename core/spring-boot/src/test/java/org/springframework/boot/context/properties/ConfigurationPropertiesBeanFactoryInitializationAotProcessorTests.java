@@ -154,6 +154,14 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 			.containsExactly(TypeReference.of(ClassValueProperties.class));
 	}
 
+	@Test
+	void classPropertyWithDefaultValueRegistersReflectionHintsForDefaultValue() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableClassValueWithDefaultProperties.class, new MockEnvironment());
+		assertThat(contribution).isNotNull();
+		assertThat(typeHints(contribution).map(TypeHint::getType)).contains(TypeReference.of(StringBuilder.class));
+	}
+
 	private Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
 		TestGenerationContext generationContext = new TestGenerationContext();
 		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
@@ -288,6 +296,26 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 		Map<String, Class<?>> getTypes() {
 			return this.types;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ClassValueWithDefaultProperties.class)
+	static class EnableClassValueWithDefaultProperties {
+
+	}
+
+	@ConfigurationProperties("class-default")
+	static class ClassValueWithDefaultProperties {
+
+		private Class<?> type = StringBuilder.class;
+
+		Class<?> getType() {
+			return this.type;
+		}
+
+		void setType(Class<?> type) {
+			this.type = type;
 		}
 
 	}
