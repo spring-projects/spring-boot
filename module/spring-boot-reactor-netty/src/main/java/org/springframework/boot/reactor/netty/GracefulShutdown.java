@@ -77,7 +77,7 @@ final class GracefulShutdown {
 	void abort() {
 		Thread shutdownThread = this.shutdownThread;
 		if (shutdownThread != null) {
-			while (!this.shuttingDown) {
+			while (!this.shuttingDown && this.shutdownThread == shutdownThread) {
 				sleep(50);
 			}
 			shutdownThread.interrupt();

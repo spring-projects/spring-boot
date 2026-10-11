@@ -187,6 +187,17 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer.stop();
 	}
 
+	@Test
+	void stopImmediatelyAfterShutDownGracefullyDoesNotHang() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		this.webServer = factory.getWebServer((request, response) -> response.setComplete());
+		this.webServer.start();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		this.webServer.stop();
+	}
+
 	@Override
 	@Test
 	@Disabled("Reactor Netty does not support multiple ports")
