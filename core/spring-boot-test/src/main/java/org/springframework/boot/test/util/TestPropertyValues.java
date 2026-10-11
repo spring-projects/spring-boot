@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author JungKyun Ryu
  * @since 2.0.0
  */
 public final class TestPropertyValues {
@@ -387,7 +388,14 @@ public final class TestPropertyValues {
 
 		@Override
 		public void close() {
-			this.previous.forEach(this::setOrClear);
+			this.previous.forEach((name, value) -> {
+				if (value != null) {
+					System.setProperty(name, value);
+				}
+				else {
+					System.clearProperty(name);
+				}
+			});
 		}
 
 		private @Nullable String setOrClear(String name, @Nullable String value) {

@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author JungKyun Ryu
  */
 class TestPropertyValuesTests {
 
@@ -157,6 +158,21 @@ class TestPropertyValuesTests {
 			});
 			assertThat(System.getProperty("foo")).isEqualTo("bar1");
 			assertThat(System.getProperties()).doesNotContainKey("baz");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
+	@Test
+	void applyToSystemPropertiesShouldRestoreEmptySystemProperty() {
+		System.setProperty("foo", "");
+		try {
+			TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
+				assertThat(System.getProperty("foo")).isEqualTo("bar");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEmpty();
 		}
 		finally {
 			System.clearProperty("foo");
