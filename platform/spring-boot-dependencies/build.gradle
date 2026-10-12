@@ -760,7 +760,7 @@ bom {
 			javadoc("https://javadoc.io/doc/org.apache.httpcomponents/httpasyncclient/{version}")
 		}
 	}
-	library("HttpClient5", "5.6.4") {
+	library("HttpClient5", "5.6.5") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
