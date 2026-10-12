@@ -99,29 +99,24 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureWithNoTimeoutsApplyDefaults() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Rest5Client.class);
-			Rest5Client restClient = context.getBean(Rest5Client.class);
-			assertTimeouts(restClient, Duration.ofMillis(Rest5ClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
-					Duration.ofMillis(Rest5ClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
-		});
+		this.contextRunner.run((context) -> assertThat(context).getBean(Rest5Client.class)
+			.satisfies((restClient) -> assertTimeouts(restClient,
+					Duration.ofMillis(Rest5ClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
+					Duration.ofMillis(Rest5ClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS))));
 	}
 
 	@Test
 	void configureWithCustomTimeouts() {
 		this.contextRunner
 			.withPropertyValues("spring.elasticsearch.connection-timeout=15s", "spring.elasticsearch.socket-timeout=1m")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(Rest5Client.class);
-				Rest5Client restClient = context.getBean(Rest5Client.class);
-				assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
-			});
+			.run((context) -> assertThat(context).getBean(Rest5Client.class)
+				.satisfies((restClient) -> assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1))));
 	}
 
 	@SuppressWarnings("unchecked")
 	private static void assertTimeouts(Rest5Client restClient, Duration connectTimeout, Duration socketTimeout) {
-		assertThat(restClient).extracting("client.manager.connectionConfigResolver")
-			.asInstanceOf(InstanceOfAssertFactories.type(Resolver.class))
+		assertThat(restClient)
+			.extracting("client.manager.connectionConfigResolver", InstanceOfAssertFactories.type(Resolver.class))
 			.extracting((resolver) -> ((Resolver<HttpRoute, ConnectionConfig>) resolver).resolve(null))
 			.satisfies((connectionConfig) -> {
 				assertThat(connectionConfig.getSocketTimeout()).isEqualTo(Timeout.of(socketTimeout));
