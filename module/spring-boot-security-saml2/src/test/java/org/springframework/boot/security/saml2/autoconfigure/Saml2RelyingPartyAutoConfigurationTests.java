@@ -17,6 +17,7 @@
 package org.springframework.boot.security.saml2.autoconfigure;
 
 import java.io.InputStream;
+import java.security.interfaces.ECPrivateKey;
 import java.util.List;
 
 import jakarta.servlet.Filter;
@@ -43,6 +44,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
@@ -333,6 +335,41 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				.getFailure()
 				.rootCause()
 				.hasMessageContaining("Missing certificates or unrecognized format"));
+	}
+
+	@Test
+	void autoconfigurationWhenSigningCredentialHasEcPrivateKeyShouldCreateRegistration() {
+		this.contextRunner.withPropertyValues(PREFIX
+				+ ".foo.signing.credentials[0].private-key-location=classpath:org/springframework/boot/security/saml2/autoconfigure/ec.key",
+				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:org/springframework/boot/security/saml2/autoconfigure/ec.crt",
+				PREFIX + ".foo.assertingparty.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.assertingparty.singlesignon.sign-request=false",
+				PREFIX + ".foo.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".foo.assertingparty.verification.credentials[0].certificate-location=classpath:org/springframework/boot/security/saml2/autoconfigure/rsa.crt")
+			.run((context) -> {
+				RelyingPartyRegistrationRepository repository = context
+					.getBean(RelyingPartyRegistrationRepository.class);
+				RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+				assertThat(registration).isNotNull();
+				assertThat(registration.getSigningX509Credentials()).singleElement()
+					.extracting(Saml2X509Credential::getPrivateKey)
+					.isInstanceOf(ECPrivateKey.class);
+			});
+	}
+
+	@Test
+	void autoconfigurationWhenDecryptionCredentialHasEcPrivateKeyShouldFail() {
+		this.contextRunner.withPropertyValues(PREFIX
+				+ ".foo.decryption.credentials[0].private-key-location=classpath:org/springframework/boot/security/saml2/autoconfigure/ec.key",
+				PREFIX + ".foo.decryption.credentials[0].certificate-location=classpath:org/springframework/boot/security/saml2/autoconfigure/ec.crt",
+				PREFIX + ".foo.assertingparty.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.assertingparty.singlesignon.sign-request=false",
+				PREFIX + ".foo.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".foo.assertingparty.verification.credentials[0].certificate-location=classpath:org/springframework/boot/security/saml2/autoconfigure/rsa.crt")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.hasMessageContaining("must be an RSAPrivateKey to be used for decryption"));
 	}
 
 	@Test

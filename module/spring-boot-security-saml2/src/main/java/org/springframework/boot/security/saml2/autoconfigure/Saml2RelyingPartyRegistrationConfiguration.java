@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Lasse Lindqvist
  * @author Lasse Wulff
  * @author Scott Frederick
+ * @author Armen Petrosyan
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -160,13 +161,15 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private Saml2X509Credential asSigningCredential(Signing.Credential properties) {
-		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
+		PrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
 		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.SIGNING);
 	}
 
 	private Saml2X509Credential asDecryptionCredential(Decryption.Credential properties) {
-		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
+		PrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
+		Assert.state(privateKey instanceof RSAPrivateKey, () -> "PrivateKey in resource '"
+				+ properties.getPrivateKeyLocation() + "' must be an RSAPrivateKey to be used for decryption");
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
 		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.DECRYPTION);
 	}
@@ -177,15 +180,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 				Saml2X509Credential.Saml2X509CredentialType.VERIFICATION);
 	}
 
-	private RSAPrivateKey readPrivateKey(@Nullable Resource location) {
+	private PrivateKey readPrivateKey(@Nullable Resource location) {
 		Assert.state(location != null, "No private key location specified");
 		Assert.state(location.exists(), () -> "Private key location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
 			PemContent pemContent = PemContent.load(inputStream);
 			PrivateKey privateKey = pemContent.getPrivateKey();
-			Assert.state(privateKey instanceof RSAPrivateKey,
-					() -> "PrivateKey in resource '" + location + "' must be an RSAPrivateKey");
-			return (RSAPrivateKey) privateKey;
+			Assert.state(privateKey != null, () -> "Missing private key in resource '" + location + "'");
+			return privateKey;
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(ex);
