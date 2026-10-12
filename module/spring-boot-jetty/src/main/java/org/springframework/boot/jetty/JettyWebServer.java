@@ -149,6 +149,9 @@ public class JettyWebServer implements WebServer {
 			if (this.started) {
 				return;
 			}
+			if (this.gracefulShutdown != null) {
+				this.gracefulShutdown.reset();
+			}
 			this.server.setConnectors(this.connectors);
 			if (!this.autoStart) {
 				return;

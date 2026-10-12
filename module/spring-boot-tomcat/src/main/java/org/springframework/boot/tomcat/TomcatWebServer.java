@@ -228,6 +228,9 @@ public class TomcatWebServer implements WebServer {
 			if (this.started) {
 				return;
 			}
+			if (this.gracefulShutdown != null) {
+				this.gracefulShutdown.reset();
+			}
 
 			try {
 				addPreviouslyRemovedConnectors();

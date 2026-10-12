@@ -124,4 +124,8 @@ final class GracefulShutdown {
 		this.aborted = true;
 	}
 
+	void reset() {
+		this.aborted = false;
+	}
+
 }
