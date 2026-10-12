@@ -54,6 +54,13 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(sslBundle).isNotNull();
 	}
 
+	@DockerComposeTest(composeFile = "rabbitmq-with-default-vhost-compose.yaml", image = TestImage.RABBITMQ)
+	void runWithDefaultVirtualHostCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails)
+			throws Exception {
+		assertThat(connectionDetails.getVirtualHost()).isEqualTo("app");
+		assertThatConnectionCanBeMade(connectionDetails);
+	}
+
 	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
