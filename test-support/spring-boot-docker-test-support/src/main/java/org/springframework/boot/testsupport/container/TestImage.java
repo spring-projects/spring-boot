@@ -228,7 +228,7 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
-	 * A container image suitable for testing Oracle XA.
+	 * A container image suitable for testing Oracle XE.
 	 */
 	ORACLE_XE("gvenzl/oracle-xe", "18.4.0-slim", () -> org.testcontainers.containers.OracleContainer.class,
 			(container) -> ((org.testcontainers.containers.OracleContainer) container)
