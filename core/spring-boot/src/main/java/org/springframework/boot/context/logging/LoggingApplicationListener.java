@@ -262,7 +262,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
 		if (!beanFactory.containsBean(LOGGING_LIFECYCLE_BEAN_NAME) && applicationContext.getParent() == null) {
-			beanFactory.registerSingleton(LOGGING_LIFECYCLE_BEAN_NAME, new Lifecycle());
+			beanFactory.registerSingleton(LOGGING_LIFECYCLE_BEAN_NAME, new Lifecycle(applicationContext));
 		}
 	}
 
@@ -464,7 +464,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private final class Lifecycle implements SmartLifecycle {
 
+		private final ConfigurableApplicationContext applicationContext;
+
 		private volatile boolean running;
+
+		Lifecycle(ConfigurableApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
 
 		@Override
 		public void start() {
@@ -473,8 +479,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 		@Override
 		public void stop() {
-			this.running = false;
-			cleanupLoggingSystem();
+			// A stopped context can be started again (for example after a checkpoint)
+			// and start() does not reinitialize the logging system
+			if (this.applicationContext.isClosed()) {
+				this.running = false;
+				cleanupLoggingSystem();
+			}
 		}
 
 		@Override
