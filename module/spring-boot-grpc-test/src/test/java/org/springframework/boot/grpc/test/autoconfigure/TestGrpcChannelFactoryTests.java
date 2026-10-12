@@ -40,7 +40,7 @@ class TestGrpcChannelFactoryTests {
 	@Test
 	void createChannelReturnsInProcessChannel() {
 		ManagedChannel channel = this.factory.createChannel("static:*:0");
-		assertThat(channel).extracting("delegate.originalTransportFactory")
+		assertThat(channel).extracting("delegate.originalTransportFactory.delegate")
 			.satisfies((transportFactory) -> assertThat(transportFactory.getClass().getName()).contains("InProcess"));
 	}
 
