@@ -139,7 +139,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 				case '"' -> tracking.toggle(Tracked.VALUE);
 			}
 			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
-				list.add(build.toString());
+				list.add(build.toString().trim());
 				build.setLength(0);
 			}
 			else if (ch == '\\') {
