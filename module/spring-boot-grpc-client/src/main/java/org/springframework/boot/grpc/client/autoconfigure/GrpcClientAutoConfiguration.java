@@ -18,7 +18,6 @@ package org.springframework.boot.grpc.client.autoconfigure;
 
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.AbstractStub;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -65,12 +64,6 @@ public final class GrpcClientAutoConfiguration {
 	PropertiesChannelCredentialsProvider grpcChannelCredentialsProvider(SslBundles bundles,
 			GrpcClientProperties properties) {
 		return new PropertiesChannelCredentialsProvider(properties, bundles);
-	}
-
-	@Bean
-	<T extends ManagedChannelBuilder<T>> PropertiesGrpcChannelBuilderCustomizer<T> grpcClientPropertiesChannelCustomizer(
-			GrpcClientProperties properties) {
-		return new PropertiesGrpcChannelBuilderCustomizer<>(properties);
 	}
 
 	@Bean

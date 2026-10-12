@@ -53,11 +53,13 @@ import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link GrpcClientAutoConfiguration}.
@@ -364,7 +366,9 @@ class GrpcClientAutoConfigurationTests {
 				.extracting("globalCustomizers", InstanceOfAssertFactories.list(GrpcChannelBuilderCustomizer.class))
 				.satisfies((allCustomizers) -> {
 					allCustomizers.forEach((c) -> c.customize("channel1", mockChannelBuilder));
+					then(mockChannelBuilder).should(times(3)).keepAliveTime(anyLong(), any());
 					InOrder ordered = inOrder(mockChannelBuilder);
+					ordered.verify(mockChannelBuilder).keepAliveTime(300000000000L, TimeUnit.NANOSECONDS);
 					ordered.verify(mockChannelBuilder).keepAliveTime(40L, TimeUnit.SECONDS);
 					ordered.verify(mockChannelBuilder).keepAliveTime(50L, TimeUnit.SECONDS);
 				}));
