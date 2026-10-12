@@ -93,11 +93,11 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	}
 
 	private String encode(String input) {
-		return URLEncoder.encode(input, StandardCharsets.UTF_8);
+		return URLEncoder.encode(input, StandardCharsets.UTF_8).replace("+", "%20");
 	}
 
 	private char[] encode(char[] input) {
-		return URLEncoder.encode(new String(input), StandardCharsets.UTF_8).toCharArray();
+		return encode(new String(input)).toCharArray();
 	}
 
 	@Override
