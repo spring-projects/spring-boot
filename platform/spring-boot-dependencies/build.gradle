@@ -2890,7 +2890,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "4.2.0-SNAPSHOT") {
+	library("Spring LDAP", "4.2.0-RC1") {
 		firstParty()
 		group("org.springframework.ldap") {
 			modules = [
