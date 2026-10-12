@@ -580,7 +580,7 @@ bom {
 			}
 		}
 	}
-	library("Grpc Java", "1.83.1") {
+	library("Grpc Java", "1.84.1") {
 		group("io.grpc") {
 			bom("grpc-bom")
 		}
