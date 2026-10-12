@@ -1716,7 +1716,7 @@ bom {
 			}
 		}
 	}
-	library("Micrometer Tracing", "1.7.2-SNAPSHOT") {
+	library("Micrometer Tracing", "1.7.2") {
 		firstParty()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
