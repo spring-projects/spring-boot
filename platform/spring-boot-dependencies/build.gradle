@@ -1673,7 +1673,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.18.0-SNAPSHOT") {
+	library("Micrometer", "1.18.0-RC1") {
 		firstParty()
 		group("io.micrometer") {
 			bom("micrometer-bom")
