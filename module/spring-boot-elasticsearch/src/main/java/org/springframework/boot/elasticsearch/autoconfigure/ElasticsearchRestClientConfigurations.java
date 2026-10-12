@@ -319,9 +319,8 @@ class ElasticsearchRestClientConfigurations {
 			if (separatorIndex == -1) {
 				return new Node(uri.getHost(), uri.getPort(), protocol, userInfo, null);
 			}
-			String[] components = userInfo.split(":");
-			return new Node(uri.getHost(), uri.getPort(), protocol, components[0],
-					(components.length > 1) ? components[1] : "");
+			return new Node(uri.getHost(), uri.getPort(), protocol, userInfo.substring(0, separatorIndex),
+					userInfo.substring(separatorIndex + 1));
 		}
 
 	}
