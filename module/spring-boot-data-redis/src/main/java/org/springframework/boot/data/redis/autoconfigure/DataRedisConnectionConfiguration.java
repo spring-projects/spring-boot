@@ -37,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yanming Zhou
+ * @author Jialin Chen
  */
 abstract class DataRedisConnectionConfiguration {
 
@@ -151,6 +152,7 @@ abstract class DataRedisConnectionConfiguration {
 			if (password != null) {
 				config.setPassword(RedisPassword.of(password));
 			}
+			config.setDatabase(this.connectionDetails.getMasterReplica().getDatabase());
 			return config;
 		}
 		return null;
