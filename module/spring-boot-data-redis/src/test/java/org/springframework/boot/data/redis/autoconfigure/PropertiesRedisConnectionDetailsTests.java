@@ -158,10 +158,12 @@ class PropertiesRedisConnectionDetailsTests {
 		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
 		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setMasterreplica(masterReplica);
+		this.properties.setDatabase(5);
 		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
 		assertThat(actualMasterReplica).isNotNull();
 		assertThat(actualMasterReplica.getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+		assertThat(actualMasterReplica.getDatabase()).isEqualTo(5);
 	}
 
 	@Test
