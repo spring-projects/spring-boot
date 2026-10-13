@@ -220,7 +220,7 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 	}
 
 	private ClientOptions.Builder initializeClientOptionsBuilder() {
-		if (getProperties().getCluster() != null) {
+		if (this.mode == Mode.CLUSTER) {
 			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
 			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
 			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder()
