@@ -145,6 +145,24 @@ class ServiceConfigTests {
 	@WithResource(name = "config.yaml", content = """
 			config:
 			  load-balancing:
+			  - grpc: {}
+			""")
+	void grpcLoadBalancing() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("grpclb");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("GrpclbLoadBalancerProvider");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("mode").hasToString("ROUND_ROBIN");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("serviceName").isNull();
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
 			  - grpc:
 			      child:
 			      - roundrobin: {}
