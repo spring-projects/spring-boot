@@ -74,6 +74,36 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void stringContainingOpeningBrace() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"{\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "{");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void stringContainingOpeningBracket() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"[\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "[");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void listWithStringContainingOpeningBracket() {
+		List<Object> list = this.parser.parseList("[\"[\",\"baz\"]");
+		assertThat(list).containsExactly("[", "baz");
+	}
+
+	@Test
+	void stringContainingClosingBraceWithNestedMap() {
+		Map<String, Object> map = this.parser.parseMap("{\"a\":\"}\",\"b\":{\"c\":\"d\",\"e\":\"f\"}}");
+		assertThat(map).containsEntry("a", "}");
+		assertThat(map).extractingByKey("b", InstanceOfAssertFactories.MAP).containsEntry("c", "d");
+		assertThat(map).extractingByKey("b", InstanceOfAssertFactories.MAP).containsEntry("e", "f");
+	}
+
+	@Test
 	void emptyMap() {
 		Map<String, Object> map = this.parser.parseMap("{}");
 		assertThat(map).isEmpty();
