@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @author JungKyun Ryu
  */
 class TestPropertyValuesTests {
 
