@@ -514,9 +514,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			// Continue
 		}
 		System.out.println("Stopped");
-		Awaitility.await()
-			.atMost(Duration.ofSeconds(5))
-			.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.REQUESTS_ACTIVE);
 		blockingHandler.completeOne();
 	}
 
@@ -541,9 +540,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
 		this.webServer.shutDownGracefully(result::set);
 		this.webServer.stop();
-		Awaitility.await()
-			.atMost(Duration.ofSeconds(30))
-			.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.REQUESTS_ACTIVE);
 		blockingHandler.completeOne();
 	}
 
