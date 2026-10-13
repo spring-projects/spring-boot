@@ -738,7 +738,7 @@ This allows your tests to run quickly, whilst still ensuring that your applicati
 By default, using javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] will:
 
 * Configure test javadoc:org.springframework.grpc.server.GrpcServerFactory[] / javadoc:org.springframework.grpc.client.GrpcChannelFactory[] beans
-* Disable any gRPC servelt registration.
+* Disable any gRPC servlet registration.
 * Disable javadoc:org.springframework.grpc.server.GrpcServerFactory[] bean auto-configuration.
 * Disable javadoc:org.springframework.grpc.client.GrpcChannelFactory[] bean auto-configuration.
 
