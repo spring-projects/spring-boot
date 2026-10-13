@@ -254,7 +254,7 @@ bom {
 			]
 		}
 	}
-	library("Classmate", "1.7.3") {
+	library("Classmate", "1.8.0") {
 		group("com.fasterxml") {
 			modules = [
 				"classmate"
