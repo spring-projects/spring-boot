@@ -18,6 +18,7 @@ package org.springframework.boot.jetty;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
@@ -55,7 +56,14 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
+		CountDownLatch shutdownInProgress = new CountDownLatch(1);
+		new Thread(() -> awaitShutdown(callback, shutdownInProgress), "jetty-shutdown").start();
+		try {
+			shutdownInProgress.await();
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 		boolean jetty10 = isJetty10();
 		for (Connector connector : this.server.getConnectors()) {
 			shutdown(connector, !jetty10);
@@ -97,10 +105,10 @@ final class GracefulShutdown {
 		}
 	}
 
-	private void awaitShutdown(GracefulShutdownCallback callback) {
-		boolean seenActive = false;
+	private void awaitShutdown(GracefulShutdownCallback callback, CountDownLatch shutdownInProgress) {
+		boolean seenActive = this.activeRequests.get() > 0;
+		shutdownInProgress.countDown();
 		while (!this.aborted && this.activeRequests.get() > 0) {
-			seenActive = true;
 			sleep(100);
 		}
 		if (this.aborted && seenActive) {
