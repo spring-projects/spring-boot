@@ -16,13 +16,12 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * A {@link PropertyDescriptor} for a constructor parameter.
@@ -32,19 +31,20 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class ConstructorParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 
-	private final ExecutableElement setter;
+	private final MethodDeclaration setter;
 
-	private final VariableElement field;
+	private final VariableDeclaration field;
 
-	ConstructorParameterPropertyDescriptor(String name, TypeMirror type, VariableElement parameter,
-			TypeElement declaringElement, ExecutableElement getter, ExecutableElement setter, VariableElement field) {
+	ConstructorParameterPropertyDescriptor(String name, TypeReference type, VariableDeclaration parameter,
+			TypeDeclaration declaringElement, MethodDeclaration getter, MethodDeclaration setter,
+			VariableDeclaration field) {
 		super(name, type, parameter, declaringElement, getter);
 		this.setter = setter;
 		this.field = field;
 	}
 
 	@Override
-	protected Element getSourceElement() {
+	protected Declaration getSourceElement() {
 		return this.field;
 	}
 
@@ -61,7 +61,7 @@ class ConstructorParameterPropertyDescriptor extends ParameterPropertyDescriptor
 
 	@Override
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
-		return environment.getTypeUtils().getJavaDoc(this.field);
+		return environment.getDescription(this.field);
 	}
 
 }

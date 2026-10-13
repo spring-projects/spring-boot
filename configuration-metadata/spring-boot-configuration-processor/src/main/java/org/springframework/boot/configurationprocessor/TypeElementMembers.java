@@ -23,19 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.RecordComponentElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
- * Provides access to relevant {@link TypeElement} members.
+ * Provides access to relevant {@link TypeDeclaration} members.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
@@ -48,61 +44,62 @@ class TypeElementMembers {
 
 	private static final String RECORD_CLASS_NAME = Record.class.getName();
 
-	private final MetadataGenerationEnvironment env;
+	private static final Set<String> WRAPPER_CLASS_NAMES = Set.of(Boolean.class.getName(), Byte.class.getName(),
+			Character.class.getName(), Double.class.getName(), Float.class.getName(), Integer.class.getName(),
+			Long.class.getName(), Short.class.getName());
 
-	private final TypeElement targetType;
+	private final TypeDeclaration targetType;
 
 	private final boolean isRecord;
 
-	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
+	private final Map<String, VariableDeclaration> fields = new LinkedHashMap<>();
 
-	private final Map<String, RecordComponentElement> recordComponents = new LinkedHashMap<>();
+	private final Map<String, VariableDeclaration> recordComponents = new LinkedHashMap<>();
 
-	private final Map<String, List<ExecutableElement>> publicGetters = new LinkedHashMap<>();
+	private final Map<String, List<MethodDeclaration>> publicGetters = new LinkedHashMap<>();
 
-	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<>();
+	private final Map<String, List<MethodDeclaration>> publicSetters = new LinkedHashMap<>();
 
-	TypeElementMembers(MetadataGenerationEnvironment env, TypeElement targetType) {
-		this.env = env;
+	TypeElementMembers(TypeDeclaration targetType) {
 		this.targetType = targetType;
-		this.isRecord = RECORD_CLASS_NAME.equals(targetType.getSuperclass().toString());
+		this.isRecord = targetType.isRecord();
 		process(targetType);
 	}
 
-	private void process(TypeElement element) {
-		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
+	private void process(TypeDeclaration element) {
+		for (VariableDeclaration field : element.getFields()) {
 			processField(field);
 		}
-		for (RecordComponentElement recordComponent : ElementFilter.recordComponentsIn(element.getEnclosedElements())) {
+		for (VariableDeclaration recordComponent : element.getRecordComponents()) {
 			processRecordComponent(recordComponent);
 		}
-		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
+		for (MethodDeclaration method : element.getMethods()) {
 			processMethod(method);
 		}
-		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType instanceof TypeElement typeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
-				&& !RECORD_CLASS_NAME.equals(superType.toString())) {
-			process(typeElement);
+		TypeDeclaration superType = element.getSuperclass();
+		if (superType != null && !OBJECT_CLASS_NAME.equals(superType.getQualifiedName())
+				&& !RECORD_CLASS_NAME.equals(superType.getQualifiedName())) {
+			process(superType);
 		}
 	}
 
-	private void processMethod(ExecutableElement method) {
+	private void processMethod(MethodDeclaration method) {
 		if (isPublic(method)) {
-			String name = method.getSimpleName().toString();
+			String name = method.getName();
 			if (isGetter(method)) {
 				String propertyName = getAccessorName(name);
-				List<ExecutableElement> matchingGetters = this.publicGetters.computeIfAbsent(propertyName,
+				List<MethodDeclaration> matchingGetters = this.publicGetters.computeIfAbsent(propertyName,
 						(k) -> new ArrayList<>());
-				TypeMirror returnType = method.getReturnType();
+				TypeReference returnType = method.getReturnType();
 				if (getMatchingGetter(matchingGetters, returnType) == null) {
 					matchingGetters.add(method);
 				}
 			}
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
-				List<ExecutableElement> matchingSetters = this.publicSetters.computeIfAbsent(propertyName,
+				List<MethodDeclaration> matchingSetters = this.publicSetters.computeIfAbsent(propertyName,
 						(k) -> new ArrayList<>());
-				TypeMirror paramType = method.getParameters().get(0).asType();
+				TypeReference paramType = method.getParameters().get(0).getType();
 				if (getMatchingSetter(matchingSetters, paramType) == null) {
 					matchingSetters.add(method);
 				}
@@ -110,68 +107,64 @@ class TypeElementMembers {
 		}
 	}
 
-	private boolean isPublic(ExecutableElement method) {
-		Set<Modifier> modifiers = method.getModifiers();
-		return modifiers.contains(Modifier.PUBLIC) && !modifiers.contains(Modifier.ABSTRACT)
-				&& !modifiers.contains(Modifier.STATIC);
+	private boolean isPublic(MethodDeclaration method) {
+		return method.isPublic() && !method.isAbstract() && !method.isStatic();
 	}
 
-	ExecutableElement getMatchingGetter(List<ExecutableElement> candidates, TypeMirror type) {
-		return getMatchingAccessor(candidates, type, ExecutableElement::getReturnType);
+	MethodDeclaration getMatchingGetter(List<MethodDeclaration> candidates, TypeReference type) {
+		return getMatchingAccessor(candidates, MethodDeclaration::getReturnType, type::isSameType);
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
-		return getMatchingAccessor(candidates, type, (candidate) -> candidate.getParameters().get(0).asType());
+	private MethodDeclaration getMatchingSetter(List<MethodDeclaration> candidates, TypeReference type) {
+		return getMatchingAccessor(candidates, this::getSetterType, type::isSameType);
 	}
 
-	private ExecutableElement getMatchingAccessor(List<ExecutableElement> candidates, TypeMirror type,
-			Function<ExecutableElement, TypeMirror> typeExtractor) {
-		for (ExecutableElement candidate : candidates) {
-			TypeMirror candidateType = typeExtractor.apply(candidate);
-			if (this.env.getTypeUtils().isSameType(candidateType, type)) {
+	private TypeReference getSetterType(MethodDeclaration setter) {
+		return setter.getParameters().get(0).getType();
+	}
+
+	private MethodDeclaration getMatchingAccessor(List<MethodDeclaration> candidates,
+			Function<MethodDeclaration, TypeReference> typeExtractor, Predicate<TypeReference> typeFilter) {
+		for (MethodDeclaration candidate : candidates) {
+			if (typeFilter.test(typeExtractor.apply(candidate))) {
 				return candidate;
 			}
 		}
 		return null;
 	}
 
-	private boolean isGetter(ExecutableElement method) {
+	private boolean isGetter(MethodDeclaration method) {
 		boolean hasParameters = !method.getParameters().isEmpty();
-		boolean returnsVoid = TypeKind.VOID == method.getReturnType().getKind();
+		boolean returnsVoid = method.getReturnType().isVoid();
 		if (hasParameters || returnsVoid) {
 			return false;
 		}
-		String name = method.getSimpleName().toString();
+		String name = method.getName();
 		if (this.isRecord && this.fields.containsKey(name)) {
 			return true;
 		}
 		return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
 	}
 
-	private boolean isSetter(ExecutableElement method) {
+	private boolean isSetter(MethodDeclaration method) {
 		if (this.isRecord) {
 			return false;
 		}
-		final String name = method.getSimpleName().toString();
+		final String name = method.getName();
 		return (name.startsWith("set") && name.length() > 3 && method.getParameters().size() == 1
 				&& isSetterReturnType(method));
 	}
 
-	private boolean isSetterReturnType(ExecutableElement method) {
-		TypeMirror returnType = method.getReturnType();
-		if (TypeKind.VOID == returnType.getKind()) {
+	private boolean isSetterReturnType(MethodDeclaration method) {
+		TypeReference returnType = method.getReturnType();
+		if (returnType.isVoid()) {
 			return true;
 		}
-		if (TypeKind.DECLARED == returnType.getKind()
-				&& this.env.getTypeUtils().isSameType(method.getEnclosingElement().asType(), returnType)) {
-			return true;
+		if (returnType.isTypeVariable()) {
+			String resolvedType = returnType.getName(this.targetType);
+			return (resolvedType != null && resolvedType.equals(this.targetType.getQualifiedName()));
 		}
-		if (TypeKind.TYPEVAR == returnType.getKind()) {
-			String resolvedType = this.env.getTypeUtils().getType(this.targetType, returnType);
-			return (resolvedType != null
-					&& resolvedType.equals(this.env.getTypeUtils().getQualifiedName(this.targetType)));
-		}
-		return false;
+		return method.getEnclosingType().asType().isSameType(returnType);
 	}
 
 	private String getAccessorName(String methodName) {
@@ -191,51 +184,62 @@ class TypeElementMembers {
 		return Character.toLowerCase(string.charAt(0)) + string.substring(1);
 	}
 
-	private void processField(VariableElement field) {
-		String name = field.getSimpleName().toString();
+	private void processField(VariableDeclaration field) {
+		String name = field.getName();
 		this.fields.putIfAbsent(name, field);
 	}
 
-	private void processRecordComponent(RecordComponentElement recordComponent) {
-		String name = recordComponent.getSimpleName().toString();
+	private void processRecordComponent(VariableDeclaration recordComponent) {
+		String name = recordComponent.getName();
 		this.recordComponents.putIfAbsent(name, recordComponent);
 	}
 
-	Map<String, VariableElement> getFields() {
+	Map<String, VariableDeclaration> getFields() {
 		return Collections.unmodifiableMap(this.fields);
 	}
 
-	Map<String, RecordComponentElement> getRecordComponents() {
+	Map<String, VariableDeclaration> getRecordComponents() {
 		return Collections.unmodifiableMap(this.recordComponents);
 	}
 
-	Map<String, List<ExecutableElement>> getPublicGetters() {
+	Map<String, List<MethodDeclaration>> getPublicGetters() {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
-	ExecutableElement getPublicGetter(String name, TypeMirror type) {
-		List<ExecutableElement> candidates = this.publicGetters.get(name);
-		return getPublicAccessor(candidates, type, (specificType) -> getMatchingGetter(candidates, specificType));
+	MethodDeclaration getPublicGetter(String name, TypeReference type) {
+		return getPublicAccessor(this.publicGetters.get(name), MethodDeclaration::getReturnType, type);
 	}
 
-	ExecutableElement getPublicSetter(String name, TypeMirror type) {
-		List<ExecutableElement> candidates = this.publicSetters.get(name);
-		return getPublicAccessor(candidates, type, (specificType) -> getMatchingSetter(candidates, specificType));
+	MethodDeclaration getPublicSetter(String name, TypeReference type) {
+		return getPublicAccessor(this.publicSetters.get(name), this::getSetterType, type);
 	}
 
-	private ExecutableElement getPublicAccessor(List<ExecutableElement> candidates, TypeMirror type,
-			Function<TypeMirror, ExecutableElement> matchingAccessorExtractor) {
+	private MethodDeclaration getPublicAccessor(List<MethodDeclaration> candidates,
+			Function<MethodDeclaration, TypeReference> typeExtractor, TypeReference type) {
 		if (candidates != null) {
-			ExecutableElement matching = matchingAccessorExtractor.apply(type);
+			MethodDeclaration matching = getMatchingAccessor(candidates, typeExtractor, type::isSameType);
 			if (matching != null) {
 				return matching;
 			}
-			TypeMirror alternative = this.env.getTypeUtils().getWrapperOrPrimitiveFor(type);
-			if (alternative != null) {
-				return matchingAccessorExtractor.apply(alternative);
+			String wrapperName = getWrapperName(type);
+			if (wrapperName != null) {
+				return getMatchingAccessor(candidates, typeExtractor,
+						(candidateType) -> candidateType.isPrimitive() != type.isPrimitive()
+								&& wrapperName.equals(candidateType.getName(this.targetType)));
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Return the name of the wrapper class of the given {@code type} if it is a primitive
+	 * type or one of their wrappers.
+	 * @param type the type
+	 * @return the name of the wrapper class or {@code null}
+	 */
+	private String getWrapperName(TypeReference type) {
+		String name = (type.isPrimitive()) ? type.getName(this.targetType) : type.toString();
+		return (WRAPPER_CLASS_NAMES.contains(name)) ? name : null;
 	}
 
 }

@@ -18,8 +18,6 @@ package org.springframework.boot.configurationprocessor;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,29 +47,6 @@ import javax.lang.model.util.Types;
  * @author Dmytro Nosan
  */
 class TypeUtils {
-
-	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
-
-	static {
-		Map<TypeKind, Class<?>> wrappers = new EnumMap<>(TypeKind.class);
-		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
-		wrappers.put(TypeKind.BYTE, Byte.class);
-		wrappers.put(TypeKind.CHAR, Character.class);
-		wrappers.put(TypeKind.DOUBLE, Double.class);
-		wrappers.put(TypeKind.FLOAT, Float.class);
-		wrappers.put(TypeKind.INT, Integer.class);
-		wrappers.put(TypeKind.LONG, Long.class);
-		wrappers.put(TypeKind.SHORT, Short.class);
-		PRIMITIVE_WRAPPERS = Collections.unmodifiableMap(wrappers);
-	}
-
-	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
-
-	static {
-		Map<String, TypeKind> primitives = new HashMap<>();
-		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
-		WRAPPER_TO_PRIMITIVE = primitives;
-	}
 
 	private final ProcessingEnvironment env;
 
@@ -180,42 +155,7 @@ class TypeUtils {
 		if (element instanceof RecordComponentElement) {
 			return getJavaDoc((RecordComponentElement) element);
 		}
-		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
-		javadoc = (javadoc != null) ? cleanUpJavaDoc(javadoc) : null;
-		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
-	}
-
-	/**
-	 * Return the {@link PrimitiveType} of the specified type or {@code null} if the type
-	 * does not represent a valid wrapper type.
-	 * @param typeMirror a type
-	 * @return the primitive type or {@code null} if the type is not a wrapper type
-	 */
-	PrimitiveType getPrimitiveType(TypeMirror typeMirror) {
-		if (getPrimitiveFor(typeMirror) != null) {
-			return this.types.unboxedType(typeMirror);
-		}
-		return null;
-	}
-
-	TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
-		Class<?> candidate = getWrapperFor(typeMirror);
-		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
-		}
-		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
-		if (primitiveKind != null) {
-			return this.env.getTypeUtils().getPrimitiveType(primitiveKind);
-		}
-		return null;
-	}
-
-	private Class<?> getWrapperFor(TypeMirror type) {
-		return PRIMITIVE_WRAPPERS.get(type.getKind());
-	}
-
-	private TypeKind getPrimitiveFor(TypeMirror type) {
-		return WRAPPER_TO_PRIMITIVE.get(type.toString());
+		return (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 	}
 
 	private TypeDescriptor resolveTypeDescriptor(TypeElement element) {
@@ -255,8 +195,7 @@ class TypeUtils {
 			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
 			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
 			if (paramJavadocMatcher.find()) {
-				String paramJavadoc = cleanUpJavaDoc(paramJavadocMatcher.group());
-				return paramJavadoc.isEmpty() ? null : paramJavadoc;
+				return paramJavadocMatcher.group();
 			}
 		}
 		return null;
@@ -265,21 +204,6 @@ class TypeUtils {
 	private Pattern paramJavadocPattern(String paramName) {
 		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
 		return Pattern.compile(pattern, Pattern.DOTALL);
-	}
-
-	private String cleanUpJavaDoc(String javadoc) {
-		StringBuilder result = new StringBuilder(javadoc.length());
-		char lastChar = '.';
-		for (int i = 0; i < javadoc.length(); i++) {
-			char ch = javadoc.charAt(i);
-			ch = (ch == '\r' || ch == '\n') ? ' ' : ch;
-			boolean repeatedSpace = (ch == ' ' && lastChar == ' ');
-			if (!repeatedSpace) {
-				result.append(ch);
-				lastChar = ch;
-			}
-		}
-		return result.toString().trim();
 	}
 
 	/**

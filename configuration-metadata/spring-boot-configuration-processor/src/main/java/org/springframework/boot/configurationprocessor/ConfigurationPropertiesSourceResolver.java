@@ -16,23 +16,20 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
 import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
@@ -42,13 +39,10 @@ import org.springframework.boot.configurationprocessor.support.ConventionUtils;
  */
 class ConfigurationPropertiesSourceResolver {
 
-	private final ProcessingEnvironment processingEnvironment;
+	private final ProcessingContext context;
 
-	private final TypeUtils typeUtils;
-
-	ConfigurationPropertiesSourceResolver(ProcessingEnvironment processingEnvironment, TypeUtils typeUtils) {
-		this.typeUtils = typeUtils;
-		this.processingEnvironment = processingEnvironment;
+	ConfigurationPropertiesSourceResolver(ProcessingContext context) {
+		this.context = context;
 	}
 
 	/**
@@ -57,19 +51,18 @@ class ConfigurationPropertiesSourceResolver {
 	 * @param typeElement the type to discover source metadata from
 	 * @return the source metadata for the specified type
 	 */
-	SourceMetadata resolveSource(TypeElement typeElement) {
+	SourceMetadata resolveSource(TypeDeclaration typeElement) {
 		ConfigurationMetadata configurationMetadata = resolveConfigurationMetadata(typeElement);
 		return (configurationMetadata != null)
 				? new SourceMetadata(configurationMetadata.getItems(), configurationMetadata.getHints())
 				: SourceMetadata.EMPTY;
 	}
 
-	private ConfigurationMetadata resolveConfigurationMetadata(TypeElement type) {
+	private ConfigurationMetadata resolveConfigurationMetadata(TypeDeclaration type) {
 		try {
-			String sourceLocation = MetadataStore.SOURCE_METADATA_PATH.apply(type, this.typeUtils);
-			FileObject resource = this.processingEnvironment.getFiler()
-				.getResource(StandardLocation.CLASS_PATH, "", sourceLocation);
-			return (resource != null) ? new JsonMarshaller().read(resource.openInputStream()) : null;
+			String sourceLocation = MetadataStore.SOURCE_METADATA_PATH.apply(type);
+			InputStream resource = this.context.openClasspathResource(sourceLocation);
+			return (resource != null) ? new JsonMarshaller().read(resource) : null;
 		}
 		catch (Exception ex) {
 			return null;
@@ -148,7 +141,7 @@ class ConfigurationPropertiesSourceResolver {
 		}
 
 		@Override
-		protected Element getSourceElement() {
+		protected Declaration getSourceElement() {
 			return this.delegate.getSourceElement();
 		}
 

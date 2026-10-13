@@ -16,23 +16,17 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
 
 /**
  * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem.
@@ -44,26 +38,18 @@ class MetadataStore {
 
 	static final String METADATA_PATH = "META-INF/spring-configuration-metadata.json";
 
-	static final BiFunction<TypeElement, TypeUtils, String> SOURCE_METADATA_PATH = (type,
-			typeUtils) -> "META-INF/spring/configuration-metadata/%s.json".formatted(typeUtils.getQualifiedName(type));
+	static final Function<TypeDeclaration, String> SOURCE_METADATA_PATH = (
+			type) -> "META-INF/spring/configuration-metadata/%s.json".formatted(type.getQualifiedName());
 
 	private static final String ADDITIONAL_METADATA_PATH = "META-INF/additional-spring-configuration-metadata.json";
 
-	static final BiFunction<TypeElement, TypeUtils, String> ADDITIONAL_SOURCE_METADATA_PATH = (type,
-			typeUtils) -> "META-INF/spring/configuration-metadata/additional/%s.json"
-				.formatted(typeUtils.getQualifiedName(type));
+	static final Function<TypeDeclaration, String> ADDITIONAL_SOURCE_METADATA_PATH = (
+			type) -> "META-INF/spring/configuration-metadata/additional/%s.json".formatted(type.getQualifiedName());
 
-	private static final String RESOURCES_DIRECTORY = "resources";
+	private final ProcessingContext context;
 
-	private static final String CLASSES_DIRECTORY = "classes";
-
-	private final ProcessingEnvironment environment;
-
-	private final TypeUtils typeUtils;
-
-	MetadataStore(ProcessingEnvironment environment, TypeUtils typeUtils) {
-		this.environment = environment;
-		this.typeUtils = typeUtils;
+	MetadataStore(ProcessingContext context) {
+		this.context = context;
 	}
 
 	/**
@@ -81,13 +67,13 @@ class MetadataStore {
 	 * @param typeElement the type to read metadata for
 	 * @return the metadata for the given type or {@code null}
 	 */
-	ConfigurationMetadata readMetadata(TypeElement typeElement) {
-		return readMetadata(SOURCE_METADATA_PATH.apply(typeElement, this.typeUtils));
+	ConfigurationMetadata readMetadata(TypeDeclaration typeElement) {
+		return readMetadata(SOURCE_METADATA_PATH.apply(typeElement));
 	}
 
 	private ConfigurationMetadata readMetadata(String location) {
 		try {
-			return readMetadata(location, getMetadataResource(location).openInputStream());
+			return readMetadata(location, this.context.openResource(location));
 		}
 		catch (IOException ex) {
 			return null;
@@ -100,29 +86,23 @@ class MetadataStore {
 	 * @throws IOException when the write fails
 	 */
 	void writeMetadata(ConfigurationMetadata metadata) throws IOException {
-		writeMetadata(metadata, () -> createMetadataResource(METADATA_PATH));
+		writeMetadata(metadata, METADATA_PATH);
 	}
 
 	/**
-	 * Write the {@link ConfigurationMetadata} for the {@link TypeElement} to the
+	 * Write the {@link ConfigurationMetadata} for the {@link TypeDeclaration} to the
 	 * filesystem.
 	 * @param metadata the metadata to write
 	 * @param typeElement the type to write metadata for
 	 * @throws IOException when the write fails
 	 */
-	void writeMetadata(ConfigurationMetadata metadata, TypeElement typeElement) throws IOException {
-		writeMetadata(metadata, () -> createMetadataResource(SOURCE_METADATA_PATH.apply(typeElement, this.typeUtils)));
+	void writeMetadata(ConfigurationMetadata metadata, TypeDeclaration typeElement) throws IOException {
+		writeMetadata(metadata, SOURCE_METADATA_PATH.apply(typeElement));
 	}
 
-	/**
-	 * Write the metadata to the {@link FileObject} provided by the given supplier.
-	 * @param metadata the metadata to provide
-	 * @param fileObjectProvider a supplier for the {@link FileObject} to use
-	 */
-	private void writeMetadata(ConfigurationMetadata metadata, FileObjectSupplier fileObjectProvider)
-			throws IOException {
+	private void writeMetadata(ConfigurationMetadata metadata, String location) throws IOException {
 		if (!metadata.getItems().isEmpty()) {
-			try (OutputStream outputStream = fileObjectProvider.get().openOutputStream()) {
+			try (OutputStream outputStream = this.context.createResource(location)) {
 				new JsonMarshaller().write(metadata, outputStream);
 			}
 		}
@@ -138,18 +118,18 @@ class MetadataStore {
 	}
 
 	/**
-	 * Read additional {@link ConfigurationMetadata} for the {@link TypeElement} or
+	 * Read additional {@link ConfigurationMetadata} for the {@link TypeDeclaration} or
 	 * {@code null}.
 	 * @param typeElement the type to get additional metadata for
 	 * @return additional metadata for the given type or {@code null} if none is present
 	 */
-	ConfigurationMetadata readAdditionalMetadata(TypeElement typeElement) {
-		return readAdditionalMetadata(ADDITIONAL_SOURCE_METADATA_PATH.apply(typeElement, this.typeUtils));
+	ConfigurationMetadata readAdditionalMetadata(TypeDeclaration typeElement) {
+		return readAdditionalMetadata(ADDITIONAL_SOURCE_METADATA_PATH.apply(typeElement));
 	}
 
 	private ConfigurationMetadata readAdditionalMetadata(String location) {
 		try {
-			InputStream in = getAdditionalMetadataStream(location);
+			InputStream in = this.context.openAdditionalMetadata(location);
 			return readMetadata(location, in);
 		}
 		catch (IOException ex) {
@@ -168,77 +148,6 @@ class MetadataStore {
 			throw new InvalidConfigurationMetadataException(
 					"Invalid additional meta-data in '" + location + "': " + ex.getMessage(), Diagnostic.Kind.ERROR);
 		}
-	}
-
-	private FileObject getMetadataResource(String location) throws IOException {
-		return this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", location);
-	}
-
-	private FileObject createMetadataResource(String location) throws IOException {
-		return this.environment.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", location);
-	}
-
-	private InputStream getAdditionalMetadataStream(String additionalMetadataLocation) throws IOException {
-		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler()
-			.getResource(StandardLocation.CLASS_OUTPUT, "", additionalMetadataLocation);
-		InputStream inputStream = getMetadataStream(fileObject);
-		if (inputStream != null) {
-			return inputStream;
-		}
-		try {
-			File file = locateAdditionalMetadataFile(new File(fileObject.toUri()), additionalMetadataLocation);
-			return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL().openStream());
-		}
-		catch (Exception ex) {
-			throw new FileNotFoundException();
-		}
-	}
-
-	private InputStream getMetadataStream(FileObject fileObject) {
-		try {
-			return fileObject.openInputStream();
-		}
-		catch (IOException ex) {
-			return null;
-		}
-	}
-
-	File locateAdditionalMetadataFile(File standardLocation, String additionalMetadataLocation) throws IOException {
-		if (standardLocation.exists()) {
-			return standardLocation;
-		}
-		String locations = this.environment.getOptions()
-			.get(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
-		if (locations != null) {
-			for (String location : locations.split(",")) {
-				File candidate = new File(location, additionalMetadataLocation);
-				if (candidate.isFile()) {
-					return candidate;
-				}
-			}
-		}
-		return new File(locateGradleResourcesDirectory(standardLocation), additionalMetadataLocation);
-	}
-
-	private File locateGradleResourcesDirectory(File standardAdditionalMetadataLocation) throws FileNotFoundException {
-		String path = standardAdditionalMetadataLocation.getPath();
-		int index = path.lastIndexOf(CLASSES_DIRECTORY);
-		if (index < 0) {
-			throw new FileNotFoundException();
-		}
-		String buildDirectoryPath = path.substring(0, index);
-		File classOutputLocation = standardAdditionalMetadataLocation.getParentFile().getParentFile();
-		return new File(buildDirectoryPath, RESOURCES_DIRECTORY + '/' + classOutputLocation.getName());
-	}
-
-	/**
-	 * Internal callback that can throw an {@link IOException}.
-	 */
-	private interface FileObjectSupplier {
-
-		FileObject get() throws IOException;
-
 	}
 
 }

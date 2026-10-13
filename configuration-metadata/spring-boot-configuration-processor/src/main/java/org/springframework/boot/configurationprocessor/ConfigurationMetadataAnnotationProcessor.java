@@ -16,19 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -36,21 +24,9 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.util.ElementFilter;
-import javax.tools.Diagnostic.Kind;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
-import org.springframework.boot.configurationprocessor.metadata.ItemHint;
-import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
-import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
  * Annotation {@link Processor} that writes meta-data file for
@@ -116,20 +92,16 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.actuate.endpoint.Access";
 
+	static final Set<String> ENDPOINT_ANNOTATIONS = Set.of(CONTROLLER_ENDPOINT_ANNOTATION, ENDPOINT_ANNOTATION,
+			JMX_ENDPOINT_ANNOTATION, REST_CONTROLLER_ENDPOINT_ANNOTATION, SERVLET_ENDPOINT_ANNOTATION,
+			WEB_ENDPOINT_ANNOTATION);
+
 	private static final Set<String> SUPPORTED_OPTIONS = Set.of(ADDITIONAL_METADATA_LOCATIONS_OPTION,
 			DESCRIPTION_CACHE_LOCATION_OPTION);
 
-	private MetadataStore metadataStore;
+	private JavaProcessingContext context;
 
-	private MetadataCollectors metadataCollectors;
-
-	private MetadataCollector metadataCollector;
-
-	private MetadataGenerationEnvironment metadataEnv;
-
-	private DescriptionCache descriptionCache;
-
-	private final Set<String> classFileBackedTypes = new HashSet<>();
+	private ConfigurationMetadataGenerator generator;
 
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
@@ -160,8 +132,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	protected Set<String> endpointAnnotations() {
-		return Set.of(CONTROLLER_ENDPOINT_ANNOTATION, ENDPOINT_ANNOTATION, JMX_ENDPOINT_ANNOTATION,
-				REST_CONTROLLER_ENDPOINT_ANNOTATION, SERVLET_ENDPOINT_ANNOTATION, WEB_ENDPOINT_ANNOTATION);
+		return ENDPOINT_ANNOTATIONS;
 	}
 
 	protected String readOperationAnnotation() {
@@ -189,44 +160,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
-		TypeUtils typeUtils = new TypeUtils(env);
-		this.metadataStore = new MetadataStore(env, typeUtils);
-		this.metadataCollectors = new MetadataCollectors(env, typeUtils);
-		this.metadataCollector = this.metadataCollectors.getModuleMetadataCollector();
-		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
-				configurationPropertiesSourceAnnotation(), nestedConfigurationPropertyAnnotation(),
-				deprecatedConfigurationPropertyAnnotation(), constructorBindingAnnotation(), autowiredAnnotation(),
-				defaultValueAnnotation(), endpointAnnotations(), readOperationAnnotation(), nameAnnotation());
-		String cacheLocation = env.getOptions().get(DESCRIPTION_CACHE_LOCATION_OPTION);
-		if (cacheLocation != null) {
-			this.descriptionCache = new DescriptionCache(cacheLocation);
-		}
+		this.context = new JavaProcessingContext(env);
+		MetadataGenerationEnvironment metadataEnv = new MetadataGenerationEnvironment(this.context,
+				configurationPropertiesAnnotation(), configurationPropertiesSourceAnnotation(),
+				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
+				constructorBindingAnnotation(), autowiredAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
+				readOperationAnnotation(), nameAnnotation());
+		this.generator = new ConfigurationMetadataGenerator(this.context, metadataEnv, endpointAccessEnum());
 	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-		this.metadataCollectors.processing(roundEnv);
-		TypeElement annotationType = this.metadataEnv.getConfigurationPropertiesAnnotationElement();
-		if (annotationType != null) { // Is @ConfigurationProperties available
-			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
-				processElement(element);
-			}
-		}
-		TypeElement sourceAnnotationType = this.metadataEnv.getConfigurationPropertiesSourceAnnotationElement();
-		if (sourceAnnotationType != null) { // Is @ConfigurationPropertiesSource available
-			for (Element element : roundEnv.getElementsAnnotatedWith(sourceAnnotationType)) {
-				if (element instanceof TypeElement typeElement) {
-					MetadataCollector metadataCollector = this.metadataCollectors.getMetadataCollector(typeElement);
-					processSourceElement(metadataCollector, "", typeElement);
-				}
-			}
-		}
-		Set<TypeElement> endpointTypes = this.metadataEnv.getEndpointAnnotationElements();
-		if (!endpointTypes.isEmpty()) { // Are endpoint annotations available
-			for (TypeElement endpointType : endpointTypes) {
-				getElementsAnnotatedOrMetaAnnotatedWith(roundEnv, endpointType).forEach(this::processEndpoint);
-			}
-		}
+		this.generator.process(new JavaProcessingRound(this.context, roundEnv));
 		if (roundEnv.processingOver()) {
 			try {
 				writeSourceMetadata();
@@ -239,258 +184,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return false;
 	}
 
-	private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(RoundEnvironment roundEnv,
-			TypeElement annotation) {
-		Map<Element, List<Element>> result = new LinkedHashMap<>();
-		for (Element element : roundEnv.getRootElements()) {
-			List<Element> annotations = this.metadataEnv.getElementsAnnotatedOrMetaAnnotatedWith(element, annotation);
-			if (!annotations.isEmpty()) {
-				result.put(element, annotations);
-			}
-		}
-		return result;
-	}
-
-	private void processElement(Element element) {
-		try {
-			AnnotationMirror annotation = this.metadataEnv.getConfigurationPropertiesAnnotation(element);
-			if (annotation != null) {
-				String prefix = getPrefix(annotation);
-				if (element instanceof TypeElement typeElement) {
-					processAnnotatedTypeElement(prefix, typeElement, new ArrayDeque<>());
-				}
-				else if (element instanceof ExecutableElement executableElement) {
-					processExecutableElement(prefix, executableElement, new ArrayDeque<>());
-				}
-			}
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Error processing configuration meta-data on " + element, ex);
-		}
-	}
-
-	private void processAnnotatedTypeElement(String prefix, TypeElement element, Deque<TypeElement> seen) {
-		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
-		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
-		processTypeElement(prefix, element, null, seen);
-	}
-
-	private void processExecutableElement(String prefix, ExecutableElement element, Deque<TypeElement> seen) {
-		if ((!element.getModifiers().contains(Modifier.PRIVATE))
-				&& (TypeKind.VOID != element.getReturnType().getKind())) {
-			Element returns = this.processingEnv.getTypeUtils().asElement(element.getReturnType());
-			if (returns instanceof TypeElement typeElement) {
-				ItemMetadata group = ItemMetadata.newGroup(prefix,
-						this.metadataEnv.getTypeUtils().getQualifiedName(returns),
-						this.metadataEnv.getTypeUtils().getQualifiedName(element.getEnclosingElement()),
-						element.toString());
-				if (this.metadataCollector.hasSimilarGroup(group)) {
-					this.processingEnv.getMessager()
-						.printMessage(Kind.ERROR,
-								"Duplicate @ConfigurationProperties definition for prefix '" + prefix + "'", element);
-				}
-				else {
-					this.metadataCollector.add(group);
-					processTypeElement(prefix, typeElement, element, seen);
-				}
-			}
-		}
-	}
-
-	private void processTypeElement(String prefix, TypeElement element, ExecutableElement source,
-			Deque<TypeElement> seen) {
-		if (!seen.contains(element)) {
-			seen.push(element);
-			if (this.descriptionCache != null && !this.metadataEnv.hasSourceTree(element)) {
-				this.classFileBackedTypes.add(this.metadataEnv.getTypeUtils().getQualifiedName(element));
-			}
-			new PropertyDescriptorResolver(this.metadataEnv).resolve(element, source).forEach((descriptor) -> {
-				this.metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
-				ItemHint itemHint = descriptor.resolveItemHint(prefix, this.metadataEnv);
-				if (itemHint != null) {
-					this.metadataCollector.add(itemHint);
-				}
-				if (descriptor.isNested(this.metadataEnv)) {
-					TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
-						.asElement(descriptor.getType());
-					String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, descriptor.getName());
-					processTypeElement(nestedPrefix, nestedTypeElement, source, seen);
-				}
-			});
-			seen.pop();
-		}
-	}
-
-	private void processSourceElement(MetadataCollector metadataCollector, String prefix, TypeElement element) {
-		new PropertyDescriptorResolver(this.metadataEnv).resolve(element, null).forEach((descriptor) -> {
-			metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
-			if (descriptor.isNested(this.metadataEnv)) {
-				TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
-					.asElement(descriptor.getType());
-				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, descriptor.getName());
-				processSourceElement(metadataCollector, nestedPrefix, nestedTypeElement);
-			}
-		});
-	}
-
-	private void processEndpoint(Element element, List<Element> annotations) {
-		try {
-			String annotationName = this.metadataEnv.getTypeUtils().getQualifiedName(annotations.get(0));
-			AnnotationMirror annotation = this.metadataEnv.getAnnotation(element, annotationName);
-			if (element instanceof TypeElement typeElement) {
-				processEndpoint(annotation, typeElement);
-			}
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Error processing configuration meta-data on " + element, ex);
-		}
-	}
-
-	private void processEndpoint(AnnotationMirror annotation, TypeElement element) {
-		Map<String, Object> elementValues = this.metadataEnv.getAnnotationElementValues(annotation);
-		String endpointId = (String) elementValues.get("id");
-		if (endpointId == null || endpointId.isEmpty()) {
-			return; // Can't process that endpoint
-		}
-		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.", endpointId);
-		String defaultAccess = elementValues.getOrDefault("defaultAccess", "unrestricted")
-			.toString()
-			.toLowerCase(Locale.ENGLISH);
-		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
-		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
-		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
-				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
-		this.metadataCollector.add(accessProperty,
-				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
-		if (hasMainReadOperation(element)) {
-			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
-					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
-		}
-	}
-
-	private void checkDefaultAccessValueMatchesExisting(ItemMetadata existing, String defaultAccess,
-			String sourceType) {
-		String existingDefaultAccess = (String) existing.getDefaultValue();
-		if (!Objects.equals(defaultAccess, existingDefaultAccess)) {
-			throw new IllegalStateException(
-					"Existing property '%s' from type %s has a conflicting value. Existing value: %s, new value from type %s: %s"
-						.formatted(existing.getName(), existing.getSourceType(), existingDefaultAccess, sourceType,
-								defaultAccess));
-		}
-	}
-
-	private boolean hasMainReadOperation(TypeElement element) {
-		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-			if (this.metadataEnv.getReadOperationAnnotation(method) != null
-					&& (TypeKind.VOID != method.getReturnType().getKind()) && hasNoOrOptionalParameters(method)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean hasNoOrOptionalParameters(ExecutableElement method) {
-		for (VariableElement parameter : method.getParameters()) {
-			if (!this.metadataEnv.hasNullableAnnotation(parameter)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private String getPrefix(AnnotationMirror annotation) {
-		String prefix = this.metadataEnv.getAnnotationElementStringValue(annotation, "prefix");
-		if (prefix != null) {
-			return prefix;
-		}
-		return this.metadataEnv.getAnnotationElementStringValue(annotation, "value");
-	}
-
 	protected void writeSourceMetadata() throws Exception {
-		for (TypeElement sourceType : this.metadataCollectors.getSourceTypes()) {
-			ConfigurationMetadata metadata = this.metadataCollectors.getMetadataCollector(sourceType).getMetadata();
-			metadata = mergeAdditionalMetadata(metadata, () -> this.metadataStore.readAdditionalMetadata(sourceType));
-			removeIgnored(metadata);
-			if (!metadata.getItems().isEmpty()) {
-				this.metadataStore.writeMetadata(metadata, sourceType);
-			}
-		}
+		this.generator.writeSourceMetadata();
 	}
 
 	protected ConfigurationMetadata writeMetadata() throws Exception {
-		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
-		metadata = mergeAdditionalMetadata(metadata, () -> this.metadataStore.readAdditionalMetadata());
-		fillCachedDescriptions(metadata);
-		removeIgnored(metadata);
-		if (!metadata.getItems().isEmpty()) {
-			this.metadataStore.writeMetadata(metadata);
-			updateDescriptionCache(metadata);
-			return metadata;
-		}
-		return null;
-	}
-
-	private void fillCachedDescriptions(ConfigurationMetadata metadata) {
-		if (this.descriptionCache == null) {
-			return;
-		}
-		for (ItemMetadata item : metadata.getItems()) {
-			if (item.isOfItemType(ItemMetadata.ItemType.PROPERTY) && item.getDescription() == null
-					&& item.getSourceType() != null && this.classFileBackedTypes.contains(item.getSourceType())) {
-				String cached = this.descriptionCache.getDescription(item.getName());
-				if (cached != null) {
-					item.setDescription(cached);
-				}
-			}
-		}
-	}
-
-	private void updateDescriptionCache(ConfigurationMetadata metadata) {
-		if (this.descriptionCache == null) {
-			return;
-		}
-		this.descriptionCache.update(metadata);
-	}
-
-	private void removeIgnored(ConfigurationMetadata metadata) {
-		for (ItemIgnore itemIgnore : metadata.getIgnored()) {
-			metadata.removeMetadata(itemIgnore.getType(), itemIgnore.getName());
-		}
-	}
-
-	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata,
-			Supplier<ConfigurationMetadata> additionalMetadataSupplier) {
-		try {
-			ConfigurationMetadata additionalMetadata = additionalMetadataSupplier.get();
-			if (additionalMetadata != null) {
-				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
-				merged.merge(additionalMetadata);
-				return merged;
-			}
-			return metadata;
-		}
-		catch (InvalidConfigurationMetadataException ex) {
-			log(ex.getKind(), ex.getMessage());
-		}
-		catch (Exception ex) {
-			logWarning("Unable to merge additional metadata");
-			logWarning(getStackTrace(ex));
-		}
-		return metadata;
-	}
-
-	private String getStackTrace(Exception ex) {
-		StringWriter writer = new StringWriter();
-		ex.printStackTrace(new PrintWriter(writer, true));
-		return writer.toString();
-	}
-
-	private void logWarning(String msg) {
-		log(Kind.WARNING, msg);
-	}
-
-	private void log(Kind kind, String msg) {
-		this.processingEnv.getMessager().printMessage(kind, msg);
+		return this.generator.writeMetadata();
 	}
 
 }

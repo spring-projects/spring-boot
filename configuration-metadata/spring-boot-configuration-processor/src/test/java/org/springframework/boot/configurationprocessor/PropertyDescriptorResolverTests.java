@@ -24,11 +24,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.TypeElement;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
@@ -78,7 +77,7 @@ class PropertyDescriptorResolverTests {
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
 							"second", "first");
 					assertThat(resolver.resolve(type, null)
-						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
+						.map((descriptor) -> descriptor.getGetter().getEnclosingType().getName()))
 						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
 								"HierarchicalPropertiesParent");
 					List<ItemMetadata> itemMetadataList = resolver.resolve(type, null)
@@ -186,7 +185,7 @@ class PropertyDescriptorResolverTests {
 				propertyNames((stream) -> assertThat(stream).containsOnly("import", "default")));
 	}
 
-	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(
+	private BiConsumer<TypeDeclaration, MetadataGenerationEnvironment> properties(
 			Consumer<Stream<PropertyDescriptor>> stream) {
 		return (element, metadataEnv) -> {
 			PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
@@ -194,19 +193,19 @@ class PropertyDescriptorResolverTests {
 		};
 	}
 
-	private BiConsumer<TypeElement, MetadataGenerationEnvironment> propertyNames(Consumer<Stream<String>> stream) {
+	private BiConsumer<TypeDeclaration, MetadataGenerationEnvironment> propertyNames(Consumer<Stream<String>> stream) {
 		return properties((result) -> stream.accept(result.map(PropertyDescriptor::getName)));
 	}
 
-	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) {
+	private void process(Class<?> target, BiConsumer<TypeDeclaration, MetadataGenerationEnvironment> consumer) {
 		process(target, Collections.emptyList(), consumer);
 	}
 
 	private void process(Class<?> target, Collection<Class<?>> additionalClasses,
-			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) {
+			BiConsumer<TypeDeclaration, MetadataGenerationEnvironment> consumer) {
 		BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> internalConsumer = (roundEnv,
 				metadataEnv) -> {
-			TypeElement element = roundEnv.getRootElement(target);
+			TypeDeclaration element = metadataEnv.getContext().getTypeDeclaration(target.getName());
 			consumer.accept(element, metadataEnv);
 		};
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(

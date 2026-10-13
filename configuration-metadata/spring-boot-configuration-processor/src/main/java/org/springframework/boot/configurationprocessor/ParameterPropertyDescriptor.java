@@ -17,18 +17,16 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.TypeKindVisitor8;
-import javax.tools.Diagnostic.Kind;
+import org.springframework.boot.configurationprocessor.model.AnnotationReference;
+import org.springframework.boot.configurationprocessor.model.Declaration;
+import org.springframework.boot.configurationprocessor.model.MethodDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeDeclaration;
+import org.springframework.boot.configurationprocessor.model.TypeReference;
+import org.springframework.boot.configurationprocessor.model.VariableDeclaration;
 
 /**
  * {@link PropertyDescriptor} created from a constructor or record parameter.
@@ -38,49 +36,53 @@ import javax.tools.Diagnostic.Kind;
  */
 abstract class ParameterPropertyDescriptor extends PropertyDescriptor {
 
-	private final VariableElement parameter;
+	private final VariableDeclaration parameter;
 
-	ParameterPropertyDescriptor(String name, TypeMirror type, VariableElement parameter, TypeElement declaringElement,
-			ExecutableElement getter) {
+	ParameterPropertyDescriptor(String name, TypeReference type, VariableDeclaration parameter,
+			TypeDeclaration declaringElement, MethodDeclaration getter) {
 		super(name, type, declaringElement, getter);
 		this.parameter = parameter;
 
 	}
 
 	@Override
-	protected Element getSourceElement() {
+	protected Declaration getSourceElement() {
 		return getParameter();
 	}
 
-	final VariableElement getParameter() {
+	final VariableDeclaration getParameter() {
 		return this.parameter;
 	}
 
 	@Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
 		Object defaultValue = getDefaultValueFromAnnotation(environment, getParameter());
-		return (defaultValue != null) ? defaultValue
-				: getParameter().asType().accept(DefaultPrimitiveTypeVisitor.INSTANCE, null);
+		if (defaultValue != null || getParameter().hasDefaultValue()) {
+			return defaultValue;
+		}
+		TypeReference parameterType = getParameter().getType();
+		Primitive primitive = (parameterType.isPrimitive()) ? getPrimitive(parameterType) : null;
+		return (primitive != null) ? primitive.getDefaultValue() : null;
 	}
 
-	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Element element) {
-		AnnotationMirror annotation = environment.getDefaultValueAnnotation(element);
+	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Declaration element) {
+		AnnotationReference annotation = environment.getDefaultValueAnnotation(element);
 		List<String> defaultValue = getDefaultValue(environment, annotation);
 		if (defaultValue != null) {
-			TypeMirror specificType = determineSpecificType(environment);
+			Primitive primitive = getPrimitive(determineSpecificType());
 			try {
-				List<Object> coerced = defaultValue.stream().map((value) -> coerceValue(specificType, value)).toList();
+				List<Object> coerced = defaultValue.stream().map((value) -> coerceValue(primitive, value)).toList();
 				return (coerced.size() != 1) ? coerced : coerced.get(0);
 			}
 			catch (IllegalArgumentException ex) {
-				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);
+				environment.getContext().error(ex.getMessage(), element, annotation);
 			}
 		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> getDefaultValue(MetadataGenerationEnvironment environment, AnnotationMirror annotation) {
+	private List<String> getDefaultValue(MetadataGenerationEnvironment environment, AnnotationReference annotation) {
 		if (annotation == null) {
 			return null;
 		}
@@ -88,17 +90,24 @@ abstract class ParameterPropertyDescriptor extends PropertyDescriptor {
 		return (List<String>) values.get("value");
 	}
 
-	private TypeMirror determineSpecificType(MetadataGenerationEnvironment environment) {
-		TypeMirror parameterType = getParameter().asType();
-		TypeMirror elementType = environment.getTypeUtils().extractElementType(parameterType);
-		parameterType = (elementType != null) ? elementType : parameterType;
-		PrimitiveType primitiveType = environment.getTypeUtils().getPrimitiveType(parameterType);
-		return (primitiveType != null) ? primitiveType : parameterType;
+	private TypeReference determineSpecificType() {
+		TypeReference parameterType = getParameter().getType();
+		TypeReference elementType = parameterType.getElementType();
+		return (elementType != null) ? elementType : parameterType;
 	}
 
-	private Object coerceValue(TypeMirror type, String value) {
-		Object coercedValue = type.accept(DefaultValueCoercionTypeVisitor.INSTANCE, value);
-		return (coercedValue != null) ? coercedValue : value;
+	private Primitive getPrimitive(TypeReference type) {
+		String wrapperName = (type.isPrimitive()) ? type.getName(getDeclaringElement()) : type.toString();
+		for (Primitive primitive : Primitive.values()) {
+			if (primitive.getWrapperName().equals(wrapperName)) {
+				return primitive;
+			}
+		}
+		return null;
+	}
+
+	private Object coerceValue(Primitive primitive, String value) {
+		return (primitive != null) ? primitive.coerce(value) : value;
 	}
 
 	@Override
@@ -107,113 +116,61 @@ abstract class ParameterPropertyDescriptor extends PropertyDescriptor {
 	}
 
 	/**
-	 * Visitor that gets the default value for primitives.
+	 * The primitive types, with their default value and how to coerce a value to them.
 	 */
-	private static final class DefaultPrimitiveTypeVisitor extends TypeKindVisitor8<Object, Void> {
+	private enum Primitive {
 
-		static final DefaultPrimitiveTypeVisitor INSTANCE = new DefaultPrimitiveTypeVisitor();
+		BOOLEAN(Boolean.class, false, Boolean::parseBoolean),
 
-		@Override
-		public Object visitPrimitiveAsBoolean(PrimitiveType type, Void parameter) {
-			return false;
+		BYTE(Byte.class, (byte) 0, Byte::parseByte),
+
+		SHORT(Short.class, (short) 0, Short::parseShort),
+
+		INT(Integer.class, 0, Integer::parseInt),
+
+		LONG(Long.class, 0L, Long::parseLong),
+
+		CHAR(Character.class, null, Primitive::parseCharacter),
+
+		FLOAT(Float.class, 0F, Float::parseFloat),
+
+		DOUBLE(Double.class, 0D, Double::parseDouble);
+
+		private final String wrapperName;
+
+		private final Object defaultValue;
+
+		private final Function<String, Object> parser;
+
+		Primitive(Class<?> wrapperType, Object defaultValue, Function<String, Object> parser) {
+			this.wrapperName = wrapperType.getName();
+			this.defaultValue = defaultValue;
+			this.parser = parser;
 		}
 
-		@Override
-		public Object visitPrimitiveAsByte(PrimitiveType type, Void parameter) {
-			return (byte) 0;
+		String getWrapperName() {
+			return this.wrapperName;
 		}
 
-		@Override
-		public Object visitPrimitiveAsShort(PrimitiveType type, Void parameter) {
-			return (short) 0;
+		Object getDefaultValue() {
+			return this.defaultValue;
 		}
 
-		@Override
-		public Object visitPrimitiveAsInt(PrimitiveType type, Void parameter) {
-			return 0;
-		}
-
-		@Override
-		public Object visitPrimitiveAsLong(PrimitiveType type, Void parameter) {
-			return 0L;
-		}
-
-		@Override
-		public Object visitPrimitiveAsChar(PrimitiveType type, Void parameter) {
-			return null;
-		}
-
-		@Override
-		public Object visitPrimitiveAsFloat(PrimitiveType type, Void parameter) {
-			return 0F;
-		}
-
-		@Override
-		public Object visitPrimitiveAsDouble(PrimitiveType type, Void parameter) {
-			return 0D;
-		}
-
-	}
-
-	/**
-	 * Visitor that gets the default using coercion.
-	 */
-	private static final class DefaultValueCoercionTypeVisitor extends TypeKindVisitor8<Object, String> {
-
-		static final DefaultValueCoercionTypeVisitor INSTANCE = new DefaultValueCoercionTypeVisitor();
-
-		private <T extends Number> T parseNumber(String value, Function<String, T> parser,
-				PrimitiveType primitiveType) {
+		Object coerce(String value) {
 			try {
-				return parser.apply(value);
+				return this.parser.apply(value);
 			}
 			catch (NumberFormatException ex) {
 				throw new IllegalArgumentException(
-						String.format("Invalid %s representation '%s'", primitiveType, value));
+						String.format("Invalid %s representation '%s'", name().toLowerCase(Locale.ROOT), value));
 			}
 		}
 
-		@Override
-		public Object visitPrimitiveAsBoolean(PrimitiveType type, String value) {
-			return Boolean.parseBoolean(value);
-		}
-
-		@Override
-		public Object visitPrimitiveAsByte(PrimitiveType type, String value) {
-			return parseNumber(value, Byte::parseByte, type);
-		}
-
-		@Override
-		public Object visitPrimitiveAsShort(PrimitiveType type, String value) {
-			return parseNumber(value, Short::parseShort, type);
-		}
-
-		@Override
-		public Object visitPrimitiveAsInt(PrimitiveType type, String value) {
-			return parseNumber(value, Integer::parseInt, type);
-		}
-
-		@Override
-		public Object visitPrimitiveAsLong(PrimitiveType type, String value) {
-			return parseNumber(value, Long::parseLong, type);
-		}
-
-		@Override
-		public Object visitPrimitiveAsChar(PrimitiveType type, String value) {
+		private static Object parseCharacter(String value) {
 			if (value.length() > 1) {
 				throw new IllegalArgumentException(String.format("Invalid character representation '%s'", value));
 			}
 			return value;
-		}
-
-		@Override
-		public Object visitPrimitiveAsFloat(PrimitiveType type, String value) {
-			return parseNumber(value, Float::parseFloat, type);
-		}
-
-		@Override
-		public Object visitPrimitiveAsDouble(PrimitiveType type, String value) {
-			return parseNumber(value, Double::parseDouble, type);
 		}
 
 	}
