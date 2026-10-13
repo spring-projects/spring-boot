@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
@@ -48,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Moritz Halbritter
  * @author Dongliang Xie
+ * @author Danish Nawab
  */
 class ExtractCommandTests extends AbstractJarModeTests {
 
@@ -83,6 +85,20 @@ class ExtractCommandTests extends AbstractJarModeTests {
 
 	private TestPrintStream run(File archive, String... args) {
 		return runCommand(ExtractCommand::new, archive, args);
+	}
+
+	private static void fileTimeAttributes(File file) {
+		try {
+			BasicFileAttributes basicAttributes = Files
+				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
+				.readAttributes();
+			assertThat(basicAttributes.lastModifiedTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
+				.as("last modified time")
+				.isEqualTo(LAST_MODIFIED_TIME.truncatedTo(ChronoUnit.SECONDS));
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Nested
@@ -147,26 +163,32 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		@Test
 		void appliesFileTimes() {
 			run(ExtractCommandTests.this.archive);
-			assertThat(file("test/lib/dependency-1.jar")).exists().satisfies(this::fileTimeAttributes);
-			assertThat(file("test/lib/dependency-2.jar")).exists().satisfies(this::fileTimeAttributes);
-			assertThat(file("test/lib/dependency-3-SNAPSHOT.jar")).exists().satisfies(this::fileTimeAttributes);
+			assertThat(file("test/lib/dependency-1.jar")).exists().satisfies(ExtractCommandTests::fileTimeAttributes);
+			assertThat(file("test/lib/dependency-2.jar")).exists().satisfies(ExtractCommandTests::fileTimeAttributes);
+			assertThat(file("test/lib/dependency-3-SNAPSHOT.jar")).exists()
+				.satisfies(ExtractCommandTests::fileTimeAttributes);
 			assertThat(file("test/test.jar")).exists()
-				.satisfies(this::fileTimeAttributes)
+				.satisfies(ExtractCommandTests::fileTimeAttributes)
 				.satisfies(this::entryTimeAttributes);
 		}
 
-		private void fileTimeAttributes(File file) {
-			try {
-				BasicFileAttributes basicAttributes = Files
-					.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
-					.readAttributes();
-				assertThat(basicAttributes.lastModifiedTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
-					.as("last modified time")
-					.isEqualTo(LAST_MODIFIED_TIME.truncatedTo(ChronoUnit.SECONDS));
-			}
-			catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+		@Test
+		void appliesFileTimesToCreatedDirectories() {
+			run(ExtractCommandTests.this.archive);
+			assertThat(file("test")).isDirectory().satisfies(ExtractCommandTests::fileTimeAttributes);
+			assertThat(file("test/lib")).isDirectory().satisfies(ExtractCommandTests::fileTimeAttributes);
+		}
+
+		@Test
+		void doesNotApplyFileTimesToExistingDirectories() throws IOException {
+			File destination = file("out");
+			Files.createDirectories(destination.toPath());
+			FileTime existingTime = FileTime.from(Instant.parse("2023-01-01T00:00:00Z"));
+			Files.setLastModifiedTime(destination.toPath(), existingTime);
+			run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath());
+			assertThat(Files.getLastModifiedTime(destination.toPath())).isNotEqualTo(existingTime)
+				.isNotEqualTo(FileTime.from(LAST_MODIFIED_TIME));
+			assertThat(file("out/lib")).isDirectory().satisfies(ExtractCommandTests::fileTimeAttributes);
 		}
 
 		private void entryTimeAttributes(File file) {
@@ -287,6 +309,16 @@ class ExtractCommandTests extends AbstractJarModeTests {
 				.contains("test/dependencies/lib/dependency-2.jar")
 				.contains("test/snapshot-dependencies/lib/dependency-3-SNAPSHOT.jar")
 				.contains("test/application/test.jar");
+		}
+
+		@Test
+		void appliesFileTimesToCreatedDirectories() {
+			run(ExtractCommandTests.this.archive, "--layers");
+			for (String directory : List.of("test", "test/dependencies", "test/dependencies/lib",
+					"test/spring-boot-loader", "test/snapshot-dependencies", "test/snapshot-dependencies/lib",
+					"test/application")) {
+				assertThat(file(directory)).isDirectory().satisfies(ExtractCommandTests::fileTimeAttributes);
+			}
 		}
 
 		@Test
