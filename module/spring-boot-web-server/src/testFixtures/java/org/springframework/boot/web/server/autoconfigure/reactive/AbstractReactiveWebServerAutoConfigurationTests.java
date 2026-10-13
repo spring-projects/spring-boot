@@ -64,16 +64,17 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 	void createFromConfigClass() {
 		this.mockServerRunner.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class)
 			.run((context) -> {
-				assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
-				assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class)).hasSizeGreaterThanOrEqualTo(1);
-				assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class)).hasSize(1);
+				assertThat(context).hasSingleBean(ReactiveWebServerFactory.class);
+				assertThat(context).getBeans(WebServerFactoryCustomizer.class).hasSizeGreaterThanOrEqualTo(1);
+				assertThat(context).hasSingleBean(ReactiveWebServerFactoryCustomizer.class);
 			});
 	}
 
 	@Test
 	void missingHttpHandler() {
 		this.mockServerRunner.withUserConfiguration(MockWebServerConfiguration.class)
-			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(ApplicationContextException.class)
 				.rootCause()
 				.hasMessageContaining("missing HttpHandler bean"));
 	}
@@ -83,7 +84,8 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 		this.mockServerRunner
 			.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 					TooManyHttpHandlers.class)
-			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(ApplicationContextException.class)
 				.rootCause()
 				.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
@@ -104,11 +106,10 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 					() -> (WebServerFactoryCustomizer<ConfigurableWebServerFactory>) (factory) -> factory
 						.setSslBundles(new DefaultSslBundleRegistry()))
 			.withPropertyValues("server.ssl.bundle=test-bundle")
-			.run((context) -> {
-				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure().getCause()).isInstanceOf(NoSuchSslBundleException.class)
-					.hasMessage("SSL bundle name 'test-bundle' cannot be found");
-			});
+			.run((context) -> assertThat(context).getFailure()
+				.cause()
+				.isInstanceOf(NoSuchSslBundleException.class)
+				.hasMessage("SSL bundle name 'test-bundle' cannot be found"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

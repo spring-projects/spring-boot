@@ -89,10 +89,8 @@ class RSocketServerAutoConfigurationTests {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.transport=websocket",
 					"spring.rsocket.server.mapping-path=/rsocket")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(RSocketServerFactory.class);
-				assertThat(context).doesNotHaveBean(RSocketWebSocketNettyRouteProvider.class);
-			});
+			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
+				.doesNotHaveBean(RSocketWebSocketNettyRouteProvider.class));
 	}
 
 	@Test
@@ -119,22 +117,16 @@ class RSocketServerAutoConfigurationTests {
 	void shouldSetFragmentWhenRSocketServerFragmentSizeIsSet() {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.fragment-size=12KB")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(RSocketServerFactory.class);
-				RSocketServerFactory factory = context.getBean(RSocketServerFactory.class);
-				assertThat(factory).hasFieldOrPropertyWithValue("fragmentSize", DataSize.ofKilobytes(12));
-			});
+			.run((context) -> assertThat(context).getBean(RSocketServerFactory.class)
+				.hasFieldOrPropertyWithValue("fragmentSize", DataSize.ofKilobytes(12)));
 	}
 
 	@Test
 	void shouldFailToSetFragmentWhenRSocketServerFragmentSizeIsBelow64() {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.fragment-size=60B")
-			.run((context) -> {
-				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure())
-					.hasMessageContaining("The smallest allowed mtu size is 64 bytes, provided: 60");
-			});
+			.run((context) -> assertThat(context).getFailure()
+				.hasMessageContaining("The smallest allowed mtu size is 64 bytes, provided: 60"));
 	}
 
 	@Test
@@ -143,8 +135,7 @@ class RSocketServerAutoConfigurationTests {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.ssl.keyStore=classpath:test.jks",
 					"spring.rsocket.server.ssl.keyPassword=password", "spring.rsocket.server.port=0")
-			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
-				.hasSingleBean(RSocketServerBootstrap.class)
+			.run((context) -> assertThat(context).hasSingleBean(RSocketServerBootstrap.class)
 				.hasSingleBean(RSocketServerCustomizer.class)
 				.getBean(RSocketServerFactory.class)
 				.hasFieldOrPropertyWithValue("ssl.keyStore", "classpath:test.jks")
@@ -159,8 +150,7 @@ class RSocketServerAutoConfigurationTests {
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.ssl.bundle=test-bundle",
 					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
 					"spring.ssl.bundle.jks.test-bundle.key.password=password")
-			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
-				.hasSingleBean(RSocketServerBootstrap.class)
+			.run((context) -> assertThat(context).hasSingleBean(RSocketServerBootstrap.class)
 				.hasSingleBean(RSocketServerCustomizer.class)
 				.getBean(RSocketServerFactory.class)
 				.hasFieldOrPropertyWithValue("sslBundle.details.keyStore", "classpath:test.jks")
@@ -171,11 +161,9 @@ class RSocketServerAutoConfigurationTests {
 	void shouldFailWhenSslIsConfiguredWithMissingBundle() {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.ssl.bundle=test-bundle")
-			.run((context) -> {
-				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(NoSuchSslBundleException.class)
-					.hasRootCauseMessage("SSL bundle name 'test-bundle' cannot be found");
-			});
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(NoSuchSslBundleException.class)
+				.hasRootCauseMessage("SSL bundle name 'test-bundle' cannot be found"));
 	}
 
 	@Test
