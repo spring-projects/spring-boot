@@ -548,6 +548,18 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	void whenThereAreNoInflightRequestsStopCompletesWhenItRacesWithGracefulShutdown() throws Exception {
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		this.webServer = factory.getWebServer((request, response) -> response.setComplete());
+		this.webServer.start();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		this.webServer.stop();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
+	}
+
+	@Test
 	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException {
 		ConfigurableReactiveWebServerFactory factory = getFactory();
 		BlockingHandler blockingHandler = new BlockingHandler();
