@@ -184,7 +184,6 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
-// @DirtiesUrlFactories
 public abstract class AbstractServletWebServerFactoryTests {
 
 	@TempDir
@@ -1326,6 +1325,18 @@ public abstract class AbstractServletWebServerFactoryTests {
 		blockingAsyncServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
 		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
+	}
+
+	@Test
+	void whenThereAreNoInflightRequestsStopCompletesWhenItRacesWithGracefulShutdown() throws Exception {
+		ConfigurableServletWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		this.webServer.stop();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test

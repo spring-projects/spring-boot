@@ -67,15 +67,14 @@ final class GracefulShutdown {
 			List<Connector> connectors = getConnectors();
 			connectors.forEach(this::close);
 			shutdownUnderway.countDown();
-			awaitInactiveOrAborted();
-			if (this.aborted) {
+			GracefulShutdownResult result = awaitInactiveOrAborted();
+			if (result == GracefulShutdownResult.REQUESTS_ACTIVE) {
 				logger.info("Graceful shutdown aborted with one or more requests still active");
-				callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 			}
 			else {
 				logger.info("Graceful shutdown complete");
-				callback.shutdownComplete(GracefulShutdownResult.IDLE);
 			}
+			callback.shutdownComplete(result);
 		}
 		finally {
 			shutdownUnderway.countDown();
@@ -95,18 +94,23 @@ final class GracefulShutdown {
 		connector.getProtocolHandler().closeServerSocketGraceful();
 	}
 
-	private void awaitInactiveOrAborted() {
+	private GracefulShutdownResult awaitInactiveOrAborted() {
 		try {
 			for (Container host : this.tomcat.getEngine().findChildren()) {
 				for (Container context : host.findChildren()) {
-					while (!this.aborted && isActive(context)) {
+					while (isActive(context)) {
+						if (this.aborted) {
+							return GracefulShutdownResult.REQUESTS_ACTIVE;
+						}
 						Thread.sleep(50);
 					}
 				}
 			}
+			return GracefulShutdownResult.IDLE;
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
+			return GracefulShutdownResult.REQUESTS_ACTIVE;
 		}
 	}
 
