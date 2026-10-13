@@ -98,10 +98,12 @@ final class GracefulShutdown {
 	}
 
 	private void awaitShutdown(GracefulShutdownCallback callback) {
+		boolean seenActive = false;
 		while (!this.aborted && this.activeRequests.get() > 0) {
+			seenActive = true;
 			sleep(100);
 		}
-		if (this.aborted) {
+		if (this.aborted && seenActive) {
 			logger.info("Graceful shutdown aborted with one or more requests still active");
 			callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 		}

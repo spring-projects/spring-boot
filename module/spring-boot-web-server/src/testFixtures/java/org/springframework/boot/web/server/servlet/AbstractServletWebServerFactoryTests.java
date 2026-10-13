@@ -1278,7 +1278,21 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
 		this.webServer.shutDownGracefully(result::set);
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.IDLE);
+	}
+
+	@Test
+	void whenThereAreNoInflightRequestsStopCompletesWhenItRacesWithGracefulShutdown() throws Exception {
+		ConfigurableServletWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		this.webServer.stop();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.IDLE);
 	}
 
 	@Test
@@ -1325,18 +1339,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		blockingAsyncServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
 		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
-	}
-
-	@Test
-	void whenThereAreNoInflightRequestsStopCompletesWhenItRacesWithGracefulShutdown() throws Exception {
-		ConfigurableServletWebServerFactory factory = getFactory();
-		factory.setShutdown(Shutdown.GRACEFUL);
-		this.webServer = factory.getWebServer();
-		this.webServer.start();
-		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
-		this.webServer.shutDownGracefully(result::set);
-		this.webServer.stop();
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
