@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ArtifactRepositoryContainer;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
@@ -61,7 +62,7 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 
 	@Override
 	protected void upgradesApplied(List<Upgrade> upgrades) {
-		if (upgrades.isEmpty()) {
+		if (upgrades.isEmpty() || new DefaultArtifactVersion(getMilestone().get()).getIncrementalVersion() > 0) {
 			return;
 		}
 		System.out.println();
