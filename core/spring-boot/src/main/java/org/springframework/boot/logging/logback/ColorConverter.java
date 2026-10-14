@@ -15,6 +15,7 @@ import java.util.Map;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
@@ -59,27 +60,41 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		LEVELS = Collections.unmodifiableMap(ansiLevels);
 	}
 
+	private List<AnsiElement> stylings = Collections.emptyList();
+
+	@Override
+	public void start() {
+		this.stylings = getStylings(getOptionList());
+		super.start();
+	}
+
 	@Override
 	protected String transform(ILoggingEvent event, String in) {
-		List<String> options = getOptionList();
-		List<AnsiElement> elements = new ArrayList<>();
-		if (options != null) {
-			for (String option : options) {
-				String[] optionParts = option.split(",");
-				for (String optionPart : optionParts) {
-					AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
-					if (element != null) {
-						elements.add(element);
-					}
+		if (this.stylings.isEmpty()) {
+			// Assume highlighting
+			AnsiElement element = LEVELS.get(event.getLevel().toInteger());
+			return toAnsiString(in, (element != null) ? element : AnsiColor.GREEN);
+		}
+		if (this.stylings.size() == 1) {
+			return toAnsiString(in, this.stylings.get(0));
+		}
+		return toAnsiString(in, this.stylings.toArray(new AnsiElement[0]));
+	}
+
+	private static List<AnsiElement> getStylings(@Nullable List<String> options) {
+		if (options == null) {
+			return Collections.emptyList();
+		}
+		List<AnsiElement> stylings = new ArrayList<>();
+		for (String option : options) {
+			for (String optionPart : option.split(",")) {
+				AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
+				if (element != null) {
+					stylings.add(element);
 				}
 			}
 		}
-		if (elements.isEmpty()) {
-			// Assume highlighting
-			AnsiElement element = LEVELS.get(event.getLevel().toInteger());
-			elements.add((element != null) ? element : AnsiColor.GREEN);
-		}
-		return toAnsiString(in, elements.toArray(new AnsiElement[0]));
+		return stylings;
 	}
 
 	protected String toAnsiString(String in, AnsiElement element) {
