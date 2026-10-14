@@ -15,7 +15,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -35,7 +37,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
@@ -129,9 +130,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
 
 	/**
-	 * The name of the {@link Lifecycle} bean used to handle cleanup.
+	 * The name of the {@link Cleanup} bean used to handle cleanup.
 	 */
-	private static final String LOGGING_LIFECYCLE_BEAN_NAME = "springBootLoggingLifecycle";
+	private static final String LOGGING_CLEANUP_BEAN_NAME = "springBootLoggingCleanup";
 
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
@@ -249,14 +250,20 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGER_GROUPS_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
-		if (!beanFactory.containsBean(LOGGING_LIFECYCLE_BEAN_NAME) && applicationContext.getParent() == null) {
-			beanFactory.registerSingleton(LOGGING_LIFECYCLE_BEAN_NAME, new Lifecycle());
+		if (!beanFactory.containsBean(LOGGING_CLEANUP_BEAN_NAME) && applicationContext.getParent() == null
+				&& beanFactory instanceof DefaultSingletonBeanRegistry registry) {
+			// Disposable beans are destroyed in reverse registration order. Registering
+			// before the context is refreshed means that cleanup happens after all other
+			// beans have been destroyed, allowing them to log during their destruction.
+			Cleanup cleanup = new Cleanup();
+			registry.registerSingleton(LOGGING_CLEANUP_BEAN_NAME, cleanup);
+			registry.registerDisposableBean(LOGGING_CLEANUP_BEAN_NAME, cleanup);
 		}
 	}
 
 	private void onContextClosedEvent(ContextClosedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
-		if (applicationContext.getParent() != null || applicationContext.containsBean(LOGGING_LIFECYCLE_BEAN_NAME)) {
+		if (applicationContext.getParent() != null || applicationContext.containsBean(LOGGING_CLEANUP_BEAN_NAME)) {
 			return;
 		}
 		cleanupLoggingSystem();
@@ -450,35 +457,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		this.parseArgs = parseArgs;
 	}
 
-	private final class Lifecycle implements SmartLifecycle {
-
-		private volatile boolean running;
+	private final class Cleanup implements DisposableBean {
 
 		@Override
-		public void start() {
-			this.running = true;
-		}
-
-		@Override
-		public void stop() {
-			this.running = false;
+		public void destroy() {
 			cleanupLoggingSystem();
-		}
-
-		@Override
-		public boolean isRunning() {
-			return this.running;
-		}
-
-		@Override
-		public int getPhase() {
-			// Shutdown late and always after WebServerStartStopLifecycle
-			return Integer.MIN_VALUE + 1;
-		}
-
-		@Override
-		public boolean isPauseable() {
-			return false;
 		}
 
 	}
