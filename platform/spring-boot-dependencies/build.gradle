@@ -1757,7 +1757,7 @@ bom {
 			}
 		}
 	}
-	library("MSSQL JDBC", "13.6.0.jre11") {
+	library("MSSQL JDBC", "13.6.1.jre11") {
 		prohibit {
 			endsWith(".jre8")
 			because "we want to use the jre11 version"
