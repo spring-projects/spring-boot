@@ -4,7 +4,11 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -57,6 +61,10 @@ public class StopMojo extends AbstractMojo {
 	@Parameter(property = "spring-boot.stop.skip", defaultValue = "false")
 	private boolean skip;
 
+	@Parameter(defaultValue = "${project.build.directory}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
+	private String buildDirectory;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
@@ -64,13 +72,26 @@ public class StopMojo extends AbstractMojo {
 			return;
 		}
 		getLog().info("Stopping application...");
-		try (JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort)) {
+		try (JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort, readPassword())) {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
 			stop(connection);
 		}
 		catch (IOException ex) {
 			// The response won't be received as the server has died - ignoring
 			getLog().debug("Service is not reachable anymore (" + ex.getMessage() + ")");
+		}
+	}
+
+	private String readPassword() {
+		try (FileInputStream input = new FileInputStream(
+				new File(this.buildDirectory, "org.springframework.boot.jmxremote.password"))) {
+			Properties properties = new Properties();
+			properties.load(
+					new FileInputStream(new File(this.buildDirectory, "org.springframework.boot.jmxremote.password")));
+			return properties.getProperty("maven-build");
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
 	}
 
