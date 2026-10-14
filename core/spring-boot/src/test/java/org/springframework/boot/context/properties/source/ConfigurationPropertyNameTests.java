@@ -151,6 +151,20 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void ofNameWhenMissingCloseBracketAtEndOfName() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("foo["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
+	void ofNameWhenOnlyMissingCloseBracket() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
 	void ofNameWhenMissingOpenBracket() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
 			.isThrownBy(() -> ConfigurationPropertyName.of("bar]"))
@@ -731,6 +745,7 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo[")).isFalse();
 	}
 
 	@Test

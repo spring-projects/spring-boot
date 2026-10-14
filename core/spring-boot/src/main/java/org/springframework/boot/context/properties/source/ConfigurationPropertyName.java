@@ -1034,6 +1034,12 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 			if (openBracketCount != 0) {
 				type = ElementType.NON_UNIFORM;
+				if (start == length) {
+					// The unbalanced bracket is the last character. Include it in the
+					// element so that it is not dropped as an empty element and the name
+					// is reported as invalid.
+					start--;
+				}
 			}
 			add(start, length, type, valueProcessor);
 			return new Elements(this.source, this.size, this.start, this.end, this.type, null, this.resolved);
