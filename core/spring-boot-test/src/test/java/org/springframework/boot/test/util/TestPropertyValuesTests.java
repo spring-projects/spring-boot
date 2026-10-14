@@ -164,6 +164,21 @@ class TestPropertyValuesTests {
 	}
 
 	@Test
+	void applyToSystemPropertiesShouldRestoreEmptySystemProperty() {
+		System.setProperty("foo", "");
+		try {
+			TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
+				assertThat(System.getProperty("foo")).isEqualTo("bar");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEmpty();
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
+	@Test
 	void applyToSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
 		System.setProperty("foo", "bar1");
 		try {

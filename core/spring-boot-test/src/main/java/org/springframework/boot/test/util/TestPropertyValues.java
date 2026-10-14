@@ -379,23 +379,32 @@ public final class TestPropertyValues {
 			this.previous = apply(TestPropertyValues.this.properties);
 		}
 
-		private Map<String, @Nullable String> apply(Map<String, @Nullable Object> properties) {
+		private static Map<String, @Nullable String> apply(Map<String, @Nullable Object> properties) {
 			Map<String, @Nullable String> previous = new LinkedHashMap<>();
 			properties.forEach((name, value) -> previous.put(name, setOrClear(name, (String) value)));
 			return previous;
 		}
 
-		@Override
-		public void close() {
-			this.previous.forEach(this::setOrClear);
-		}
-
-		private @Nullable String setOrClear(String name, @Nullable String value) {
+		private static @Nullable String setOrClear(String name, @Nullable String value) {
 			Assert.notNull(name, "'name' must not be null");
 			if (!StringUtils.hasLength(value)) {
 				return (String) System.getProperties().remove(name);
 			}
 			return (String) System.getProperties().setProperty(name, value);
+		}
+
+		@Override
+		public void close() {
+			this.previous.forEach(this::restore);
+		}
+
+		private void restore(String name, @Nullable String value) {
+			if (value != null) {
+				System.setProperty(name, value);
+			}
+			else {
+				System.clearProperty(name);
+			}
 		}
 
 	}
