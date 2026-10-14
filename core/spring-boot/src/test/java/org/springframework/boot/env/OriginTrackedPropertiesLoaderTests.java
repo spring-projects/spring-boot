@@ -6,6 +6,7 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.jspecify.annotations.Nullable;
@@ -161,6 +162,17 @@ class OriginTrackedPropertiesLoaderTests {
 		assertThat(getFromFirst("#commented-property")).isNull();
 		assertThat(getFromFirst("commented-two")).isNull();
 		assertThat(getFromFirst("!commented-two")).isNull();
+	}
+
+	@Test
+	void getPropertyWithEscapedCommentPrefixCharacter() throws IOException {
+		String content = "\\#hash-prefixed=hash\n\\!bang-prefixed=bang";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
+		assertThat(map).containsOnlyKeys("#hash-prefixed", "!bang-prefixed");
+		assertThat(getValue(map.get("#hash-prefixed"))).isEqualTo("hash");
+		assertThat(getValue(map.get("!bang-prefixed"))).isEqualTo("bang");
 	}
 
 	@Test
