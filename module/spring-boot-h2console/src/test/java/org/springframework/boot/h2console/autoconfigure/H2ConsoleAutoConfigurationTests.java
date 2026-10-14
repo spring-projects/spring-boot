@@ -93,6 +93,16 @@ class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
+	void customPathWithMultipleTrailingSlashes() {
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=/custom///")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ServletRegistrationBean.class);
+				ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
+				assertThat(registrationBean.getUrlMappings()).contains("/custom/*");
+			});
+	}
+
+	@Test
 	void customPath() {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=/custom")
 			.run((context) -> {

@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.security.autoconfigure.web.PathPattern;
 import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -207,7 +208,8 @@ public final class EndpointRequest {
 		protected final List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, Set<String> paths, @Nullable HttpMethod httpMethod) {
 			return paths.stream()
-				.map((path) -> requestMatcherFactory.antPath(matcherProvider, httpMethod, path, "/**"))
+				.map((path) -> PathPattern.of(path).withoutTrailingSlash() + "/**")
+				.map((pattern) -> requestMatcherFactory.antPath(matcherProvider, httpMethod, pattern))
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
 
@@ -223,7 +225,7 @@ public final class EndpointRequest {
 
 		protected @Nullable String getLinksPath(WebApplicationContext context, String basePath) {
 			if (StringUtils.hasText(basePath)) {
-				return basePath;
+				return PathPattern.of(basePath).withoutTrailingSlash();
 			}
 			ManagementPortType managementPortType = this.managementPortType;
 			if (managementPortType == null) {
