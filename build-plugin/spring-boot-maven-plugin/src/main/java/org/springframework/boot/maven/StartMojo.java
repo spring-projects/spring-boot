@@ -6,11 +6,25 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.ConnectException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -76,6 +90,10 @@ public class StartMojo extends AbstractRunMojo {
 	@Parameter(property = "spring-boot.start.maxAttempts", defaultValue = "60")
 	private int maxAttempts;
 
+	@Parameter(defaultValue = "${project.build.directory}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
+	private String buildDirectory;
+
 	private final Object lock = new Object();
 
 	/**
@@ -98,6 +116,10 @@ public class StartMojo extends AbstractRunMojo {
 	private String testClasspath = "off";
 
 	private @Nullable TestClasspath resolvedTestClasspath;
+
+	private final String password = UUID.randomUUID().toString();
+
+	private final boolean posix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
 	@Inject
 	public StartMojo(ToolchainManager toolchainManager) {
@@ -131,17 +153,61 @@ public class StartMojo extends AbstractRunMojo {
 		List<String> remoteJmxArguments = new ArrayList<>();
 		remoteJmxArguments.add("-Dcom.sun.management.jmxremote");
 		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + this.jmxPort);
-		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=false");
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.rmi.port=" + this.jmxPort);
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.local.only=true");
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.host=127.0.0.1");
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=true");
+		Path passwordFile = new File(this.buildDirectory, "org.springframework.boot.jmxremote.password").toPath();
+		writeWithOwnerOnlyPermissions(passwordFile, "maven-build " + this.password);
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.password.file=" + passwordFile);
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.password.toHashes=false");
+		Path accessFile = new File(this.buildDirectory, "org.springframework.boot.jmxremote.access").toPath();
+		writeWithOwnerOnlyPermissions(accessFile, "maven-build readwrite");
+		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.access.file=" + accessFile);
 		remoteJmxArguments.add("-Dcom.sun.management.jmxremote.ssl=false");
 		remoteJmxArguments.add("-Djava.rmi.server.hostname=127.0.0.1");
 		jvmArguments.getArgs().addAll(remoteJmxArguments);
 		return jvmArguments;
 	}
 
+	private void writeWithOwnerOnlyPermissions(Path file, String content) {
+		try {
+			Files.deleteIfExists(file);
+			if (this.posix) {
+				Files.createFile(file, PosixFilePermissions
+					.asFileAttribute(EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE)));
+			}
+			else {
+				Files.createFile(file);
+				AclFileAttributeView view = Files.getFileAttributeView(file, AclFileAttributeView.class);
+				if (view != null) {
+					UserPrincipal owner = view.getOwner();
+					AclEntry ownerOnly = AclEntry.newBuilder()
+						.setType(AclEntryType.ALLOW)
+						.setPrincipal(owner)
+						.setPermissions(EnumSet.allOf(AclEntryPermission.class))
+						.build();
+					view.setAcl(Collections.singletonList(ownerOnly));
+				}
+				else {
+					file.toFile().setReadable(false, false); // Remove read permissions
+					file.toFile().setReadable(true); // Allow owner read
+					file.toFile().setWritable(false, false); // Remove write permissions
+					file.toFile().setWritable(true); // Allow owner write
+				}
+			}
+			Files.write(file, Collections.singletonList(content));
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
 	private void waitForSpringApplication() throws MojoFailureException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
-			try (JMXConnector connector = execute(this.wait, this.maxAttempts, new CreateJmxConnector(this.jmxPort))) {
+			try (JMXConnector connector = execute(this.wait, this.maxAttempts,
+					new CreateJmxConnector(this.jmxPort, this.password))) {
 				if (connector == null) {
 					throw new MojoExecutionException("JMX MBean server was not reachable before the configured "
 							+ "timeout (" + (this.wait * this.maxAttempts) + "ms");
@@ -226,14 +292,17 @@ public class StartMojo extends AbstractRunMojo {
 
 		private final int port;
 
-		CreateJmxConnector(int port) {
+		private final String password;
+
+		CreateJmxConnector(int port, String password) {
 			this.port = port;
+			this.password = password;
 		}
 
 		@Override
 		public @Nullable JMXConnector call() throws Exception {
 			try {
-				return SpringApplicationAdminClient.connect(this.port);
+				return SpringApplicationAdminClient.connect(this.port, this.password);
 			}
 			catch (IOException ex) {
 				if (hasCauseWithType(ex, ConnectException.class)) {
