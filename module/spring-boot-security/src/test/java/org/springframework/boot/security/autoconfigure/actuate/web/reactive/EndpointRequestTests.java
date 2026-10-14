@@ -163,6 +163,14 @@ class EndpointRequestTests {
 		assertMatcher.doesNotMatch("/foo");
 	}
 
+	void toLinksWhenBasePathIsSlashShouldNotMatch() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.doesNotMatch("/actuator/foo");
+		assertMatcher.doesNotMatch("/actuator/bar");
+		assertMatcher.doesNotMatch("/");
+	}
+
 	@Test
 	void excludeByClassShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()

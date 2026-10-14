@@ -171,6 +171,15 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toLinksWhenBasePathIsSlashShouldNotMatch() {
+		RequestMatcher matcher = EndpointRequest.toLinks();
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
+		assertMatcher.doesNotMatch("/actuator/foo");
+		assertMatcher.doesNotMatch("/actuator/bar");
+		assertMatcher.doesNotMatch("/");
+	}
+
+	@Test
 	void excludeByClassShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding(FooEndpoint.class, BazServletEndpoint.class);
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
@@ -373,7 +382,7 @@ class EndpointRequestTests {
 	private PathMappedEndpoints mockPathMappedEndpoints(String basePath) {
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 		endpoints.add(mockEndpoint(EndpointId.of("foo"), "foo"));
-		endpoints.add(mockEndpoint(EndpointId.of("bar"), "bar"));
+		endpoints.add(mockEndpoint(EndpointId.of("bar"), "bar/"));
 		return new PathMappedEndpoints(basePath, () -> endpoints);
 	}
 

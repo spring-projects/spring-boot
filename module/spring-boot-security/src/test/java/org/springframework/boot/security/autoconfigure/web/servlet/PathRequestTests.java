@@ -4,10 +4,14 @@
 
 package org.springframework.boot.security.autoconfigure.web.servlet;
 
+import java.util.function.Consumer;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -44,6 +48,17 @@ class PathRequestTests {
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "/custom", "/custom/" })
+	void toH2ConsoleShouldMatchCustomH2ConsolePath(String consolePath) {
+		RequestMatcher matcher = PathRequest.toH2Console();
+		assertMatcher(matcher, (properties) -> properties.setPath(consolePath)).matches("/custom");
+		assertMatcher(matcher, (properties) -> properties.setPath(consolePath)).matches("/custom/subpath");
+		assertMatcher(matcher, (properties) -> properties.setPath(consolePath)).doesNotMatch("/h2-console");
+		assertMatcher(matcher, (properties) -> properties.setPath(consolePath)).doesNotMatch("/h2-console/subpath");
+		assertMatcher(matcher, (properties) -> properties.setPath(consolePath)).doesNotMatch("/js/file.js");
+	}
+
 	@Test
 	void toH2ConsoleWhenManagementContextShouldNeverMatch() {
 		RequestMatcher matcher = PathRequest.toH2Console();
@@ -57,8 +72,8 @@ class PathRequestTests {
 	void toH2ConsoleWhenNoWebServerContextClassPresent() {
 		assertThatExceptionOfType(NoClassDefFoundError.class)
 			.isThrownBy(() -> WebServerApplicationContext.class.getName());
-		RequestMatcher matcher = PathRequest.toH2Console();
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
+		RequestMatcher matcher = PathRequest.toH2Console();
 		assertMatcher(matcher, context).matches("/h2-console");
 		assertMatcher(matcher, context).matches("/h2-console/subpath");
 		assertMatcher(matcher, context).doesNotMatch("/js/file.js");
@@ -68,15 +83,32 @@ class PathRequestTests {
 		return assertMatcher(matcher, (String) null);
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace) {
-		StaticWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
-		return assertMatcher(matcher, context);
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, WebApplicationContext context) {
+		return assertMatcher(matcher, context, null);
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, WebApplicationContext context) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace) {
+		return assertMatcher(matcher, serverNamespace, null);
+	}
+
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
+			Consumer<H2ConsoleProperties> consolePropertiesConfigurer) {
+		return assertMatcher(matcher, (String) null, consolePropertiesConfigurer);
+	}
+
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace,
+			@Nullable Consumer<H2ConsoleProperties> consolePropertiesConfigurer) {
+		return assertMatcher(matcher, new TestWebApplicationContext(serverNamespace), consolePropertiesConfigurer);
+	}
+
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, WebApplicationContext context,
+			@Nullable Consumer<H2ConsoleProperties> consolePropertiesConfigurer) {
 		GenericApplicationContext genericContext = (GenericApplicationContext) context;
 		genericContext.registerBean(ServerProperties.class);
 		genericContext.registerBean(H2ConsoleProperties.class);
+		if (consolePropertiesConfigurer != null) {
+			consolePropertiesConfigurer.accept(context.getBean(H2ConsoleProperties.class));
+		}
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 

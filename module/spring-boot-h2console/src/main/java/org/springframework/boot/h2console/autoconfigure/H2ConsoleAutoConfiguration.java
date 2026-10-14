@@ -54,12 +54,19 @@ public final class H2ConsoleAutoConfiguration {
 
 	@Bean
 	ServletRegistrationBean<JakartaWebServlet> h2Console() {
-		String path = this.properties.getPath();
+		String path = removeTrailingSlashes(this.properties.getPath());
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<JakartaWebServlet> registration = new ServletRegistrationBean<>(new JakartaWebServlet(),
 				urlMapping);
 		configureH2ConsoleSettings(registration, this.properties.getSettings());
 		return registration;
+	}
+
+	private String removeTrailingSlashes(String path) {
+		while (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		return path;
 	}
 
 	@Bean
