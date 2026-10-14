@@ -1777,8 +1777,8 @@ bom {
 				.formatted(version.toString().replace(".jre11", "")))
 		}
 	}
-	library("MySQL", "9.7.0") {
-		upgradePolicy = "same-major-version"
+	library("MySQL", "26.7.0") {
+		upgradePolicy = "any"
 		group("com.mysql") {
 			modules = [
 				"mysql-connector-j" {
