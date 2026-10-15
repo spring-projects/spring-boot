@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
@@ -20,6 +22,7 @@ import javax.tools.StandardLocation;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
@@ -27,6 +30,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Van Vo
  */
 class MetadataStore {
 
@@ -44,6 +48,9 @@ class MetadataStore {
 	private static final String RESOURCES_DIRECTORY = "resources";
 
 	private static final String CLASSES_DIRECTORY = "classes";
+
+	private static final Pattern JAVA_TYPE_PATTERN = Pattern
+		.compile("(?<![\\p{javaJavaIdentifierPart}.])java\\.[\\p{javaJavaIdentifierPart}.]+");
 
 	private final ProcessingEnvironment environment;
 
@@ -138,10 +145,35 @@ class MetadataStore {
 	private ConfigurationMetadata readAdditionalMetadata(String location) {
 		try {
 			InputStream in = getAdditionalMetadataStream(location);
-			return readMetadata(location, in);
+			ConfigurationMetadata metadata = readMetadata(location, in);
+			if (metadata != null) {
+				validateAdditionalMetadataTypes(location, metadata);
+			}
+			return metadata;
 		}
 		catch (IOException ex) {
 			return null;
+		}
+	}
+
+	private void validateAdditionalMetadataTypes(String location, ConfigurationMetadata metadata) {
+		for (ItemMetadata item : metadata.getItems()) {
+			String type = item.getType();
+			if (!item.isOfItemType(ItemMetadata.ItemType.PROPERTY) || type == null) {
+				continue;
+			}
+			// Additional metadata may reference optional dependencies that are not on the
+			// classpath.
+			Matcher matcher = JAVA_TYPE_PATTERN.matcher(type);
+			while (matcher.find()) {
+				String typeName = matcher.group();
+				if (this.environment.getElementUtils().getTypeElement(typeName.replace('$', '.')) == null) {
+					this.environment.getMessager()
+						.printMessage(Diagnostic.Kind.WARNING,
+								"Cannot resolve type '%s' for property '%s' in additional metadata '%s'"
+									.formatted(typeName, item.getName(), location));
+				}
+			}
 		}
 	}
 

@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -18,10 +21,15 @@ import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationprocessor.metadata.TestJsonConverter;
+import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
+import org.springframework.boot.configurationsample.source.generation.SimplePropertiesSource;
 import org.springframework.boot.configurationsample.specific.SimpleConflictingProperties;
 import org.springframework.core.test.tools.CompilationException;
+import org.springframework.core.test.tools.ResourceFile;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -31,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Van Vo
  */
 class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -42,6 +51,76 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(additionalMetadata, SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).has(Metadata.withProperty("foo", String.class).fromSource(AdditionalMetadata.class));
+	}
+
+	@ParameterizedTest
+	@CsvSource(delimiter = '|',
+			value = { "java.nio.Charset|java.nio.Charset", "java.nio.Charset[]|java.nio.Charset",
+					"java.util.List<java.nio.Charset>|java.nio.Charset",
+					"java.util.Map<java.lang.String, java.util.List<java.nio.Charset[]>>|java.nio.Charset",
+					"java.util.Map$Missing|java.util.Map$Missing" })
+	void mergingAdditionalPropertyWithUnknownJdkTypeRaisesWarning(String type, String unknownType) throws Exception {
+		String additionalMetadata = buildAdditionalMetadata(
+				ItemMetadata.newProperty(null, "foo", type, null, null, null, null, null));
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compileWithWarningsAsErrors("META-INF/additional-spring-configuration-metadata.json",
+					additionalMetadata, SimpleProperties.class))
+			.withMessageContaining(
+					"Cannot resolve type '" + unknownType + "' for property 'foo' in additional metadata");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "java.nio.charset.Charset", "java.lang.String[][]", "java.util.List<java.lang.String>",
+			"java.util.Map<java.lang.String, java.util.List<java.time.Duration>>",
+			"java.util.List<? extends java.lang.Number>", "java.util.List<? super java.lang.Integer>",
+			"java.util.Map$Entry<java.lang.String, java.lang.Integer>",
+			"java.util.Map.Entry<java.lang.String, java.lang.Integer>", "int", "int[]", "com.example.OptionalType",
+			"com.example.java.OptionalType", "com.example.caféjava.OptionalType", "com.example.αjava.OptionalType",
+			"java.util.List<com.example.caféjava.OptionalType>", "java.util.List<com.example.OptionalType>" })
+	void mergingAdditionalPropertyWithResolvableOrOptionalTypeDoesNotRaiseWarning(String type) throws Exception {
+		String additionalMetadata = buildAdditionalMetadata(
+				ItemMetadata.newProperty(null, "foo", type, null, null, null, null, null));
+		compileWithWarningsAsErrors("META-INF/additional-spring-configuration-metadata.json", additionalMetadata,
+				SimpleProperties.class);
+	}
+
+	@Test
+	void mergingAdditionalPropertyWithUnknownJdkTypePreservesMetadata() throws Exception {
+		String additionalMetadata = buildAdditionalMetadata(
+				ItemMetadata.newProperty(null, "foo", "java.nio.Charset", null, null, null, null, null));
+		ConfigurationMetadata metadata = compile(additionalMetadata, SimpleProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("foo", "java.nio.Charset"));
+		assertThat(metadata)
+			.has(Metadata.withProperty("simple.the-name", String.class).withDefaultValue("boot").withDeprecation());
+	}
+
+	@Test
+	void mergingAdditionalPropertyWithoutTypeDoesNotRaiseWarning() throws Exception {
+		String additionalMetadata = buildAdditionalMetadata(
+				ItemMetadata.newProperty("simple", "the-name", null, null, null, "A name.", null, null));
+		compileWithWarningsAsErrors("META-INF/additional-spring-configuration-metadata.json", additionalMetadata,
+				SimpleProperties.class);
+	}
+
+	@Test
+	void mergingSourceAdditionalPropertyWithUnknownJdkTypeRaisesWarning() throws Exception {
+		String additionalMetadata = buildAdditionalMetadata(
+				ItemMetadata.newProperty(null, "foo", "java.nio.Charset", null, null, null, null, null));
+		String location = "META-INF/spring/configuration-metadata/additional/%s.json"
+			.formatted(SimplePropertiesSource.class.getName());
+		assertThatExceptionOfType(CompilationException.class)
+			.isThrownBy(() -> compileWithWarningsAsErrors(location, additionalMetadata, SimplePropertiesSource.class))
+			.withMessageContaining("Cannot resolve type 'java.nio.Charset' for property 'foo' in additional metadata");
+	}
+
+	private void compileWithWarningsAsErrors(String location, String additionalMetadata, Class<?> source) {
+		TestCompiler.forSystem()
+			.withSources(SourceFile.forTestClass(source))
+			.withResources(ResourceFile.of(location, additionalMetadata))
+			.withProcessors(new TestConfigurationMetadataAnnotationProcessor())
+			.withCompilerOptions("-Werror")
+			.compile((compiled) -> {
+			});
 	}
 
 	@Test
