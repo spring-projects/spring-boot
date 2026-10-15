@@ -4,14 +4,18 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
@@ -103,11 +107,42 @@ class JarUrlClassLoaderTests {
 	@Test
 	void loadClassFromNested() throws Exception {
 		File appJar = new File("src/test/resources/jars/app.jar");
+		File jarFile = createJarWithNestedJar(Files.readAllBytes(appJar.toPath()));
+		URL url = JarUrl.create(jarFile, "app.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			assertThat(loader.loadClass("demo.Application")).isNotNull().hasToString("class demo.Application");
+		}
+	}
+
+	@Test
+	void loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest() throws Exception {
+		byte[] classData;
+		try (JarFile appJar = new JarFile("src/test/resources/jars/app.jar");
+				InputStream inputStream = appJar.getInputStream(appJar.getEntry("demo/Application.class"))) {
+			classData = inputStream.readAllBytes();
+		}
+		Manifest manifest = new Manifest();
+		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION, "1.2.3");
+		ByteArrayOutputStream nestedJarData = new ByteArrayOutputStream();
+		try (JarOutputStream jarOutputStream = new JarOutputStream(nestedJarData, manifest)) {
+			jarOutputStream.putNextEntry(new JarEntry("demo/Application.class"));
+			jarOutputStream.write(classData);
+			jarOutputStream.closeEntry();
+		}
+		File jarFile = createJarWithNestedJar(nestedJarData.toByteArray());
+		URL url = JarUrl.create(jarFile, "app.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			Package pkg = loader.loadClass("demo.Application").getPackage();
+			assertThat(pkg.getImplementationVersion()).isEqualTo("1.2.3");
+		}
+	}
+
+	private File createJarWithNestedJar(byte[] nestedJarData) throws Exception {
 		File jarFile = new File(this.tempDir, "test.jar");
 		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
 		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			JarEntry nestedEntry = new JarEntry("app.jar");
-			byte[] nestedJarData = Files.readAllBytes(appJar.toPath());
 			nestedEntry.setSize(nestedJarData.length);
 			nestedEntry.setCompressedSize(nestedJarData.length);
 			CRC32 crc32 = new CRC32();
@@ -118,10 +153,7 @@ class JarUrlClassLoaderTests {
 			jarOutputStream.write(nestedJarData);
 			jarOutputStream.closeEntry();
 		}
-		URL url = JarUrl.create(jarFile, "app.jar");
-		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
-			assertThat(loader.loadClass("demo.Application")).isNotNull().hasToString("class demo.Application");
-		}
+		return jarFile;
 	}
 
 	static class TestJarUrlClassLoader extends JarUrlClassLoader {
