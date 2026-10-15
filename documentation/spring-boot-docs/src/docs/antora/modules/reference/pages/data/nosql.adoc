@@ -782,6 +782,8 @@ spring.ldap.embedded.base-dn:
 ====
 
 By default, the server starts on a random port and triggers the regular LDAP support.
+It listens on all network interfaces.
+Set configprop:spring.ldap.embedded.address[] to bind to a single address.
 
 If there is a `schema.ldif` file on your classpath, it is used to initialize the server.
 If you want to load the initialization script from a different resource, you can also use the configprop:spring.ldap.embedded.ldif[] property.
@@ -793,7 +795,7 @@ If you have custom attributes, you can use configprop:spring.ldap.embedded.valid
 The `spring.ldap.embedded` properties configure the server, while the remaining `spring.ldap` properties configure the client that connects to it, as described in xref:data/nosql.adoc#data.nosql.ldap[LDAP].
 Everything that describes the connection itself is taken from the server, as only the server can determine what a connection to it looks like:
 
-* The client connects to the port and scheme that the server is listening on, so configprop:spring.ldap.urls[] is ignored.
+* The client connects to the port and scheme that the server is listening on. It uses `localhost` unless configprop:spring.ldap.embedded.address[] is a specific non-loopback address. configprop:spring.ldap.urls[] is ignored.
 * The client uses the credentials from configprop:spring.ldap.embedded.credential.username[] and configprop:spring.ldap.embedded.credential.password[], so configprop:spring.ldap.username[] and configprop:spring.ldap.password[] are ignored.
 * The client uses the SSL bundle from configprop:spring.ldap.embedded.ssl.bundle[], so `spring.ldap.ssl.*` is ignored.
 
