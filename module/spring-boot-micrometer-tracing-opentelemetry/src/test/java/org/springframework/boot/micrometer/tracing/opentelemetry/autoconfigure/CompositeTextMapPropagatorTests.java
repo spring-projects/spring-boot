@@ -131,11 +131,6 @@ class CompositeTextMapPropagatorTests {
 	private static final class MapTextMapGetter implements TextMapGetter<Map<String, String>> {
 
 		@Override
-		public Iterable<String> keys(Map<String, String> carrier) {
-			return carrier.keySet();
-		}
-
-		@Override
 		public @Nullable String get(@Nullable Map<String, String> carrier, String key) {
 			if (carrier == null) {
 				return null;
