@@ -89,7 +89,7 @@ class OAuth2ResourceServerJwtConfiguration {
 			NimbusJwtDecoder nimbusJwtDecoder = builder.build();
 			String issuerUri = this.properties.getIssuerUri();
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
-			if (issuerUri != null) {
+			if (StringUtils.hasText(issuerUri)) {
 				validators.add(new JwtIssuerValidator(issuerUri));
 			}
 			validators.addAll(getValidators());
