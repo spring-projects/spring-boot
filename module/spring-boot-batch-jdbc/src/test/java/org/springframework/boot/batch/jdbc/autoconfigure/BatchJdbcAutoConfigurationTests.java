@@ -739,7 +739,7 @@ class BatchJdbcAutoConfigurationTests {
 
 		@Bean
 		Job job() {
-			AbstractJob job = new AbstractJob() {
+			AbstractJob job = new AbstractJob("job") {
 
 				@Override
 				public Collection<String> getStepNames() {
