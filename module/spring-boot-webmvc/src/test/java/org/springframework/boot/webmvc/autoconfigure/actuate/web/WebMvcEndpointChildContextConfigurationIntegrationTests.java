@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -25,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.ConfigTreePropertySource;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -34,6 +38,7 @@ import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebSer
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcObservationAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
@@ -48,12 +53,14 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestHeadersSpec.ExchangeFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Integration tests for {@link WebMvcEndpointChildContextConfiguration}.
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Aditya Reddy
  */
 class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
@@ -72,6 +79,40 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	@TempDir
 	Path temp;
+
+	@Test
+	void requestsOnSeparateManagementPortAreObserved() {
+		assertManagementRequestObserved("http.server.requests", "");
+	}
+
+	@Test
+	void requestsOnSeparateManagementPortUseCustomObservationNameAndBasePath() {
+		assertManagementRequestObserved("custom.http.requests", "/manage");
+	}
+
+	private void assertManagementRequestObserved(String name, String basePath) {
+		this.runner
+			.withConfiguration(
+					AutoConfigurations.of(ObservationAutoConfiguration.class, WebMvcObservationAutoConfiguration.class))
+			.withBean(SimpleMeterRegistry.class)
+			.withPropertyValues("management.observations.http.server.requests.name=" + name,
+					"management.server.base-path=" + basePath)
+			.run((context) -> {
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				context.getBean(ObservationRegistry.class)
+					.observationConfig()
+					.observationHandler(DefaultMeterObservationHandler.builder(registry).build());
+				int port = context.getEnvironment().getRequiredProperty("local.management.port", Integer.class);
+				assertThat(RestClient.create("http://localhost:" + port)
+					.get()
+					.uri(basePath + "/actuator/success")
+					.retrieve()
+					.body(String.class)).isEqualTo("Success");
+				await()
+					.untilAsserted(() -> assertThat(registry.get(name).tag("uri", "/actuator/success").timer().count())
+						.isEqualTo(1));
+			});
+	}
 
 	@Test // gh-17938
 	void errorEndpointIsUsedWithEndpoint() {
