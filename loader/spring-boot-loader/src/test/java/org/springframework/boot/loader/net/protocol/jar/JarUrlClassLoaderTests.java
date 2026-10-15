@@ -12,8 +12,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -29,6 +31,7 @@ import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JarUrlClassLoader}.
@@ -96,6 +99,83 @@ class JarUrlClassLoaderTests {
 				assertThat(input.read()).isEqualTo(3);
 			}
 		}
+	}
+
+	@Test
+	void resolveFromNestedWhenMissingReturnsNull() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL url = JarUrl.create(jarFile, "nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			assertThat(loader.getResource("missing.dat")).isNull();
+			assertThat(loader.getResources("missing.dat").hasMoreElements()).isFalse();
+		}
+	}
+
+	@Test
+	void resolveResourcesFromMultipleNestedReturnsResourcesInOrder() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL nestedUrl = JarUrl.create(jarFile, "nested.jar");
+		URL anotherNestedUrl = JarUrl.create(jarFile, "another-nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(nestedUrl, anotherNestedUrl)) {
+			assertThat(Collections.list(loader.getResources("3.dat"))).map(URL::toString)
+				.containsExactly(nestedUrl + "3.dat", anotherNestedUrl + "3.dat");
+		}
+	}
+
+	@Test
+	void resolveFromNestedWhenClassPathAlsoContainsOtherUrls() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL url = JarUrl.create(jarFile, "nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(APP_JAR, url)) {
+			assertThat(loader.getResource("3.dat")).hasToString(url + "3.dat");
+			assertThat(loader.loadClass("demo.Application")).hasToString("class demo.Application");
+		}
+	}
+
+	@Test
+	void loadClassFromNestedAfterMissingClassInSamePackageDefinesPackageFromManifest() throws Exception {
+		byte[] classData;
+		try (JarFile appJar = new JarFile("src/test/resources/jars/app.jar");
+				InputStream inputStream = appJar.getInputStream(appJar.getEntry("demo/Application.class"))) {
+			classData = inputStream.readAllBytes();
+		}
+		Manifest manifest = new Manifest();
+		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION, "1.2.3");
+		ByteArrayOutputStream nestedJarData = new ByteArrayOutputStream();
+		try (JarOutputStream jarOutputStream = new JarOutputStream(nestedJarData, manifest)) {
+			jarOutputStream.putNextEntry(new JarEntry("demo/"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new JarEntry("demo/Application.class"));
+			jarOutputStream.write(classData);
+			jarOutputStream.closeEntry();
+		}
+		File jarFile = new File(this.tempDir, "test.jar");
+		try (JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile))) {
+			writeStoredEntry(jarOutputStream, "app.jar", nestedJarData.toByteArray());
+		}
+		URL url = JarUrl.create(jarFile, "app.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(() -> loader.loadClass("demo.Missing"));
+			Package pkg = loader.loadClass("demo.Application").getPackage();
+			assertThat(pkg.getImplementationVersion()).isEqualTo("1.2.3");
+		}
+	}
+
+	private void writeStoredEntry(JarOutputStream jarOutputStream, String name, byte[] data) throws Exception {
+		JarEntry entry = new JarEntry(name);
+		entry.setSize(data.length);
+		entry.setCompressedSize(data.length);
+		CRC32 crc32 = new CRC32();
+		crc32.update(data);
+		entry.setCrc(crc32.getValue());
+		entry.setMethod(ZipEntry.STORED);
+		jarOutputStream.putNextEntry(entry);
+		jarOutputStream.write(data);
+		jarOutputStream.closeEntry();
 	}
 
 	@Test
