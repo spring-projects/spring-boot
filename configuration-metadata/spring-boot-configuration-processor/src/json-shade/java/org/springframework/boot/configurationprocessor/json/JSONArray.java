@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-present the original author or authors.
+ * Copyright (C) 2010 The Android Open Source Project
  */
 
 package org.springframework.boot.configurationprocessor.json;
