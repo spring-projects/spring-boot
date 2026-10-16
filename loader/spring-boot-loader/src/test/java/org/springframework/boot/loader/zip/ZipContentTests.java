@@ -273,6 +273,23 @@ class ZipContentTests {
 	}
 
 	@Test
+	void loadWhenHasTrailingBytesOpensZip() throws IOException {
+		File fileWithTrailingBytes = new File(this.tempDir, "withtrailingbytes.jar");
+		try (InputStream inputStream = new FileInputStream(this.file);
+				FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(inputStream, outputStream);
+			StreamUtils.copy("#/bin/bash", Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getComment()).isEqualTo("outer");
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry(11).getName()).isEqualTo("multi-release.jar");
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
 	void openWhenZip64ThatExceedsZipEntryLimitOpensZip() throws Exception {
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		FileCopyUtils.copy(zip64Bytes(), zip64File);
