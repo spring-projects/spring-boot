@@ -5,6 +5,7 @@
 package org.springframework.boot.kafka.autoconfigure;
 
 import java.io.File;
+import java.security.KeyStore;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,9 +39,11 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslBundleRegistrar;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Template;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -223,6 +226,25 @@ class KafkaAutoConfigurationTests {
 			assertThat(configs).containsEntry("ssl.engine.factory.class", SslBundleSslEngineFactory.class);
 			assertThat(configs).containsEntry("org.springframework.boot.ssl.SslBundle", sslBundle);
 		});
+	}
+
+	@Test
+	void sslBundleUpdateIsVisibleToPreviouslyConfiguredSslEngineFactory() throws Exception {
+		KeyStore initialTrustStore = emptyKeyStore();
+		KeyStore updatedTrustStore = emptyKeyStore();
+		this.contextRunner.withPropertyValues("spring.kafka.security.protocol=SSL", "spring.kafka.ssl.bundle=test")
+			.withBean(SslBundleRegistrar.class,
+					() -> (registry) -> registry.registerBundle("test",
+							SslBundle.of(SslStoreBundle.of(null, null, initialTrustStore))))
+			.run((context) -> {
+				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+				SslBundleSslEngineFactory engineFactory = new SslBundleSslEngineFactory();
+				engineFactory.configure(consumerFactory.getConfigurationProperties());
+				assertThat(engineFactory.truststore()).isSameAs(initialTrustStore);
+				context.getBean(SslBundleRegistry.class)
+					.updateBundle("test", SslBundle.of(SslStoreBundle.of(null, null, updatedTrustStore)));
+				assertThat(engineFactory.truststore()).isSameAs(updatedTrustStore);
+			});
 	}
 
 	@Test
@@ -1125,6 +1147,12 @@ class KafkaAutoConfigurationTests {
 			KafkaTemplate<?, ?> template = context.getBean(KafkaTemplate.class);
 			assertThat(template).hasFieldOrPropertyWithValue("observationConvention", convention);
 		});
+	}
+
+	private KeyStore emptyKeyStore() throws Exception {
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(null, null);
+		return keyStore;
 	}
 
 	private KafkaConnectionDetails kafkaConnectionDetails() {
