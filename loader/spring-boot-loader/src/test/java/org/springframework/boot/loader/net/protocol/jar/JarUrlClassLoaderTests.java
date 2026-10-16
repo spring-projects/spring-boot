@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link JarUrlClassLoader}.
  *
  * @author Phillip Webb
+ * @author Jan Mohr
  */
 @AssertFileChannelDataBlocksClosed
 class JarUrlClassLoaderTests {
@@ -121,6 +122,18 @@ class JarUrlClassLoaderTests {
 		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(nestedUrl, anotherNestedUrl)) {
 			assertThat(Collections.list(loader.getResources("3.dat"))).map(URL::toString)
 				.containsExactly(nestedUrl + "3.dat", anotherNestedUrl + "3.dat");
+		}
+	}
+
+	@Test
+	void resolveResourcesFromMultipleNestedWhenUrlEndedReturnsResourcesInOrder() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL nestedUrl = JarUrl.create(jarFile, "nested.jar");
+		URL anotherNestedUrl = JarUrl.create(jarFile, "another-nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(nestedUrl, anotherNestedUrl)) {
+			assertThat(Collections.list(loader.getResources("\u00E4.dat"))).map(URL::toString)
+				.containsExactly(nestedUrl + "%c3%a4.dat", anotherNestedUrl + "%c3%a4.dat");
 		}
 	}
 

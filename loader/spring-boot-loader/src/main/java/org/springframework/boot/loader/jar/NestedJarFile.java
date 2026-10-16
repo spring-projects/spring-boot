@@ -4,6 +4,7 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -681,6 +682,8 @@ public class NestedJarFile extends JarFile {
 	 */
 	private class JarEntryInputStream extends InputStream {
 
+		private final Entry entry;
+
 		private final int uncompressedSize;
 
 		private final CloseableDataBlock content;
@@ -692,9 +695,19 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean closed;
 
 		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
+			this.entry = entry;
 			this.uncompressedSize = entry.getUncompressedSize();
 			this.content = entry.openContent();
 			this.remaining = this.uncompressedSize;
+		}
+
+		@Override
+		public byte[] readAllBytes() throws IOException {
+			byte[] bytes = new byte[this.uncompressedSize];
+			if (readNBytes(bytes, 0, bytes.length) != bytes.length) {
+				throw new EOFException("Unexpected end of entry " + this.entry.getName());
+			}
+			return bytes;
 		}
 
 		@Override

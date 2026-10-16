@@ -4,7 +4,6 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
@@ -28,6 +27,7 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.jar.NestedJarFile;
 import org.springframework.boot.loader.launch.LaunchedClassLoader;
+import org.springframework.boot.loader.net.util.UrlEncoder;
 
 /**
  * {@link URLClassLoader} with optimized support for Jar URLs.
@@ -47,11 +47,11 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	private final boolean hasJarUrls;
 
-	private final boolean hasOnlyNestedJarUrls;
-
 	private final Map<URL, JarFile> jarFiles = new ConcurrentHashMap<>();
 
 	private final Set<String> undefinablePackages = ConcurrentHashMap.newKeySet();
+
+	private final NestedOnlyOptimizedLoader nestedOnlyOptimizedLoader;
 
 	/**
 	 * Create a new {@link LaunchedClassLoader} instance.
@@ -61,92 +61,92 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	public JarUrlClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.urls = urls;
-		this.hasJarUrls = Arrays.stream(urls).anyMatch(this::isJarUrl);
-		this.hasOnlyNestedJarUrls = urls.length > 0 && Arrays.stream(urls).allMatch(this::isNestedJarUrl);
+		this.hasJarUrls = (urls.length != 0) && Arrays.stream(urls).anyMatch(this::isJarUrl);
+		this.nestedOnlyOptimizedLoader = (this.hasJarUrls && Arrays.stream(urls).allMatch(this::isNestedJarUrl))
+				? new NestedOnlyOptimizedLoader() : null;
 	}
 
 	@Override
 	public URL findResource(String name) {
-		if (this.hasOnlyNestedJarUrls && isSimpleEntryName(name)) {
-			for (URL url : this.urls) {
-				if (hasNestedJarEntry(url, name)) {
-					return createResourceUrl(url, name);
-				}
-			}
+		if (!LoadableNames.isValidResourceName(name)) {
 			return null;
 		}
-		if (!this.hasJarUrls) {
-			return super.findResource(name);
+		if (this.nestedOnlyOptimizedLoader != null) {
+			return this.nestedOnlyOptimizedLoader.findResource(name);
 		}
-		Optimizations.enable(false);
-		try {
-			return super.findResource(name);
+		if (this.hasJarUrls) {
+			Optimizations.enable(false);
+			try {
+				return super.findResource(name);
+			}
+			finally {
+				Optimizations.disable();
+			}
 		}
-		finally {
-			Optimizations.disable();
-		}
+		return super.findResource(name);
 	}
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (this.hasOnlyNestedJarUrls && isSimpleEntryName(name)) {
-			List<URL> resources = new ArrayList<>();
-			for (URL url : this.urls) {
-				if (hasNestedJarEntry(url, name)) {
-					URL resource = createResourceUrl(url, name);
-					if (resource != null) {
-						resources.add(resource);
-					}
-				}
+		if (!LoadableNames.isValidResourceName(name)) {
+			return Collections.emptyEnumeration();
+		}
+		if (this.nestedOnlyOptimizedLoader != null) {
+			return this.nestedOnlyOptimizedLoader.findResources(name);
+		}
+		if (this.hasJarUrls) {
+			Optimizations.enable(false);
+			try {
+				return new OptimizedEnumeration(super.findResources(name));
 			}
-			return Collections.enumeration(resources);
+			finally {
+				Optimizations.disable();
+			}
 		}
-		if (!this.hasJarUrls) {
-			return super.findResources(name);
-		}
-		Optimizations.enable(false);
-		try {
-			return new OptimizedEnumeration(super.findResources(name));
-		}
-		finally {
-			Optimizations.disable();
-		}
+		return super.findResources(name);
 	}
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		if (!this.hasOnlyNestedJarUrls) {
-			return super.findClass(name);
+		if (!LoadableNames.isValidClassName(name)) {
+			throw new ClassNotFoundException(name);
 		}
-		String entryName = name.replace('.', '/').concat(".class");
-		for (URL url : this.urls) {
-			NestedJarFile jarFile = getNestedJarFile(url);
-			JarEntry entry = (jarFile != null) ? jarFile.getJarEntry(entryName) : null;
-			if (entry != null) {
-				return defineClass(name, jarFile, entry, url);
-			}
+		if (this.nestedOnlyOptimizedLoader != null) {
+			return this.nestedOnlyOptimizedLoader.findClass(name);
 		}
-		throw new ClassNotFoundException(name);
+		return super.findClass(name);
 	}
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		if (!this.hasJarUrls || this.hasOnlyNestedJarUrls) {
+		if (!LoadableNames.isValidClassName(name)) {
+			throw new ClassNotFoundException(name);
+		}
+		if (this.nestedOnlyOptimizedLoader != null) {
+			// No need to define package here since super.loadClass will end up in the
+			// optimized findClass method.
 			return super.loadClass(name, resolve);
 		}
-		Optimizations.enable(true);
-		try {
+		if (this.hasJarUrls) {
+			Optimizations.enable(true);
 			try {
-				definePackageIfNecessary(name);
+				try {
+					definePackageIfNecessary(name);
+				}
+				catch (IllegalArgumentException ex) {
+					tolerateRaceConditionDueToBeingParallelCapable(ex, name);
+				}
+				return super.loadClass(name, resolve);
 			}
-			catch (IllegalArgumentException ex) {
-				tolerateRaceConditionDueToBeingParallelCapable(ex, name);
+			finally {
+				Optimizations.disable();
 			}
-			return super.loadClass(name, resolve);
 		}
-		finally {
-			Optimizations.disable();
-		}
+		return super.loadClass(name, resolve);
+	}
+
+	final Class<?> defineClass(String name, byte[] bytes, URL url) {
+		return defineClass(name, bytes, 0, bytes.length, new CodeSource(url, (CodeSigner[]) null));
 	}
 
 	/**
@@ -178,7 +178,7 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 			return;
 		}
 		String classEntryName = className.replace('.', '/') + ".class";
-		for (URL url : this.urls) {
+		for (URL url : urls()) {
 			try {
 				JarFile jarFile = getJarFile(url);
 				if (jarFile != null) {
@@ -193,6 +193,20 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 			}
 		}
 		this.undefinablePackages.add(packageName);
+	}
+
+	final void definePackageWithOptionalManifest(String packageName, Manifest manifest, URL url) throws AssertionError {
+		try {
+			if (manifest != null) {
+				definePackage(packageName, manifest, url);
+			}
+			else {
+				definePackage(packageName, null, null, null, null, null, null, null);
+			}
+		}
+		catch (IllegalArgumentException ex) {
+			tolerateRaceConditionDueToBeingParallelCapable(ex, packageName);
+		}
 	}
 
 	private void tolerateRaceConditionDueToBeingParallelCapable(IllegalArgumentException ex, String packageName)
@@ -232,106 +246,6 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		return jarFile;
 	}
 
-	private NestedJarFile getNestedJarFile(URL url) {
-		try {
-			return (getJarFile(url) instanceof NestedJarFile nestedJarFile) ? nestedJarFile : null;
-		}
-		catch (IOException ex) {
-			return null;
-		}
-	}
-
-	private boolean hasNestedJarEntry(URL url, String name) {
-		NestedJarFile jarFile = getNestedJarFile(url);
-		return jarFile != null && jarFile.hasEntry(name);
-	}
-
-	private URL createResourceUrl(URL url, String name) {
-		try {
-			return new URL(url, name);
-		}
-		catch (MalformedURLException ex) {
-			return null;
-		}
-	}
-
-	private Class<?> defineClass(String name, NestedJarFile jarFile, JarEntry entry, URL url)
-			throws ClassNotFoundException {
-		try {
-			definePackageForClass(name, jarFile, url);
-			byte[] bytes = readEntry(jarFile, entry);
-			return defineClass(name, bytes, 0, bytes.length, new CodeSource(url, (CodeSigner[]) null));
-		}
-		catch (IOException ex) {
-			throw new ClassNotFoundException(name, ex);
-		}
-	}
-
-	private void definePackageForClass(String className, NestedJarFile jarFile, URL url) {
-		int lastDot = className.lastIndexOf('.');
-		if (lastDot == -1) {
-			return;
-		}
-		String packageName = className.substring(0, lastDot);
-		Package definedPackage = getDefinedPackage(packageName);
-		if (definedPackage != null) {
-			if (definedPackage.isSealed() && !definedPackage.isSealed(url)) {
-				throw new SecurityException("sealing violation: package " + packageName + " is sealed");
-			}
-			return;
-		}
-		Manifest manifest = getManifest(jarFile);
-		try {
-			if (manifest != null) {
-				definePackage(packageName, manifest, url);
-			}
-			else {
-				definePackage(packageName, null, null, null, null, null, null, null);
-			}
-		}
-		catch (IllegalArgumentException ex) {
-			tolerateRaceConditionDueToBeingParallelCapable(ex, packageName);
-		}
-	}
-
-	private Manifest getManifest(NestedJarFile jarFile) {
-		try {
-			return jarFile.getManifest();
-		}
-		catch (IOException ex) {
-			return null;
-		}
-	}
-
-	private byte[] readEntry(NestedJarFile jarFile, JarEntry entry) throws IOException {
-		try (InputStream inputStream = jarFile.getInputStream(entry)) {
-			long size = entry.getSize();
-			if (size < 0 || size > Integer.MAX_VALUE) {
-				return inputStream.readAllBytes();
-			}
-			byte[] bytes = new byte[(int) size];
-			if (inputStream.readNBytes(bytes, 0, bytes.length) != bytes.length) {
-				throw new EOFException("Unexpected end of entry " + entry.getName());
-			}
-			return bytes;
-		}
-	}
-
-	private static boolean isSimpleEntryName(String name) {
-		if (name.isEmpty() || name.charAt(0) == '/' || name.endsWith(".") || name.contains("./")) {
-			return false;
-		}
-		for (int i = 0; i < name.length(); i++) {
-			char ch = name.charAt(i);
-			boolean simple = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')
-					|| ch == '/' || ch == '.' || ch == '-' || ch == '_' || ch == '$';
-			if (!simple) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * Clear any caches. This method is called reflectively by
 	 * {@code ClearCachesApplicationListener}.
@@ -345,7 +259,7 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		catch (IOException ex) {
 			// Ignore
 		}
-		for (URL url : this.urls) {
+		for (URL url : urls()) {
 			if (isJarUrl(url)) {
 				clearCache(url);
 			}
@@ -371,13 +285,16 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		}
 	}
 
-	private boolean isJarUrl(URL url) {
-		return "jar".equals(url.getProtocol());
+	private boolean isNestedJarUrl(URL url) {
+		return isJarUrl(url) && isNestedJarUrlFilePart(url.getFile());
 	}
 
-	private boolean isNestedJarUrl(URL url) {
-		String file = url.getFile();
-		return isJarUrl(url) && file.startsWith("nested:") && file.endsWith("!/");
+	private boolean isNestedJarUrlFilePart(String file) {
+		return file.startsWith("nested:") && file.endsWith("!/");
+	}
+
+	private boolean isJarUrl(URL url) {
+		return "jar".equals(url.getProtocol());
 	}
 
 	@Override
@@ -393,6 +310,117 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 			}
 			this.jarFiles.clear();
 		}
+	}
+
+	final URL[] urls() {
+		return this.urls;
+	}
+
+	/**
+	 * Optimzations that can be used when the classloader contains only
+	 * {@code 'jar:nested'} URLs.
+	 */
+	private final class NestedOnlyOptimizedLoader {
+
+		Class<?> findClass(String name) throws ClassNotFoundException {
+			String entryName = name.replace('.', '/').concat(".class");
+			for (URL url : urls()) {
+				NestedJarFile jarFile = getNestedJarFile(url);
+				JarEntry entry = (jarFile != null) ? jarFile.getJarEntry(entryName) : null;
+				if (entry != null) {
+					return defineClass(jarFile, entry, url, name);
+				}
+			}
+			throw new ClassNotFoundException(name);
+		}
+
+		URL findResource(String name) {
+			for (URL url : urls()) {
+				NestedJarFile jarFile = getNestedJarFile(url);
+				URL resource = createResource(jarFile, url, name);
+				if (resource != null) {
+					return resource;
+				}
+			}
+			return null;
+		}
+
+		Enumeration<URL> findResources(String name) {
+			List<URL> resources = new ArrayList<>();
+			for (URL url : urls()) {
+				NestedJarFile jarFile = getNestedJarFile(url);
+				URL resource = createResource(jarFile, url, name);
+				if (resource != null) {
+					resources.add(resource);
+				}
+			}
+			return Collections.enumeration(resources);
+		}
+
+		private URL createResource(NestedJarFile jarFile, URL url, String name) {
+			try {
+				if (jarFile != null && jarFile.hasEntry(name)) {
+					return new URL(url, UrlEncoder.encode(name));
+				}
+			}
+			catch (MalformedURLException ex) {
+			}
+			return null;
+		}
+
+		private NestedJarFile getNestedJarFile(URL url) {
+			try {
+				JarFile jarFile = getJarFile(url);
+				if (jarFile instanceof NestedJarFile nestedJarFile) {
+					return nestedJarFile;
+				}
+			}
+			catch (IOException ex) {
+			}
+			return null;
+		}
+
+		private Class<?> defineClass(NestedJarFile jarFile, JarEntry entry, URL url, String name)
+				throws ClassNotFoundException {
+			try {
+				definePackageIfNecessary(jarFile, url, name);
+				try (InputStream inputStream = jarFile.getInputStream(entry)) {
+					return JarUrlClassLoader.this.defineClass(name, inputStream.readAllBytes(), url);
+				}
+			}
+			catch (IOException ex) {
+				throw new ClassNotFoundException(name, ex);
+			}
+		}
+
+		private void definePackageIfNecessary(NestedJarFile jarFile, URL url, String className) {
+			int lastDot = className.lastIndexOf('.');
+			if (lastDot >= 0) {
+				String packageName = className.substring(0, lastDot);
+				definePackage(jarFile, url, packageName);
+			}
+		}
+
+		private void definePackage(NestedJarFile jarFile, URL url, String packageName) throws AssertionError {
+			Package definedPackage = getDefinedPackage(packageName);
+			if (definedPackage != null) {
+				if (definedPackage.isSealed() && !definedPackage.isSealed(url)) {
+					throw new SecurityException("sealing violation: package " + packageName + " is sealed");
+				}
+				return;
+			}
+			definePackageWithOptionalManifest(packageName, getManifest(jarFile), url);
+		}
+
+		private Manifest getManifest(NestedJarFile jarFile) {
+			try {
+				return jarFile.getManifest();
+			}
+			catch (IOException ex) {
+				return null;
+			}
+		}
+
 	}
 
 	/**
