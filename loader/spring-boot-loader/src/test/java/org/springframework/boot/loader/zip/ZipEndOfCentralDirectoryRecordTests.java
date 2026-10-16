@@ -26,7 +26,8 @@ class ZipEndOfCentralDirectoryRecordTests {
 				0x04, 0x00, //
 				0x05, 0x00, 0x00, 0x00, //
 				0x06, 0x00, 0x00, 0x00, //
-				0x07, 0x00 }); //
+				0x07, 0x00, //
+				0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74 }); // "comment"
 		ZipEndOfCentralDirectoryRecord.Located located = ZipEndOfCentralDirectoryRecord.load(dataBlock);
 		assertThat(located.pos()).isEqualTo(0L);
 		ZipEndOfCentralDirectoryRecord record = located.endOfCentralDirectoryRecord();
@@ -58,6 +59,27 @@ class ZipEndOfCentralDirectoryRecordTests {
 	}
 
 	@Test
+	void loadWhenSignatureWithinCommentLoadsData() throws Exception {
+		DataBlock dataBlock = new ByteArrayDataBlock(new byte[] { //
+				0x50, 0x4b, 0x05, 0x06, //
+				0x01, 0x00, //
+				0x02, 0x00, //
+				0x03, 0x00, //
+				0x04, 0x00, //
+				0x05, 0x00, 0x00, 0x00, //
+				0x06, 0x00, 0x00, 0x00, //
+				0x04, 0x00, //
+				0x50, 0x4b, 0x05, 0x06 }); // Comment ends with the signature bytes
+		ZipEndOfCentralDirectoryRecord.Located located = ZipEndOfCentralDirectoryRecord.load(dataBlock);
+		assertThat(located.pos()).isEqualTo(0L);
+		ZipEndOfCentralDirectoryRecord record = located.endOfCentralDirectoryRecord();
+		assertThat(record.numberOfThisDisk()).isEqualTo((short) 1);
+		assertThat(record.sizeOfCentralDirectory()).isEqualTo(5);
+		assertThat(record.offsetToStartOfCentralDirectory()).isEqualTo(6);
+		assertThat(record.commentLength()).isEqualTo((short) 4);
+	}
+
+	@Test
 	void loadWhenSignatureDoesNotMatchThrowsException() {
 		DataBlock dataBlock = new ByteArrayDataBlock(new byte[] { //
 				0x51, 0x4b, 0x05, 0x06, //
@@ -83,8 +105,10 @@ class ZipEndOfCentralDirectoryRecordTests {
 				0x05, 0x00, 0x00, 0x00, //
 				0x06, 0x00, 0x00, 0x00, //
 				0x07, 0x00 }; //
+		byte[] data = new byte[bytes.length + 7];
+		System.arraycopy(bytes, 0, data, 0, bytes.length);
 		ZipEndOfCentralDirectoryRecord.Located located = ZipEndOfCentralDirectoryRecord
-			.load(new ByteArrayDataBlock(bytes));
+			.load(new ByteArrayDataBlock(data));
 		assertThat(located.endOfCentralDirectoryRecord().asByteArray()).isEqualTo(bytes);
 	}
 
