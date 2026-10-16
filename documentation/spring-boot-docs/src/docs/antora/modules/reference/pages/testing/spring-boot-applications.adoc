@@ -285,6 +285,8 @@ For example, you might want to test that Spring MVC controllers are mapping URLs
 
 When combined with `spring-boot-test-autoconfigure`, Spring Boot's xref:reference:testing/test-modules.adoc[test modules] include a number of annotations that can be used to automatically configure such "`slices`".
 Each of them works in a similar way, providing a `@...Test` annotation that loads the javadoc:org.springframework.context.ApplicationContext[] and one or more `@AutoConfigure...` annotations that can be used to customize auto-configuration settings.
+Separate slices exist because each kind of test needs different component scanning and auto-configuration: a web MVC test focuses on controllers and web test support, while a JDBC test focuses on JDBC components.
+The `@AutoConfigure...` annotations let you tailor the chosen slice's test support.
 
 NOTE: Each slice restricts component scan to appropriate components and loads a very restricted set of auto-configuration classes.
 If you need to exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
@@ -874,6 +876,20 @@ In this example, the `+com.example.IntegrationAutoConfiguration+` is enabled on 
 TIP: You can use comments with `#` in this file.
 
 TIP: A slice or `@AutoConfigure...` annotation can be customized this way as long as it is meta-annotated with javadoc:org.springframework.boot.autoconfigure.ImportAutoConfiguration[format=annotation].
+
+=== Composing a Reusable Test Annotation
+
+If several tests need the same slice and additional auto-configuration, you can combine those annotations in a single annotation.
+For example, the following annotation builds on javadoc:org.springframework.boot.jdbc.test.autoconfigure.JdbcTest[format=annotation] and imports the same auto-configuration used in the earlier `@JdbcTest` example:
+
+include-code::composedannotation/MyJdbcTest[]
+
+Tests can then use the composed annotation instead of repeating both annotations:
+
+include-code::composedannotation/MyJdbcTests[]
+
+The composed annotation retains the JDBC slice's component scanning and other defaults.
+Choose a single `@...Test` annotation as its base; combining multiple slices in one composed annotation is not supported.
 
 
 
