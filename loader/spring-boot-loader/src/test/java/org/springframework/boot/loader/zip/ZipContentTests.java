@@ -273,6 +273,53 @@ class ZipContentTests {
 	}
 
 	@Test
+	void loadWhenHasTrailingBytesOpensZip() throws IOException {
+		File fileWithTrailingBytes = new File(this.tempDir, "withtrailingbytes.jar");
+		try (InputStream inputStream = new FileInputStream(this.file);
+				FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(inputStream, outputStream);
+			StreamUtils.copy("trailing-bytes", Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getComment()).isEqualTo("outer");
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry(11).getName()).isEqualTo("multi-release.jar");
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
+	void loadWhenHasTrailingBytesLargerThanTheSearchBufferOpensZip() throws IOException {
+		File fileWithTrailingBytes = new File(this.tempDir, "withmanytrailingbytes.jar");
+		try (InputStream inputStream = new FileInputStream(this.file);
+				FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(inputStream, outputStream);
+			StreamUtils.copy("x".repeat(1024), Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getComment()).isEqualTo("outer");
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
+	void loadWhenZip64HasTrailingBytesOpensZip() throws Exception {
+		File fileWithTrailingBytes = new File(this.tempDir, "zip64withtrailingbytes.zip");
+		try (FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(zip64Bytes(), outputStream);
+			StreamUtils.copy("trailing-bytes", Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(65537);
+			assertThat(zip.getEntry(0).getName()).isEqualTo("0.dat");
+			assertThat(zip.getEntry(65536).getName()).isEqualTo("65536.dat");
+		}
+	}
+
+	@Test
 	void openWhenZip64ThatExceedsZipEntryLimitOpensZip() throws Exception {
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		FileCopyUtils.copy(zip64Bytes(), zip64File);
