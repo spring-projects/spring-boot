@@ -160,6 +160,7 @@ The component consuming the bundle has to be compatible with reloadable SSL bund
 Currently the following components are compatible:
 
 * Tomcat web server
+* Jetty web server
 * Netty web server
 * LDAP client
 

@@ -19,6 +19,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletRegistration.Dynamic;
@@ -27,6 +30,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.jasper.servlet.JspServlet;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
@@ -54,6 +58,11 @@ import org.mockito.InOrder;
 import org.springframework.boot.jetty.JettyAccess;
 import org.springframework.boot.jetty.JettyServerCustomizer;
 import org.springframework.boot.jetty.JettyWebServer;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -85,6 +94,7 @@ import static org.mockito.Mockito.mock;
  * @author Henri Kerola
  * @author Moritz Halbritter
  * @author Onur Kagan Ozcan
+ * @author Armen Petrosyan
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -285,6 +295,55 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		factory.setSsl(ssl);
 		assertThatIllegalStateException().isThrownBy(() -> this.webServer = factory.getWebServer())
 			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
+	}
+
+	@Test
+	@WithPackageResources({ "1.crt", "1.key", "2.crt", "2.key" })
+	void shouldUpdateSslWhenReloadingSslBundles() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test",
+				createPemSslBundle("classpath:1.crt", "classpath:1.key"));
+		factory.setSslBundles(bundles);
+		factory.setSsl(Ssl.forBundle("test"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		assertThat(getPeerPrincipal()).isEqualTo("CN=1");
+		bundles.updateBundle("test", createPemSslBundle("classpath:2.crt", "classpath:2.key"));
+		assertThat(getPeerPrincipal()).isEqualTo("CN=2");
+	}
+
+	@Test
+	@WithPackageResources({ "1.crt", "1.key", "2.crt", "2.key" })
+	void shouldNotUpdateSslWhenReloadedSslBundleDoesNotContainKeyAlias() throws Exception {
+		SslBundleKey key = SslBundleKey.of(null, "test-alias");
+		JettyServletWebServerFactory factory = getFactory();
+		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test",
+				SslBundle.of(createPemSslStoreBundle("classpath:1.crt", "classpath:1.key", "test-alias"), key));
+		factory.setSslBundles(bundles);
+		factory.setSsl(Ssl.forBundle("test"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		SslBundle updatedBundle = SslBundle
+			.of(createPemSslStoreBundle("classpath:2.crt", "classpath:2.key", "other-alias"), key);
+		assertThatIllegalStateException().isThrownBy(() -> bundles.updateBundle("test", updatedBundle))
+			.withMessage("Keystore does not contain alias 'test-alias'");
+		assertThat(getPeerPrincipal()).isEqualTo("CN=1");
+	}
+
+	private PemSslStoreBundle createPemSslStoreBundle(String certificate, String privateKey, String alias) {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(certificate)
+			.withPrivateKey(privateKey)
+			.withAlias(alias);
+		return new PemSslStoreBundle(keyStoreDetails, null);
+	}
+
+	private String getPeerPrincipal() throws Exception {
+		SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+		try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory()
+			.createSocket("localhost", this.webServer.getPort())) {
+			socket.startHandshake();
+			return socket.getSession().getPeerPrincipal().getName();
+		}
 	}
 
 	private SslContextFactory extractSslContextFactory(SslConnectionFactory connectionFactory) {
