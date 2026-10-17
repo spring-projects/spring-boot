@@ -13,7 +13,8 @@ package org.springframework.boot.buildpack.platform.build;
 public enum PullPolicy {
 
 	/**
-	 * Always pull the image from the registry.
+	 * Always attempt to pull the image from the registry, using a local image if the
+	 * image does not exist in the registry.
 	 */
 	ALWAYS,
 

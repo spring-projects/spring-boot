@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Andrey Shlykov
  * @author Rafael Ceccone
+ * @author Van Vo
  * @since 2.3.0
  */
 public class Builder {
@@ -234,8 +235,7 @@ public class Builder {
 				return pullImageAndCheckForPlatformMismatch(type, reference, platform);
 			}
 			try {
-				Image image = Builder.this.docker.image().inspect(reference, platform);
-				return checkPlatformMismatch(image, reference, platform);
+				return inspectImage(reference, platform);
 			}
 			catch (DockerEngineException ex) {
 				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
@@ -243,6 +243,11 @@ public class Builder {
 				}
 				throw ex;
 			}
+		}
+
+		private Image inspectImage(ImageReference reference, @Nullable ImagePlatform platform) throws IOException {
+			Image image = Builder.this.docker.image().inspect(reference, platform);
+			return checkPlatformMismatch(image, reference, platform);
 		}
 
 		private Image pullImageAndCheckForPlatformMismatch(ImageType type, ImageReference reference,
@@ -258,6 +263,16 @@ public class Builder {
 				if (platform != null && ex.getMessage() != null
 						&& ex.getMessage().contains("does not provide the specified platform")) {
 					throwAsPlatformMismatchException(type, reference, platform, ex);
+				}
+				if (this.pullPolicy == PullPolicy.ALWAYS && ex.getStatusCode() == 404) {
+					try {
+						return inspectImage(reference, platform);
+					}
+					catch (DockerEngineException inspectException) {
+						if (inspectException.getStatusCode() != 404) {
+							throw inspectException;
+						}
+					}
 				}
 				throw ex;
 			}

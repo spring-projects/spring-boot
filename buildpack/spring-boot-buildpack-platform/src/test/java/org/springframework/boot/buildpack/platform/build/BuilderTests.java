@@ -12,6 +12,8 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
@@ -35,6 +37,7 @@ import org.springframework.boot.buildpack.platform.io.TarArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -54,6 +57,7 @@ import static org.mockito.Mockito.times;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Rafael Ceccone
+ * @author Van Vo
  */
 class BuilderTests {
 
@@ -339,8 +343,8 @@ class BuilderTests {
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(LATEST_PAKETO_BUILDPACKS_BUILDER))).willReturn(builderImage);
-		given(docker.image().inspect(eq(BASE_CNB))).willReturn(runImage);
+		given(docker.image().inspect(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), any())).willReturn(builderImage);
+		given(docker.image().inspect(eq(BASE_CNB), any())).willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.ALWAYS);
 		builder.build(request);
@@ -352,7 +356,7 @@ class BuilderTests {
 		assertThat(tag).isNotNull();
 		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
-		then(docker.image()).should(never()).inspect(any());
+		then(docker.image()).should(never()).inspect(any(), any());
 	}
 
 	@Test
@@ -385,6 +389,152 @@ class BuilderTests {
 		then(docker.image()).should().remove(tag, true);
 		then(docker.image()).should(times(2)).inspect(any(), any());
 		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
+	}
+
+	@Test
+	void buildUsesLocalBuilderWhenPullReturnsNotFound() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null));
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null)).willReturn(builderImage);
+		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		new Builder(BuildLog.to(out), docker, null).build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS));
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null);
+	}
+
+	@Test
+	void buildUsesLocalRunImageWhenPullReturnsNotFound() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		ImagePlatform platform = ImagePlatform.from(builderImage);
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(BASE_CNB), eq(platform), any(), isNull())).willThrow(new TestDockerEngineException(
+				"docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null, null));
+		given(docker.image().inspect(BASE_CNB, platform)).willReturn(runImage);
+		new Builder(BuildLog.to(out), docker, null).build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS));
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should().inspect(BASE_CNB, platform);
+	}
+
+	@Test
+	void buildUsesLocalBuildpackWhenPullReturnsNotFound() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		ImagePlatform platform = ImagePlatform.from(builderImage);
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(BASE_CNB), eq(platform), any(), isNull()))
+			.willAnswer(withPulledImage(loadImage("run-image.json")));
+		ImageReference buildpackImage = ImageReference.of("example/buildpack1:1.0.0");
+		given(docker.image().pull(eq(buildpackImage), eq(platform), any(), isNull()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null));
+		given(docker.image().inspect(buildpackImage, platform)).willReturn(loadImage("buildpack-image.json"));
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.ALWAYS)
+			.withBuildpacks(BuildpackReference.of("docker://example/buildpack1:1.0.0"));
+		new Builder(BuildLog.to(out), docker, null).build(request);
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		then(docker.image()).should().inspect(buildpackImage, platform);
+	}
+
+	@Test
+	void buildThrowsPullExceptionWhenImageIsNotFoundLocallyOrInRegistry() throws Exception {
+		DockerApi docker = mockDockerApi();
+		TestDockerEngineException pullException = new TestDockerEngineException("docker://localhost/",
+				new URI("example"), 404, "NOT FOUND", null, null, null);
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(pullException);
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null)).willThrow(new TestDockerEngineException(
+				"docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null, null));
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		assertThatExceptionOfType(TestDockerEngineException.class)
+			.isThrownBy(() -> builder.build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS)))
+			.isSameAs(pullException);
+		then(docker.image()).should().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = { 401, 403, 500 })
+	void buildDoesNotUseLocalImageForOtherPullErrors(int statusCode) throws Exception {
+		DockerApi docker = mockDockerApi();
+		TestDockerEngineException pullException = new TestDockerEngineException("docker://localhost/",
+				new URI("example"), statusCode, "ERROR", null, null, null);
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(pullException);
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		assertThatExceptionOfType(TestDockerEngineException.class)
+			.isThrownBy(() -> builder.build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS)))
+			.isSameAs(pullException);
+		then(docker.image()).should(never()).inspect(any(), any());
+	}
+
+	@Test
+	void buildRejectsLocalImageWithMismatchedPlatform() throws Exception {
+		DockerApi docker = mockDockerApi();
+		ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), eq(platform), any(), isNull()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null));
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, platform)).willReturn(loadImage("image.json"));
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.ALWAYS).withImagePlatform("linux/arm64/v1");
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> builder.build(request))
+			.withMessageContaining("Image platform mismatch detected")
+			.withMessageContaining("Requested platform 'linux/arm64/v1' but got 'linux/amd64'");
+	}
+
+	@Test
+	void buildDoesNotInspectAgainWhenIfNotPresentPullReturnsNotFound() throws Exception {
+		DockerApi docker = mockDockerApi();
+		TestDockerEngineException pullException = new TestDockerEngineException("docker://localhost/",
+				new URI("example"), 404, "NOT FOUND", null, null, null);
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null)).willThrow(new TestDockerEngineException(
+				"docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null, null));
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(pullException);
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		assertThatExceptionOfType(TestDockerEngineException.class)
+			.isThrownBy(() -> builder.build(getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT)))
+			.isSameAs(pullException);
+		then(docker.image()).should().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null);
+	}
+
+	@Test
+	void buildThrowsExceptionWhenInspectingLocalImageFails() throws Exception {
+		DockerApi docker = mockDockerApi();
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null));
+		TestDockerEngineException inspectException = new TestDockerEngineException("docker://localhost/",
+				new URI("example"), 500, "ERROR", null, null, null);
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null)).willThrow(inspectException);
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		assertThatExceptionOfType(TestDockerEngineException.class)
+			.isThrownBy(() -> builder.build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS)))
+			.isSameAs(inspectException);
+	}
+
+	@Test
+	void buildThrowsIOExceptionWhenInspectingLocalImageFails() throws Exception {
+		DockerApi docker = mockDockerApi();
+		given(docker.image().pull(eq(LATEST_PAKETO_BUILDPACKS_BUILDER), isNull(), any(), isNull()))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null));
+		IOException inspectException = new IOException("Inspect failed");
+		given(docker.image().inspect(LATEST_PAKETO_BUILDPACKS_BUILDER, null)).willThrow(inspectException);
+		Builder builder = new Builder(BuildLog.to(new TestPrintStream()), docker, null);
+		assertThatIOException().isThrownBy(() -> builder.build(getTestRequest().withPullPolicy(PullPolicy.ALWAYS)))
+			.isSameAs(inspectException);
 	}
 
 	@Test

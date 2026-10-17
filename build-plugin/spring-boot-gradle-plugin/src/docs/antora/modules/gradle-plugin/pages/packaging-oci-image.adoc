@@ -157,8 +157,9 @@ Refer to documentation of the builder being used to determine the image OS and a
 
 | `pullPolicy`
 | `--pullPolicy`
-| javadoc:org.springframework.boot.buildpack.platform.build.PullPolicy[Policy] used to determine when to pull the builder and run images from the registry.
+| javadoc:org.springframework.boot.buildpack.platform.build.PullPolicy[Policy] used to determine when to pull the builder, run, and buildpack images from the registry.
 Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
+With `ALWAYS`, a local image is used if the image does not exist in the registry.
 | `ALWAYS`
 
 | `environment`
