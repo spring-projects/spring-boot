@@ -281,6 +281,17 @@ class StandardConfigDataLocationResolverTests {
 	}
 
 	@Test
+	@WithResource(name = "config[a]/application.properties", content = "brackets=test")
+	void resolveWhenLocationContainsBracketsResolves() throws IOException {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:config[a]/application.properties");
+		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
+		assertThat(locations).hasSize(1);
+		ConfigData loaded = new StandardConfigDataLoader().load(mock(ConfigDataLoaderContext.class), locations.get(0));
+		PropertySource<?> propertySource = loaded.getPropertySources().get(0);
+		assertThat(propertySource.getProperty("brackets")).isEqualTo("test");
+	}
+
+	@Test
 	@WithResource(name = "application-dev.properties")
 	void resolveProfileSpecificReturnsProfileSpecificFiles() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/");
