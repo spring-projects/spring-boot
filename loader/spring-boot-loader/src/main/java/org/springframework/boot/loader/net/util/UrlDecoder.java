@@ -48,41 +48,36 @@ public final class UrlDecoder {
 		if (length == 0 || firstPercentIndex < 0) {
 			return source;
 		}
-
 		StringBuilder output = new StringBuilder(length);
 		output.append(source, 0, firstPercentIndex);
 		byte[] bytes = null;
 		int i = firstPercentIndex;
 		while (i < length) {
 			char ch = source.charAt(i);
-			if (ch == '%') {
-				try {
-					if (bytes == null) {
-						bytes = new byte[(length - i) / 3];
-					}
-
-					int pos = 0;
-					while (i + 2 < length && ch == '%') {
-						bytes[pos++] = (byte) HexFormat.fromHexDigits(source, i + 1, i + 3);
-						i += 3;
-						if (i < length) {
-							ch = source.charAt(i);
-						}
-					}
-
-					if (i < length && ch == '%') {
-						throw new IllegalArgumentException("Incomplete trailing escape (%) pattern");
-					}
-
-					output.append(new String(bytes, 0, pos, charset));
-				}
-				catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
-				}
-			}
-			else {
+			if (ch != '%') {
 				output.append(ch);
 				i++;
+				continue;
+			}
+			try {
+				if (bytes == null) {
+					bytes = new byte[(length - i) / 3];
+				}
+				int pos = 0;
+				while (i + 2 < length && ch == '%') {
+					bytes[pos++] = (byte) HexFormat.fromHexDigits(source, i + 1, i + 3);
+					i += 3;
+					if (i < length) {
+						ch = source.charAt(i);
+					}
+				}
+				if (i < length && ch == '%') {
+					throw new IllegalArgumentException("Incomplete trailing escape (%) pattern");
+				}
+				output.append(new String(bytes, 0, pos, charset));
+			}
+			catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
 			}
 		}
 		return output.toString();
