@@ -134,7 +134,8 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 			return false;
 		}
 		OriginTrackedResource other = (OriginTrackedResource) obj;
-		return this.resource.equals(other) && ObjectUtils.nullSafeEquals(this.origin, other.origin);
+		return ObjectUtils.nullSafeEquals(this.resource, other.resource)
+				&& ObjectUtils.nullSafeEquals(this.origin, other.origin);
 	}
 
 	@Override
