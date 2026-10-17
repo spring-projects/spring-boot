@@ -15,13 +15,13 @@ import java.util.Map;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Logback {@link CompositeConverter} to color output using the {@link AnsiOutput} class.
@@ -32,69 +32,65 @@ import org.springframework.boot.ansi.AnsiStyle;
  * {@code reverse}).
  *
  * @author Phillip Webb
+ * @author Jan Mohr
  * @since 1.0.0
  */
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
-	private static final Map<String, AnsiElement> ELEMENTS;
+	private static final Map<String, AnsiElement> ELEMENTS_BY_NAME;
 
 	static {
-		Map<String, AnsiElement> ansiElements = new HashMap<>();
+		Map<String, AnsiElement> elements = new HashMap<>();
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
-			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
+			.forEach((color) -> elements.put(color.name().toLowerCase(Locale.ROOT), color));
 		Arrays.stream(AnsiStyle.values())
-			.forEach((style) -> ansiElements.put(style.name().toLowerCase(Locale.ROOT), style));
+			.forEach((style) -> elements.put(style.name().toLowerCase(Locale.ROOT), style));
 		Arrays.stream(AnsiBackground.values())
-			.filter((bg) -> bg != AnsiBackground.DEFAULT)
-			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
-		ELEMENTS = Collections.unmodifiableMap(ansiElements);
+			.filter((background) -> background != AnsiBackground.DEFAULT)
+			.forEach((background) -> elements.put("bg_" + background.name().toLowerCase(Locale.ROOT), background));
+		ELEMENTS_BY_NAME = Collections.unmodifiableMap(elements);
 	}
 
-	private static final Map<Integer, AnsiElement> LEVELS;
+	private static final Map<Integer, AnsiElement> ELEMENTS_BY_LEVEL;
 
 	static {
-		Map<Integer, AnsiElement> ansiLevels = new HashMap<>();
-		ansiLevels.put(Level.ERROR_INTEGER, AnsiColor.RED);
-		ansiLevels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
-		LEVELS = Collections.unmodifiableMap(ansiLevels);
+		Map<Integer, AnsiElement> elements = new HashMap<>();
+		elements.put(Level.ERROR_INTEGER, AnsiColor.RED);
+		elements.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
+		ELEMENTS_BY_LEVEL = Collections.unmodifiableMap(elements);
 	}
 
-	private List<AnsiElement> stylings = Collections.emptyList();
+	private static final AnsiElement[] NO_ELEMENTS = {};
+
+	private AnsiElement[] elements = NO_ELEMENTS;
 
 	@Override
 	public void start() {
-		this.stylings = getStylings(getOptionList());
+		List<String> options = getOptionList();
+		if (!CollectionUtils.isEmpty(options)) {
+			List<AnsiElement> elements = new ArrayList<>();
+			for (String option : options) {
+				for (String optionPart : option.split(",")) {
+					AnsiElement element = ELEMENTS_BY_NAME.get(optionPart.trim().toLowerCase(Locale.ROOT));
+					if (element != null) {
+						elements.add(element);
+					}
+				}
+			}
+			this.elements = elements.toArray(AnsiElement[]::new);
+		}
 		super.start();
 	}
 
 	@Override
 	protected String transform(ILoggingEvent event, String in) {
-		if (this.stylings.isEmpty()) {
+		if (this.elements.length == 0) {
 			// Assume highlighting
-			AnsiElement element = LEVELS.get(event.getLevel().toInteger());
+			AnsiElement element = ELEMENTS_BY_LEVEL.get(event.getLevel().toInteger());
 			return toAnsiString(in, (element != null) ? element : AnsiColor.GREEN);
 		}
-		if (this.stylings.size() == 1) {
-			return toAnsiString(in, this.stylings.get(0));
-		}
-		return toAnsiString(in, this.stylings.toArray(new AnsiElement[0]));
-	}
-
-	private static List<AnsiElement> getStylings(@Nullable List<String> options) {
-		if (options == null) {
-			return Collections.emptyList();
-		}
-		List<AnsiElement> stylings = new ArrayList<>();
-		for (String option : options) {
-			for (String optionPart : option.split(",")) {
-				AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
-				if (element != null) {
-					stylings.add(element);
-				}
-			}
-		}
-		return stylings;
+		return toAnsiString(in, this.elements);
 	}
 
 	protected String toAnsiString(String in, AnsiElement element) {
@@ -109,7 +105,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	}
 
 	static String getName(AnsiElement element) {
-		return ELEMENTS.entrySet()
+		return ELEMENTS_BY_NAME.entrySet()
 			.stream()
 			.filter((entry) -> entry.getValue().equals(element))
 			.map(Map.Entry::getKey)
