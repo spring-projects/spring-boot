@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Jialin Chen
  * @since 4.0.0
  */
 public interface DataRedisConnectionDetails extends ConnectionDetails {
@@ -202,6 +203,15 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	 * Redis master replica configuration.
 	 */
 	interface MasterReplica {
+
+		/**
+		 * Database index used by the connection factory.
+		 * @return the database index used by the connection factory
+		 * @since 4.0.9
+		 */
+		default int getDatabase() {
+			return 0;
+		}
 
 		/**
 		 * Static nodes to use. This represents the full list of cluster nodes and is

@@ -521,6 +521,19 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithMasterReplicaAndDatabase() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.database=1",
+					"spring.data.redis.masterreplica.nodes=127.0.0.1:28319,127.0.0.1:28320")
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.getDatabase()).isOne();
+				assertThat(connectionFactory).extracting("configuration")
+					.isInstanceOf(RedisStaticMasterReplicaConfiguration.class);
+			});
+	}
+
+	@Test
 	void testRedisConfigurationWithMasterAndAuthentication() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
@@ -676,6 +689,7 @@ class DataRedisAutoConfigurationTests {
 							assertThat(masterReplicationConfiguration.getUsername()).isEqualTo("user-1");
 							assertThat(masterReplicationConfiguration.getPassword().get())
 								.isEqualTo("password-1".toCharArray());
+							assertThat(masterReplicationConfiguration.getDatabase()).isOne();
 							assertThat(masterReplicationConfiguration.getNodes())
 								.map((nodeConfiguration) -> new RedisNode(nodeConfiguration.getHostName(),
 										nodeConfiguration.getPort()))
@@ -960,6 +974,11 @@ class DataRedisAutoConfigurationTests {
 				@Override
 				public MasterReplica getMasterReplica() {
 					return new MasterReplica() {
+
+						@Override
+						public int getDatabase() {
+							return 1;
+						}
 
 						@Override
 						public List<Node> getNodes() {
