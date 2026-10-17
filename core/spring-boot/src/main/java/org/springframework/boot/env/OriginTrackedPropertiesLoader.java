@@ -300,7 +300,7 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		boolean isCommentPrefixCharacter() {
-			return this.character == '#' || this.character == '!';
+			return !this.escaped && (this.character == '#' || this.character == '!');
 		}
 
 		boolean isHyphenCharacter() {
