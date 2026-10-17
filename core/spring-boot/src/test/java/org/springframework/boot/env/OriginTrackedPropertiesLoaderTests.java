@@ -179,7 +179,7 @@ class OriginTrackedPropertiesLoaderTests {
 	@Test
 	void getPropertyWithEscapedCommentPrefixCharacter() throws IOException {
 		String content = "\\#hash-prefixed=hash\n\\!bang-prefixed=bang";
-		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
 		assertThat(loaded).hasSize(1);
 		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
 		assertThat(map).containsOnlyKeys("#hash-prefixed", "!bang-prefixed");
