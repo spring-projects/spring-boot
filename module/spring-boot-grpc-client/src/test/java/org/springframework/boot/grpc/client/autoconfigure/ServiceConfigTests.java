@@ -147,7 +147,7 @@ class ServiceConfigTests {
 			  load-balancing:
 			  - grpc: {}
 			""")
-	void grpcLoadBalancing() throws Exception {
+	void grpcLoadBalancingWhenNoChildren() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
 		assertThat(map).containsKey("loadBalancingConfig");
 		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
