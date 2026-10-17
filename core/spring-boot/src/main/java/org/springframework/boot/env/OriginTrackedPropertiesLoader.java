@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -154,20 +153,24 @@ class OriginTrackedPropertiesLoader {
 		if (reader.isSameLastLineCommentPrefix()) {
 			return false;
 		}
-		boolean result = reader.getLocation().getColumn() == 0;
-		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		if (!reader.isEndOfLine()) {
-			reader.read();
-			reader.skipWhitespace();
+		if (reader.getLocation().getColumn() != 0) {
+			return false;
 		}
-		return result && reader.isEndOfLine();
+		return readAndExpectHyphen(reader) && readAndExpectHyphen(reader) && readAndExpectHyphen(reader)
+				&& readWhitespaceUntilEndOfLine(reader);
 	}
 
-	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
-		reader.read();
-		return check.getAsBoolean();
+	private boolean readAndExpectHyphen(CharacterReader reader) throws IOException {
+		reader.readRaw();
+		return reader.isHyphenCharacter();
+	}
+
+	private boolean readWhitespaceUntilEndOfLine(CharacterReader reader) throws IOException {
+		do {
+			reader.readRaw();
+		}
+		while (reader.isWhiteSpace());
+		return reader.isEndOfLine();
 	}
 
 	/**
@@ -210,6 +213,23 @@ class OriginTrackedPropertiesLoader {
 				readEscaped();
 			}
 			else if (this.character == '\n') {
+				this.columnNumber = -1;
+			}
+			return !isEndOfFile();
+		}
+
+		/**
+		 * Read the next character without handling escape sequences. Used when inspecting
+		 * the remainder of a comment line where a {@code '\'} at the end of the line must
+		 * not be treated as a line continuation.
+		 * @return {@code true} if the end of the file has not been reached
+		 * @throws IOException on read error
+		 */
+		boolean readRaw() throws IOException {
+			this.escaped = false;
+			this.character = this.reader.read();
+			this.columnNumber++;
+			if (this.character == '\n') {
 				this.columnNumber = -1;
 			}
 			return !isEndOfFile();
