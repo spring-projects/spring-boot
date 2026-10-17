@@ -226,6 +226,23 @@ class ZipContentTests {
 	}
 
 	@Test
+	void nestedDirectoryWhenNameHasMultiByteCharactersReturnsRelativeNames() throws IOException {
+		File file = new File(this.tempDir, "multi-byte-directory.jar");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			out.putNextEntry(new ZipEntry("special\u00EB/"));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry("special\u00EB/9.dat"));
+			out.write(9);
+			out.closeEntry();
+		}
+		try (ZipContent nested = ZipContent.open(file.toPath(), "special\u00EB/")) {
+			assertThat(nested.size()).isEqualTo(1);
+			assertThat(nested.getEntry(0).getName()).isEqualTo("9.dat");
+			assertThat(nested.getEntry("9.dat")).isNotNull();
+		}
+	}
+
+	@Test
 	void nestedDirectoryWhenNotEndingInSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ZipContent.open(this.file.toPath(), "d"))
 			.withMessage("Nested entry name must end with '/'");
