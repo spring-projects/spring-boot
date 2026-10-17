@@ -63,6 +63,14 @@ class FileHintTests {
 	}
 
 	@Test
+	void shouldParseTrailingHintWhenValueContainsOtherBrackets() {
+		String value = "foo[a]/bar[encoding=utf-8]";
+		FileHint hint = FileHint.from(value);
+		assertThat(hint.getEncoding()).isEqualTo("utf-8");
+		assertThat(FileHint.removeFrom(value)).isEqualTo("foo[a]/bar");
+	}
+
+	@Test
 	void isPresentWhenHasNoHint() {
 		assertThat(FileHint.from("foo").isPresent()).isFalse();
 		assertThat(FileHint.from("foo[bar]").isPresent()).isFalse();
@@ -77,6 +85,12 @@ class FileHintTests {
 	@Test
 	void getExtensionOrElseWhenHasNoHint() {
 		assertThat(FileHint.from("foo").getExtensionOrElse(".txt")).isEqualTo(".txt");
+	}
+
+	@Test
+	void removeFromWhenBracketsAreNotTrailing() {
+		assertThat(FileHint.removeFrom("foo[a]/bar.yaml")).isEqualTo("foo[a]/bar.yaml");
+		assertThat(FileHint.removeFrom("foo[1].yaml")).isEqualTo("foo[1].yaml");
 	}
 
 	@Test
