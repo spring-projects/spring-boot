@@ -65,23 +65,28 @@ public final class UrlEncoder {
 				result[size++] = ch;
 				continue;
 			}
-			if (ch < 0x80) {
-				size = escape(result, ch, size);
-			}
-			else if (ch > 0x07FF) {
-				size = escape(result, 0xE0 | ((ch >> 12) & 0x0F), size);
-				size = escape(result, 0x80 | ((ch >> 6) & 0x3F), size);
-				size = escape(result, 0x80 | ((ch >> 0) & 0x3F), size);
-			}
-			else {
-				size = escape(result, 0xC0 | ((ch >> 6) & 0x1F), size);
-				size = escape(result, 0x80 | ((ch >> 0) & 0x3F), size);
-			}
+			size = encode(ch, result, size);
 		}
 		return new String(result, 0, size);
 	}
 
-	private static int escape(char[] result, int ch, int size) {
+	private static int encode(char ch, char[] result, int size) {
+		if (ch <= 0x007F) {
+			size = encodeByteChar(result, ch, size);
+			return size;
+		}
+		if (ch <= 0x07FF) {
+			size = encodeByteChar(result, 0xC0 | ((ch >> 6) & 0x1F), size);
+			size = encodeByteChar(result, 0x80 | ((ch >> 0) & 0x3F), size);
+			return size;
+		}
+		size = encodeByteChar(result, 0xE0 | ((ch >> 12) & 0x0F), size);
+		size = encodeByteChar(result, 0x80 | ((ch >> 6) & 0x3F), size);
+		size = encodeByteChar(result, 0x80 | ((ch >> 0) & 0x3F), size);
+		return size;
+	}
+
+	private static int encodeByteChar(char[] result, int ch, int size) {
 		result[size++] = '%';
 		result[size++] = HexFormat.of().toHighHexDigit(ch);
 		result[size++] = HexFormat.of().toLowHexDigit(ch);

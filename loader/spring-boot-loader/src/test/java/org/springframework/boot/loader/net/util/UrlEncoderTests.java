@@ -21,18 +21,23 @@ class UrlEncoderTests {
 	}
 
 	@Test
+	void encodeWhenHasSingleByteEncodedCharacters() {
+		assertThat(UrlEncoder.encode("a b/c#d%e?f.txt")).isEqualTo("a%20b/c%23d%25e%3ff.txt");
+	}
+
+	@Test
 	void encodeWhenHasDoubleByteEncodedCharacters() {
 		assertThat(UrlEncoder.encode("\u00e1/b/C.class")).isEqualTo("%c3%a1/b/C.class");
 	}
 
 	@Test
-	void encodeWhenHasMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
-		assertThat(UrlEncoder.encode("\u00e1/b/\u00c7.class")).isEqualTo("%c3%a1/b/%c3%87.class");
+	void encodeWhenHasTrippleByteEncodedCharacters() {
+		assertThat(UrlEncoder.encode("\u6841/b/C.class")).isEqualTo("%e6%a1%81/b/C.class");
 	}
 
 	@Test
-	void encodeWhenHasSingleByteEncodedCharacters() {
-		assertThat(UrlEncoder.encode("a b/c#d%e?f.txt")).isEqualTo("a%20b/c%23d%25e%3ff.txt");
+	void encodeWhenHasMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
+		assertThat(UrlEncoder.encode("\u00e1/b/\u00c7.class")).isEqualTo("%c3%a1/b/%c3%87.class");
 	}
 
 	@Test
