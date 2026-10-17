@@ -145,7 +145,7 @@ class JwtDecoderConfiguration {
 
 	private OAuth2TokenValidator<Jwt> getValidator() {
 		List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
-		if (this.properties.getIssuerUri() != null) {
+		if (StringUtils.hasText(this.properties.getIssuerUri())) {
 			validators.add(new JwtIssuerValidator(this.properties.getIssuerUri()));
 		}
 		if (!CollectionUtils.isEmpty(this.properties.getAudiences())) {

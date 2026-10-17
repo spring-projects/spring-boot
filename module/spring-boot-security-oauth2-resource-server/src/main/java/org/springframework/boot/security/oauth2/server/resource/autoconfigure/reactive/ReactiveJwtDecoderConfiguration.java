@@ -42,6 +42,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -153,7 +154,7 @@ class ReactiveJwtDecoderConfiguration {
 
 	private OAuth2TokenValidator<Jwt> getValidator() {
 		List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
-		if (this.properties.getIssuerUri() != null) {
+		if (StringUtils.hasText(this.properties.getIssuerUri())) {
 			validators.add(new JwtIssuerValidator(this.properties.getIssuerUri()));
 		}
 		if (!CollectionUtils.isEmpty(this.properties.getAudiences())) {
