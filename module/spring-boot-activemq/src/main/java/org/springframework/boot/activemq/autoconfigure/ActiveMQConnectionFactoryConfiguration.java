@@ -48,8 +48,8 @@ class ActiveMQConnectionFactoryConfiguration {
 		private static ActiveMQConnectionFactory createJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 				ActiveMQConnectionDetails connectionDetails) {
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(connectionDetails.getUser(),
-					connectionDetails.getPassword(), connectionDetails.getBrokerUrl());
+			ActiveMQConnectionFactory connectionFactory = ActiveMQConnectionFactoryConfigurer
+				.createConnectionFactory(connectionDetails);
 			new ActiveMQConnectionFactoryConfigurer(properties, factoryCustomizers.orderedStream().toList())
 				.configure(connectionFactory);
 			return connectionFactory;
@@ -86,8 +86,8 @@ class ActiveMQConnectionFactoryConfiguration {
 		JmsPoolConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 				ActiveMQConnectionDetails connectionDetails) {
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(connectionDetails.getUser(),
-					connectionDetails.getPassword(), connectionDetails.getBrokerUrl());
+			ActiveMQConnectionFactory connectionFactory = ActiveMQConnectionFactoryConfigurer
+				.createConnectionFactory(connectionDetails);
 			new ActiveMQConnectionFactoryConfigurer(properties, factoryCustomizers.orderedStream().toList())
 				.configure(connectionFactory);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
