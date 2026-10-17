@@ -162,6 +162,7 @@ Currently the following components are compatible:
 * Tomcat web server
 * Netty web server
 * LDAP client
+* Kafka clients
 
 To enable reloading, you need to opt-in via a configuration property as shown in this example:
 
@@ -180,6 +181,8 @@ To enable reloading, you need to opt-in via a configuration property as shown in
 
 A file watcher is then watching the files and if they change, the SSL bundle will be reloaded.
 This in turn triggers a reload in the consuming component, e.g. Tomcat rotates the certificates in the SSL enabled connectors.
+
+Components that do not rotate established connections, such as the Kafka clients, keep using the previous key material until a connection is re-established.
 
 You can configure the quiet period (to make sure that there are no more changes) of the file watcher with the configprop:spring.ssl.bundle.watch.file.quiet-period[] property.
 
