@@ -17,6 +17,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,6 +69,17 @@ class HikariCheckpointRestoreLifecycleTests {
 		assertThat(this.dataSource.isRunning()).isTrue();
 		assertThat(this.dataSource.isClosed()).isFalse();
 		assertThat(this.lifecycle.isRunning()).isTrue();
+	}
+
+	@Test
+	void whenApplicationContextIsClosedThenStopShouldNotSuspendPool() {
+		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
+		given(applicationContext.isClosed()).willReturn(true);
+		HikariCheckpointRestoreLifecycle lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource,
+				applicationContext);
+		assertThat(lifecycle.isRunning()).isTrue();
+		lifecycle.stop();
+		assertThat(this.dataSource.isRunning()).isTrue();
 	}
 
 	@Test
