@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +72,7 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
 		if (!LoadableNames.isValidResourceName(name)) {
-			return null;
+			return Collections.emptyEnumeration();
 		}
 		if (!this.hasJarUrls) {
 			return super.findResources(name);
