@@ -98,7 +98,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	@Override
 	public void stop() {
-		if (this.dataSource == null || !this.dataSource.isRunning()) {
+		if (this.dataSource == null || !this.dataSource.isRunning() || this.applicationContext.isClosed()) {
 			return;
 		}
 		if (this.dataSource.isAllowPoolSuspension()) {
@@ -106,11 +106,9 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 			this.dataSource.getHikariPoolMXBean().suspendPool();
 		}
 		else {
-			if (this.applicationContext != null && !this.applicationContext.isClosed()) {
-				logger.warn(this.dataSource + " is not configured to allow pool suspension. "
-						+ "This will cause problems when the application is checkpointed. "
-						+ "Please configure allow-pool-suspension to fix this!");
-			}
+			logger.warn(this.dataSource + " is not configured to allow pool suspension. "
+					+ "This will cause problems when the application is checkpointed. "
+					+ "Please configure allow-pool-suspension to fix this!");
 		}
 		closeConnections(this.dataSource, Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
 	}
