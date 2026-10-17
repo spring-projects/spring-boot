@@ -217,7 +217,9 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 				Duration initialFallbackTimeout) {
 
 			public GrpcLoadBalancingConfig {
-				child.forEach(this::assertChild);
+				if (child != null) {
+					child.forEach(this::assertChild);
+				}
 			}
 
 			private void assertChild(LoadBalancingConfig child) {
