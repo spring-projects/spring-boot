@@ -5,7 +5,8 @@ The Spring Framework provides an abstraction for sending email by using the java
 
 TIP: See the {url-spring-framework-docs}/integration/email.html[reference documentation] for a detailed explanation of how you can use javadoc:org.springframework.mail.javamail.JavaMailSender[].
 
-If `spring.mail.host` and the relevant libraries (as defined by `spring-boot-starter-mail`) are available, a default javadoc:org.springframework.mail.javamail.JavaMailSender[] is created if none exists.
+If `spring.mail.host` or a javadoc:org.springframework.boot.mail.autoconfigure.MailConnectionDetails[] bean is available, along with the relevant libraries (as defined by `spring-boot-starter-mail`), a default javadoc:org.springframework.mail.javamail.JavaMailSender[] is created if none exists.
+Connection details take precedence over the host, port, username, and password properties.
 The sender can be further customized by configuration items from the `spring.mail` namespace.
 See javadoc:org.springframework.boot.mail.autoconfigure.MailProperties[] for more details.
 
