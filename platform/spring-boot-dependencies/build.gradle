@@ -232,7 +232,7 @@ bom {
 			releaseNotes("https://github.com/ben-manes/caffeine/releases/tag/v{version}")
 		}
 	}
-	library("Cassandra Driver", "4.19.3") {
+	library("Cassandra Driver", "4.19.4") {
 		group("org.apache.cassandra") {
 			bom("java-driver-bom") {
 				permit("com.datastax.oss:native-protocol")
