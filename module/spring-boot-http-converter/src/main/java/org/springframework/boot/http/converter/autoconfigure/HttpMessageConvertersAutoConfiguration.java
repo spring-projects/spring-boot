@@ -80,6 +80,7 @@ public final class HttpMessageConvertersAutoConfiguration {
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnMissingBean(StringHttpMessageConverter.class)
 		StringHttpMessageConvertersCustomizer stringHttpMessageConvertersCustomizer(
 				HttpMessageConvertersProperties properties) {

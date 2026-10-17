@@ -319,6 +319,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
+	void stringCustomConverterWithCustomizer() {
+		this.contextRunner.withUserConfiguration(CustomStringConverterConfig.class)
+			.run((context) -> assertConverterIsRegistered(context, CustomStringConverter.class));
+	}
+
+	@Test
 	void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter() {
 		this.contextRunner
 			.withUserConfiguration(JacksonJsonMapperBuilderConfig.class, TypeConstrainedConverterConfiguration.class)
@@ -671,6 +677,21 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomStringConverterConfig {
+
+		@Bean
+		ServerHttpMessageConvertersCustomizer stringServerCustomizer() {
+			return (configurer) -> configurer.withStringConverter(new CustomStringConverter());
+		}
+
+		@Bean
+		ClientHttpMessageConvertersCustomizer stringClientCustomizer() {
+			return (configurer) -> configurer.withStringConverter(new CustomStringConverter());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TypeConstrainedConverterConfiguration {
 
 		@Bean
@@ -703,6 +724,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 				throws IOException, HttpMessageNotWritableException {
 
 		}
+
+	}
+
+	static class CustomStringConverter extends StringHttpMessageConverter {
 
 	}
 
