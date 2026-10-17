@@ -127,14 +127,12 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		if (this.undefinablePackages.contains(packageName)) {
 			return;
 		}
-		String packageEntryName = packageName.replace('.', '/') + "/";
 		String classEntryName = className.replace('.', '/') + ".class";
 		for (URL url : this.urls) {
 			try {
 				JarFile jarFile = getJarFile(url);
 				if (jarFile != null) {
-					if (hasEntry(jarFile, classEntryName) && hasEntry(jarFile, packageEntryName)
-							&& jarFile.getManifest() != null) {
+					if (hasEntry(jarFile, classEntryName) && jarFile.getManifest() != null) {
 						definePackage(packageName, jarFile.getManifest(), url);
 						return;
 					}
