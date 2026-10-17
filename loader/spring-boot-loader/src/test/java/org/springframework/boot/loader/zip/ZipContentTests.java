@@ -273,6 +273,28 @@ class ZipContentTests {
 	}
 
 	@Test
+	void loadWhenCommentContainsRecordSignatureOpensZip() throws IOException {
+		File file = new File(this.tempDir, "signature-in-comment.jar");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			out.setComment("PK\u0005\u0006");
+			out.putNextEntry(new ZipEntry("a.txt"));
+			out.write("hello".getBytes(StandardCharsets.UTF_8));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry("d/"));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry("d/9.dat"));
+			out.write(9);
+			out.closeEntry();
+		}
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.size()).isEqualTo(3);
+			assertThat(zip.getComment()).isEqualTo("PK\u0005\u0006");
+			assertThat(zip.getEntry("a.txt")).isNotNull();
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
 	void openWhenZip64ThatExceedsZipEntryLimitOpensZip() throws Exception {
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		FileCopyUtils.copy(zip64Bytes(), zip64File);
