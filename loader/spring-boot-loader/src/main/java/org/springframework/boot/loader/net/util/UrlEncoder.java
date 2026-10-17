@@ -65,7 +65,10 @@ public final class UrlEncoder {
 				result[size++] = ch;
 				continue;
 			}
-			if (ch > 0x07FF) {
+			if (ch < 0x80) {
+				size = escape(result, ch, size);
+			}
+			else if (ch > 0x07FF) {
 				size = escape(result, 0xE0 | ((ch >> 12) & 0x0F), size);
 				size = escape(result, 0x80 | ((ch >> 6) & 0x3F), size);
 				size = escape(result, 0x80 | ((ch >> 0) & 0x3F), size);
