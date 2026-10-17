@@ -10,6 +10,10 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkConnectionLimit;
@@ -22,6 +26,11 @@ import org.mockito.InOrder;
 import org.springframework.boot.jetty.JettyAccess;
 import org.springframework.boot.jetty.JettyServerCustomizer;
 import org.springframework.boot.jetty.JettyWebServer;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
@@ -44,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  * @author Moritz Halbritter
+ * @author Armen Petrosyan
  */
 class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -173,6 +183,20 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
 	}
 
+	@Test
+	@WithPackageResources({ "1.key", "1.crt", "2.key", "2.crt" })
+	void shouldUpdateSslWhenReloadingSslBundles() throws Exception {
+		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test", createSslBundle("1.key", "1.crt"));
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setSslBundles(bundles);
+		factory.setSsl(Ssl.forBundle("test"));
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(getPeerPrincipal()).isEqualTo("CN=1");
+		bundles.updateBundle("test", createSslBundle("2.key", "2.crt"));
+		assertThat(getPeerPrincipal()).isEqualTo("CN=2");
+	}
+
 	@Override
 	protected String startedLogMessage() {
 		return JettyAccess.getStartedLogMessage((JettyWebServer) this.webServer);
@@ -185,6 +209,20 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			connector.setPort(port);
 			server.addConnector(connector);
 		});
+	}
+
+	private String getPeerPrincipal() throws Exception {
+		SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (chain, authType) -> true).build();
+		try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory()
+			.createSocket("localhost", this.webServer.getPort())) {
+			socket.startHandshake();
+			return socket.getSession().getPeerPrincipal().getName();
+		}
+	}
+
+	private static SslBundle createSslBundle(String key, String certificate) {
+		return SslBundle.of(new PemSslStoreBundle(
+				new PemSslStoreDetails(null, "classpath:" + certificate, "classpath:" + key), null));
 	}
 
 }

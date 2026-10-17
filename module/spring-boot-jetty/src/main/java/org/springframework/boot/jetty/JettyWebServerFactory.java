@@ -28,6 +28,7 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
@@ -37,6 +38,7 @@ import org.springframework.util.StringUtils;
  * Base class for factories that produce a {@link JettyWebServer}.
  *
  * @author Andy Wilkinson
+ * @author Armen Petrosyan
  * @since 4.0.0
  */
 public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
@@ -204,7 +206,18 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 		Ssl ssl = getSsl();
 		Assert.state(ssl != null, "'ssl' must not be null");
 		Assert.state(ssl.getServerNameBundles().isEmpty(), "Server name SSL bundles are not supported with Jetty");
-		new SslServerCustomizer(getHttp2(), address, ssl.getClientAuth(), getSslBundle()).customize(server);
+		SslServerCustomizer customizer = new SslServerCustomizer(getHttp2(), address, ssl.getClientAuth(),
+				getSslBundle());
+		customizer.customize(server);
+		addBundleUpdateHandler(ssl.getBundle(), customizer);
+	}
+
+	private void addBundleUpdateHandler(@Nullable String bundleName, SslServerCustomizer customizer) {
+		if (StringUtils.hasText(bundleName)) {
+			SslBundles sslBundles = getSslBundles();
+			Assert.state(sslBundles != null, "'sslBundles' must not be null");
+			sslBundles.addBundleUpdateHandler(bundleName, customizer::updateSslBundle);
+		}
 	}
 
 	protected Handler addHandlerWrappers(Handler handler) {
