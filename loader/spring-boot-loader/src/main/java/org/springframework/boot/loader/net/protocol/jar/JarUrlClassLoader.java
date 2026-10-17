@@ -53,6 +53,9 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	@Override
 	public URL findResource(String name) {
+		if (!LoadableNames.isValidResourceName(name)) {
+			return null;
+		}
 		if (!this.hasJarUrls) {
 			return super.findResource(name);
 		}
@@ -67,6 +70,9 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
+		if (!LoadableNames.isValidResourceName(name)) {
+			return null;
+		}
 		if (!this.hasJarUrls) {
 			return super.findResources(name);
 		}
@@ -80,7 +86,18 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		if (!LoadableNames.isValidClassName(name)) {
+			throw new ClassNotFoundException(name);
+		}
+		return super.findClass(name);
+	}
+
+	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+		if (!LoadableNames.isValidClassName(name)) {
+			throw new ClassNotFoundException(name);
+		}
 		if (!this.hasJarUrls) {
 			return super.loadClass(name, resolve);
 		}
