@@ -91,10 +91,11 @@ final class FileHint {
 	 * @return the {@link FileHint}
 	 */
 	static FileHint from(String value) {
-		if (!hasBrackets(value)) {
+		int start = findHintStart(value);
+		if (start == -1) {
 			return NONE;
 		}
-		List<String> betweenBrackets = findBetweenBrackets(value);
+		List<String> betweenBrackets = findBetweenBrackets(value.substring(start));
 		Map<String, String> attributes = new HashMap<>();
 		for (String entry : betweenBrackets) {
 			String cleaned = entry.trim();
@@ -147,30 +148,39 @@ final class FileHint {
 	 * @return the value without any hint
 	 */
 	static String removeFrom(String value) {
-		if (!hasBrackets(value)) {
-			return value;
-		}
-		StringBuilder result = new StringBuilder();
-		int brackets = 0;
-		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			if (c == '[') {
-				brackets++;
-				continue;
-			}
-			if (c == ']') {
-				brackets--;
-				continue;
-			}
-			if (brackets <= 0) {
-				result.append(c);
-			}
-		}
-		return result.toString();
+		int start = findHintStart(value);
+		return (start != -1) ? value.substring(0, start) : value;
 	}
 
-	private static boolean hasBrackets(String value) {
-		return value.indexOf('[') != -1 && value.indexOf(']') != -1;
+	private static int findHintStart(String value) {
+		int start = -1;
+		int end = value.length();
+		while (end > 0 && value.charAt(end - 1) == ']') {
+			int open = findOpeningBracket(value, end - 1);
+			if (open == -1) {
+				break;
+			}
+			start = open;
+			end = open;
+		}
+		return start;
+	}
+
+	private static int findOpeningBracket(String value, int close) {
+		int depth = 0;
+		for (int i = close; i >= 0; i--) {
+			char c = value.charAt(i);
+			if (c == ']') {
+				depth++;
+			}
+			else if (c == '[') {
+				depth--;
+				if (depth == 0) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 
 }
