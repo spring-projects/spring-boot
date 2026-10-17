@@ -103,6 +103,28 @@ class JarUrlClassLoaderTests {
 	}
 
 	@Test
+	void resolveFromNestedWhenNameNeedsEncoding() throws Exception {
+		ByteArrayOutputStream nestedJarData = new ByteArrayOutputStream();
+		try (JarOutputStream jarOutputStream = new JarOutputStream(nestedJarData)) {
+			jarOutputStream.putNextEntry(new JarEntry("dir with space/a#b.txt"));
+			jarOutputStream.write(42);
+			jarOutputStream.closeEntry();
+		}
+		File jarFile = new File(this.tempDir, "test.jar");
+		try (JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile))) {
+			writeStoredEntry(jarOutputStream, "nested.jar", nestedJarData.toByteArray());
+		}
+		URL url = JarUrl.create(jarFile, "nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			URL resource = loader.getResource("dir with space/a#b.txt");
+			assertThat(resource).isNotNull();
+			try (InputStream input = resource.openConnection().getInputStream()) {
+				assertThat(input.read()).isEqualTo(42);
+			}
+		}
+	}
+
+	@Test
 	void resolveFromNestedWhenMissingReturnsNull() throws Exception {
 		File jarFile = new File(this.tempDir, "test.jar");
 		TestJar.create(jarFile);
