@@ -13,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for ActiveMQ.
@@ -22,6 +23,7 @@ import org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProper
  * @author Aurélien Leboulanger
  * @author Venil Noronha
  * @author Eddú Meléndez
+ * @author Armen Petrosyan
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.activemq")
@@ -68,6 +70,8 @@ public class ActiveMQProperties {
 	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
 	private final Packages packages = new Packages();
+
+	private final Ssl ssl = new Ssl();
 
 	public @Nullable String getBrokerUrl() {
 		return this.brokerUrl;
@@ -129,6 +133,10 @@ public class ActiveMQProperties {
 		return this.packages;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	String determineBrokerUrl() {
 		if (this.brokerUrl != null) {
 			return this.brokerUrl;
@@ -185,6 +193,40 @@ public class ActiveMQProperties {
 
 		public void setTrusted(List<String> trusted) {
 			this.trusted = trusted;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private @Nullable Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private @Nullable String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public @Nullable String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(@Nullable String bundle) {
+			this.bundle = bundle;
 		}
 
 	}
