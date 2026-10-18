@@ -386,7 +386,7 @@ public interface SanitizingFunction {
 	private Predicate<SanitizableData> onKeyIgnoringCase(BiPredicate<String, String> predicate, String value) {
 		Assert.notNull(predicate, "'predicate' must not be null");
 		Assert.notNull(value, "'value' must not be null");
-		String lowerCaseValue = value.toLowerCase(Locale.getDefault());
+		String lowerCaseValue = value.toLowerCase(Locale.ROOT);
 		return (data) -> predicate.test(data.getLowerCaseKey(), lowerCaseValue);
 	}
 

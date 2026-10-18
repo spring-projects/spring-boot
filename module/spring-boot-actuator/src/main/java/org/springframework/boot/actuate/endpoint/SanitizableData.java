@@ -71,7 +71,7 @@ public final class SanitizableData {
 	public String getLowerCaseKey() {
 		String result = this.lowerCaseKey;
 		if (result == null) {
-			result = this.key.toLowerCase(Locale.getDefault());
+			result = this.key.toLowerCase(Locale.ROOT);
 			this.lowerCaseKey = result;
 		}
 		return result;

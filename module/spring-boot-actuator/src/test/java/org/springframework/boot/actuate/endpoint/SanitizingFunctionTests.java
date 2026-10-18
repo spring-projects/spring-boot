@@ -5,6 +5,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,19 @@ class SanitizingFunctionTests {
 	void ifLikelyCredentialFiltersExpected() {
 		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelyCredential();
 		assertThat(function).satisfies(this::likelyCredentialChecks);
+	}
+
+	@Test
+	void ifLikelyCredentialWhenNonEnglishLocaleFiltersExpected() {
+		Locale defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.forLanguageTag("tr"));
+		try {
+			SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelyCredential();
+			assertThatApplyingToKey(function, "SPRING.CREDENTIALS").has(sanitizedValue());
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 	private void likelyCredentialChecks(SanitizingFunction function) {

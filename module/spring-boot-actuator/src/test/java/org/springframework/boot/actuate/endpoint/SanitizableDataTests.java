@@ -4,6 +4,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,19 @@ class SanitizableDataTests {
 		SanitizableData sanitized = data.withValue("eulav");
 		assertThat(data.getValue()).isEqualTo("value");
 		assertThat(sanitized.getValue()).isEqualTo("eulav");
+	}
+
+	@Test
+	void getLowerCaseKeyWhenNonEnglishLocaleReturnsFixedLowercaseKey() {
+		Locale defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.forLanguageTag("tr"));
+		try {
+			SanitizableData data = new SanitizableData(this.propertySource, "SPRING.I", "value");
+			assertThat(data.getLowerCaseKey()).isEqualTo("spring.i");
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -107,6 +108,22 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.USE_LOWERCASE_NAMES);
 		assertThat(propertySource.getPropertyNames()).containsExactly("spring");
+	}
+
+	@Test
+	void getPropertyWhenLowercaseAndNonEnglishLocaleReturnsProperty() throws Exception {
+		Locale defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.forLanguageTag("tr"));
+		try {
+			addProperty("SPRING.I", "boot");
+			ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+					Option.USE_LOWERCASE_NAMES);
+			assertThat(propertySource.getPropertyNames()).containsExactly("spring.i");
+			assertThat(propertySource.getProperty("spring.i")).hasToString("boot");
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 	@Test
