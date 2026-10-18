@@ -16,6 +16,7 @@ import java.util.zip.InflaterInputStream;
  * available() results.
  *
  * @author Phillip Webb
+ * @author Jan Mohr
  */
 class ZipInflaterInputStream extends InflaterInputStream {
 
