@@ -27,6 +27,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -89,6 +90,7 @@ import static org.mockito.Mockito.times;
  * @author Madhura Bhave
  * @author Piotr P. Karwasz
  * @author Dhruv Rastogi
+ * @author Rameel Rizvi
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -432,6 +434,37 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				if (handler instanceof Log4jBridgeHandler) {
 					rootLogger.removeHandler(handler);
 				}
+			}
+		}
+	}
+
+	@Test
+	void cleanUpRestoresDefaultRootHandlerToAvoidSilentlyDiscardingJulLogging(CapturedOutput output) {
+		// gh-50404: installing the bridge removes the default JUL root ConsoleHandler.
+		// If cleanUp does not restore it, anything subsequently logged through JUL
+		// (such as a startup failure reported via a JUL-backed commons-logging Log) is
+		// silently discarded. Start from the default single-ConsoleHandler state that a
+		// freshly started application has.
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		Handler[] originalHandlers = rootLogger.getHandlers();
+		for (Handler handler : originalHandlers) {
+			rootLogger.removeHandler(handler);
+		}
+		rootLogger.addHandler(new ConsoleHandler());
+		try {
+			this.loggingSystem.beforeInitialize();
+			assertThat(rootLogger.getHandlers()).hasAtLeastOneElementOfType(Log4jBridgeHandler.class);
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).isNotEmpty();
+			java.util.logging.Logger.getLogger(getClass().getName()).severe("JUL logging after cleanup");
+			assertThat(output).contains("JUL logging after cleanup");
+		}
+		finally {
+			for (Handler handler : rootLogger.getHandlers()) {
+				rootLogger.removeHandler(handler);
+			}
+			for (Handler handler : originalHandlers) {
+				rootLogger.addHandler(handler);
 			}
 		}
 	}

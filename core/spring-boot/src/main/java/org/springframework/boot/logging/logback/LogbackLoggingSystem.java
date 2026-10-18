@@ -179,6 +179,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 	}
 
+	private void revertJdkLoggingBridgeHandler() {
+		try {
+			SLF4JBridgeHandler.uninstall();
+			// Restore the default JUL root handler that was removed when the bridge
+			// was installed. Without this, anything logged through JUL after cleanup
+			// (for example a startup failure reported via a JUL-backed commons-logging
+			// Log) would be silently discarded (see gh-50404).
+			restoreDefaultRootHandler();
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
+	}
+
 	private void removeDefaultRootHandler() {
 		try {
 			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -359,12 +373,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		markAsUninitialized(context);
 		super.cleanUp();
 		if (this.bridgeHandlerInstalled) {
-			removeJdkLoggingBridgeHandler();
-			// Restore the default JUL root handler that was removed when the bridge
-			// was installed. Without this, anything logged through JUL after cleanup
-			// (for example a startup failure reported via a JUL-backed commons-logging
-			// Log) would be silently discarded (see gh-50404).
-			restoreDefaultRootHandler();
+			revertJdkLoggingBridgeHandler();
 			this.bridgeHandlerInstalled = false;
 		}
 		context.getStatusManager().clear();
