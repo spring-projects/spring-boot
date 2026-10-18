@@ -29,15 +29,26 @@ class LoadableNamesTests {
 	}
 
 	@Test
+	void isValidClassNameWhenNotJavaIdentifier() {
+		assertThatIsValidClassName("com.example.package-info").isTrue();
+		assertThatIsValidClassName("com.example.-MyClass").isTrue();
+		assertThatIsValidClassName("com.example.MyClass$my-function$1").isTrue();
+		assertThatIsValidClassName("com.example.my-package.MyClass").isTrue();
+		assertThatIsValidClassName("1Bad").isTrue();
+		assertThatIsValidClassName("com.1Bad").isTrue();
+		assertThatIsValidClassName("My Class").isTrue();
+		assertThatIsValidClassName("my!class").isTrue();
+		assertThatIsValidClassName("my:class").isTrue();
+	}
+
+	@Test
 	void isValidClassNameWhenInvalid() {
 		assertThatIsValidClassName("").isFalse();
 		assertThatIsValidClassName(".").isFalse();
-		assertThatIsValidClassName("1Bad").isFalse();
-		assertThatIsValidClassName("com.1Bad").isFalse();
 		assertThatIsValidClassName("com..MyClass").isFalse();
-		assertThatIsValidClassName("My Class").isFalse();
-		assertThatIsValidClassName("my!class").isFalse();
-		assertThatIsValidClassName("my:class").isFalse();
+		assertThatIsValidClassName("com.example.My;Class").isFalse();
+		assertThatIsValidClassName("[Lcom.example.MyClass;").isFalse();
+		assertThatIsValidClassName("com.example.MyClass[]").isFalse();
 	}
 
 	@Test

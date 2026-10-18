@@ -22,8 +22,7 @@ final class LoadableNames {
 		for (int i = 0; i < name.length(); i++) {
 			char ch = name.charAt(i);
 			boolean dotOrSlash = (ch == '.' || ch == '/');
-			if ((identifierStart && !Character.isJavaIdentifierStart(ch))
-					|| !identifierStart && !Character.isJavaIdentifierPart(ch) && !dotOrSlash) {
+			if ((identifierStart && dotOrSlash) || ch == ';' || ch == '[') {
 				return false;
 			}
 			identifierStart = dotOrSlash;
