@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -143,6 +144,32 @@ class JarUrlClassLoaderTests {
 		}
 	}
 
+	@Test
+	void loadClassFromNestedMakesPackageAnnotationsAvailable() throws Exception {
+		String packagePath = "org/springframework/boot/loader/net/protocol/jar/annotatedpackage/";
+		ByteArrayOutputStream nestedAppJarData = new ByteArrayOutputStream();
+		try (JarOutputStream nestedAppJar = new JarOutputStream(nestedAppJarData)) {
+			for (String name : List.of("package-info.class", "AnnotatedPackageClass.class",
+					"PackageAnnotation.class")) {
+				nestedAppJar.putNextEntry(new JarEntry(packagePath + name));
+				try (InputStream inputStream = getClass().getResourceAsStream("/" + packagePath + name)) {
+					inputStream.transferTo(nestedAppJar);
+				}
+				nestedAppJar.closeEntry();
+			}
+		}
+		File jarFile = createJarWithNestedAppJar(nestedAppJarData.toByteArray());
+		URL url = JarUrl.create(jarFile, "app.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(ClassLoader.getPlatformClassLoader(), url)) {
+			Class<?> type = loader
+				.loadClass("org.springframework.boot.loader.net.protocol.jar.annotatedpackage.AnnotatedPackageClass");
+			assertThat(type.getClassLoader()).isSameAs(loader);
+			assertThat(type.getPackage().getAnnotations())
+				.extracting((annotation) -> annotation.annotationType().getName())
+				.containsExactly("org.springframework.boot.loader.net.protocol.jar.annotatedpackage.PackageAnnotation");
+		}
+	}
+
 	private File createJarWithNestedAppJar(byte[] nestedAppJarData) throws Exception {
 		File jarFile = new File(this.tempDir, "test.jar");
 		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
@@ -164,7 +191,11 @@ class JarUrlClassLoaderTests {
 	static class TestJarUrlClassLoader extends JarUrlClassLoader {
 
 		TestJarUrlClassLoader(URL... urls) {
-			super(urls, JarUrlClassLoaderTests.class.getClassLoader());
+			this(JarUrlClassLoaderTests.class.getClassLoader(), urls);
+		}
+
+		TestJarUrlClassLoader(ClassLoader parent, URL... urls) {
+			super(urls, parent);
 		}
 
 	}

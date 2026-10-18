@@ -29,6 +29,19 @@ class LoadableNamesTests {
 	}
 
 	@Test
+	void isValidClassNameWhenPackageInfo() {
+		assertThatIsValidClassName("package-info").isTrue();
+		assertThatIsValidClassName("com.example.package-info").isTrue();
+		assertThatIsValidClassName("com/example/package-info").isTrue();
+		assertThatIsValidClassName("com.example.my-info").isFalse();
+		assertThatIsValidClassName("com.1Bad.package-info").isFalse();
+		assertThatIsValidClassName(".package-info").isFalse();
+		assertThatIsValidClassName("com..package-info").isFalse();
+		assertThatIsValidClassName("com//package-info").isFalse();
+		assertThatIsValidClassName("package-info.package-info").isFalse();
+	}
+
+	@Test
 	void isValidClassNameWhenInvalid() {
 		assertThatIsValidClassName("").isFalse();
 		assertThatIsValidClassName(".").isFalse();
