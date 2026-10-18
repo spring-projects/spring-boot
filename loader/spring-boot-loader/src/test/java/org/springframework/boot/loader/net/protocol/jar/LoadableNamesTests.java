@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LoadableNamesTests {
 
 	@Test
-	void isValidClassNameWhenValid() {
+	void isValidClassNameWhenValidReturnsTrue() {
 		assertThatIsValidClassName("$").isTrue();
 		assertThatIsValidClassName("MyClass").isTrue();
 		assertThatIsValidClassName("com.example.MyClass").isTrue();
@@ -29,36 +29,73 @@ class LoadableNamesTests {
 	}
 
 	@Test
-	void isValidClassNameWhenInvalid() {
+	void isValidClassNameWhenNotJavaIdentifierReturnsTrue() {
+		assertThatIsValidClassName("com.example.package-info").isTrue();
+		assertThatIsValidClassName("com.example.-MyClass").isTrue();
+		assertThatIsValidClassName("com.example.MyClass$my-function$1").isTrue();
+		assertThatIsValidClassName("com.example.my-package.MyClass").isTrue();
+		assertThatIsValidClassName("1Bad").isTrue();
+		assertThatIsValidClassName("com.1Bad").isTrue();
+		assertThatIsValidClassName("My Class").isTrue();
+		assertThatIsValidClassName("my!class").isTrue();
+		assertThatIsValidClassName("my:class").isTrue();
+	}
+
+	@Test
+	void isValidClassNameWhenInvalidReturnsFalse() {
 		assertThatIsValidClassName("").isFalse();
 		assertThatIsValidClassName(".").isFalse();
-		assertThatIsValidClassName("1Bad").isFalse();
-		assertThatIsValidClassName("com.1Bad").isFalse();
+		assertThatIsValidClassName("..").isFalse();
+		assertThatIsValidClassName("./").isFalse();
+		assertThatIsValidClassName("//").isFalse();
+		assertThatIsValidClassName("/.").isFalse();
+		assertThatIsValidClassName("com.").isFalse();
+		assertThatIsValidClassName(".com").isFalse();
+		assertThatIsValidClassName("com.").isFalse();
 		assertThatIsValidClassName("com..MyClass").isFalse();
-		assertThatIsValidClassName("My Class").isFalse();
-		assertThatIsValidClassName("my!class").isFalse();
-		assertThatIsValidClassName("my:class").isFalse();
+		assertThatIsValidClassName("com//MyClass").isFalse();
+		assertThatIsValidClassName("com./MyClass").isFalse();
+		assertThatIsValidClassName("com/.MyClass").isFalse();
+		assertThatIsValidClassName("com.example.My;Class").isFalse();
+		assertThatIsValidClassName("[Lcom.example.MyClass;").isFalse();
+		assertThatIsValidClassName("com.example.MyClass[]").isFalse();
+		assertThatIsValidClassName("com.example.MyClass<").isFalse();
+		assertThatIsValidClassName("com.example.MyClass>").isFalse();
 	}
 
 	@Test
-	void isValidResourceNameWhenValid() {
-		assertThatIsValidResourceName("resource.txt").isTrue();
-		assertThatIsValidResourceName("/some/resource.txt").isTrue();
-		assertThatIsValidResourceName("some/resource.txt").isTrue();
+	void isValidWhenPackageNameWithEscapesReturnsTrue() {
+		assertThatIsValidClassName("com.example\\\\.MyClass").isTrue();
+		assertThatIsValidClassName("com.example\\@.MyClass").isTrue();
+		assertThatIsValidClassName("com.example\\:.MyClass").isTrue();
+		assertThatIsValidClassName("com/example\\:/MyClass").isTrue();
+		assertThatIsValidClassName("com.example\u0020.MyClass").isTrue();
 	}
 
 	@Test
-	void isValidResourceNameWhenInvalid() {
-		assertThatIsValidResourceName("").isFalse();
-		assertThatIsValidResourceName("test:test").isFalse();
+	void isValidWhenPackageNameInBadCharRangeReturnsFalse() {
+		assertThatIsValidClassName("com.example\u0000.MyClass").isFalse();
+		assertThatIsValidClassName("com.example\u001F.MyClass").isFalse();
+	}
+
+	@Test
+	void isValidWhenPackageNameWithoutEscapesReturnsFalse() {
+		assertThatIsValidClassName("com.example\\.MyClass").isFalse();
+		assertThatIsValidClassName("com.example@.MyClass").isFalse();
+		assertThatIsValidClassName("com.example:.MyClass").isFalse();
+		assertThatIsValidClassName("com/example:/MyClass").isFalse();
+		assertThatIsValidClassName("com.ex@mple.another.MyClass").isFalse();
+	}
+
+	@Test
+	void isValidWhenSimpleClassNameDoesNotEnforcePackageRules() {
+		assertThatIsValidClassName("My@Class").isTrue();
+		assertThatIsValidClassName("My:Class").isTrue();
+		assertThatIsValidClassName("com.ex@mple").isTrue();
 	}
 
 	private AbstractBooleanAssert<?> assertThatIsValidClassName(String n) {
 		return assertThat(LoadableNames.isValidClassName(n));
-	}
-
-	private AbstractBooleanAssert<?> assertThatIsValidResourceName(String n) {
-		return assertThat(LoadableNames.isValidResourceName(n));
 	}
 
 }

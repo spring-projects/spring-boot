@@ -68,9 +68,6 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	@Override
 	public URL findResource(String name) {
-		if (!LoadableNames.isValidResourceName(name)) {
-			return null;
-		}
 		if (this.nestedOnlyOptimizedLoader != null) {
 			return this.nestedOnlyOptimizedLoader.findResource(name);
 		}
@@ -88,9 +85,6 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (!LoadableNames.isValidResourceName(name)) {
-			return Collections.emptyEnumeration();
-		}
 		if (this.nestedOnlyOptimizedLoader != null) {
 			return this.nestedOnlyOptimizedLoader.findResources(name);
 		}
