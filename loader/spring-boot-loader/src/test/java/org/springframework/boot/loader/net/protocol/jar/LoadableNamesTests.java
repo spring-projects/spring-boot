@@ -26,18 +26,25 @@ class LoadableNamesTests {
 		assertThatIsValidClassName("com$$MyClass").isTrue();
 		assertThatIsValidClassName("com/example/MyClass").isTrue();
 		assertThatIsValidClassName("com/example/MyClass$3").isTrue();
+		assertThatIsValidClassName("okio.-SegmentedByteString").isTrue();
+		assertThatIsValidClassName("1Bad").isTrue();
+		assertThatIsValidClassName("com.example.My Class").isTrue();
+		assertThatIsValidClassName("com.example.my!class").isTrue();
+		assertThatIsValidClassName("com.example.my:class").isTrue();
 	}
 
 	@Test
 	void isValidClassNameWhenInvalid() {
+		assertThatIsValidClassName(null).isFalse();
 		assertThatIsValidClassName("").isFalse();
 		assertThatIsValidClassName(".").isFalse();
-		assertThatIsValidClassName("1Bad").isFalse();
-		assertThatIsValidClassName("com.1Bad").isFalse();
+		assertThatIsValidClassName(".MyClass").isFalse();
+		assertThatIsValidClassName("MyClass.").isFalse();
 		assertThatIsValidClassName("com..MyClass").isFalse();
-		assertThatIsValidClassName("My Class").isFalse();
-		assertThatIsValidClassName("my!class").isFalse();
-		assertThatIsValidClassName("my:class").isFalse();
+		assertThatIsValidClassName("com//MyClass").isFalse();
+		assertThatIsValidClassName("com./MyClass").isFalse();
+		assertThatIsValidClassName("com;example").isFalse();
+		assertThatIsValidClassName("com[example").isFalse();
 	}
 
 	@Test

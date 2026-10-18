@@ -18,17 +18,19 @@ final class LoadableNames {
 		if (name == null || name.isEmpty()) {
 			return false;
 		}
-		boolean identifierStart = true;
+		boolean segmentStart = true;
 		for (int i = 0; i < name.length(); i++) {
 			char ch = name.charAt(i);
-			boolean dotOrSlash = (ch == '.' || ch == '/');
-			if ((identifierStart && !Character.isJavaIdentifierStart(ch))
-					|| !identifierStart && !Character.isJavaIdentifierPart(ch) && !dotOrSlash) {
+			boolean separator = (ch == '.' || ch == '/');
+			// JVM class-file names are not restricted to Java identifiers.
+			// ';' ends an object type descriptor and '[' starts an array type descriptor,
+			// so they are not valid in a class name.
+			if ((separator && segmentStart) || ch == ';' || ch == '[') {
 				return false;
 			}
-			identifierStart = dotOrSlash;
+			segmentStart = separator;
 		}
-		return true;
+		return !segmentStart;
 	}
 
 	static boolean isValidResourceName(String name) {

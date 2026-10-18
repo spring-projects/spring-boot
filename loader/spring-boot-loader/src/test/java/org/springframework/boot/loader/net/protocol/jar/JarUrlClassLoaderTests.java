@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.jar.Attributes;
@@ -231,6 +232,27 @@ class JarUrlClassLoaderTests {
 	}
 
 	@Test
+	void loadClassWithHyphenInNameFromNested() throws Exception {
+		byte[] classData;
+		try (JarFile appJar = new JarFile("src/test/resources/jars/app.jar");
+				InputStream inputStream = appJar.getInputStream(appJar.getJarEntry("demo/Application.class"))) {
+			classData = inputStream.readAllBytes();
+		}
+		classData = replaceClassName(classData, "demo/Application", "demo/-pplication");
+		ByteArrayOutputStream nestedJarData = new ByteArrayOutputStream();
+		try (JarOutputStream nestedAppJar = new JarOutputStream(nestedJarData)) {
+			nestedAppJar.putNextEntry(new JarEntry("demo/-pplication.class"));
+			nestedAppJar.write(classData);
+			nestedAppJar.closeEntry();
+		}
+		File jarFile = createJarWithNestedAppJar(nestedJarData.toByteArray());
+		URL url = JarUrl.create(jarFile, "app.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			assertThat(loader.loadClass("demo.-pplication")).hasToString("class demo.-pplication");
+		}
+	}
+
+	@Test
 	void loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest() throws Exception {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -274,6 +296,29 @@ class JarUrlClassLoaderTests {
 			jarOutputStream.closeEntry();
 		}
 		return jarFile;
+	}
+
+	private byte[] replaceClassName(byte[] classData, String originalName, String replacementName) {
+		byte[] originalNameBytes = originalName.getBytes(StandardCharsets.UTF_8);
+		byte[] replacementNameBytes = replacementName.getBytes(StandardCharsets.UTF_8);
+		assertThat(replacementNameBytes.length).isEqualTo(originalNameBytes.length);
+		boolean replaced = false;
+		for (int i = 0; i <= classData.length - originalNameBytes.length; i++) {
+			boolean matches = true;
+			for (int j = 0; j < originalNameBytes.length; j++) {
+				if (classData[i + j] != originalNameBytes[j]) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				System.arraycopy(replacementNameBytes, 0, classData, i, replacementNameBytes.length);
+				replaced = true;
+				i += originalNameBytes.length - 1;
+			}
+		}
+		assertThat(replaced).isTrue();
+		return classData;
 	}
 
 	static class TestJarUrlClassLoader extends JarUrlClassLoader {
