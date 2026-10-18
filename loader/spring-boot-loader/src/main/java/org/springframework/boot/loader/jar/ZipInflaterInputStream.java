@@ -41,6 +41,18 @@ class ZipInflaterInputStream extends InflaterInputStream {
 	}
 
 	@Override
+	public byte[] readAllBytes() throws IOException {
+		if (this.available < 0) {
+			return super.readAllBytes();
+		}
+		byte[] bytes = new byte[this.available];
+		if (readNBytes(bytes, 0, bytes.length) != bytes.length) {
+			throw new EOFException("Unexpected end of ZLIB input stream");
+		}
+		return bytes;
+	}
+
+	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		int result = super.read(b, off, len);
 		if (result != -1) {

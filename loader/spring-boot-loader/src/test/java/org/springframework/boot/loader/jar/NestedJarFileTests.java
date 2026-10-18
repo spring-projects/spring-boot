@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
@@ -464,6 +465,31 @@ class NestedJarFileTests {
 				assertThat(input.available()).isGreaterThan(0);
 				long skipped = input.skip(1000);
 				assertThat(skipped).isLessThan(1000);
+				assertThat(input.available()).isZero();
+			}
+		}
+	}
+
+	@Test
+	void readAllBytesAfterReadingStoredContentReturnsRemainingContent() throws IOException {
+		assertReadAllBytesAfterReadingReturnsRemainingContent("nested.jar");
+	}
+
+	@Test
+	void readAllBytesAfterReadingDeflatedContentReturnsRemainingContent() throws IOException {
+		assertReadAllBytesAfterReadingReturnsRemainingContent("META-INF/MANIFEST.MF");
+	}
+
+	private void assertReadAllBytesAfterReadingReturnsRemainingContent(String name) throws IOException {
+		byte[] expected;
+		try (JarFile jarFile = new JarFile(this.file);
+				InputStream input = jarFile.getInputStream(jarFile.getEntry(name))) {
+			expected = input.readAllBytes();
+		}
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			try (InputStream input = jar.getInputStream(jar.getEntry(name))) {
+				assertThat(input.read()).isEqualTo(expected[0] & 0xFF);
+				assertThat(input.readAllBytes()).isEqualTo(Arrays.copyOfRange(expected, 1, expected.length));
 				assertThat(input.available()).isZero();
 			}
 		}

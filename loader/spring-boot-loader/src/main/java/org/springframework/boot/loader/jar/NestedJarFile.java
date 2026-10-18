@@ -703,7 +703,7 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public byte[] readAllBytes() throws IOException {
-			byte[] bytes = new byte[this.uncompressedSize];
+			byte[] bytes = new byte[available()];
 			if (readNBytes(bytes, 0, bytes.length) != bytes.length) {
 				throw new EOFException("Unexpected end of entry " + this.entry.getName());
 			}
