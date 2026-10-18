@@ -682,8 +682,6 @@ public class NestedJarFile extends JarFile {
 	 */
 	private class JarEntryInputStream extends InputStream {
 
-		private final Entry entry;
-
 		private final int uncompressedSize;
 
 		private final CloseableDataBlock content;
@@ -695,7 +693,6 @@ public class NestedJarFile extends JarFile {
 		private volatile boolean closed;
 
 		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
-			this.entry = entry;
 			this.uncompressedSize = entry.getUncompressedSize();
 			this.content = entry.openContent();
 			this.remaining = this.uncompressedSize;
@@ -703,9 +700,9 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public byte[] readAllBytes() throws IOException {
-			byte[] bytes = new byte[this.uncompressedSize];
+			byte[] bytes = new byte[available()];
 			if (readNBytes(bytes, 0, bytes.length) != bytes.length) {
-				throw new EOFException("Unexpected end of entry " + this.entry.getName());
+				throw new EOFException("Unexpected end of input stream");
 			}
 			return bytes;
 		}
