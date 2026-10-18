@@ -303,8 +303,10 @@ class JarUrlClassLoaderTests {
 		byte[] replacementNameBytes = replacementName.getBytes(StandardCharsets.UTF_8);
 		assertThat(replacementNameBytes.length).isEqualTo(originalNameBytes.length);
 		boolean replaced = false;
+		// The class name can appear anywhere in the class-file bytes, so check each possible position.
 		for (int i = 0; i <= classData.length - originalNameBytes.length; i++) {
 			boolean matches = true;
+			// Check whether the old name starts at this position.
 			for (int j = 0; j < originalNameBytes.length; j++) {
 				if (classData[i + j] != originalNameBytes[j]) {
 					matches = false;
@@ -314,6 +316,7 @@ class JarUrlClassLoaderTests {
 			if (matches) {
 				System.arraycopy(replacementNameBytes, 0, classData, i, replacementNameBytes.length);
 				replaced = true;
+				// Skip past the name we just replaced.
 				i += originalNameBytes.length - 1;
 			}
 		}
