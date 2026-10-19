@@ -47,6 +47,29 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
+	@WithPackageResources({ "1.key", "1.crt", "2.key", "2.crt" })
+	void getSslProviderIgnoresCaseOfServerName() {
+		SslBundle defaultBundle = createBundle("1.key", "1.crt");
+		SslBundle mappedBundle = createBundle("2.key", "2.crt");
+		SslServerCustomizer customizer = new SslServerCustomizer(null, Ssl.ClientAuth.NONE, defaultBundle,
+				Map.of("Mapped.Example", mappedBundle));
+		assertThat(customizer.getSslProvider("mapped.example")).isNotSameAs(customizer.getSslProvider(null));
+	}
+
+	@Test
+	@WithPackageResources({ "1.key", "1.crt", "2.key", "2.crt" })
+	void getSslProviderReturnsMappedProviderForServerNameMatchingWildcard() {
+		SslBundle defaultBundle = createBundle("1.key", "1.crt");
+		SslBundle mappedBundle = createBundle("2.key", "2.crt");
+		SslServerCustomizer customizer = new SslServerCustomizer(null, Ssl.ClientAuth.NONE, defaultBundle,
+				Map.of("*.mapped.example", mappedBundle));
+		SslProvider defaultProvider = customizer.getSslProvider(null);
+		assertThat(customizer.getSslProvider("one.mapped.example")).isNotSameAs(defaultProvider);
+		assertThat(customizer.getSslProvider("two.one.mapped.example")).isSameAs(defaultProvider);
+		assertThat(customizer.getSslProvider("mapped.example")).isSameAs(defaultProvider);
+	}
+
+	@Test
 	@WithPackageResources({ "1.key", "1.crt" })
 	void getSslProviderReturnsDefaultWhenServerNameIsNull() {
 		SslBundle defaultBundle = createBundle("1.key", "1.crt");
