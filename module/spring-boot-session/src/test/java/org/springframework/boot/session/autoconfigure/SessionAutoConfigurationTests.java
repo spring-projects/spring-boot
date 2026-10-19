@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author SangHoon Han
  */
 class SessionAutoConfigurationTests {
 
@@ -228,6 +229,16 @@ class SessionAutoConfigurationTests {
 			DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
 			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Lax");
 		});
+	}
+
+	@Test
+	void cookieSerializerUsesLaxSameSitePolicyByDefaultInAWarDeployment() {
+		MockServletContext servletContext = new MockServletContext();
+		this.contextRunner.withInitializer((context) -> context.setServletContext(servletContext)) // war
+			.run((context) -> {
+				DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Lax");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
