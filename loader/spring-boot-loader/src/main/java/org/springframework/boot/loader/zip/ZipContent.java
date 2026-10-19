@@ -768,9 +768,10 @@ public final class ZipContent implements Closeable {
 			if (name != null) {
 				return name.startsWith(prefix.toString());
 			}
+			int offset = ZipContent.this.nameOffsetLookups.get(this.lookupIndex);
 			long pos = getCentralDirectoryFileHeaderRecordPos(this.lookupIndex)
-					+ ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-			return ZipString.startsWith(null, ZipContent.this.data, pos, this.centralRecord.fileNameLength(),
+					+ ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
+			return ZipString.startsWith(null, ZipContent.this.data, pos, this.centralRecord.fileNameLength() - offset,
 					prefix) != -1;
 		}
 
