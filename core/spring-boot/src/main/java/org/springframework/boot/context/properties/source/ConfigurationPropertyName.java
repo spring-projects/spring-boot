@@ -672,6 +672,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 			throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('.'));
 		}
+		for (int i = 0; i < name.length() - 1; i++) {
+			if (name.charAt(i) == '.' && name.charAt(i + 1) == '.') {
+				// A repeated separator produces an empty element between the two dots.
+				// ElementsParser.add silently drops empty elements, which would
+				// otherwise make this name indistinguishable from the same name with
+				// the repeated separator collapsed to one (e.g. "foo..bar" parsing as
+				// identical to "foo.bar"), silently merging two distinct names.
+				if (returnNullIfInvalid) {
+					return null;
+				}
+				throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('.'));
+			}
+		}
 		Elements elements = new ElementsParser(name, '.', parserCapacity).parse();
 		for (int i = 0; i < elements.getSize(); i++) {
 			if (elements.getType(i) == ElementType.NON_UNIFORM) {

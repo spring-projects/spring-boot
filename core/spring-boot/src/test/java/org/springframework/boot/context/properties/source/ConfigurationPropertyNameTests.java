@@ -55,6 +55,22 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void ofNameShouldNotContainDoubleDot() {
+		// A repeated separator produces an empty element, which ElementsParser.add
+		// silently drops. Without this check, "foo..bar" parses as identical to
+		// "foo.bar" (of("foo..bar").equals(of("foo.bar")) is true and
+		// isValid("foo..bar") is true), so two distinct property-source keys that
+		// differ only by a repeated separator silently collide on the same
+		// ConfigurationPropertyName.
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("foo..bar"))
+			.withMessageContaining("is not valid");
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("foo...bar"))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
 	void ofNameShouldNotContainUppercase() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
 			.isThrownBy(() -> ConfigurationPropertyName.of("fOo"))
@@ -731,6 +747,8 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo..bar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo...bar")).isFalse();
 	}
 
 	@Test
