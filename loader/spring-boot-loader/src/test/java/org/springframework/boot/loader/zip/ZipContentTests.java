@@ -96,6 +96,26 @@ class ZipContentTests {
 	}
 
 	@Test
+	void getCommentWhenContentHasPrefixReturnsComment() throws Exception {
+		File file = new File(this.tempDir, "prefixed.zip");
+		ByteArrayOutputStream zipData = new ByteArrayOutputStream();
+		try (ZipOutputStream zipOutput = new ZipOutputStream(zipData)) {
+			zipOutput.setComment("prefixed");
+			zipOutput.putNextEntry(new ZipEntry("1.dat"));
+			zipOutput.write(new byte[] { (byte) 1 });
+			zipOutput.closeEntry();
+		}
+		ByteArrayOutputStream content = new ByteArrayOutputStream();
+		content.write("#!/bin/sh\n".getBytes(StandardCharsets.UTF_8));
+		content.write(zipData.toByteArray());
+		Files.write(file.toPath(), content.toByteArray());
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.getComment()).isEqualTo("prefixed");
+			assertThat(zip.getEntry("1.dat")).isNotNull();
+		}
+	}
+
+	@Test
 	void getEntryWhenPresentReturnsEntry() {
 		Entry entry = this.zipContent.getEntry("1.dat");
 		assertThat(entry).isNotNull();
