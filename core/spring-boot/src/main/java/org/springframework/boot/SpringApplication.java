@@ -312,8 +312,12 @@ public class SpringApplication {
 			if (this.properties.isLogStartupInfo()) {
 				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
 			}
-			listeners.started(context, timeTakenToStarted);
-			callRunners(context, applicationArguments);
+			if (context.isRunning()) {
+				listeners.started(context, timeTakenToStarted);
+			}
+			if (context.isRunning()) {
+				callRunners(context, applicationArguments);
+			}
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, listeners);
