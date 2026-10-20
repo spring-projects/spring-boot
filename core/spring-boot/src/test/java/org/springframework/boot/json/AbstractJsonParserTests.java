@@ -109,6 +109,51 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void listWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[\"foo\" ,\"bar\"]");
+		assertThat(list).containsExactly("foo", "bar");
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[1 ,2]");
+		assertThat(list).hasSize(2);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2]"));
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[1, 2, 3]");
+		assertThat(list).hasSize(3);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L, 3L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2,3]"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"}, {\"foo\":\"baz\"}, {\"foo\":\"qux\"}]");
+		assertThat(list).hasSize(3);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+		assertThat(list.get(2)).isEqualTo(Map.of("foo", "qux"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"} ,{\"foo\":\"baz\"}]");
+		assertThat(list).hasSize(2);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+	}
+
+	@Test
+	void mapOfListsWithWhitespaceBeforeComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":[\"bar\" ,\"baz\"]}");
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly("bar", "baz");
+	}
+
+	@Test
 	void mapWithNullThrowsARuntimeException() {
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseMap(null));
 	}
