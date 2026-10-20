@@ -219,6 +219,18 @@ class AmqpRabbitAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void autoConfigurationDoesNotConfigureRabbitAmqpTemplateExchangeAndRoutingKeyByDefault() {
+		this.contextRunner
+			.withBean(RabbitAmqpTemplateCustomizer.class, () -> (template) -> template.setQueue("test.queue"))
+			.run((context) -> {
+				RabbitAmqpTemplate template = context.getBean(RabbitAmqpTemplate.class);
+				assertThat(template).hasFieldOrPropertyWithValue("defaultQueue", "test.queue");
+				assertThat(template).hasFieldOrPropertyWithValue("defaultExchange", null);
+				assertThat(template).hasFieldOrPropertyWithValue("defaultRoutingKey", null);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class MultipleRabbitAmqpTemplateCustomizersConfiguration {
 
