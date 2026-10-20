@@ -302,6 +302,47 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbIsAvailable() {
+		allOptionsRunner()
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.run((context) -> {
+				assertConverterIsRegistered(context, JsonbHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+			});
+	}
+
+	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbApiIsAvailable() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.withBean(Json.class, () -> Json.Default)
+			.run((context) -> {
+				assertConverterIsNotRegistered(context, JsonbHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+			});
+	}
+
+	@Test
+	void kotlinSerializationUsesUnrestrictedPredicateWhenNoOtherJsonConverterIsAvailable() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName(),
+					Jsonb.class.getPackage().getName()))
+			.withBean(Json.class, () -> Json.Default)
+			.run((context) -> {
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isTrue();
+			});
+	}
+
+	@Test
 	void stringDefaultConverter() {
 		this.contextRunner.run((context) -> assertConverterIsRegistered(context, StringHttpMessageConverter.class));
 	}
