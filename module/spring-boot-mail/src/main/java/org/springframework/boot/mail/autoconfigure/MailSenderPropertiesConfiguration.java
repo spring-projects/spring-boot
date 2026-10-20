@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.mail.autoconfigure.MailProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
@@ -70,6 +71,16 @@ class MailSenderPropertiesConfiguration {
 				SslBundle sslBundle = sslBundles.getBundle(ssl.getBundle());
 				javaMailProperties.put("mail." + protocol + ".ssl.socketFactory",
 						sslBundle.createSslContext().getSocketFactory());
+				SslOptions options = sslBundle.getOptions();
+				String[] enabledProtocols = options.getEnabledProtocols();
+				if (enabledProtocols != null) {
+					javaMailProperties.setProperty("mail." + protocol + ".ssl.protocols",
+							String.join(" ", enabledProtocols));
+				}
+				String[] ciphers = options.getCiphers();
+				if (ciphers != null) {
+					javaMailProperties.setProperty("mail." + protocol + ".ssl.ciphersuites", String.join(" ", ciphers));
+				}
 			}
 		}
 		if (!javaMailProperties.isEmpty()) {
