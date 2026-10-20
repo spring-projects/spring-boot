@@ -33,6 +33,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
@@ -222,6 +224,24 @@ class ZipContentTests {
 			assertThat(nested.size()).isEqualTo(1);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
 			assertThat(nested.getEntry(0).getName()).isEqualTo("9.dat");
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "special\u00EB/", "special\u20AC/", "special\uD83D\uDE00/" })
+	void nestedDirectoryWhenNameHasMultiByteCharactersReturnsRelativeNames(String directoryName) throws IOException {
+		File file = new File(this.tempDir, "multi-byte-directory.jar");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			out.putNextEntry(new ZipEntry(directoryName));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry(directoryName + "9.dat"));
+			out.write(9);
+			out.closeEntry();
+		}
+		try (ZipContent nested = ZipContent.open(file.toPath(), directoryName)) {
+			assertThat(nested.size()).isEqualTo(1);
+			assertThat(nested.getEntry(0).getName()).isEqualTo("9.dat");
+			assertThat(nested.getEntry("9.dat")).isNotNull();
 		}
 	}
 
