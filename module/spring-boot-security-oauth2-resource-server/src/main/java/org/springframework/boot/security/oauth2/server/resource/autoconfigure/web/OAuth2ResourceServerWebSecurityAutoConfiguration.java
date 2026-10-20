@@ -7,6 +7,7 @@ package org.springframework.boot.security.oauth2.server.resource.autoconfigure.w
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
@@ -28,6 +29,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author WooSeung Kim
  * @since 4.1.0
  */
 @AutoConfiguration(before = { ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class,
@@ -46,6 +48,7 @@ public final class OAuth2ResourceServerWebSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(OpaqueTokenIntrospector.class)
+	@ConditionalOnMissingBean(JwtDecoder.class)
 	SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.oauth2ResourceServer((resourceServer) -> resourceServer.opaqueToken(withDefaults()));
