@@ -47,6 +47,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ferdinand MZ
  * @see ConditionalOnAvailableEndpoint
  */
 class OnAvailableEndpointCondition extends SpringBootCondition {

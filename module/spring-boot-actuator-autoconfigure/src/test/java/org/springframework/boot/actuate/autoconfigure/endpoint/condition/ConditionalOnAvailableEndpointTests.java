@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link ConditionalOnAvailableEndpoint @ConditionalOnAvailableEndpoint}.
  *
  * @author Brian Clozel
+ * @author Ferdinand MZ
  */
 class ConditionalOnAvailableEndpointTests {
 
