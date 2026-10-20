@@ -116,7 +116,27 @@ abstract class AbstractJsonParserTests {
 
 	@Test
 	void listOfNumbersWithWhitespaceBeforeComma() {
-		assertThat(this.parser.parseList("[1 ,2]")).isEqualTo(this.parser.parseList("[1,2]"));
+		List<Object> list = this.parser.parseList("[1 ,2]");
+		assertThat(list).hasSize(2);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2]"));
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[1, 2, 3]");
+		assertThat(list).hasSize(3);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L, 3L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2,3]"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"}, {\"foo\":\"baz\"}, {\"foo\":\"qux\"}]");
+		assertThat(list).hasSize(3);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+		assertThat(list.get(2)).isEqualTo(Map.of("foo", "qux"));
 	}
 
 	@Test
