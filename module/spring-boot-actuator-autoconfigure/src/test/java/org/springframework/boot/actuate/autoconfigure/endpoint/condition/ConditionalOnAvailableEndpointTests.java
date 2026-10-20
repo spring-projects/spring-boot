@@ -4,8 +4,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -15,10 +23,14 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConditionalOnAvailableEndpoint @ConditionalOnAvailableEndpoint}.
@@ -26,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 class ConditionalOnAvailableEndpointTests {
+
+	private static final String CACHE_BEAN_NAME = OnAvailableEndpointCondition.class.getName() + ".cache";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withUserConfiguration(AllEndpointsConfiguration.class)
@@ -272,6 +286,89 @@ class ConditionalOnAvailableEndpointTests {
 			.run((context) -> assertThat(context).hasSingleBean(TestEndpoint.class));
 	}
 
+	@Test
+	void conditionDoesNotUseStaticMapCaches() {
+		for (Field field : OnAvailableEndpointCondition.class.getDeclaredFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				assertThat(Map.class.isAssignableFrom(field.getType()))
+					.as("Field %s must not be a static Map", field.getName())
+					.isFalse();
+			}
+		}
+	}
+
+	@Test
+	void endpointAvailabilityCacheIsCleanedUpWhenContextCloses() {
+		ConfigurableListableBeanFactory beanFactory;
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(AllEndpointsConfiguration.class);
+			context.refresh();
+			beanFactory = context.getBeanFactory();
+			assertThat(beanFactory.containsSingleton(CACHE_BEAN_NAME)).isTrue();
+			assertThat(beanFactory.getSingleton(CACHE_BEAN_NAME)).isNotNull();
+			assertThat(context.containsBean("health")).isTrue();
+		}
+		assertThat(beanFactory.containsSingleton(CACHE_BEAN_NAME)).isFalse();
+		assertThat(beanFactory.getSingleton(CACHE_BEAN_NAME)).isNull();
+	}
+
+	@Test
+	void endpointAvailabilityCacheIsCleanedUpWhenContextRefreshFails() {
+		FailingConfiguration.cacheInitializedBeforeFailure.set(false);
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(FailingConfiguration.class);
+			assertThatExceptionOfType(BeanCreationException.class).isThrownBy(context::refresh)
+				.withMessageContaining("Simulated refresh failure");
+			assertThat(FailingConfiguration.cacheInitializedBeforeFailure).isTrue();
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			assertThat(beanFactory.containsSingleton(CACHE_BEAN_NAME)).isFalse();
+			assertThat(beanFactory.getSingleton(CACHE_BEAN_NAME)).isNull();
+		}
+	}
+
+	@Test
+	void exposureContributorsAreNotLoadedWhenAccessIsNone() {
+		this.contextRunner.withPropertyValues("management.endpoints.access.default=none").run((context) -> {
+			assertThat(context).doesNotHaveBean("health");
+			Object availability = context.getBeanFactory().getSingleton(CACHE_BEAN_NAME);
+			assertThat(availability).isNotNull();
+			Object exposureContributors = ReflectionTestUtils.getField(availability, "exposureOutcomeContributors");
+			assertThat(exposureContributors).isNull();
+		});
+	}
+
+	@Test
+	void parentAndChildContextsSharingEnvironmentDoNotInterfere() {
+		MockEnvironment sharedEnv = new MockEnvironment();
+		sharedEnv.setProperty("management.endpoints.web.exposure.include", "*");
+		try (AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+				AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext()) {
+			parent.setEnvironment(sharedEnv);
+			parent.register(AllEndpointsConfiguration.class);
+			parent.refresh();
+
+			child.setParent(parent);
+			child.setEnvironment(sharedEnv);
+			child.register(AllEndpointsConfiguration.class);
+			child.refresh();
+
+			ConfigurableListableBeanFactory parentBeanFactory = parent.getBeanFactory();
+			ConfigurableListableBeanFactory childBeanFactory = child.getBeanFactory();
+			Object parentCache = parentBeanFactory.getSingleton(CACHE_BEAN_NAME);
+			Object childCache = childBeanFactory.getSingleton(CACHE_BEAN_NAME);
+			assertThat(parentCache).isNotNull();
+			assertThat(childCache).isNotNull();
+			assertThat(childCache).isNotSameAs(parentCache);
+
+			child.close();
+			assertThat(childBeanFactory.containsSingleton(CACHE_BEAN_NAME)).isFalse();
+			assertThat(childBeanFactory.getSingleton(CACHE_BEAN_NAME)).isNull();
+			assertThat(parent.isActive()).isTrue();
+			assertThat(parent.containsBean("health")).isTrue();
+			assertThat(parentBeanFactory.getSingleton(CACHE_BEAN_NAME)).isSameAs(parentCache);
+		}
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
@@ -397,6 +494,27 @@ class ConditionalOnAvailableEndpointTests {
 		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposure = EndpointExposure.WEB)
 		String unexposed() {
 			return "unexposed";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FailingConfiguration {
+
+		static final AtomicBoolean cacheInitializedBeforeFailure = new AtomicBoolean();
+
+		@Bean
+		@ConditionalOnAvailableEndpoint
+		HealthEndpoint health() {
+			return new HealthEndpoint();
+		}
+
+		@Bean
+		String failingBean(BeanFactory beanFactory) {
+			if (beanFactory instanceof ConfigurableListableBeanFactory listable) {
+				cacheInitializedBeforeFailure.set(listable.containsSingleton(CACHE_BEAN_NAME));
+			}
+			throw new RuntimeException("Simulated refresh failure");
 		}
 
 	}

@@ -9,11 +9,11 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.PropertiesEndpointAccessResolver;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
@@ -39,7 +39,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * A condition that checks if an endpoint is available (i.e. accessible and exposed).
@@ -54,9 +53,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 
 	private static final String JMX_ENABLED_KEY = "spring.jmx.enabled";
 
-	private static final Map<Environment, EndpointAccessResolver> accessResolversCache = new ConcurrentReferenceHashMap<>();
-
-	private static final Map<Environment, Set<EndpointExposureOutcomeContributor>> exposureOutcomeContributorsCache = new ConcurrentReferenceHashMap<>();
+	private static final String CACHE_BEAN_NAME = OnAvailableEndpointCondition.class.getName() + ".cache";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -103,33 +100,30 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnAvailableEndpoint.class);
 		Environment environment = context.getEnvironment();
 		EndpointId endpointId = EndpointId.of(environment, endpointAnnotation.getString("id"));
-		ConditionOutcome accessOutcome = getAccessOutcome(environment, endpointAnnotation, endpointId, message);
+		EndpointAvailability availability = getEndpointAvailability(context);
+		ConditionOutcome accessOutcome = getAccessOutcome(availability, endpointAnnotation, endpointId, message);
 		if (!accessOutcome.isMatch()) {
 			return accessOutcome;
 		}
-		ConditionOutcome exposureOutcome = getExposureOutcome(context, conditionAnnotation, endpointAnnotation,
-				endpointId, message);
+		ConditionOutcome exposureOutcome = getExposureOutcome(context, availability, conditionAnnotation,
+				endpointAnnotation, endpointId, message);
 		return (exposureOutcome != null) ? exposureOutcome : ConditionOutcome.noMatch(message.because("not exposed"));
 	}
 
-	private ConditionOutcome getAccessOutcome(Environment environment, MergedAnnotation<Endpoint> endpointAnnotation,
-			EndpointId endpointId, ConditionMessage.Builder message) {
+	private ConditionOutcome getAccessOutcome(EndpointAvailability availability,
+			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, ConditionMessage.Builder message) {
 		Access defaultAccess = endpointAnnotation.getEnum("defaultAccess", Access.class);
-		Access access = getAccess(environment, endpointId, defaultAccess);
+		Access access = availability.getAccessResolver().accessFor(endpointId, defaultAccess);
 		return new ConditionOutcome(access != Access.NONE,
 				message.because("the configured access for endpoint '%s' is %s".formatted(endpointId, access)));
 	}
 
-	private Access getAccess(Environment environment, EndpointId endpointId, Access defaultAccess) {
-		return accessResolversCache.computeIfAbsent(environment, PropertiesEndpointAccessResolver::new)
-			.accessFor(endpointId, defaultAccess);
-	}
-
-	private @Nullable ConditionOutcome getExposureOutcome(ConditionContext context,
+	private @Nullable ConditionOutcome getExposureOutcome(ConditionContext context, EndpointAvailability availability,
 			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation,
 			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, Builder message) {
 		Set<EndpointExposure> exposures = getExposures(conditionAnnotation);
-		Set<EndpointExposureOutcomeContributor> outcomeContributors = getExposureOutcomeContributors(context);
+		Set<EndpointExposureOutcomeContributor> outcomeContributors = availability
+			.getExposureOutcomeContributors(context);
 		for (EndpointExposureOutcomeContributor outcomeContributor : outcomeContributors) {
 			ConditionOutcome outcome = outcomeContributor.getExposureOutcome(endpointId, exposures, message);
 			if (outcome != null && outcome.isMatch()) {
@@ -145,26 +139,70 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 				: EnumSet.copyOf(Arrays.asList(exposures));
 	}
 
-	private Set<EndpointExposureOutcomeContributor> getExposureOutcomeContributors(ConditionContext context) {
-		Environment environment = context.getEnvironment();
-		Set<EndpointExposureOutcomeContributor> contributors = exposureOutcomeContributorsCache.get(environment);
-		if (contributors == null) {
-			contributors = new LinkedHashSet<>();
-			contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.WEB));
-			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
-				contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.JMX));
-			}
-			contributors.addAll(loadExposureOutcomeContributors(context.getClassLoader(), environment));
-			exposureOutcomeContributorsCache.put(environment, contributors);
+	private EndpointAvailability getEndpointAvailability(ConditionContext context) {
+		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		if (beanFactory == null) {
+			return new EndpointAvailability(context.getEnvironment());
 		}
+		synchronized (beanFactory) {
+			EndpointAvailability availability = (EndpointAvailability) beanFactory.getSingleton(CACHE_BEAN_NAME);
+			if (availability == null) {
+				availability = new EndpointAvailability(context.getEnvironment());
+				beanFactory.registerSingleton(CACHE_BEAN_NAME, availability);
+			}
+			return availability;
+		}
+	}
+
+	private static Set<EndpointExposureOutcomeContributor> determineExposureOutcomeContributors(
+			ConditionContext context) {
+		Environment environment = context.getEnvironment();
+		Set<EndpointExposureOutcomeContributor> contributors = new LinkedHashSet<>();
+		contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.WEB));
+		if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
+			contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.JMX));
+		}
+		contributors.addAll(loadExposureOutcomeContributors(context.getClassLoader(), environment));
 		return contributors;
 	}
 
-	private List<EndpointExposureOutcomeContributor> loadExposureOutcomeContributors(@Nullable ClassLoader classLoader,
-			Environment environment) {
+	private static List<EndpointExposureOutcomeContributor> loadExposureOutcomeContributors(
+			@Nullable ClassLoader classLoader, Environment environment) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, environment);
 		return SpringFactoriesLoader.forDefaultResourceLocation(classLoader)
 			.load(EndpointExposureOutcomeContributor.class, argumentResolver);
+	}
+
+	private static final class EndpointAvailability {
+
+		private final Object lock = new Object();
+
+		private final EndpointAccessResolver accessResolver;
+
+		private volatile @Nullable Set<EndpointExposureOutcomeContributor> exposureOutcomeContributors;
+
+		EndpointAvailability(Environment environment) {
+			this.accessResolver = new PropertiesEndpointAccessResolver(environment);
+		}
+
+		EndpointAccessResolver getAccessResolver() {
+			return this.accessResolver;
+		}
+
+		Set<EndpointExposureOutcomeContributor> getExposureOutcomeContributors(ConditionContext context) {
+			Set<EndpointExposureOutcomeContributor> contributors = this.exposureOutcomeContributors;
+			if (contributors == null) {
+				synchronized (this.lock) {
+					contributors = this.exposureOutcomeContributors;
+					if (contributors == null) {
+						contributors = determineExposureOutcomeContributors(context);
+						this.exposureOutcomeContributors = contributors;
+					}
+				}
+			}
+			return contributors;
+		}
+
 	}
 
 	/**
