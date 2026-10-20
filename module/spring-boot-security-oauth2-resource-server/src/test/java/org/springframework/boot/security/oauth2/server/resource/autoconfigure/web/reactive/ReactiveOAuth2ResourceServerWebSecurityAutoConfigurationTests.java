@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author WooSeung Kim
  */
 class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 
@@ -99,6 +100,20 @@ class ReactiveOAuth2ResourceServerWebSecurityAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration.class);
 				ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
 				assertThat(authenticationManager).isInstanceOf(OpaqueTokenReactiveAuthenticationManager.class);
+			});
+	}
+
+	@Test
+	void whenHasReactiveJwtDecoderAndReactiveOpaqueTokenIntrospectorAddsJwtFilterChain() {
+		this.contextRunner
+			.withPropertyValues(JWK_SET_URI_PROPERTY,
+					"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://authserver",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-id=test",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-secret=shh")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
+				ReactiveAuthenticationManager authenticationManager = getAuthenticationManager(context);
+				assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 			});
 	}
 

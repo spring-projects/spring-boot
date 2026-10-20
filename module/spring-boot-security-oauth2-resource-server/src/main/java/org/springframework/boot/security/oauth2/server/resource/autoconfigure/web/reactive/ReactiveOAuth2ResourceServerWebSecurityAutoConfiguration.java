@@ -7,6 +7,7 @@ package org.springframework.boot.security.oauth2.server.resource.autoconfigure.w
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration;
@@ -30,6 +31,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author WooSeung Kim
  * @since 4.1.0
  */
 @AutoConfiguration(
@@ -52,6 +54,7 @@ public final class ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(ReactiveOpaqueTokenIntrospector.class)
+	@ConditionalOnMissingBean(ReactiveJwtDecoder.class)
 	SecurityWebFilterChain reactiveOpaqueTokenSecurityWebFilterChain(ServerHttpSecurity http) {
 		http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
 		http.oauth2ResourceServer((resourceServer) -> resourceServer.opaqueToken(withDefaults()));
