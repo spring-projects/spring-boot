@@ -1495,6 +1495,24 @@ class SpringApplicationTests {
 						.isEmpty());
 	}
 
+	@Test
+	void shouldNotStopKeepAliveThreadIfChildContextIsClosed() throws InterruptedException {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setKeepAlive(true);
+		this.context = application.run();
+		Thread keepAlive = getCurrentThreads().stream()
+			.filter((thread) -> thread.getName().equals("keep-alive"))
+			.findFirst()
+			.orElseThrow();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(this.context);
+		child.refresh();
+		child.close();
+		keepAlive.join(250);
+		assertThat(keepAlive.isAlive()).isTrue();
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?> availabilityChangeEvent)
