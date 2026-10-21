@@ -151,6 +151,20 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void ofNameWhenMissingCloseBracketAtEndOfName() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("foo["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
+	void ofNameWhenOnlyMissingCloseBracket() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
 	void ofNameWhenMissingOpenBracket() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
 			.isThrownBy(() -> ConfigurationPropertyName.of("bar]"))
@@ -298,6 +312,18 @@ class ConfigurationPropertyNameTests {
 	void adaptUnderscoreShouldReturnEmpty() {
 		assertThat(ConfigurationPropertyName.adapt("_", '_').isEmpty()).isTrue();
 		assertThat(ConfigurationPropertyName.adapt("_", '.').isEmpty()).isTrue();
+	}
+
+	@Test
+	void adaptWhenNameEndsWithOpenBracketShouldNotAddEmptyElement() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo[", '.');
+		assertThat(name.getNumberOfElements()).isEqualTo(1);
+		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
+	}
+
+	@Test
+	void adaptWhenNameIsOnlyAnOpenBracketShouldReturnEmpty() {
+		assertThat(ConfigurationPropertyName.adapt("[", '.').isEmpty()).isTrue();
 	}
 
 	@Test
@@ -731,6 +757,7 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo[")).isFalse();
 	}
 
 	@Test
