@@ -561,6 +561,22 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithClusterRefreshPeriodAndCustomConnectionDetails() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsClusterConfiguration.class)
+			.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
+			.run(assertClientOptions(ClusterClientOptions.class,
+					(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod()).hasSeconds(30)));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterRefreshPeriodAndClusterConfigurationBean() {
+		this.contextRunner.withUserConfiguration(RedisClusterConfig.class)
+			.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
+			.run(assertClientOptions(ClusterClientOptions.class,
+					(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod()).hasSeconds(30)));
+	}
+
+	@Test
 	void testRedisConfigurationWithClusterAdaptiveRefresh() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
@@ -804,6 +820,16 @@ class DataRedisAutoConfigurationTests {
 			RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 			config.setHostName("foo");
 			return config;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RedisClusterConfig {
+
+		@Bean
+		RedisClusterConfiguration clusterConfiguration() {
+			return new RedisClusterConfiguration(List.of("127.0.0.1:27379", "127.0.0.1:27380"));
 		}
 
 	}
