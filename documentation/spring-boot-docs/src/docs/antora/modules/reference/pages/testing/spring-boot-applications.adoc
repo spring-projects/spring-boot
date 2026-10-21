@@ -238,6 +238,10 @@ include-code::MyJmxTests[]
 
 If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation] from `spring-boot-micrometer-tracing-test` or with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] from `spring-boot-micrometer-metrics-test`, it auto-configures an javadoc:io.micrometer.observation.ObservationRegistry[].
 
+Requests sent by an auto-configured javadoc:org.springframework.test.web.servlet.client.RestTestClient[] or javadoc:org.springframework.test.web.reactive.server.WebTestClient[] are not observed.
+These clients are part of the test harness rather than of the application under test, so their requests are not recorded in `http.client.requests` metrics and do not propagate a trace context to the server.
+To test how your application handles an incoming trace, send a known `traceparent` header with the request.
+
 
 
 [[testing.spring-boot-applications.metrics]]
