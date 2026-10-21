@@ -83,12 +83,13 @@ abstract class AbstractJsonParserTests {
 		assertThat(list).containsExactly("[", "baz");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void stringContainingClosingBraceWithNestedMap() {
 		Map<String, Object> map = this.parser.parseMap("{\"a\":\"}\",\"b\":{\"c\":\"d\",\"e\":\"f\"}}");
 		assertThat(map).containsEntry("a", "}");
-		assertThat((Map<String, Object>) map.get("b")).containsEntry("c", "d").containsEntry("e", "f");
+		assertThat(map.get("b")).asInstanceOf(InstanceOfAssertFactories.MAP)
+			.containsEntry("c", "d")
+			.containsEntry("e", "f");
 	}
 
 	@Test

@@ -131,12 +131,16 @@ public class BasicJsonParser extends AbstractJsonParser {
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
-			switch (ch) {
-				case '{' -> tracking.updateNesting(Tracked.OBJECT, +1);
-				case '}' -> tracking.updateNesting(Tracked.OBJECT, -1);
-				case '[' -> tracking.updateNesting(Tracked.LIST, +1);
-				case ']' -> tracking.updateNesting(Tracked.LIST, -1);
-				case '"' -> tracking.toggle(Tracked.VALUE);
+			if (ch == '"') {
+				tracking.toggle(Tracked.VALUE);
+			}
+			else if (!tracking.in(Tracked.VALUE)) {
+				switch (ch) {
+					case '{' -> tracking.update(Tracked.OBJECT, +1);
+					case '}' -> tracking.update(Tracked.OBJECT, -1);
+					case '[' -> tracking.update(Tracked.LIST, +1);
+					case ']' -> tracking.update(Tracked.LIST, -1);
+				}
 			}
 			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
 				list.add(build.toString().trim());
@@ -173,12 +177,6 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 		void update(Tracked tracked, int delta) {
 			set(tracked, get(tracked) + delta);
-		}
-
-		void updateNesting(Tracked tracked, int delta) {
-			if (!in(Tracked.VALUE)) {
-				update(tracked, delta);
-			}
 		}
 
 		private int get(Tracked tracked) {
