@@ -315,6 +315,18 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void adaptWhenNameEndsWithOpenBracketShouldNotAddEmptyElement() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo[", '.');
+		assertThat(name.getNumberOfElements()).isEqualTo(1);
+		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
+	}
+
+	@Test
+	void adaptWhenNameIsOnlyAnOpenBracketShouldReturnEmpty() {
+		assertThat(ConfigurationPropertyName.adapt("[", '.').isEmpty()).isTrue();
+	}
+
+	@Test
 	void isEmptyWhenEmptyShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.of("").isEmpty()).isTrue();
 	}

@@ -672,6 +672,12 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 			throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('.'));
 		}
+		if (name.charAt(name.length() - 1) == '[') {
+			if (returnNullIfInvalid) {
+				return null;
+			}
+			throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('['));
+		}
 		Elements elements = new ElementsParser(name, '.', parserCapacity).parse();
 		for (int i = 0; i < elements.getSize(); i++) {
 			if (elements.getType(i) == ElementType.NON_UNIFORM) {
@@ -1034,12 +1040,6 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 			if (openBracketCount != 0) {
 				type = ElementType.NON_UNIFORM;
-				if (start == length) {
-					// The unbalanced bracket is the last character. Include it in the
-					// element so that it is not dropped as an empty element and the name
-					// is reported as invalid.
-					start--;
-				}
 			}
 			add(start, length, type, valueProcessor);
 			return new Elements(this.source, this.size, this.start, this.end, this.type, null, this.resolved);
