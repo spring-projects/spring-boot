@@ -111,32 +111,31 @@ abstract class AbstractJsonParserTests {
 		assertThat(list).isEmpty();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void listOfMaps() {
 		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertThat(list).hasSize(2);
-		assertThat(((Map<String, Object>) list.get(1))).hasSize(2);
+		assertThat(list.get(1)).asInstanceOf(InstanceOfAssertFactories.MAP).hasSize(2);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void mapOfLists() {
 		Map<String, Object> map = this.parser
 			.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void nestedLeadingAndTrailingWhitespace() {
 		Map<String, Object> map = this.parser
 			.parseMap(" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
 	}
 
 	@Test
