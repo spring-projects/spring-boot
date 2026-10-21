@@ -457,7 +457,8 @@ public final class ZipContent implements Closeable {
 			this.nameHashLookups = new int[maxSize];
 			this.relativeCentralDirectoryOffsetLookups = new int[maxSize];
 			this.nameOffsetLookups = (directoryEntry != null)
-					? new NameOffsetLookups(directoryEntry.getName().length(), maxSize) : NameOffsetLookups.NONE;
+					? new NameOffsetLookups(directoryEntry.getName().getBytes(StandardCharsets.UTF_8).length, maxSize)
+					: NameOffsetLookups.NONE;
 		}
 
 		private void add(ZipCentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)

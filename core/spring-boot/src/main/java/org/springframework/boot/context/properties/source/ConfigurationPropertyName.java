@@ -685,6 +685,12 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 				throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('.'));
 			}
 		}
+		if (name.charAt(name.length() - 1) == '[') {
+			if (returnNullIfInvalid) {
+				return null;
+			}
+			throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('['));
+		}
 		Elements elements = new ElementsParser(name, '.', parserCapacity).parse();
 		for (int i = 0; i < elements.getSize(); i++) {
 			if (elements.getType(i) == ElementType.NON_UNIFORM) {

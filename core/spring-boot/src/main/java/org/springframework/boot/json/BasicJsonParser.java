@@ -131,15 +131,19 @@ public class BasicJsonParser extends AbstractJsonParser {
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
-			switch (ch) {
-				case '{' -> tracking.update(Tracked.OBJECT, +1);
-				case '}' -> tracking.update(Tracked.OBJECT, -1);
-				case '[' -> tracking.update(Tracked.LIST, +1);
-				case ']' -> tracking.update(Tracked.LIST, -1);
-				case '"' -> tracking.toggle(Tracked.VALUE);
+			if (ch == '"') {
+				tracking.toggle(Tracked.VALUE);
+			}
+			else if (!tracking.in(Tracked.VALUE)) {
+				switch (ch) {
+					case '{' -> tracking.update(Tracked.OBJECT, +1);
+					case '}' -> tracking.update(Tracked.OBJECT, -1);
+					case '[' -> tracking.update(Tracked.LIST, +1);
+					case ']' -> tracking.update(Tracked.LIST, -1);
+				}
 			}
 			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
-				list.add(build.toString());
+				list.add(build.toString().trim());
 				build.setLength(0);
 			}
 			else if (ch == '\\') {

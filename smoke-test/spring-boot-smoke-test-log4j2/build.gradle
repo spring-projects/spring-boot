@@ -20,3 +20,7 @@ dependencies {
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

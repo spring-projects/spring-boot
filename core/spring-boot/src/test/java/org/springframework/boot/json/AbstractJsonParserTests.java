@@ -62,6 +62,37 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void stringContainingOpeningBrace() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"{\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "{");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void stringContainingOpeningBracket() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"[\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "[");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void listWithStringContainingOpeningBracket() {
+		List<Object> list = this.parser.parseList("[\"[\",\"baz\"]");
+		assertThat(list).containsExactly("[", "baz");
+	}
+
+	@Test
+	void stringContainingClosingBraceWithNestedMap() {
+		Map<String, Object> map = this.parser.parseMap("{\"a\":\"}\",\"b\":{\"c\":\"d\",\"e\":\"f\"}}");
+		assertThat(map).containsEntry("a", "}");
+		assertThat(map.get("b")).asInstanceOf(InstanceOfAssertFactories.MAP)
+			.containsEntry("c", "d")
+			.containsEntry("e", "f");
+	}
+
+	@Test
 	void emptyMap() {
 		Map<String, Object> map = this.parser.parseMap("{}");
 		assertThat(map).isEmpty();
@@ -80,32 +111,76 @@ abstract class AbstractJsonParserTests {
 		assertThat(list).isEmpty();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void listOfMaps() {
 		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertThat(list).hasSize(2);
-		assertThat(((Map<String, Object>) list.get(1))).hasSize(2);
+		assertThat(list.get(1)).asInstanceOf(InstanceOfAssertFactories.MAP).hasSize(2);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void mapOfLists() {
 		Map<String, Object> map = this.parser
 			.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void nestedLeadingAndTrailingWhitespace() {
 		Map<String, Object> map = this.parser
 			.parseMap(" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
+	}
+
+	@Test
+	void listWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[\"foo\" ,\"bar\"]");
+		assertThat(list).containsExactly("foo", "bar");
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[1 ,2]");
+		assertThat(list).hasSize(2);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2]"));
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[1, 2, 3]");
+		assertThat(list).hasSize(3);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L, 3L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2,3]"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"}, {\"foo\":\"baz\"}, {\"foo\":\"qux\"}]");
+		assertThat(list).hasSize(3);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+		assertThat(list.get(2)).isEqualTo(Map.of("foo", "qux"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"} ,{\"foo\":\"baz\"}]");
+		assertThat(list).hasSize(2);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+	}
+
+	@Test
+	void mapOfListsWithWhitespaceBeforeComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":[\"bar\" ,\"baz\"]}");
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly("bar", "baz");
 	}
 
 	@Test
