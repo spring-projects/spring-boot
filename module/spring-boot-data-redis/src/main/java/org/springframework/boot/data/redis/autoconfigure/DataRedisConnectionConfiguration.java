@@ -37,7 +37,6 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yanming Zhou
- * @author Jialin Chen
  */
 abstract class DataRedisConnectionConfiguration {
 

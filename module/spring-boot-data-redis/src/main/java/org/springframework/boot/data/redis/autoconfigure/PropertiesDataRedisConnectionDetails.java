@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Yanming Zhou
  * @author Phillip Webb
- * @author Jialin Chen
  */
 class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails {
 

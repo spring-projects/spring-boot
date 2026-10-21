@@ -155,6 +155,18 @@ class PropertiesRedisConnectionDetailsTests {
 	}
 
 	@Test
+	void masterReplicaDatabaseIsConfiguredFromUrl() {
+		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
+		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
+		this.properties.setMasterreplica(masterReplica);
+		this.properties.setUrl("redis://example.com:1234/9999");
+		this.properties.setDatabase(5);
+		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
+		assertThat(actualMasterReplica).isNotNull();
+		assertThat(actualMasterReplica.getDatabase()).isEqualTo(9999);
+	}
+
+	@Test
 	void sentinelIsConfigured() {
 		DataRedisProperties.Sentinel sentinel = new DataRedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
