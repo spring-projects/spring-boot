@@ -116,7 +116,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableAutoConfiguration
- * public class MyApplication  {
+ * public class MyApplication {
  *
  *   // ... Bean definitions
  *

@@ -225,8 +225,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 		 * a {@link FileSystemResource}.
 		 * @param location the location used to create the resource
 		 * @param resource the resource to check
-		 * @return the file path of the resource or {@code null} if the it is not possible
-		 * to represent the resource as a {@link FileSystemResource}.
+		 * @return the file path of the resource or {@code null} if it is not possible to
+		 * represent the resource as a {@link FileSystemResource}.
 		 */
 		@Nullable String resolveFilePath(String location, Resource resource);
 
