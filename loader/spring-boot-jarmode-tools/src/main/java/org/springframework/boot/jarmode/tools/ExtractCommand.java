@@ -18,9 +18,11 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Moritz Halbritter
  * @author Dongliang Xie
+ * @author Danish Nawab
  */
 class ExtractCommand extends Command {
 
@@ -81,6 +84,8 @@ class ExtractCommand extends Command {
 
 	private final @Nullable Layers layers;
 
+	private final Directories directories = new Directories();
+
 	ExtractCommand(Context context) {
 		this(context, null);
 	}
@@ -109,6 +114,7 @@ class ExtractCommand extends Command {
 				extractLibraries(fileResolver, jarStructure, options);
 				createApplication(jarStructure, fileResolver, options);
 			}
+			this.directories.applyTimeAttributes(getManifestEntry());
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -173,7 +179,7 @@ class ExtractCommand extends Command {
 		}
 		Layers layers = getLayers();
 		Set<String> layersToExtract = StringUtils.commaDelimitedListToSet(options.get(LAYERS_OPTION));
-		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename);
+		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename, this.directories);
 	}
 
 	private File getDestination(Map<Option, @Nullable String> options) {
@@ -234,7 +240,7 @@ class ExtractCommand extends Command {
 		}
 		String librariesDirectory = getLibrariesDirectory(options);
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
-		mkdirs(file.getParentFile());
+		this.directories.create(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
 			ManifestWriter manifestWriter = (sourceJarFile) -> {
 				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
@@ -282,11 +288,15 @@ class ExtractCommand extends Command {
 		return this.context.getArchiveFile().getName();
 	}
 
-	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
-		mkdirs(file.getParentFile());
+	private void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
+		this.directories.create(file.getParentFile());
 		try (OutputStream out = new FileOutputStream(file)) {
 			StreamUtils.copy(stream, out);
 		}
+		copyTimeAttributes(entry, file);
+	}
+
+	private static void copyTimeAttributes(JarEntry entry, File file) {
 		try {
 			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
 				.setTimes(getLastModifiedTime(entry), getLastAccessTime(entry), getCreationTime(entry));
@@ -296,9 +306,9 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static void mkdirs(File file) throws IOException {
-		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("Unable to create directory " + file);
+	private @Nullable JarEntry getManifestEntry() throws IOException {
+		try (JarFile jarFile = new JarFile(this.context.getArchiveFile())) {
+			return jarFile.getJarEntry(JarFile.MANIFEST_NAME);
 		}
 	}
 
@@ -455,6 +465,8 @@ class ExtractCommand extends Command {
 
 	private static final class LayersFileResolver implements FileResolver {
 
+		private final Directories directories;
+
 		private final Layers layers;
 
 		private final Set<String> layersToExtract;
@@ -463,7 +475,9 @@ class ExtractCommand extends Command {
 
 		private final String applicationFilename;
 
-		LayersFileResolver(File directory, Layers layers, Set<String> layersToExtract, String applicationFilename) {
+		LayersFileResolver(File directory, Layers layers, Set<String> layersToExtract, String applicationFilename,
+				Directories directories) {
+			this.directories = directories;
 			this.layers = layers;
 			this.layersToExtract = layersToExtract;
 			this.directory = directory;
@@ -474,7 +488,7 @@ class ExtractCommand extends Command {
 		public void createDirectories() throws IOException {
 			for (String layer : this.layers) {
 				if (shouldExtractLayer(layer)) {
-					mkdirs(getLayerDirectory(layer));
+					this.directories.create(getLayerDirectory(layer));
 				}
 			}
 		}
@@ -515,6 +529,39 @@ class ExtractCommand extends Command {
 					() -> "Layer '%s' would be written to '%s'. This is outside the output location of '%s'. Verify the contents of your archive."
 						.formatted(layerName, canonicalLayerPath, canonicalOutputPath));
 			return layerDirectory;
+		}
+
+	}
+
+	/**
+	 * Keep track of directories that have been created.
+	 */
+	private static final class Directories {
+
+		private final Set<File> created = new LinkedHashSet<>();
+
+		void create(File directory) throws IOException {
+			if (directory.exists()) {
+				return;
+			}
+			List<File> missing = new ArrayList<>();
+			File candidate = directory;
+			while (candidate != null && !candidate.exists()) {
+				missing.add(candidate);
+				candidate = candidate.getParentFile();
+			}
+			if (!directory.mkdirs()) {
+				throw new IOException("Unable to create directory " + directory);
+			}
+			this.created.addAll(missing);
+		}
+
+		void applyTimeAttributes(@Nullable JarEntry entry) {
+			if (entry != null) {
+				for (File directory : this.created) {
+					copyTimeAttributes(entry, directory);
+				}
+			}
 		}
 
 	}
