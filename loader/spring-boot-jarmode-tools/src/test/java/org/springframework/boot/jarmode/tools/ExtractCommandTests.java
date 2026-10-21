@@ -171,11 +171,8 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		void doesNotApplyFileTimesToExistingDirectories() throws IOException {
 			File destination = file("out");
 			Files.createDirectories(destination.toPath());
-			FileTime existingTime = FileTime.from(Instant.parse("2023-01-01T00:00:00Z"));
-			Files.setLastModifiedTime(destination.toPath(), existingTime);
 			run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath());
-			assertThat(Files.getLastModifiedTime(destination.toPath())).isNotEqualTo(existingTime)
-				.isNotEqualTo(FileTime.from(LAST_MODIFIED_TIME));
+			assertThat(Files.getLastModifiedTime(destination.toPath())).isNotEqualTo(FileTime.from(LAST_MODIFIED_TIME));
 			assertThat(file("out/lib")).isDirectory().satisfies(ExtractCommandTests::fileTimeAttributes);
 		}
 

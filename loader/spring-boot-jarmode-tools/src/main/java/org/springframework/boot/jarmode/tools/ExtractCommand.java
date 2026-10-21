@@ -84,6 +84,8 @@ class ExtractCommand extends Command {
 
 	private final @Nullable Layers layers;
 
+	private final Directories directories = new Directories();
+
 	ExtractCommand(Context context) {
 		this(context, null);
 	}
@@ -103,17 +105,16 @@ class ExtractCommand extends Command {
 			File destination = getDestination(options);
 			checkDirectoryIsEmpty(options, destination);
 			FileResolver fileResolver = getFileResolver(destination, options);
-			Directories directories = new Directories();
-			fileResolver.createDirectories(directories);
+			fileResolver.createDirectories();
 			if (options.containsKey(LAUNCHER_OPTION)) {
-				extractArchive(fileResolver, directories);
+				extractArchive(fileResolver);
 			}
 			else {
 				JarStructure jarStructure = getJarStructure();
-				extractLibraries(fileResolver, directories, jarStructure, options);
-				createApplication(jarStructure, fileResolver, directories, options);
+				extractLibraries(fileResolver, jarStructure, options);
+				createApplication(jarStructure, fileResolver, options);
 			}
-			directories.copyTimes(getManifestEntry());
+			this.directories.applyTimeAttributes(getManifestEntry());
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -148,10 +149,10 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private void extractLibraries(FileResolver fileResolver, Directories directories, JarStructure jarStructure,
+	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure,
 			Map<Option, @Nullable String> options) throws IOException {
 		String librariesDirectory = getLibrariesDirectory(options);
-		extractArchive(fileResolver, directories, (jarEntry) -> {
+		extractArchive(fileResolver, (jarEntry) -> {
 			Entry entry = jarStructure.resolve(jarEntry);
 			if (entry != null && entry.type() == Type.LIBRARY) {
 				return librariesDirectory + entry.location();
@@ -178,7 +179,7 @@ class ExtractCommand extends Command {
 		}
 		Layers layers = getLayers();
 		Set<String> layersToExtract = StringUtils.commaDelimitedListToSet(options.get(LAYERS_OPTION));
-		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename);
+		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename, this.directories);
 	}
 
 	private File getDestination(Map<Option, @Nullable String> options) {
@@ -206,12 +207,12 @@ class ExtractCommand extends Command {
 		return jarStructure;
 	}
 
-	private void extractArchive(FileResolver fileResolver, Directories directories) throws IOException {
-		extractArchive(fileResolver, directories, JarEntry::getName);
+	private void extractArchive(FileResolver fileResolver) throws IOException {
+		extractArchive(fileResolver, JarEntry::getName);
 	}
 
-	private void extractArchive(FileResolver fileResolver, Directories directories,
-			EntryNameTransformer entryNameTransformer) throws IOException {
+	private void extractArchive(FileResolver fileResolver, EntryNameTransformer entryNameTransformer)
+			throws IOException {
 		withJarEntries(this.context.getArchiveFile(), (stream, jarEntry) -> {
 			if (jarEntry.isDirectory()) {
 				return;
@@ -222,7 +223,7 @@ class ExtractCommand extends Command {
 			}
 			File file = fileResolver.resolve(jarEntry, name);
 			if (file != null) {
-				extractEntry(directories, stream, jarEntry, file);
+				extractEntry(stream, jarEntry, file);
 			}
 		});
 	}
@@ -231,7 +232,7 @@ class ExtractCommand extends Command {
 		return (this.layers != null) ? this.layers : Layers.get(this.context);
 	}
 
-	private void createApplication(JarStructure jarStructure, FileResolver fileResolver, Directories directories,
+	private void createApplication(JarStructure jarStructure, FileResolver fileResolver,
 			Map<Option, @Nullable String> options) throws IOException {
 		File file = fileResolver.resolveApplication();
 		if (file == null) {
@@ -239,7 +240,7 @@ class ExtractCommand extends Command {
 		}
 		String librariesDirectory = getLibrariesDirectory(options);
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
-		directories.create(file.getParentFile());
+		this.directories.create(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
 			ManifestWriter manifestWriter = (sourceJarFile) -> {
 				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
@@ -287,16 +288,15 @@ class ExtractCommand extends Command {
 		return this.context.getArchiveFile().getName();
 	}
 
-	private static void extractEntry(Directories directories, InputStream stream, JarEntry entry, File file)
-			throws IOException {
-		directories.create(file.getParentFile());
+	private void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
+		this.directories.create(file.getParentFile());
 		try (OutputStream out = new FileOutputStream(file)) {
 			StreamUtils.copy(stream, out);
 		}
-		copyTimes(entry, file);
+		copyTimeAttributes(entry, file);
 	}
 
-	private static void copyTimes(JarEntry entry, File file) {
+	private static void copyTimeAttributes(JarEntry entry, File file) {
 		try {
 			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
 				.setTimes(getLastModifiedTime(entry), getLastAccessTime(entry), getCreationTime(entry));
@@ -400,10 +400,9 @@ class ExtractCommand extends Command {
 
 		/**
 		 * Creates needed directories.
-		 * @param directories used to create and track the directories
 		 * @throws IOException if something went wrong
 		 */
-		void createDirectories(Directories directories) throws IOException;
+		void createDirectories() throws IOException;
 
 		/**
 		 * Resolves the given {@link JarEntry} to a file.
@@ -449,7 +448,7 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public void createDirectories(Directories directories) {
+		public void createDirectories() {
 		}
 
 		@Override
@@ -466,6 +465,8 @@ class ExtractCommand extends Command {
 
 	private static final class LayersFileResolver implements FileResolver {
 
+		private final Directories directories;
+
 		private final Layers layers;
 
 		private final Set<String> layersToExtract;
@@ -474,7 +475,9 @@ class ExtractCommand extends Command {
 
 		private final String applicationFilename;
 
-		LayersFileResolver(File directory, Layers layers, Set<String> layersToExtract, String applicationFilename) {
+		LayersFileResolver(File directory, Layers layers, Set<String> layersToExtract, String applicationFilename,
+				Directories directories) {
+			this.directories = directories;
 			this.layers = layers;
 			this.layersToExtract = layersToExtract;
 			this.directory = directory;
@@ -482,10 +485,10 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public void createDirectories(Directories directories) throws IOException {
+		public void createDirectories() throws IOException {
 			for (String layer : this.layers) {
 				if (shouldExtractLayer(layer)) {
-					directories.create(getLayerDirectory(layer));
+					this.directories.create(getLayerDirectory(layer));
 				}
 			}
 		}
@@ -531,7 +534,7 @@ class ExtractCommand extends Command {
 	}
 
 	/**
-	 * Creates directories and keeps track of the ones that did not exist before.
+	 * Keep track of directories that have been created.
 	 */
 	private static final class Directories {
 
@@ -553,10 +556,10 @@ class ExtractCommand extends Command {
 			this.created.addAll(missing);
 		}
 
-		void copyTimes(@Nullable JarEntry entry) {
+		void applyTimeAttributes(@Nullable JarEntry entry) {
 			if (entry != null) {
 				for (File directory : this.created) {
-					ExtractCommand.copyTimes(entry, directory);
+					copyTimeAttributes(entry, directory);
 				}
 			}
 		}
