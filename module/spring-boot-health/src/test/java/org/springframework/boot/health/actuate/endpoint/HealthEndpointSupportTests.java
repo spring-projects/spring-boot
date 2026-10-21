@@ -189,6 +189,16 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<H, D>,
 	}
 
 	@Test
+	void getResultWhenNestedPathDoesNotExistReturnsNull() {
+		Map<String, C> contributors = new LinkedHashMap<>();
+		contributors.put("spring", createContributor(this.up));
+		R registry = createRegistry("test", createCompositeContributor(contributors));
+		Result<D> result = create(registry, this.groups).getResult(ApiVersion.V3, null, SecurityContext.NONE, false,
+				"missing", "spring");
+		assertThat(result).isNull();
+	}
+
+	@Test
 	void getResultWhenPathIsEmptyIncludesGroups() {
 		R registry = createRegistry("test", createContributor(this.up));
 		E endpoint = create(registry, this.groups);
