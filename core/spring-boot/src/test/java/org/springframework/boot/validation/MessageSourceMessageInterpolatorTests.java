@@ -86,7 +86,7 @@ class MessageSourceMessageInterpolatorTests {
 	}
 
 	@Test
-	void interpolateWhenParameterBracesAreUnbalancedAfterReplacementShouldLeaveThemUnchanged() {
+	void interpolateWhenReplacedParameterIsFollowedByUnbalancedBraceShouldLeaveItUnchanged() {
 		this.messageSource.addMessage("top", Locale.getDefault(), "other");
 		this.messageSource.addMessage("other", Locale.getDefault(), "otherValue");
 		assertThat(this.interpolator.interpolate("{top}}", this.context)).isEqualTo("other}");
