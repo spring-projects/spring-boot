@@ -438,6 +438,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 		defaultConvertersCustomizerHasOrderZero(DefaultClientHttpMessageConvertersCustomizer.class);
 	}
 
+	@Test
+	void stringConvertersCustomizerHasOrderZero() {
+		defaultConvertersCustomizerHasOrderZero(
+				HttpMessageConvertersAutoConfiguration.StringHttpMessageConvertersCustomizer.class);
+	}
+
 	private <T> void defaultConvertersCustomizerHasOrderZero(Class<T> customizerType) {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
