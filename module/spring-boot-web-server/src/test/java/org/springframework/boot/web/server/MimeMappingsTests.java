@@ -52,6 +52,28 @@ class MimeMappingsTests {
 	}
 
 	@Test
+	void createFromDefault() {
+		MimeMappings clone = new MimeMappings(MimeMappings.DEFAULT);
+		assertThat(clone).hasSameSizeAs(MimeMappings.DEFAULT);
+		assertThat(clone.get("html")).isEqualTo("text/html");
+		clone.add("foo", "bar");
+		assertThat(MimeMappings.DEFAULT.get("foo")).isNull();
+	}
+
+	@Test
+	void makeUnmodifiableFromDefault() {
+		MimeMappings unmodifiable = MimeMappings.unmodifiableMappings(MimeMappings.DEFAULT);
+		assertThat(unmodifiable.get("html")).isEqualTo("text/html");
+	}
+
+	@Test
+	void equalsIsSymmetricWithDefault() {
+		MimeMappings clone = new MimeMappings(MimeMappings.DEFAULT);
+		assertThat(clone).isEqualTo(MimeMappings.DEFAULT);
+		assertThat(MimeMappings.DEFAULT).isEqualTo(clone);
+	}
+
+	@Test
 	void createFromMap() {
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put("foo", "bar");
