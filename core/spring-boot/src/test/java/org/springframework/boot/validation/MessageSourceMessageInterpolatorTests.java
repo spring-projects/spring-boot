@@ -86,6 +86,19 @@ class MessageSourceMessageInterpolatorTests {
 	}
 
 	@Test
+	void interpolateWhenReplacedParameterIsFollowedByUnbalancedBraceShouldLeaveItUnchanged() {
+		this.messageSource.addMessage("top", Locale.getDefault(), "other");
+		this.messageSource.addMessage("other", Locale.getDefault(), "otherValue");
+		assertThat(this.interpolator.interpolate("{top}}", this.context)).isEqualTo("other}");
+	}
+
+	@Test
+	void interpolateWhenAResolvableMessageCodeIsFollowedByAnUnbalancedBraceShouldLeaveItUnchanged() {
+		this.messageSource.addMessage("error.code", Locale.getDefault(), "errorCodeValue");
+		assertThat(this.interpolator.interpolate("error.code}", this.context)).isEqualTo("error.code}");
+	}
+
+	@Test
 	void interpolateWhenBracesAreEscapedShouldIgnore() {
 		this.messageSource.addMessage("foo", Locale.getDefault(), "fooValue");
 		this.messageSource.addMessage("bar", Locale.getDefault(), "\\{foo}");

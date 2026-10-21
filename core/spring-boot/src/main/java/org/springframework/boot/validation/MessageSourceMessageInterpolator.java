@@ -79,10 +79,8 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 				}
 				parentheses++;
 			}
-			else if (buf.charAt(i) == SUFFIX) {
-				if (parentheses > 0) {
-					parentheses--;
-				}
+			else if (buf.charAt(i) == SUFFIX && parentheses > 0) {
+				parentheses--;
 				endIndex = i;
 			}
 			if (parentheses == 0 && startIndex < endIndex) {
