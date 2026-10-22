@@ -80,8 +80,10 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
 		sslBundle.getKey().assertContainsAlias(sslBundle.getStores().getKeyStore());
 		this.sslBundle = sslBundle;
+		configureSsl(sslContextFactory, this.clientAuth);
 		try {
-			sslContextFactory.reload((ignored) -> configureSsl(sslContextFactory, this.clientAuth));
+			sslContextFactory.reload((factory) -> {
+			});
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to reload SSL configuration: " + ex.getMessage(), ex);
