@@ -269,6 +269,17 @@ class NettyRSocketServerFactoryTests {
 
 	@Test
 	@WithPackageResources({ "test-cert.pem", "test-key.pem" })
+	void websocketTransportSslProviderIgnoresCaseOfServerName() {
+		SslBundle defaultBundle = createBundle("test-cert.pem", "test-key.pem");
+		SslBundle mappedBundle = createBundle("test-cert.pem", "test-key.pem");
+		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(
+				Ssl.ClientAuth.NONE, defaultBundle, Map.of("Mapped.Example", mappedBundle));
+		assertThat(customizer.getSslProvider("mapped.example")).isNotSameAs(customizer.getSslProvider(null));
+		assertThat(customizer.getSslProvider("MAPPED.EXAMPLE")).isSameAs(customizer.getSslProvider("mapped.example"));
+	}
+
+	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem" })
 	void websocketTransportSslProviderReturnsDefaultWhenServerNameIsNull() {
 		SslBundle defaultBundle = createBundle("test-cert.pem", "test-key.pem");
 		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(
