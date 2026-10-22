@@ -1,4 +1,4 @@
-name: Publicize Release
+name: Publicize Prerelease
 on:
   push:
     tags:
