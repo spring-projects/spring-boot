@@ -15,6 +15,9 @@ inputs:
     description: 'Whether the release is a pre-release (a milestone or release candidate)'
     required: false
     default: 'false'
+  edit:
+    description: 'Whether to add or edit the release'
+    default: 'false'
   token:
     description: 'Token to use for authentication with GitHub'
     required: true
@@ -28,7 +31,14 @@ runs:
         milestone: ${{ inputs.milestone }}
         token: ${{ inputs.token }}
     - name: Create GitHub Release
+      if: ${{ !inputs.edit }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md ${{ inputs.pre-release == 'true' && '--prerelease' || format('--latest={0}', inputs.latest) }}
+    - name: Edit GitHub Release
+      if: ${{ !inputs.edit }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: gh release edit ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md
