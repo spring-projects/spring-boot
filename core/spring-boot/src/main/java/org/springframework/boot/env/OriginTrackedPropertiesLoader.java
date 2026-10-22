@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -153,24 +154,20 @@ class OriginTrackedPropertiesLoader {
 		if (reader.isSameLastLineCommentPrefix()) {
 			return false;
 		}
-		if (reader.getLocation().getColumn() != 0) {
-			return false;
-		}
-		return readAndExpectHyphen(reader) && readAndExpectHyphen(reader) && readAndExpectHyphen(reader)
-				&& readWhitespaceUntilEndOfLine(reader);
-	}
-
-	private boolean readAndExpectHyphen(CharacterReader reader) throws IOException {
-		reader.readRaw();
-		return reader.isHyphenCharacter();
-	}
-
-	private boolean readWhitespaceUntilEndOfLine(CharacterReader reader) throws IOException {
-		do {
+		boolean result = reader.getLocation().getColumn() == 0;
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		if (!reader.isEndOfLine()) {
 			reader.readRaw();
+			reader.skipWhitespace();
 		}
-		while (reader.isWhiteSpace());
-		return reader.isEndOfLine();
+		return result && reader.isEndOfLine();
+	}
+
+	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
+		reader.readRaw();
+		return check.getAsBoolean();
 	}
 
 	/**
@@ -219,9 +216,8 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		/**
-		 * Read the next character without handling escape sequences. Used when inspecting
-		 * the remainder of a comment line where a {@code '\'} at the end of the line must
-		 * not be treated as a line continuation.
+		 * Read the next character without handling escape sequences, so that a
+		 * {@code '\'} at the end of a comment line is not treated as a line continuation.
 		 * @return {@code true} if the end of the file has not been reached
 		 * @throws IOException on read error
 		 */
