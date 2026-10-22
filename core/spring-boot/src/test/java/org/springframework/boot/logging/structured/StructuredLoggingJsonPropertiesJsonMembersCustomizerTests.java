@@ -68,6 +68,33 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	}
 
 	@Test
+	void customizeWhenHasNestedIncludeIncludesOnlyTheNestedMember() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x.y"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\"}}");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeIncludesAncestorsAndDescendants() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\",\"z\":\"z\"}}");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeAndExcludeExcludesMember() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x"), Set.of("x.z"),
+				Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\"}}");
+	}
+
+	@Test
 	void customizeWhenHasRenameRenamesMember() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
 				Collections.emptySet(), Map.of("a", "z"), Collections.emptyMap(), null, null, null);
@@ -127,6 +154,17 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			members.add("a", "a");
 			members.add("b", "b");
 			members.add("c", "c");
+			customizer.customize(members);
+		}).writeToString(new Object());
+	}
+
+	private String writeNestedSampleJson(StructuredLoggingJsonMembersCustomizer<Object> customizer) {
+		return JsonWriter.of((members) -> {
+			members.add("x").usingMembers((x) -> {
+				x.add("y", "y");
+				x.add("z", "z");
+			});
+			members.add("w", "w");
 			customizer.customize(members);
 		}).writeToString(new Object());
 	}
