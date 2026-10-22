@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.util.Instantiator;
@@ -65,6 +66,67 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			.doesNotContain("b")
 			.doesNotContain("c")
 			.doesNotContain("d");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeIncludesOnlyTheNestedMember() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x.y"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\"}}");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeIncludesAncestorsAndDescendants() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\",\"z\":\"z\"}}");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeAndExcludeExcludesMember() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x"), Set.of("x.z"),
+				Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"x\":{\"y\":\"y\"}}");
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeDoesNotIncludePathsWithTheSamePrefix() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x.y"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(customizer.filterPath(MemberPath.of("x.y"))).isFalse();
+		assertThat(customizer.filterPath(MemberPath.of("x.yy"))).isTrue();
+		assertThat(customizer.filterPath(MemberPath.of("x.yy.z"))).isTrue();
+	}
+
+	@Test
+	void customizeWhenHasNestedIncludeIncludesIndexedDescendants() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(customizer.filterPath(MemberPath.of("x[0].y"))).isFalse();
+		assertThat(customizer.filterPath(MemberPath.of("xy"))).isTrue();
+	}
+
+	@Test
+	void customizeWhenHasIndexedNestedIncludeIncludesAncestors() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("x[0].y"),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(customizer.filterPath(MemberPath.of("x"))).isFalse();
+		assertThat(customizer.filterPath(MemberPath.of("x[0]"))).isFalse();
+		assertThat(customizer.filterPath(MemberPath.of("x[0].y"))).isFalse();
+		assertThat(customizer.filterPath(MemberPath.of("x[0].z"))).isTrue();
+		assertThat(customizer.filterPath(MemberPath.of("x[1].y"))).isTrue();
 	}
 
 	@Test
@@ -127,6 +189,17 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			members.add("a", "a");
 			members.add("b", "b");
 			members.add("c", "c");
+			customizer.customize(members);
+		}).writeToString(new Object());
+	}
+
+	private String writeNestedSampleJson(StructuredLoggingJsonMembersCustomizer<Object> customizer) {
+		return JsonWriter.of((members) -> {
+			members.add("x").usingMembers((x) -> {
+				x.add("y", "y");
+				x.add("z", "z");
+			});
+			members.add("w", "w");
 			customizer.customize(members);
 		}).writeToString(new Object());
 	}
