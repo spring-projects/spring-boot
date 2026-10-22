@@ -10,9 +10,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 import io.netty.handler.ssl.ClientAuth;
@@ -285,7 +285,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		}
 
 		private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {
-			Map<String, SslProvider> serverNameSslProviders = new HashMap<>();
+			Map<String, SslProvider> serverNameSslProviders = new ConcurrentSkipListMap<>(
+					String.CASE_INSENSITIVE_ORDER);
 			serverNameSslBundles.forEach(
 					(serverName, sslBundle) -> serverNameSslProviders.put(serverName, createSslProvider(sslBundle)));
 			return serverNameSslProviders;
