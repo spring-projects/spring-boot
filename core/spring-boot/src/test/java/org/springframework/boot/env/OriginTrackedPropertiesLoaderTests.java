@@ -270,7 +270,7 @@ class OriginTrackedPropertiesLoaderTests {
 	@Test
 	void loadWhenCommentEndsWithBackslashLoadsFollowingProperties() throws IOException {
 		String content = "#\\\nkey=value";
-		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
 		assertThat(loaded).hasSize(1);
 		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
 		assertThat(map).containsOnlyKeys("key");
@@ -280,7 +280,7 @@ class OriginTrackedPropertiesLoaderTests {
 	@Test
 	void loadWhenCommentWithExclamationPrefixEndsWithBackslashLoadsFollowingProperties() throws IOException {
 		String content = "!\\\nkey=value";
-		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
 		assertThat(loaded).hasSize(1);
 		assertThat(loaded.get(0).asMap()).containsOnlyKeys("key");
 	}
@@ -288,7 +288,7 @@ class OriginTrackedPropertiesLoaderTests {
 	@Test
 	void loadWhenDocumentSeparatorEndsWithBackslashLoadsSingleDocument() throws IOException {
 		String content = "a=a\n#---\\\nb=b";
-		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
 		assertThat(loaded).hasSize(1);
 		assertThat(loaded.get(0).asMap()).containsOnlyKeys("a", "b");
 	}
