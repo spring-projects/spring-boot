@@ -65,6 +65,22 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 	}
 
 	@Test
+	void filterByPrefixDoesNotMatchSiblingPrefix() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "foobar.name:sibling");
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
+				.configurationPropertiesWithPrefix("foo");
+			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
+			assertThat(contextProperties.getBeans()).containsOnlyKeys("primaryFoo", "secondaryFoo");
+		});
+	}
+
+	@Test
 	void filterByPrefixNoMatches() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
 			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
@@ -171,6 +187,12 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 		@Bean
 		@ConfigurationProperties("foo.secondary")
 		Foo secondaryFoo() {
+			return new Foo();
+		}
+
+		@Bean
+		@ConfigurationProperties("foobar")
+		Foo fooBar() {
 			return new Foo();
 		}
 
