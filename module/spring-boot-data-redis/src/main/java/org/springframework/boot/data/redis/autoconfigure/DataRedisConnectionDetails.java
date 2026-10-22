@@ -204,6 +204,15 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	interface MasterReplica {
 
 		/**
+		 * Database index used by the connection factory.
+		 * @return the database index used by the connection factory
+		 * @since 4.2.0
+		 */
+		default int getDatabase() {
+			return 0;
+		}
+
+		/**
 		 * Static nodes to use. This represents the full list of cluster nodes and is
 		 * required to have at least one entry.
 		 * @return the nodes to use

@@ -83,7 +83,8 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	@Override
 	public @Nullable MasterReplica getMasterReplica() {
 		DataRedisProperties.Masterreplica masterreplica = this.properties.getMasterreplica();
-		return (masterreplica != null) ? new PropertiesMasterReplica(masterreplica) : null;
+		return (masterreplica != null) ? new PropertiesMasterReplica(getStandalone().getDatabase(), masterreplica)
+				: null;
 	}
 
 	private @Nullable DataRedisUrl getRedisUrl() {
@@ -127,10 +128,18 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	 */
 	private static class PropertiesMasterReplica implements MasterReplica {
 
+		private final int database;
+
 		private final List<Node> nodes;
 
-		PropertiesMasterReplica(DataRedisProperties.Masterreplica properties) {
+		PropertiesMasterReplica(int database, DataRedisProperties.Masterreplica properties) {
+			this.database = database;
 			this.nodes = asNodes(properties.getNodes());
+		}
+
+		@Override
+		public int getDatabase() {
+			return this.database;
 		}
 
 		@Override

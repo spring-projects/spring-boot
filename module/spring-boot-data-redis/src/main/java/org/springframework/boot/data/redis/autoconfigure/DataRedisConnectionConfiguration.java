@@ -151,6 +151,7 @@ abstract class DataRedisConnectionConfiguration {
 			if (password != null) {
 				config.setPassword(RedisPassword.of(password));
 			}
+			config.setDatabase(this.connectionDetails.getMasterReplica().getDatabase());
 			return config;
 		}
 		return null;
