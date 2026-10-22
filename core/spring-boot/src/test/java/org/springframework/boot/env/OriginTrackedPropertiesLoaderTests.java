@@ -268,6 +268,32 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	void loadWhenCommentEndsWithBackslashLoadsFollowingProperties() throws IOException {
+		String content = "#\\\nkey=value";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
+		assertThat(map).containsOnlyKeys("key");
+		assertThat(getValue(map.get("key"))).isEqualTo("value");
+	}
+
+	@Test
+	void loadWhenCommentWithExclamationPrefixEndsWithBackslashLoadsFollowingProperties() throws IOException {
+		String content = "!\\\nkey=value";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+		assertThat(loaded.get(0).asMap()).containsOnlyKeys("key");
+	}
+
+	@Test
+	void loadWhenDocumentSeparatorEndsWithBackslashLoadsSingleDocument() throws IOException {
+		String content = "a=a\n#---\\\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+		assertThat(loaded.get(0).asMap()).containsOnlyKeys("a", "b");
+	}
+
+	@Test
 	void getPropertyWithWhitespaceAfterKey() {
 		OriginTrackedValue value = getFromFirst("bar");
 		assertThat(getValue(value)).isEqualTo("foo=baz");
