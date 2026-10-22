@@ -4,8 +4,8 @@
 
 package org.springframework.boot.reactor.netty;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import io.netty.handler.ssl.ClientAuth;
 import org.apache.commons.logging.Log;
@@ -84,7 +84,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {
-		Map<String, SslProvider> serverNameSslProviders = new HashMap<>();
+		Map<String, SslProvider> serverNameSslProviders = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
 		serverNameSslBundles
 			.forEach((serverName, sslBundle) -> serverNameSslProviders.put(serverName, createSslProvider(sslBundle)));
 		return serverNameSslProviders;
