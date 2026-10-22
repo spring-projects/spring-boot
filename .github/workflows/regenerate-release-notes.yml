@@ -40,5 +40,5 @@ jobs:
           commercial: ${{ vars.COMMERCIAL }}
           pre-release: ${{ inputs.prerelease }}
           milestone: ${{ needs.read-version.outputs.version }}
+          edit: 'true'
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-          edit: true
