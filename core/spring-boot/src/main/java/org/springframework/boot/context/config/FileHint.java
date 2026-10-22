@@ -86,7 +86,8 @@ final class FileHint {
 	}
 
 	/**
-	 * Return the {@link FileHint} from the given value.
+	 * Return the {@link FileHint} from the given value. Only the bracketed groups at the
+	 * end of the value are considered, any other bracket is part of the value.
 	 * @param value the source value
 	 * @return the {@link FileHint}
 	 */
@@ -143,7 +144,8 @@ final class FileHint {
 	}
 
 	/**
-	 * Remove any hint from the given value.
+	 * Remove the hint at the end of the given value, if any. Brackets that are not part
+	 * of the trailing bracketed groups are kept.
 	 * @param value the source value
 	 * @return the value without any hint
 	 */
@@ -152,35 +154,30 @@ final class FileHint {
 		return (start != -1) ? value.substring(0, start) : value;
 	}
 
+	/**
+	 * Return the index of the first bracket of the hint at the end of the given value.
+	 * Brackets that are not part of the trailing bracketed groups are ignored.
+	 * @param value the source value
+	 * @return the index of the start of the hint or {@code -1} if there is no hint
+	 */
 	private static int findHintStart(String value) {
 		int start = -1;
-		int end = value.length();
-		while (end > 0 && value.charAt(end - 1) == ']') {
-			int open = findOpeningBracket(value, end - 1);
-			if (open == -1) {
-				break;
-			}
-			start = open;
-			end = open;
-		}
-		return start;
-	}
-
-	private static int findOpeningBracket(String value, int close) {
 		int depth = 0;
-		for (int i = close; i >= 0; i--) {
+		for (int i = value.length() - 1; i >= 0; i--) {
 			char c = value.charAt(i);
 			if (c == ']') {
 				depth++;
 			}
-			else if (c == '[') {
-				depth--;
-				if (depth == 0) {
-					return i;
+			else if (c == '[' && depth > 0) {
+				if (--depth == 0) {
+					start = i;
 				}
 			}
+			else if (depth == 0) {
+				break;
+			}
 		}
-		return -1;
+		return start;
 	}
 
 }

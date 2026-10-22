@@ -5,6 +5,9 @@
 package org.springframework.boot.context.config;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,10 +90,21 @@ class FileHintTests {
 		assertThat(FileHint.from("foo").getExtensionOrElse(".txt")).isEqualTo(".txt");
 	}
 
-	@Test
-	void removeFromWhenBracketsAreNotTrailing() {
-		assertThat(FileHint.removeFrom("foo[a]/bar.yaml")).isEqualTo("foo[a]/bar.yaml");
-		assertThat(FileHint.removeFrom("foo[1].yaml")).isEqualTo("foo[1].yaml");
+	@ParameterizedTest
+	@ValueSource(strings = { "foo[a]/bar.yaml", "foo[1].yaml", "file:/tmp/team[a]/app[1].yaml", "a[b]c[.yaml]d",
+			"foo[.yaml]/", "foo]", "foo[a]]", "foo[", "[", "]" })
+	void removeFromWhenBracketsAreNotTrailingKeepsValue(String value) {
+		assertThat(FileHint.removeFrom(value)).isEqualTo(value);
+		assertThat(FileHint.from(value).isPresent()).isFalse();
+	}
+
+	@ParameterizedTest
+	@CsvSource(delimiter = '|',
+			value = { "foo[.yaml]|foo", "foo[a]/bar[.yaml]|foo[a]/bar", "foo[a]|foo", "foo[a]bar[b]|foo[a]bar",
+					"app.yaml[a][b]|app.yaml", "foo[.yaml][encoding=utf-8]|foo", "foo[encoding=[utf-8]]|foo",
+					"foo[ .yaml ]|foo", "foo[[x]|foo[" })
+	void removeFromWhenHasTrailingBracketsRemovesOnlyTheTrailingBrackets(String value, String expected) {
+		assertThat(FileHint.removeFrom(value)).isEqualTo(expected);
 	}
 
 	@Test
