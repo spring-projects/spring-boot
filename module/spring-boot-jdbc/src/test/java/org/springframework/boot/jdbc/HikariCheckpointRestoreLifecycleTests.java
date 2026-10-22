@@ -32,14 +32,16 @@ class HikariCheckpointRestoreLifecycleTests {
 
 	private final HikariDataSource dataSource;
 
+	private final ConfigurableApplicationContext applicationContext;
+
 	HikariCheckpointRestoreLifecycleTests() {
 		HikariConfig config = new HikariConfig();
 		config.setAllowPoolSuspension(true);
 		config.setJdbcUrl("jdbc:hsqldb:mem:test-" + UUID.randomUUID());
 		config.setPoolName("lifecycle-tests");
 		this.dataSource = new HikariDataSource(config);
-		this.lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource,
-				mock(ConfigurableApplicationContext.class));
+		this.applicationContext = mock(ConfigurableApplicationContext.class);
+		this.lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource, this.applicationContext);
 	}
 
 	@Test
@@ -73,12 +75,9 @@ class HikariCheckpointRestoreLifecycleTests {
 
 	@Test
 	void whenApplicationContextIsClosedThenStopShouldNotSuspendPool() {
-		ConfigurableApplicationContext applicationContext = mock(ConfigurableApplicationContext.class);
-		given(applicationContext.isClosed()).willReturn(true);
-		HikariCheckpointRestoreLifecycle lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource,
-				applicationContext);
-		assertThat(lifecycle.isRunning()).isTrue();
-		lifecycle.stop();
+		given(this.applicationContext.isClosed()).willReturn(true);
+		assertThat(this.lifecycle.isRunning()).isTrue();
+		this.lifecycle.stop();
 		assertThat(this.dataSource.isRunning()).isTrue();
 	}
 
