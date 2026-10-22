@@ -143,8 +143,25 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	ConfigurationPropertiesDescriptor getConfigurationProperties(String prefix, boolean showUnsanitized) {
-		return getConfigurationProperties(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix),
-				showUnsanitized);
+		return getConfigurationProperties(this.context, (bean) -> isMappedUnder(bean, prefix), showUnsanitized);
+	}
+
+	/**
+	 * Return whether the given bean is mapped under the given prefix, i.e. its prefix is
+	 * the given prefix or one of its descendants in the dot-separated property hierarchy.
+	 * A plain {@code startsWith} check would also match an unrelated sibling that merely
+	 * shares a character prefix, for example {@code spring.datasource} for
+	 * {@code spring.data}.
+	 * @param bean the bean to check
+	 * @param prefix the requested prefix (a trailing dot keeps matching every descendant)
+	 * @return {@code true} if the bean is mapped under the prefix
+	 */
+	private static boolean isMappedUnder(ConfigurationPropertiesBean bean, String prefix) {
+		String beanPrefix = bean.getAnnotation().prefix();
+		if (prefix.isEmpty() || prefix.endsWith(".")) {
+			return beanPrefix.startsWith(prefix);
+		}
+		return beanPrefix.equals(prefix) || beanPrefix.startsWith(prefix + ".");
 	}
 
 	private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
