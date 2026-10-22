@@ -1,6 +1,11 @@
 name: Regenerate Release Notes
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+      prerelease:
+        required: true
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -10,6 +15,8 @@ jobs:
     steps:
       - name: Check Out Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
       - name: Read Version From gradle.properties
         id: read-version
         shell: bash
@@ -31,6 +38,6 @@ jobs:
         uses: ./.github/actions/create-github-release
         with:
           commercial: ${{ vars.COMMERCIAL }}
-          pre-release: true
+          pre-release: ${{ inputs.prerelease }}
           milestone: ${{ needs.read-version.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
