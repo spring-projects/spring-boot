@@ -165,14 +165,14 @@ class OriginTrackedPropertiesLoader {
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		if (!reader.isEndOfLine()) {
-			reader.read();
+			reader.readRaw();
 			reader.skipWhitespace();
 		}
 		return result && reader.isEndOfLine();
 	}
 
 	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
-		reader.read();
+		reader.readRaw();
 		return check.getAsBoolean();
 	}
 
@@ -216,6 +216,22 @@ class OriginTrackedPropertiesLoader {
 				readEscaped();
 			}
 			else if (this.character == '\n') {
+				this.columnNumber = -1;
+			}
+			return !isEndOfFile();
+		}
+
+		/**
+		 * Read the next character without handling escape sequences, so that a
+		 * {@code '\'} at the end of a comment line is not treated as a line continuation.
+		 * @return {@code true} if the end of the file has not been reached
+		 * @throws IOException on read error
+		 */
+		boolean readRaw() throws IOException {
+			this.escaped = false;
+			this.character = this.reader.read();
+			this.columnNumber++;
+			if (this.character == '\n') {
 				this.columnNumber = -1;
 			}
 			return !isEndOfFile();
