@@ -48,6 +48,11 @@ package org.springframework.boot.configurationmetadata.json;
 public class JSONTokener {
 
 	/**
+	 * The maximum nesting depth of objects and arrays.
+	 */
+	private static final int MAX_DEPTH = 512;
+
+	/**
 	 * The input JSON.
 	 */
 	private final String in;
@@ -57,6 +62,11 @@ public class JSONTokener {
 	 * exhausted, this equals the input's length.
 	 */
 	private int pos;
+
+	/**
+	 * The current nesting depth of objects and arrays.
+	 */
+	private int depth;
 
 	/**
 	 * @param in JSON encoded string. Null is not permitted and will yield a tokener that
@@ -82,11 +92,18 @@ public class JSONTokener {
 			case -1:
 				throw syntaxError("End of input");
 
-			case '{':
-				return readObject();
-
-			case '[':
-				return readArray();
+			case '{', '[':
+				if (this.depth >= MAX_DEPTH) {
+					throw new JSONException(
+							"Maximum nesting depth of " + MAX_DEPTH + " exceeded at character " + this.pos);
+				}
+				this.depth++;
+				try {
+					return (c == '{') ? readObject() : readArray();
+				}
+				finally {
+					this.depth--;
+				}
 
 			case '\'', '"':
 				return nextString((char) c);
