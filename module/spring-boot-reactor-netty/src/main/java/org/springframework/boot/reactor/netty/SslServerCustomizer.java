@@ -5,7 +5,7 @@
 package org.springframework.boot.reactor.netty;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import io.netty.handler.ssl.ClientAuth;
 import org.apache.commons.logging.Log;
@@ -69,15 +69,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	SslProvider getSslProvider(@Nullable String serverName) {
-		if (serverName == null) {
-			return this.sslProvider;
-		}
-		SslProvider sslProvider = this.serverNameSslProviders.get(serverName);
-		int dot = serverName.indexOf('.');
-		if (sslProvider == null && dot != -1) {
-			sslProvider = this.serverNameSslProviders.get("*" + serverName.substring(dot));
-		}
-		return (sslProvider != null) ? sslProvider : this.sslProvider;
+		return (serverName != null) ? this.serverNameSslProviders.getOrDefault(serverName, this.sslProvider)
+				: this.sslProvider;
 	}
 
 	void updateSslBundle(@Nullable String serverName, SslBundle sslBundle) {
@@ -91,7 +84,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {
-		Map<String, SslProvider> serverNameSslProviders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		Map<String, SslProvider> serverNameSslProviders = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
 		serverNameSslBundles
 			.forEach((serverName, sslBundle) -> serverNameSslProviders.put(serverName, createSslProvider(sslBundle)));
 		return serverNameSslProviders;
