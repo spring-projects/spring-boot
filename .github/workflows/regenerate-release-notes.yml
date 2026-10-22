@@ -1,4 +1,4 @@
-name: Publicize Prerelease
+name: Regenerate Release Notes
 on:
   workflow_dispatch:
 concurrency:
