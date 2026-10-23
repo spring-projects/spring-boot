@@ -147,7 +147,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedRequestFactoryBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.client.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, RequestFactoryBuilderConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
@@ -203,7 +203,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasNoHttpServiceProxyRegistryBean() {
-		this.contextRunner.withPropertyValues("spring.http.clients.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
 	}
 

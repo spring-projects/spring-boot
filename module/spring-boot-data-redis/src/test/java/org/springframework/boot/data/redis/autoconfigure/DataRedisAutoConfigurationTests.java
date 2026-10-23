@@ -205,7 +205,7 @@ class DataRedisAutoConfigurationTests {
 	@Test
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.redis.data.user:alice",
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.username:alice",
 					"spring.data.redis.password:xyz", "spring.data.redis.port:1000",
 					"spring.data.redis.ssl.enabled:false", "spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
@@ -613,9 +613,7 @@ class DataRedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterDynamicSourcesUnspecifiedUsesDefault() {
-		this.contextRunner
-			.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-					"spring.data.redis.lettuce.cluster.refresh.dynamic-sources=")
+		this.contextRunner.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
 			.run(assertClientOptions(ClusterClientOptions.class,
 					(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources()).isTrue()));
 	}
