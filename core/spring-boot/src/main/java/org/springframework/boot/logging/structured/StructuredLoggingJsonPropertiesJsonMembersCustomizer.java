@@ -4,7 +4,10 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -24,13 +27,23 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 
 	private final StructuredLoggingJsonProperties properties;
 
+	private final Set<MemberPath> includedPaths;
+
 	private final boolean nested;
 
 	StructuredLoggingJsonPropertiesJsonMembersCustomizer(Instantiator<?> instantiator,
 			StructuredLoggingJsonProperties properties, boolean nested) {
 		this.instantiator = instantiator;
 		this.properties = properties;
+		this.includedPaths = toIncludedPaths(properties.include());
 		this.nested = nested;
+	}
+
+	private static Set<MemberPath> toIncludedPaths(Set<String> include) {
+		if (CollectionUtils.isEmpty(include)) {
+			return Collections.emptySet();
+		}
+		return include.stream().map(MemberPath::of).collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Override
@@ -57,11 +70,38 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 	}
 
 	boolean filterPath(MemberPath path) {
-		boolean included = CollectionUtils.isEmpty(this.properties.include())
-				|| this.properties.include().contains(path.toUnescapedString());
+		boolean included = isIncluded(path);
 		boolean excluded = !CollectionUtils.isEmpty(this.properties.exclude())
 				&& this.properties.exclude().contains(path.toUnescapedString());
 		return (!included || excluded);
+	}
+
+	private boolean isIncluded(MemberPath path) {
+		if (this.includedPaths.isEmpty()) {
+			return true;
+		}
+		for (MemberPath includedPath : this.includedPaths) {
+			if (isSameOrAncestor(includedPath, path) || isSameOrAncestor(path, includedPath)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return if the given {@code path} is the same as, or a descendant of, the given
+	 * {@code candidate} path.
+	 * @param candidate the candidate path
+	 * @param path the path to test
+	 * @return {@code true} if the path is the same as, or a descendant of, the candidate
+	 */
+	private static boolean isSameOrAncestor(MemberPath candidate, MemberPath path) {
+		for (MemberPath current = path; current != null; current = current.parent()) {
+			if (current.equals(candidate)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
