@@ -32,7 +32,7 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |Testing applications that use Spring Data MongoDB. Provides the `@DataMongoTest` test slice.
 
 |`spring-boot-data-neo4j-test`
-|Testing applications that use Spring Data JPA. Provides the `@DataNeo4jTest` test slice.
+|Testing applications that use Spring Data Neo4j. Provides the `@DataNeo4jTest` test slice.
 
 |`spring-boot-data-r2dbc-test`
 |Testing applications that use Spring Data R2DBC. Provides the `@DataR2dbcTest` test slice.
