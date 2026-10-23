@@ -214,6 +214,19 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void matchAllRemainingPathsSelectorShouldMatchFullPathIgnoringMatrixParameters() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("/matchallremaining/one/two/three;matrix=example")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("selection")
+					.isEqualTo("one|two|three"));
+	}
+
+	@Test
 	void matchAllRemainingPathsSelectorShouldDecodePath() {
 		load(MatchAllRemainingEndpointConfiguration.class,
 				(client) -> client.get()
