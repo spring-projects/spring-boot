@@ -47,7 +47,8 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 			ClassLoader classLoader = resourceLoader.getClassLoader();
 			boolean hasAnyJsonSupport = ClassUtils.isPresent("tools.jackson.databind.json.JsonMapper", classLoader)
 					|| ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", classLoader)
-					|| ClassUtils.isPresent("com.google.gson.Gson", classLoader);
+					|| ClassUtils.isPresent("com.google.gson.Gson", classLoader)
+					|| ClassUtils.isPresent("jakarta.json.bind.Jsonb", classLoader);
 			this.converter = hasAnyJsonSupport ? new KotlinSerializationJsonHttpMessageConverter(json)
 					: new KotlinSerializationJsonHttpMessageConverter(json, (type) -> true);
 		}
