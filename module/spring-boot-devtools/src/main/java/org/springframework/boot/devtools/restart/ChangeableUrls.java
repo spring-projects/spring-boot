@@ -170,7 +170,7 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	static ChangeableUrls fromUrls(Collection<URL> urls) {
-		return fromUrls(new ArrayList<>(urls).toArray(new URL[urls.size()]));
+		return fromUrls(urls.toArray(URL[]::new));
 	}
 
 	static ChangeableUrls fromUrls(URL... urls) {
