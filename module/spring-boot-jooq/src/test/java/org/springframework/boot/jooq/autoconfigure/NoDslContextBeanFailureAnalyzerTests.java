@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NoDslContextBeanFailureAnalyzer}.
  *
  * @author Andy Wilkinson
+ * @author George Papadopoulos
  */
 class NoDslContextBeanFailureAnalyzerTests {
 
@@ -36,7 +37,12 @@ class NoDslContextBeanFailureAnalyzerTests {
 			.run((context) -> {
 				NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
 						context.getBeanFactory());
-				assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNotNull();
+				assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNotNull()
+					.satisfies((analysis) -> {
+						assertThat(analysis.getDescription()).contains("R2DBC connection factory");
+						assertThat(analysis.getAction()).contains("org.jooq:jooq-reactor-extensions",
+								"single ConnectionFactory candidate");
+					});
 			});
 	}
 
