@@ -87,7 +87,7 @@
   ],
   "hints": [
     {
-      "name": "management.health.status.order",
+      "name": "management.endpoint.health.status.order",
       "values": [
         {
           "value": "UNKNOWN"
