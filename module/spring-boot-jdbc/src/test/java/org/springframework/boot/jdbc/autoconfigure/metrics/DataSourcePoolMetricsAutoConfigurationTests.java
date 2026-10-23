@@ -26,6 +26,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoC
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -112,8 +113,9 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/create-custom-schema.sql", content = "CREATE SCHEMA CUSTOMSCHEMA;")
 	void autoConfiguredHikariDataSourceIsInstrumentedWhenUsingDataSourceInitialization() {
-		this.contextRunner.withPropertyValues("spring.sql.init.schema:db/create-custom-schema.sql")
+		this.contextRunner.withPropertyValues("spring.sql.init.schema-locations:db/create-custom-schema.sql")
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					DataSourceInitializationAutoConfiguration.class))
 			.run((context) -> {
