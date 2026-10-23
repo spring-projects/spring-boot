@@ -47,6 +47,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.http.server.PathContainer;
+import org.springframework.http.server.PathContainer.Element;
+import org.springframework.http.server.PathContainer.PathSegment;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -383,11 +386,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		private Object getRemainingPathSegments(HttpServletRequest request) {
 			PathPattern pathPattern = getPathPattern(request);
 			if (pathPattern.hasPatternSyntax()) {
-				String remainingSegments = pathPattern
-					.extractPathWithinPattern(
-							ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication())
-					.value();
-				return tokenizePathSegments(remainingSegments);
+				List<String> segments = new ArrayList<>();
+				PathContainer container = pathPattern.extractPathWithinPattern(
+						ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication());
+				for (Element element : container.elements()) {
+					if (element instanceof PathSegment pathSegment
+							&& StringUtils.hasLength(pathSegment.valueToMatch())) {
+						segments.add(pathSegment.valueToMatch());
+					}
+				}
+				return segments.toArray(new String[0]);
 			}
 			return tokenizePathSegments(pathPattern.toString());
 		}
