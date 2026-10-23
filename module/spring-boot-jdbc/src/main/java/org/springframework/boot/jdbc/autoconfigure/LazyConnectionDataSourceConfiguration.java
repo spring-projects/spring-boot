@@ -6,6 +6,7 @@ package org.springframework.boot.jdbc.autoconfigure;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
@@ -21,6 +22,7 @@ import org.springframework.core.Ordered;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.support.JmxUtils;
+import org.springframework.util.ClassUtils;
 
 /**
  * Replace the auto-configured {@link DataSource} by a
@@ -44,6 +46,9 @@ class LazyConnectionDataSourceConfiguration {
 
 	static class LazyConnectionDataSourceBeanPostProcessor implements BeanPostProcessor, Ordered {
 
+		private static final boolean HIKARI_PRESENT = ClassUtils.isPresent("com.zaxxer.hikari.HikariDataSource",
+				LazyConnectionDataSourceBeanPostProcessor.class.getClassLoader());
+
 		private final ObjectProvider<MBeanExporter> mbeanExporter;
 
 		LazyConnectionDataSourceBeanPostProcessor(ObjectProvider<MBeanExporter> mbeanExporter) {
@@ -54,7 +59,7 @@ class LazyConnectionDataSourceConfiguration {
 		public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (beanName.equals("dataSource") && bean instanceof DataSource dataSource) {
 				this.mbeanExporter.ifAvailable((exporter) -> {
-					if (JmxUtils.isMBean(dataSource.getClass())) {
+					if (JmxUtils.isMBean(dataSource.getClass()) && !registersItsOwnMBeans(dataSource)) {
 						exporter.registerManagedResource(dataSource, beanName);
 					}
 				});
@@ -63,9 +68,21 @@ class LazyConnectionDataSourceConfiguration {
 			return bean;
 		}
 
+		private boolean registersItsOwnMBeans(DataSource dataSource) {
+			return HIKARI_PRESENT && Hikari.registersItsOwnMBeans(dataSource);
+		}
+
 		@Override
 		public int getOrder() {
 			return 0;
+		}
+
+	}
+
+	private static final class Hikari {
+
+		static boolean registersItsOwnMBeans(DataSource dataSource) {
+			return dataSource instanceof HikariDataSource hikariDataSource && hikariDataSource.isRegisterMbeans();
 		}
 
 	}
