@@ -47,6 +47,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.http.server.PathContainer;
+import org.springframework.http.server.PathContainer.Element;
+import org.springframework.http.server.PathContainer.PathSegment;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationResult;
@@ -427,10 +430,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			Assert.state(pathPattern != null, "'pathPattern' must not be null");
 			if (pathPattern.hasPatternSyntax()) {
-				String remainingSegments = pathPattern
-					.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication())
-					.value();
-				return tokenizePathSegments(remainingSegments);
+				List<String> segments = new ArrayList<>();
+				PathContainer container = pathPattern
+					.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication());
+				for (Element element : container.elements()) {
+					if (element instanceof PathSegment pathSegment
+							&& StringUtils.hasLength(pathSegment.valueToMatch())) {
+						segments.add(pathSegment.valueToMatch());
+					}
+				}
+				return segments.toArray(new String[0]);
 			}
 			return tokenizePathSegments(pathPattern.toString());
 		}
