@@ -6,6 +6,8 @@ package org.springframework.boot.jetty;
 
 import java.net.InetSocketAddress;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http2.HTTP2Cipher;
@@ -38,8 +40,11 @@ import org.springframework.util.ClassUtils;
  * @author Chris Bono
  * @author Cyril Dangerville
  * @author Scott Frederick
+ * @author Armen Petrosyan
  */
 class SslServerCustomizer implements JettyServerCustomizer {
+
+	private static final Log logger = LogFactory.getLog(SslServerCustomizer.class);
 
 	private final @Nullable Http2 http2;
 
@@ -47,7 +52,9 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	private final @Nullable ClientAuth clientAuth;
 
-	private final SslBundle sslBundle;
+	private volatile SslBundle sslBundle;
+
+	private volatile SslContextFactory.@Nullable Server sslContextFactory;
 
 	SslServerCustomizer(@Nullable Http2 http2, InetSocketAddress address, @Nullable ClientAuth clientAuth,
 			SslBundle sslBundle) {
@@ -64,6 +71,23 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		configureSsl(sslContextFactory, this.clientAuth);
 		ServerConnector connector = createConnector(server, sslContextFactory);
 		server.setConnectors(new Connector[] { connector });
+		this.sslContextFactory = sslContextFactory;
+	}
+
+	void updateSslBundle(SslBundle sslBundle) {
+		SslContextFactory.Server sslContextFactory = this.sslContextFactory;
+		Assert.state(sslContextFactory != null, "'sslContextFactory' must not be null");
+		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
+		sslBundle.getKey().assertContainsAlias(sslBundle.getStores().getKeyStore());
+		this.sslBundle = sslBundle;
+		configureSsl(sslContextFactory, this.clientAuth);
+		try {
+			sslContextFactory.reload((factory) -> {
+			});
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to reload SSL configuration: " + ex.getMessage(), ex);
+		}
 	}
 
 	private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory) {
