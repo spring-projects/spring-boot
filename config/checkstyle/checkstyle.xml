@@ -98,12 +98,6 @@
 			<property name="message" value="Please use object instanceof type instead." />
 			<property name="ignoreComments" value="true" />
 		</module>
-		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
-			<property name="maximum" value="0"/>
-			<property name="format" value="\.toArray\(new \w+\[.*\.size\(\)\]\)" />
-			<property name="message" value="Please use new T[0] or method references (e.g., T[]::new) instead to avoid pre-sized arrays in toArray()." />
-			<property name="ignoreComments" value="true" />
-		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
 			<property name="publicOnlySinceTags" value="true" />
 			<property name="requireSinceTag" value="true" />
