@@ -153,12 +153,25 @@ public class NettyServerProperties {
 		 */
 		private HeaderFormat headerFormat = HeaderFormat.X_FORWARDED;
 
+		/**
+		 * Whether to use the "X-Forwarded-Prefix" header to determine the context path.
+		 */
+		private boolean useForwardedPrefix;
+
 		public HeaderFormat getHeaderFormat() {
 			return this.headerFormat;
 		}
 
 		public void setHeaderFormat(HeaderFormat headerFormat) {
 			this.headerFormat = headerFormat;
+		}
+
+		public boolean isUseForwardedPrefix() {
+			return this.useForwardedPrefix;
+		}
+
+		public void setUseForwardedPrefix(boolean useForwardedPrefix) {
+			this.useForwardedPrefix = useForwardedPrefix;
 		}
 
 		/**

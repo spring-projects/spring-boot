@@ -74,6 +74,17 @@ class NettyServerPropertiesTests {
 			.isEqualTo(NettyServerProperties.Forwardedheaders.HeaderFormat.STANDARD);
 	}
 
+	@Test
+	void forwardedPrefixIsDisabledByDefault() {
+		assertThat(this.properties.getForwardedHeaders().isUseForwardedPrefix()).isFalse();
+	}
+
+	@Test
+	void testCustomizeNettyForwardedHeadersUseForwardedPrefix() {
+		bind("server.netty.forwarded-headers.use-forwarded-prefix", "true");
+		assertThat(this.properties.getForwardedHeaders().isUseForwardedPrefix()).isTrue();
+	}
+
 	private void bind(String name, String value) {
 		bind(Collections.singletonMap(name, value));
 	}

@@ -72,10 +72,12 @@ public class NettyReactiveWebServerFactoryCustomizer
 	}
 
 	private void configureForwardedSupport(NettyReactiveWebServerFactory factory) {
-		switch (this.nettyProperties.getForwardedHeaders().getHeaderFormat()) {
+		NettyServerProperties.Forwardedheaders forwardedHeaders = this.nettyProperties.getForwardedHeaders();
+		switch (forwardedHeaders.getHeaderFormat()) {
 			case X_FORWARDED -> factory.setUseForwardHeaders(true);
 			case STANDARD -> factory.setUseRfcForwardHeader(true);
 		}
+		factory.setUseForwardedPrefix(forwardedHeaders.isUseForwardedPrefix());
 	}
 
 	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {

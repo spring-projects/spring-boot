@@ -118,6 +118,32 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void forwardedPrefixIsDisabledByDefault() {
+		this.environment.setProperty("DYNO", "-");
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseForwardedPrefix(false);
+	}
+
+	@Test
+	void useForwardedPrefixConfiguresFactory() {
+		this.environment.setProperty("DYNO", "-");
+		this.nettyProperties.getForwardedHeaders().setUseForwardedPrefix(true);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setUseForwardedPrefix(true);
+	}
+
+	@Test
+	void useForwardedPrefixWhenStrategyIsNoneShouldNotConfigureFactory() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		this.nettyProperties.getForwardedHeaders().setUseForwardedPrefix(true);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should(never()).setUseForwardedPrefix(anyBoolean());
+	}
+
+	@Test
 	void setConnectionTimeout() {
 		this.nettyProperties.setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
