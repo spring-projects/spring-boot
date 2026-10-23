@@ -588,7 +588,7 @@ class DataRedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterRefreshPeriodHasNoEffectWithNonClusteredConfiguration() {
-		this.contextRunner.withPropertyValues("spring.data.redis.cluster.refresh.period=30s")
+		this.contextRunner.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
 			.run(assertClientOptions(ClientOptions.class,
 					(options) -> assertThat(options.getClass()).isEqualTo(ClientOptions.class)));
 	}
