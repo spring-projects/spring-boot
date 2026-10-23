@@ -25,6 +25,7 @@ import org.springframework.amqp.client.config.MethodAmqpMessageListenerContainer
 import org.springframework.amqp.client.listener.AmqpMessageListenerContainer;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.boot.amqp.autoconfigure.AmqpConnectionDetails.Address;
 import org.springframework.boot.amqp.autoconfigure.AmqpProperties.Listener;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -32,6 +33,7 @@ import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ReflectionUtils;
 
@@ -195,6 +197,20 @@ class AmqpAutoConfigurationTests {
 	}
 
 	@Test
+	void whenAPrimaryMessageConverterIsAvailableThenAmqpClientIsConfiguredToUseIt() {
+		this.contextRunner.withUserConfiguration(PrimaryMessageConverterConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AmqpClient.class)).hasFieldOrPropertyWithValue(
+					"messageConverter", PrimaryMessageConverterConfiguration.messageConverter));
+	}
+
+	@Test
+	void whenMultipleMessageConvertersAreAvailableThenAmqpClientUsesDefaultMessageConverter() {
+		this.contextRunner.withUserConfiguration(MultipleMessageConvertersConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AmqpClient.class)).extracting("messageConverter")
+				.isInstanceOf(SimpleMessageConverter.class));
+	}
+
+	@Test
 	void autoConfigurationBacksOffWhenUserProvidesAmqpClient() {
 		AmqpClient amqpClient = mock();
 		this.contextRunner.withBean(AmqpClient.class, () -> amqpClient).run((context) -> {
@@ -307,6 +323,39 @@ class AmqpAutoConfigurationTests {
 					.doesNotHaveBean(MethodAmqpMessageListenerContainerFactory.class);
 				assertThat(context.getBean(AmqpMessageListenerContainerFactory.class)).isEqualTo(containerFactory);
 			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryMessageConverterConfiguration {
+
+		private static final MessageConverter messageConverter = mock(MessageConverter.class);
+
+		@Bean
+		@Primary
+		MessageConverter messageConverter1() {
+			return messageConverter;
+		}
+
+		@Bean
+		MessageConverter messageConverter2() {
+			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleMessageConvertersConfiguration {
+
+		@Bean
+		MessageConverter messageConverter1() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		MessageConverter messageConverter2() {
+			return mock(MessageConverter.class);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

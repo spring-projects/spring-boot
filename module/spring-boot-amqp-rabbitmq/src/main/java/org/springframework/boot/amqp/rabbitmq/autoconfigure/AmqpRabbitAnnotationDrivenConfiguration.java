@@ -34,8 +34,8 @@ class AmqpRabbitAnnotationDrivenConfiguration {
 			ObjectProvider<TaskScheduler> taskSchedulers) {
 		RabbitAmqpListenerContainerFactoryConfigurer configurer = new RabbitAmqpListenerContainerFactoryConfigurer(
 				properties);
-		messageConverter.ifAvailable(configurer::setMessageConverter);
-		taskSchedulers.ifAvailable(configurer::setTaskScheduler);
+		messageConverter.ifUnique(configurer::setMessageConverter);
+		taskSchedulers.ifUnique(configurer::setTaskScheduler);
 		return configurer;
 	}
 

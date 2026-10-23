@@ -86,7 +86,7 @@ public final class AmqpRabbitAutoConfiguration {
 			ObjectProvider<RabbitAmqpTemplateCustomizer> customizers,
 			ObjectProvider<MessageConverter> messageConverter) {
 		RabbitAmqpTemplate rabbitAmqpTemplate = new RabbitAmqpTemplate(connectionFactory);
-		messageConverter.ifAvailable(rabbitAmqpTemplate::setMessageConverter);
+		messageConverter.ifUnique(rabbitAmqpTemplate::setMessageConverter);
 		AmqpRabbitProperties.Template templateProperties = properties.getTemplate();
 
 		PropertyMapper map = PropertyMapper.get();

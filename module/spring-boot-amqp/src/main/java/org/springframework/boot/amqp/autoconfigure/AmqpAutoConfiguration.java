@@ -112,7 +112,7 @@ public final class AmqpAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(client.getDefaultToAddress()).to(builder::defaultToAddress);
 			map.from(client.getCompletionTimeout()).to(builder::completionTimeout);
-			messageConverter.ifAvailable(builder::messageConverter);
+			messageConverter.ifUnique(builder::messageConverter);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}

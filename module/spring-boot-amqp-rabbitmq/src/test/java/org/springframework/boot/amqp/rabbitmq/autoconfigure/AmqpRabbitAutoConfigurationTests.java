@@ -20,6 +20,7 @@ import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContain
 import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails.Address;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.ssl.SslBundle;
@@ -28,8 +29,10 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.TaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -206,6 +209,41 @@ class AmqpRabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void whenAPrimaryMessageConverterIsAvailableThenTemplateAndListenerContainerFactoryAreConfiguredToUseIt() {
+		this.contextRunner.withUserConfiguration(PrimaryMessageConverterConfiguration.class).run((context) -> {
+			MessageConverter expected = PrimaryMessageConverterConfiguration.messageConverter;
+			assertThat(context.getBean(RabbitAmqpTemplate.class)).hasFieldOrPropertyWithValue("messageConverter",
+					expected);
+			assertThat(context.getBean(RabbitAmqpListenerContainerFactoryConfigurer.class))
+				.hasFieldOrPropertyWithValue("messageConverter", expected);
+		});
+	}
+
+	@Test
+	void whenMultipleMessageConvertersAreAvailableThenTemplateAndListenerContainerFactoryUseDefault() {
+		this.contextRunner.withUserConfiguration(MultipleMessageConvertersConfiguration.class).run((context) -> {
+			assertThat(context.getBean(RabbitAmqpTemplate.class)).extracting("messageConverter")
+				.isInstanceOf(SimpleMessageConverter.class);
+			assertThat(context.getBean(RabbitAmqpListenerContainerFactoryConfigurer.class))
+				.hasFieldOrPropertyWithValue("messageConverter", null);
+		});
+	}
+
+	@Test
+	void whenAPrimaryTaskSchedulerIsAvailableThenListenerContainerFactoryIsConfiguredToUseIt() {
+		this.contextRunner.withUserConfiguration(PrimaryTaskSchedulerConfiguration.class)
+			.run((context) -> assertThat(context.getBean(RabbitAmqpListenerContainerFactoryConfigurer.class))
+				.hasFieldOrPropertyWithValue("taskScheduler", PrimaryTaskSchedulerConfiguration.taskScheduler));
+	}
+
+	@Test
+	void whenMultipleTaskSchedulersAreAvailableThenListenerContainerFactoryUsesDefault() {
+		this.contextRunner.withUserConfiguration(MultipleTaskSchedulersConfiguration.class)
+			.run((context) -> assertThat(context.getBean(RabbitAmqpListenerContainerFactoryConfigurer.class))
+				.hasFieldOrPropertyWithValue("taskScheduler", null));
+	}
+
+	@Test
 	void autoConfigurationConfiguresRabbitAmqpTemplateWithTemplateProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.amqp.rabbitmq.template.exchange=my-exchange",
@@ -244,6 +282,72 @@ class AmqpRabbitAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		ContainerCustomizer<RabbitAmqpListenerContainer> customizer() {
 			return mock(ContainerCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryMessageConverterConfiguration {
+
+		private static final MessageConverter messageConverter = mock(MessageConverter.class);
+
+		@Bean
+		@Primary
+		MessageConverter messageConverter1() {
+			return messageConverter;
+		}
+
+		@Bean
+		MessageConverter messageConverter2() {
+			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleMessageConvertersConfiguration {
+
+		@Bean
+		MessageConverter messageConverter1() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		MessageConverter messageConverter2() {
+			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryTaskSchedulerConfiguration {
+
+		private static final TaskScheduler taskScheduler = mock(TaskScheduler.class);
+
+		@Bean
+		@Primary
+		TaskScheduler taskScheduler1() {
+			return taskScheduler;
+		}
+
+		@Bean
+		TaskScheduler taskScheduler2() {
+			return mock(TaskScheduler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTaskSchedulersConfiguration {
+
+		@Bean
+		TaskScheduler taskScheduler1() {
+			return mock(TaskScheduler.class);
+		}
+
+		@Bean
+		TaskScheduler taskScheduler2() {
+			return mock(TaskScheduler.class);
 		}
 
 	}
