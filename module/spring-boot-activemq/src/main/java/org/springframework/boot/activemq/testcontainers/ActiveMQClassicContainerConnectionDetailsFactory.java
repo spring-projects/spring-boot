@@ -4,9 +4,11 @@
 
 package org.springframework.boot.activemq.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.activemq.ActiveMQContainer;
 
 import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -47,6 +49,11 @@ class ActiveMQClassicContainerConnectionDetailsFactory
 		@Override
 		public String getPassword() {
 			return getContainer().getPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}
