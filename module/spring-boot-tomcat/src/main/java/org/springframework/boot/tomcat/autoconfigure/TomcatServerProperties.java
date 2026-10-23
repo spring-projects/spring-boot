@@ -152,6 +152,13 @@ public class TomcatServerProperties {
 	private int maxParameterCount = 1000;
 
 	/**
+	 * Maximum number of locales permitted in the Accept-Language header of a request.
+	 * Requests that exceed this limit will be rejected when the locales are parsed. A
+	 * value of less than 0 means no limit.
+	 */
+	private int maxLocaleCount = 10;
+
+	/**
 	 * Whether to use APR.
 	 */
 	private UseApr useApr = UseApr.NEVER;
@@ -354,6 +361,14 @@ public class TomcatServerProperties {
 
 	public void setMaxParameterCount(int maxParameterCount) {
 		this.maxParameterCount = maxParameterCount;
+	}
+
+	public int getMaxLocaleCount() {
+		return this.maxLocaleCount;
+	}
+
+	public void setMaxLocaleCount(int maxLocaleCount) {
+		this.maxLocaleCount = maxLocaleCount;
 	}
 
 	public UseApr getUseApr() {
