@@ -107,6 +107,46 @@ A number of configuration options that are specific to executable jars and wars 
 
 
 
+[[packaging-executable.configuring.resolved-artifacts]]
+=== Registering Dependency Coordinates
+
+The plugin automatically registers the resolved artifacts and dependency graph for the standard `bootJar` and `bootWar` tasks.
+This lets the tasks identify project dependencies and their coordinates without accessing other projects, including when Gradle's Isolated Projects feature is enabled.
+Other plugins and your build logic must also support Isolated Projects.
+
+When configuring an archive with a custom dependency configuration or artifact view, register its artifacts together with the root component of the same configuration:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy]
+----
+def incoming = configurations.customRuntime.incoming
+tasks.named('customArchive', org.springframework.boot.gradle.tasks.bundling.BootJar) {
+    resolvedArtifacts(incoming.artifacts.resolvedArtifacts, incoming.resolutionResult.rootComponent)
+}
+----
+Kotlin::
++
+[source,kotlin]
+----
+val incoming = configurations["customRuntime"].incoming
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("customArchive") {
+    resolvedArtifacts(incoming.artifacts.resolvedArtifacts, incoming.resolutionResult.rootComponent)
+}
+----
+======
+
+The root component provides the project coordinates used for custom layer matching and reachability metadata.
+Project coordinates are the producer project's `group`, `name`, and `version`, which may differ from its Maven publication coordinates and archive file name.
+
+The existing artifact-only `resolvedArtifacts` method remains available for compatibility.
+It obtains project coordinates through cross-project access and cannot be used with Isolated Projects in a multi-project build.
+Use the overload that accepts both providers when migrating a custom archive to Isolated Projects.
+
+
+
 [[packaging-executable.configuring.main-class]]
 === Configuring the Main Class
 

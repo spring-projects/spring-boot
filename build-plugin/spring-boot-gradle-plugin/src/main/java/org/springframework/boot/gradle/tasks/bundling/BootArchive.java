@@ -10,6 +10,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.artifacts.result.ResolvedComponentResult;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.provider.Property;
@@ -25,6 +26,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Greg Taube
  * @since 2.0.0
  */
 public interface BootArchive extends Task {
@@ -93,11 +95,29 @@ public interface BootArchive extends Task {
 	/**
 	 * Registers the given lazily provided {@code resolvedArtifacts}. They are used to map
 	 * from the files in the {@link #getClasspath classpath} to their dependency
-	 * coordinates.
+	 * coordinates. This overload obtains project coordinates through cross-project
+	 * access. Use {@link #resolvedArtifacts(Provider, Provider)} with isolated projects.
 	 * @param resolvedArtifacts the lazily provided resolved artifacts
 	 * @since 3.0.7
 	 */
 	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts);
+
+	/**
+	 * Registers the given lazily provided artifacts and their dependency graph. Project
+	 * coordinates are obtained from resolved components without cross-project access. The
+	 * artifacts and root component must come from the same configuration; artifacts may
+	 * also come from an artifact view of that configuration.
+	 * <p>
+	 * The default implementation delegates to {@link #resolvedArtifacts(Provider)}.
+	 * {@link BootJar} and {@link BootWar} override it to use the dependency graph.
+	 * @param resolvedArtifacts the lazily provided resolved artifacts
+	 * @param rootComponent the lazily provided root component of the dependency graph
+	 * @since 4.2.0
+	 */
+	default void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts,
+			Provider<ResolvedComponentResult> rootComponent) {
+		resolvedArtifacts(resolvedArtifacts);
+	}
 
 	/**
 	 * Returns whether the JAR tools should be included as a dependency in the layered

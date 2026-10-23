@@ -174,7 +174,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 						? manifestStartClass : resolver.readMainClassName()));
 			bootJar.getTargetJavaVersion()
 				.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
-			bootJar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
+			bootJar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts(),
+					runtimeClasspath.getIncoming().getResolutionResult().getRootComponent());
 		});
 	}
 
