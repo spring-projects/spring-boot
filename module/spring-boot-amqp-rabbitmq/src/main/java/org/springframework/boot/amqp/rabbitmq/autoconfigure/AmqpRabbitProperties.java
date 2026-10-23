@@ -295,12 +295,12 @@ public class AmqpRabbitProperties {
 		/**
 		 * Name of the default exchange to use for send operations.
 		 */
-		private String exchange = "";
+		private @Nullable String exchange;
 
 		/**
 		 * Value of a default routing key to use for send operations.
 		 */
-		private String routingKey = "";
+		private @Nullable String routingKey;
 
 		/**
 		 * Name of the default queue to receive messages from when none is specified
@@ -308,19 +308,19 @@ public class AmqpRabbitProperties {
 		 */
 		private @Nullable String defaultReceiveQueue;
 
-		public String getExchange() {
+		public @Nullable String getExchange() {
 			return this.exchange;
 		}
 
-		public void setExchange(String exchange) {
+		public void setExchange(@Nullable String exchange) {
 			this.exchange = exchange;
 		}
 
-		public String getRoutingKey() {
+		public @Nullable String getRoutingKey() {
 			return this.routingKey;
 		}
 
-		public void setRoutingKey(String routingKey) {
+		public void setRoutingKey(@Nullable String routingKey) {
 			this.routingKey = routingKey;
 		}
 
