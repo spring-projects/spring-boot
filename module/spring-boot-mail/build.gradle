@@ -21,6 +21,7 @@ dependencies {
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
 
 	runtimeOnly("org.eclipse.angus:angus-mail")
@@ -34,6 +35,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
