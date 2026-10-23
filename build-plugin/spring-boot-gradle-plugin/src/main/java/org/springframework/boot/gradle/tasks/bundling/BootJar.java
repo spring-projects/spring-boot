@@ -13,6 +13,7 @@ import java.util.function.Function;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.artifacts.result.ResolvedComponentResult;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
@@ -33,6 +34,7 @@ import org.jspecify.annotations.Nullable;
  * @author Madhura Bhave
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Greg Taube
  * @since 2.0.0
  */
 @DisableCachingByDefault(because = "Not worth caching")
@@ -109,7 +111,13 @@ public abstract class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
-		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts);
+		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts, getProject());
+	}
+
+	@Override
+	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts,
+			Provider<ResolvedComponentResult> rootComponent) {
+		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts, rootComponent);
 	}
 
 	@Nested

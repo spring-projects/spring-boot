@@ -92,7 +92,8 @@ class WarPluginAction implements PluginApplicationAction {
 							? manifestStartClass : resolver.readMainClassName()));
 				bootWar.getTargetJavaVersion()
 					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
-				bootWar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
+				bootWar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts(),
+						runtimeClasspath.getIncoming().getResolutionResult().getRootComponent());
 			});
 		return bootWarProvider;
 	}
