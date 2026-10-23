@@ -91,8 +91,8 @@ public final class AmqpRabbitAutoConfiguration {
 
 		PropertyMapper map = PropertyMapper.get();
 		map.from(templateProperties::getDefaultReceiveQueue).to(rabbitAmqpTemplate::setReceiveQueue);
-		map.from(templateProperties::getExchange).whenHasText().to(rabbitAmqpTemplate::setExchange);
-		map.from(templateProperties::getRoutingKey).whenHasText().to(rabbitAmqpTemplate::setRoutingKey);
+		map.from(templateProperties::getExchange).to(rabbitAmqpTemplate::setExchange);
+		map.from(templateProperties::getRoutingKey).to(rabbitAmqpTemplate::setRoutingKey);
 
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(rabbitAmqpTemplate));
 		return rabbitAmqpTemplate;
