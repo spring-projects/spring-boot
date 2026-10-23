@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author WooSeung Kim
  */
 class OAuth2ResourceServerWebSecurityAutoConfigurationTests {
 
@@ -91,6 +92,22 @@ class OAuth2ResourceServerWebSecurityAutoConfigurationTests {
 				assertThat(bearerTokenFilter).isNotNull();
 				assertThat(getAuthenticationProviders(bearerTokenFilter))
 					.hasAtLeastOneElementOfType(OpaqueTokenAuthenticationProvider.class);
+			});
+	}
+
+	@Test
+	void whenHasJwtDecoderAndOpaqueTokenIntrospectorAddsJwtFilterChain() {
+		this.contextRunner
+			.withPropertyValues(JWK_SET_URI_PROPERTY,
+					"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://authserver",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-id=test",
+					"spring.security.oauth2.resourceserver.opaquetoken.client-secret=shh")
+			.run((context) -> {
+				assertThat(context).hasNotFailed().hasSingleBean(SecurityFilterChain.class);
+				Filter bearerTokenFilter = getBearerTokenFilter(context);
+				assertThat(bearerTokenFilter).isNotNull();
+				assertThat(getAuthenticationProviders(bearerTokenFilter))
+					.hasAtLeastOneElementOfType(JwtAuthenticationProvider.class);
 			});
 	}
 
