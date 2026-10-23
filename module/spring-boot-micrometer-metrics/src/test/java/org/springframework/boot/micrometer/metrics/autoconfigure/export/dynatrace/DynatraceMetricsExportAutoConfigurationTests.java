@@ -109,7 +109,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 		return (runner) -> runner.withPropertyValues(
 				"management.dynatrace.metrics.export.uri=https://dynatrace.example.com",
 				"management.dynatrace.metrics.export.api-token=abcde",
-				"management.dynatrace.metrics.export.device-id=test");
+				"management.dynatrace.metrics.export.v1.device-id=test");
 	}
 
 	@Configuration(proxyBeanMethods = false)

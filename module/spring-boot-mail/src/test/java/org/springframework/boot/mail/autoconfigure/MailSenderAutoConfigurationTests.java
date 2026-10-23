@@ -119,7 +119,7 @@ class MailSenderAutoConfigurationTests {
 	@Test
 	void mailSenderBackOff() {
 		this.contextRunner.withUserConfiguration(ManualMailConfiguration.class)
-			.withPropertyValues("spring.mail.host:smtp.acme.org", "spring.mail.user:user",
+			.withPropertyValues("spring.mail.host:smtp.acme.org", "spring.mail.username:user",
 					"spring.mail.password:secret")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
