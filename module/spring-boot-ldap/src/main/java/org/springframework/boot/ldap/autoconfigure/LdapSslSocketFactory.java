@@ -4,13 +4,7 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-
 import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,18 +12,13 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * Bridges the JNDI {@code java.naming.ldap.factory.socket} environment property to an
  * {@link SslBundle}. That property only accepts a class name, which JNDI loads and on
  * which it then calls {@link #getDefault()}, with no way of passing an actual factory
  * instance. The bundle to use is therefore held in a static field.
- * <p>
- * JNDI calls {@link #getDefault()} once per new connection and the {@link SslBundle} is
- * asked for a fresh {@code SSLContext} each time, so key and trust material of a bundle
- * that has been reloaded is picked up by connections opened from then on. Reloading is
- * only tracked for a bundle configured by name through {@code spring.ldap.ssl.bundle}; a
- * bundle supplied by a custom {@link LdapConnectionDetails} is used as given.
  * <p>
  * As the bundle is held statically, a single {@link SslBundle} applies JVM-wide. This is
  * sufficient for the auto-configured
@@ -42,96 +31,44 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @since 4.2.0
  */
-public final class LdapSslSocketFactory extends SSLSocketFactory {
+public final class LdapSslSocketFactory {
 
 	private static final Log logger = LogFactory.getLog(LdapSslSocketFactory.class);
 
-	private static volatile @Nullable SslBundle sslBundle;
+	private static volatile @Nullable BundleSocketFactory current;
 
-	private final SSLSocketFactory delegate;
-
-	private LdapSslSocketFactory(SslBundle sslBundle) {
-		this.delegate = sslBundle.createSslContext().getSocketFactory();
+	private LdapSslSocketFactory() {
 	}
 
 	public static SocketFactory getDefault() {
-		SslBundle sslBundle = LdapSslSocketFactory.sslBundle;
-		Assert.state(sslBundle != null, "No SSL bundle has been set");
-		return new LdapSslSocketFactory(sslBundle);
+		BundleSocketFactory current = LdapSslSocketFactory.current;
+		Assert.state(current != null, "No SSL bundle has been set");
+		return current.socketFactory().obtain();
 	}
 
 	static void setSslBundle(@Nullable SslBundle sslBundle) {
-		SslBundle previous = LdapSslSocketFactory.sslBundle;
-		if (previous != null && sslBundle != null && previous != sslBundle) {
+		BundleSocketFactory previous = LdapSslSocketFactory.current;
+		if (previous != null && previous.sslBundle() == sslBundle) {
+			return;
+		}
+		if (previous != null && sslBundle != null) {
 			logger.warn("A different SSL bundle has already been set for LDAP. As the bundle applies JVM-wide, "
 					+ "LDAPS connections opened from now on use the key and trust material of the new bundle, "
 					+ "including connections from context sources that were configured with the previous one");
 		}
-		LdapSslSocketFactory.sslBundle = sslBundle;
+		LdapSslSocketFactory.current = (sslBundle != null) ? new BundleSocketFactory(sslBundle) : null;
 	}
 
 	/**
-	 * Replaces the bundle with a reloaded version of itself. Unlike
-	 * {@link #setSslBundle(SslBundle)} this does not warn, as the material is being
-	 * reloaded for the same bundle rather than claimed by another context source.
-	 * @param sslBundle the reloaded SSL bundle
+	 * Pairs a bundle with the socket factory lazily created from it, so both are replaced
+	 * atomically.
 	 */
-	static void updateSslBundle(SslBundle sslBundle) {
-		LdapSslSocketFactory.sslBundle = sslBundle;
-	}
+	private record BundleSocketFactory(SslBundle sslBundle, SingletonSupplier<SocketFactory> socketFactory) {
 
-	@Override
-	public String[] getDefaultCipherSuites() {
-		return this.delegate.getDefaultCipherSuites();
-	}
+		BundleSocketFactory(SslBundle sslBundle) {
+			this(sslBundle, SingletonSupplier.of(() -> sslBundle.createSslContext().getSocketFactory()));
+		}
 
-	@Override
-	public String[] getSupportedCipherSuites() {
-		return this.delegate.getSupportedCipherSuites();
-	}
-
-	@Override
-	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
-		return this.delegate.createSocket(socket, host, port, autoClose);
-	}
-
-	@Override
-	public Socket createSocket(Socket socket, InputStream consumed, boolean autoClose) throws IOException {
-		return this.delegate.createSocket(socket, consumed, autoClose);
-	}
-
-	/**
-	 * Creates an unconnected socket. JNDI tries this first when a connect timeout has
-	 * been configured, so it has to be delegated rather than inheriting
-	 * {@link javax.net.SocketFactory#createSocket()}, which throws and makes JNDI fall
-	 * back to a connected socket that ignores the timeout.
-	 * @return an unconnected socket
-	 * @throws IOException if the socket cannot be created
-	 */
-	@Override
-	public Socket createSocket() throws IOException {
-		return this.delegate.createSocket();
-	}
-
-	@Override
-	public Socket createSocket(String host, int port) throws IOException {
-		return this.delegate.createSocket(host, port);
-	}
-
-	@Override
-	public Socket createSocket(String host, int port, InetAddress localAddress, int localPort) throws IOException {
-		return this.delegate.createSocket(host, port, localAddress, localPort);
-	}
-
-	@Override
-	public Socket createSocket(InetAddress host, int port) throws IOException {
-		return this.delegate.createSocket(host, port);
-	}
-
-	@Override
-	public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
-			throws IOException {
-		return this.delegate.createSocket(address, port, localAddress, localPort);
 	}
 
 }

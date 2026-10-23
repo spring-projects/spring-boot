@@ -4,9 +4,6 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
-import java.io.InputStream;
-import java.net.Socket;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -48,28 +45,42 @@ class LdapSslSocketFactoryTests {
 	void shouldUseSocketFactoryFromSslBundle() {
 		SSLSocketFactory socketFactory = mock(SSLSocketFactory.class);
 		LdapSslSocketFactory.setSslBundle(sslBundle(socketFactory));
-		assertThat(LdapSslSocketFactory.getDefault()).extracting("delegate").isSameAs(socketFactory);
+		assertThat(LdapSslSocketFactory.getDefault()).isSameAs(socketFactory);
 	}
 
 	@Test
-	void shouldDelegateCreationOfUnconnectedSocket() throws Exception {
-		SSLSocketFactory socketFactory = mock(SSLSocketFactory.class);
-		Socket socket = mock(Socket.class);
-		given(socketFactory.createSocket()).willReturn(socket);
-		LdapSslSocketFactory.setSslBundle(sslBundle(socketFactory));
-		assertThat(LdapSslSocketFactory.getDefault().createSocket()).isSameAs(socket);
+	void shouldCreateSocketFactoryOnce() {
+		SslBundle sslBundle = sslBundle(mock(SSLSocketFactory.class));
+		LdapSslSocketFactory.setSslBundle(sslBundle);
+		assertThat(LdapSslSocketFactory.getDefault()).isSameAs(LdapSslSocketFactory.getDefault());
+		then(sslBundle).should(times(1)).createSslContext();
 	}
 
 	@Test
-	void shouldDelegateCreationOfSocketWithConsumedInput() throws Exception {
+	void shouldKeepSocketFactoryWhenSettingTheSameBundleAgain() {
+		SslBundle sslBundle = sslBundle(mock(SSLSocketFactory.class));
+		LdapSslSocketFactory.setSslBundle(sslBundle);
+		LdapSslSocketFactory.getDefault();
+		LdapSslSocketFactory.setSslBundle(sslBundle);
+		LdapSslSocketFactory.getDefault();
+		then(sslBundle).should(times(1)).createSslContext();
+	}
+
+	@Test
+	void shouldUseSocketFactoryOfNewBundleWhenBundleIsReplaced() {
+		LdapSslSocketFactory.setSslBundle(sslBundle(mock(SSLSocketFactory.class)));
+		LdapSslSocketFactory.getDefault();
 		SSLSocketFactory socketFactory = mock(SSLSocketFactory.class);
-		Socket socket = mock(Socket.class);
-		Socket wrapped = mock(Socket.class);
-		InputStream consumed = InputStream.nullInputStream();
-		given(socketFactory.createSocket(socket, consumed, true)).willReturn(wrapped);
 		LdapSslSocketFactory.setSslBundle(sslBundle(socketFactory));
-		assertThat(((SSLSocketFactory) LdapSslSocketFactory.getDefault()).createSocket(socket, consumed, true))
-			.isSameAs(wrapped);
+		assertThat(LdapSslSocketFactory.getDefault()).isSameAs(socketFactory);
+	}
+
+	@Test
+	void shouldFailWhenSslBundleHasBeenCleared() {
+		LdapSslSocketFactory.setSslBundle(sslBundle(mock(SSLSocketFactory.class)));
+		LdapSslSocketFactory.setSslBundle(null);
+		assertThatIllegalStateException().isThrownBy(LdapSslSocketFactory::getDefault)
+			.withMessage("No SSL bundle has been set");
 	}
 
 	@Test
@@ -85,15 +96,6 @@ class LdapSslSocketFactoryTests {
 		LdapSslSocketFactory.setSslBundle(sslBundle);
 		LdapSslSocketFactory.setSslBundle(sslBundle);
 		assertThat(output).doesNotContain("A different SSL bundle has already been set for LDAP");
-	}
-
-	@Test
-	void shouldCreateSslContextForEachInvocationToPickUpReloadedMaterial() {
-		SslBundle sslBundle = sslBundle(mock(SSLSocketFactory.class));
-		LdapSslSocketFactory.setSslBundle(sslBundle);
-		LdapSslSocketFactory.getDefault();
-		LdapSslSocketFactory.getDefault();
-		then(sslBundle).should(times(2)).createSslContext();
 	}
 
 	private SslBundle sslBundle(SSLSocketFactory socketFactory) {

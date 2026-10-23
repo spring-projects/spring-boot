@@ -31,20 +31,6 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 	PropertiesLdapConnectionDetails(LdapProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
-		registerSslBundleUpdateHandler();
-	}
-
-	/**
-	 * Keeps {@link LdapSslSocketFactory} up-to-date when the configured bundle is
-	 * reloaded. Without this, the bundle resolved when the context source was created is
-	 * held on to and reloaded key or trust material is never used.
-	 */
-	private void registerSslBundleUpdateHandler() {
-		LdapProperties.Ssl ssl = this.properties.getSsl();
-		if (this.sslBundles == null || !ssl.isEnabled() || !StringUtils.hasLength(ssl.getBundle())) {
-			return;
-		}
-		this.sslBundles.addBundleUpdateHandler(ssl.getBundle(), LdapSslSocketFactory::updateSslBundle);
 	}
 
 	@Override
