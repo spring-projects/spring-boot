@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -478,6 +479,43 @@ class NestedJarFileTests {
 	@Test
 	void readAllBytesAfterReadingDeflatedContentReturnsRemainingContent() throws IOException {
 		assertReadAllBytesAfterReadingReturnsRemainingContent("META-INF/MANIFEST.MF");
+	}
+
+	@Test
+	void getInputStreamWhenDeflatedContentIsHighlyCompressedReturnsContent() throws IOException {
+		byte[] content = new byte[256 * 1024];
+		Arrays.fill(content, (byte) 'a');
+		assertDeflatedEntryContent(content);
+	}
+
+	@Test
+	void getInputStreamWhenDeflatedContentIsIncompressibleReturnsContent() throws IOException {
+		byte[] content = new byte[128 * 1024];
+		new Random(0).nextBytes(content);
+		assertDeflatedEntryContent(content);
+	}
+
+	private void assertDeflatedEntryContent(byte[] content) throws IOException {
+		File file = new File(this.tempDir, "deflated.jar");
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+			JarEntry entry = new JarEntry("content.dat");
+			entry.setMethod(ZipEntry.DEFLATED);
+			out.putNextEntry(entry);
+			out.write(content);
+			out.closeEntry();
+		}
+		try (NestedJarFile jar = new NestedJarFile(file)) {
+			JarEntry entry = jar.getJarEntry("content.dat");
+			assertThat(entry.getCompressedSize()).isNotEqualTo(entry.getSize());
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(input.available()).isEqualTo(content.length);
+				assertThat(input.readAllBytes()).isEqualTo(content);
+				assertThat(input.available()).isZero();
+			}
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(StreamUtils.copyToByteArray(input)).isEqualTo(content);
+			}
+		}
 	}
 
 	private void assertReadAllBytesAfterReadingReturnsRemainingContent(String name) throws IOException {
