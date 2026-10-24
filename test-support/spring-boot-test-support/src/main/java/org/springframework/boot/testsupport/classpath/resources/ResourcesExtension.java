@@ -173,8 +173,8 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 
 	/**
 	 * Holder for the thread context class loader that can be safely
-	 * {@link Store#put(Object, Object) stored} without it causing unwanted
-	 * {@link ClassLoader#close closure} of the class loader.
+	 * {@link Store#put(Object, Object) stored} without it causing unwanted closure of the
+	 * class loader.
 	 */
 	private static class Tccl {
 
