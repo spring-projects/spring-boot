@@ -29,13 +29,20 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
  * @author Brian Clozel
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Van Vo
  * @since 4.0.0
  */
 public class MustacheView extends AbstractTemplateView {
 
+	private final Object templateLock = new Object();
+
 	private @Nullable Compiler compiler;
 
 	private @Nullable Charset charset;
+
+	private boolean cache;
+
+	private volatile @Nullable Template cachedTemplate;
 
 	/**
 	 * Set the Mustache compiler to be used by this view.
@@ -47,6 +54,7 @@ public class MustacheView extends AbstractTemplateView {
 	 */
 	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
+		this.cachedTemplate = null;
 	}
 
 	/**
@@ -56,6 +64,7 @@ public class MustacheView extends AbstractTemplateView {
 	 */
 	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
+		this.cachedTemplate = null;
 	}
 
 	/**
@@ -69,6 +78,24 @@ public class MustacheView extends AbstractTemplateView {
 		setCharset((charset != null) ? Charset.forName(charset) : null);
 	}
 
+	/**
+	 * Set whether to cache the compiled template. Defaults to {@code false}.
+	 * @param cache whether to cache the compiled template
+	 * @since 4.2.0
+	 */
+	public void setCache(boolean cache) {
+		this.cache = cache;
+		if (!cache) {
+			this.cachedTemplate = null;
+		}
+	}
+
+	@Override
+	public void setUrl(@Nullable String url) {
+		super.setUrl(url);
+		this.cachedTemplate = null;
+	}
+
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
 		Resource resource = getResource();
@@ -78,12 +105,24 @@ public class MustacheView extends AbstractTemplateView {
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		Resource resource = getResource();
-		Assert.state(resource != null, "'resource' must not be null");
-		Template template = createTemplate(resource);
-		if (template != null) {
-			template.execute(model, response.getWriter());
+		getTemplate().execute(model, response.getWriter());
+	}
+
+	private Template getTemplate() throws IOException {
+		if (!this.cache) {
+			return createTemplate();
 		}
+		Template template = this.cachedTemplate;
+		if (template == null) {
+			synchronized (this.templateLock) {
+				template = this.cachedTemplate;
+				if (template == null) {
+					template = createTemplate();
+					this.cachedTemplate = template;
+				}
+			}
+		}
+		return template;
 	}
 
 	private @Nullable Resource getResource() {
@@ -96,7 +135,9 @@ public class MustacheView extends AbstractTemplateView {
 		return (resource.exists()) ? resource : null;
 	}
 
-	private Template createTemplate(Resource resource) throws IOException {
+	private Template createTemplate() throws IOException {
+		Resource resource = getResource();
+		Assert.state(resource != null, "'resource' must not be null");
 		try (Reader reader = getReader(resource)) {
 			Assert.state(this.compiler != null, "'compiler' must not be null");
 			return this.compiler.compile(reader);
