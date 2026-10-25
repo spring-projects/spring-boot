@@ -166,6 +166,7 @@ test {
 }
 
 eclipse {
+	synchronizationTasks tasks.named("eclipseJdt")
 	jdt {
 		file {
 			withProperties {
