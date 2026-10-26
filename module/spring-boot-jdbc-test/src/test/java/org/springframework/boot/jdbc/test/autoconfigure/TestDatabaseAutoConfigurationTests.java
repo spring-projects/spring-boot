@@ -7,8 +7,11 @@ package org.springframework.boot.jdbc.test.autoconfigure;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.jdbc.test.autoconfigure.TestDatabaseAutoConfiguration.EmbeddedDataSourceFactoryBean;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +51,37 @@ class TestDatabaseAutoConfigurationTests {
 				anotherJdbcTemplate.execute("create table example (id int, name varchar);");
 			});
 		});
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "non-test", "non_test" })
+	void replaceWithNonTestValue(String replace) {
+		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
+			.withPropertyValues("spring.test.database.replace=" + replace)
+			.run((context) -> assertThat(context).hasSingleBean(EmbeddedDataSourceFactoryBean.class));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "auto-configured", "auto_configured" })
+	void replaceWithAutoConfiguredValue(String replace) {
+		this.contextRunner.withPropertyValues("spring.test.database.replace=" + replace)
+			.run((context) -> assertThat(context).hasSingleBean(DataSource.class));
+	}
+
+	@Test
+	void replaceWithEmptyValueDefaultsToNonTest() {
+		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
+			.withPropertyValues("spring.test.database.replace=")
+			.run((context) -> assertThat(context).hasSingleBean(EmbeddedDataSourceFactoryBean.class));
+	}
+
+	@Test
+	void replaceWithInvalidValueFails() {
+		this.contextRunner.withPropertyValues("spring.test.database.replace=invalid")
+			.run((context) -> assertThat(context).getFailure()
+				.cause()
+				.isInstanceOf(BindException.class)
+				.hasMessageContaining("spring.test.database.replace"));
 	}
 
 	@Test
