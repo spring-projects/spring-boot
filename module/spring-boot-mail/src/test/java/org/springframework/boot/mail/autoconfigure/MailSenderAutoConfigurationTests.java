@@ -292,6 +292,41 @@ class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
+	void smtpSslBundleWithOptions() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols:TLSv1.3,TLSv1.2",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers:TLS_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties())
+					.containsEntry("mail.smtp.ssl.protocols", "TLSv1.3 TLSv1.2")
+					.containsEntry("mail.smtp.ssl.ciphersuites", "TLS_AES_256_GCM_SHA384 TLS_AES_128_GCM_SHA256");
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void smtpSslBundleWithoutOptions() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).doesNotContainKey("mail.smtp.ssl.protocols")
+					.doesNotContainKey("mail.smtp.ssl.ciphersuites");
+			});
+	}
+
+	@Test
 	void smtpsSslEnabled() {
 		this.contextRunner
 			.withPropertyValues("spring.mail.host:localhost", "spring.mail.protocol:smtps",
@@ -320,6 +355,27 @@ class MailSenderAutoConfigurationTests {
 					.containsEntry("mail.smtps.ssl.checkserveridentity", "true");
 				Object property = mailSender.getJavaMailProperties().get("mail.smtps.ssl.socketFactory");
 				assertThat(property).isInstanceOf(SSLSocketFactory.class);
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void smtpsSslBundleWithOptions() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.protocol:smtps",
+					"spring.mail.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols:TLSv1.3",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers:TLS_AES_128_GCM_SHA256")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).containsEntry("mail.smtps.ssl.protocols", "TLSv1.3")
+					.containsEntry("mail.smtps.ssl.ciphersuites", "TLS_AES_128_GCM_SHA256")
+					.doesNotContainKey("mail.smtp.ssl.protocols")
+					.doesNotContainKey("mail.smtp.ssl.ciphersuites");
 			});
 	}
 
