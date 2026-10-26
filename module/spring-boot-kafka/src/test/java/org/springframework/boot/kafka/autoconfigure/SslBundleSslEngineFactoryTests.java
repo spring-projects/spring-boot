@@ -4,6 +4,7 @@
 
 package org.springframework.boot.kafka.autoconfigure;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.net.ssl.SSLEngine;
@@ -25,25 +26,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SslBundleSslEngineFactoryTests {
 
 	@Test
-	void createClientSslEngineAppliesSslOptions() {
-		SSLEngine sslEngine = createFactory().createClientSslEngine("localhost", 9093, "https");
-		assertThat(sslEngine.getUseClientMode()).isTrue();
-		assertThat(sslEngine.getEnabledCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
-		assertThat(sslEngine.getEnabledProtocols()).containsExactly("TLSv1.3");
-		assertThat(sslEngine.getSSLParameters().getEndpointIdentificationAlgorithm()).isEqualTo("https");
+	void createClientSslEngineAppliesSslOptions() throws IOException {
+		SslOptions sslOptions = SslOptions.of(new String[] { "TLS_AES_128_GCM_SHA256" }, new String[] { "TLSv1.3" });
+		try (SslBundleSslEngineFactory factory = createFactory(sslOptions)) {
+			SSLEngine sslEngine = factory.createClientSslEngine("localhost", 9093, "https");
+			assertThat(sslEngine.getUseClientMode()).isTrue();
+			assertThat(sslEngine.getEnabledCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+			assertThat(sslEngine.getEnabledProtocols()).containsExactly("TLSv1.3");
+			assertThat(sslEngine.getSSLParameters().getEndpointIdentificationAlgorithm()).isEqualTo("https");
+		}
 	}
 
 	@Test
-	void createServerSslEngineAppliesSslOptions() {
-		SSLEngine sslEngine = createFactory().createServerSslEngine("localhost", 9093);
-		assertThat(sslEngine.getUseClientMode()).isFalse();
-		assertThat(sslEngine.getEnabledCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
-		assertThat(sslEngine.getEnabledProtocols()).containsExactly("TLSv1.3");
+	void createServerSslEngineAppliesSslOptions() throws IOException {
+		SslOptions sslOptions = SslOptions.of(new String[] { "TLS_AES_128_GCM_SHA256" }, new String[] { "TLSv1.3" });
+		try (SslBundleSslEngineFactory factory = createFactory(sslOptions)) {
+			SSLEngine sslEngine = factory.createServerSslEngine("localhost", 9093);
+			assertThat(sslEngine.getUseClientMode()).isFalse();
+			assertThat(sslEngine.getEnabledCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+			assertThat(sslEngine.getEnabledProtocols()).containsExactly("TLSv1.3");
+		}
 	}
 
-	private SslBundleSslEngineFactory createFactory() {
-		SslOptions options = SslOptions.of(new String[] { "TLS_AES_128_GCM_SHA256" }, new String[] { "TLSv1.3" });
-		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE, options);
+	private SslBundleSslEngineFactory createFactory(SslOptions sslOptions) {
+		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE, sslOptions);
 		SslBundleSslEngineFactory factory = new SslBundleSslEngineFactory();
 		factory.configure(Map.of(SslBundle.class.getName(), sslBundle));
 		return factory;
