@@ -319,9 +319,7 @@ public class SpringApplication {
 			throw handleRunFailure(context, ex, listeners);
 		}
 		try {
-			if (context.isRunning()) {
-				listeners.ready(context, startup.ready());
-			}
+			listeners.ready(context, startup.ready());
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, null);
@@ -753,6 +751,9 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ConfigurableApplicationContext context, ApplicationArguments args) {
+		if (!context.isRunning()) {
+			return;
+		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] beanNames = beanFactory.getBeanNamesForType(Runner.class);
 		Map<Runner, String> instancesToBeanNames = new IdentityHashMap<>();

@@ -649,6 +649,58 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	void runnersAreCalledOnceWhenContextIsRefreshed() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isTrue();
+		assertThat(runnerCalls).hasValue(1);
+	}
+
+	@Test
+	void runnersAreNotCalledWhenContextIsClosedImmediatelyAfterRefresh() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class) {
+
+			@Override
+			protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
+				context.close();
+			}
+
+		};
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
+		application.addListeners(listener);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isFalse();
+		assertThat(runnerCalls).hasValue(0);
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+	}
+
+	@Test
+	void runnersAreNotCalledWhenContextIsClosedWhileHandlingApplicationStartedEvent() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.addListeners((ApplicationStartedEvent event) -> event.getApplicationContext().close());
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
+		application.addListeners(listener);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isFalse();
+		assertThat(runnerCalls).hasValue(0);
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+	}
+
+	private AtomicInteger registerCountingRunner(SpringApplication application) {
+		AtomicInteger calls = new AtomicInteger();
+		ApplicationRunner runner = (args) -> calls.incrementAndGet();
+		application.addInitializers((context) -> context.getBeanFactory().registerSingleton("runner", runner));
+		return calls;
+	}
+
+	@Test
 	void applicationRunnerFailureCausesApplicationFailedEventToBePublished() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
