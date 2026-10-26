@@ -353,8 +353,8 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 		private URL createResource(NestedJarFile jarFile, URL url, String name) {
 			try {
-				if (jarFile != null && jarFile.hasEntry(name)) {
-					return new URL(url, UrlEncoder.encode(name));
+				if (jarFile != null && (name.isEmpty() || jarFile.hasEntry(name))) {
+					return (!name.isEmpty()) ? new URL(url, UrlEncoder.encode(name)) : url;
 				}
 			}
 			catch (MalformedURLException ex) {

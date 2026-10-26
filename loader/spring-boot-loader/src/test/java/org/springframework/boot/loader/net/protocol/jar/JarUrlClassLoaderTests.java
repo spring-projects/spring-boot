@@ -103,6 +103,28 @@ class JarUrlClassLoaderTests {
 	}
 
 	@Test
+	void resolveRootPathFromNested() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL url = JarUrl.create(jarFile, "nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(url)) {
+			assertThat(loader.findResource("")).hasToString(url.toString());
+		}
+	}
+
+	@Test
+	void resolveRootResourcesFromNested() throws Exception {
+		File jarFile = new File(this.tempDir, "test.jar");
+		TestJar.create(jarFile);
+		URL nestedUrl = JarUrl.create(jarFile, "nested.jar");
+		URL anotherNestedUrl = JarUrl.create(jarFile, "another-nested.jar");
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(nestedUrl, anotherNestedUrl)) {
+			assertThat(Collections.list(loader.findResources(""))).map(URL::toString)
+				.containsExactly(nestedUrl.toString(), anotherNestedUrl.toString());
+		}
+	}
+
+	@Test
 	void resolveFromNestedWhenNameNeedsEncoding() throws Exception {
 		ByteArrayOutputStream nestedJarData = new ByteArrayOutputStream();
 		try (JarOutputStream jarOutputStream = new JarOutputStream(nestedJarData)) {
