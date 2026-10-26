@@ -113,11 +113,14 @@ abstract class HealthEndpointSupport<H, D> {
 	private @Nullable Contributor<H, D> getContributor(String[] path, int pathOffset) {
 		Contributor<H, D> contributor = this.rootContributor;
 		while (pathOffset < path.length) {
-			Assert.state(contributor != null, "'contributor' must not be null");
 			if (!contributor.isComposite()) {
 				return null;
 			}
-			contributor = contributor.getChild(path[pathOffset]);
+			Contributor<H, D> child = contributor.getChild(path[pathOffset]);
+			if (child == null) {
+				return null;
+			}
+			contributor = child;
 			pathOffset++;
 		}
 		return contributor;
