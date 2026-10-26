@@ -16,6 +16,7 @@ import org.apache.kafka.common.security.auth.SslEngineFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
 
 /**
@@ -49,7 +50,7 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 	public SSLEngine createClientSslEngine(String peerHost, int peerPort, String endpointIdentification) {
 		SslBundle sslBundle = this.sslBundle;
 		Assert.state(sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SSLEngine sslEngine = createSslEngine(sslBundle, peerHost, peerPort);
 		sslEngine.setUseClientMode(true);
 		SSLParameters sslParams = sslEngine.getSSLParameters();
 		sslParams.setEndpointIdentificationAlgorithm(endpointIdentification);
@@ -61,8 +62,20 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 	public SSLEngine createServerSslEngine(String peerHost, int peerPort) {
 		SslBundle sslBundle = this.sslBundle;
 		Assert.state(sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SSLEngine sslEngine = createSslEngine(sslBundle, peerHost, peerPort);
 		sslEngine.setUseClientMode(false);
+		return sslEngine;
+	}
+
+	private SSLEngine createSslEngine(SslBundle sslBundle, String peerHost, int peerPort) {
+		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SslOptions options = sslBundle.getOptions();
+		if (options.getCiphers() != null) {
+			sslEngine.setEnabledCipherSuites(options.getCiphers());
+		}
+		if (options.getEnabledProtocols() != null) {
+			sslEngine.setEnabledProtocols(options.getEnabledProtocols());
+		}
 		return sslEngine;
 	}
 
