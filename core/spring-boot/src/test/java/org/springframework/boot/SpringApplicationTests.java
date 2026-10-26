@@ -88,7 +88,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -650,23 +649,29 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	void runnersAreCalledOnceWhenContextIsRefreshed() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isTrue();
+		assertThat(runnerCalls).hasValue(1);
+	}
+
+	@Test
 	void runnersAreNotCalledWhenContextIsClosedImmediatelyAfterRefresh() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class) {
 
 			@Override
 			protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
-				// As the shutdown hook does when the JVM stops during refresh
 				context.close();
 			}
 
 		};
 		application.setWebApplicationType(WebApplicationType.NONE);
-		@SuppressWarnings("unchecked")
-		ApplicationListener<SpringApplicationEvent> listener = mock(ApplicationListener.class);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
 		application.addListeners(listener);
-		AtomicInteger runnerCalls = new AtomicInteger();
-		application.addInitializers((context) -> ((GenericApplicationContext) context).registerBean("runner",
-				ApplicationRunner.class, () -> (args) -> runnerCalls.incrementAndGet()));
+		AtomicInteger runnerCalls = registerCountingRunner(application);
 		this.context = application.run();
 		assertThat(this.context.isActive()).isFalse();
 		assertThat(runnerCalls).hasValue(0);
@@ -677,18 +682,22 @@ class SpringApplicationTests {
 	@Test
 	void runnersAreNotCalledWhenContextIsClosedWhileHandlingApplicationStartedEvent() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		@SuppressWarnings("unchecked")
-		ApplicationListener<SpringApplicationEvent> listener = mock(ApplicationListener.class);
-		application.addListeners(listener);
 		application.addListeners((ApplicationStartedEvent event) -> event.getApplicationContext().close());
-		AtomicInteger runnerCalls = new AtomicInteger();
-		application.addInitializers((context) -> ((GenericApplicationContext) context).registerBean("runner",
-				ApplicationRunner.class, () -> (args) -> runnerCalls.incrementAndGet()));
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
+		application.addListeners(listener);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
 		this.context = application.run();
 		assertThat(this.context.isActive()).isFalse();
 		assertThat(runnerCalls).hasValue(0);
 		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+	}
+
+	private AtomicInteger registerCountingRunner(SpringApplication application) {
+		AtomicInteger calls = new AtomicInteger();
+		ApplicationRunner runner = (args) -> calls.incrementAndGet();
+		application.addInitializers((context) -> context.getBeanFactory().registerSingleton("runner", runner));
+		return calls;
 	}
 
 	@Test

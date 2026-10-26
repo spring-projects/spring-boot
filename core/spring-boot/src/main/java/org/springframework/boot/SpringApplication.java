@@ -312,20 +312,14 @@ public class SpringApplication {
 			if (this.properties.isLogStartupInfo()) {
 				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
 			}
-			if (context.isRunning()) {
-				listeners.started(context, timeTakenToStarted);
-			}
-			if (context.isRunning()) {
-				callRunners(context, applicationArguments);
-			}
+			listeners.started(context, timeTakenToStarted);
+			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, listeners);
 		}
 		try {
-			if (context.isRunning()) {
-				listeners.ready(context, startup.ready());
-			}
+			listeners.ready(context, startup.ready());
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, null);
@@ -757,6 +751,9 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ConfigurableApplicationContext context, ApplicationArguments args) {
+		if (!context.isRunning()) {
+			return;
+		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] beanNames = beanFactory.getBeanNamesForType(Runner.class);
 		Map<Runner, String> instancesToBeanNames = new IdentityHashMap<>();
