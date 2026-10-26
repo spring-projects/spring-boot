@@ -32,7 +32,7 @@ import org.springframework.util.function.SingletonSupplier;
  *   .asInt(Duration::getSeconds)
  *   .to(destination::setTimeoutSecs);
  * map.from(source::isEnabled)
- *   .whenFalse().
+ *   .whenFalse()
  *   .toCall(destination::disable);
  * </pre>
  * <p>
