@@ -833,6 +833,10 @@ When appropriate, Spring Boot auto-configures the following javadoc:org.springfr
 | javadoc:org.springframework.boot.neo4j.health.Neo4jReactiveHealthIndicator[]
 | Checks that a Neo4j database is up.
 
+| `r2dbc`
+| javadoc:org.springframework.boot.r2dbc.health.ConnectionFactoryHealthIndicator[]
+| Checks that a connection to javadoc:io.r2dbc.spi.ConnectionFactory[] can be obtained.
+
 | `redis`
 | javadoc:org.springframework.boot.data.redis.health.DataRedisReactiveHealthIndicator[]
 | Checks that a Redis server is up.
