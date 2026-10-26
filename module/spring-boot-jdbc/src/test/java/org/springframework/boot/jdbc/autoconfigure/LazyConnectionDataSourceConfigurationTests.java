@@ -4,7 +4,6 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
-import java.sql.Connection;
 import java.util.Random;
 import java.util.UUID;
 
@@ -67,7 +66,7 @@ class LazyConnectionDataSourceConfigurationTests {
 
 	@ParameterizedTest
 	@ValueSource(strings = { "eager", "lazy" })
-	void autoConfigurationDoesNotExposeDataSourceMBeanWhenHikariRegistersItsOwnMBeans(String connectionFetchStrategy) {
+	void autoConfigurationLeavesMBeanRegistrationToHikariWhenRegisterMbeansIsSet(String connectionFetchStrategy) {
 		String uniqueDomain = UUID.randomUUID().toString();
 		String poolName = "pool-" + UUID.randomUUID();
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
@@ -76,16 +75,13 @@ class LazyConnectionDataSourceConfigurationTests {
 					"spring.datasource.hikari.register-mbeans=true", "spring.datasource.hikari.pool-name=" + poolName,
 					"spring.datasource.connection-fetch=" + connectionFetchStrategy)
 			.run((context) -> {
-				HikariDataSource hikariDataSource = context.getBean(DataSource.class).unwrap(HikariDataSource.class);
-				try (Connection connection = hikariDataSource.getConnection()) {
-					assertThat(connection).isNotNull();
-				}
+				context.getBean(DataSource.class).getConnection().close();
 				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+				assertThat(mBeanServer.isRegistered(new ObjectName("com.zaxxer.hikari:type=Pool (" + poolName + ")")))
+					.isTrue();
 				assertThat(mBeanServer.isRegistered(new ObjectName(
 						"%s:type=%s,name=dataSource".formatted(uniqueDomain, HikariDataSource.class.getSimpleName()))))
 					.isFalse();
-				assertThat(mBeanServer.isRegistered(new ObjectName("com.zaxxer.hikari:type=Pool (" + poolName + ")")))
-					.isTrue();
 			});
 	}
 
