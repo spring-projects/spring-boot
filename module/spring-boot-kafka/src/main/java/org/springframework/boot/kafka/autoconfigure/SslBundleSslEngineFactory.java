@@ -15,6 +15,7 @@ import javax.net.ssl.SSLParameters;
 import org.apache.kafka.common.security.auth.SslEngineFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
@@ -48,9 +49,7 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createClientSslEngine(String peerHost, int peerPort, String endpointIdentification) {
-		SslBundle sslBundle = this.sslBundle;
-		Assert.state(sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = createSslEngine(sslBundle, peerHost, peerPort);
+		SSLEngine sslEngine = createSslEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(true);
 		SSLParameters sslParams = sslEngine.getSSLParameters();
 		sslParams.setEndpointIdentificationAlgorithm(endpointIdentification);
@@ -60,22 +59,19 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createServerSslEngine(String peerHost, int peerPort) {
-		SslBundle sslBundle = this.sslBundle;
-		Assert.state(sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = createSslEngine(sslBundle, peerHost, peerPort);
+		SSLEngine sslEngine = createSslEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(false);
 		return sslEngine;
 	}
 
-	private SSLEngine createSslEngine(SslBundle sslBundle, String peerHost, int peerPort) {
+	private SSLEngine createSslEngine(String peerHost, int peerPort) {
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
 		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		PropertyMapper map = PropertyMapper.get();
 		SslOptions options = sslBundle.getOptions();
-		if (options.getCiphers() != null) {
-			sslEngine.setEnabledCipherSuites(options.getCiphers());
-		}
-		if (options.getEnabledProtocols() != null) {
-			sslEngine.setEnabledProtocols(options.getEnabledProtocols());
-		}
+		map.from(options::getCiphers).to(sslEngine::setEnabledCipherSuites);
+		map.from(options.getEnabledProtocols()).to(sslEngine::setEnabledProtocols);
 		return sslEngine;
 	}
 
