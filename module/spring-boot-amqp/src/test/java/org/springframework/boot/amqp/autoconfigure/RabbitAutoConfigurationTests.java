@@ -14,6 +14,7 @@ import java.util.function.BiFunction;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
@@ -968,6 +969,26 @@ class RabbitAutoConfigurationTests {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
 				assertThatHostnameVerificationIsDisabled(rabbitConnectionFactory);
+			});
+	}
+
+	@Test
+	void enableSslWithBundleAppliesSslOptions() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:org/springframework/boot/amqp/autoconfigure/test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers=TLS_AES_128_GCM_SHA256",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols=TLSv1.3")
+			.run((context) -> {
+				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+				SSLSocket socket = mock(SSLSocket.class);
+				SSLParameters socketParameters = new SSLParameters();
+				given(socket.getSSLParameters()).willReturn(socketParameters);
+				rabbitConnectionFactory.getSocketConfigurator().configure(socket);
+				assertThat(socketParameters.getCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+				assertThat(socketParameters.getProtocols()).containsExactly("TLSv1.3");
+				assertThat(socketParameters.getEndpointIdentificationAlgorithm()).isEqualTo("HTTPS");
 			});
 	}
 
