@@ -218,6 +218,14 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldDisableFieldIntrospectionWithCustomGraphQlSource() {
+		Introspection.enabledJvmWide(true);
+		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false")
+			.withUserConfiguration(CustomGraphQlSourceConfiguration.class)
+			.run((context) -> assertThat(Introspection.isEnabledJvmWide()).isFalse());
+	}
+
+	@Test
 	void shouldConfigureCustomBatchLoaderRegistry() {
 		this.contextRunner
 			.withBean("customBatchLoaderRegistry", BatchLoaderRegistry.class, () -> mock(BatchLoaderRegistry.class))
