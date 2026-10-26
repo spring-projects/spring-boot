@@ -31,10 +31,10 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 		"sourceType": "org.springframework.boot.web.server.autoconfigure.ServerProperties"
 	},
 	{
-		  "name": "spring.jpa.hibernate.ddl-auto",
-		  "type": "java.lang.String",
-		  "description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
-		  "sourceType": "org.springframework.boot.hibernate.autoconfigure.HibernateProperties"
+		"name": "spring.jpa.hibernate.ddl-auto",
+		"type": "java.lang.String",
+		"description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
+		"sourceType": "org.springframework.boot.hibernate.autoconfigure.HibernateProperties"
 	}
 	...
 ],"hints": [

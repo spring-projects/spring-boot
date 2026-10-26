@@ -20,10 +20,10 @@ open class MySamlRelyingPartyConfiguration {
 			authorizeHttpRequests {
 				authorize(anyRequest, authenticated)
 			}
-			saml2Login {  }
+			saml2Login { }
 			saml2Logout {
-				logoutRequest { logoutUrl =  "/SLOService.saml2" }
-				logoutResponse { logoutUrl =  "/SLOService.saml2" }
+				logoutRequest { logoutUrl = "/SLOService.saml2" }
+				logoutResponse { logoutUrl = "/SLOService.saml2" }
 			}
 		}
 		return http.build()
