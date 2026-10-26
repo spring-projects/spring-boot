@@ -38,6 +38,26 @@ class AmqpRabbitPropertiesTests {
 	}
 
 	@Test
+	void determinePortDefaultsTo5671WhenSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
+	void determinePortReturnsCustomPortWhenSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setPort(1234);
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
+	void determinePortReturnsPortFromAddressWhenSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
 	void determinePortReturnsPortFromAddress() {
 		this.properties.setAddress("rabbit.example.com:1234");
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
@@ -88,6 +108,12 @@ class AmqpRabbitPropertiesTests {
 	@Test
 	void determineAddressUsesHostAndPortDefaults() {
 		assertThat(this.properties.determineAddress()).isEqualTo("localhost:5672");
+	}
+
+	@Test
+	void determineAddressUsesSecurePortDefaultWhenSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.determineAddress()).isEqualTo("localhost:5671");
 	}
 
 	@Test

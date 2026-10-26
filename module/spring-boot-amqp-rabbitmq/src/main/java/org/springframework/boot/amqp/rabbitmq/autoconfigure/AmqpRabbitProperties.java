@@ -23,6 +23,8 @@ public class AmqpRabbitProperties {
 
 	static final int DEFAULT_PORT = 5672;
 
+	static final int DEFAULT_PORT_SECURE = 5671;
+
 	/**
 	 * RabbitMQ host. Ignored if an address is set.
 	 */
@@ -97,7 +99,7 @@ public class AmqpRabbitProperties {
 			if (port != null) {
 				return port;
 			}
-			return DEFAULT_PORT;
+			return StringUtils.hasLength(getSsl().getBundle()) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
 		return this.parsedAddress.port;
 	}
