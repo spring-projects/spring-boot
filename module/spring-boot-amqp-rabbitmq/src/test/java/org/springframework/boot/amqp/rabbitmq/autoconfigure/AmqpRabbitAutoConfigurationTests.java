@@ -4,6 +4,12 @@
 
 package org.springframework.boot.amqp.rabbitmq.autoconfigure;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import javax.net.ssl.SSLEngine;
+
+import com.rabbitmq.client.amqp.ConnectionSettings.TlsSettings;
 import com.rabbitmq.client.amqp.Environment;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
 import org.junit.jupiter.api.Test;
@@ -23,13 +29,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails.Address;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -120,6 +130,28 @@ class AmqpRabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationConfiguresEnvironmentWithSslBundleOptions() {
+		SslOptions options = SslOptions.of(new String[] { "TLS_AES_128_GCM_SHA256" }, new String[] { "TLSv1.3" });
+		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE, options);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		AtomicReference<TlsSettings<?>> tls = new AtomicReference<>();
+		this.contextRunner.withPropertyValues("spring.amqp.rabbitmq.ssl.bundle=test-bundle")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.withBean(AmqpEnvironmentCustomizer.class, () -> (builder) -> tls.set(builder.connectionSettings().tls()))
+			.run((context) -> {
+				assertThat(tls.get()).hasFieldOrPropertyWithValue("ciphers", new String[] { "TLS_AES_128_GCM_SHA256" });
+				@SuppressWarnings("unchecked")
+				Consumer<SSLEngine> engineCustomizer = (Consumer<SSLEngine>) ReflectionTestUtils.getField(tls.get(),
+						"sslEngineCustomizer");
+				assertThat(engineCustomizer).isNotNull();
+				SSLEngine engine = mock(SSLEngine.class);
+				engineCustomizer.accept(engine);
+				then(engine).should().setEnabledProtocols(new String[] { "TLSv1.3" });
+			});
+	}
+
+	@Test
 	void autoConfigurationBacksOffWhenUserProvidesConnectionDetails() {
 		AmqpRabbitConnectionDetails connectionDetails = mock(AmqpRabbitConnectionDetails.class);
 		given(connectionDetails.getAddress()).willReturn(new Address("localhost", 5672));
@@ -185,7 +217,7 @@ class AmqpRabbitAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationConfiguresConnectionDetailsWithSslBundle() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
 		this.contextRunner.withPropertyValues("spring.amqp.rabbitmq.ssl.bundle=test-bundle")

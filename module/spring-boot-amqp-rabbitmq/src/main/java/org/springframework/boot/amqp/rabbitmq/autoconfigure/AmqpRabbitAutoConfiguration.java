@@ -7,6 +7,7 @@ package org.springframework.boot.amqp.rabbitmq.autoconfigure;
 import javax.net.ssl.SSLContext;
 
 import com.rabbitmq.client.amqp.Connection;
+import com.rabbitmq.client.amqp.ConnectionSettings.TlsSettings;
 import com.rabbitmq.client.amqp.CredentialsProvider;
 import com.rabbitmq.client.amqp.Environment;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
@@ -28,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -67,7 +69,11 @@ public final class AmqpRabbitAutoConfiguration {
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		if (sslBundle != null) {
 			SSLContext sslContext = sslBundle.createSslContext();
-			environmentConnectionSettings.tls().sslContext(sslContext);
+			TlsSettings<?> tls = environmentConnectionSettings.tls().sslContext(sslContext);
+			SslOptions options = sslBundle.getOptions();
+			map.from(options::getCiphers).to(tls::ciphers);
+			map.from(options::getEnabledProtocols)
+				.to((protocols) -> tls.sslEngineCustomizer((engine) -> engine.setEnabledProtocols(protocols)));
 		}
 		AmqpEnvironmentBuilder builder = environmentConnectionSettings.environmentBuilder();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
