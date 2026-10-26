@@ -71,11 +71,6 @@ import org.springframework.web.util.UriTemplateHandler;
  * class. It can then be {@code @Autowired} into your test. If you need customizations
  * (for example to adding additional message converters) use a {@link RestTemplateBuilder}
  * {@code @Bean}.
- * <p>
- * As it is built from the application's {@link RestTemplateBuilder}, requests sent by an
- * auto-configured {@code TestRestTemplate} are observed when observations are enabled.
- * They are recorded in metrics and propagate a trace context to the server. This is not
- * the case with {@code RestTestClient} and {@code WebTestClient}.
  *
  * @author Dave Syer
  * @author Phillip Webb
