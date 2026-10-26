@@ -122,7 +122,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedHttpConnectorBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, HttpConnectorBuilderConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
