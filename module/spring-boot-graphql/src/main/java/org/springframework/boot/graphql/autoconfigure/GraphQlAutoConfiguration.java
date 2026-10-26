@@ -20,12 +20,14 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -72,6 +74,12 @@ public final class GraphQlAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
 
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.graphql.schema.introspection", name = "enabled", havingValue = "false")
+	InitializingBean graphQlIntrospectionConfigurer() {
+		return () -> Introspection.enabledJvmWide(false);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
 			ObjectProvider<DataFetcherExceptionResolver> exceptionResolvers,
@@ -92,9 +100,6 @@ public final class GraphQlAutoConfiguration {
 			.instrumentation(instrumentations.orderedStream().toList());
 		if (properties.getSchema().getInspection().isEnabled()) {
 			builder.inspectSchemaMappings(logger::info);
-		}
-		if (!properties.getSchema().getIntrospection().isEnabled()) {
-			Introspection.enabledJvmWide(false);
 		}
 		builder.configureTypeDefinitions(new ConnectionTypeDefinitionConfigurer());
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
