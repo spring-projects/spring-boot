@@ -54,7 +54,8 @@ class LazyConnectionDataSourceConfiguration {
 		public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (beanName.equals("dataSource") && bean instanceof DataSource dataSource) {
 				this.mbeanExporter.ifAvailable((exporter) -> {
-					if (JmxUtils.isMBean(dataSource.getClass())) {
+					if (JmxUtils.isMBean(dataSource.getClass())
+							&& !DataSourceJmxConfiguration.registersItsOwnMBeans(dataSource)) {
 						exporter.registerManagedResource(dataSource, beanName);
 					}
 				});
