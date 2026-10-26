@@ -303,13 +303,14 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void resourceHandlerChainCustomized() {
-		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true",
-				"spring.web.resources.chain.cache:false", "spring.web.resources.chain.strategy.content.enabled:true",
-				"spring.web.resources.chain.strategy.content.paths:/**,/*.png",
-				"spring.web.resources.chain.strategy.fixed.enabled:true",
-				"spring.web.resources.chain.strategy.fixed.version:test",
-				"spring.web.resources.chain.strategy.fixed.paths:/**/*.js",
-				"spring.web.resources.chain.html-application-cache:true", "spring.web.resources.chain.compressed:true")
+		this.contextRunner
+			.withPropertyValues("spring.web.resources.chain.enabled:true", "spring.web.resources.chain.cache:false",
+					"spring.web.resources.chain.strategy.content.enabled:true",
+					"spring.web.resources.chain.strategy.content.paths:/**,/*.png",
+					"spring.web.resources.chain.strategy.fixed.enabled:true",
+					"spring.web.resources.chain.strategy.fixed.version:test",
+					"spring.web.resources.chain.strategy.fixed.paths:/**/*.js",
+					"spring.web.resources.chain.compressed:true")
 			.run((context) -> {
 				assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 				assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);
