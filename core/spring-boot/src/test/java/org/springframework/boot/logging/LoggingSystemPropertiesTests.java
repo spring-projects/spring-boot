@@ -8,10 +8,12 @@ import java.io.Console;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import static org.mockito.Mockito.spy;
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
+ * @author Van Vo
  */
 class LoggingSystemPropertiesTests {
 
@@ -56,6 +59,68 @@ class LoggingSystemPropertiesTests {
 	void pidIsSet() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.PID)).isNotNull();
+	}
+
+	@Test
+	void systemPropertyTransferCanBeDisabled() {
+		MockEnvironment environment = new MockEnvironment().withProperty("logging.system-properties.enabled", "false")
+			.withProperty("spring.application.name", "test")
+			.withProperty("logging.pattern.console", "console pattern")
+			.withProperty("logging.file.name", "application.log")
+			.withProperty("logging.file.path", "logs");
+		new LoggingSystemProperties(environment).apply(LogFile.get(environment));
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			assertThat(getSystemProperty(property)).as(property.name()).isNull();
+		}
+		assertThat(System.getProperty("LOGGED_APPLICATION_NAME")).isNull();
+	}
+
+	@Test
+	void customSetterStillReceivesLogFilePropertiesWhenSystemTransferIsDisabled() {
+		MockEnvironment environment = new MockEnvironment().withProperty("logging.system-properties.enabled", "false")
+			.withProperty("logging.pattern.console", "console pattern")
+			.withProperty("logging.file.name", "application.log")
+			.withProperty("logging.file.path", "logs");
+		Map<String, @Nullable String> properties = new HashMap<>();
+		new LoggingSystemProperties(environment, properties::put).apply(LogFile.get(environment));
+		assertThat(properties)
+			.containsEntry(LoggingSystemProperty.CONSOLE_PATTERN.getEnvironmentVariableName(), "console pattern")
+			.containsEntry(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName(), "application.log")
+			.containsEntry(LoggingSystemProperty.LOG_PATH.getEnvironmentVariableName(), "logs");
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			assertThat(getSystemProperty(property)).as(property.name()).isNull();
+		}
+	}
+
+	@Test
+	void systemPropertyTransferCanBeExplicitlyEnabled() {
+		MockEnvironment environment = new MockEnvironment().withProperty("logging.system-properties.enabled", "true")
+			.withProperty("logging.pattern.console", "console pattern");
+		new LoggingSystemProperties(environment).apply();
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).isEqualTo("console pattern");
+		assertThat(getSystemProperty(LoggingSystemProperty.PID)).isNotNull();
+	}
+
+	@Test
+	void disabledSystemPropertyTransferPreservesExistingValues() {
+		String name = LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName();
+		System.setProperty(name, "existing.log");
+		MockEnvironment environment = new MockEnvironment().withProperty("logging.system-properties.enabled", "false")
+			.withProperty("logging.file.name", "replacement.log");
+		new LoggingSystemProperties(environment).apply(LogFile.get(environment));
+		assertThat(System.getProperty(name)).isEqualTo("existing.log");
+	}
+
+	@Test
+	void systemPropertyTransferSettingIsReadForEachApply() {
+		MockEnvironment environment = new MockEnvironment().withProperty("logging.system-properties.enabled", "false")
+			.withProperty("logging.pattern.console", "console pattern");
+		LoggingSystemProperties properties = new LoggingSystemProperties(environment);
+		properties.apply();
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).isNull();
+		environment.setProperty("logging.system-properties.enabled", "true");
+		properties.apply();
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).isEqualTo("console pattern");
 	}
 
 	@Test

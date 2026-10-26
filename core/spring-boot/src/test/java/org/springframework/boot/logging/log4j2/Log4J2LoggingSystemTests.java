@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,7 @@ import static org.mockito.Mockito.times;
  * @author Piotr P. Karwasz
  * @author Stephane Nicoll
  * @author Dhruv Rastogi
+ * @author Van Vo
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -134,6 +136,35 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
+	}
+
+	@Test
+	@WithResource(name = "without-system-properties.xml", content = """
+			<Configuration status="WARN">
+			    <Appenders>
+			        <Console name="CONSOLE" follow="true">
+			            <PatternLayout pattern="%msg%n"/>
+			        </Console>
+			    </Appenders>
+			    <Loggers>
+			        <Root level="INFO"><AppenderRef ref="CONSOLE"/></Root>
+			    </Loggers>
+			</Configuration>
+			""")
+	void customConfigurationWorksWithoutSystemPropertyTransfer(CapturedOutput output) {
+		this.environment.setProperty("logging.system-properties.enabled", "false");
+		this.environment.setProperty("logging.pattern.console", "not transferred");
+		Map<String, @Nullable String> previous = new HashMap<>();
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			previous.put(name, System.getProperty(name));
+		}
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, "classpath:without-system-properties.xml", null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		this.logger.debug("Log4j2 is still active");
+		assertThat(output).contains("Log4j2 is still active");
+		previous.forEach((name, value) -> assertThat(System.getProperty(name)).as(name).isEqualTo(value));
 	}
 
 	@Test

@@ -78,6 +78,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Van Vo
  * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
  */
@@ -281,7 +282,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		getLoggingSystemProperties(environment).apply();
 		this.logFile = LogFile.get(environment);
-		if (this.logFile != null) {
+		if (this.logFile != null && environment.getProperty(LoggingSystemProperties.SYSTEM_PROPERTIES_ENABLED_PROPERTY,
+				Boolean.class, true)) {
 			this.logFile.applyToSystemProperties();
 		}
 		this.loggerGroups = new LoggerGroups(DEFAULT_GROUP_LOGGERS);

@@ -88,6 +88,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Fahim Farook
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
+ * @author Van Vo
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("log4j*.jar")
@@ -130,12 +131,19 @@ class LoggingApplicationListenerTests {
 
 	@AfterEach
 	void clear() {
-		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
+		LoggingSystem loggingSystem = (LoggingSystem) ReflectionTestUtils.getField(this.listener, "loggingSystem");
+		if (loggingSystem == null) {
+			loggingSystem = LoggingSystem.get(getClass().getClassLoader());
+		}
 		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
 		loggingSystem.cleanUp();
 		if (loggingSystem.getShutdownHandler() != null) {
 			loggingSystem.getShutdownHandler().run();
 		}
+		this.loggerContext.reset();
+		// Refresh the snapshot used by %property after resetting context-local
+		// properties.
+		this.loggerContext.putProperty(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName(), null);
 		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
@@ -494,6 +502,42 @@ class LoggingApplicationListenerTests {
 		assertThat(getSystemProperty(LoggingSystemProperty.LEVEL_PATTERN)).isEqualTo("level");
 		assertThat(getSystemProperty(LoggingSystemProperty.LOG_PATH)).isEqualTo("path");
 		assertThat(getSystemProperty(LoggingSystemProperty.PID)).isNotNull();
+	}
+
+	@Test
+	void systemPropertyTransferCanBeDisabledWithoutDisablingLogging() {
+		Map<String, String> previous = new HashMap<>();
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			String value = System.getProperty(name);
+			if (value != null) {
+				previous.put(name, value);
+			}
+		}
+		addPropertiesToEnvironment(this.context, "logging.system-properties.enabled=false",
+				"logging.file.name=" + this.logFile, "logging.file.path=" + this.tempDir,
+				"logging.pattern.console=%msg%n", "logging.level." + getClass().getName() + "=DEBUG");
+		this.listener.initialize(this.context.getEnvironment(), getClassLoader());
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			assertThat(System.getProperty(name)).as(name).isEqualTo(previous.get(name));
+		}
+		assertThat(this.logger.getLevel()).isEqualTo(Level.DEBUG);
+		this.logger.info("Logging is still active");
+		assertThat(this.output).contains("Logging is still active");
+	}
+
+	@Test
+	@WithNonDefaultXmlResource
+	void disabledSystemPropertyTransferKeepsCustomConfigurationAndLoggerGroups() {
+		addPropertiesToEnvironment(this.context, "logging.system-properties.enabled=false",
+				"logging.config=classpath:nondefault.xml", "logging.group.custom=example.one,example.two",
+				"logging.level.custom=TRACE");
+		this.listener.initialize(this.context.getEnvironment(), getClassLoader());
+		assertTraceEnabled("example.one", true);
+		assertTraceEnabled("example.two", true);
+		this.logger.info("Custom configuration is still active");
+		assertThat(this.output).contains("Custom configuration is still active").endsWith("BOOTBOOT");
 	}
 
 	@Test

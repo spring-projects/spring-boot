@@ -485,6 +485,12 @@ See the default configurations in `spring-boot.jar` for examples:
 * {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
 * {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
 
+To disable this transfer, set configprop:logging.system-properties.enabled[] to `false`.
+This can be useful when multiple applications share a JVM.
+When transfer is disabled, provide a logging configuration that does not rely on Spring Boot's mapped System properties.
+Logger levels, logger groups, and the logging lifecycle continue to be configured.
+Properties applied through a custom setter, such as those scoped to a Logback context, are still applied.
+
 [TIP]
 ====
 If you want to use a placeholder in a logging property, you should use xref:features/external-config.adoc#features.external-config.files.property-placeholders[Spring Boot's syntax] and not the syntax of the underlying framework.

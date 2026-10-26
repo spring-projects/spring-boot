@@ -96,6 +96,7 @@ import static org.mockito.Mockito.times;
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Dhruv Rastogi
+ * @author Van Vo
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
@@ -397,6 +398,25 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world")).contains("INFO");
 		assertThat(getLineWithText(file, "Hello world")).doesNotContain("INFO");
+	}
+
+	@Test
+	void defaultFileLoggingWorksWithoutSystemPropertyTransfer() {
+		this.environment.setProperty("logging.system-properties.enabled", "false");
+		this.environment.setProperty("logging.pattern.file", "%msg%n");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "1KB");
+		String systemLogFile = LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName();
+		System.setProperty(systemLogFile, "existing.log");
+		File file = new File(tmpDir(), "scoped.log");
+		LogFile logFile = getLogFile(file.getPath(), null, false);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Scoped file logging");
+		assertThat(contentOf(file)).contains("Scoped file logging").doesNotContain("INFO");
+		assertThat(getRollingPolicy().getFileNamePattern()).isEqualTo(file.getPath() + ".%d{yyyy-MM-dd}.%i.gz");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")).hasToString("1 KB");
+		assertThat(System.getProperty(systemLogFile)).isEqualTo("existing.log");
+		assertThat(System.getProperty(LoggingSystemProperty.PID.getEnvironmentVariableName())).isNull();
+		assertThat(System.getProperty(LoggingSystemProperty.FILE_PATTERN.getEnvironmentVariableName())).isNull();
 	}
 
 	@Test

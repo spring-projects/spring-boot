@@ -7,14 +7,19 @@ package org.springframework.boot.logging.logback;
 import java.io.Console;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import ch.qos.logback.classic.LoggerContext;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -29,6 +34,7 @@ import static org.mockito.Mockito.spy;
  * Tests for {@link LogbackLoggingSystemProperties}.
  *
  * @author Phillip Webb
+ * @author Van Vo
  */
 class LogbackLoggingSystemPropertiesTests {
 
@@ -75,6 +81,53 @@ class LogbackLoggingSystemPropertiesTests {
 			.containsEntry(RollingPolicySystemProperty.MAX_FILE_SIZE.getEnvironmentVariableName(), "1024")
 			.containsEntry(RollingPolicySystemProperty.TOTAL_SIZE_CAP.getEnvironmentVariableName(), "2048")
 			.containsEntry(RollingPolicySystemProperty.MAX_HISTORY.getEnvironmentVariableName(), "mh");
+	}
+
+	@Test
+	void disabledTransferKeepsPropertiesLocalToEachLoggerContext() {
+		Map<String, @Nullable String> previous = new HashMap<>();
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			previous.put(name, System.getProperty(name));
+		}
+		for (RollingPolicySystemProperty property : RollingPolicySystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			previous.put(name, System.getProperty(name));
+		}
+		previous.put("LOGGED_APPLICATION_NAME", System.getProperty("LOGGED_APPLICATION_NAME"));
+		previous.put("org.jboss.logging.provider", System.getProperty("org.jboss.logging.provider"));
+		LoggerContext first = new LoggerContext();
+		LoggerContext second = new LoggerContext();
+		try {
+			this.environment.setProperty("logging.system-properties.enabled", "false");
+			this.environment.setProperty("spring.application.name", "first");
+			this.environment.setProperty("logging.file.name", "first.log");
+			this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "1KB");
+			new LogbackLoggingSystemProperties(this.environment, first::putProperty)
+				.apply(LogFile.get(this.environment));
+			this.environment.setProperty("spring.application.name", "second");
+			this.environment.setProperty("logging.file.name", "second.log");
+			this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "2KB");
+			new LogbackLoggingSystemProperties(this.environment, second::putProperty)
+				.apply(LogFile.get(this.environment));
+			assertThat(first.getProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName()))
+				.isEqualTo("first");
+			assertThat(first.getProperty(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName()))
+				.isEqualTo("first.log");
+			assertThat(first.getProperty(RollingPolicySystemProperty.MAX_FILE_SIZE.getEnvironmentVariableName()))
+				.isEqualTo("1024");
+			assertThat(second.getProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName()))
+				.isEqualTo("second");
+			assertThat(second.getProperty(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName()))
+				.isEqualTo("second.log");
+			assertThat(second.getProperty(RollingPolicySystemProperty.MAX_FILE_SIZE.getEnvironmentVariableName()))
+				.isEqualTo("2048");
+			previous.forEach((name, value) -> assertThat(System.getProperty(name)).as(name).isEqualTo(value));
+		}
+		finally {
+			first.stop();
+			second.stop();
+		}
 	}
 
 	@Test

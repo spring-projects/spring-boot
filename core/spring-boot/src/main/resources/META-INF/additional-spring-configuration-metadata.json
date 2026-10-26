@@ -379,6 +379,13 @@
       "description": "Root ordering (root first or root last)."
     },
     {
+      "name": "logging.system-properties.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to transfer logging configuration to JVM system properties. Custom property setters remain active.",
+      "sourceType": "org.springframework.boot.logging.LoggingSystemProperties",
+      "defaultValue": true
+    },
+    {
       "name": "logging.threshold.console",
       "type": "java.lang.String",
       "description": "Log level threshold for console output.",

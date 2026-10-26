@@ -4,9 +4,12 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Log4j2LoggingSystemProperties}.
  *
  * @author hojooo
+ * @author Van Vo
  */
 class Log4j2LoggingSystemPropertiesTests {
 
@@ -74,6 +78,24 @@ class Log4j2LoggingSystemPropertiesTests {
 		new Log4j2LoggingSystemProperties(this.environment).apply(null);
 		assertThat(System.getProperties().keySet())
 			.noneMatch((key) -> ((String) key).startsWith("LOG4J2_ROLLINGPOLICY"));
+	}
+
+	@Test
+	void disabledTransferDoesNotApplyLog4j2RollingPolicyProperties() {
+		Map<String, @Nullable String> previous = new HashMap<>();
+		for (RollingPolicySystemProperty property : RollingPolicySystemProperty.values()) {
+			String name = property.getEnvironmentVariableName();
+			previous.put(name, System.getProperty(name));
+		}
+		this.environment.setProperty("logging.system-properties.enabled", "false");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
+		this.environment.setProperty("logging.file.name", "application.log");
+		new Log4j2LoggingSystemProperties(this.environment).apply(LogFile.get(this.environment));
+		previous.forEach((name, value) -> assertThat(System.getProperty(name)).as(name).isEqualTo(value));
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			assertThat(System.getProperty(property.getEnvironmentVariableName())).as(property.name()).isNull();
+		}
 	}
 
 	@Test

@@ -7,6 +7,7 @@ package org.springframework.boot.logging;
 import java.io.Console;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -22,6 +23,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utility to set system properties that can later be used by log configuration files.
+ * Custom setters continue to receive properties when JVM system property transfer is
+ * disabled.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -30,10 +33,18 @@ import org.springframework.util.StringUtils;
  * @author Robert Thornton
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
+ * @author Van Vo
  * @since 2.0.0
  * @see LoggingSystemProperty
  */
 public class LoggingSystemProperties {
+
+	/**
+	 * Property controlling whether logging configuration is applied to JVM system
+	 * properties.
+	 * @since 4.2.0
+	 */
+	public static final String SYSTEM_PROPERTIES_ENABLED_PROPERTY = "logging.system-properties.enabled";
 
 	private static final BiConsumer<String, @Nullable String> systemPropertySetter = (name, value) -> {
 		if (System.getProperty(name) == null && value != null) {
@@ -46,6 +57,8 @@ public class LoggingSystemProperties {
 	private final Function<@Nullable String, @Nullable String> defaultValueResolver;
 
 	private final BiConsumer<String, @Nullable String> setter;
+
+	private final boolean usesSystemProperties;
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
@@ -81,6 +94,7 @@ public class LoggingSystemProperties {
 		this.environment = environment;
 		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
 		this.setter = (setter != null) ? setter : systemPropertySetter;
+		this.usesSystemProperties = setter == null;
 	}
 
 	/**
@@ -97,8 +111,15 @@ public class LoggingSystemProperties {
 	}
 
 	public final void apply(@Nullable LogFile logFile) {
+		if (this.usesSystemProperties && !isSystemPropertyTransferEnabled()) {
+			return;
+		}
 		PropertyResolver resolver = getPropertyResolver();
 		apply(logFile, resolver);
+	}
+
+	private boolean isSystemPropertyTransferEnabled() {
+		return this.environment.getProperty(SYSTEM_PROPERTIES_ENABLED_PROPERTY, Boolean.class, true);
 	}
 
 	private PropertyResolver getPropertyResolver() {
@@ -129,7 +150,15 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
 		if (logFile != null) {
-			logFile.applyToSystemProperties();
+			if (isSystemPropertyTransferEnabled()) {
+				logFile.applyToSystemProperties();
+			}
+			else {
+				Properties properties = new Properties();
+				logFile.applyTo(properties);
+				properties.stringPropertyNames()
+					.forEach((name) -> setSystemProperty(name, properties.getProperty(name)));
+			}
 		}
 		if (!this.environment.getProperty("logging.console.enabled", Boolean.class, true)) {
 			setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName(), "OFF");
