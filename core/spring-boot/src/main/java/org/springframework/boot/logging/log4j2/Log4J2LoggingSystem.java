@@ -399,8 +399,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		LoggerConfig loggerConfig = getAllLoggers().get(loggerName);
-		return (loggerConfig != null) ? convertLoggerConfig(loggerName, loggerConfig) : null;
+		String name = asLog4j2LoggerName(loggerName);
+		LoggerConfig loggerConfig = getAllLoggers().get(name);
+		return (loggerConfig != null) ? convertLoggerConfig(name, loggerConfig) : null;
 	}
 
 	private Map<String, LoggerConfig> getAllLoggers() {
@@ -433,12 +434,17 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return null;
 		}
 		LevelConfiguration effectiveLevelConfiguration = getLevelConfiguration(loggerConfig.getLevel());
-		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
-			name = ROOT_LOGGER_NAME;
-		}
 		boolean isAssigned = loggerConfig.getName().equals(name);
 		LevelConfiguration assignedLevelConfiguration = (!isAssigned) ? null : effectiveLevelConfiguration;
-		return new LoggerConfiguration(name, assignedLevelConfiguration, effectiveLevelConfiguration);
+		return new LoggerConfiguration(asLoggingSystemLoggerName(name), assignedLevelConfiguration,
+				effectiveLevelConfiguration);
+	}
+
+	private String asLoggingSystemLoggerName(String log4j2LoggerName) {
+		if (!StringUtils.hasLength(log4j2LoggerName) || LogManager.ROOT_LOGGER_NAME.equals(log4j2LoggerName)) {
+			return ROOT_LOGGER_NAME;
+		}
+		return log4j2LoggerName;
 	}
 
 	private LevelConfiguration getLevelConfiguration(Level level) {
@@ -471,10 +477,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private @Nullable LoggerConfig getLogger(@Nullable String name) {
-		if (!StringUtils.hasLength(name) || ROOT_LOGGER_NAME.equals(name)) {
-			return findLogger(LogManager.ROOT_LOGGER_NAME);
+		return findLogger(asLog4j2LoggerName(name));
+	}
+
+	private String asLog4j2LoggerName(@Nullable String loggingSystemLoggerName) {
+		if (!StringUtils.hasLength(loggingSystemLoggerName) || ROOT_LOGGER_NAME.equals(loggingSystemLoggerName)) {
+			return LogManager.ROOT_LOGGER_NAME;
 		}
-		return findLogger(name);
+		return loggingSystemLoggerName;
 	}
 
 	private @Nullable LoggerConfig findLogger(String name) {
