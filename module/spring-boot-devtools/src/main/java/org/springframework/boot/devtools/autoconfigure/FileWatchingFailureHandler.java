@@ -41,6 +41,9 @@ class FileWatchingFailureHandler implements FailureHandler {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
+		finally {
+			watcher.stop();
+		}
 		return Outcome.RETRY;
 	}
 
