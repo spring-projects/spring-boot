@@ -33,43 +33,6 @@ class AmqpRabbitPropertiesTests {
 	}
 
 	@Test
-	void determinePortDefaultsTo5672() {
-		assertThat(this.properties.determinePort()).isEqualTo(5672);
-	}
-
-	@Test
-	void determinePortDefaultsTo5671WhenSslBundleIsSet() {
-		this.properties.getSsl().setBundle("test-bundle");
-		assertThat(this.properties.determinePort()).isEqualTo(5671);
-	}
-
-	@Test
-	void determinePortReturnsCustomPortWhenSslBundleIsSet() {
-		this.properties.getSsl().setBundle("test-bundle");
-		this.properties.setPort(1234);
-		assertThat(this.properties.determinePort()).isEqualTo(1234);
-	}
-
-	@Test
-	void determinePortReturnsPortFromAddressWhenSslBundleIsSet() {
-		this.properties.getSsl().setBundle("test-bundle");
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determinePort()).isEqualTo(1234);
-	}
-
-	@Test
-	void determinePortReturnsPortFromAddress() {
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determinePort()).isEqualTo(1234);
-	}
-
-	@Test
-	void determinePortDefaultsWhenAddressHasNoPort() {
-		this.properties.setAddress("rabbit.example.com");
-		assertThat(this.properties.determinePort()).isEqualTo(5672);
-	}
-
-	@Test
 	void customVirtualHost() {
 		this.properties.setVirtualHost("alpha");
 		assertThat(this.properties.getVirtualHost()).isEqualTo("alpha");
@@ -106,115 +69,9 @@ class AmqpRabbitPropertiesTests {
 	}
 
 	@Test
-	void determineAddressUsesHostAndPortDefaults() {
-		assertThat(this.properties.determineAddress()).isEqualTo("localhost:5672");
-	}
-
-	@Test
-	void determineAddressUsesSecurePortDefaultWhenSslBundleIsSet() {
-		this.properties.getSsl().setBundle("test-bundle");
-		assertThat(this.properties.determineAddress()).isEqualTo("localhost:5671");
-	}
-
-	@Test
-	void determineAddressUsesHostAndPortProperties() {
-		this.properties.setHost("rabbit.example.com");
-		this.properties.setPort(1234);
-		assertThat(this.properties.determineAddress()).isEqualTo("rabbit.example.com:1234");
-	}
-
-	@Test
-	void determineAddressUsesAddressProperty() {
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determineAddress()).isEqualTo("rabbit.example.com:1234");
-	}
-
-	@Test
-	void determineAddressFromAmqpUrl() {
-		this.properties.setAddress("amqp://user:secret@rabbit.example.com:1234/alpha");
-		assertThat(this.properties.determineAddress()).isEqualTo("rabbit.example.com:1234");
-		assertThat(this.properties.determineUsername()).isEqualTo("user");
-		assertThat(this.properties.determinePassword()).isEqualTo("secret");
-		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
-	}
-
-	@Test
-	void determineAddressFromAmqpsUrl() {
-		this.properties.setAddress("amqps://user:secret@rabbit.example.com:1234");
-		assertThat(this.properties.determineAddress()).isEqualTo("rabbit.example.com:1234");
-	}
-
-	@Test
-	void determineUsernameFromAddress() {
-		this.properties.setAddress("user:secret@rabbit.example.com:1234");
-		assertThat(this.properties.determineUsername()).isEqualTo("user");
-	}
-
-	@Test
-	void determineUsernameReturnsPropertyWhenAddressHasNoUsername() {
-		this.properties.setUsername("alice");
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determineUsername()).isEqualTo("alice");
-	}
-
-	@Test
-	void determineUsernameWithoutPassword() {
-		this.properties.setAddress("user@rabbit.example.com:1234");
-		assertThat(this.properties.determineUsername()).isEqualTo("user");
-		assertThat(this.properties.determinePassword()).isEqualTo("guest");
-	}
-
-	@Test
-	void determinePasswordFromAddress() {
-		this.properties.setAddress("user:secret@rabbit.example.com:1234");
-		assertThat(this.properties.determinePassword()).isEqualTo("secret");
-	}
-
-	@Test
-	void determinePasswordReturnsPropertyWhenAddressHasNoPassword() {
-		this.properties.setPassword("12345678");
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determinePassword()).isEqualTo("12345678");
-	}
-
-	@Test
-	void determineVirtualHostFromAddress() {
-		this.properties.setAddress("rabbit.example.com:1234/alpha");
-		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
-	}
-
-	@Test
-	void determineVirtualHostReturnsPropertyWhenAddressHasNoVirtualHost() {
-		this.properties.setVirtualHost("alpha");
-		this.properties.setAddress("rabbit.example.com:1234");
-		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
-	}
-
-	@Test
-	void determineVirtualHostIsSlashWhenAddressHasTrailingSlash() {
-		this.properties.setAddress("amqp://root:password@otherhost:1111/");
-		assertThat(this.properties.determineVirtualHost()).isEqualTo("/");
-	}
-
-	@Test
-	void ipv6Address() {
-		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
-		assertThat(this.properties.determineAddress()).isEqualTo("[aaaa:bbbb:cccc::d]:1234");
-		assertThat(this.properties.determinePort()).isEqualTo(1234);
-	}
-
-	@Test
-	void ipv6AddressDefaultPort() {
-		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
-		assertThat(this.properties.determineAddress()).isEqualTo("[aaaa:bbbb:cccc::d]:5672");
-		assertThat(this.properties.determinePort()).isEqualTo(5672);
-	}
-
-	@Test
-	void hostPropertyMustBeSingleHost() {
-		this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net");
+	void setHostWhenPropertyContainsMultipleHostsThrowsException() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
-			.isThrownBy(this.properties::determineAddress)
+			.isThrownBy(() -> this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net"))
 			.withMessageContaining("spring.amqp.rabbitmq.host");
 	}
 
