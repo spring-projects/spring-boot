@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -219,7 +220,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldUseSslSocketFactoryWhenSslBundleConfiguredWithLdapsUrl() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test")
@@ -236,7 +237,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldUseSslSocketFactoryWhenSslBundleConfiguredAndReadOnlyOperationsAreAuthenticated() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner
@@ -253,7 +254,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldUseSslSocketFactoryWhenSslBundleConfiguredWithUppercaseLdapsUrl() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner.withPropertyValues("spring.ldap.urls=LDAPS://localhost:636", "spring.ldap.ssl.bundle=test")
@@ -264,7 +265,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldKeepCustomBaseEnvironmentWhenSslBundleConfigured() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner
@@ -278,7 +279,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldFailWhenSslBundleConfiguredWithoutLdapsUrl() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner.withPropertyValues("spring.ldap.urls=ldap://localhost:389", "spring.ldap.ssl.bundle=test")
@@ -302,8 +303,20 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldFailWhenSslBundleWithOptionsConfigured() {
+		SslBundle sslBundle = SslBundle.of(null, null, SslOptions.of(null, new String[] { "TLSv1.3" }));
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test")).willReturn(sslBundle);
+		this.contextRunner.withPropertyValues("spring.ldap.urls=ldaps://localhost:636", "spring.ldap.ssl.bundle=test")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(IllegalStateException.class)
+				.hasRootCauseMessage("SSL options cannot be specified with LDAP"));
+	}
+
+	@Test
 	void shouldFailWhenSslBundleConfiguredWithMixedSchemeUrls() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner
@@ -317,7 +330,7 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void shouldFailWhenSslBundleConfiguredAndSocketFactorySetInBaseEnvironment() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(null);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test")).willReturn(sslBundle);
 		this.contextRunner
@@ -425,7 +438,7 @@ class LdapAutoConfigurationTests {
 
 				@Override
 				public SslBundle getSslBundle() {
-					return mock(SslBundle.class);
+					return SslBundle.of(null);
 				}
 			};
 		}

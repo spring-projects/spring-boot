@@ -107,6 +107,7 @@ public final class LdapAutoConfiguration {
 						() -> "SSL bundle has been configured but '" + SOCKET_FACTORY_ENV_KEY
 								+ "' has also been set in the base environment. Use either an SSL bundle or your own socket factory, not both");
 			}
+			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with LDAP");
 			LdapSslSocketFactory.setSslBundle(sslBundle);
 			baseEnvironment.put(SOCKET_FACTORY_ENV_KEY, LdapSslSocketFactory.class.getName());
 		}

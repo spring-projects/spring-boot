@@ -387,6 +387,16 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldFailWhenSslBundleWithOptionsIsConfigured() {
+		this.contextRunner
+			.withPropertyValues(sslBundleProperties("spring.ldap.embedded.ssl.bundle:test",
+					"spring.ssl.bundle.jks.test.options.enabled-protocols=TLSv1.3"))
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(IllegalStateException.class)
+				.hasRootCauseMessage("SSL options cannot be specified with embedded LDAP"));
+	}
+
+	@Test
 	void shouldFailWhenSslIsEnabledWithoutAnSslBundle() {
 		this.contextRunner
 			.withPropertyValues("spring.ldap.embedded.port:0", "spring.ldap.embedded.base-dn:dc=spring,dc=org",

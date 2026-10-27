@@ -175,6 +175,8 @@ final class OtlpLoggingConfigurations {
 				SslContextConfigurer sslContextConfigurer) {
 			SslBundle sslBundle = connectionDetails.getSslBundle();
 			if (sslBundle != null) {
+				Assert.state(!sslBundle.getOptions().isSpecified(),
+						"SSL options cannot be specified with OTLP logging");
 				SSLContext sslContext = sslBundle.createSslContext();
 				X509TrustManager trustManager = extractTrustManager(sslBundle);
 				sslContextConfigurer.configure(sslContext, trustManager);
