@@ -77,23 +77,23 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test // gh-24321
-	void transactionManagerWithDaoExceptionTranslationDisabled() {
+	void transactionManagerWithPersistenceExceptionTranslationDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-			.withPropertyValues("spring.dao.exceptiontranslation.enabled=false")
+			.withPropertyValues("spring.persistence.exceptiontranslation.enabled=false")
 			.run((context) -> assertThat(context.getBean(TransactionManager.class))
 				.isExactlyInstanceOf(DataSourceTransactionManager.class));
 	}
 
 	@Test // gh-24321
-	void transactionManagerWithDaoExceptionTranslationEnabled() {
+	void transactionManagerWithPersistenceExceptionTranslationEnabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-			.withPropertyValues("spring.dao.exceptiontranslation.enabled=true")
+			.withPropertyValues("spring.persistence.exceptiontranslation.enabled=true")
 			.run((context) -> assertThat(context.getBean(TransactionManager.class))
 				.isExactlyInstanceOf(JdbcTransactionManager.class));
 	}
 
 	@Test // gh-24321
-	void transactionManagerWithDaoExceptionTranslationDefault() {
+	void transactionManagerWithPersistenceExceptionTranslationDefault() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.run((context) -> assertThat(context.getBean(TransactionManager.class))
 				.isExactlyInstanceOf(JdbcTransactionManager.class));
