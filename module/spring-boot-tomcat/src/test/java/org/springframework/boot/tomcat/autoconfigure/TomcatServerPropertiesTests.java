@@ -130,6 +130,12 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeTomcatMaxLocaleCount() {
+		bind("server.tomcat.max-locale-count", "20");
+		assertThat(this.properties.getMaxLocaleCount()).isEqualTo(20);
+	}
+
+	@Test
 	void testCustomizeTomcatMinSpareThreads() {
 		bind("server.tomcat.threads.min-spare", "10");
 		assertThat(this.properties.getThreads().getMinSpare()).isEqualTo(10);
@@ -163,6 +169,11 @@ class TomcatServerPropertiesTests {
 	@Test
 	void tomcatMaxParameterCountMatchesConnectorDefault() {
 		assertThat(this.properties.getMaxParameterCount()).isEqualTo(getDefaultConnector().getMaxParameterCount());
+	}
+
+	@Test
+	void tomcatMaxLocaleCountMatchesConnectorDefault() {
+		assertThat(this.properties.getMaxLocaleCount()).isEqualTo(getDefaultConnector().getMaxLocaleCount());
 	}
 
 	@Test
