@@ -120,6 +120,25 @@ class PropertiesRedisConnectionDetailsTests {
 	}
 
 	@Test
+	void standaloneIsConfiguredFromUrlWithoutPort() {
+		this.properties.setUrl("redis://example.com");
+		DataRedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
+		assertThat(standalone.getHost()).isEqualTo("example.com");
+		assertThat(standalone.getPort()).isEqualTo(6379);
+		assertThat(standalone.getDatabase()).isEqualTo(0);
+	}
+
+	@Test
+	void standaloneIsConfiguredFromSecureUrl() {
+		this.properties.setUrl("rediss://example.com");
+		DataRedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
+		assertThat(standalone.getHost()).isEqualTo("example.com");
+		assertThat(standalone.getPort()).isEqualTo(6379);
+		assertThat(standalone.getDatabase()).isEqualTo(0);
+		assertThat(this.connectionDetails.getSslBundle()).isNotNull();
+	}
+
+	@Test
 	void standaloneIsConfiguredFromProperties() {
 		this.properties.setHost("example.com");
 		this.properties.setPort(1234);
@@ -142,6 +161,17 @@ class PropertiesRedisConnectionDetailsTests {
 	}
 
 	@Test
+	void clusterIsConfiguredWithDefaultPorts() {
+		DataRedisProperties.Cluster cluster = new DataRedisProperties.Cluster();
+		cluster.setNodes(List.of("localhost", "127.0.0.1", "[::1]"));
+		this.properties.setCluster(cluster);
+		Cluster actualCluster = this.connectionDetails.getCluster();
+		assertThat(actualCluster).isNotNull();
+		assertThat(actualCluster.getNodes()).containsExactly(new Node("localhost", 6379), new Node("127.0.0.1", 6379),
+				new Node("[::1]", 6379));
+	}
+
+	@Test
 	void masterReplicaIsConfigured() {
 		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
 		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
@@ -152,6 +182,17 @@ class PropertiesRedisConnectionDetailsTests {
 		assertThat(actualMasterReplica.getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 		assertThat(actualMasterReplica.getDatabase()).isEqualTo(5);
+	}
+
+	@Test
+	void masterReplicaIsConfiguredWithDefaultPorts() {
+		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
+		masterReplica.setNodes(List.of("localhost", "127.0.0.1", "[::1]"));
+		this.properties.setMasterreplica(masterReplica);
+		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
+		assertThat(actualMasterReplica).isNotNull();
+		assertThat(actualMasterReplica.getNodes()).containsExactly(new Node("localhost", 6379),
+				new Node("127.0.0.1", 6379), new Node("[::1]", 6379));
 	}
 
 	@Test
@@ -179,6 +220,17 @@ class PropertiesRedisConnectionDetailsTests {
 		assertThat(actualSentinel.getNodes()).containsExactly(new Node("localhost", 1111), new Node("127.0.0.1", 2222),
 				new Node("[::1]", 3333));
 		assertThat(actualSentinel.getDatabase()).isEqualTo(5);
+	}
+
+	@Test
+	void sentinelIsConfiguredWithDefaultPorts() {
+		DataRedisProperties.Sentinel sentinel = new DataRedisProperties.Sentinel();
+		sentinel.setNodes(List.of("localhost", "127.0.0.1", "[::1]"));
+		this.properties.setSentinel(sentinel);
+		Sentinel actualSentinel = this.connectionDetails.getSentinel();
+		assertThat(actualSentinel).isNotNull();
+		assertThat(actualSentinel.getNodes()).containsExactly(new Node("localhost", 26379),
+				new Node("127.0.0.1", 26379), new Node("[::1]", 26379));
 	}
 
 	@Test

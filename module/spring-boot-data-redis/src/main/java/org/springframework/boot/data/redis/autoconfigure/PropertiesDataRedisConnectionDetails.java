@@ -11,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -49,7 +50,9 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 
 	@Override
 	public @Nullable SslBundle getSslBundle() {
-		if (!this.properties.getSsl().isEnabled()) {
+		DataRedisUrl redisUrl = getRedisUrl();
+		boolean urlUsesSsl = (redisUrl != null) && redisUrl.useSsl();
+		if (!this.properties.getSsl().isEnabled() && !urlUsesSsl) {
 			return null;
 		}
 		String bundleName = this.properties.getSsl().getBundle();
@@ -63,9 +66,14 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	@Override
 	public Standalone getStandalone() {
 		DataRedisUrl redisUrl = getRedisUrl();
-		return (redisUrl != null)
-				? Standalone.of(redisUrl.uri().getHost(), redisUrl.uri().getPort(), redisUrl.database())
-				: Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+		if (redisUrl != null) {
+			int port = redisUrl.uri().getPort();
+			return Standalone.of(redisUrl.uri().getHost(), (port != -1) ? port : RedisNode.DEFAULT_PORT,
+					redisUrl.database());
+		}
+		else {
+			return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+		}
 	}
 
 	@Override
@@ -91,17 +99,21 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 		return DataRedisUrl.of(this.properties.getUrl());
 	}
 
-	private static List<Node> asNodes(@Nullable List<String> nodes) {
+	private static List<Node> asNodes(@Nullable List<String> nodes, int defaultPort) {
 		if (nodes == null) {
 			return Collections.emptyList();
 		}
-		return nodes.stream().map(PropertiesDataRedisConnectionDetails::asNode).toList();
+		return nodes.stream().map((node) -> asNode(node, defaultPort)).toList();
 	}
 
-	private static Node asNode(String node) {
-		int portSeparatorIndex = node.lastIndexOf(':');
-		String host = node.substring(0, portSeparatorIndex);
-		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
+	private static Node asNode(String node, int defaultPort) {
+		int bracketIndex = node.lastIndexOf(']');
+		int colonIndex = node.lastIndexOf(':');
+		if (colonIndex == -1 || colonIndex < bracketIndex) {
+			return new Node(node, defaultPort);
+		}
+		String host = node.substring(0, colonIndex);
+		int port = Integer.parseInt(node.substring(colonIndex + 1));
 		return new Node(host, port);
 	}
 
@@ -113,7 +125,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 		private final List<Node> nodes;
 
 		PropertiesCluster(DataRedisProperties.Cluster properties) {
-			this.nodes = asNodes(properties.getNodes());
+			this.nodes = asNodes(properties.getNodes(), RedisNode.DEFAULT_PORT);
 		}
 
 		@Override
@@ -134,7 +146,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 
 		PropertiesMasterReplica(int database, DataRedisProperties.Masterreplica properties) {
 			this.database = database;
-			this.nodes = asNodes(properties.getNodes());
+			this.nodes = asNodes(properties.getNodes(), RedisNode.DEFAULT_PORT);
 		}
 
 		@Override
@@ -177,7 +189,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 
 		@Override
 		public List<Node> getNodes() {
-			return asNodes(this.properties.getNodes());
+			return asNodes(this.properties.getNodes(), RedisNode.DEFAULT_SENTINEL_PORT);
 		}
 
 		@Override
