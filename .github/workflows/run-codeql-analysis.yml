@@ -10,4 +10,4 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: spring-io/github-actions/.github/workflows/codeql-analysis.yml@035e701d99b48da41f409014e1bfd937425c4477
+    uses: spring-io/github-actions/.github/workflows/codeql-analysis.yml@5caba18f0b4141f3a32b1bc9f5f3f82169b0b6ac
