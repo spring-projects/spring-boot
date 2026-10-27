@@ -27,7 +27,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 	@Test
 	void getUsernameWhenNoRabbitMqDefaultUser() {
 		AmqpEnvironment environment = getAmqpEnvironment(Collections.emptyMap());
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 	@Test
 	void getPasswordWhenNoRabbitMqDefaultPass() {
 		AmqpEnvironment environment = getAmqpEnvironment(Collections.emptyMap());
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_USER", null);
 		AmqpEnvironment environment = getAmqpEnvironment(env);
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_PASS", null);
 		AmqpEnvironment environment = getAmqpEnvironment(env);
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test

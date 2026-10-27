@@ -32,10 +32,9 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactory extends AbstractAmqpDock
 		return new AmqpEnvironment(username, password);
 	}
 
-	private String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
+	private @Nullable String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
 		String value = env.get(key);
-		value = (value != null) ? value : env.get(fallbackKey);
-		return (value != null) ? value : "guest";
+		return (value != null) ? value : env.get(fallbackKey);
 	}
 
 }

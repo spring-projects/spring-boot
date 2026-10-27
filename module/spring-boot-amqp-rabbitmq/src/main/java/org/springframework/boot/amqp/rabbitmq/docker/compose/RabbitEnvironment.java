@@ -5,6 +5,7 @@
 package org.springframework.boot.amqp.rabbitmq.docker.compose;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -22,16 +23,14 @@ class RabbitEnvironment {
 	private final String virtualHost;
 
 	RabbitEnvironment(Map<String, @Nullable String> env) {
-		this.username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME", "guest");
-		this.password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD", "guest");
-		this.virtualHost = extract(env, "RABBITMQ_DEFAULT_VHOST", "RABBITMQ_VHOST", "/");
+		this.username = extract(env, "RABBITMQ_DEFAULT_USER", "RABBITMQ_USERNAME");
+		this.password = extract(env, "RABBITMQ_DEFAULT_PASS", "RABBITMQ_PASSWORD");
+		this.virtualHost = Objects.requireNonNullElse(extract(env, "RABBITMQ_DEFAULT_VHOST", "RABBITMQ_VHOST"), "/");
 	}
 
-	private static String extract(Map<String, @Nullable String> env, String key, String fallbackKey,
-			String defaultValue) {
+	private static @Nullable String extract(Map<String, @Nullable String> env, String key, String fallbackKey) {
 		String value = env.get(key);
-		value = (value != null) ? value : env.get(fallbackKey);
-		return (value != null) ? value : defaultValue;
+		return (value != null) ? value : env.get(fallbackKey);
 	}
 
 	@Nullable String getUsername() {

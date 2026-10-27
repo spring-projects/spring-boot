@@ -35,12 +35,12 @@ public class AmqpRabbitProperties {
 	/**
 	 * Login user to authenticate to the broker.
 	 */
-	private String username = "guest";
+	private @Nullable String username;
 
 	/**
 	 * Login to authenticate against the broker.
 	 */
-	private String password = "guest";
+	private @Nullable String password;
 
 	/**
 	 * Virtual host to use when connecting to the broker.
@@ -96,19 +96,19 @@ public class AmqpRabbitProperties {
 		this.address = address;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 

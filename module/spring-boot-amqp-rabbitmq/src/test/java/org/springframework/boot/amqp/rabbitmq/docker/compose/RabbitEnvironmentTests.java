@@ -26,7 +26,7 @@ class RabbitEnvironmentTests {
 	@Test
 	void getUsernameWhenNoRabbitmqDefaultUser() {
 		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class RabbitEnvironmentTests {
 	@Test
 	void getPasswordWhenNoRabbitmqDefaultPass() {
 		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class RabbitEnvironmentTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_USER", null);
 		RabbitEnvironment environment = new RabbitEnvironment(env);
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class RabbitEnvironmentTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_PASS", null);
 		RabbitEnvironment environment = new RabbitEnvironment(env);
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test

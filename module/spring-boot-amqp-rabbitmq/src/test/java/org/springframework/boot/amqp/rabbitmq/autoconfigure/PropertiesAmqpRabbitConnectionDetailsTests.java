@@ -76,8 +76,8 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	}
 
 	@Test
-	void getUsernameReturnsDefaultGuest() {
-		assertThat(this.details.getUsername()).isEqualTo("guest");
+	void getUsernameReturnsNullByDefault() {
+		assertThat(this.details.getUsername()).isNull();
 	}
 
 	@Test
@@ -93,8 +93,8 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	}
 
 	@Test
-	void getPasswordReturnsDefaultGuest() {
-		assertThat(this.details.getPassword()).isEqualTo("guest");
+	void getPasswordReturnsNullByDefault() {
+		assertThat(this.details.getPassword()).isNull();
 	}
 
 	@Test
@@ -237,7 +237,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 		this.properties.setAddress("rabbit.example.com:1234");
 		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
 		assertThat(this.details.getUsername()).isEqualTo("alice");
-		assertThat(this.details.getPassword()).isEqualTo("guest");
+		assertThat(this.details.getPassword()).isNull();
 		assertThat(this.details.getVirtualHost()).isNull();
 	}
 
@@ -246,7 +246,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 		this.properties.setAddress("user@rabbit.example.com:1234");
 		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
 		assertThat(this.details.getUsername()).isEqualTo("user");
-		assertThat(this.details.getPassword()).isEqualTo("guest");
+		assertThat(this.details.getPassword()).isNull();
 		assertThat(this.details.getVirtualHost()).isNull();
 	}
 
@@ -255,7 +255,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 		this.properties.setPassword("12345678");
 		this.properties.setAddress("rabbit.example.com:1234");
 		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
-		assertThat(this.details.getUsername()).isEqualTo("guest");
+		assertThat(this.details.getUsername()).isNull();
 		assertThat(this.details.getPassword()).isEqualTo("12345678");
 		assertThat(this.details.getVirtualHost()).isNull();
 	}

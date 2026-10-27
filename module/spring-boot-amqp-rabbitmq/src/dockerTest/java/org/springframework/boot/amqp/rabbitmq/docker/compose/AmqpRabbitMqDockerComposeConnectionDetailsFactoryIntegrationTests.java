@@ -50,6 +50,14 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThatConnectionCanBeMade(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "rabbitmq-no-credentials-compose.yaml", image = TestImage.RABBITMQ)
+	void runWithNoCredentialsCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUsername()).isNull();
+		assertThat(connectionDetails.getPassword()).isNull();
+		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
+		assertThatConnectionCanBeMade(connectionDetails);
+	}
+
 	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");

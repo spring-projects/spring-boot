@@ -27,4 +27,10 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(address.port()).isGreaterThan(0);
 	}
 
+	@DockerComposeTest(composeFile = "rabbitmq-no-credentials-compose.yaml", image = TestImage.RABBITMQ)
+	void runWithNoCredentialsCreatesConnectionDetails(AmqpConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUsername()).isNull();
+		assertThat(connectionDetails.getPassword()).isNull();
+	}
+
 }
