@@ -33,6 +33,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
 import org.springframework.batch.core.repository.dao.JacksonExecutionContextStringSerializer;
 import org.springframework.batch.core.step.Step;
+import org.springframework.batch.infrastructure.support.DatabaseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -84,7 +85,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link BatchJdbcAutoConfiguration}.
@@ -280,6 +283,28 @@ class BatchJdbcAutoConfigurationTests {
 					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
 				JobRepository jobRepository = context.getBean(JobRepository.class);
 				assertThat(jobRepository.findRunningJobExecutions("test")).isEmpty();
+				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
+			});
+	}
+
+	@Test
+	void jobRepositoryDoesNotConnectToTheDatabaseWhenDatabaseTypeIsSet() {
+		DataSource dataSource = mock(DataSource.class);
+		this.contextRunner.withBean(DataSource.class, () -> dataSource)
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never", "spring.batch.jdbc.database-type=postgres")
+			.run((context) -> {
+				assertThat(context).hasNotFailed().hasSingleBean(JobRepository.class);
+				then(dataSource).should(never()).getConnection();
+			});
+	}
+
+	@Test
+	void jobRepositoryUsesCustomDatabaseType() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.batch.jdbc.database-type=hsql")
+			.run((context) -> {
+				assertThat(context.getBean(BatchJdbcProperties.class).getDatabaseType()).isEqualTo(DatabaseType.HSQL);
+				JobRepository jobRepository = context.getBean(JobRepository.class);
 				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
 			});
 	}

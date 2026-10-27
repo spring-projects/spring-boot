@@ -6,6 +6,7 @@ package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.batch.infrastructure.support.DatabaseType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 import org.springframework.transaction.annotation.Isolation;
@@ -24,6 +25,11 @@ public class BatchJdbcProperties extends DatabaseInitializationProperties {
 			+ "batch/core/schema-@@platform@@.sql";
 
 	/**
+	 * Database type to use. Detected from the DataSource by default.
+	 */
+	private @Nullable DatabaseType databaseType;
+
+	/**
 	 * Whether to validate the transaction state.
 	 */
 	private boolean validateTransactionState = true;
@@ -37,6 +43,14 @@ public class BatchJdbcProperties extends DatabaseInitializationProperties {
 	 * Table prefix for all the batch meta-data tables.
 	 */
 	private @Nullable String tablePrefix;
+
+	public @Nullable DatabaseType getDatabaseType() {
+		return this.databaseType;
+	}
+
+	public void setDatabaseType(@Nullable DatabaseType databaseType) {
+		this.databaseType = databaseType;
+	}
 
 	public boolean isValidateTransactionState() {
 		return this.validateTransactionState;
