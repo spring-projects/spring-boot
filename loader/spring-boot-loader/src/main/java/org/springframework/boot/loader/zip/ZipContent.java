@@ -576,7 +576,9 @@ public final class ZipContent implements Closeable {
 			long eocdPos = locatedEocd.pos();
 			Zip64EndOfCentralDirectoryLocator zip64Locator = Zip64EndOfCentralDirectoryLocator.find(data, eocdPos);
 			Zip64EndOfCentralDirectoryRecord zip64Eocd = Zip64EndOfCentralDirectoryRecord.load(data, zip64Locator);
-			data = data.slice(getStartOfZipContent(data, eocd, zip64Eocd));
+			long startOfZipContent = getStartOfZipContent(data, eocd, zip64Eocd);
+			data = data.slice(startOfZipContent);
+			eocdPos -= startOfZipContent;
 			long centralDirectoryPos = (zip64Eocd != null) ? zip64Eocd.offsetToStartOfCentralDirectory()
 					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long numberOfEntries = (zip64Eocd != null) ? zip64Eocd.totalNumberOfCentralDirectoryEntries()
@@ -596,7 +598,7 @@ public final class ZipContent implements Closeable {
 				loader.add(centralRecord, pos, false);
 				pos += centralRecord.size();
 			}
-			long commentPos = locatedEocd.pos() + ZipEndOfCentralDirectoryRecord.COMMENT_OFFSET;
+			long commentPos = eocdPos + ZipEndOfCentralDirectoryRecord.COMMENT_OFFSET;
 			return loader.finish(kind, commentPos, eocd.commentLength(), signatureFiles.detected());
 		}
 
