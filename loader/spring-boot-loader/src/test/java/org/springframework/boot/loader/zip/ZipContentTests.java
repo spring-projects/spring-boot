@@ -272,6 +272,15 @@ class ZipContentTests {
 	}
 
 	@Test
+	void hasNameStartingWithWhenNestedDirectoryReturnsTrueForEntryName() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
+			Entry entry = nested.getEntry(0);
+			assertThat(entry.hasNameStartingWith("9.dat")).isTrue();
+			assertThat(entry.getName()).isEqualTo("9.dat");
+		}
+	}
+
+	@Test
 	void getDataWhenNestedDirectoryReturnsVirtualZipDataBlock() throws IOException {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
 			File file = new File(this.tempDir, "included.zip");
