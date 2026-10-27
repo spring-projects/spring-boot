@@ -16,6 +16,7 @@ import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConf
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
+import org.springframework.batch.infrastructure.support.DatabaseType;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
@@ -112,6 +114,12 @@ public final class BatchJdbcAutoConfiguration {
 		protected String getTablePrefix() {
 			String tablePrefix = this.properties.getTablePrefix();
 			return (tablePrefix != null) ? tablePrefix : super.getTablePrefix();
+		}
+
+		@Override
+		protected String getDatabaseType() throws MetaDataAccessException {
+			DatabaseType databaseType = this.properties.getDatabaseType();
+			return (databaseType != null) ? databaseType.name() : super.getDatabaseType();
 		}
 
 		@Override

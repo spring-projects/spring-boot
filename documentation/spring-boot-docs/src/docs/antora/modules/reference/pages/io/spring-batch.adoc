@@ -32,6 +32,9 @@ spring:
           initialize: true
 ----
 
+By default, the database type is detected from the javadoc:javax.sql.DataSource[], which requires a database connection when the job repository is created.
+If your application should not connect to the database at that point, for instance when using xref:packaging/aot.adoc[ahead-of-time processing] or when performing the training run of an xref:packaging/aot-cache.adoc[AOT cache], set the configprop:spring.batch.jdbc.database-type[] property to the type of your database.
+
 To disable Spring Boot's auto-configuration and take complete control of Spring Batch's configuration, add javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or extend javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[].
 This will cause the auto-configuration to back off, including initialization of Spring Batch's database schema (JDBC or MongoDB).
 Spring Batch can then be configured using the `@Enable*JobRepository` annotation's attributes rather than the previously described configuration properties.
