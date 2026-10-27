@@ -4,12 +4,14 @@
 
 package org.springframework.boot.amqp.rabbitmq.docker.compose;
 
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.SocketConfigurators;
+import com.rabbitmq.client.amqp.Connection;
+import com.rabbitmq.client.amqp.Environment;
+import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
+import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder.EnvironmentConnectionSettings;
 
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails;
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails.Address;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -28,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "rabbitmq-compose.yaml", image = TestImage.RABBITMQ)
-	void runCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
+	void runCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		assertThat(connectionDetails.getSslBundle()).isNull();
 	}
@@ -36,20 +38,19 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "rabbitmq-ssl-compose.yaml", image = TestImage.RABBITMQ,
 			additionalResources = { "../../ca.crt", "../../server.crt", "../../server.key", "../../client.crt",
 					"../../client.key", "rabbitmq-ssl.conf" })
-	void runWithSslCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
+	void runWithSslCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
 	}
 
 	@DockerComposeTest(composeFile = "rabbitmq-with-default-vhost-compose.yaml", image = TestImage.RABBITMQ)
-	void runWithDefaultVirtualHostCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails)
-			throws Exception {
+	void runWithDefaultVirtualHostCreatesConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("app");
 		assertThatConnectionCanBeMade(connectionDetails);
 	}
 
-	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
+	private void assertConnectionDetails(AmqpRabbitConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
@@ -59,21 +60,22 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThatConnectionCanBeMade(connectionDetails);
 	}
 
-	private void assertThatConnectionCanBeMade(AmqpRabbitConnectionDetails connectionDetails) throws Exception {
-		ConnectionFactory connectionFactory = new ConnectionFactory();
+	private void assertThatConnectionCanBeMade(AmqpRabbitConnectionDetails connectionDetails) {
+		PropertyMapper map = PropertyMapper.get();
 		Address address = connectionDetails.getAddress();
-		connectionFactory.setHost(address.host());
-		connectionFactory.setPort(address.port());
-		connectionFactory.setUsername(connectionDetails.getUsername());
-		connectionFactory.setPassword(connectionDetails.getPassword());
-		connectionFactory.setVirtualHost(connectionDetails.getVirtualHost());
+		EnvironmentConnectionSettings settings = new AmqpEnvironmentBuilder().connectionSettings()
+			.host(address.host())
+			.port(address.port());
+		map.from(connectionDetails::getUsername).to(settings::username);
+		map.from(connectionDetails::getPassword).to(settings::password);
+		map.from(connectionDetails::getVirtualHost).to(settings::virtualHost);
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		if (sslBundle != null) {
-			connectionFactory.useSslProtocol(sslBundle.createSslContext());
-			connectionFactory.setSocketConfigurator(SocketConfigurators.defaultConfigurator());
+			settings.tls().sslContext(sslBundle.createSslContext());
 		}
-		try (Connection connection = connectionFactory.newConnection()) {
-			assertThat(connection.isOpen()).isTrue();
+		try (Environment environment = settings.environmentBuilder().build();
+				Connection connection = environment.connectionBuilder().build()) {
+			assertThat(connection.connectionInfo()).isNotNull();
 		}
 	}
 
