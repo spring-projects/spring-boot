@@ -267,6 +267,24 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void getLoggerConfigurationForRootLogger() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configuration)
+			.isEqualTo(new LoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.INFO, LogLevel.INFO));
+	}
+
+	@Test
+	void getLoggerConfigurationsShouldReturnRootLoggerWithConfiguredLevel() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
+		assertThat(configurations.get(0))
+			.isEqualTo(new LoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.INFO, LogLevel.INFO));
+	}
+
+	@Test
 	void setLevelOfUnconfiguredLoggerDoesNotAffectRootConfiguration(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);

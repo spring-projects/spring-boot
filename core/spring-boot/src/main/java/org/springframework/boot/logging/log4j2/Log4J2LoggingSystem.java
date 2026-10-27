@@ -392,8 +392,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		LoggerConfig loggerConfig = getAllLoggers().get(loggerName);
-		return (loggerConfig != null) ? convertLoggerConfig(loggerName, loggerConfig) : null;
+		String name = getLoggerName(loggerName);
+		LoggerConfig loggerConfig = getAllLoggers().get(name);
+		return (loggerConfig != null) ? convertLoggerConfig(name, loggerConfig) : null;
 	}
 
 	private Map<String, LoggerConfig> getAllLoggers() {
@@ -426,10 +427,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return null;
 		}
 		LevelConfiguration effectiveLevelConfiguration = getLevelConfiguration(loggerConfig.getLevel());
+		boolean isAssigned = loggerConfig.getName().equals(name);
 		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
 			name = ROOT_LOGGER_NAME;
 		}
-		boolean isAssigned = loggerConfig.getName().equals(name);
 		LevelConfiguration assignedLevelConfiguration = (!isAssigned) ? null : effectiveLevelConfiguration;
 		return new LoggerConfiguration(name, assignedLevelConfiguration, effectiveLevelConfiguration);
 	}
@@ -464,10 +465,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private @Nullable LoggerConfig getLogger(@Nullable String name) {
+		return findLogger(getLoggerName(name));
+	}
+
+	private String getLoggerName(@Nullable String name) {
 		if (!StringUtils.hasLength(name) || ROOT_LOGGER_NAME.equals(name)) {
-			return findLogger(LogManager.ROOT_LOGGER_NAME);
+			return LogManager.ROOT_LOGGER_NAME;
 		}
-		return findLogger(name);
+		return name;
 	}
 
 	private @Nullable LoggerConfig findLogger(String name) {
