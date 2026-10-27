@@ -11,12 +11,14 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Integration tests for {@link OpenTelemetryTracingDockerComposeConnectionDetailsFactory}
  * using {@link TestImage#OTEL_COLLECTOR}.
  *
  * @author Eddú Meléndez
+ * @author WooSeung Kim
  */
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests {
 
@@ -34,6 +36,13 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests 
 		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("https://").endsWith("/v1/traces");
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
+	}
+
+	@DockerComposeTest(composeFile = "otlp-http-only-compose.yaml", image = TestImage.OTEL_COLLECTOR)
+	void runWithOnlyHttpPortCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("http://").endsWith("/v1/traces");
+		assertThatIllegalStateException().isThrownBy(() -> connectionDetails.getUrl(Transport.GRPC))
+			.withMessage("No host port mapping found for container port 4317");
 	}
 
 }

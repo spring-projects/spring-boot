@@ -11,11 +11,13 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Integration tests for {@link OtlpLoggingDockerComposeConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
+ * @author WooSeung Kim
  */
 class OtelCollectorOtlpLoggingDockerComposeConnectionDetailsFactoryTests {
 
@@ -33,6 +35,13 @@ class OtelCollectorOtlpLoggingDockerComposeConnectionDetailsFactoryTests {
 		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("https://").endsWith("/v1/logs");
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
+	}
+
+	@DockerComposeTest(composeFile = "otlp-http-only-compose.yaml", image = TestImage.OTEL_COLLECTOR)
+	void runWithOnlyHttpPortCreatesConnectionDetails(OtlpLoggingConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("http://").endsWith("/v1/logs");
+		assertThatIllegalStateException().isThrownBy(() -> connectionDetails.getUrl(Transport.GRPC))
+			.withMessage("No host port mapping found for container port 4317");
 	}
 
 }
