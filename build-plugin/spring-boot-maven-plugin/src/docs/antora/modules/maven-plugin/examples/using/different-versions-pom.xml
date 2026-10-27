@@ -10,6 +10,7 @@
 	</properties>
 	<!-- end::different-versions[] -->
 
+	<!-- tag::spring-boot-maven-plugin[] -->
 	<build>
 		<plugins>
 			<plugin>
@@ -18,5 +19,6 @@
 			</plugin>
 		</plugins>
 	</build>
+	<!-- end::spring-boot-maven-plugin[] -->
 </project>
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>getting-started</artifactId>
+	<!-- tag::main-class[] -->
+	<properties>
+		<start-class>com.example.MyApplication</start-class>
+	</properties>
+	<!-- end::main-class[] -->
+</project>
