@@ -576,7 +576,7 @@ public final class ZipContent implements Closeable {
 			long eocdPos = locatedEocd.pos();
 			Zip64EndOfCentralDirectoryLocator zip64Locator = Zip64EndOfCentralDirectoryLocator.find(data, eocdPos);
 			Zip64EndOfCentralDirectoryRecord zip64Eocd = Zip64EndOfCentralDirectoryRecord.load(data, zip64Locator);
-			long startOfZipContent = getStartOfZipContent(data, eocd, zip64Eocd);
+			long startOfZipContent = getStartOfZipContent(eocdPos, eocd, zip64Eocd);
 			data = data.slice(startOfZipContent);
 			eocdPos -= startOfZipContent;
 			long centralDirectoryPos = (zip64Eocd != null) ? zip64Eocd.offsetToStartOfCentralDirectory()
@@ -606,19 +606,20 @@ public final class ZipContent implements Closeable {
 		 * Returns the location in the data that the archive actually starts. For most
 		 * files the archive data will start at 0, however, it is possible to have
 		 * prefixed bytes (often used for startup scripts) at the beginning of the data.
-		 * @param data the source data
+		 * The end of the end of central directory record is used as the end of the
+		 * archive so that trailing bytes after the record are also supported.
+		 * @param eocdPos the position of the end of central directory record
 		 * @param eocd the end of central directory record
 		 * @param zip64Eocd the zip64 end of central directory record or {@code null}
 		 * @return the offset within the data where the archive begins
-		 * @throws IOException on I/O error
 		 */
-		private static long getStartOfZipContent(FileDataBlock data, ZipEndOfCentralDirectoryRecord eocd,
-				Zip64EndOfCentralDirectoryRecord zip64Eocd) throws IOException {
+		private static long getStartOfZipContent(long eocdPos, ZipEndOfCentralDirectoryRecord eocd,
+				Zip64EndOfCentralDirectoryRecord zip64Eocd) {
 			long specifiedOffsetToStartOfCentralDirectory = (zip64Eocd != null)
 					? zip64Eocd.offsetToStartOfCentralDirectory()
 					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long sizeOfCentralDirectoryAndEndRecords = getSizeOfCentralDirectoryAndEndRecords(eocd, zip64Eocd);
-			long actualOffsetToStartOfCentralDirectory = data.size() - sizeOfCentralDirectoryAndEndRecords;
+			long actualOffsetToStartOfCentralDirectory = eocdPos + eocd.size() - sizeOfCentralDirectoryAndEndRecords;
 			return actualOffsetToStartOfCentralDirectory - specifiedOffsetToStartOfCentralDirectory;
 		}
 
