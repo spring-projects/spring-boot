@@ -253,6 +253,10 @@ bom {
 		}
 	}
 	library("Commons Codec", "${commonsCodecVersion}") {
+		prohibit {
+			versionRange "[1.23.0]"
+			because "https://shibboleth.atlassian.net/browse/JSSH-84"
+		}
 		group("commons-codec") {
 			modules = [
 				"commons-codec"
