@@ -21,8 +21,6 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.amqp.rabbitmq")
 public class AmqpRabbitProperties {
 
-	static final int DEFAULT_PORT = 5672;
-
 	/**
 	 * RabbitMQ host. Ignored if an address is set.
 	 */
@@ -70,36 +68,20 @@ public class AmqpRabbitProperties {
 	 */
 	private final Template template = new Template();
 
-	private @Nullable Address parsedAddress;
-
 	public String getHost() {
 		return this.host;
 	}
 
 	public void setHost(String host) {
+		if (host.contains(",")) {
+			throw new InvalidConfigurationPropertyValueException("spring.amqp.rabbitmq.host", this.host,
+					"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.amqp.address' instead.");
+		}
 		this.host = host;
 	}
 
 	public @Nullable Integer getPort() {
 		return this.port;
-	}
-
-	/**
-	 * Returns the port from the address, or the configured port if no address have been
-	 * set.
-	 * @return the port
-	 * @see #setAddress(String)
-	 * @see #getPort()
-	 */
-	public int determinePort() {
-		if (this.parsedAddress == null) {
-			Integer port = getPort();
-			if (port != null) {
-				return port;
-			}
-			return DEFAULT_PORT;
-		}
-		return this.parsedAddress.port;
 	}
 
 	public void setPort(@Nullable Integer port) {
@@ -110,48 +92,12 @@ public class AmqpRabbitProperties {
 		return this.address;
 	}
 
-	/**
-	 * Returns the configured address ({@code host:port}) created from the configured host
-	 * and port.
-	 * @return the address
-	 */
-	public String determineAddress() {
-		if (this.parsedAddress == null) {
-			if (this.host.contains(",")) {
-				throw new InvalidConfigurationPropertyValueException("spring.amqp.rabbitmq.host", this.host,
-						"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.amqp.address' instead.");
-			}
-			return this.host + ":" + determinePort();
-		}
-		return this.parsedAddress.host + ":" + this.parsedAddress.port;
-	}
-
 	public void setAddress(String address) {
 		this.address = address;
-		this.parsedAddress = parseAddress(address);
-	}
-
-	private Address parseAddress(String address) {
-		return new Address(address);
 	}
 
 	public String getUsername() {
 		return this.username;
-	}
-
-	/**
-	 * If address has been set and has a username it is returned. Otherwise returns the
-	 * result of calling {@code getUsername()}.
-	 * @return the username
-	 * @see #setAddress(String)
-	 * @see #getUsername()
-	 */
-	public String determineUsername() {
-		if (this.parsedAddress == null) {
-			return this.username;
-		}
-		Address address = this.parsedAddress;
-		return (address.username != null) ? address.username : this.username;
 	}
 
 	public void setUsername(String username) {
@@ -162,42 +108,12 @@ public class AmqpRabbitProperties {
 		return this.password;
 	}
 
-	/**
-	 * If address has been set and has a password it is returned. Otherwise returns the
-	 * result of calling {@code getPassword()}.
-	 * @return the password or {@code null}
-	 * @see #setAddress(String)
-	 * @see #getPassword()
-	 */
-	public @Nullable String determinePassword() {
-		if (this.parsedAddress == null) {
-			return getPassword();
-		}
-		Address address = this.parsedAddress;
-		return (address.password != null) ? address.password : getPassword();
-	}
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	public @Nullable String getVirtualHost() {
 		return this.virtualHost;
-	}
-
-	/**
-	 * If address has been set and has a virtual host it is returned. Otherwise returns
-	 * the result of calling {@code getVirtualHost()}.
-	 * @return the virtual host or {@code null}
-	 * @see #setAddress(String)
-	 * @see #getVirtualHost()
-	 */
-	public @Nullable String determineVirtualHost() {
-		if (this.parsedAddress == null) {
-			return getVirtualHost();
-		}
-		Address address = this.parsedAddress;
-		return (address.virtualHost != null) ? address.virtualHost : getVirtualHost();
 	}
 
 	public void setVirtualHost(@Nullable String virtualHost) {
@@ -330,84 +246,6 @@ public class AmqpRabbitProperties {
 
 		public void setDefaultReceiveQueue(@Nullable String defaultReceiveQueue) {
 			this.defaultReceiveQueue = defaultReceiveQueue;
-		}
-
-	}
-
-	private static final class Address {
-
-		private static final String PREFIX_AMQP = "amqp://";
-
-		private static final String PREFIX_AMQP_SECURE = "amqps://";
-
-		private String host;
-
-		private int port;
-
-		private @Nullable String username;
-
-		private @Nullable String password;
-
-		private @Nullable String virtualHost;
-
-		private Address(String input) {
-			input = input.trim();
-			input = trimPrefix(input);
-			input = parseUsernameAndPassword(input);
-			input = parseVirtualHost(input);
-			parseHostAndPort(input);
-		}
-
-		private String trimPrefix(String input) {
-			if (input.startsWith(PREFIX_AMQP_SECURE)) {
-				return input.substring(PREFIX_AMQP_SECURE.length());
-			}
-			if (input.startsWith(PREFIX_AMQP)) {
-				return input.substring(PREFIX_AMQP.length());
-			}
-			return input;
-		}
-
-		private String parseUsernameAndPassword(String input) {
-			String[] splitInput = StringUtils.split(input, "@");
-			if (splitInput == null) {
-				return input;
-			}
-			String credentials = splitInput[0];
-			String[] splitCredentials = StringUtils.split(credentials, ":");
-			if (splitCredentials == null) {
-				this.username = credentials;
-			}
-			else {
-				this.username = splitCredentials[0];
-				this.password = splitCredentials[1];
-			}
-			return splitInput[1];
-		}
-
-		private String parseVirtualHost(String input) {
-			int hostIndex = input.indexOf('/');
-			if (hostIndex >= 0) {
-				this.virtualHost = input.substring(hostIndex + 1);
-				if (this.virtualHost.isEmpty()) {
-					this.virtualHost = "/";
-				}
-				input = input.substring(0, hostIndex);
-			}
-			return input;
-		}
-
-		private void parseHostAndPort(String input) {
-			int bracketIndex = input.lastIndexOf(']');
-			int colonIndex = input.lastIndexOf(':');
-			if (colonIndex == -1 || colonIndex < bracketIndex) {
-				this.host = input;
-				this.port = DEFAULT_PORT;
-			}
-			else {
-				this.host = input.substring(0, colonIndex);
-				this.port = Integer.parseInt(input.substring(colonIndex + 1));
-			}
 		}
 
 	}

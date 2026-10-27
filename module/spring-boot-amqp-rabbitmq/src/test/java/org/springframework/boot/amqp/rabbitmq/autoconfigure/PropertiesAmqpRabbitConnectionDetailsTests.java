@@ -24,20 +24,20 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 
 	private AmqpRabbitProperties properties;
 
-	private DefaultSslBundleRegistry sslBundleRegistry;
+	private DefaultSslBundleRegistry sslBundles;
 
-	private PropertiesAmqpRabbitConnectionDetails connectionDetails;
+	private PropertiesAmqpRabbitConnectionDetails details;
 
 	@BeforeEach
 	void setUp() {
 		this.properties = new AmqpRabbitProperties();
-		this.sslBundleRegistry = new DefaultSslBundleRegistry();
-		this.connectionDetails = new PropertiesAmqpRabbitConnectionDetails(this.properties, this.sslBundleRegistry);
+		this.sslBundles = new DefaultSslBundleRegistry();
+		this.details = new PropertiesAmqpRabbitConnectionDetails(this.properties, this.sslBundles);
 	}
 
 	@Test
 	void getAddressUsesDefaultHostAndPort() {
-		Address address = this.connectionDetails.getAddress();
+		Address address = this.details.getAddress();
 		assertThat(address.host()).isEqualTo("localhost");
 		assertThat(address.port()).isEqualTo(5672);
 	}
@@ -46,7 +46,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	void getAddressUsesHostAndPortProperties() {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
-		Address address = this.connectionDetails.getAddress();
+		Address address = this.details.getAddress();
 		assertThat(address.host()).isEqualTo("rabbit.example.com");
 		assertThat(address.port()).isEqualTo(1234);
 	}
@@ -54,7 +54,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	@Test
 	void getAddressUsesAddressProperty() {
 		this.properties.setAddress("rabbit.example.com:1234");
-		Address address = this.connectionDetails.getAddress();
+		Address address = this.details.getAddress();
 		assertThat(address.host()).isEqualTo("rabbit.example.com");
 		assertThat(address.port()).isEqualTo(1234);
 	}
@@ -62,7 +62,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	@Test
 	void getAddressFromAmqpUrl() {
 		this.properties.setAddress("amqp://user:secret@rabbit.example.com:1234/alpha");
-		Address address = this.connectionDetails.getAddress();
+		Address address = this.details.getAddress();
 		assertThat(address.host()).isEqualTo("rabbit.example.com");
 		assertThat(address.port()).isEqualTo(1234);
 	}
@@ -70,82 +70,232 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	@Test
 	void getAddressWithIpv6() {
 		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
-		Address address = this.connectionDetails.getAddress();
+		Address address = this.details.getAddress();
 		assertThat(address.host()).isEqualTo("[aaaa:bbbb:cccc::d]");
 		assertThat(address.port()).isEqualTo(1234);
 	}
 
 	@Test
 	void getUsernameReturnsDefaultGuest() {
-		assertThat(this.connectionDetails.getUsername()).isEqualTo("guest");
+		assertThat(this.details.getUsername()).isEqualTo("guest");
 	}
 
 	@Test
 	void getUsernameUsesProperty() {
 		this.properties.setUsername("alice");
-		assertThat(this.connectionDetails.getUsername()).isEqualTo("alice");
+		assertThat(this.details.getUsername()).isEqualTo("alice");
 	}
 
 	@Test
 	void getUsernameFromAddress() {
 		this.properties.setAddress("user:secret@rabbit.example.com:1234");
-		assertThat(this.connectionDetails.getUsername()).isEqualTo("user");
+		assertThat(this.details.getUsername()).isEqualTo("user");
 	}
 
 	@Test
 	void getPasswordReturnsDefaultGuest() {
-		assertThat(this.connectionDetails.getPassword()).isEqualTo("guest");
+		assertThat(this.details.getPassword()).isEqualTo("guest");
 	}
 
 	@Test
 	void getPasswordUsesProperty() {
 		this.properties.setPassword("secret");
-		assertThat(this.connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(this.details.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void getPasswordFromAddress() {
 		this.properties.setAddress("user:secret@rabbit.example.com:1234");
-		assertThat(this.connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(this.details.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void getVirtualHostDefaultsToNull() {
-		assertThat(this.connectionDetails.getVirtualHost()).isNull();
+		assertThat(this.details.getVirtualHost()).isNull();
 	}
 
 	@Test
 	void getVirtualHostUsesProperty() {
 		this.properties.setVirtualHost("alpha");
-		assertThat(this.connectionDetails.getVirtualHost()).isEqualTo("alpha");
+		assertThat(this.details.getVirtualHost()).isEqualTo("alpha");
 	}
 
 	@Test
 	void getVirtualHostFromAddress() {
 		this.properties.setAddress("rabbit.example.com:1234/alpha");
-		assertThat(this.connectionDetails.getVirtualHost()).isEqualTo("alpha");
+		assertThat(this.details.getVirtualHost()).isEqualTo("alpha");
 	}
 
 	@Test
 	void getSslBundleDefaultsToNull() {
-		assertThat(this.connectionDetails.getSslBundle()).isNull();
+		assertThat(this.details.getSslBundle()).isNull();
 	}
 
 	@Test
 	void getSslBundleUsesBundle() {
 		SslBundle bundle = mock(SslBundle.class);
-		this.sslBundleRegistry.registerBundle("test-bundle", bundle);
+		this.sslBundles.registerBundle("test-bundle", bundle);
 		this.properties.getSsl().setBundle("test-bundle");
-		assertThat(this.connectionDetails.getSslBundle()).isSameAs(bundle);
+		assertThat(this.details.getSslBundle()).isSameAs(bundle);
 	}
 
 	@Test
 	void getSslBundleWithNoSslBundlesThrowsException() {
-		PropertiesAmqpRabbitConnectionDetails details = new PropertiesAmqpRabbitConnectionDetails(this.properties,
-				null);
+		AmqpRabbitConnectionDetails details = new PropertiesAmqpRabbitConnectionDetails(this.properties, null);
 		this.properties.getSsl().setBundle("test-bundle");
 		assertThatIllegalArgumentException().isThrownBy(details::getSslBundle)
 			.withMessageContaining("SSL bundle name has been set but no SSL bundles found in context");
+	}
+
+	@Test
+	void getAddressWhenNoNothingConfiguredUsesLocalhostAndDefaultPort() {
+		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", Address.DEFAULT_PORT));
+	}
+
+	@Test
+	void getAddressWhenHasSslBundleUsesLocalhostAndSecurePort() {
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", Address.DEFAULT_SECURE_PORT));
+	}
+
+	@Test
+	void getAddressWhenHasSslBundleAndInsecureAddressUsesInsecurePort() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setAddress("amqp://localhost");
+		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_PORT);
+	}
+
+	@Test
+	void getAddressWhenHasNoSslBundleAndSecureAddressUsesSecurePort() {
+		this.properties.setAddress("amqps://localhost");
+		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_SECURE_PORT);
+	}
+
+	@Test
+	void getAddressWhenHasSslBundleAndPortUsesPort() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setPort(1234);
+		assertThat(this.details.getAddress().port()).isEqualTo(1234);
+	}
+
+	@Test
+	void getAddressWhenHasSslBundleAndAddressWithPortUsesPort() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.details.getAddress().port()).isEqualTo(1234);
+	}
+
+	@Test
+	void getAddressWhenHasNoSslBundleAndAddressWithPortUsesAddress() {
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+	}
+
+	@Test
+	void getAddressWhenHasNoSslBundleAndAddressWithoutPortUsesDefaultPort() {
+		this.properties.setAddress("rabbit.example.com");
+		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_PORT);
+	}
+
+	@Test
+	void getAddressWhenHasHostAndPortUsesHostAndPort() {
+		this.properties.setHost("rabbit.example.com");
+		this.properties.setPort(1234);
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+	}
+
+	@Test
+	void whenHasAddressWithUsernamePasswordHostPortAndVirtualhost() {
+		this.properties.setAddress("amqp://user:secret@rabbit.example.com:1234/alpha");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("user");
+		assertThat(this.details.getPassword()).isEqualTo("secret");
+		assertThat(this.details.getVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	void whenHasAddressWithUsernamePasswordHostAndPort() {
+		this.properties.setAddress("amqps://user:secret@rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("user");
+		assertThat(this.details.getPassword()).isEqualTo("secret");
+		assertThat(this.details.getVirtualHost()).isNull();
+	}
+
+	@Test
+	void whenHasAddressWithNoScheme() {
+		this.properties.setAddress("user:secret@rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("user");
+		assertThat(this.details.getPassword()).isEqualTo("secret");
+		assertThat(this.details.getVirtualHost()).isNull();
+	}
+
+	@Test
+	void whenHasAddressWithNoUsernameAndUsernameProperty() {
+		this.properties.setUsername("alice");
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("alice");
+		assertThat(this.details.getPassword()).isEqualTo("guest");
+		assertThat(this.details.getVirtualHost()).isNull();
+	}
+
+	@Test
+	void whenHasAddressWithUsernameAndNoPassword() {
+		this.properties.setAddress("user@rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("user");
+		assertThat(this.details.getPassword()).isEqualTo("guest");
+		assertThat(this.details.getVirtualHost()).isNull();
+	}
+
+	@Test
+	void whenHasAddressWithNoPasswordAndPasswordProperty() {
+		this.properties.setPassword("12345678");
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("rabbit.example.com", 1234));
+		assertThat(this.details.getUsername()).isEqualTo("guest");
+		assertThat(this.details.getPassword()).isEqualTo("12345678");
+		assertThat(this.details.getVirtualHost()).isNull();
+	}
+
+	@Test
+	void getVirtualHostWhenAddressPropertyIncludesVirtualHost() {
+		this.properties.setAddress("rabbit.example.com:1234/alpha");
+		assertThat(this.details.getVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	void getVirtualHostWhenHasVirtualHostPropertyAndAddressHasNoVirtualHost() {
+		this.properties.setVirtualHost("alpha");
+		this.properties.setAddress("rabbit.example.com:1234");
+		assertThat(this.details.getVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	void getVirtualHostWhenHasVirtualHostPropertyAndAddressWithVirtualHost() {
+		this.properties.setVirtualHost("alpha");
+		this.properties.setAddress("rabbit.example.com:1234/beta");
+		assertThat(this.details.getVirtualHost()).isEqualTo("beta");
+	}
+
+	@Test
+	void getVirtualHostWhenHasAddressWithTrailingSlash() {
+		this.properties.setAddress("amqp://root:password@otherhost:1111/");
+		assertThat(this.details.getVirtualHost()).isEqualTo("/");
+	}
+
+	@Test
+	void getAddressWhenAddressIsIpv6Address() {
+		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("[aaaa:bbbb:cccc::d]", 1234));
+	}
+
+	@Test
+	void getAddressWhenAddressIsIpv6AddressWithoutPort() {
+		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
+		assertThat(this.details.getAddress()).isEqualTo(new Address("[aaaa:bbbb:cccc::d]", Address.DEFAULT_PORT));
 	}
 
 }

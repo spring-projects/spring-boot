@@ -108,7 +108,7 @@ class AmqpRabbitAutoConfigurationTests {
 			AmqpRabbitConnectionDetails connectionDetails = context.getBean(AmqpRabbitConnectionDetails.class);
 			AmqpRabbitProperties properties = new AmqpRabbitProperties();
 			assertThat(connectionDetails.getAddress().host()).isEqualTo(properties.getHost());
-			assertThat(connectionDetails.getAddress().port()).isEqualTo(AmqpRabbitProperties.DEFAULT_PORT);
+			assertThat(connectionDetails.getAddress().port()).isEqualTo(5672);
 			assertThat(connectionDetails.getUsername()).isEqualTo(properties.getUsername());
 			assertThat(connectionDetails.getPassword()).isEqualTo(properties.getPassword());
 			assertThat(connectionDetails.getVirtualHost()).isNull();

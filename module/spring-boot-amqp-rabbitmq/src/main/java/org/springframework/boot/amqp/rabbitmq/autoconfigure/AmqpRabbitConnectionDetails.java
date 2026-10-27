@@ -62,6 +62,19 @@ public interface AmqpRabbitConnectionDetails extends ConnectionDetails {
 	 * @param port the port
 	 */
 	record Address(String host, int port) {
+
+		/**
+		 * The default RabbitMQ port.
+		 * @since 4.2.0
+		 */
+		public static final int DEFAULT_PORT = 5672;
+
+		/**
+		 * The default RabbitMQ secure port.
+		 * @since 4.2.0
+		 */
+		public static final int DEFAULT_SECURE_PORT = 5671;
+
 	}
 
 }
