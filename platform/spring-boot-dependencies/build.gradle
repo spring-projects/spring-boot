@@ -1437,7 +1437,7 @@ bom {
 			}
 		}
 	}
-	library("Logback", "1.6.5") {
+	library("Logback", "1.6.6") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
@@ -1447,6 +1447,16 @@ bom {
 		links {
 			site("https://logback.qos.ch")
 			javadoc("https://logback.qos.ch/apidocs/ch.qos.logback.core", "ch.qos.logback")
+		}
+	}
+	library("Logback Tyler", "1.0.5") {
+		group("ch.qos.logback.tyler") {
+			modules = [
+				"tyler-base"
+			]
+		}
+		links {
+			site("https://github.com/qos-ch/logback-tyler")
 		}
 	}
 	library("Lombok", "1.18.48") {

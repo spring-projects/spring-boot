@@ -21,6 +21,7 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
+	optional("ch.qos.logback.tyler:tyler-base")
 	optional("com.google.code.gson:gson")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")

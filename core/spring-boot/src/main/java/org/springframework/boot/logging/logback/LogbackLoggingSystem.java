@@ -19,6 +19,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
+import ch.qos.logback.classic.spi.Configurator;
 import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -35,6 +36,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.helpers.SubstituteLoggerFactory;
 
 import org.springframework.aot.AotDetector;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -210,6 +212,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> putInitializationContextObjects(loggerContext, initializationContext));
 		SystemStatusListener.addTo(loggerContext);
+		Configurator generatedConfigurator = createGeneratedConfigurator();
+		if (generatedConfigurator != null) {
+			generatedConfigurator.configure(loggerContext);
+			reportConfigurationErrorsIfNecessary(loggerContext);
+			return true;
+		}
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -217,6 +225,19 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			reportConfigurationErrorsIfNecessary(loggerContext);
 		}
 		return configuredUsingAotGeneratedArtifacts;
+	}
+
+	private @Nullable Configurator createGeneratedConfigurator() {
+		String className = SpringBootTylerConfiguratorBase.GENERATED_CLASS_NAME;
+		if (!ClassUtils.isPresent(className, getClassLoader())) {
+			return null;
+		}
+		try {
+			return (Configurator) BeanUtils.instantiateClass(ClassUtils.forName(className, getClassLoader()));
+		}
+		catch (ClassNotFoundException | LinkageError ex) {
+			throw new IllegalStateException("Failed to load generated Logback configurator " + className, ex);
+		}
 	}
 
 	@Override
