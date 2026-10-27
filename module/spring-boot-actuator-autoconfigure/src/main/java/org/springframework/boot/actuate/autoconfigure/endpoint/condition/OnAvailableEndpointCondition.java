@@ -40,6 +40,7 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
 
 /**
  * A condition that checks if an endpoint is available (i.e. accessible and exposed).
@@ -54,9 +55,11 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 
 	private static final String JMX_ENABLED_KEY = "spring.jmx.enabled";
 
-	private static final Map<Environment, EndpointAccessResolver> accessResolversCache = new ConcurrentReferenceHashMap<>();
+	private static final Map<Environment, EndpointAccessResolver> accessResolversCache = new ConcurrentReferenceHashMap<>(
+			16, ReferenceType.WEAK);
 
-	private static final Map<Environment, Set<EndpointExposureOutcomeContributor>> exposureOutcomeContributorsCache = new ConcurrentReferenceHashMap<>();
+	private static final Map<Environment, Set<EndpointExposureOutcomeContributor>> exposureOutcomeContributorsCache = new ConcurrentReferenceHashMap<>(
+			16, ReferenceType.WEAK);
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
