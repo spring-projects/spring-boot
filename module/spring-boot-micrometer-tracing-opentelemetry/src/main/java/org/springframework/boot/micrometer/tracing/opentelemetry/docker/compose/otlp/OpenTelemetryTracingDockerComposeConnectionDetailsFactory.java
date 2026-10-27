@@ -6,6 +6,7 @@ package org.springframework.boot.micrometer.tracing.opentelemetry.docker.compose
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -19,6 +20,7 @@ import org.springframework.boot.ssl.SslBundle;
  *
  * @author Eddú Meléndez
  * @author Moritz Halbritter
+ * @author WooSeung Kim
  */
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpTracingConnectionDetails> {
@@ -45,28 +47,25 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int grpcPort;
-
-		private final int httpPort;
+		private final ConnectionPorts ports;
 
 		private final @Nullable SslBundle sslBundle;
 
 		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
-			this.httpPort = source.ports().get(OTLP_HTTP_PORT);
+			this.ports = source.ports();
 			this.sslBundle = getSslBundle(source);
 		}
 
 		@Override
 		public String getUrl(Transport transport) {
 			int port = switch (transport) {
-				case HTTP -> this.httpPort;
-				case GRPC -> this.grpcPort;
+				case HTTP -> OTLP_HTTP_PORT;
+				case GRPC -> OTLP_GRPC_PORT;
 			};
 			String scheme = (this.sslBundle != null) ? "https" : "http";
-			return "%s://%s:%d/v1/traces".formatted(scheme, this.host, port);
+			return "%s://%s:%d/v1/traces".formatted(scheme, this.host, this.ports.get(port));
 		}
 
 		@Override
