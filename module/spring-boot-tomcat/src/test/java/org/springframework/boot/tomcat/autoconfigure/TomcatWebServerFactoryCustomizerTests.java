@@ -223,6 +223,19 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void defaultMaxLocaleCount() {
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxLocaleCount()).isEqualTo(10));
+	}
+
+	@Test
+	void customMaxLocaleCount() {
+		bind("server.tomcat.max-locale-count=-1");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxLocaleCount()).isEqualTo(-1));
+	}
+
+	@Test
 	void customMaxRequestHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-request-header-size=-1");
 		customizeAndRunServer((server) -> assertThat(

@@ -118,6 +118,8 @@ public class TomcatWebServerFactoryCustomizer
 			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
 		map.from(this.tomcatProperties::getMaxParameterCount)
 			.to((maxParameterCount) -> customizeMaxParameterCount(factory, maxParameterCount));
+		map.from(this.tomcatProperties::getMaxLocaleCount)
+			.to((maxLocaleCount) -> customizeMaxLocaleCount(factory, maxLocaleCount));
 		map.from(this.tomcatProperties::getMaxPartHeaderSize)
 			.asInt(DataSize::toBytes)
 			.to((maxPartHeaderSize) -> customizeMaxPartHeaderSize(factory, maxPartHeaderSize));
@@ -320,6 +322,17 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeMaxParameterCount(ConfigurableTomcatWebServerFactory factory, int maxParameterCount) {
 		factory.addConnectorCustomizers((connector) -> connector.setMaxParameterCount(maxParameterCount));
+	}
+
+	private void customizeMaxLocaleCount(ConfigurableTomcatWebServerFactory factory, int maxLocaleCount) {
+		factory.addConnectorCustomizers((connector) -> {
+			try {
+				connector.setMaxLocaleCount(maxLocaleCount);
+			}
+			catch (NoSuchMethodError ex) {
+				// Tomcat < 11.0.27
+			}
+		});
 	}
 
 	private void customizeMaxPartCount(ConfigurableTomcatWebServerFactory factory, int maxPartCount) {
