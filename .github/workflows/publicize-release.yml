@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - v4.0.[0-9]+
+permissions:
+  contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
