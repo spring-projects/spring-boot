@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -67,7 +68,7 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return (obj != null) && (getClass() == obj.getClass());
 		}
 

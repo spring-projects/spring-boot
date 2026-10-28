@@ -43,7 +43,7 @@ public class OriginTrackedValue implements OriginProvider {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}

@@ -4,6 +4,8 @@
 
 package org.springframework.boot.origin;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -28,7 +30,7 @@ public class SystemEnvironmentOrigin implements Origin {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

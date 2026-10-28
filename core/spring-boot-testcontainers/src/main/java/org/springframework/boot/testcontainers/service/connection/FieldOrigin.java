@@ -6,6 +6,8 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.lang.reflect.Field;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -27,7 +29,7 @@ class FieldOrigin implements Origin {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

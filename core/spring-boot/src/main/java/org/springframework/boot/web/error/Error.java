@@ -63,7 +63,7 @@ public final class Error implements MessageSourceResolvable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

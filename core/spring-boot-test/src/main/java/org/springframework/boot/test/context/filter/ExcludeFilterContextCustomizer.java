@@ -4,6 +4,8 @@
 
 package org.springframework.boot.test.context.filter;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
@@ -24,7 +26,7 @@ class ExcludeFilterContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (getClass() == obj.getClass());
 	}
 

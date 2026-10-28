@@ -5,6 +5,7 @@
 package org.springframework.boot.build.bom.bomr.version;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base class for {@link DependencyVersion} implementations.
@@ -34,7 +35,7 @@ abstract class AbstractDependencyVersion implements DependencyVersion {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

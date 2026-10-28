@@ -423,7 +423,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (obj == this) {
 				return true;
 			}

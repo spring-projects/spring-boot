@@ -69,7 +69,7 @@ class SpringBootTestRandomPortContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 

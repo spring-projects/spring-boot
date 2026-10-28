@@ -32,7 +32,7 @@ public final class MockOrigin implements Origin {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

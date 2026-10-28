@@ -7,6 +7,8 @@ package org.springframework.boot.loader.net.protocol.jar;
 import java.net.URL;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A fast cache key for a jar file {@link URL} that doesn't trigger DNS lookups.
  *
@@ -41,7 +43,7 @@ final class JarFileUrlKey {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

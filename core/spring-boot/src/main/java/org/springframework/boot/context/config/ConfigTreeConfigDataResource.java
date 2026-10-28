@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.env.ConfigTreePropertySource;
 import org.springframework.util.Assert;
 
@@ -38,7 +40,7 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

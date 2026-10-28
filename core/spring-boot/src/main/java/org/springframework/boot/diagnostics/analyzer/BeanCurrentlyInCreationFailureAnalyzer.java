@@ -155,7 +155,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}

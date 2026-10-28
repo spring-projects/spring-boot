@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.logging.LogLevel;
 
 /**
@@ -77,7 +79,7 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -26,7 +26,7 @@ public class ExampleBasicObject {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj != null && obj.getClass() == getClass()) {
 			return Objects.equals(this.value, ((ExampleBasicObject) obj).value);
 		}
