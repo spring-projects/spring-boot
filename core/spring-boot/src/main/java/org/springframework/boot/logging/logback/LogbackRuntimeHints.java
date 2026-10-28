@@ -4,8 +4,10 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
+import ch.qos.logback.classic.util.DefaultJoranConfigurator;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
 import org.jspecify.annotations.Nullable;
@@ -31,6 +33,7 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		}
 		ReflectionHints reflection = hints.reflection();
 		registerHintsForLogbackLoggingSystemTypeChecks(reflection, classLoader);
+		registerHintsForBuiltInConfigurators(reflection);
 		registerHintsForBuiltInLogbackConverters(reflection);
 		registerHintsForSpringBootConverters(reflection);
 	}
@@ -40,6 +43,11 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		reflection.registerType(LoggerContext.class);
 		reflection.registerTypeIfPresent(classLoader, "org.slf4j.bridge.SLF4JBridgeHandler", (typeHint) -> {
 		});
+	}
+
+	private void registerHintsForBuiltInConfigurators(ReflectionHints reflection) {
+		registerForPublicConstructorInvocation(reflection, BasicConfigurator.class,
+				DefaultJoranConfigurator.class);
 	}
 
 	private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {

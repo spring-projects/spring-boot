@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
+import ch.qos.logback.classic.util.DefaultJoranConfigurator;
 import ch.qos.logback.core.pattern.Converter;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
@@ -38,6 +40,13 @@ class LogbackRuntimeHintsTests {
 		ReflectionHints reflection = registerHints();
 		assertThat(reflection.getTypeHint(LoggerContext.class)).isNotNull();
 		assertThat(reflection.getTypeHint(SLF4JBridgeHandler.class)).isNotNull();
+	}
+
+	@Test
+	void registersHintsForBuiltInConfigurators() {
+		ReflectionHints reflection = registerHints();
+		assertThat(List.of(BasicConfigurator.class, DefaultJoranConfigurator.class))
+			.allSatisfy(registeredForPublicConstructorInvocation(reflection));
 	}
 
 	@Test
