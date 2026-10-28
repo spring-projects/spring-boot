@@ -344,6 +344,21 @@ class OtlpTracingAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
+	void whenHasSslBundleWithOptionsFailsToStart() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
+			.withPropertyValues(
+					"management.opentelemetry.tracing.export.otlp.endpoint=https://localhost:4318/v1/traces",
+					"management.opentelemetry.tracing.export.otlp.ssl.bundle=mybundle",
+					"spring.ssl.bundle.jks.mybundle.truststore.location=classpath:test.jks",
+					"spring.ssl.bundle.jks.mybundle.options.enabled-protocols=TLSv1.3")
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("SSL options cannot be specified with OTLP tracing"));
+	}
+
+	@Test
 	void whenCustomConnectionDetailsProvidesSslBundleConfiguresHttpExporter() {
 		SslBundle sslBundle = SslBundle.systemDefault();
 		OtlpTracingConnectionDetails connectionDetails = mock(OtlpTracingConnectionDetails.class);

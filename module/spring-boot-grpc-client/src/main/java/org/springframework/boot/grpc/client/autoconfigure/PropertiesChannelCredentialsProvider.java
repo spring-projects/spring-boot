@@ -15,6 +15,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.internal.InsecureTrustManagerFactory;
+import org.springframework.util.Assert;
 
 /**
  * {@link ChannelCredentialsProvider} backed by {@link GrpcClientProperties}.
@@ -37,6 +38,7 @@ record PropertiesChannelCredentialsProvider(GrpcClientProperties properties,
 		Builder builder = TlsChannelCredentials.newBuilder();
 		if (channel.getSsl().getBundle() != null) {
 			SslBundle bundle = this.bundles.getBundle(channel.getSsl().getBundle());
+			Assert.state(!bundle.getOptions().isSpecified(), "SSL options cannot be specified with gRPC clients");
 			builder.trustManager(bundle.getManagers().getTrustManagerFactory().getTrustManagers());
 			builder.keyManager(bundle.getManagers().getKeyManagerFactory().getKeyManagers());
 		}

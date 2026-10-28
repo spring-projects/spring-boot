@@ -118,6 +118,7 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 	private InMemoryListenerConfig createListenerConfig(ObjectProvider<SslBundles> sslBundles) throws LDAPException {
 		SslBundle sslBundle = getSslBundle(sslBundles.getIfAvailable());
 		if (sslBundle != null) {
+			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with embedded LDAP");
 			SSLContext sslContext = sslBundle.createSslContext();
 			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
 			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
