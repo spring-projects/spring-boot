@@ -143,6 +143,18 @@ class JsonValueWriterTests {
 	}
 
 	@Test
+	void writeWhenNonFiniteNumber() {
+		assertThat(write(Double.NaN)).isEqualTo(quoted("NaN"));
+		assertThat(write(Double.POSITIVE_INFINITY)).isEqualTo(quoted("Infinity"));
+		assertThat(write(Double.NEGATIVE_INFINITY)).isEqualTo(quoted("-Infinity"));
+		assertThat(write(Float.NaN)).isEqualTo(quoted("NaN"));
+		assertThat(write(Float.POSITIVE_INFINITY)).isEqualTo(quoted("Infinity"));
+		assertThat(write(Float.NEGATIVE_INFINITY)).isEqualTo(quoted("-Infinity"));
+		assertThat(write(new double[] { 1.0, Double.NaN })).isEqualTo("""
+				[1.0,"NaN"]""");
+	}
+
+	@Test
 	void writeWhenBoolean() {
 		assertThat(write(true)).isEqualTo("true");
 		assertThat(write(Boolean.TRUE)).isEqualTo("true");
