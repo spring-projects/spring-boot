@@ -7,6 +7,8 @@ package org.springframework.boot.build.bom.bomr.version;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -106,7 +108,7 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

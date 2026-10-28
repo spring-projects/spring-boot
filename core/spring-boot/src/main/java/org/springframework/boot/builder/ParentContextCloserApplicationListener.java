@@ -6,6 +6,8 @@ package org.springframework.boot.builder;
 
 import java.lang.ref.WeakReference;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
 import org.springframework.context.ApplicationContext;
@@ -84,7 +86,7 @@ public class ParentContextCloserApplicationListener
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (this == obj) {
 				return true;
 			}

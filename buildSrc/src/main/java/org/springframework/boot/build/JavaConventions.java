@@ -398,6 +398,7 @@ class JavaConventions {
 		if (errorProneVersion != null) {
 			extension.getErrorProneVersion().set(errorProneVersion);
 		}
+		extension.getJspecifyExperimental().set(true);
 	}
 
 	private void configureDependencyFixes(Project project) {

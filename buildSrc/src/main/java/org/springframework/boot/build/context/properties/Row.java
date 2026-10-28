@@ -4,6 +4,8 @@
 
 package org.springframework.boot.build.context.properties;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Abstract class for rows in {@link Table}.
  *
@@ -22,7 +24,7 @@ abstract class Row implements Comparable<Row> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

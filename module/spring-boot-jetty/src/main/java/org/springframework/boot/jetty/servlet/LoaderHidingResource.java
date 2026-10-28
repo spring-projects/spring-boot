@@ -66,7 +66,7 @@ final class LoaderHidingResource extends Resource {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return this.delegate.equals(obj);
 	}
 

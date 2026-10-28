@@ -125,7 +125,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -195,7 +195,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (obj == null) {
 				return false;
 			}
