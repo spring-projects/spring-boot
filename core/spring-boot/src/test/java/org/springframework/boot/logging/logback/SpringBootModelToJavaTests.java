@@ -20,12 +20,14 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.Configurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.OutputStreamAppender;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.pattern.PatternLayoutBase;
+import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.RollingPolicy;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
@@ -87,19 +89,127 @@ class SpringBootModelToJavaTests {
 
 	@Test
 	void generatedConfiguratorMatchesJoranConfigurator() {
-		String source = new SpringBootModelToJava().translate(CONFIGURATION);
-		List<MockEnvironment> environments = List.of(new MockEnvironment(), environment("dev"),
+		assertGeneratedConfiguratorMatchesJoran(CONFIGURATION, new MockEnvironment(), environment("dev"),
 				environment("dev", "eu"), environment("staging"), environment("qa"),
 				environment().withProperty("app.context", "custom")
 					.withProperty("app.no-default", "set")
 					.withProperty("app.level", "WARN"));
-		compile(source, (configurator) -> {
-			for (MockEnvironment environment : environments) {
-				Map<String, String> expected = describe(configureWithJoran(CONFIGURATION, environment));
-				Map<String, String> actual = describe(configureWith(configurator, environment));
-				assertThat(actual).as("profiles %s", List.of(environment.getActiveProfiles())).isEqualTo(expected);
-			}
+	}
+
+	@Test
+	void propertiesAreAvailableToLoggersThatPrecedeThem() {
+		String configuration = """
+				<configuration>
+					<logger name="top" level="${topLevel}"/>
+					<springProfile name="dev">
+						<logger name="dev" level="${devLevel}"/>
+						<springProperty name="devLevel" source="app.dev-level" defaultValue="ERROR"/>
+						<springProperty name="sharedLevel" source="app.shared-level" defaultValue="TRACE"/>
+					</springProfile>
+					<logger name="shared" level="${sharedLevel:-INFO}"/>
+					<springProperty name="topLevel" source="app.top-level" defaultValue="WARN"/>
+				</configuration>
+				""";
+		assertGeneratedConfiguratorMatchesJoran(configuration, new MockEnvironment(), environment("dev"));
+		compile(new SpringBootModelToJava().translate(configuration), (configurator) -> {
+			LoggerContext context = configureWith(configurator, environment("dev"));
+			assertThat(context.getLogger("top").getLevel()).hasToString("WARN");
+			assertThat(context.getLogger("dev").getLevel()).hasToString("ERROR");
+			assertThat(context.getLogger("shared").getLevel()).hasToString("TRACE");
 		});
+	}
+
+	@Test
+	void packagingDataIsConfigured() {
+		String configuration = """
+				<configuration packagingData="${packagingData:-false}">
+					<springProperty scope="context" name="packagingData" source="app.packaging-data"/>
+				</configuration>
+				""";
+		assertGeneratedConfiguratorMatchesJoran(configuration, new MockEnvironment(),
+				environment().withProperty("app.packaging-data", "true"));
+		compile(new SpringBootModelToJava().translate("<configuration packagingData=\"true\"/>"), (
+				configurator) -> assertThat(configureWith(configurator, new MockEnvironment()).isPackagingDataEnabled())
+					.isTrue());
+	}
+
+	@Test
+	void loggerAndAppenderNamesAreResolvedAtRuntime() {
+		String configuration = """
+				<configuration>
+					<springProperty name="loggerName" source="app.logger-name" defaultValue="com.example"/>
+					<springProperty name="appenderName" source="app.appender-name" defaultValue="EXAMPLE"/>
+					<appender name="${appenderName}" class="ch.qos.logback.core.read.ListAppender"/>
+					<logger name="${loggerName}" level="DEBUG">
+						<appender-ref ref="${appenderName}"/>
+					</logger>
+				</configuration>
+				""";
+		assertGeneratedConfiguratorMatchesJoran(configuration, new MockEnvironment(),
+				environment().withProperty("app.logger-name", "org.example")
+					.withProperty("app.appender-name", "OTHER"));
+		compile(new SpringBootModelToJava().translate(configuration), (configurator) -> {
+			LoggerContext context = configureWith(configurator, new MockEnvironment());
+			assertThat(context.getLogger("com.example").getLevel()).hasToString("DEBUG");
+			assertThat(context.getLogger("com.example").getAppender("EXAMPLE")).isNotNull();
+		});
+	}
+
+	@Test
+	void appendersWithTheSameNameCanBeDefinedInMutuallyExclusiveProfiles() {
+		String configuration = """
+				<configuration>
+					<root level="INFO">
+						<appender-ref ref="OUT"/>
+					</root>
+					<springProfile name="dev">
+						<appender name="OUT" class="ch.qos.logback.core.ConsoleAppender">
+							<encoder>
+								<pattern>DEV %m%n</pattern>
+							</encoder>
+						</appender>
+					</springProfile>
+					<springProfile name="!dev">
+						<appender name="OUT" class="ch.qos.logback.core.read.ListAppender"/>
+					</springProfile>
+				</configuration>
+				""";
+		assertGeneratedConfiguratorMatchesJoran(configuration, new MockEnvironment(), environment("dev"));
+		compile(new SpringBootModelToJava().translate(configuration), (configurator) -> {
+			assertThat(configureWith(configurator, environment("dev")).getLogger("ROOT").getAppender("OUT"))
+				.isInstanceOf(ConsoleAppender.class);
+			assertThat(configureWith(configurator, new MockEnvironment()).getLogger("ROOT").getAppender("OUT"))
+				.isInstanceOf(ListAppender.class);
+		});
+	}
+
+	@Test
+	void translateWhenAppenderIsNotDeclaredThrowsException() {
+		String configuration = """
+				<configuration>
+					<root level="INFO">
+						<appender-ref ref="MISSING"/>
+					</root>
+				</configuration>
+				""";
+		assertThatIllegalStateException().isThrownBy(() -> new SpringBootModelToJava().translate(configuration))
+			.withMessageContaining("Appender named [MISSING] is not declared");
+	}
+
+	@Test
+	void translateWhenAppendersReferToEachOtherThrowsException() {
+		String configuration = """
+				<configuration>
+					<appender name="A" class="ch.qos.logback.classic.AsyncAppender">
+						<appender-ref ref="B"/>
+					</appender>
+					<appender name="B" class="ch.qos.logback.classic.AsyncAppender">
+						<appender-ref ref="A"/>
+					</appender>
+				</configuration>
+				""";
+		assertThatIllegalStateException().isThrownBy(() -> new SpringBootModelToJava().translate(configuration))
+			.withMessageContaining("Appender reference cycle");
 	}
 
 	@Test
@@ -168,6 +278,17 @@ class SpringBootModelToJavaTests {
 			.withMessageContaining("Logback configuration problems detected");
 	}
 
+	private void assertGeneratedConfiguratorMatchesJoran(String configuration, MockEnvironment... environments) {
+		String source = new SpringBootModelToJava().translate(configuration);
+		compile(source, (configurator) -> {
+			for (MockEnvironment environment : environments) {
+				Map<String, String> expected = describe(configureWithJoran(configuration, environment));
+				Map<String, String> actual = describe(configureWith(configurator, environment));
+				assertThat(actual).as("profiles %s", List.of(environment.getActiveProfiles())).isEqualTo(expected);
+			}
+		});
+	}
+
 	private MockEnvironment environment(String... profiles) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setActiveProfiles(profiles);
@@ -217,6 +338,7 @@ class SpringBootModelToJavaTests {
 			.sorted(Comparator.comparing(Logger::getName))
 			.forEach((logger) -> description.put("logger " + logger.getName(), describe(logger)));
 		context.getCopyOfPropertyMap().forEach((name, value) -> description.put("property " + name, value));
+		description.put("packagingData", String.valueOf(context.isPackagingDataEnabled()));
 		context.stop();
 		return description;
 	}

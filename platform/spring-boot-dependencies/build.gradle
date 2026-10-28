@@ -1449,7 +1449,7 @@ bom {
 			javadoc("https://logback.qos.ch/apidocs/ch.qos.logback.core", "ch.qos.logback")
 		}
 	}
-	library("Logback Tyler", "1.0.5") {
+	library("Logback Tyler", "1.0.6") {
 		group("ch.qos.logback.tyler") {
 			modules = [
 				"tyler-base"

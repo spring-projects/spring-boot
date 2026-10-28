@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -62,7 +61,6 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.util.function.ThrowingConsumer;
 
@@ -144,23 +142,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	private BeanFactoryInitializationAotContribution createAotContribution(Model model) {
 		URL configurationUrl = getTopURL();
 		if (configurationUrl != null && isTylerPresent()) {
-			return new GeneratedConfiguratorAotContribution(
-					new SpringBootModelToJava().translate(readConfiguration(configurationUrl)));
+			return new GeneratedConfiguratorAotContribution(new SpringBootModelToJava().translate(configurationUrl));
 		}
 		return new LogbackConfigurationAotContribution(model, getModelInterpretationContext(), getContext());
 	}
 
 	boolean isTylerPresent() {
 		return ClassUtils.isPresent(TYLER_MODEL_TO_JAVA, getClass().getClassLoader());
-	}
-
-	private String readConfiguration(URL configurationUrl) {
-		try (InputStream inputStream = configurationUrl.openStream()) {
-			return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException("Failed to read Logback configuration from " + configurationUrl, ex);
-		}
 	}
 
 	private boolean isAotProcessingInProgress() {

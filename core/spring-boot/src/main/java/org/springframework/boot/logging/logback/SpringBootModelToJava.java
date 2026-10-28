@@ -5,6 +5,9 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URL;
 import java.util.List;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -23,6 +26,9 @@ import ch.qos.logback.core.util.OptionHelper;
 import ch.qos.logback.tyler.base.ModelToJava;
 import ch.qos.logback.tyler.base.TranslationOptions;
 import ch.qos.logback.tyler.base.TylerModelInterpretationContext;
+import ch.qos.logback.tyler.base.handler.GuardModelHandler;
+import com.squareup.javapoet.CodeBlock;
+import org.xml.sax.InputSource;
 
 /**
  * Extended version of the Logback Tyler {@link ModelToJava} that translates a Logback XML
@@ -46,6 +52,25 @@ class SpringBootModelToJava extends ModelToJava {
 	}
 
 	/**
+	 * Translate the Logback XML configuration at the given URL into the source code of a
+	 * configurator named {@link SpringBootTylerConfiguratorBase#GENERATED_CLASS_NAME}.
+	 * The configuration is decoded according to its XML encoding declaration.
+	 * @param url the URL of the XML configuration
+	 * @return the source code of the configurator
+	 * @throws IllegalStateException if the configuration cannot be translated completely
+	 */
+	String translate(URL url) {
+		try (InputStream inputStream = url.openStream()) {
+			InputSource inputSource = new InputSource(inputStream);
+			inputSource.setSystemId(url.toExternalForm());
+			return translate(inputSource);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to read Logback configuration from " + url, ex);
+		}
+	}
+
+	/**
 	 * Translate the given Logback XML configuration into the source code of a
 	 * configurator named {@link SpringBootTylerConfiguratorBase#GENERATED_CLASS_NAME}.
 	 * @param xml the XML configuration
@@ -53,8 +78,12 @@ class SpringBootModelToJava extends ModelToJava {
 	 * @throws IllegalStateException if the configuration cannot be translated completely
 	 */
 	String translate(String xml) {
+		return translate(new InputSource(new StringReader(xml)));
+	}
+
+	private String translate(InputSource inputSource) {
 		try {
-			Model model = extractModel(xml);
+			Model model = extractModel(inputSource);
 			checkStatus("parsing");
 			SpringProfileIfNestedWithinSecondPhaseElementSanityChecker sanityChecker = new SpringProfileIfNestedWithinSecondPhaseElementSanityChecker();
 			sanityChecker.setContext(getContext());
@@ -136,25 +165,18 @@ class SpringBootModelToJava extends ModelToJava {
 	/**
 	 * Emits code for a {@code <springProfile>} element. Nested elements are only applied
 	 * if the runtime {@code Environment} accepts the profiles, as determined by
-	 * {@link SpringBootTylerConfiguratorBase#acceptsProfiles(String)}.
+	 * {@link SpringBootTylerConfiguratorBase#acceptsProfiles(String)}. As with Joran, the
+	 * profiles are evaluated once, where the element appears in the configuration.
 	 */
-	private static final class TylerSpringProfileModelHandler extends ModelHandlerBase {
+	private static final class TylerSpringProfileModelHandler extends GuardModelHandler {
 
 		TylerSpringProfileModelHandler(Context context) {
 			super(context);
 		}
 
 		@Override
-		public void handle(ModelInterpretationContext intercon, Model model) {
-			TylerModelInterpretationContext tylerContext = (TylerModelInterpretationContext) intercon;
-			tylerContext.getConfigureMethodSpecBuilder()
-				.beginControlFlow("if (acceptsProfiles($S))", ((SpringProfileModel) model).getName());
-		}
-
-		@Override
-		public void postHandle(ModelInterpretationContext intercon, Model model) {
-			TylerModelInterpretationContext tylerContext = (TylerModelInterpretationContext) intercon;
-			tylerContext.getConfigureMethodSpecBuilder().endControlFlow();
+		protected CodeBlock guardExpression(TylerModelInterpretationContext tmic, Model model) {
+			return CodeBlock.of("acceptsProfiles($S)", ((SpringProfileModel) model).getName());
 		}
 
 	}

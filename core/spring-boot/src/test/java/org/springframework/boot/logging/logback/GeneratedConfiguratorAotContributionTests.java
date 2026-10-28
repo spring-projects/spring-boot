@@ -6,6 +6,8 @@ package org.springframework.boot.logging.logback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
@@ -106,6 +110,29 @@ class GeneratedConfiguratorAotContributionTests {
 		});
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "ISO-8859-1", "UTF-16" })
+	void configurationIsDecodedAccordingToItsEncodingDeclaration(String encoding) throws Exception {
+		String configuration = """
+				<?xml version="1.0" encoding="%s"?>
+				<configuration>
+					<property scope="context" name="word" value="caf\u00e9"/>
+				</configuration>
+				""".formatted(encoding);
+		TestGenerationContext generationContext = new TestGenerationContext();
+		applyTo(generationContext,
+				configure(new SpringBootJoranConfigurator(new LoggingInitializationContext(new MockEnvironment())),
+						configuration.getBytes(Charset.forName(encoding))));
+		TestCompiler.forSystem().with(generationContext).compile((compiled) -> {
+			Configurator configurator = compiled.getInstance(Configurator.class,
+					SpringBootTylerConfiguratorBase.GENERATED_CLASS_NAME);
+			LoggerContext context = new LoggerContext();
+			context.putObject(Environment.class.getName(), new MockEnvironment());
+			configurator.configure(context);
+			assertThat(context.getProperty("word")).isEqualTo("caf\u00e9");
+		});
+	}
+
 	@Test
 	void contributionThatMatchesExistingContributionIsAccepted() throws Exception {
 		TestGenerationContext generationContext = new TestGenerationContext();
@@ -165,8 +192,13 @@ class GeneratedConfiguratorAotContributionTests {
 
 	private BeanFactoryInitializationAotContribution configure(SpringBootJoranConfigurator configurator,
 			String configuration) throws IOException, JoranException {
+		return configure(configurator, configuration.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private BeanFactoryInitializationAotContribution configure(SpringBootJoranConfigurator configurator,
+			byte[] configuration) throws IOException, JoranException {
 		Path file = Files.createTempFile(this.temp, "logback", ".xml");
-		Files.writeString(file, configuration);
+		Files.write(file, configuration);
 		URL url = file.toUri().toURL();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
