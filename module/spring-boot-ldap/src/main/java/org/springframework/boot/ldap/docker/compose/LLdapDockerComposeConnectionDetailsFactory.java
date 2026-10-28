@@ -54,7 +54,8 @@ class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 					service.ports().get(Integer.parseInt(ldapPort))) };
 			this.base = getFromEnv(env, "LLDAP_LDAP_BASE_DN", "dc=example,dc=com");
 			this.password = getFromEnv(env, "LLDAP_LDAP_USER_PASS", "password");
-			this.username = "cn=admin,ou=people,%s".formatted(this.base);
+			String userId = getFromEnv(env, "LLDAP_LDAP_USER_DN", "admin");
+			this.username = "cn=%s,ou=people,%s".formatted(userId, this.base);
 		}
 
 		private static String getFromEnv(Map<String, @Nullable String> env, String key, String defaultValue) {
