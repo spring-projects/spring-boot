@@ -44,6 +44,15 @@ class LLdapDockerComposeConnectionDetailsFactoryTests {
 	}
 
 	@Test
+	void createConnectionDetailsWhenHasBaseDn() {
+		RunningService runningService = mockRunningService();
+		given(runningService.env()).willReturn(Map.of("LLDAP_LDAP_BASE_DN", "dc=springframework,dc=org"));
+		LLdapDockerComposeConnectionDetails connectionDetails = new LLdapDockerComposeConnectionDetails(runningService);
+		assertThat(connectionDetails.getUsername()).isEqualTo("cn=admin,ou=people,dc=springframework,dc=org");
+		assertThat(connectionDetails.getBase()).isEqualTo("dc=springframework,dc=org");
+	}
+
+	@Test
 	void createConnectionDetailsWhenHasUserDnAndBaseDn() {
 		RunningService runningService = mockRunningService();
 		given(runningService.env())
