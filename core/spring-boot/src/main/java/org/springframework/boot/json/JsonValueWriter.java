@@ -100,7 +100,7 @@ class JsonValueWriter {
 	 * <li>A {@link WritableJson} instance</li>
 	 * <li>Any {@link Iterable} or Array (written as a JSON array)</li>
 	 * <li>A {@link Map} (written as a JSON object)</li>
-	 * <li>Any {@link Number}</li>
+	 * <li>Any finite {@link Number}</li>
 	 * <li>A {@link Boolean}</li>
 	 * </ul>
 	 * All other values, including {@code NaN} and infinite {@link Double} or
