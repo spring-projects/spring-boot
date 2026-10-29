@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
-import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -27,8 +26,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
  * @author Mark Paluch
  * @since 4.0.0
  */
-@AutoConfiguration(before = TransactionAutoConfiguration.class,
-		after = TransactionManagerCustomizationAutoConfiguration.class)
+@AutoConfiguration(before = TransactionAutoConfiguration.class)
 @ConditionalOnClass({ R2dbcTransactionManager.class, ReactiveTransactionManager.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
