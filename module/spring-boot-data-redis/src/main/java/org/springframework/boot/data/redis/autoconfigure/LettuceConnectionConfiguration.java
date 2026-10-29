@@ -142,10 +142,33 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (StringUtils.hasText(url)) {
 			customizeConfigurationFromUrl(builder, url);
 		}
-		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers, sslBundle));
+		TimeoutOptions timeoutOptions = TimeoutOptions.enabled();
+		ClientOptions.Builder clientOptionsBuilder = createClientOptionsBuilder(clientOptionsBuilderCustomizers,
+				sslBundle, timeoutOptions);
+		ClientOptions clientOptions = clientOptionsBuilder.build();
+		builder.clientOptions(clientOptions);
 		builder.clientResources(clientResources);
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		return builder.build();
+		LettuceClientConfiguration configuration = builder.build();
+		Duration timeout = getProperties().getTimeout();
+		Duration connectTimeout = getProperties().getConnectTimeout();
+		if (timeout != null && connectTimeout != null && connectTimeout.compareTo(timeout) > 0
+				&& !isTimeoutCustomized(configuration, timeout, clientOptions, timeoutOptions)) {
+			// Lettuce limits the initialization of a connection, including connecting to
+			// the server, with the command timeout. Use the longer connect timeout there
+			// and limit commands to the timeout instead.
+			builder.commandTimeout(connectTimeout);
+			builder.clientOptions(clientOptionsBuilder.timeoutOptions(TimeoutOptions.enabled(timeout)).build());
+			return builder.build();
+		}
+		return configuration;
+	}
+
+	private boolean isTimeoutCustomized(LettuceClientConfiguration configuration, Duration timeout,
+			ClientOptions clientOptions, TimeoutOptions timeoutOptions) {
+		return !timeout.equals(configuration.getCommandTimeout())
+				|| configuration.getClientOptions().orElse(null) != clientOptions
+				|| clientOptions.getTimeoutOptions() != timeoutOptions;
 	}
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
@@ -159,9 +182,8 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (sslBundle != null) {
 			builder.useSsl();
 		}
-		Duration timeout = getProperties().getTimeout();
-		if (timeout != null) {
-			builder.commandTimeout(getConnectionInitializationTimeout(timeout));
+		if (getProperties().getTimeout() != null) {
+			builder.commandTimeout(getProperties().getTimeout());
 		}
 		DataRedisProperties.Lettuce lettuce = getProperties().getLettuce();
 		if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
@@ -174,13 +196,6 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
-	}
-
-	private Duration getConnectionInitializationTimeout(Duration timeout) {
-		// Lettuce uses the command timeout to limit the initialization of a connection,
-		// including connecting to the server
-		Duration connectTimeout = getProperties().getConnectTimeout();
-		return (connectTimeout != null && connectTimeout.compareTo(timeout) > 0) ? connectTimeout : timeout;
 	}
 
 	private ReadFrom getReadFrom(String readFrom) {
@@ -202,9 +217,9 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		return canonicalName.toString();
 	}
 
-	private ClientOptions createClientOptions(
+	private ClientOptions.Builder createClientOptionsBuilder(
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers,
-			@Nullable SslBundle sslBundle) {
+			@Nullable SslBundle sslBundle, TimeoutOptions timeoutOptions) {
 		ClientOptions.Builder builder = initializeClientOptionsBuilder();
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
@@ -223,17 +238,9 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 			}
 			builder.sslOptions(sslOptionsBuilder.build());
 		}
-		builder.timeoutOptions(createTimeoutOptions());
+		builder.timeoutOptions(timeoutOptions);
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		return builder.build();
-	}
-
-	private TimeoutOptions createTimeoutOptions() {
-		Duration timeout = getProperties().getTimeout();
-		if (timeout != null && !timeout.equals(getConnectionInitializationTimeout(timeout))) {
-			return TimeoutOptions.enabled(timeout);
-		}
-		return TimeoutOptions.enabled();
+		return builder;
 	}
 
 	private ClientOptions.Builder initializeClientOptionsBuilder() {

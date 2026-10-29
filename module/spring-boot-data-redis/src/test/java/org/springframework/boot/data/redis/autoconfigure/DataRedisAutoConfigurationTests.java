@@ -18,6 +18,7 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.ReadFrom.Nodes;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.TimeoutOptions.TimeoutSource;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
@@ -326,6 +327,55 @@ class DataRedisAutoConfigurationTests {
 					.get()
 					.getTimeoutOptions()
 					.isApplyConnectionTimeout()).isTrue();
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithTimeoutAndConnectTimeoutAndCustomizedCommandTimeout() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
+					"spring.data.redis.connect-timeout:1000")
+			.withBean(LettuceClientConfigurationBuilderCustomizer.class,
+					() -> (builder) -> builder.commandTimeout(Duration.ofMillis(500)))
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getTimeout()).isEqualTo(500);
+				assertThat(cf.getClientConfiguration()
+					.getClientOptions()
+					.get()
+					.getTimeoutOptions()
+					.isApplyConnectionTimeout()).isTrue();
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithTimeoutAndConnectTimeoutAndCustomizedTimeoutOptions() {
+		TimeoutOptions timeoutOptions = TimeoutOptions.enabled(Duration.ofMillis(500));
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
+					"spring.data.redis.connect-timeout:1000")
+			.withBean(LettuceClientOptionsBuilderCustomizer.class,
+					() -> (builder) -> builder.timeoutOptions(timeoutOptions))
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getTimeout()).isEqualTo(250);
+				assertThat(cf.getClientConfiguration().getClientOptions().get().getTimeoutOptions())
+					.isSameAs(timeoutOptions);
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithTimeoutAndConnectTimeoutAndCustomizedClientOptions() {
+		ClientOptions clientOptions = ClientOptions.builder().autoReconnect(false).build();
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
+					"spring.data.redis.connect-timeout:1000")
+			.withBean(LettuceClientConfigurationBuilderCustomizer.class,
+					() -> (builder) -> builder.clientOptions(clientOptions))
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getTimeout()).isEqualTo(250);
+				assertThat(cf.getClientConfiguration().getClientOptions()).containsSame(clientOptions);
 			});
 	}
 
