@@ -57,11 +57,6 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 	static final int COMMENT_OFFSET = MINIMUM_SIZE;
 
 	/**
-	 * The offset of the comment length relative to the record start position.
-	 */
-	private static final int COMMENT_LENGTH_OFFSET = COMMENT_OFFSET - Short.BYTES;
-
-	/**
 	 * Return the size of this record.
 	 * @return the record size
 	 */
@@ -120,43 +115,18 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 			}
 			debug.log("Finding EndOfCentralDirectoryRecord from %s with limit %s", startPos, buffer.limit());
 			dataBlock.readFully(buffer, startPos);
-			int offset = findInBuffer(buffer, buffer.limit() - Integer.BYTES);
-			while (offset >= 0) {
-				if (isValidLocation(dataBlock, buffer, startPos, offset)) {
-					debug.log("Found EndOfCentralDirectoryRecord at %s + %s", startPos, offset);
-					return startPos + offset;
-				}
-				offset = findInBuffer(buffer, offset - 1);
+			int offset = findInBuffer(buffer);
+			if (offset >= 0) {
+				debug.log("Found EndOfCentralDirectoryRecord at %s + %s", startPos, offset);
+				return startPos + offset;
 			}
 			endPos = endPos - BUFFER_SIZE + MINIMUM_SIZE;
 		}
 		throw new IOException("Zip 'End Of Central Directory Record' not found after reading entire data block");
 	}
 
-	/**
-	 * Return if a candidate record at the given offset is a valid
-	 * {@link ZipEndOfCentralDirectoryRecord}. The signature bytes are not unique, they
-	 * can also occur in the file comment or in the central directory data, so a candidate
-	 * is only accepted when the whole record is available and the comment that follows it
-	 * doesn't extend beyond the end of the data.
-	 * @param dataBlock the source data block
-	 * @param buffer the buffer that was searched
-	 * @param startPos the position of the buffer within the data block
-	 * @param offset the offset of the candidate record within the buffer
-	 * @return if the candidate record is valid
-	 * @throws IOException on I/O error
-	 */
-	private static boolean isValidLocation(DataBlock dataBlock, ByteBuffer buffer, long startPos, int offset)
-			throws IOException {
-		if (offset + MINIMUM_SIZE > buffer.limit()) {
-			return false;
-		}
-		int commentLength = Short.toUnsignedInt(buffer.getShort(offset + COMMENT_LENGTH_OFFSET));
-		return startPos + offset + MINIMUM_SIZE + commentLength <= dataBlock.size();
-	}
-
-	private static int findInBuffer(ByteBuffer buffer, int fromPos) {
-		for (int pos = fromPos; pos >= 0; pos--) {
+	private static int findInBuffer(ByteBuffer buffer) {
+		for (int pos = buffer.limit() - MINIMUM_SIZE; pos >= 0; pos--) {
 			buffer.position(pos);
 			if (buffer.getInt() == SIGNATURE) {
 				return pos;
