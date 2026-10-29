@@ -126,7 +126,7 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 	}
 
 	private static int findInBuffer(ByteBuffer buffer) {
-		for (int pos = buffer.limit() - 4; pos >= 0; pos--) {
+		for (int pos = buffer.limit() - MINIMUM_SIZE; pos >= 0; pos--) {
 			buffer.position(pos);
 			if (buffer.getInt() == SIGNATURE) {
 				return pos;
