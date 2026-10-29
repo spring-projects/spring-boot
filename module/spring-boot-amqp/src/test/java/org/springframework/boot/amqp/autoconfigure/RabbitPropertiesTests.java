@@ -136,6 +136,13 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determinePortUsesAmqpAddressSchemeWhenFirstAddressHasNoExplicitPortAndSslEnabled() {
+		this.properties.getSsl().setEnabled(true);
+		this.properties.setAddresses(List.of("amqp://root:password@rabbit1.example.com"));
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
+	}
+
+	@Test
 	void determinePortUsesAmqpAddressSchemeWhenFirstAddressHasNoExplicitPortAndSslBundleIsSet() {
 		this.properties.getSsl().setBundle("test-bundle");
 		this.properties.setAddresses(List.of("amqp://root:password@rabbit1.example.com"));
