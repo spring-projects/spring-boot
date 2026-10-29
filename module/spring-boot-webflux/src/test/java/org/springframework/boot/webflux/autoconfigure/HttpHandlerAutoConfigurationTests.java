@@ -22,9 +22,11 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.web.reactive.DispatcherHandler;
+import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +114,78 @@ class HttpHandlerAutoConfigurationTests {
 				assertThat(context.getBean(HttpHandler.class)).isInstanceOfSatisfying(HttpWebHandlerAdapter.class,
 						(adapter) -> assertThat(adapter.getDefaultHtmlEscape()).isNull());
 			});
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsNotConfiguredByDefault() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsNotConfiguredWhenStrategyIsNotFramework() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=native")
+			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsConfiguredWhenFrameworkStrategyIsUsed() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class);
+				ForwardedHeaderTransformer transformer = context.getBean(ForwardedHeaderTransformer.class);
+				assertThat(transformer).extracting("useStandardHeader").isEqualTo(false);
+				assertThat(transformer).extracting("useForwardedPrefix").isEqualTo(false);
+			});
+	}
+
+	@Test
+	void forwardedHeaderTransformerAppliesConfiguredProperties() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"spring.webflux.forwarded-headers.header-format=standard",
+					"spring.webflux.forwarded-headers.use-forwarded-prefix=true")
+			.run((context) -> {
+				ForwardedHeaderTransformer transformer = context.getBean(ForwardedHeaderTransformer.class);
+				assertThat(transformer).extracting("useStandardHeader").isEqualTo(true);
+				assertThat(transformer).extracting("useForwardedPrefix").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void forwardedHeaderTransformerBacksOffWhenBeanAlreadyRegistered() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsConfiguredWithEnableWebFlux() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withUserConfiguration(WebFluxConfigurationSupport.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerIsConfiguredWithCustomHttpHandler() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withUserConfiguration(CustomHttpHandler.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderTransformerConfiguration {
+
+		@Bean
+		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
+			return new ForwardedHeaderTransformer(false);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -4,20 +4,24 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
+import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -160,6 +164,67 @@ class DispatcherServletAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void forwardedHeaderFilterIsNotConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterIsNotConfiguredWhenStrategyIsNotFramework() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
+			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterIsConfiguredWhenFrameworkStrategyIsUsed() {
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework").run((context) -> {
+			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+			assertThat(filter).extracting("useStandardHeader").isEqualTo(false);
+			assertThat(filter).extracting("useForwardedPrefix").isEqualTo(false);
+		});
+	}
+
+	@Test
+	void forwardedHeaderFilterAppliesConfiguredProperties() {
+		this.contextRunner
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"spring.mvc.forwarded-headers.header-format=standard",
+					"spring.mvc.forwarded-headers.use-forwarded-prefix=true")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).extracting("useStandardHeader").isEqualTo(true);
+				assertThat(filter).extracting("useForwardedPrefix").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void forwardedHeaderFilterBacksOffWhenFilterBeanAlreadyRegistered() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterCustomizerFromDeprecatedTypeIsApplied() {
+		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterCustomizerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).extracting("removeOnly").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void forwardedHeaderFilterIsConfiguredWithEnableWebMvc() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
+			.withUserConfiguration(WebMvcConfigurationSupport.class)
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
+				.isInstanceOf(ForwardedHeaderFilter.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class MultipartConfiguration {
 
@@ -177,6 +242,27 @@ class DispatcherServletAutoConfigurationTests {
 		@Bean
 		DispatcherServlet customDispatcherServlet() {
 			return new DispatcherServlet();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterConfiguration {
+
+		@Bean
+		FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
+			return new FilterRegistrationBean<>(new ForwardedHeaderFilter(false));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterCustomizerConfiguration {
+
+		@Bean
+		@SuppressWarnings("removal")
+		org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer forwardedHeaderFilterCustomizer() {
+			return (filter) -> filter.setRemoveOnly(true);
 		}
 
 	}
