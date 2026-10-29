@@ -167,9 +167,15 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void shouldTolerateEndpointWithSameId() {
-		ConfigurationMetadata metadata = compile(SimpleEndpoint.class, SimpleEndpoint2.class);
+		shouldTolerateEndpointWithSameId(SimpleEndpoint.class, SimpleEndpoint2.class);
+		shouldTolerateEndpointWithSameId(SimpleEndpoint2.class, SimpleEndpoint.class);
+	}
+
+	private void shouldTolerateEndpointWithSameId(Class<?> endpoint1, Class<?> endpoint2) {
+		ConfigurationMetadata metadata = compile(endpoint1, endpoint2);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
-		assertThat(metadata).has(defaultAccess("simple", "simple", TestAccess.UNRESTRICTED));
+		assertThat(metadata)
+			.has(defaultAccess("simple", "simple", TestAccess.UNRESTRICTED).fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
