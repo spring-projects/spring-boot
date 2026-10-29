@@ -53,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Changmin Lee
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -158,8 +159,9 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (sslBundle != null) {
 			builder.useSsl();
 		}
-		if (getProperties().getTimeout() != null) {
-			builder.commandTimeout(getProperties().getTimeout());
+		Duration timeout = getProperties().getTimeout();
+		if (timeout != null) {
+			builder.commandTimeout(getConnectionInitializationTimeout(timeout));
 		}
 		DataRedisProperties.Lettuce lettuce = getProperties().getLettuce();
 		if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
@@ -172,6 +174,13 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
+	}
+
+	private Duration getConnectionInitializationTimeout(Duration timeout) {
+		// Lettuce uses the command timeout to limit the initialization of a connection,
+		// including connecting to the server
+		Duration connectTimeout = getProperties().getConnectTimeout();
+		return (connectTimeout != null && connectTimeout.compareTo(timeout) > 0) ? connectTimeout : timeout;
 	}
 
 	private ReadFrom getReadFrom(String readFrom) {
@@ -214,9 +223,17 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 			}
 			builder.sslOptions(sslOptionsBuilder.build());
 		}
-		builder.timeoutOptions(TimeoutOptions.enabled());
+		builder.timeoutOptions(createTimeoutOptions());
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
+	}
+
+	private TimeoutOptions createTimeoutOptions() {
+		Duration timeout = getProperties().getTimeout();
+		if (timeout != null && !timeout.equals(getConnectionInitializationTimeout(timeout))) {
+			return TimeoutOptions.enabled(timeout);
+		}
+		return TimeoutOptions.enabled();
 	}
 
 	private ClientOptions.Builder initializeClientOptionsBuilder() {

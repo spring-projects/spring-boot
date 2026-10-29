@@ -60,7 +60,8 @@ public class DataRedisProperties {
 	private int port = 6379;
 
 	/**
-	 * Read timeout.
+	 * Read timeout. With Lettuce, also limits the time to initialize a connection unless
+	 * a longer "connect-timeout" is configured.
 	 */
 	private @Nullable Duration timeout;
 

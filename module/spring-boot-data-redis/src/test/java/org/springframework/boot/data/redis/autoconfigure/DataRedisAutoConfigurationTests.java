@@ -18,6 +18,7 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.ReadFrom;
 import io.lettuce.core.ReadFrom.Nodes;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.TimeoutOptions.TimeoutSource;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
 import io.lettuce.core.cluster.models.partitions.RedisClusterNode;
@@ -82,6 +83,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Changmin Lee
  */
 class DataRedisAutoConfigurationTests {
 
@@ -295,13 +297,35 @@ class DataRedisAutoConfigurationTests {
 			.run((context) -> {
 				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 				assertThat(cf.getHostName()).isEqualTo("foo");
-				assertThat(cf.getTimeout()).isEqualTo(250);
+				assertThat(cf.getTimeout()).isEqualTo(1000);
 				assertThat(cf.getClientConfiguration()
 					.getClientOptions()
 					.get()
 					.getSocketOptions()
 					.getConnectTimeout()
 					.toMillis()).isEqualTo(1000);
+				TimeoutSource commandTimeout = cf.getClientConfiguration()
+					.getClientOptions()
+					.get()
+					.getTimeoutOptions()
+					.getSource();
+				assertThat(commandTimeout.getTimeUnit().toMillis(commandTimeout.getTimeout(null))).isEqualTo(250);
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithTimeoutLongerThanConnectTimeout() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:1000",
+					"spring.data.redis.connect-timeout:250")
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getTimeout()).isEqualTo(1000);
+				assertThat(cf.getClientConfiguration()
+					.getClientOptions()
+					.get()
+					.getTimeoutOptions()
+					.isApplyConnectionTimeout()).isTrue();
 			});
 	}
 
