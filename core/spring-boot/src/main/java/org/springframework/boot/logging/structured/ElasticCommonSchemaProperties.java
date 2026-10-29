@@ -71,12 +71,17 @@ public record ElasticCommonSchemaProperties(Service service) {
 		static final Service NONE = new Service(null, null, null, null);
 
 		void jsonMembers(Members<?> members) {
-			members.add("service").usingMembers((service) -> {
+			members.add("service").whenNot((instance) -> isEmpty()).usingMembers((service) -> {
 				service.add("name", this::name).whenHasLength();
 				service.add("version", this::version).whenHasLength();
 				service.add("environment", this::environment).whenHasLength();
-				service.add("node").usingMembers((node) -> node.add("name", this::nodeName).whenHasLength());
+				service.add("node", this::nodeName).whenHasLength().usingMembers((node) -> node.add("name"));
 			});
+		}
+
+		private boolean isEmpty() {
+			return !StringUtils.hasLength(this.name) && !StringUtils.hasLength(this.version)
+					&& !StringUtils.hasLength(this.environment) && !StringUtils.hasLength(this.nodeName);
 		}
 
 		Service withDefaults(Environment environment) {
