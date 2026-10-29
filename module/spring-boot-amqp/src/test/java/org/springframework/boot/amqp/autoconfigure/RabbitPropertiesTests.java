@@ -83,6 +83,19 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determinePortWithSslBundleReturnsDefaultSslPortWhenNoAddresses() {
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
+	void determinePortReturnsPortPropertyWhenSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setPort(1234);
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
 	void determinePortReturnsPortPropertyWhenNoAddresses() {
 		this.properties.setPort(1234);
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
@@ -113,6 +126,27 @@ class RabbitPropertiesTests {
 		this.properties.setPort(1234);
 		this.properties.setAddresses(List.of("rabbit1.example.com", "rabbit2.example.com:2345"));
 		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
+	void determinePortReturnsDefaultAmqpsPortWhenFirstAddressHasNoExplicitPortButSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setAddresses(List.of("rabbit1.example.com", "rabbit2.example.com:2345"));
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
+	void determinePortUsesAmqpAddressSchemeWhenFirstAddressHasNoExplicitPortAndSslEnabled() {
+		this.properties.getSsl().setEnabled(true);
+		this.properties.setAddresses(List.of("amqp://root:password@rabbit1.example.com"));
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
+	}
+
+	@Test
+	void determinePortUsesAmqpAddressSchemeWhenFirstAddressHasNoExplicitPortAndSslBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.setAddresses(List.of("amqp://root:password@rabbit1.example.com"));
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test
@@ -268,6 +302,12 @@ class RabbitPropertiesTests {
 	@Test
 	void determineAddressesWithSslUsesDefaultWhenNoAddressesSet() {
 		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determineAddresses()).containsExactly("localhost:5671");
+	}
+
+	@Test
+	void determineAddressesWithSslBundleUsesDefaultWhenNoAddressesSet() {
+		this.properties.getSsl().setBundle("test-bundle");
 		assertThat(this.properties.determineAddresses()).containsExactly("localhost:5671");
 	}
 

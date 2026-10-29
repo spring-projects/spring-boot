@@ -185,7 +185,7 @@ public class RabbitProperties {
 			if (port != null) {
 				return port;
 			}
-			return Boolean.TRUE.equals(getSsl().getEnabled()) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
+			return getSsl().enabledOrBundleConfigured() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
 		return this.parsedAddresses.get(0).port;
 	}
@@ -225,8 +225,9 @@ public class RabbitProperties {
 
 	private List<Address> parseAddresses(List<String> addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
+		boolean sslEnabled = getSsl().enabledOrBundleConfigured();
 		for (String address : addresses) {
-			parsedAddresses.add(new Address(address, Boolean.TRUE.equals(getSsl().getEnabled())));
+			parsedAddresses.add(new Address(address, sslEnabled));
 		}
 		return parsedAddresses;
 	}
@@ -466,12 +467,16 @@ public class RabbitProperties {
 		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
-			boolean defaultEnabled = Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
+			boolean defaultEnabled = enabledOrBundleConfigured();
 			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
 				return defaultEnabled;
 			}
 			Address address = RabbitProperties.this.parsedAddresses.get(0);
 			return address.determineSslEnabled(defaultEnabled);
+		}
+
+		private boolean enabledOrBundleConfigured() {
+			return Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(@Nullable Boolean enabled) {
