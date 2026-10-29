@@ -79,6 +79,23 @@ class ElasticCommonSchemaPropertiesTests {
 	}
 
 	@Test
+	void addToJsonMembersWhenNoNodeNameDoesNotAddNode() {
+		ElasticCommonSchemaProperties properties = new ElasticCommonSchemaProperties(
+				new Service("spring", "1.2.3", "prod", null));
+		JsonWriter<ElasticCommonSchemaProperties> writer = JsonWriter.of(properties::jsonMembers);
+		assertThat(writer.writeToString(properties)).isEqualTo("""
+				{"service":{"name":"spring","version":"1.2.3","environment":"prod"}}""");
+	}
+
+	@Test
+	void addToJsonMembersWhenNoServiceValuesDoesNotAddService() {
+		ElasticCommonSchemaProperties properties = new ElasticCommonSchemaProperties(
+				new Service(null, null, null, null));
+		JsonWriter<ElasticCommonSchemaProperties> writer = JsonWriter.of(properties::jsonMembers);
+		assertThat(writer.writeToString(properties)).isEqualTo("{}");
+	}
+
+	@Test
 	void shouldRegisterRuntimeHints() throws Exception {
 		RuntimeHints hints = new RuntimeHints();
 		new ElasticCommonSchemaPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
