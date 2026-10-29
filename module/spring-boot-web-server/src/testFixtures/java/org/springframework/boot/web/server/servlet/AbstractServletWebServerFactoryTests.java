@@ -1305,7 +1305,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenARequestRemainsInFlightAfterRestartThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
+	void givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
 			throws Exception {
 		ConfigurableServletWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
