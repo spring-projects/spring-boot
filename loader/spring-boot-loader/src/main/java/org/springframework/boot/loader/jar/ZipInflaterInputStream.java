@@ -25,7 +25,19 @@ class ZipInflaterInputStream extends InflaterInputStream {
 	private boolean extraBytesWritten;
 
 	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
-		super(inputStream, inflater, getInflaterBufferSize(size));
+		this(inputStream, inflater, size, size);
+	}
+
+	/**
+	 * Create a new {@link ZipInflaterInputStream} with an input buffer sized for the
+	 * compressed data rather than the inflated data.
+	 * @param inputStream the compressed input stream
+	 * @param inflater the inflater to use
+	 * @param size the uncompressed size
+	 * @param compressedSize the compressed size
+	 */
+	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size, long compressedSize) {
+		super(inputStream, inflater, getInflaterBufferSize(compressedSize));
 		this.available = size;
 	}
 
