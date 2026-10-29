@@ -345,13 +345,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			.toString()
 			.toLowerCase(Locale.ENGLISH);
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
-		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
+		this.metadataCollector.addOrKeepEarliest(ItemMetadata.newGroup(endpointKey, type, type, null));
 		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
 				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
-		this.metadataCollector.add(accessProperty,
+		this.metadataCollector.addOrKeepEarliest(accessProperty,
 				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
 		if (hasMainReadOperation(element)) {
-			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
+			this.metadataCollector.addOrKeepEarliest(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
 					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
 		}
 	}

@@ -47,13 +47,29 @@ class MetadataCollector {
 		this.metadataItems.add(metadata);
 	}
 
-	void add(ItemMetadata metadata, Consumer<ItemMetadata> onConflict) {
+	void addOrKeepEarliest(ItemMetadata metadata) {
+		addOrKeepEarliest(metadata, null);
+	}
+
+	void addOrKeepEarliest(ItemMetadata metadata, Consumer<ItemMetadata> onConflict) {
 		ItemMetadata existing = find(metadata.getName());
-		if (existing != null) {
-			onConflict.accept(existing);
-			return;
+		if (existing == null) {
+			add(metadata);
 		}
-		add(metadata);
+		else {
+			if (onConflict != null) {
+				onConflict.accept(existing);
+			}
+			keepEarliest(existing, metadata);
+		}
+	}
+
+	private void keepEarliest(ItemMetadata existing, ItemMetadata candidate) {
+		if (candidate.getSourceType() != null && (existing.getSourceType() == null
+				|| existing.getSourceType().compareTo(candidate.getSourceType()) > 0)) {
+			this.metadataItems.remove(existing);
+			this.metadataItems.add(candidate);
+		}
 	}
 
 	boolean addIfAbsent(ItemMetadata metadata) {
