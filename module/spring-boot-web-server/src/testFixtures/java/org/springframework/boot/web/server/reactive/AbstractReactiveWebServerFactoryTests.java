@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -471,6 +472,36 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		blockingHandler.completeOne();
 		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
 		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
+	}
+
+	@Test
+	void givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
+			throws Exception {
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		this.webServer.stop();
+		this.webServer.start();
+		Mono<ResponseEntity<Void>> request = getWebClient(this.webServer.getPort()).build()
+			.get()
+			.retrieve()
+			.toBodilessEntity();
+		AtomicReference<ResponseEntity<Void>> responseReference = new AtomicReference<>();
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		request.subscribe((response) -> {
+			responseReference.set(response);
+			responseLatch.countDown();
+		});
+		blockingHandler.awaitQueue();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		assertThat(responseReference.get()).isNull();
+		blockingHandler.completeOne();
+		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
+		assertThat(Awaitility.await().atMost(Duration.ofSeconds(30)).until(result::get, Objects::nonNull))
+			.isEqualTo(GracefulShutdownResult.IDLE);
 	}
 
 	@Test
