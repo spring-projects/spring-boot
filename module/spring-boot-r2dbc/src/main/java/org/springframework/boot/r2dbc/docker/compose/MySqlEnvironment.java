@@ -35,6 +35,9 @@ class MySqlEnvironment {
 
 	private static String extractUsername(Map<String, @Nullable String> env) {
 		String result = env.get("MYSQL_USER");
+		if (result == null) {
+			assertNoFileVariant(env, "MYSQL_USER");
+		}
 		return (result != null) ? result : "root";
 	}
 
@@ -43,7 +46,13 @@ class MySqlEnvironment {
 				"MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
 		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
-		password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
+		if (password == null) {
+			assertNoFileVariant(env, "MYSQL_PASSWORD");
+			password = env.get("MYSQL_ROOT_PASSWORD");
+		}
+		if (password == null) {
+			assertNoFileVariant(env, "MYSQL_ROOT_PASSWORD");
+		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MySQL password found");
 		return (password != null) ? password : "";
 	}
@@ -54,8 +63,18 @@ class MySqlEnvironment {
 
 	private String extractDatabase(Map<String, @Nullable String> env) {
 		String database = env.get("MYSQL_DATABASE");
+		if (database == null) {
+			assertNoFileVariant(env, "MYSQL_DATABASE");
+		}
 		Assert.state(database != null, "No MYSQL_DATABASE defined");
 		return database;
+	}
+
+	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
+		for (String key : keys) {
+			String fileKey = key + "_FILE";
+			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
+		}
 	}
 
 	String getUsername() {
