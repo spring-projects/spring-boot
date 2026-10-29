@@ -20,6 +20,7 @@ import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
@@ -60,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Laura Trotta
+ * @author WooSeung Kim
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -168,6 +170,12 @@ class ElasticsearchRestClientConfigurations {
 			map.from(this.properties::isSocketKeepAlive)
 				.to((keepAlive) -> httpClientBuilder
 					.setIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
+		}
+
+		@Override
+		public void customize(RequestConfig.Builder requestConfigBuilder) {
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this.properties::getResponseTimeout).as(Timeout::of).to(requestConfigBuilder::setResponseTimeout);
 		}
 
 		@Override
