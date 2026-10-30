@@ -96,6 +96,22 @@ class ZipContentTests {
 	}
 
 	@Test
+	void getCommentWhenContentHasNoCommentReturnsNull() throws Exception {
+		File file = createZipWithoutComment();
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.getComment()).isNull();
+		}
+	}
+
+	@Test
+	void getCommentWhenContentHasNoCommentAndIsClosedThrowsException() throws Exception {
+		File file = createZipWithoutComment();
+		ZipContent zip = ZipContent.open(file.toPath());
+		zip.close();
+		assertThatIllegalStateException().isThrownBy(zip::getComment).withMessage("Zip content closed");
+	}
+
+	@Test
 	void getCommentWhenContentHasPrefixReturnsComment() throws Exception {
 		File file = new File(this.tempDir, "prefixed.zip");
 		ByteArrayOutputStream zipData = new ByteArrayOutputStream();
@@ -574,6 +590,16 @@ class ZipContentTests {
 		dataBlock.readFully(buffer, 0);
 		Files.write(file.toPath(), buffer.array());
 		dataBlock.close();
+	}
+
+	private File createZipWithoutComment() throws IOException {
+		File file = new File(this.tempDir, "no-comment.zip");
+		try (ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file))) {
+			zipOutput.putNextEntry(new ZipEntry("1.dat"));
+			zipOutput.write(new byte[] { (byte) 1 });
+			zipOutput.closeEntry();
+		}
+		return file;
 	}
 
 	private static class ZipInfo {
