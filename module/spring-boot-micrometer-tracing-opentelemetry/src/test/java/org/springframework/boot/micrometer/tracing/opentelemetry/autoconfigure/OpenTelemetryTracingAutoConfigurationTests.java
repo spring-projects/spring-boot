@@ -369,18 +369,12 @@ class OpenTelemetryTracingAutoConfigurationTests {
 
 	@Test
 	void shouldConfigureRemoteAndTaggedFields() {
-		this.contextRunner
-			.withPropertyValues("management.tracing.baggage.remote-fields=r1",
-					"management.tracing.baggage.tag-fields=t1")
-			.run((context) -> {
-				CompositeTextMapPropagator propagator = context.getBean(CompositeTextMapPropagator.class);
-				assertThat(propagator).extracting("baggagePropagator.baggageManager.remoteFields")
-					.asInstanceOf(InstanceOfAssertFactories.list(String.class))
-					.containsExactly("r1");
-				assertThat(propagator).extracting("baggagePropagator.baggageManager.tagFields")
-					.asInstanceOf(InstanceOfAssertFactories.list(String.class))
-					.containsExactly("t1");
-			});
+		this.contextRunner.withPropertyValues("management.tracing.baggage.remote-fields=r1").run((context) -> {
+			CompositeTextMapPropagator propagator = context.getBean(CompositeTextMapPropagator.class);
+			assertThat(propagator).extracting("baggagePropagator.remoteFields")
+				.asInstanceOf(InstanceOfAssertFactories.list(String.class))
+				.containsExactly("r1");
+		});
 	}
 
 	@Test
