@@ -1,0 +1,143 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ */
+
+package org.springframework.boot.jersey.autoconfigure;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import org.glassfish.jersey.message.MessageProperties;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.client.RestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests for {@link JerseyAutoConfiguration} when using a custom Jackson 2 ObjectMapper.
+ *
+ * @author Eddú Meléndez
+ * @author Kristoffer Larsen Hopland
+ */
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "spring.jackson2.default-property-inclusion=always",
+				"spring.jackson.default-property-inclusion=always" })
+@DirtiesContext
+@SuppressWarnings("removal")
+class JerseyAutoConfigurationCustomJackson2ObjectMapperProviderTests {
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Test
+	void responseIsSerializedUsingCustomJackson2ObjectMapper() {
+		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
+		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
+		assertThat(this.applicationContext.getBeansOfType(ObjectMapper.class)).hasSize(1);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
+		ServletContainer servlet = (ServletContainer) this.applicationContext
+			.getBean("jerseyServletRegistration", ServletRegistrationBean.class)
+			.getServlet();
+		assertThat(servlet).isNotNull();
+		assertThat(servlet.getApplicationHandler()
+			.getConfiguration()
+			.getProperty(MessageProperties.JSON_MAX_STRING_LENGTH)).isEqualTo(1024);
+	}
+
+	@MinimalWebConfiguration
+	@ApplicationPath("/rest")
+	@Path("/message")
+	public static class Application extends ResourceConfig {
+
+		Application() {
+			register(Application.class);
+			register(new org.glassfish.jersey.jackson.JacksonFeature().maxStringLength(1024));
+		}
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+		}
+
+		@GET
+		public Message message() {
+			return new Message("Jersey", null);
+		}
+
+		static void main(String[] args) {
+			SpringApplication.run(Application.class, args);
+		}
+
+	}
+
+	public static class Message {
+
+		private String subject;
+
+		private @Nullable String body;
+
+		Message(String subject, @Nullable String body) {
+			this.subject = subject;
+			this.body = body;
+		}
+
+		public String getSubject() {
+			return this.subject;
+		}
+
+		public void setSubject(String subject) {
+			this.subject = subject;
+		}
+
+		public @Nullable String getBody() {
+			return this.body;
+		}
+
+		public void setBody(@Nullable String body) {
+			this.body = body;
+		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Configuration
+	@ImportAutoConfiguration({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
+			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+			JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
+
+	}
+
+}
