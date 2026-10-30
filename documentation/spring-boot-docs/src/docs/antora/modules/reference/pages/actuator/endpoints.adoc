@@ -673,7 +673,7 @@ with the `key` listed in the following table:
 | Always responds with `UP`.
 
 | `rabbit`
-| javadoc:org.springframework.boot.rabbitmq.health.RabbitHealthIndicator[]
+| javadoc:org.springframework.boot.rabbitmq.health.RabbitHealthIndicator[] or javadoc:org.springframework.boot.amqp.rabbitmq.health.AmqpRabbitHealthIndicator[]
 | Checks that a Rabbit server is up.
 
 | `redis`
