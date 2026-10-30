@@ -260,6 +260,28 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void escapeControlCharacters() {
+		String input = """
+				{
+				  "a": "alpha\\b\\f\\n\\r\\tbravo"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).containsEntry("a", "alpha\b\f\n\r\tbravo");
+	}
+
+	@Test
+	void escapeUnicode() {
+		String input = """
+				{
+				  "a": "alpha\\u0026bravo"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).containsEntry("a", "alpha&bravo");
+	}
+
+	@Test
 	void escapeBackslashInNestedMap() {
 		String input = """
 				{
@@ -283,6 +305,19 @@ abstract class AbstractJsonParserTests {
 				""";
 		Map<String, Object> map = this.parser.parseMap(input);
 		assertThat(map).extractingByKey("outer", InstanceOfAssertFactories.MAP).containsEntry("a", "alpha\"");
+	}
+
+	@Test
+	void escapeUnicodeInNestedMap() {
+		String input = """
+				{
+				  "outer": {
+				    "a": "alpha\\u0026bravo"
+				  }
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("outer", InstanceOfAssertFactories.MAP).containsEntry("a", "alpha&bravo");
 	}
 
 	@Test
