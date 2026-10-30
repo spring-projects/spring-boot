@@ -167,6 +167,10 @@ public final class ZipContent implements Closeable {
 	 * @return the comment or {@code null}
 	 */
 	public String getComment() {
+		if (this.commentLength == 0) {
+			this.data.ensureOpen(() -> new IllegalStateException("Zip content closed"));
+			return null;
+		}
 		try {
 			return ZipString.readString(this.data, this.commentPos, this.commentLength);
 		}
