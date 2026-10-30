@@ -68,7 +68,7 @@ class PlainTextThreadDumpFormatter {
 		writer.printf("\tat %s%n", element.toString());
 		LockInfo lockInfo = info.getLockInfo();
 		if (firstElement && lockInfo != null) {
-			if (element.getClassName().equals(Object.class.getName()) && element.getMethodName().equals("wait")) {
+			if (isObjectWait(element)) {
 				writer.printf("\t- waiting on %s%n", format(lockInfo));
 			}
 			else {
@@ -83,6 +83,12 @@ class PlainTextThreadDumpFormatter {
 			}
 		}
 		writeMonitors(writer, lockedMonitors);
+	}
+
+	private boolean isObjectWait(StackTraceElement element) {
+		// On Java 19 and later, Object.wait() delegates to the native Object.wait0()
+		return element.getClassName().equals(Object.class.getName())
+				&& (element.getMethodName().equals("wait") || element.getMethodName().equals("wait0"));
 	}
 
 	private String format(LockInfo lockInfo) {
