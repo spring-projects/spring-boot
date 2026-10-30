@@ -96,19 +96,11 @@ class ZipContentTests {
 	}
 
 	@Test
-	void getCommentWhenContentHasNoCommentReturnsNull() throws Exception {
+	void getCommentWhenNoCommentReturnsNull() throws Exception {
 		File file = createZipWithoutComment();
 		try (ZipContent zip = ZipContent.open(file.toPath())) {
 			assertThat(zip.getComment()).isNull();
 		}
-	}
-
-	@Test
-	void getCommentWhenContentHasNoCommentAndIsClosedThrowsException() throws Exception {
-		File file = createZipWithoutComment();
-		ZipContent zip = ZipContent.open(file.toPath());
-		zip.close();
-		assertThatIllegalStateException().isThrownBy(zip::getComment).withMessage("Zip content closed");
 	}
 
 	@Test

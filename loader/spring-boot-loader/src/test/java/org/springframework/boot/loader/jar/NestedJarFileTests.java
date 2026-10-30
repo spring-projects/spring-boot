@@ -225,20 +225,6 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void getCommentWhenJarHasNoCommentAlignsWithJdkJar() throws IOException {
-		File file = new File(this.tempDir, "no-comment.jar");
-		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
-			out.putNextEntry(new ZipEntry("1.dat"));
-			out.write(1);
-			out.closeEntry();
-		}
-		try (NestedJarFile jar = new NestedJarFile(file); JarFile jdkJar = new JarFile(file)) {
-			assertThat(jar.getComment()).isNull();
-			assertThat(jdkJar.getComment()).isNull();
-		}
-	}
-
-	@Test
 	void getCommentWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
@@ -394,7 +380,7 @@ class NestedJarFileTests {
 	}
 
 	@Test // gh-39166
-	void getCommentAlignsWithJdkJar() throws Exception {
+	void entryGetCommentAlignsWithJdkJarEntry() throws Exception {
 		File file = new File(this.tempDir, "testcomments.jar");
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("BOOT-INF/"));
@@ -412,6 +398,20 @@ class NestedJarFileTests {
 		List<String> jdk = collectComments(new JarFile(file));
 		List<String> nested = collectComments(new NestedJarFile(file, "BOOT-INF/classes/"));
 		assertThat(nested).isEqualTo(jdk);
+	}
+
+	@Test
+	void jarGetCommentWhenHasNoCommentAlignsWithJdkJar() throws IOException {
+		File file = new File(this.tempDir, "no-comment.jar");
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+			out.putNextEntry(new ZipEntry("1.dat"));
+			out.write(1);
+			out.closeEntry();
+		}
+		try (NestedJarFile jar = new NestedJarFile(file); JarFile jdkJar = new JarFile(file)) {
+			assertThat(jar.getComment()).isNull();
+			assertThat(jdkJar.getComment()).isNull();
+		}
 	}
 
 	@Test
