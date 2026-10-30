@@ -86,7 +86,6 @@ class PlainTextThreadDumpFormatter {
 	}
 
 	private boolean isObjectWait(StackTraceElement element) {
-		// On Java 19 and later, Object.wait() delegates to the native Object.wait0()
 		return element.getClassName().equals(Object.class.getName())
 				&& (element.getMethodName().equals("wait") || element.getMethodName().equals("wait0"));
 	}
