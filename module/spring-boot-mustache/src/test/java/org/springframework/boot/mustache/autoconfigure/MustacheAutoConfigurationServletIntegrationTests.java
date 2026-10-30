@@ -4,6 +4,7 @@
 
 package org.springframework.boot.mustache.autoconfigure;
 
+import java.io.Reader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +28,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.spy;
 
 /**
  * Integration Tests for {@link MustacheAutoConfiguration}, {@link MustacheViewResolver}
@@ -37,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Moritz Halbritter
+ * @author Van Vo
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -45,6 +52,12 @@ class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Autowired
 	private RestTestClient restTestClient;
+
+	@Autowired
+	private Mustache.Compiler compiler;
+
+	@Autowired
+	private MustacheViewResolver viewResolver;
 
 	@Test
 	void shouldRenderTemplate() {
@@ -73,15 +86,29 @@ class MustacheAutoConfigurationServletIntegrationTests {
 			.value((body) -> assertThat(body).contains("Hello World"));
 	}
 
+	@Test
+	void cachedTemplateIsCompiledOnceForSeparateRequests() {
+		this.viewResolver.clearCache();
+		clearInvocations(this.compiler);
+		for (String message : new String[] { "First request", "Second request" }) {
+			this.restTestClient.get()
+				.uri((uri) -> uri.path("/").queryParam("message", message).build())
+				.exchangeSuccessfully()
+				.expectBody(String.class)
+				.value((body) -> assertThat(body).contains(message));
+		}
+		then(this.compiler).should().compile(any(Reader.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@Import(MinimalWebConfiguration.class)
 	@Controller
 	static class Application {
 
 		@RequestMapping("/")
-		String home(Map<String, Object> model) {
+		String home(@RequestParam(defaultValue = "Hello World") String message, Map<String, Object> model) {
 			model.put("time", new Date());
-			model.put("message", "Hello World");
+			model.put("message", message);
 			model.put("title", "Hello App");
 			return "home";
 		}
@@ -95,10 +122,14 @@ class MustacheAutoConfigurationServletIntegrationTests {
 		}
 
 		@Bean
-		MustacheViewResolver viewResolver() {
-			Mustache.Compiler compiler = Mustache.compiler()
+		Mustache.Compiler compiler() {
+			return spy(Mustache.compiler()
 				.withLoader(new MustacheResourceTemplateLoader(
-						"classpath:/org/springframework/boot/mustache/autoconfigure/", ".html"));
+						"classpath:/org/springframework/boot/mustache/autoconfigure/", ".html")));
+		}
+
+		@Bean
+		MustacheViewResolver viewResolver(Mustache.Compiler compiler) {
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/org/springframework/boot/mustache/autoconfigure/");
 			resolver.setSuffix(".html");
