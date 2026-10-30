@@ -3170,6 +3170,7 @@ bom {
 			]
 		}
 		links {
+			javadoc("https://javadoc.io/doc/com.unboundid/unboundid-ldapsdk/{version}", "com.unboundid")
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
