@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DockerJson}.
@@ -67,6 +69,36 @@ class DockerJsonTests {
 			TestLowercaseResponse response = DockerJson.deserialize(json, TestLowercaseResponse.class);
 			assertThat(response.integer()).isEqualTo(42);
 		});
+	}
+
+	@Test
+	void deserializeWhenMalformedJsonThrowsDockerOutputParseException() {
+		String json = "{ \"value\": ";
+		assertThatExceptionOfType(DockerOutputParseException.class)
+			.isThrownBy(() -> DockerJson.deserialize(json, TestResponse.class))
+			.withMessageContaining(json)
+			.withCauseInstanceOf(JacksonException.class);
+	}
+
+	@Test
+	void deserializeToListWhenMalformedJsonThrowsDockerOutputParseException() {
+		String json = "[{ \"value\": 1 }, { \"value\": ";
+		assertThatExceptionOfType(DockerOutputParseException.class)
+			.isThrownBy(() -> DockerJson.deserializeToList(json, TestResponse.class))
+			.withMessageContaining(json)
+			.withCauseInstanceOf(JacksonException.class);
+	}
+
+	@Test
+	void deserializeToListWhenLineIsNotJsonThrowsDockerOutputParseException() {
+		String json = """
+				{ "Value": 1 }
+				level=warning msg="The Foo variable is not set"
+				""";
+		assertThatExceptionOfType(DockerOutputParseException.class)
+			.isThrownBy(() -> DockerJson.deserializeToList(json, TestResponse.class))
+			.withMessageContaining("level=warning")
+			.withCauseInstanceOf(JacksonException.class);
 	}
 
 	private void withLocale(Locale locale, Runnable runnable) {
