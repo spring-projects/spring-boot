@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -75,7 +76,8 @@ class DockerJsonTests {
 		String json = "{ \"value\": ";
 		assertThatExceptionOfType(DockerOutputParseException.class)
 			.isThrownBy(() -> DockerJson.deserialize(json, TestResponse.class))
-			.withMessageContaining(json);
+			.withMessageContaining(json)
+			.withCauseInstanceOf(JacksonException.class);
 	}
 
 	@Test
@@ -83,7 +85,8 @@ class DockerJsonTests {
 		String json = "[{ \"value\": 1 }, { \"value\": ";
 		assertThatExceptionOfType(DockerOutputParseException.class)
 			.isThrownBy(() -> DockerJson.deserializeToList(json, TestResponse.class))
-			.withMessageContaining(json);
+			.withMessageContaining(json)
+			.withCauseInstanceOf(JacksonException.class);
 	}
 
 	@Test
@@ -94,7 +97,8 @@ class DockerJsonTests {
 				""";
 		assertThatExceptionOfType(DockerOutputParseException.class)
 			.isThrownBy(() -> DockerJson.deserializeToList(json, TestResponse.class))
-			.withMessageContaining("level=warning");
+			.withMessageContaining("level=warning")
+			.withCauseInstanceOf(JacksonException.class);
 	}
 
 	private void withLocale(Locale locale, Runnable runnable) {
