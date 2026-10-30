@@ -650,6 +650,9 @@ public interface JsonWriter<T> {
 		private @Nullable WritableJson getWritableJsonToWrite(@Nullable T extracted, JsonValueWriter valueWriter) {
 			BiConsumer<T, BiConsumer<?, ?>> pairs = this.pairs;
 			if (pairs != null) {
+				if (this.name != null) {
+					return (out) -> valueWriter.writeObject((outPairs) -> pairs.accept(extracted, outPairs));
+				}
 				return (out) -> valueWriter.writePairs((outPairs) -> pairs.accept(extracted, outPairs));
 			}
 			Members<T> members = this.members;
