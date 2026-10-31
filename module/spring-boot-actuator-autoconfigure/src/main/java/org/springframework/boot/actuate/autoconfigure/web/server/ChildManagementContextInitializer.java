@@ -13,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.generate.GeneratedMethod;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
@@ -43,8 +44,9 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Tyler Gregory
  */
-class ChildManagementContextInitializer implements BeanRegistrationAotProcessor, SmartLifecycle {
+class ChildManagementContextInitializer implements BeanRegistrationAotProcessor, SmartLifecycle, DisposableBean {
 
 	private final ManagementContextFactory managementContextFactory;
 
@@ -99,6 +101,14 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	}
 
 	@Override
+	public void destroy() {
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		if (managementContext != null && managementContext.isActive()) {
+			managementContext.close();
+		}
+	}
+
+	@Override
 	public boolean isRunning() {
 		ConfigurableApplicationContext managementContext = this.managementContext;
 		return managementContext != null && managementContext.isRunning();
@@ -107,6 +117,11 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public int getPhase() {
 		return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE - 512;
+	}
+
+	@Override
+	public boolean isPauseable() {
+		return false;
 	}
 
 	@Override

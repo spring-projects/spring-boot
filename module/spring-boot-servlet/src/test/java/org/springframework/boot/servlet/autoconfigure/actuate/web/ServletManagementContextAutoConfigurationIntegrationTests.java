@@ -23,6 +23,8 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author Tyler Gregory
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ServletManagementContextAutoConfigurationIntegrationTests {
@@ -89,6 +92,66 @@ class ServletManagementContextAutoConfigurationIntegrationTests {
 	}
 
 	@Test
+	void childManagementContextShouldBeClosedWhenParentIsStoppedThenClosed() {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					EndpointAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run((context) -> {
+			ConfigurableApplicationContext managementContext = getManagementContext(
+					context.getSourceApplicationContext());
+			context.getSourceApplicationContext().stop();
+			context.getSourceApplicationContext().close();
+			assertThat(managementContext.isActive()).isFalse();
+		});
+	}
+
+	@Test
+	void childManagementContextShouldBeClosedWhenParentIsPausedThenClosed() {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					EndpointAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run((context) -> {
+			ConfigurableApplicationContext managementContext = getManagementContext(
+					context.getSourceApplicationContext());
+			context.getSourceApplicationContext().pause();
+			context.getSourceApplicationContext().close();
+			assertThat(managementContext.isActive()).isFalse();
+		});
+	}
+
+	@Test
+	void childManagementContextShouldKeepRunningWhenParentIsPausedThenRestarted(CapturedOutput output) {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					EndpointAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run((context) -> {
+			ConfigurableApplicationContext managementContext = getManagementContext(
+					context.getSourceApplicationContext());
+			WebServer managementServer = ((WebServerApplicationContext) managementContext).getWebServer();
+			assertThat(managementServer).isNotNull();
+			int port = managementServer.getPort();
+			assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2));
+			context.getSourceApplicationContext().pause();
+			assertThat(managementContext.isRunning()).isTrue();
+			context.getSourceApplicationContext().restart();
+			assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2));
+			assertThat(managementServer.getPort()).isEqualTo(port);
+		});
+	}
+
+	@Test
 	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
@@ -109,13 +172,7 @@ class ServletManagementContextAutoConfigurationIntegrationTests {
 		application.setDefaultProperties(properties);
 		application.setEnvironmentPrefix("my");
 		try (ConfigurableApplicationContext parentContext = application.run()) {
-			Class<?> initializerClass = ClassUtils.forName(
-					"org.springframework.boot.actuate.autoconfigure.web.server.ChildManagementContextInitializer",
-					null);
-			Object initializer = parentContext.getBean(initializerClass);
-			ConfigurableApplicationContext managementContext = (ConfigurableApplicationContext) ReflectionTestUtils
-				.getField(initializer, "managementContext");
-			assertThat(managementContext).isNotNull();
+			ConfigurableApplicationContext managementContext = getManagementContext(parentContext);
 			ConfigurableEnvironment managementEnvironment = managementContext.getEnvironment();
 			assertThat(managementEnvironment).isNotNull();
 			PropertySource<?> systemEnvironmentPropertySource = managementEnvironment.getPropertySources()
@@ -123,6 +180,17 @@ class ServletManagementContextAutoConfigurationIntegrationTests {
 			assertThat(systemEnvironmentPropertySource).isNotNull();
 			assertThat(((PropertySourceInfo) systemEnvironmentPropertySource).getPrefix()).isEqualTo("my");
 		}
+	}
+
+	private ConfigurableApplicationContext getManagementContext(ConfigurableApplicationContext parentContext)
+			throws ClassNotFoundException {
+		Class<?> initializerClass = ClassUtils.forName(
+				"org.springframework.boot.actuate.autoconfigure.web.server.ChildManagementContextInitializer", null);
+		Object initializer = parentContext.getBean(initializerClass);
+		ConfigurableApplicationContext managementContext = (ConfigurableApplicationContext) ReflectionTestUtils
+			.getField(initializer, "managementContext");
+		assertThat(managementContext).isNotNull();
+		return managementContext;
 	}
 
 	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {
