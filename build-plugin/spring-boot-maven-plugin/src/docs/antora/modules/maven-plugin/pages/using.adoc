@@ -57,6 +57,28 @@ To configure your project to inherit from the `spring-boot-starter-parent`, set 
 NOTE: You should need to specify only the Spring Boot version number on this dependency.
 If you import additional starters, you can safely omit the version number.
 
+To activate the parent's pre-configured `repackage` execution, declare the Spring Boot Maven Plugin:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/different-versions-pom.xml[tags=spring-boot-maven-plugin]
+----
+
+Running `mvn package` then invokes `repackage` automatically.
+You do not need to add an `executions` section to the plugin declaration.
+
+To select the application's main class, set the `start-class` Maven property to its fully qualified class name:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/main-class-pom.xml[tags=main-class]
+----
+
+The parent uses this property to configure the main class for the Spring Boot Maven Plugin, including the `repackage` and `run` goals.
+In a repackaged JAR, this is the `Start-Class` manifest entry; the `Main-Class` entry identifies the Spring Boot launcher.
+If `start-class` is not set, the plugin attempts to find the application's main class automatically.
+The `exec.mainClass` property is not used by the Spring Boot Maven Plugin.
+
 With that setup, you can also override individual dependencies by overriding a property in your own project.
 For instance, to use a different version of the SLF4J library and the Spring Data release train, you would add the following to your `pom.xml`:
 
