@@ -10,13 +10,17 @@ import java.util.Properties;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.mail.autoconfigure.MailProperties.Ssl;
+import org.springframework.boot.mail.autoconfigure.MailSenderPropertiesConfiguration.MailSenderPropertiesCondition;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -30,27 +34,33 @@ import org.springframework.util.StringUtils;
  * @author Oliver Gierke
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Van Vo
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.mail.host")
+@Conditional(MailSenderPropertiesCondition.class)
 class MailSenderPropertiesConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(MailConnectionDetails.class)
+	PropertiesMailConnectionDetails mailConnectionDetails(MailProperties properties) {
+		return new PropertiesMailConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(JavaMailSender.class)
-	JavaMailSenderImpl mailSender(MailProperties properties, ObjectProvider<SslBundles> sslBundles) {
+	JavaMailSenderImpl mailSender(MailProperties properties, MailConnectionDetails connectionDetails,
+			ObjectProvider<SslBundles> sslBundles) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
+		sender.setHost(connectionDetails.getHost());
+		sender.setPort(connectionDetails.getPort());
+		sender.setUsername(connectionDetails.getUsername());
+		sender.setPassword(connectionDetails.getPassword());
 		applyProperties(properties, sender, sslBundles.getIfAvailable());
 		return sender;
 	}
 
 	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender,
 			@Nullable SslBundles sslBundles) {
-		sender.setHost(properties.getHost());
-		if (properties.getPort() != null) {
-			sender.setPort(properties.getPort());
-		}
-		sender.setUsername(properties.getUsername());
-		sender.setPassword(properties.getPassword());
 		sender.setProtocol(properties.getProtocol());
 		if (properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(properties.getDefaultEncoding().name());
@@ -92,6 +102,24 @@ class MailSenderPropertiesConfiguration {
 		Properties properties = new Properties();
 		properties.putAll(source);
 		return properties;
+	}
+
+	static class MailSenderPropertiesCondition extends AnyNestedCondition {
+
+		MailSenderPropertiesCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty("spring.mail.host")
+		static class HostProperty {
+
+		}
+
+		@ConditionalOnBean(MailConnectionDetails.class)
+		static class ConnectionDetailsBean {
+
+		}
+
 	}
 
 }
