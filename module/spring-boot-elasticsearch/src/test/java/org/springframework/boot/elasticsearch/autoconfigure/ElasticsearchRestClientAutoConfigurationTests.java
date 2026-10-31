@@ -54,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Laura Trotta
+ * @author WooSeung Kim
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -110,6 +111,21 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				assertThat(connectionConfig.getSocketTimeout()).isEqualTo(Timeout.of(socketTimeout));
 				assertThat(connectionConfig.getConnectTimeout()).isEqualTo(Timeout.of(connectTimeout));
 			});
+	}
+
+	@Test
+	void configureWithNoResponseTimeoutUsesClientDefault() {
+		this.contextRunner.run((context) -> assertThat(context).getBean(Rest5Client.class)
+			.extracting("client.defaultConfig.responseTimeout")
+			.isEqualTo(Timeout.ofMilliseconds(Rest5ClientBuilder.DEFAULT_RESPONSE_TIMEOUT_MILLIS)));
+	}
+
+	@Test
+	void configureWithCustomResponseTimeout() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.response-timeout=45s")
+			.run((context) -> assertThat(context).getBean(Rest5Client.class)
+				.extracting("client.defaultConfig.responseTimeout")
+				.isEqualTo(Timeout.ofSeconds(45)));
 	}
 
 	@Test
