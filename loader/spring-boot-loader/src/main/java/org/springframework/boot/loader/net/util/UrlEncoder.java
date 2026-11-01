@@ -14,7 +14,7 @@ import java.util.HexFormat;
  */
 public final class UrlEncoder {
 
-	private static final int MAXIMUM_ENCODED_SIZE_FOR_CHAR = 9;
+	private static final int MAXIMUM_ENCODED_SIZE_FOR_CODE_POINT = 12;
 
 	private static final boolean[] UNENCODED = new boolean[128];
 	static {
@@ -60,29 +60,38 @@ public final class UrlEncoder {
 		System.arraycopy(path, 0, result, 0, fromIndex);
 		for (int i = fromIndex; i < path.length; i++) {
 			char ch = path[i];
-			result = expandedIfNeeded(result, size, MAXIMUM_ENCODED_SIZE_FOR_CHAR);
+			result = expandedIfNeeded(result, size, MAXIMUM_ENCODED_SIZE_FOR_CODE_POINT);
 			if (!needsEncoding(ch)) {
 				result[size++] = ch;
 				continue;
 			}
-			size = encode(ch, result, size);
+			int codePoint = Character.codePointAt(path, i);
+			i += Character.charCount(codePoint) - 1;
+			size = encode(codePoint, result, size);
 		}
 		return new String(result, 0, size);
 	}
 
-	private static int encode(char ch, char[] result, int size) {
-		if (ch <= 0x007F) {
-			size = encodeByteChar(result, ch, size);
+	private static int encode(int codePoint, char[] result, int size) {
+		if (codePoint <= 0x007F) {
+			size = encodeByteChar(result, codePoint, size);
 			return size;
 		}
-		if (ch <= 0x07FF) {
-			size = encodeByteChar(result, 0xC0 | ((ch >> 6) & 0x1F), size);
-			size = encodeByteChar(result, 0x80 | ((ch >> 0) & 0x3F), size);
+		if (codePoint <= 0x07FF) {
+			size = encodeByteChar(result, 0xC0 | ((codePoint >> 6) & 0x1F), size);
+			size = encodeByteChar(result, 0x80 | ((codePoint >> 0) & 0x3F), size);
 			return size;
 		}
-		size = encodeByteChar(result, 0xE0 | ((ch >> 12) & 0x0F), size);
-		size = encodeByteChar(result, 0x80 | ((ch >> 6) & 0x3F), size);
-		size = encodeByteChar(result, 0x80 | ((ch >> 0) & 0x3F), size);
+		if (codePoint <= 0xFFFF) {
+			size = encodeByteChar(result, 0xE0 | ((codePoint >> 12) & 0x0F), size);
+			size = encodeByteChar(result, 0x80 | ((codePoint >> 6) & 0x3F), size);
+			size = encodeByteChar(result, 0x80 | ((codePoint >> 0) & 0x3F), size);
+			return size;
+		}
+		size = encodeByteChar(result, 0xF0 | ((codePoint >> 18) & 0x07), size);
+		size = encodeByteChar(result, 0x80 | ((codePoint >> 12) & 0x3F), size);
+		size = encodeByteChar(result, 0x80 | ((codePoint >> 6) & 0x3F), size);
+		size = encodeByteChar(result, 0x80 | ((codePoint >> 0) & 0x3F), size);
 		return size;
 	}
 

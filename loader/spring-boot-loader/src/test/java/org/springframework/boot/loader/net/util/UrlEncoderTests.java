@@ -36,6 +36,11 @@ class UrlEncoderTests {
 	}
 
 	@Test
+	void encodeWhenHasFourByteEncodedCharacters() {
+		assertThat(UrlEncoder.encode("\ud842\udfb7/b/C.class")).isEqualTo("%f0%a0%ae%b7/b/C.class");
+	}
+
+	@Test
 	void encodeWhenHasMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
 		assertThat(UrlEncoder.encode("\u00e1/b/\u00c7.class")).isEqualTo("%c3%a1/b/%c3%87.class");
 	}
