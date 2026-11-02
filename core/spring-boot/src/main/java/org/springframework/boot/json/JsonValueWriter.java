@@ -34,10 +34,13 @@ import org.springframework.util.function.ThrowingConsumer;
  *
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Diego Magalhães
  */
 class JsonValueWriter {
 
 	private static final int DEFAULT_MAX_NESTING_DEPTH = 500;
+
+	private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
 	private final Appendable out;
 
@@ -263,31 +266,47 @@ class JsonValueWriter {
 		try {
 			this.out.append('"');
 			String string = value.toString();
+			int start = 0;
 			for (int i = 0; i < string.length(); i++) {
 				char ch = string.charAt(i);
-				switch (ch) {
-					case '"' -> this.out.append("\\\"");
-					case '\\' -> this.out.append("\\\\");
-					case '\b' -> this.out.append("\\b");
-					case '\f' -> this.out.append("\\f");
-					case '\n' -> this.out.append("\\n");
-					case '\r' -> this.out.append("\\r");
-					case '\t' -> this.out.append("\\t");
-					default -> {
-						if (Character.isISOControl(ch)) {
-							this.out.append("\\u");
-							this.out.append(String.format("%04X", (int) ch));
-						}
-						else {
-							this.out.append(ch);
-						}
-					}
-				}
+				start = switch (ch) {
+					case '"' -> appendEscaped(string, start, i, "\\\"");
+					case '\\' -> appendEscaped(string, start, i, "\\\\");
+					case '\b' -> appendEscaped(string, start, i, "\\b");
+					case '\f' -> appendEscaped(string, start, i, "\\f");
+					case '\n' -> appendEscaped(string, start, i, "\\n");
+					case '\r' -> appendEscaped(string, start, i, "\\r");
+					case '\t' -> appendEscaped(string, start, i, "\\t");
+					default -> (Character.isISOControl(ch)) ? appendUnicodeEscaped(string, start, i, ch) : start;
+				};
 			}
+			appendUnescaped(string, start, string.length());
 			this.out.append('"');
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private int appendEscaped(String string, int start, int index, String escape) throws IOException {
+		appendUnescaped(string, start, index);
+		this.out.append(escape);
+		return index + 1;
+	}
+
+	private int appendUnicodeEscaped(String string, int start, int index, char ch) throws IOException {
+		appendUnescaped(string, start, index);
+		this.out.append("\\u");
+		this.out.append(HEX_DIGITS[(ch >> 12) & 0xF]);
+		this.out.append(HEX_DIGITS[(ch >> 8) & 0xF]);
+		this.out.append(HEX_DIGITS[(ch >> 4) & 0xF]);
+		this.out.append(HEX_DIGITS[ch & 0xF]);
+		return index + 1;
+	}
+
+	private void appendUnescaped(String string, int start, int end) throws IOException {
+		if (start < end) {
+			this.out.append(string, start, end);
 		}
 	}
 
