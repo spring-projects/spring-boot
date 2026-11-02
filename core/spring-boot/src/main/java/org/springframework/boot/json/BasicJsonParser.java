@@ -14,7 +14,6 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Really basic JSON parser for when you have nothing else available. Comes with some
@@ -71,20 +70,41 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
-			String[] split = StringUtils.split(pair, ":");
-			Assert.state(split != null, () -> "Unable to parse '%s'".formatted(pair));
-			@Nullable String[] rawElement = StringUtils.trimArrayElements(split);
-			String rawKey = rawElement[0];
-			String rawValue = rawElement[1];
-			Assert.state(rawKey != null, () -> "rawKey is null in '%s'".formatted(pair));
+			int colonIndex = findSeparatorColon(pair);
+			Assert.state(colonIndex != -1, () -> "Unable to parse '%s'".formatted(pair));
+			String rawKey = pair.substring(0, colonIndex).trim();
+			String rawValue = pair.substring(colonIndex + 1).trim();
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
 			String key = trimEdges(rawKey, '"', '"');
-			Assert.state(rawValue != null, () -> "rawValue is null in '%s'".formatted(pair));
 			Object value = parseInternal(nesting, rawValue);
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	private static int findSeparatorColon(String pair) {
+		boolean inString = false;
+		boolean escape = false;
+		for (int i = 0; i < pair.length(); i++) {
+			char ch = pair.charAt(i);
+			if (escape) {
+				escape = false;
+				continue;
+			}
+			if (ch == '\\') {
+				escape = true;
+				continue;
+			}
+			if (ch == '"') {
+				inString = !inString;
+				continue;
+			}
+			if (ch == ':' && !inString) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private Object parseNumber(String json) {
