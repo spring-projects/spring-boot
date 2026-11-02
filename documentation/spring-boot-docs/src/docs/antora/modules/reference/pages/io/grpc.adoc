@@ -169,7 +169,7 @@ protobuf {
 }
 ----
 
-The `org.springframework.boot` reacts to the `com.google.protobuf` plugin and configures `protoc` and its version.
+The `org.springframework.boot` plugin reacts to the `com.google.protobuf` plugin and configures `protoc` and its version.
 Additionally, because the `protobuf` extension has been configured to use the `grpc` plugin, the `org.springframework.boot` plugin also configures `protoc-gen-grpc-java` and its version.
 
 The `.proto` files should be added to `src/main/proto`.
@@ -449,7 +449,7 @@ Spring gRPC includes features that allow you to secure your Netty based server a
 This follows similar patterns to those you would use to secure a regular web application.
 
 Spring Boot provides auto-configuration for both javadoc:org.springframework.grpc.server.security.GrpcSecurity[] and javadoc:org.springframework.grpc.server.security.SecurityGrpcExceptionHandler[] beans.
-Typically gRPC application are then secured using javadoc:org.springframework.security.access.prepost.PreAuthorize[format=annotation] annotations on your gRPC service beans, or a javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean.
+Typically, gRPC applications are then secured using javadoc:org.springframework.security.access.prepost.PreAuthorize[format=annotation] annotations on your gRPC service beans, or a javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean.
 
 For more details, please see {url-spring-grpc-docs}/server.html#_declarative_security_with_spring_security[the Spring gRPC documentation].
 
@@ -465,12 +465,12 @@ Cross-Site Request Forgery (CSRF) protection is incompatible with the gRPC proto
 If you prefer to configure your own CSRF protection, you can switch this off by setting configprop:spring.grpc.server.security.csrf.enabled[] to `false`.
 
 To help with manual Security configuration, Spring Boot provides request matchers for gRPC services.
-Matches are available for both servlet and reactive stacks.
+Matchers are available for both servlet and reactive stacks.
 For example, the following will include all gRPC services with the exception of "`special`".
 
 include-code::MySecurityConfiguration[]
 
-NOTE: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
+NOTE: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.reactive.GrpcRequest[format=full].
 
 
 
@@ -480,7 +480,7 @@ NOTE: For reactive matches use javadoc:org.springframework.boot.grpc.server.auto
 https://oauth.net/2/[OAuth2] is a widely used authorization framework.
 Spring Boot's OAuth2 Resource Server support in compatible with gRPC and may be configured in the usual way.
 
-For details of how to configure an OAuth2 Resource Server to use with your gRPC server application, see the xref:security/oauth2.adoc#security.oauth2.server["`OAuth2`" section] of under "`Security`".
+For details of how to configure an OAuth2 Resource Server to use with your gRPC server application, see the xref:security/oauth2.adoc#security.oauth2.server["`OAuth2`" section] under "`Security`".
 
 
 
@@ -495,7 +495,7 @@ This includes the W3C `baggage` header as well as the individual metadata keys l
 
 NOTE: The interceptor is provided by `micrometer-core`, so it is only auto-configured when that dependency is on the classpath (for example through `spring-boot-starter-actuator`).
 
-TIP: If you use Micrometer, but prefer to not to use it for gRPC, you can set configprop:spring.grpc.server.observation.enabled[] to `false`.
+TIP: If you use Micrometer, but prefer not to use it for gRPC, you can set configprop:spring.grpc.server.observation.enabled[] to `false`.
 
 
 
@@ -525,7 +525,7 @@ TIP: You can use the `basePackageClasses` or `basePackages` attribute of javadoc
 
 When the `target` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] uses a logical channel name, you'll need to provide some properties so that Spring Boot can find the actual gRPC server to call.
 
-To do that, you can add an entry using `spring.grpc.channel.<name>.*` properties.
+To do that, you can add an entry using `spring.grpc.client.channel.<name>.*` properties.
 Typically, you'll configure the actual real `target`, along with any other settings that are unique to the channel.
 
 For example, the following will configure `myservice` to use the real target of `static://grpc.example.com:9090`.
@@ -539,9 +539,9 @@ spring:
       channel:
         myservice:
           target: static://grpc.example.com:9090
+          keepalive:
+            timeout: 40s
           inbound:
-            keepalive:
-              timeout: 40s
             message:
               max-size: 8MB
 ----
@@ -552,7 +552,7 @@ spring:
 
 With your javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotations in place, and your properties written, you can use stubs as you would any other bean.
 
-For example, here's the `HelloWorldStub` being injected into a `ApplicationRunner` bean:
+For example, here's the `HelloWorldBlockingStub` being injected into an `ApplicationRunner` bean:
 
 include-code::MyApplicationRunner[]
 
@@ -564,7 +564,7 @@ include-code::MyApplicationRunner[]
 Under the hood, remote gRPC network calls are made using Netty.
 If you find that the version of Netty provided by the `spring-boot-starter-grpc-client` starter POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
 
-To switch, you can excluded `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
+To switch, you can exclude `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
 For example:
 
 
@@ -614,8 +614,8 @@ dependencies {
 [[io.grpc.client.ssl]]
 === SSL Support
 
-Client gRPC applications can connect to gRPC services using SSL/TSL encrypted connections.
-You can configure gRPC connections to use standard one-way-TLS, or mutual TLS
+Client gRPC applications can connect to gRPC services using SSL/TLS encrypted connections.
+You can configure gRPC connections to use standard one-way TLS, or mutual TLS.
 
 
 
@@ -662,7 +662,7 @@ spring:
 
 [TIP]
 ====
-To temporarily disable client SSL support – to aid with testing, for example – set `bypass-certificate-validation` to `true` on your channel config:
+To temporarily bypass server certificate validation – to aid with testing, for example – set `bypass-certificate-validation` to `true` on your channel config:
 
 [configprops,yaml]
 ----
@@ -680,13 +680,13 @@ spring:
 [[io.grpc.client.in-process]]
 === Using In-Process Channels
 
-You can communicate with an xref:io/grpc.adoc#io.grpc.server.in-process[in-process server] (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath.
+You can communicate with an xref:io/grpc.adoc#io.grpc.server.in-process[in-process server] (i.e. not listening on a network port) by including the `io.grpc:grpc-inprocess` dependency on your classpath.
 
 In this mode, the in-process channel factory is auto-configured in addition to the regular channel factories (e.g. Netty).
 To prevent users from having to deal with multiple channel factories, a composite channel factory is configured as the primary channel factory bean.
 The composite consults its composed factories to find the first one that supports the channel target.
 
-To use the in-process server, the channel target must be set to `in-process:<name>`
+To use the in-process server, the channel target must be set to `in-process:<name>`.
 
 TIP: To disable the in-process channel factory, you can set the configprop:spring.grpc.client.inprocess.enabled[] property to `false`.
 
@@ -702,7 +702,7 @@ When Micrometer Tracing is also available, the trace context and the current xre
 
 NOTE: The interceptor is provided by `micrometer-core`, so it is only auto-configured when that dependency is on the classpath (for example through `spring-boot-starter-actuator`).
 
-TIP: If you use Micrometer, but prefer to not to use it for gRPC, you can set configprop:spring.grpc.client.observation.enabled[] to `false`.
+TIP: If you use Micrometer, but prefer not to use it for gRPC, you can set configprop:spring.grpc.client.observation.enabled[] to `false`.
 
 
 
@@ -714,7 +714,7 @@ Each customizer is called with the logical target name and the javadoc:io.grpc.M
 There's also a convenient `matching(String pattern)` factory method that will limit customizations to targets that match the given regex pattern.
 
 A common customizer use-case is to add {url-spring-grpc-docs}/client.html#_http_headers[security interceptors] to the builder.
-For example, here we're adding the javadoc:org.springframework.grpc.client.interceptor.security.BearerTokenAuthenticationInterceptor[] to the target matching "`hello`":
+For example, here we're adding the javadoc:org.springframework.grpc.client.interceptor.security.BasicAuthenticationInterceptor[] to the target matching "`hello`":
 
 include-code::MyGrpcConfiguration[]
 
@@ -742,7 +742,7 @@ By default, using javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoC
 * Disable javadoc:org.springframework.grpc.server.GrpcServerFactory[] bean auto-configuration.
 * Disable javadoc:org.springframework.grpc.client.GrpcChannelFactory[] bean auto-configuration.
 
-The following example shows how you can use  javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] to test a gRPC server application:
+The following example shows how you can use javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] to test a gRPC server application:
 
 include-code::MyGrpcTests[]
 
