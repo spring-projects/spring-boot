@@ -4,13 +4,29 @@
 
 package org.springframework.boot.json;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.SplittableRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -30,14 +46,17 @@ import org.springframework.boot.json.JsonWriter.ValueProcessor;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link JsonWriter}.
  *
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Diego Magalhães
  */
 class JsonWriterTests {
 
@@ -966,6 +985,522 @@ class JsonWriterTests {
 						? string.toUpperCase(Locale.ROOT) : null;
 				members.applyingValueProcessor(ValueProcessor.of(String.class, toUpperCase));
 			});
+		}
+
+	}
+
+	/**
+	 * Tests for string escaping.
+	 */
+	@Nested
+	class StringEscapingTests {
+
+		private static final List<Charset> CHARSETS = List.of(StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1,
+				StandardCharsets.US_ASCII, StandardCharsets.UTF_16);
+
+		private final JsonWriter<Object> writer = JsonWriter.standard();
+
+		@Test
+		void writeWhenEmptyString() {
+			assertThat(this.writer.writeToString("")).isEqualTo("\"\"");
+			assertThat(this.writer.write("").toByteArray(StandardCharsets.UTF_16))
+				.isEqualTo(bytes("FE FF 00 22 00 22"));
+		}
+
+		@Test
+		void writeEscapesEveryIsoControlCharacter() {
+			List<String> values = isoControlValues();
+			assertThat(values).hasSize(67);
+			for (String value : values) {
+				assertThat(this.writer.writeToString(value)).isEqualTo(expectedJson(value));
+			}
+			assertThat(this.writer.writeToString("\u0000\u001F\u007F\u0085\u009F"))
+				.isEqualTo("\"\\u0000\\u001F\\u007F\\u0085\\u009F\"")
+				.hasSize(32);
+		}
+
+		@Test
+		void writeDoesNotEscapeOtherCharacters() {
+			StringBuilder printable = new StringBuilder();
+			for (char ch = 0x20; ch < 0x7F; ch++) {
+				if (ch != '"' && ch != '\\') {
+					printable.append(ch);
+				}
+			}
+			List<String> values = List.of(printable.toString(), "/", "\u2028", "\u2029", "\u00A0", "\u00AD", "\uFEFF",
+					"\uFFFD");
+			for (String value : values) {
+				assertThat(this.writer.writeToString(value)).isEqualTo("\"" + value + "\"");
+			}
+			WritableJson json = this.writer.write("\u2028\u2029/");
+			assertThat(json.toByteArray(StandardCharsets.UTF_8)).isEqualTo(bytes("22 E2 80 A8 E2 80 A9 2F 22"));
+			assertThat(json.toByteArray(StandardCharsets.US_ASCII)).isEqualTo(bytes("22 3F 3F 2F 22"));
+		}
+
+		@Test
+		void writeEscapesQuoteAndBackslash() {
+			for (String value : List.of("\"", "\\", "\"\"", "\\\"", "a\"b\\c", "\"abc", "abc\"")) {
+				assertThat(this.writer.writeToString(value)).isEqualTo(expectedJson(value));
+			}
+			assertThat(this.writer.writeToString("a\"b\\c")).isEqualTo("\"a\\\"b\\\\c\"");
+		}
+
+		@Test
+		void writeWhenEscapesAtStartEndAndAdjacent() {
+			for (String value : List.of("\nabc", "abc\n", "\n\n\t\r", "a\n\nb", "\u0001\u0002")) {
+				assertThat(this.writer.writeToString(value)).isEqualTo(expectedJson(value));
+			}
+			assertThat(this.writer.writeToString("\n\n\t\r")).isEqualTo("\"\\n\\n\\t\\r\"");
+		}
+
+		@Test
+		void writeWhenLongStrings() {
+			List<String> values = new ArrayList<>();
+			values.add("a".repeat(1_048_576));
+			values.add("a\n".repeat(524_288));
+			values.add("\"".repeat(100_000));
+			for (int length : new int[] { 8191, 8192, 8193, 16385 }) {
+				values.add(withEscapeAt(length, 8191));
+				values.add(withEscapeAt(length, length - 1));
+			}
+			for (String value : values) {
+				String expected = expectedJson(value);
+				assertThat(this.writer.writeToString(value)).isEqualTo(expected);
+				assertThat(this.writer.write(value).toByteArray(StandardCharsets.UTF_8))
+					.isEqualTo(encode(expected, StandardCharsets.UTF_8));
+			}
+		}
+
+		@Test
+		void writeWhenSurrogates() {
+			for (String value : surrogateValues()) {
+				WritableJson json = this.writer.write(value);
+				assertThat(json.toJsonString()).isEqualTo(expectedJson(value)).doesNotContain("\\u");
+				for (Charset charset : CHARSETS) {
+					assertThat(json.toByteArray(charset)).isEqualTo(encode(json.toJsonString(), charset));
+				}
+			}
+			assertThat(this.writer.write("\uD83D\"").toByteArray(StandardCharsets.UTF_8))
+				.isEqualTo(bytes("22 3F 5C 22 22"));
+			assertThat(this.writer.write("\uD83D\"").toByteArray(StandardCharsets.UTF_16))
+				.isEqualTo(bytes("FE FF 00 22 FF FD 00 5C 00 22 00 22"));
+			assertThat(this.writer.write("a\uD83D").toByteArray(StandardCharsets.UTF_8))
+				.isEqualTo(bytes("22 61 3F 22"));
+			assertThat(this.writer.write("\uDE00b").toByteArray(StandardCharsets.UTF_8))
+				.isEqualTo(bytes("22 3F 62 22"));
+			WritableJson emoji = this.writer.write("\uD83D\uDE00");
+			assertThat(emoji.toByteArray(StandardCharsets.UTF_8)).isEqualTo(bytes("22 F0 9F 98 80 22"));
+			assertThat(emoji.toByteArray(StandardCharsets.US_ASCII)).isEqualTo(bytes("22 3F 22"));
+			assertThat(emoji.toByteArray(StandardCharsets.ISO_8859_1)).isEqualTo(bytes("22 3F 22"));
+			assertThat(emoji.toByteArray(StandardCharsets.UTF_16)).isEqualTo(bytes("FE FF 00 22 D8 3D DE 00 00 22"));
+		}
+
+		@Test
+		void writeToByteArrayMatchesEncodedJsonString() {
+			for (String value : randomValues()) {
+				for (Object shape : shapes(value)) {
+					WritableJson json = this.writer.write(shape);
+					String jsonString = json.toJsonString();
+					for (Charset charset : CHARSETS) {
+						assertThat(json.toByteArray(charset)).isEqualTo(encode(jsonString, charset));
+					}
+				}
+			}
+		}
+
+		@Test
+		void writeNamesRequiringEscape() {
+			String name = "a\"b\n\u0001";
+			assertThat(this.writer.writeToString(Map.of(name, 1))).isEqualTo("{" + expectedJson(name) + ":1}")
+				.isEqualTo("{\"a\\\"b\\n\\u0001\":1}");
+			JsonWriter<Object> writer = JsonWriter.of((members) -> members.add("x\ty", "v"));
+			assertThat(writer.writeToString("ignored")).isEqualTo("{\"x\\ty\":\"v\"}");
+		}
+
+		@Test
+		void writeWhenValueIsNotAString() {
+			assertThat(this.writer.writeToString(new StringBuilder("a\"b"))).isEqualTo("\"a\\\"b\"");
+			assertThat(this.writer.writeToString(new ToStringValue("q\"\n"))).isEqualTo("\"q\\\"\\n\"");
+			assertThat(this.writer.writeToString(Double.NaN)).isEqualTo("\"NaN\"");
+		}
+
+		@Test
+		void writeWhenToStringReturnsNullThrowsNullPointerException() {
+			ToStringValue value = new ToStringValue(null);
+			assertThatNullPointerException().isThrownBy(() -> this.writer.writeToString(value));
+			assertThatNullPointerException()
+				.isThrownBy(() -> this.writer.write(value).toByteArray(StandardCharsets.UTF_8));
+		}
+
+		@Test
+		void writeWhenToStringThrowsPropagatesException() {
+			Object value = new Object() {
+
+				@Override
+				public String toString() {
+					throw new IllegalStateException("boom");
+				}
+
+			};
+			assertThatIllegalStateException().isThrownBy(() -> this.writer.writeToString(value)).withMessage("boom");
+			assertThatIllegalStateException()
+				.isThrownBy(() -> this.writer.write(value).toByteArray(StandardCharsets.UTF_8))
+				.withMessage("boom");
+		}
+
+		@Test
+		void writeToWriterAndOutputStreamMatchesToJsonString() throws IOException {
+			for (Object shape : surrogateAndRandomShapes()) {
+				WritableJson json = this.writer.write(shape);
+				String jsonString = json.toJsonString();
+				StringWriter stringWriter = new StringWriter();
+				json.toWriter(stringWriter);
+				assertThat(stringWriter).hasToString(jsonString);
+				for (Charset charset : CHARSETS) {
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					json.toOutputStream(outputStream, charset);
+					assertThat(outputStream.toByteArray()).isEqualTo(encode(jsonString, charset));
+				}
+			}
+		}
+
+		@Test
+		void writeToAppendableReceivesSameContent() throws IOException {
+			for (Object shape : surrogateAndRandomShapes()) {
+				WritableJson json = this.writer.write(shape);
+				StringBuilder content = new StringBuilder();
+				json.to(forwarding(content));
+				assertThat(content).hasToString(json.toJsonString());
+			}
+		}
+
+		@Test
+		void writeToFixedCapacityCharBufferThrowsBufferOverflowException() {
+			assertThatExceptionOfType(BufferOverflowException.class)
+				.isThrownBy(() -> this.writer.write("abcdef").to(CharBuffer.allocate(4)));
+		}
+
+		@Test
+		void writeWhenDefaultLocaleIsNotRoot() {
+			List<String> values = isoControlValues();
+			List<String> expected = values.stream().map(this::expectedJson).toList();
+			Locale defaultLocale = Locale.getDefault();
+			Locale displayLocale = Locale.getDefault(Locale.Category.DISPLAY);
+			Locale formatLocale = Locale.getDefault(Locale.Category.FORMAT);
+			try {
+				for (String tag : List.of("tr-TR", "th-TH-u-nu-thai", "ar-SA-u-nu-arab", "hi-IN-u-nu-deva")) {
+					Locale.setDefault(Locale.forLanguageTag(tag));
+					for (int i = 0; i < values.size(); i++) {
+						assertThat(this.writer.writeToString(values.get(i))).as(tag).isEqualTo(expected.get(i));
+					}
+				}
+			}
+			finally {
+				Locale.setDefault(defaultLocale);
+				Locale.setDefault(Locale.Category.DISPLAY, displayLocale);
+				Locale.setDefault(Locale.Category.FORMAT, formatLocale);
+			}
+		}
+
+		@Test
+		void writeToByteArrayWhenCalledRepeatedlyOnSameThread() {
+			List<String> values = List.of("a".repeat(100_000), "x", "a\uD83D", "\uDE00b");
+			for (Charset charset : List.of(StandardCharsets.UTF_8, StandardCharsets.UTF_16, StandardCharsets.UTF_8)) {
+				for (String value : values) {
+					assertThat(this.writer.write(value).toByteArray(charset)).as(charset.name())
+						.isEqualTo(encode(expectedJson(value), charset));
+				}
+			}
+			this.writer.write("a\uD83D").toByteArray(StandardCharsets.UTF_8);
+			assertThat(this.writer.write("\uDE00b").toByteArray(StandardCharsets.UTF_8))
+				.isEqualTo(bytes("22 3F 62 22"));
+		}
+
+		@Test
+		void writeToByteArrayWhenValueToStringReentersToByteArray() {
+			// Characterizes current behavior of a re-entrant call on the same thread
+			// (latent bug, reported separately); not a contract
+			AtomicReference<byte[]> inner = new AtomicReference<>();
+			Object value = new Object() {
+
+				@Override
+				public String toString() {
+					inner.set(JsonWriter.standard().write("inner").toByteArray(StandardCharsets.UTF_8));
+					return "X";
+				}
+
+			};
+			byte[] outer = JsonWriter.standard().write(value).toByteArray(StandardCharsets.UTF_8);
+			assertThat(inner.get()).isEqualTo("\"\"inner\"".getBytes(StandardCharsets.UTF_8));
+			assertThat(outer).isEqualTo("X\"".getBytes(StandardCharsets.UTF_8));
+		}
+
+		@Test
+		void writeWhenSurrogatesStraddleBufferBoundaries() throws IOException {
+			List<String> values = boundaryValues();
+			assertThat(values).hasSize(470);
+			for (int i = 0; i < values.size(); i++) {
+				String value = values.get(i);
+				String expected = expectedJson(value);
+				WritableJson json = this.writer.write(value);
+				assertThat(this.writer.writeToString(value)).as("writeToString %s", i).isEqualTo(expected);
+				assertThat(json.toJsonString()).as("toJsonString %s", i).isEqualTo(expected);
+				StringWriter stringWriter = new StringWriter();
+				json.toWriter(stringWriter);
+				assertThat(stringWriter).as("toWriter %s", i).hasToString(expected);
+				StringBuilder forwarded = new StringBuilder();
+				json.to(forwarding(forwarded));
+				assertThat(forwarded).as("to(Appendable) %s", i).hasToString(expected);
+				for (Charset charset : CHARSETS) {
+					byte[] expectedBytes = encode(expected, charset);
+					assertThat(json.toByteArray(charset)).as("toByteArray %s %s", charset, i).isEqualTo(expectedBytes);
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					json.toOutputStream(outputStream, charset);
+					assertThat(outputStream.toByteArray()).as("toOutputStream %s %s", charset, i)
+						.isEqualTo(expectedBytes);
+				}
+			}
+		}
+
+		@Test
+		void writeWhenAppendableThrowsIOExceptionThrowsUncheckedIOException() {
+			assertThatExceptionOfType(UncheckedIOException.class)
+				.isThrownBy(() -> this.writer.write("abc").to(throwingAppendable(true)))
+				.havingCause()
+				.isInstanceOf(IOException.class)
+				.withMessage("x");
+			assertThatExceptionOfType(UncheckedIOException.class)
+				.isThrownBy(() -> this.writer.write("a\nb").to(throwingAppendable(false)))
+				.havingCause()
+				.isInstanceOf(IOException.class)
+				.withMessage("x");
+		}
+
+		private List<String> isoControlValues() {
+			List<String> values = new ArrayList<>();
+			StringBuilder all = new StringBuilder();
+			StringBuilder interleaved = new StringBuilder("a");
+			for (char ch = 0; ch <= 0x9F; ch++) {
+				if (Character.isISOControl(ch)) {
+					values.add(String.valueOf(ch));
+					all.append(ch);
+					interleaved.append(ch).append('a');
+				}
+			}
+			assertThat(all).hasSize(65);
+			values.add(all.toString());
+			values.add(interleaved.toString());
+			return values;
+		}
+
+		private String withEscapeAt(int length, int index) {
+			char[] chars = new char[length];
+			Arrays.fill(chars, 'a');
+			if (index < length) {
+				chars[index] = (index == length - 1) ? '"' : '\n';
+			}
+			return new String(chars);
+		}
+
+		private List<String> surrogateValues() {
+			return List.of("\uD83D\uDE00", "\u4E2D\u6587", "a\uD83D", "\uD83D\"", "\uD83D\n", "\uDE00b",
+					"\uDE00\uD83D");
+		}
+
+		private List<String> randomValues() {
+			Random random = new Random(4711);
+			List<String> values = new ArrayList<>();
+			for (int i = 0; i < 2000; i++) {
+				int length = (i % 100 == 99) ? 9000 + random.nextInt(11001) : random.nextInt(601);
+				StringBuilder value = new StringBuilder(length + 1);
+				while (value.length() < length) {
+					appendRandomCharacter(value, random);
+				}
+				values.add(value.toString());
+			}
+			return values;
+		}
+
+		private void appendRandomCharacter(StringBuilder value, Random random) {
+			int kind = random.nextInt(100);
+			if (kind < 50) {
+				value.append((char) (0x20 + random.nextInt(0x5F)));
+			}
+			else if (kind < 58) {
+				value.append((char) random.nextInt(0x20));
+			}
+			else if (kind < 60) {
+				value.append((char) (0x7F + random.nextInt(0x21)));
+			}
+			else if (kind < 66) {
+				value.append("\"\\/".charAt(random.nextInt(3)));
+			}
+			else if (kind < 68) {
+				value.append((char) (0x2028 + random.nextInt(2)));
+			}
+			else if (kind < 78) {
+				value.append((char) ((random.nextBoolean() ? 0x00C0 : 0x4E00) + random.nextInt(0x100)));
+			}
+			else if (kind < 88) {
+				value.appendCodePoint(0x10000 + random.nextInt(0x100000));
+			}
+			else if (kind < 94) {
+				value.append((char) (0xD800 + random.nextInt(0x400)));
+			}
+			else {
+				value.append((char) (0xDC00 + random.nextInt(0x400)));
+			}
+		}
+
+		private List<Object> shapes(String value) {
+			return List.of(value, Map.of(value, 1), List.of(value, Map.of("k", value)));
+		}
+
+		private List<Object> surrogateAndRandomShapes() {
+			List<Object> shapes = new ArrayList<>();
+			surrogateValues().forEach((value) -> shapes.addAll(shapes(value)));
+			randomValues().forEach((value) -> shapes.addAll(shapes(value)));
+			return shapes;
+		}
+
+		private List<String> boundaryValues() {
+			List<String> values = new ArrayList<>();
+			for (int boundary = 2048; boundary <= 65536; boundary *= 2) {
+				for (int offset = -6; offset <= 0; offset++) {
+					for (String prefix : List.of("", "\n")) {
+						String run = prefix + "x".repeat(boundary + offset);
+						values.add(run + "\uD83D\uDE00" + "x".repeat(10));
+						values.add(run + "\uD83D\"");
+						values.add(run + "\uD83D\n");
+						values.add(run + "\uD83D");
+						values.add(run + "\uDE00" + "x".repeat(10));
+					}
+				}
+			}
+			SplittableRandom random = new SplittableRandom(2026);
+			for (int i = 0; i < 50; i++) {
+				int length = 8000 + random.nextInt(62001);
+				StringBuilder value = new StringBuilder(length + 1);
+				while (value.length() < length) {
+					int kind = random.nextInt(100);
+					if (kind < 50) {
+						value.append((char) ('a' + random.nextInt(26)));
+					}
+					else if (kind < 75) {
+						value.append((char) (0x4E00 + random.nextInt(0x5000)));
+					}
+					else if (kind < 85) {
+						value.append((char) (0xA0 + random.nextInt(0x60)));
+					}
+					else {
+						value.appendCodePoint(0x1F300 + random.nextInt(0x300));
+					}
+				}
+				values.add(value.toString());
+			}
+			return values;
+		}
+
+		private String expectedJson(String value) {
+			StringBuilder expected = new StringBuilder("\"");
+			for (int i = 0; i < value.length(); i++) {
+				char ch = value.charAt(i);
+				switch (ch) {
+					case '"' -> expected.append("\\\"");
+					case '\\' -> expected.append("\\\\");
+					case '\b' -> expected.append("\\b");
+					case '\f' -> expected.append("\\f");
+					case '\n' -> expected.append("\\n");
+					case '\r' -> expected.append("\\r");
+					case '\t' -> expected.append("\\t");
+					default -> expected
+						.append(Character.isISOControl(ch) ? String.format(Locale.ROOT, "\\u%04X", (int) ch) : ch);
+				}
+			}
+			return expected.append('"').toString();
+		}
+
+		private byte[] encode(String content, Charset charset) {
+			try {
+				ByteBuffer buffer = charset.newEncoder()
+					.onMalformedInput(CodingErrorAction.REPLACE)
+					.onUnmappableCharacter(CodingErrorAction.REPLACE)
+					.encode(CharBuffer.wrap(content));
+				byte[] bytes = new byte[buffer.remaining()];
+				buffer.get(bytes);
+				return bytes;
+			}
+			catch (CharacterCodingException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private byte[] bytes(String hex) {
+			return HexFormat.ofDelimiter(" ").parseHex(hex);
+		}
+
+		private Appendable forwarding(StringBuilder target) {
+			return new Appendable() {
+
+				@Override
+				public Appendable append(@Nullable CharSequence csq) {
+					target.append(csq);
+					return this;
+				}
+
+				@Override
+				public Appendable append(@Nullable CharSequence csq, int start, int end) {
+					target.append(csq, start, end);
+					return this;
+				}
+
+				@Override
+				public Appendable append(char c) {
+					target.append(c);
+					return this;
+				}
+
+			};
+		}
+
+		private Appendable throwingAppendable(boolean throwOnChar) {
+			return new Appendable() {
+
+				@Override
+				public Appendable append(@Nullable CharSequence csq) throws IOException {
+					throw new IOException("x");
+				}
+
+				@Override
+				public Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
+					throw new IOException("x");
+				}
+
+				@Override
+				public Appendable append(char c) throws IOException {
+					if (throwOnChar) {
+						throw new IOException("x");
+					}
+					return this;
+				}
+
+			};
+		}
+
+		static final class ToStringValue {
+
+			private final @Nullable String toString;
+
+			ToStringValue(@Nullable String toString) {
+				this.toString = toString;
+			}
+
+			@Override
+			@SuppressWarnings("NullAway") // Test null toString()
+			public String toString() {
+				return this.toString;
+			}
+
 		}
 
 	}
