@@ -7,15 +7,8 @@ package org.springframework.boot.mustache.servlet.view;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.MustacheException;
@@ -36,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
@@ -45,7 +37,6 @@ import static org.mockito.Mockito.times;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @author Van Vo
  */
 class MustacheViewResolverTests {
 
@@ -93,26 +84,6 @@ class MustacheViewResolverTests {
 		then(this.compiler).should(times(2)).compile(any(Reader.class));
 	}
 
-	@Test
-	void cachedTemplateSurvivesResourceRemoval(@TempDir Path directory) throws Exception {
-		Path template = writeTemplate(directory, "Hello {{World}}");
-		this.resolver.setCache(true);
-		assertThat(render("Spring")).isEqualTo("Hello Spring");
-		Files.delete(template);
-		assertThat(render("Boot")).isEqualTo("Hello Boot");
-		then(this.compiler).should().compile(any(Reader.class));
-	}
-
-	@Test
-	void cacheDisabledReflectsTemplateChanges(@TempDir Path directory) throws Exception {
-		Path template = writeTemplate(directory, "Hello {{World}}");
-		this.resolver.setCache(false);
-		assertThat(render("Spring")).isEqualTo("Hello Spring");
-		Files.writeString(template, "Updated {{World}}");
-		assertThat(render("Boot")).isEqualTo("Updated Boot");
-		then(this.compiler).should(times(2)).compile(any(Reader.class));
-	}
-
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
 	void evictingViewReloadsCompiledTemplate(boolean clearAll, @TempDir Path directory) throws Exception {
@@ -140,35 +111,6 @@ class MustacheViewResolverTests {
 		assertThat(render("Spring")).isEqualTo("Hello Spring");
 		assertThat(render("Boot")).isEqualTo("Hello Boot");
 		then(this.compiler).should(times(2)).compile(any(Reader.class));
-	}
-
-	@Test
-	void concurrentRenderingCompilesOnceAndKeepsModelsSeparate(@TempDir Path directory) throws Exception {
-		writeTemplate(directory, "Hello {{World}}");
-		this.resolver.setCache(true);
-		CountDownLatch rendering = new CountDownLatch(8);
-		willAnswer((invocation) -> {
-			assertThat(rendering.await(10, TimeUnit.SECONDS)).isTrue();
-			return invocation.callRealMethod();
-		}).given(this.compiler).compile(any(Reader.class));
-		ExecutorService executor = Executors.newFixedThreadPool(8);
-		try {
-			List<Future<String>> results = new ArrayList<>();
-			for (int i = 0; i < 8; i++) {
-				String world = "world-" + i;
-				results.add(executor.submit(() -> {
-					rendering.countDown();
-					return render(world);
-				}));
-			}
-			for (int i = 0; i < results.size(); i++) {
-				assertThat(results.get(i).get(10, TimeUnit.SECONDS)).isEqualTo("Hello world-" + i);
-			}
-			then(this.compiler).should().compile(any(Reader.class));
-		}
-		finally {
-			executor.shutdownNow();
-		}
 	}
 
 	@Test

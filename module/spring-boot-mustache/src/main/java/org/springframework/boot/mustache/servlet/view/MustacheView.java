@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
@@ -34,7 +36,7 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
  */
 public class MustacheView extends AbstractTemplateView {
 
-	private final Object templateLock = new Object();
+	private final Lock templateLock = new ReentrantLock();
 
 	private @Nullable Compiler compiler;
 
@@ -54,7 +56,6 @@ public class MustacheView extends AbstractTemplateView {
 	 */
 	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
-		this.cachedTemplate = null;
 	}
 
 	/**
@@ -64,7 +65,6 @@ public class MustacheView extends AbstractTemplateView {
 	 */
 	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
-		this.cachedTemplate = null;
 	}
 
 	/**
@@ -81,19 +81,10 @@ public class MustacheView extends AbstractTemplateView {
 	/**
 	 * Set whether to cache the compiled template. Defaults to {@code false}.
 	 * @param cache whether to cache the compiled template
-	 * @since 4.2.0
+	 * @since 4.3.0
 	 */
 	public void setCache(boolean cache) {
 		this.cache = cache;
-		if (!cache) {
-			this.cachedTemplate = null;
-		}
-	}
-
-	@Override
-	public void setUrl(@Nullable String url) {
-		super.setUrl(url);
-		this.cachedTemplate = null;
 	}
 
 	@Override
@@ -114,12 +105,16 @@ public class MustacheView extends AbstractTemplateView {
 		}
 		Template template = this.cachedTemplate;
 		if (template == null) {
-			synchronized (this.templateLock) {
+			this.templateLock.lock();
+			try {
 				template = this.cachedTemplate;
 				if (template == null) {
 					template = createTemplate();
 					this.cachedTemplate = template;
 				}
+			}
+			finally {
+				this.templateLock.unlock();
 			}
 		}
 		return template;

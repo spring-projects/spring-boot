@@ -18,7 +18,6 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
  * Spring MVC {@link ViewResolver} for Mustache.
  *
  * @author Brian Clozel
- * @author Van Vo
  * @since 4.0.0
  */
 public class MustacheViewResolver extends AbstractTemplateViewResolver {
