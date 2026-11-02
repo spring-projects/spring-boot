@@ -225,7 +225,7 @@ public abstract class LayeredSpec {
 		 * @param patterns the patterns to be excluded
 		 */
 		public void exclude(String... patterns) {
-			this.includes.addAll(Arrays.asList(patterns));
+			this.excludes.addAll(Arrays.asList(patterns));
 		}
 
 		<T> ContentSelector<T> asSelector(Function<String, ContentFilter<T>> filterFactory) {
