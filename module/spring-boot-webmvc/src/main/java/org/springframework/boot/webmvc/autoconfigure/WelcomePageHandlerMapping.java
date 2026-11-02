@@ -19,6 +19,7 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.util.ConcurrentLruCache;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
  * @author Andy Wilkinson
  * @author Bruce Brouwer
  * @author Moritz Halbritter
+ * @author Diego Magalhães
  * @see WelcomePageNotAcceptableHandlerMapping
  */
 final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
@@ -38,6 +40,13 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
 
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
+
+	private static final int ACCEPT_HEADER_CACHE_SIZE = 32;
+
+	private static final int MAX_CACHED_ACCEPT_HEADER_LENGTH = 256;
+
+	private final ConcurrentLruCache<String, Boolean> htmlTextAccepted = new ConcurrentLruCache<>(
+			ACCEPT_HEADER_CACHE_SIZE, (acceptHeader) -> includesTextHtml(MediaType.parseMediaTypes(acceptHeader)));
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, @Nullable Resource indexHtmlResource, String staticPathPattern) {
@@ -59,26 +68,34 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	private boolean isHtmlTextAccepted(HttpServletRequest request) {
-		for (MediaType mediaType : getAcceptedMediaTypes(request)) {
-			if (mediaType.includes(MediaType.TEXT_HTML)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
 		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 		if (StringUtils.hasText(acceptHeader)) {
 			try {
-				return MediaType.parseMediaTypes(acceptHeader);
+				if (acceptHeader.length() > MAX_CACHED_ACCEPT_HEADER_LENGTH) {
+					return includesTextHtml(MediaType.parseMediaTypes(acceptHeader));
+				}
+				return this.htmlTextAccepted.get(acceptHeader);
 			}
 			catch (InvalidMediaTypeException ex) {
 				logger.warn("Received invalid Accept header. Assuming all media types are accepted",
 						logger.isDebugEnabled() ? ex : null);
 			}
 		}
-		return MEDIA_TYPES_ALL;
+		return includesTextHtml(MEDIA_TYPES_ALL);
+	}
+
+	/**
+	 * Return whether any of the given media types includes {@code text/html}.
+	 * @param mediaTypes the media types to check
+	 * @return {@code true} if {@code text/html} is included
+	 */
+	private static boolean includesTextHtml(List<MediaType> mediaTypes) {
+		for (MediaType mediaType : mediaTypes) {
+			if (mediaType.includes(MediaType.TEXT_HTML)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
