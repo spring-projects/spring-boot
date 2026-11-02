@@ -92,16 +92,24 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected static LoggingEvent createEvent() {
-		return createEvent(null);
+		return createEvent("message");
 	}
 
-	protected static LoggingEvent createEvent(@Nullable Throwable thrown) {
+	protected static LoggingEvent createEvent(@Nullable String message) {
+		return createEvent(message, null);
+	}
+
+	protected static LoggingEvent createEvent(Throwable thrown) {
+		return createEvent("message", thrown);
+	}
+
+	protected static LoggingEvent createEvent(@Nullable String message, @Nullable Throwable thrown) {
 		LoggingEvent event = new LoggingEvent();
 		event.setInstant(EVENT_TIME);
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");
-		event.setMessage("message");
+		event.setMessage(message);
 		if (thrown != null) {
 			event.setThrowableProxy(new ThrowableProxy(thrown));
 		}
