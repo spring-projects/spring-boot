@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -85,6 +86,7 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionExecutionListener;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,6 +110,7 @@ import static org.mockito.Mockito.never;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author WooSeung Kim
  */
 class KafkaAutoConfigurationTests {
 
@@ -872,6 +875,19 @@ class KafkaAutoConfigurationTests {
 				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
 				assertThat(factory).hasFieldOrPropertyWithValue("commonErrorHandler", context.getBean("errorHandler"));
+			});
+	}
+
+	@Test
+	void transactionManagerWithTransactionExecutionListenersIsConfigured() {
+		TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
+			.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
+			.withBean(TransactionExecutionListener.class, () -> listener)
+			.run((context) -> {
+				KafkaTransactionManager<?, ?> transactionManager = context.getBean(KafkaTransactionManager.class);
+				assertThat(transactionManager.getTransactionExecutionListeners()).containsExactly(listener);
 			});
 	}
 
