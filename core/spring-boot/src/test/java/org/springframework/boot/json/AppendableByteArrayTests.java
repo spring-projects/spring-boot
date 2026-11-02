@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Diego Magalhães
  */
 class AppendableByteArrayTests {
 
@@ -41,6 +43,26 @@ class AppendableByteArrayTests {
 	void writesLargeStringWithLargeBuffer() throws Exception {
 		assertByteArray(string.length() * 10, 10, StandardCharsets.UTF_8, (appendable) -> appendable.append(string));
 		assertByteArray(string.length() * 10, 10, StandardCharsets.UTF_16, (appendable) -> appendable.append(string));
+	}
+
+	@Test
+	void writesLargeStringWhenBufferIsExpandedManyTimes() throws Exception {
+		String content = "a".repeat(50_000);
+		AppendableByteArray appendableByteArray = new AppendableByteArray(StandardCharsets.UTF_8, 1, 1);
+		AtomicReference<Object> result = new AtomicReference<>();
+		Thread thread = new Thread(null, () -> {
+			try {
+				appendableByteArray.append(content);
+				result.set(appendableByteArray.toByteArray());
+			}
+			catch (Throwable ex) {
+				result.set(ex);
+			}
+		}, "small-stack", 256 * 1024);
+		thread.start();
+		thread.join();
+		assertThat(result.get()).isInstanceOf(byte[].class);
+		assertThat((byte[]) result.get()).isEqualTo(content.getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Test

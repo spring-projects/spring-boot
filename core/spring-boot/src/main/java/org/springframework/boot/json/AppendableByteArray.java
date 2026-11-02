@@ -25,6 +25,7 @@ import org.springframework.util.function.ThrowingConsumer;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Diego Magalhães
  */
 class AppendableByteArray implements Appendable {
 
@@ -90,16 +91,16 @@ class AppendableByteArray implements Appendable {
 
 	private AppendableByteArray append(CharBuffer in, boolean endOfInput) throws IOException {
 		CoderResult result = this.encoder.encode(in, this.out, endOfInput);
-		if (result.isUnderflow()) {
-			this.highSurrogate = (in.hasRemaining()) ? in.get() : 0;
-			return this;
-		}
-		if (result.isOverflow()) {
+		while (result.isOverflow()) {
 			ByteBuffer out = this.out;
 			this.out = ByteBuffer.allocate(out.capacity() + this.expansionSize);
 			out.flip();
 			this.out.put(out);
-			return append(in, endOfInput);
+			result = this.encoder.encode(in, this.out, endOfInput);
+		}
+		if (result.isUnderflow()) {
+			this.highSurrogate = (in.hasRemaining()) ? in.get() : 0;
+			return this;
 		}
 		result.throwException();
 		return this;
