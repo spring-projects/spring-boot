@@ -229,11 +229,15 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,
 				Map<String, String> suffixMapping) {
 			Object instance = expression.getInstance();
-			if (instance != null && instance.toString().startsWith(prefix)) {
+			if (instance != null) {
 				String type = instance.toString();
-				type = type.substring(prefix.length(), type.indexOf('('));
-				String suffix = suffixMapping.get(type);
-				return (suffix != null) ? factoryValue + suffix : null;
+				int start = type.indexOf(prefix);
+				// The type may be fully-qualified, as in java.time.Duration.ofSeconds(60)
+				if (start == 0 || (start > 0 && type.charAt(start - 1) == '.' && type.indexOf('(') > start)) {
+					type = type.substring(start + prefix.length(), type.indexOf('('));
+					String suffix = suffixMapping.get(type);
+					return (suffix != null) ? factoryValue + suffix : null;
+				}
 			}
 			return null;
 		}
