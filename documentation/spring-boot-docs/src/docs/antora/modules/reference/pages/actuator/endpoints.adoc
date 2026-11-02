@@ -624,6 +624,10 @@ with the `key` listed in the following table:
 |===
 | Key | Name | Description
 
+| `amqprabbit`
+| javadoc:org.springframework.boot.amqp.rabbitmq.health.AmqpRabbitHealthIndicator[]
+| Checks that a Rabbit server is up using AMQP 1.0.
+
 | `cassandra`
 | javadoc:org.springframework.boot.cassandra.health.CassandraDriverHealthIndicator[]
 | Checks that a Cassandra database is up.

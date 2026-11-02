@@ -10,9 +10,12 @@ import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitAutoConfig
 import org.springframework.boot.amqp.rabbitmq.health.AmqpRabbitHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AmqpRabbitHealthContributorAutoConfiguration}.
@@ -32,8 +35,15 @@ class AmqpRabbitHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.rabbit.enabled:false")
+		this.contextRunner.withPropertyValues("management.health.amqprabbit.enabled:false")
 			.run((context) -> assertThat(context).doesNotHaveBean(AmqpRabbitHealthIndicator.class));
+	}
+
+	@Test
+	void runWhenRabbitHealthContributorExistsShouldStillCreateIndicator() {
+		this.contextRunner
+			.withBean("rabbitHealthContributor", HealthContributor.class, () -> mock(HealthIndicator.class))
+			.run((context) -> assertThat(context).hasSingleBean(AmqpRabbitHealthIndicator.class));
 	}
 
 }

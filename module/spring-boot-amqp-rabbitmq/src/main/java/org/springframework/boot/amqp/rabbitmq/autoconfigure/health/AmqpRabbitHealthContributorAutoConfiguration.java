@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ AmqpRabbitHealthIndicator.class, RabbitAmqpTemplate.class, Connection.class,
 		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(AmqpConnectionFactory.class)
-@ConditionalOnEnabledHealthIndicator("rabbit")
+@ConditionalOnEnabledHealthIndicator("amqprabbit")
 public final class AmqpRabbitHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<AmqpRabbitHealthIndicator, AmqpConnectionFactory> {
 
@@ -41,8 +41,8 @@ public final class AmqpRabbitHealthContributorAutoConfiguration
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = { "rabbitHealthIndicator", "rabbitHealthContributor" })
-	HealthContributor rabbitHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	@ConditionalOnMissingBean(name = { "amqpRabbitHealthIndicator", "amqpRabbitHealthContributor" })
+	HealthContributor amqpRabbitHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, AmqpConnectionFactory.class);
 	}
 
