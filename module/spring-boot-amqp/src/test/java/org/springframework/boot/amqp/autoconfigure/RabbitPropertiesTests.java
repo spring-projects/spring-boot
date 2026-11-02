@@ -5,6 +5,7 @@
 package org.springframework.boot.amqp.autoconfigure;
 
 import java.util.List;
+import java.util.Map;
 
 import com.rabbitmq.client.ConnectionFactory;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,10 @@ import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -312,6 +316,51 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determinePortUsesDefaultSslPortWhenAddressesAreSetBeforeSslBundle() {
+		this.properties.setAddresses(List.of("rabbit1.example.com"));
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
+	void determineAddressesUsesDefaultSslPortWhenAddressesAreSetBeforeSslBundle() {
+		this.properties.setAddresses(List.of("rabbit1.example.com", "rabbit2.example.com:2345"));
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit1.example.com:5671",
+				"rabbit2.example.com:2345");
+	}
+
+	@Test
+	void determineAddressesUsesDefaultSslPortWhenAddressesAreSetBeforeSslIsEnabled() {
+		this.properties.setAddresses(List.of("rabbit1.example.com"));
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit1.example.com:5671");
+	}
+
+	@Test
+	void determineAddressesUsesExplicitPortWhenAddressesAreSetBeforeSslIsEnabled() {
+		this.properties.setAddresses(List.of("rabbit1.example.com:1234"));
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit1.example.com:1234");
+	}
+
+	@Test
+	void determineAddressesUsesAmqpSchemeWhenAddressesAreSetBeforeSslIsEnabled() {
+		this.properties.setAddresses(List.of("amqp://rabbit1.example.com", "amqps://rabbit2.example.com"));
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit1.example.com:5672",
+				"rabbit2.example.com:5671");
+	}
+
+	@Test
+	void determineAddressesUsesDefaultSslPortWhenBoundFromProperties() {
+		RabbitProperties properties = bind(Map.of("spring.rabbitmq.addresses", "rabbit1.example.com",
+				"spring.rabbitmq.ssl.bundle", "test-bundle"));
+		assertThat(properties.getSsl().determineEnabled()).isTrue();
+		assertThat(properties.determineAddresses()).containsExactly("rabbit1.example.com:5671");
+	}
+
+	@Test
 	void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSet() {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
@@ -413,6 +462,12 @@ class RabbitPropertiesTests {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(this.properties::determineAddresses)
 			.withMessageContaining("spring.rabbitmq.host");
+	}
+
+	private RabbitProperties bind(Map<String, String> properties) {
+		return new Binder(new MapConfigurationPropertySource(properties))
+			.bind("spring.rabbitmq", Bindable.of(RabbitProperties.class))
+			.get();
 	}
 
 }
