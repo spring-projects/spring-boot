@@ -185,9 +185,9 @@ public class RabbitProperties {
 			if (port != null) {
 				return port;
 			}
-			return getSsl().enabledOrBundleConfigured() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
+			return shouldUseSsl() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
-		return this.parsedAddresses.get(0).determinePort(getSsl().enabledOrBundleConfigured());
+		return this.parsedAddresses.get(0).determinePort(shouldUseSsl());
 	}
 
 	public void setPort(@Nullable Integer port) {
@@ -211,10 +211,9 @@ public class RabbitProperties {
 			}
 			return List.of(this.host + ":" + determinePort());
 		}
-		boolean sslEnabled = getSsl().enabledOrBundleConfigured();
 		List<String> addressStrings = new ArrayList<>();
 		for (Address parsedAddress : this.parsedAddresses) {
-			addressStrings.add(parsedAddress.host + ":" + parsedAddress.determinePort(sslEnabled));
+			addressStrings.add(parsedAddress.host + ":" + parsedAddress.determinePort(shouldUseSsl()));
 		}
 		return addressStrings;
 	}
@@ -280,6 +279,10 @@ public class RabbitProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	private boolean shouldUseSsl() {
+		return this.ssl.enabledOrBundleConfigured();
 	}
 
 	public @Nullable String getVirtualHost() {

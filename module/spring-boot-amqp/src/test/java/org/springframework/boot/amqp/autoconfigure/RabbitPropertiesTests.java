@@ -4,7 +4,6 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +16,8 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -356,22 +353,11 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
-	void determineAddressesUsesDefaultSslPortWhenBoundFromPropertiesInAnyOrder() {
-		RabbitProperties properties = bindProperties("spring.rabbitmq.addresses", "rabbit1.example.com",
-				"spring.rabbitmq.ssl.bundle", "test-bundle");
+	void determineAddressesUsesDefaultSslPortWhenBoundFromProperties() {
+		RabbitProperties properties = bind(Map.of("spring.rabbitmq.addresses", "rabbit1.example.com",
+				"spring.rabbitmq.ssl.bundle", "test-bundle"));
 		assertThat(properties.getSsl().determineEnabled()).isTrue();
 		assertThat(properties.determineAddresses()).containsExactly("rabbit1.example.com:5671");
-	}
-
-	private RabbitProperties bindProperties(String... keyValues) {
-		Map<String, Object> map = new LinkedHashMap<>();
-		for (int i = 0; i < keyValues.length; i += 2) {
-			map.put(keyValues[i], keyValues[i + 1]);
-		}
-		ConfigurationPropertySource source = ConfigurationPropertySources.from(new MapPropertySource("test", map))
-			.iterator()
-			.next();
-		return new Binder(source).bind("spring.rabbitmq", Bindable.of(RabbitProperties.class)).get();
 	}
 
 	@Test
@@ -476,6 +462,12 @@ class RabbitPropertiesTests {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(this.properties::determineAddresses)
 			.withMessageContaining("spring.rabbitmq.host");
+	}
+
+	private RabbitProperties bind(Map<String, String> properties) {
+		return new Binder(new MapConfigurationPropertySource(properties))
+			.bind("spring.rabbitmq", Bindable.of(RabbitProperties.class))
+			.get();
 	}
 
 }
