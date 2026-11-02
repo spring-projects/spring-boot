@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Diego Magalhães
  */
 class JsonWriterTests {
 
@@ -715,6 +716,30 @@ class JsonWriterTests {
 			assertThatIllegalStateException().isThrownBy(() -> writer.writeToString(new Person("spring", "boot", 10)))
 				.withMessageContaining("NameProcessor")
 				.withMessageContaining("returned an empty result");
+		}
+
+		@Test
+		void processNameWhenReturnsEmptyStringThrowsExceptionNamingProcessor() {
+			NameProcessor processor = new NameProcessor() {
+
+				@Override
+				public String processName(MemberPath path, String existingName) {
+					return !"last".equals(existingName) ? existingName : "";
+				}
+
+				@Override
+				public String toString() {
+					return "TestNameProcessor";
+				}
+
+			};
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("last", Person::lastName);
+				members.applyingNameProcessor(processor);
+			});
+			assertThatIllegalStateException().isThrownBy(() -> writer.writeToString(new Person("spring", "boot", 10)))
+				.withMessage("NameProcessor TestNameProcessor returned an empty result");
 		}
 
 	}
