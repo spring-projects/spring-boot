@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +47,7 @@ import org.springframework.util.StringUtils;
  * be used.
  *
  * @author Phillip Webb
+ * @author Diego Magalhães
  * @since 3.2.0
  * @see #of(String)
  * @see #of(Collection)
@@ -87,13 +86,12 @@ public final class CorrelationIdFormatter {
 	 * @param appendable the appendable for the formatted correlation id
 	 */
 	public void formatTo(UnaryOperator<@Nullable String> resolver, Appendable appendable) {
-		Predicate<Part> canResolve = (part) -> StringUtils.hasLength(resolver.apply(part.name()));
 		try {
-			if (this.parts.stream().anyMatch(canResolve)) {
+			if (canResolveAny(resolver)) {
 				appendable.append('[');
-				for (Iterator<Part> iterator = this.parts.iterator(); iterator.hasNext();) {
-					appendable.append(iterator.next().resolve(resolver));
-					if (iterator.hasNext()) {
+				for (int i = 0; i < this.parts.size(); i++) {
+					appendable.append(this.parts.get(i).resolve(resolver));
+					if (i < this.parts.size() - 1) {
 						appendable.append('-');
 					}
 				}
@@ -106,6 +104,21 @@ public final class CorrelationIdFormatter {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	/**
+	 * Return whether the resolver returns a value with length for any part, asking for
+	 * each part in order and stopping at the first one that has a value.
+	 * @param resolver the resolver used to resolve named values
+	 * @return {@code true} if any part can be resolved
+	 */
+	private boolean canResolveAny(UnaryOperator<@Nullable String> resolver) {
+		for (int i = 0; i < this.parts.size(); i++) {
+			if (StringUtils.hasLength(resolver.apply(this.parts.get(i).name()))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
