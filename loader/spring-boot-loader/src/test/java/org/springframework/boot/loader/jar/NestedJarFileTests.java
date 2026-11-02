@@ -267,7 +267,7 @@ class NestedJarFileTests {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			try (JarFile jdkJar = new JarFile(this.file)) {
 				assertThat(jar.getEntry("META-INF/MANIFEST.MF").getTime())
-					.isEqualTo(jar.getEntry("META-INF/MANIFEST.MF").getTime());
+					.isEqualTo(jdkJar.getEntry("META-INF/MANIFEST.MF").getTime());
 			}
 		}
 	}
