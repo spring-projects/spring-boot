@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
  * shown enclosed in square brackets.
  *
  * @author Phillip Webb
+ * @author Diego Magalhães
  * @since 3.4.0
  */
 public class EnclosedInSquareBracketsConverter extends CompositeConverter<ILoggingEvent> {
@@ -22,7 +23,7 @@ public class EnclosedInSquareBracketsConverter extends CompositeConverter<ILoggi
 	@Override
 	protected String transform(ILoggingEvent event, @Nullable String in) {
 		in = (!StringUtils.hasLength(in)) ? resolveFromFirstOption(event) : in;
-		return (!StringUtils.hasLength(in)) ? "" : "[%s] ".formatted(in);
+		return (!StringUtils.hasLength(in)) ? "" : "[" + in + "] ";
 	}
 
 	private @Nullable String resolveFromFirstOption(ILoggingEvent event) {
