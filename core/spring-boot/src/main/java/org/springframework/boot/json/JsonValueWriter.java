@@ -34,6 +34,7 @@ import org.springframework.util.function.ThrowingConsumer;
  *
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Diego Magalhães
  */
 class JsonValueWriter {
 
@@ -332,7 +333,7 @@ class JsonValueWriter {
 
 	private String processName(String name, NameProcessor nameProcessor) {
 		name = nameProcessor.processName(this.path, name);
-		Assert.state(StringUtils.hasLength(name), "NameProcessor " + nameProcessor + " returned an empty result");
+		Assert.state(StringUtils.hasLength(name), () -> "NameProcessor " + nameProcessor + " returned an empty result");
 		return name;
 	}
 

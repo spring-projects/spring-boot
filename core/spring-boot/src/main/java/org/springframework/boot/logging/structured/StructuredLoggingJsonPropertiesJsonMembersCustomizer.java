@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Phillip Webb
  * @author Yanming Zhou
+ * @author Diego Magalhães
  */
 class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructuredLoggingJsonMembersCustomizer<Object> {
 
@@ -52,8 +53,10 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 
 	String renameJsonMembers(MemberPath path, String existingName) {
 		Map<String, String> rename = this.properties.rename();
-		String key = path.toUnescapedString();
-		return !CollectionUtils.isEmpty(rename) ? rename.getOrDefault(key, existingName) : existingName;
+		if (CollectionUtils.isEmpty(rename)) {
+			return existingName;
+		}
+		return rename.getOrDefault(path.toUnescapedString(), existingName);
 	}
 
 	boolean filterPath(MemberPath path) {
