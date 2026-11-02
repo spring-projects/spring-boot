@@ -6,6 +6,7 @@ package org.springframework.boot.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,8 +127,13 @@ public class BasicJsonParser extends AbstractJsonParser {
 		while (index < json.length()) {
 			char ch = json.charAt(index);
 			if (tracking.in(Tracked.ESCAPE)) {
-				build.append(ch);
-				index++;
+				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
+					build.append(ch);
+					index++;
+				}
+				else {
+					index += unescape(json, index, build);
+				}
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
@@ -161,6 +167,23 @@ public class BasicJsonParser extends AbstractJsonParser {
 			list.add(build.toString().trim());
 		}
 		return list;
+	}
+
+	private static int unescape(String json, int index, StringBuilder build) {
+		char ch = json.charAt(index);
+		switch (ch) {
+			case 'b' -> build.append('\b');
+			case 'f' -> build.append('\f');
+			case 'n' -> build.append('\n');
+			case 'r' -> build.append('\r');
+			case 't' -> build.append('\t');
+			case 'u' -> {
+				build.append((char) HexFormat.fromHexDigits(json, index + 1, index + 5));
+				return 5;
+			}
+			default -> build.append(ch);
+		}
+		return 1;
 	}
 
 	private static final class Tracking {
