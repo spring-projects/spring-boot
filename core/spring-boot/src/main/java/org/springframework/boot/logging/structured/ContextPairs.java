@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
  * in the correct location (or drop them altogether).
  *
  * @author Phillip Webb
+ * @author Diego Magalhães
  * @since 3.5.0
  */
 public class ContextPairs {
@@ -76,9 +77,12 @@ public class ContextPairs {
 
 	private Joiner joinWith(String delimiter) {
 		return (prefix, name) -> {
+			if (prefix.isEmpty()) {
+				return name;
+			}
 			StringBuilder joined = new StringBuilder(prefix.length() + delimiter.length() + name.length());
 			joined.append(prefix);
-			if (!prefix.isEmpty() && !prefix.endsWith(delimiter) && !name.startsWith(delimiter)) {
+			if (!prefix.endsWith(delimiter) && !name.startsWith(delimiter)) {
 				joined.append(delimiter);
 			}
 			joined.append(name);
@@ -181,6 +185,11 @@ public class ContextPairs {
 			LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 			this.addedPairs.forEach((addedPair) -> {
 				addedPair.accept(item, joining((name, value) -> {
+					if (name.indexOf('.') == -1) {
+						Object previous = result.put(name, value);
+						assertNotDuplicateNestedPairs(previous == null, name, name.length());
+						return;
+					}
 					StringBuilder part = new StringBuilder(name.length());
 					int length = (!name.endsWith(".")) ? name.length() : name.length() - 1;
 					Map<String, Object> destination = result;
