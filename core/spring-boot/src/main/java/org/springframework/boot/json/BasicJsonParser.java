@@ -129,11 +129,11 @@ public class BasicJsonParser extends AbstractJsonParser {
 			if (tracking.in(Tracked.ESCAPE)) {
 				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
 					build.append(ch);
+					index++;
 				}
 				else {
-					index = unescape(json, index, build);
+					index += unescape(json, index, build);
 				}
-				index++;
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
@@ -179,11 +179,11 @@ public class BasicJsonParser extends AbstractJsonParser {
 			case 't' -> build.append('\t');
 			case 'u' -> {
 				build.append((char) HexFormat.fromHexDigits(json, index + 1, index + 5));
-				return index + 4;
+				return 5;
 			}
 			default -> build.append(ch);
 		}
-		return index;
+		return 1;
 	}
 
 	private static final class Tracking {

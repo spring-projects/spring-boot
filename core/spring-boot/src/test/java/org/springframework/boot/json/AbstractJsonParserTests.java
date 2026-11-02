@@ -282,6 +282,16 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void escapeMalformedUnicodeThrowsJsonParseException() {
+		String input = """
+				{
+				  "a": "alpha\\u"
+				}
+				""";
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseMap(input));
+	}
+
+	@Test
 	void escapeBackslashInNestedMap() {
 		String input = """
 				{
