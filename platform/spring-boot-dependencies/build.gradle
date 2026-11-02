@@ -2038,6 +2038,12 @@ bom {
 		}
 	}
 	library("Rabbit AMQP Client", "5.27.1") {
+		alignWith {
+			version {
+				from "org.springframework.amqp:spring-rabbit"
+				managedBy "Spring AMQP"
+			}
+		}
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
