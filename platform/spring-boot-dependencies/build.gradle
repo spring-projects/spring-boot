@@ -2168,6 +2168,12 @@ bom {
 		}
 	}
 	library("RabbitMQ Client", "5.37.0") {
+		alignWith {
+			version {
+				from "org.springframework.amqp:spring-rabbit"
+				managedBy "Spring AMQP"
+			}
+		}
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
@@ -2180,6 +2186,12 @@ bom {
 		}
 	}
 	library("RabbitMQ AMQP Client", "1.6.0") {
+		alignWith {
+			version {
+				from "org.springframework.amqp:spring-rabbitmq-client"
+				managedBy "Spring AMQP"
+			}
+		}
 		group("com.rabbitmq.client") {
 			modules = [
 					"amqp-client"
