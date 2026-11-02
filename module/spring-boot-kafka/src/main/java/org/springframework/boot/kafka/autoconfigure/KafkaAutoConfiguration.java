@@ -30,6 +30,7 @@ import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry.Topic.
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.SimpleAdmin;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Template;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -63,6 +64,7 @@ import org.springframework.util.backoff.BackOff;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author WooSeung Kim
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -149,8 +151,11 @@ public final class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.producer.transaction-id-prefix")
 	@ConditionalOnMissingBean
-	KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
-		return new KafkaTransactionManager<>(producerFactory);
+	KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		KafkaTransactionManager<?, ?> transactionManager = new KafkaTransactionManager<>(producerFactory);
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
+		return transactionManager;
 	}
 
 	@Bean
