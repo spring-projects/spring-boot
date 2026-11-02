@@ -187,9 +187,9 @@ public class RabbitProperties {
 			if (port != null) {
 				return port;
 			}
-			return getSsl().enabledOrBundleConfigured() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
+			return shouldUseSsl() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
-		return this.parsedAddresses.get(0).port;
+		return this.parsedAddresses.get(0).determinePort(shouldUseSsl());
 	}
 
 	public void setPort(@Nullable Integer port) {
@@ -215,7 +215,7 @@ public class RabbitProperties {
 		}
 		List<String> addressStrings = new ArrayList<>();
 		for (Address parsedAddress : this.parsedAddresses) {
-			addressStrings.add(parsedAddress.host + ":" + parsedAddress.port);
+			addressStrings.add(parsedAddress.host + ":" + parsedAddress.determinePort(shouldUseSsl()));
 		}
 		return addressStrings;
 	}
@@ -227,9 +227,8 @@ public class RabbitProperties {
 
 	private List<Address> parseAddresses(List<String> addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
-		boolean sslEnabled = getSsl().enabledOrBundleConfigured();
 		for (String address : addresses) {
-			parsedAddresses.add(new Address(address, sslEnabled));
+			parsedAddresses.add(new Address(address));
 		}
 		return parsedAddresses;
 	}
@@ -282,6 +281,10 @@ public class RabbitProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	private boolean shouldUseSsl() {
+		return this.ssl.enabledOrBundleConfigured();
 	}
 
 	public @Nullable String getVirtualHost() {
@@ -1194,7 +1197,7 @@ public class RabbitProperties {
 
 		private String host;
 
-		private int port;
+		private @Nullable Integer port;
 
 		private @Nullable String username;
 
@@ -1204,12 +1207,12 @@ public class RabbitProperties {
 
 		private @Nullable Boolean secureConnection;
 
-		private Address(String input, boolean sslEnabled) {
+		private Address(String input) {
 			input = input.trim();
 			input = trimPrefix(input);
 			input = parseUsernameAndPassword(input);
 			input = parseVirtualHost(input);
-			parseHostAndPort(input, sslEnabled);
+			parseHostAndPort(input);
 		}
 
 		private String trimPrefix(String input) {
@@ -1253,17 +1256,23 @@ public class RabbitProperties {
 			return input;
 		}
 
-		private void parseHostAndPort(String input, boolean sslEnabled) {
+		private void parseHostAndPort(String input) {
 			int bracketIndex = input.lastIndexOf(']');
 			int colonIndex = input.lastIndexOf(':');
 			if (colonIndex == -1 || colonIndex < bracketIndex) {
 				this.host = input;
-				this.port = (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 			}
 			else {
 				this.host = input.substring(0, colonIndex);
 				this.port = Integer.parseInt(input.substring(colonIndex + 1));
 			}
+		}
+
+		private int determinePort(boolean sslEnabled) {
+			if (this.port != null) {
+				return this.port;
+			}
+			return (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
 
 		private boolean determineSslEnabled(boolean sslEnabled) {
