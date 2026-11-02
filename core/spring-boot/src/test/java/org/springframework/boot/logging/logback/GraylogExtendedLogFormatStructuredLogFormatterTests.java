@@ -7,7 +7,6 @@ package org.springframework.boot.logging.logback;
 import java.util.Collections;
 import java.util.Map;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.jspecify.annotations.Nullable;
@@ -90,15 +89,16 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@NullAndEmptySource
 	@ValueSource(strings = " ")
 	void shouldUseBlankPlaceholderWhenMessageHasNoText(@Nullable String message) {
-		LoggingEvent event = createEventWithMessage(message);
+		LoggingEvent event = createEvent(message);
+		event.setMDCPropertyMap(Collections.emptyMap());
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
 		assertThat(deserialized).containsEntry("short_message", "(blank)");
 	}
 
 	@Test
 	void shouldUseBlankPlaceholderWhenMessageIsNullAndThereIsAnException() {
-		LoggingEvent event = createEventWithMessage(null);
-		event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
+		LoggingEvent event = createEvent(null, new RuntimeException());
+		event.setMDCPropertyMap(Collections.emptyMap());
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
 		assertThat(deserialized).containsEntry("short_message", "(blank)")
 			.containsEntry("_error_type", "java.lang.RuntimeException");
@@ -183,17 +183,6 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		assertThat(deserialized)
 			.containsAllEntriesOf(map("_error_type", "java.lang.RuntimeException", "_error_message", "Boom"));
 		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
-	}
-
-	private LoggingEvent createEventWithMessage(@Nullable String message) {
-		LoggingEvent event = new LoggingEvent();
-		event.setInstant(EVENT_TIME);
-		event.setLevel(Level.INFO);
-		event.setThreadName("main");
-		event.setLoggerName("org.example.Test");
-		event.setMessage(message);
-		event.setMDCPropertyMap(Collections.emptyMap());
-		return event;
 	}
 
 }
