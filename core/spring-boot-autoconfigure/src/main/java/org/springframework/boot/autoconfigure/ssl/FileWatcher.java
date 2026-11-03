@@ -192,7 +192,7 @@ class FileWatcher implements Closeable {
 		public void run() {
 			logger.debug("Watch thread started");
 			Set<Runnable> actions = new HashSet<>();
-			while (this.running) {
+			while (this.running && !Thread.currentThread().isInterrupted()) {
 				try {
 					long timeout = FileWatcher.this.quietPeriod.toMillis();
 					WatchKey key = this.watchService.poll(timeout, TimeUnit.MILLISECONDS);
@@ -207,6 +207,7 @@ class FileWatcher implements Closeable {
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
+					this.running = false;
 				}
 				catch (ClosedWatchServiceException ex) {
 					logger.debug("File watcher has been closed");
@@ -229,7 +230,19 @@ class FileWatcher implements Closeable {
 			List<Registration> registrations = this.registrations.get(key);
 			Path directory = (Path) key.watchable();
 			for (WatchEvent<?> event : key.pollEvents()) {
-				Path file = directory.resolve((Path) event.context());
+				if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
+					if (registrations != null) {
+						for (Registration registration : registrations) {
+							actions.add(registration.action());
+						}
+					}
+					continue;
+				}
+				Object context = event.context();
+				if (!(context instanceof Path contextPath)) {
+					continue;
+				}
+				Path file = directory.resolve(contextPath);
 				Assert.state(registrations != null, "'registrations' must not be null");
 				for (Registration registration : registrations) {
 					if (registration.manages(file)) {

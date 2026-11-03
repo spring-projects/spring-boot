@@ -61,12 +61,14 @@ class AppendableByteArray implements Appendable {
 
 	@Override
 	public AppendableByteArray append(@Nullable CharSequence charSequence, int start, int end) throws IOException {
-		return append(((charSequence != null) ? charSequence : "null").subSequence(start, end));
+		CharSequence cs = (charSequence != null) ? charSequence : "null";
+		return append(CharBuffer.wrap(cs, start, end));
 	}
 
 	@Override
-	public AppendableByteArray append(CharSequence charSequence) throws IOException {
-		return append(String.valueOf(charSequence).toCharArray());
+	public AppendableByteArray append(@Nullable CharSequence charSequence) throws IOException {
+		CharSequence cs = (charSequence != null) ? charSequence : "null";
+		return append(CharBuffer.wrap(cs));
 	}
 
 	@Override

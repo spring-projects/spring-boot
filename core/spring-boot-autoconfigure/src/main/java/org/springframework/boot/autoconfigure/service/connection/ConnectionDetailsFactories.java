@@ -119,10 +119,10 @@ public class ConnectionDetailsFactories {
 				ConnectionDetailsFactory<S, D> factory) {
 			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
 			@Nullable Class<?>[] generics = type.resolveGenerics();
-			Class<S> sourceType = (Class<S>) generics[0];
-			Class<D> connectionDetailsType = (Class<D>) generics[1];
-			return (sourceType != null && connectionDetailsType != null)
-					? new Registration<>(sourceType, connectionDetailsType, factory) : null;
+			if (generics.length == 2 && generics[0] != null && generics[1] != null) {
+				return new Registration<>((Class<S>) generics[0], (Class<D>) generics[1], factory);
+			}
+			return null;
 		}
 
 	}

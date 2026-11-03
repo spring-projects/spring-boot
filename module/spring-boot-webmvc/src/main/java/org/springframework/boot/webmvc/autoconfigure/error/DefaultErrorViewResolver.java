@@ -150,7 +150,9 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		public void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			response.setContentType(getContentType());
-			FileCopyUtils.copy(this.resource.getInputStream(), response.getOutputStream());
+			try (java.io.InputStream inputStream = this.resource.getInputStream()) {
+				FileCopyUtils.copy(inputStream, response.getOutputStream());
+			}
 		}
 
 	}

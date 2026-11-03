@@ -316,7 +316,12 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private String formatRequest(ServerRequest request) {
-		String rawQuery = request.uri().getRawQuery();
+		String rawQuery = null;
+		try {
+			rawQuery = request.uri().getRawQuery();
+		}
+		catch (Exception ex) {
+		}
 		String query = StringUtils.hasText(rawQuery) ? "?" + rawQuery : "";
 		return "HTTP " + request.method() + " \"" + request.path() + query + "\"";
 	}

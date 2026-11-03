@@ -32,6 +32,8 @@ import org.springframework.util.CollectionUtils;
  */
 class DockerCli {
 
+	private static final Object DOCKER_COMMANDS_MONITOR = new Object();
+
 	private static final Map<@Nullable File, DockerCommands> dockerCommandsCache = new HashMap<>();
 
 	private static final Log logger = LogFactory.getLog(DockerCli.class);
@@ -51,8 +53,10 @@ class DockerCli {
 	 */
 	DockerCli(@Nullable File workingDirectory, @Nullable DockerComposeOptions dockerComposeOptions) {
 		this.processRunner = new ProcessRunner(workingDirectory);
-		this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
-				(key) -> new DockerCommands(this.processRunner));
+		synchronized (DOCKER_COMMANDS_MONITOR) {
+			this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
+					(key) -> new DockerCommands(this.processRunner));
+		}
 		this.dockerComposeOptions = (dockerComposeOptions != null) ? dockerComposeOptions : DockerComposeOptions.none();
 		this.composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
 	}

@@ -131,8 +131,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		List<String> data = new ArrayList<>();
 		data.add("error/" + errorStatus);
 		HttpStatus.Series series = HttpStatus.Series.resolve(errorStatus);
-		if (series != null) {
-			data.add("error/" + SERIES_VIEWS.get(series));
+		String seriesView = (series != null) ? SERIES_VIEWS.get(series) : null;
+		if (seriesView != null) {
+			data.add("error/" + seriesView);
 		}
 		data.add("error/error");
 		return data;

@@ -243,7 +243,7 @@ public class FileSystemWatcher {
 		@Override
 		public void run() {
 			int remainingScans = this.remainingScans.get();
-			while (remainingScans > 0 || remainingScans == -1) {
+			while (!Thread.currentThread().isInterrupted() && (remainingScans > 0 || remainingScans == -1)) {
 				try {
 					if (remainingScans > 0) {
 						this.remainingScans.decrementAndGet();
@@ -252,6 +252,7 @@ public class FileSystemWatcher {
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
+					break;
 				}
 				remainingScans = this.remainingScans.get();
 			}

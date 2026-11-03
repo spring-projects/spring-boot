@@ -68,7 +68,9 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
-		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+		java.util.Enumeration<String> acceptHeaders = request.getHeaders(HttpHeaders.ACCEPT);
+		String acceptHeader = (acceptHeaders != null && acceptHeaders.hasMoreElements())
+				? String.join(", ", java.util.Collections.list(acceptHeaders)) : request.getHeader(HttpHeaders.ACCEPT);
 		if (StringUtils.hasText(acceptHeader)) {
 			try {
 				return MediaType.parseMediaTypes(acceptHeader);

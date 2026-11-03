@@ -70,7 +70,8 @@ public final class PathRequest {
 		protected void initialized(Supplier<ApplicationContext> context) {
 			String path = context.get().getBean(H2ConsoleProperties.class).getPath();
 			Assert.hasText(path, "'path' in H2ConsoleProperties must not be empty");
-			this.delegate = PathPatternRequestMatcher.withDefaults().matcher(path + "/**");
+			String pattern = path.endsWith("/") ? path + "**" : path + "/**";
+			this.delegate = PathPatternRequestMatcher.withDefaults().matcher(pattern);
 		}
 
 		@Override

@@ -61,8 +61,10 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	 */
 	protected ConditionOutcome getResourceOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		List<String> found = new ArrayList<>();
+		org.springframework.core.io.ResourceLoader resourceLoader = (context.getResourceLoader() != null)
+				? context.getResourceLoader() : new org.springframework.core.io.DefaultResourceLoader(context.getClassLoader());
 		for (String location : this.resourceLocations) {
-			Resource resource = context.getResourceLoader().getResource(location);
+			Resource resource = resourceLoader.getResource(location);
 			if (resource != null && resource.exists()) {
 				found.add(location);
 			}

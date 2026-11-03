@@ -266,6 +266,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 
 		private volatile byte @Nullable [] content;
 
+		private volatile @Nullable String stringContent;
+
 		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent,
 				boolean autoTrimTrailingNewLine) {
 			this.path = path;
@@ -297,6 +299,18 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 
 		@Override
 		public String toString() {
+			if (!this.cacheContent) {
+				return loadString();
+			}
+			String string = this.stringContent;
+			if (string == null) {
+				string = loadString();
+				this.stringContent = string;
+			}
+			return string;
+		}
+
+		private String loadString() {
 			String string = new String(getBytes());
 			if (this.autoTrimTrailingNewLine) {
 				string = autoTrimTrailingNewLine(string);

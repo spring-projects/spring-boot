@@ -51,7 +51,8 @@ final class WelcomePageRouterFunctionFactory {
 	}
 
 	private Resource getIndexHtml(ResourceLoader resourceLoader, String location) {
-		return resourceLoader.getResource(location + "index.html");
+		String normalizedLocation = location.endsWith("/") ? location : location + "/";
+		return resourceLoader.getResource(normalizedLocation + "index.html");
 	}
 
 	private boolean isReadable(Resource resource) {
