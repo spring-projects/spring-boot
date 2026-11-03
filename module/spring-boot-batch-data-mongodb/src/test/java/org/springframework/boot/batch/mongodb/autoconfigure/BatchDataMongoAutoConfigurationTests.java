@@ -58,7 +58,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationUsesMainTransactionManager() {
+	void autoConfigurationUsesMainTransactionManager() {
 		PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(PlatformTransactionManager.class, () -> transactionManager)
@@ -68,7 +68,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationFavorsBatchTransactionManager() {
+	void autoConfigurationFavorsBatchTransactionManager() {
 		MongoTransactionManager transactionManager = mock(MongoTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(MongoTransactionManager.class, () -> transactionManager)
@@ -81,7 +81,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationCreatesBatchTransactionManagerIfNecessary() {
+	void autoConfigurationCreatesBatchTransactionManagerIfNecessary() {
 		MongoDatabaseFactory mongoDatabaseFactory = mockMongoDatabaseFactory();
 		this.contextRunner.withBean(MongoDatabaseFactory.class, () -> mongoDatabaseFactory).run((context) -> {
 			assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
@@ -93,7 +93,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autoconfigurationBacksOffEntirelyIfSpringMongoDbAbsent() {
+	void autoConfigurationBacksOffEntirelyIfSpringMongoDbAbsent() {
 		this.contextRunner
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, DataMongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoOperations.class))
