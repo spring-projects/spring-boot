@@ -30,8 +30,10 @@ class ClearCachesApplicationListener implements ApplicationListener<ContextRefre
 			return;
 		}
 		try {
-			Method clearCacheMethod = classLoader.getClass().getDeclaredMethod("clearCache");
-			clearCacheMethod.invoke(classLoader);
+			Method clearCacheMethod = ReflectionUtils.findMethod(classLoader.getClass(), "clearCache");
+			if (clearCacheMethod != null) {
+				clearCacheMethod.invoke(classLoader);
+			}
 		}
 		catch (Exception ex) {
 			// Ignore
