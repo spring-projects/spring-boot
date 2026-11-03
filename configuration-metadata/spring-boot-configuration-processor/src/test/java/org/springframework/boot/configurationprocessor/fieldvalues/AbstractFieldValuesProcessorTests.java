@@ -62,6 +62,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("integerObjectNone")).isNull();
 		assertThat(values.get("integerObjectConst")).isEqualTo(4);
 		assertThat(values.get("charset")).isEqualTo("US-ASCII");
+		assertThat(values.get("charsetQualified")).isEqualTo("UTF-16");
 		assertThat(values.get("charsetConst")).isEqualTo("UTF-8");
 		assertThat(values.get("mimeType")).isEqualTo("text/html");
 		assertThat(values.get("mimeTypeConst")).isEqualTo("text/plain");
@@ -85,6 +86,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
 		assertThat(values.get("durationZero")).isEqualTo(0);
+		assertThat(values.get("durationZeroQualified")).isEqualTo(0);
 		assertThat(values.get("durationQualified")).isEqualTo("60s");
 		assertThat(values.get("dataSizeNone")).isNull();
 		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
@@ -99,6 +101,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("periodMonths")).isEqualTo("10m");
 		assertThat(values.get("periodYears")).isEqualTo("15y");
 		assertThat(values.get("periodZero")).isEqualTo(0);
+		assertThat(values.get("periodZeroQualified")).isEqualTo(0);
 		assertThat(values.get("periodQualified")).isEqualTo("6w");
 		assertThat(values.get("enumNone")).isNull();
 		assertThat(values.get("enumSimple")).isEqualTo("seconds");
