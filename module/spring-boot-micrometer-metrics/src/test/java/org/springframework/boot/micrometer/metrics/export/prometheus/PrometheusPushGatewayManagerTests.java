@@ -32,7 +32,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 
@@ -92,17 +91,7 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	void shutdownWhenOwnsSchedulerDoesShutDownScheduler() {
-		PushGatewayTaskScheduler ownedScheduler = givenScheduleAtFixedRateWillReturnFuture(
-				mock(PushGatewayTaskScheduler.class));
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, ownedScheduler,
-				this.pushRate, null);
-		manager.shutdown();
-		then(ownedScheduler).should().shutdown();
-	}
-
-	@Test
-	void shutdownWhenOwnsSchedulerShutsDownExecutor() throws Exception {
+	void shutdownWhenOwnsSchedulerDoesShutDownScheduler() throws Exception {
 		PushGatewayTaskScheduler ownedScheduler = spy(new PushGatewayTaskScheduler());
 		List<ScheduledExecutorService> executors = new ArrayList<>();
 		willAnswer((invocation) -> {
@@ -117,6 +106,7 @@ class PrometheusPushGatewayManagerTests {
 			assertThat(executor.submit(() -> Thread.currentThread().isDaemon()).get(10, TimeUnit.SECONDS)).isTrue();
 			then(this.pushGateway).should().pushAdd();
 			manager.shutdown();
+			then(ownedScheduler).should().shutdown();
 			assertThat(executor.isShutdown()).isTrue();
 			assertThat(executor.awaitTermination(10, TimeUnit.SECONDS)).isTrue();
 		}
@@ -126,23 +116,14 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	void shutdownWhenDoesNotOwnSchedulerDoesNotShutDownScheduler() {
-		ThreadPoolTaskScheduler otherScheduler = givenScheduleAtFixedRateWillReturnFuture(
-				mock(ThreadPoolTaskScheduler.class));
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, otherScheduler,
-				this.pushRate, null);
-		manager.shutdown();
-		then(otherScheduler).should(never()).shutdown();
-	}
-
-	@Test
-	void shutdownWhenDoesNotOwnSchedulerLeavesExecutorRunning() throws Exception {
-		ThreadPoolTaskScheduler otherScheduler = new ThreadPoolTaskScheduler();
+	void shutdownWhenDoesNotOwnSchedulerDoesNotShutDownScheduler() throws Exception {
+		ThreadPoolTaskScheduler otherScheduler = spy(new ThreadPoolTaskScheduler());
 		otherScheduler.initialize();
 		try {
 			PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, otherScheduler,
 					Duration.ofDays(1), ShutdownOperation.NONE);
 			manager.shutdown();
+			then(otherScheduler).should(never()).shutdown();
 			ScheduledExecutorService executor = otherScheduler.getScheduledExecutor();
 			assertThat(executor.isShutdown()).isFalse();
 			assertThat(executor.submit(() -> "running").get(10, TimeUnit.SECONDS)).isEqualTo("running");
