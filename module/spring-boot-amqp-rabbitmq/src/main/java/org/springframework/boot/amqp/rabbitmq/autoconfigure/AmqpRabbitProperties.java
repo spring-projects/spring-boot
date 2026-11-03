@@ -74,8 +74,8 @@ public class AmqpRabbitProperties {
 
 	public void setHost(String host) {
 		if (host.contains(",")) {
-			throw new InvalidConfigurationPropertyValueException("spring.amqp.rabbitmq.host", this.host,
-					"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.amqp.address' instead.");
+			throw new InvalidConfigurationPropertyValueException("spring.amqp.rabbitmq.host", host,
+					"Invalid character ','. Value must be a single host.");
 		}
 		this.host = host;
 	}

@@ -72,7 +72,11 @@ class AmqpRabbitPropertiesTests {
 	void setHostWhenPropertyContainsMultipleHostsThrowsException() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(() -> this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net"))
-			.withMessageContaining("spring.amqp.rabbitmq.host");
+			.satisfies((ex) -> {
+				assertThat(ex.getName()).isEqualTo("spring.amqp.rabbitmq.host");
+				assertThat(ex.getValue()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
+				assertThat(ex.getReason()).isEqualTo("Invalid character ','. Value must be a single host.");
+			});
 	}
 
 	@Test
