@@ -26,6 +26,7 @@ import org.springframework.boot.batch.autoconfigure.BatchTransactionManager;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -43,6 +44,7 @@ import org.springframework.transaction.annotation.Isolation;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch using Data MongoDB.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.1.0
  */
 @AutoConfiguration(before = { BatchAutoConfiguration.class, BatchJobLauncherAutoConfiguration.class },
@@ -90,11 +92,17 @@ public final class BatchDataMongoAutoConfiguration {
 		SpringBootBatchMongoConfiguration(MongoDatabaseFactory mongoDatabaseFactory,
 				ObjectProvider<MongoTransactionManager> transactionManager,
 				@BatchTransactionManager ObjectProvider<MongoTransactionManager> batchTransactionManager,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
 				BatchDataMongoProperties properties) {
 			this.mongoOperations = createMongoOperations(mongoDatabaseFactory);
-			this.transactionManager = batchTransactionManager.getIfAvailable(
-					() -> transactionManager.getIfAvailable(() -> new MongoTransactionManager(mongoDatabaseFactory)));
+			this.transactionManager = batchTransactionManager
+				.getIfAvailable(() -> transactionManager.getIfAvailable(() -> {
+					MongoTransactionManager mongoTransactionManager = new MongoTransactionManager(mongoDatabaseFactory);
+					transactionManagerCustomizers
+						.ifAvailable((customizers) -> customizers.customize(mongoTransactionManager));
+					return mongoTransactionManager;
+				}));
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 		}
