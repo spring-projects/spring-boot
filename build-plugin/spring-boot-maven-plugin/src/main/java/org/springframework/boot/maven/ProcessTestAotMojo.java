@@ -123,8 +123,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		}
 		generateAotAssets(getClassPath(true), AOT_PROCESSOR_CLASS_NAME, getAotArguments());
 		compileSourceFiles(getClassPath(false), this.generatedSources, this.generatedTestClasses);
-		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
-				this.testClassesDirectory.toPath().resolve("META-INF/native-image"));
+		copyAll(this.generatedResources.toPath(), this.testClassesDirectory.toPath());
 		copyAll(this.generatedTestClasses.toPath(), this.testClassesDirectory.toPath());
 	}
 
