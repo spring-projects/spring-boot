@@ -8,8 +8,11 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
@@ -17,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Valentine Wu
+ * @author Raunak
  */
 class DurationStyleTests {
 
@@ -237,6 +241,30 @@ class DurationStyleTests {
 	void printSimpleWithMicrosUnitShouldPrintInUnit() {
 		Duration duration = Duration.ofNanos(2000);
 		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.MICROS)).isEqualTo("2us");
+	}
+
+	@ParameterizedTest
+	@ValueSource(longs = { Long.MIN_VALUE, Long.MAX_VALUE })
+	void printSimpleWithMicrosUnitShouldSupportFullLongRange(long micros) {
+		Duration duration = Duration.of(micros, ChronoUnit.MICROS);
+		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.MICROS)).isEqualTo(micros + "us");
+		Duration withFraction = duration.plusNanos((micros < 0) ? -999 : 999);
+		assertThat(DurationStyle.SIMPLE.print(withFraction, ChronoUnit.MICROS)).isEqualTo(micros + "us");
+	}
+
+	@ParameterizedTest
+	@ValueSource(longs = { Long.MIN_VALUE, Long.MAX_VALUE })
+	void printSimpleWithMicrosUnitWhenResultOverflowsShouldThrowException(long micros) {
+		Duration duration = Duration.of(micros, ChronoUnit.MICROS).plusNanos((micros < 0) ? -1000 : 1000);
+		assertThatExceptionOfType(ArithmeticException.class)
+			.isThrownBy(() -> DurationStyle.SIMPLE.print(duration, ChronoUnit.MICROS));
+	}
+
+	@ParameterizedTest
+	@ValueSource(longs = { -1999, -1001, -999, 0, 999, 1001, 1999 })
+	void printSimpleWithMicrosUnitShouldTruncateTowardsZero(long nanos) {
+		Duration duration = Duration.ofNanos(nanos);
+		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.MICROS)).isEqualTo(nanos / 1000 + "us");
 	}
 
 }
