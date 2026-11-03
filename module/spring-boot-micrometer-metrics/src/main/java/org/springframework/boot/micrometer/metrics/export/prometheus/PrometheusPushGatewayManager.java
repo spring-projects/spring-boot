@@ -5,8 +5,6 @@
 package org.springframework.boot.micrometer.metrics.export.prometheus;
 
 import java.time.Duration;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import io.prometheus.metrics.exporter.pushgateway.PushGateway;
@@ -144,11 +142,7 @@ public class PrometheusPushGatewayManager {
 			setPoolSize(1);
 			setDaemon(true);
 			setThreadGroupName("prometheus-push-gateway");
-		}
-
-		@Override
-		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
-			return Executors.newSingleThreadScheduledExecutor(this);
+			initialize();
 		}
 
 	}
