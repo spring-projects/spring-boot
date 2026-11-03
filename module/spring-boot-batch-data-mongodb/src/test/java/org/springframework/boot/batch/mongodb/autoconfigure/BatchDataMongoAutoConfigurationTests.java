@@ -40,7 +40,6 @@ import static org.mockito.Mockito.times;
  * Tests for {@link BatchDataMongoAutoConfiguration}.
  *
  * @author Stephane Nicoll
- * @author Yanming Zhou
  */
 class BatchDataMongoAutoConfigurationTests {
 

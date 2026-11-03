@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Isolation;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch using Data MongoDB.
  *
  * @author Stephane Nicoll
- * @author Yanming Zhou
  * @since 4.1.0
  */
 @AutoConfiguration(before = { BatchAutoConfiguration.class, BatchJobLauncherAutoConfiguration.class },
@@ -96,13 +95,8 @@ public final class BatchDataMongoAutoConfiguration {
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
 				BatchDataMongoProperties properties) {
 			this.mongoOperations = createMongoOperations(mongoDatabaseFactory);
-			this.transactionManager = batchTransactionManager
-				.getIfAvailable(() -> transactionManager.getIfAvailable(() -> {
-					MongoTransactionManager mongoTransactionManager = new MongoTransactionManager(mongoDatabaseFactory);
-					transactionManagerCustomizers
-						.ifAvailable((customizers) -> customizers.customize(mongoTransactionManager));
-					return mongoTransactionManager;
-				}));
+			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager.getIfAvailable(
+					() -> createMongoTransactionManager(mongoDatabaseFactory, transactionManagerCustomizers)));
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 		}
@@ -112,6 +106,13 @@ public final class BatchDataMongoAutoConfiguration {
 			MappingMongoConverter converter = (MappingMongoConverter) template.getConverter();
 			converter.setMapKeyDotReplacement(".");
 			return template;
+		}
+
+		private static MongoTransactionManager createMongoTransactionManager(MongoDatabaseFactory mongoDatabaseFactory,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			MongoTransactionManager mongoTransactionManager = new MongoTransactionManager(mongoDatabaseFactory);
+			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(mongoTransactionManager));
+			return mongoTransactionManager;
 		}
 
 		@Override
