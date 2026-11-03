@@ -26,6 +26,7 @@ import org.springframework.boot.batch.autoconfigure.BatchTransactionManager;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -91,11 +92,12 @@ public final class BatchDataMongoAutoConfiguration {
 		SpringBootBatchMongoConfiguration(MongoDatabaseFactory mongoDatabaseFactory,
 				ObjectProvider<PlatformTransactionManager> transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor,
 				BatchDataMongoProperties properties) {
 			this.mongoOperations = createMongoOperations(mongoDatabaseFactory);
-			this.transactionManager = batchTransactionManager.getIfAvailable(
-					() -> transactionManager.getIfAvailable(() -> new MongoTransactionManager(mongoDatabaseFactory)));
+			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager.getIfAvailable(
+					() -> createMongoTransactionManager(mongoDatabaseFactory, transactionManagerCustomizers)));
 			this.taskExecutor = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 		}
@@ -105,6 +107,13 @@ public final class BatchDataMongoAutoConfiguration {
 			MappingMongoConverter converter = (MappingMongoConverter) template.getConverter();
 			converter.setMapKeyDotReplacement(".");
 			return template;
+		}
+
+		private static MongoTransactionManager createMongoTransactionManager(MongoDatabaseFactory mongoDatabaseFactory,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			MongoTransactionManager mongoTransactionManager = new MongoTransactionManager(mongoDatabaseFactory);
+			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(mongoTransactionManager));
+			return mongoTransactionManager;
 		}
 
 		@Override

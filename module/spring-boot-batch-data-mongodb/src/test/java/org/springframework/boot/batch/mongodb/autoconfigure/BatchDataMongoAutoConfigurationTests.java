@@ -19,6 +19,7 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfigur
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -26,6 +27,7 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoExceptionTranslator;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionExecutionListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -167,6 +169,22 @@ class BatchDataMongoAutoConfigurationTests {
 				.rootCause()
 				.hasMessageContaining("spring.batch.data.mongodb.schema.location")
 				.hasMessageContaining("resource does not exist"));
+	}
+
+	@Test
+	void mongoTransactionManagerWithTransactionExecutionListenersIsConfigured() {
+		TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
+			.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
+			.withBean(TransactionExecutionListener.class, () -> listener)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
+				PlatformTransactionManager transactionManager = context.getBean(SpringBootBatchMongoConfiguration.class)
+					.getTransactionManager();
+				assertThat(transactionManager).isInstanceOfSatisfying(MongoTransactionManager.class,
+						(mtm) -> assertThat(mtm.getTransactionExecutionListeners()).containsExactly(listener));
+			});
 	}
 
 	private MongoDatabaseFactory mockMongoDatabaseFactory() {
