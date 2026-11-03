@@ -2,13 +2,9 @@ name: CI
 on:
   push:
     branches:
-      - '4.1.x-internal'
-  schedule:
-    - cron: '30 05 * * *'
+      - '4.1.x'
 permissions:
   contents: read
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
@@ -55,6 +51,7 @@ jobs:
           commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
           commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
           commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           gradle-cache-read-only: false
           java-early-access: ${{ matrix.java.early-access || 'false' }}
           java-distribution: ${{ matrix.java.distribution }}
