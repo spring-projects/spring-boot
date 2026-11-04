@@ -11,7 +11,7 @@ description = "Spring Boot Dependencies"
 
 bom {
 	upgrade {
-		policy = "same-major-version"
+		policy = "same-minor-version"
 		gitHub {
 			issueLabels = [
 				"type: dependency-upgrade",
