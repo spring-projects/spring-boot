@@ -85,7 +85,7 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
 		Collections.reverse(values);
 		Assert.state(values.stream().filter(this::isDefault).count() <= 1,
-				"Multiple default values declared in " + type.getName());
+				() -> "Multiple default values declared in " + type.getName());
 		return values;
 	}
 

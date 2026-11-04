@@ -63,7 +63,7 @@ class LoaderZipEntries {
 
 	private InputStream getResourceAsStream(String name) {
 		InputStream stream = getClass().getResourceAsStream(name);
-		Assert.state(stream != null, "Resource '%s not found'".formatted(name));
+		Assert.state(stream != null, () -> "Resource '%s not found'".formatted(name));
 		return stream;
 	}
 
