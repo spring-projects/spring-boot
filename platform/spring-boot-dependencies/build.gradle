@@ -1893,7 +1893,7 @@ bom {
 			}
 		}
 	}
-	library("Oracle Database", "23.26.3.0.0") {
+	library("Oracle Database", "23.26.4.0.0") {
 		alignWith {
 			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
 		}

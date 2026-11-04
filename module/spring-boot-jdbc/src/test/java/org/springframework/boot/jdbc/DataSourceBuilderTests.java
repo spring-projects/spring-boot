@@ -22,10 +22,12 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OpaqueString;
 import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.config.PoolProperties;
 import oracle.ucp.config.PoolPropertiesException;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.util.introspection.FieldSupport;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
@@ -389,13 +391,16 @@ class DataSourceBuilderTests {
 		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
 		PoolDataSource built = (PoolDataSource) builder.username("test2").password("secret2").build();
 		assertThat(built.getUser()).isEqualTo("test2");
-		assertThat(built).extracting(this::getPassword).isEqualTo("secret2");
+		assertThat(built).extracting("recentPoolProperties")
+			.asInstanceOf(InstanceOfAssertFactories.type(PoolProperties.class))
+			.extracting(this::getPassword)
+			.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
 	}
 
-	private String getPassword(PoolDataSource target) {
+	private String getPassword(PoolProperties poolProperties) {
 		try {
-			return ((oracle.ucp.util.OpaqueString) target.getPoolProperties().getPoolProperty("password")).get();
+			return ((oracle.ucp.util.OpaqueString) poolProperties.getPoolProperty("password")).get();
 		}
 		catch (PoolPropertiesException ex) {
 			throw new IllegalStateException(ex);
