@@ -96,7 +96,7 @@ final class OtlpLoggingConfigurations {
 			@Override
 			public String getUrl(Transport transport) {
 				Assert.state(transport == this.properties.getTransport(),
-						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+						() -> "Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
 				String path = (transport == Transport.HTTP) ? "v1/logs" : null;
 				String endpoint = this.otlpProperties.resolveEndpoint(this.properties.getEndpoint(), path);

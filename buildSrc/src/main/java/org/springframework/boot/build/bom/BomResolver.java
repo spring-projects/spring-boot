@@ -92,7 +92,7 @@ class BomResolver {
 			.detachedConfiguration(this.dependencies.create(coordinates + "@pom"))
 			.getResolvedConfiguration()
 			.getResolvedArtifacts();
-		Assert.state(artifacts.size() == 1, "Expected a single artifact but '%s' resolved to %d artifacts"
+		Assert.state(artifacts.size() == 1, () -> "Expected a single artifact but '%s' resolved to %d artifacts"
 			.formatted(coordinates, artifacts.size()));
 		return artifacts.iterator().next().getFile();
 	}

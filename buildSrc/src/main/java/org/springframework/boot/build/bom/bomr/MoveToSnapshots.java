@@ -84,7 +84,7 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 			Milestone milestone) {
 		OffsetDateTime releaseDate = (milestone.getDueOn() != null) ? milestone.getDueOn() : releaseTrainDate();
 		Assert.state(releaseDate != null,
-				"No release date available. Schedule the %s milestone or use --release-train to provide a release date"
+				() -> "No release date available. Schedule the %s milestone or use --release-train to provide a release date"
 					.formatted(milestone.getName()));
 		Map<String, List<Release>> scheduledReleases = getScheduledOpenSourceReleases(releaseDate);
 		BiFunction<Library, DependencyVersion, VersionOption> resolver = super.createVersionOptionResolver(milestone);
