@@ -6,6 +6,7 @@ package org.springframework.boot.convert;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -174,7 +175,7 @@ public enum DurationStyle {
 		/**
 		 * Microseconds.
 		 */
-		MICROS(ChronoUnit.MICROS, "us", (duration) -> duration.dividedBy(Duration.ofNanos(1000))),
+		MICROS(ChronoUnit.MICROS, "us", Unit::toMicros),
 
 		/**
 		 * Milliseconds.
@@ -200,6 +201,12 @@ public enum DurationStyle {
 		 * Days.
 		 */
 		DAYS(ChronoUnit.DAYS, "d", Duration::toDays);
+
+		private static final long NANOSECONDS_PER_MICROSECOND = TimeUnit.MICROSECONDS.toNanos(1);
+
+		private static final long NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
+
+		private static final long MICROSECONDS_PER_SECOND = TimeUnit.SECONDS.toMicros(1);
 
 		private final ChronoUnit chronoUnit;
 
@@ -244,6 +251,18 @@ public enum DurationStyle {
 				}
 			}
 			throw new IllegalArgumentException("Unknown unit '" + suffix + "'");
+		}
+
+		private static long toMicros(Duration duration) {
+			long seconds = duration.getSeconds();
+			long nanoseconds = duration.getNano();
+			if (seconds < 0) {
+				seconds++;
+				nanoseconds -= NANOSECONDS_PER_SECOND;
+			}
+			seconds = Math.multiplyExact(seconds, MICROSECONDS_PER_SECOND);
+			nanoseconds = nanoseconds / NANOSECONDS_PER_MICROSECOND;
+			return Math.addExact(seconds, nanoseconds);
 		}
 
 	}
