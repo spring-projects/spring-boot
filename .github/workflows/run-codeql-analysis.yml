@@ -6,6 +6,7 @@ on:
 permissions: read-all
 jobs:
   run-analysis:
+    if: ${{ github.event.repository.visibility == 'public' }}
     permissions:
       actions: read
       contents: read
