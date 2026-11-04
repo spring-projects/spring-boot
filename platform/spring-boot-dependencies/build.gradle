@@ -1781,7 +1781,7 @@ bom {
 				.formatted(version.toString().replace(".jre11", "")))
 		}
 	}
-	library("MySQL", "26.7.0") {
+	library("MySQL", "26.10.0") {
 		upgradePolicy = "any"
 		group("com.mysql") {
 			modules = [
