@@ -53,7 +53,7 @@ final class OtlpTracingConfigurations {
 			@Override
 			public String getUrl(Transport transport) {
 				Assert.state(transport == this.properties.getTransport(),
-						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+						() -> "Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
 				String endpoint = this.properties.getEndpoint();
 				Assert.state(endpoint != null, "'endpoint' must not be null");
