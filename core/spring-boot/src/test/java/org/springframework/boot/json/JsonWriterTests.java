@@ -379,6 +379,19 @@ class JsonWriterTests {
 		}
 
 		@Test
+		void usingPairsWithName() {
+			Map<String, Object> map = new LinkedHashMap<>();
+			map.put("a", "A");
+			map.put("b", "B");
+			JsonWriter<Map<String, Object>> writer = JsonWriter.of((members) -> {
+				members.add("version", 1);
+				members.add("pairs").usingPairs(Map::forEach);
+			});
+			assertThat(writer.writeToString(map)).isEqualTo("""
+					{"version":1,"pairs":{"a":"A","b":"B"}}""");
+		}
+
+		@Test
 		void usingPairsWhenAlreadyDeclaredThrowsException() {
 			assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((
 					members) -> members.from(Collections.emptyMap()).usingPairs(Map::forEach).usingPairs(Map::forEach)))

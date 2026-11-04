@@ -64,12 +64,12 @@ class SampleRabbitMultipleApplicationTests {
 			assertThat(composite.getStatus()).isEqualTo(Status.UP);
 			Map<String, HealthDescriptor> components = composite.getComponents();
 			assertThat(components).isNotNull();
-			assertThat(components).containsKeys("rabbit", "amqprabbit");
+			assertThat(components).containsKeys("rabbit", "amqpRabbit");
 			assertThat(components.get("rabbit")).isInstanceOfSatisfying(IndicatedHealthDescriptor.class, (rabbit) -> {
 				assertThat(rabbit.getStatus()).isEqualTo(Status.UP);
 				assertThat(rabbit.getDetails()).containsKey("version");
 			});
-			assertThat(components.get("amqprabbit")).isInstanceOfSatisfying(IndicatedHealthDescriptor.class,
+			assertThat(components.get("amqpRabbit")).isInstanceOfSatisfying(IndicatedHealthDescriptor.class,
 					(amqpRabbit) -> {
 						assertThat(amqpRabbit.getStatus()).isEqualTo(Status.UP);
 						assertThat(amqpRabbit.getDetails()).containsKey("version");

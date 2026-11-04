@@ -11,7 +11,7 @@ description = "Spring Boot Dependencies"
 
 bom {
 	upgrade {
-		policy = "same-major-version"
+		policy = "same-minor-version"
 		gitHub {
 			issueLabels = [
 				"type: dependency-upgrade",
@@ -19,7 +19,7 @@ bom {
 			]
 		}
 	}
-	library("ActiveMQ", "6.3.2") {
+	library("ActiveMQ", "6.3.3") {
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-console",
@@ -112,7 +112,7 @@ bom {
 			}
 		}
 	}
-	library("AspectJ", "1.9.25.1") {
+	library("AspectJ", "1.9.27") {
 		group("org.aspectj") {
 			modules = [
 				"aspectjrt",
@@ -187,7 +187,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/build-helper-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("Byte Buddy", "1.18.15") {
+	library("Byte Buddy", "1.18.17") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -660,7 +660,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "7.4.13.Final") {
+	library("Hibernate", "7.4.14.Final") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
@@ -693,7 +693,7 @@ bom {
 				.formatted(version.toString().replace(".Final", "")))
 		}
 	}
-	library("Hibernate Validator", "9.1.5.Final") {
+	library("Hibernate Validator", "9.1.6.Final") {
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
@@ -787,7 +787,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "16.3.0") {
+	library("Infinispan", "16.3.1") {
 		group("org.infinispan") {
 			bom("infinispan-bom")
 		}
@@ -1227,7 +1227,7 @@ bom {
 			releaseNotes("https://github.com/json-path/JsonPath/releases/tag/json-path-{version}")
 		}
 	}
-	library("Json-smart", "2.6.0") {
+	library("Json-smart", "2.6.1") {
 		group("net.minidev") {
 			modules = [
 				"json-smart"
@@ -1437,7 +1437,7 @@ bom {
 			}
 		}
 	}
-	library("Logback", "1.6.5") {
+	library("Logback", "1.6.6") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
@@ -1460,7 +1460,7 @@ bom {
 			javadoc("https://projectlombok.org/api")
 		}
 	}
-	library("MariaDB", "3.5.10") {
+	library("MariaDB", "3.5.11") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
@@ -1554,7 +1554,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-enforcer/releases/tag/enforcer-{version}")
 		}
 	}
-	library("Maven Failsafe Plugin", "3.6.0") {
+	library("Maven Failsafe Plugin", "3.6.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-failsafe-plugin"
@@ -1657,7 +1657,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-source-plugin/releases/tag/maven-source-plugin-{version}")
 		}
 	}
-	library("Maven Surefire Plugin", "3.6.0") {
+	library("Maven Surefire Plugin", "3.6.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-surefire-plugin"
@@ -1761,7 +1761,7 @@ bom {
 			}
 		}
 	}
-	library("MSSQL JDBC", "13.6.1.jre11") {
+	library("MSSQL JDBC", "13.6.2.jre11") {
 		prohibit {
 			endsWith(".jre8")
 			because "we want to use the jre11 version"
@@ -1781,7 +1781,7 @@ bom {
 				.formatted(version.toString().replace(".jre11", "")))
 		}
 	}
-	library("MySQL", "26.7.0") {
+	library("MySQL", "26.10.0") {
 		upgradePolicy = "any"
 		group("com.mysql") {
 			modules = [
@@ -1837,7 +1837,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.2.19.Final") {
+	library("Netty", "4.2.20.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
@@ -1893,7 +1893,7 @@ bom {
 			}
 		}
 	}
-	library("Oracle Database", "23.26.3.0.0") {
+	library("Oracle Database", "23.26.4.0.0") {
 		alignWith {
 			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
 		}
@@ -1944,7 +1944,7 @@ bom {
 			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
 		}
 	}
-	library("Protobuf Maven Plugin", "5.1.11") {
+	library("Protobuf Maven Plugin", "5.1.12") {
 		group("io.github.ascopes") {
 			plugins = [
 				"protobuf-maven-plugin"
@@ -1955,7 +1955,7 @@ bom {
 			releaseNotes("https://github.com/ascopes/protobuf-maven-plugin/releases/tag/v{version}")
 		}
 	}
-	library("Pooled JMS", "3.2.5") {
+	library("Pooled JMS", "3.2.6") {
 		group("org.messaginghub") {
 			modules = [
 				"pooled-jms"
@@ -2168,6 +2168,12 @@ bom {
 		}
 	}
 	library("RabbitMQ Client", "5.37.0") {
+		alignWith {
+			version {
+				from "org.springframework.amqp:spring-rabbit"
+				managedBy "Spring AMQP"
+			}
+		}
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
@@ -2180,6 +2186,12 @@ bom {
 		}
 	}
 	library("RabbitMQ AMQP Client", "1.6.0") {
+		alignWith {
+			version {
+				from "org.springframework.amqp:spring-rabbitmq-client"
+				managedBy "Spring AMQP"
+			}
+		}
 		group("com.rabbitmq.client") {
 			modules = [
 					"amqp-client"
@@ -3163,7 +3175,7 @@ bom {
 			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}
 	}
-	library("UnboundID LDAPSDK", "7.0.5") {
+	library("UnboundID LDAPSDK", "7.0.6") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"

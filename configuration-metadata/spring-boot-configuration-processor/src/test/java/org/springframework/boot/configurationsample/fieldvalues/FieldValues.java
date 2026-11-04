@@ -56,6 +56,8 @@ public class FieldValues {
 
 	private Boolean boolObject = Boolean.TRUE;
 
+	private Boolean boolObjectQualified = java.lang.Boolean.TRUE;
+
 	private Boolean boolObjectNone;
 
 	private Boolean boolObjectConst = BOOLEAN_OBJ_CONST;
@@ -77,6 +79,8 @@ public class FieldValues {
 	private Integer integerObjectConst = INTEGER_OBJ_CONST;
 
 	private Charset charset = StandardCharsets.US_ASCII;
+
+	private Charset charsetQualified = java.nio.charset.StandardCharsets.UTF_16;
 
 	private Charset charsetConst = DEFAULT_CHARSET;
 
@@ -124,6 +128,10 @@ public class FieldValues {
 
 	private Duration durationZero = Duration.ZERO;
 
+	private Duration durationZeroQualified = java.time.Duration.ZERO;
+
+	private Duration durationQualified = java.time.Duration.ofSeconds(60);
+
 	private DataSize dataSizeNone;
 
 	private DataSize dataSizeBytes = DataSize.ofBytes(5);
@@ -136,6 +144,8 @@ public class FieldValues {
 
 	private DataSize dataSizeTerabytes = DataSize.ofTerabytes(40);
 
+	private DataSize dataSizeQualified = org.springframework.util.unit.DataSize.ofMegabytes(60);
+
 	private Period periodNone;
 
 	private Period periodDays = Period.ofDays(3);
@@ -147,6 +157,10 @@ public class FieldValues {
 	private Period periodYears = Period.ofYears(15);
 
 	private Period periodZero = Period.ZERO;
+
+	private Period periodZeroQualified = java.time.Period.ZERO;
+
+	private Period periodQualified = java.time.Period.ofWeeks(6);
 
 	private ChronoUnit enumNone;
 

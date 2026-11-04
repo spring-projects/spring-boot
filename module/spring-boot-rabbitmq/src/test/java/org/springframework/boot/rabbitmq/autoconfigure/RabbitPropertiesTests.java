@@ -462,7 +462,12 @@ class RabbitPropertiesTests {
 		assertThat(this.properties.getHost()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(this.properties::determineAddresses)
-			.withMessageContaining("spring.rabbitmq.host");
+			.satisfies((ex) -> {
+				assertThat(ex.getName()).isEqualTo("spring.rabbitmq.host");
+				assertThat(ex.getValue()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
+				assertThat(ex.getReason()).isEqualTo("Invalid character ','. Value must be a single host. "
+						+ "For multiple hosts, use property 'spring.rabbitmq.addresses' instead.");
+			});
 	}
 
 	@Test
