@@ -4,6 +4,9 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.Set;
 
@@ -13,6 +16,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Copy of package-private
@@ -29,8 +33,6 @@ final class ConfigurationPropertiesCharSequenceToObjectConverter implements Cond
 	private static final TypeDescriptor BYTE_ARRAY = TypeDescriptor.valueOf(byte[].class);
 
 	private static final Set<ConvertiblePair> TYPES;
-
-	private final ThreadLocal<Boolean> disable = new ThreadLocal<>();
 
 	static {
 		TYPES = Collections.singleton(new ConvertiblePair(CharSequence.class, Object.class));
@@ -49,20 +51,15 @@ final class ConfigurationPropertiesCharSequenceToObjectConverter implements Cond
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType.getType() == String.class || this.disable.get() == Boolean.TRUE) {
+		if (sourceType.getType() == String.class || sourceType instanceof ProtectedTypeDescriptor) {
 			return false;
 		}
-		this.disable.set(Boolean.TRUE);
-		try {
-			boolean canDirectlyConvertCharSequence = this.conversionService.canConvert(sourceType, targetType);
-			if (canDirectlyConvertCharSequence && !isStringConversionBetter(sourceType, targetType)) {
-				return false;
-			}
-			return this.conversionService.canConvert(STRING, targetType);
+		sourceType = new ProtectedTypeDescriptor(sourceType);
+		boolean canDirectlyConvertCharSequence = this.conversionService.canConvert(sourceType, targetType);
+		if (canDirectlyConvertCharSequence && !isStringConversionBetter(sourceType, targetType)) {
+			return false;
 		}
-		finally {
-			this.disable.remove();
-		}
+		return this.conversionService.canConvert(STRING, targetType);
 	}
 
 	/**
@@ -91,6 +88,34 @@ final class ConfigurationPropertiesCharSequenceToObjectConverter implements Cond
 			return null;
 		}
 		return this.conversionService.convert(source.toString(), STRING, targetType);
+	}
+
+	/**
+	 * Wrapper for {@link TypeDescriptor} used to protect against infinite recursion and
+	 * cache pollution.
+	 */
+	@CacheProtected
+	static class ProtectedTypeDescriptor extends TypeDescriptor {
+
+		ProtectedTypeDescriptor(TypeDescriptor typeDescriptor) {
+			super(typeDescriptor.getResolvableType(), null, withCacheDisabled(typeDescriptor.getAnnotations()));
+		}
+
+		private static Annotation[] withCacheDisabled(Annotation[] annotations) {
+			Annotation[] disabledAnnotations = ProtectedTypeDescriptor.class.getDeclaredAnnotations();
+			return (annotations.length == 0) ? disabledAnnotations
+					: ObjectUtils.addObjectToArray(annotations, disabledAnnotations[0]);
+		}
+
+	}
+
+	/**
+	 * Annotation added to {@link ProtectedTypeDescriptor} to ensure a different cache key
+	 * is used.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface CacheProtected {
+
 	}
 
 }
