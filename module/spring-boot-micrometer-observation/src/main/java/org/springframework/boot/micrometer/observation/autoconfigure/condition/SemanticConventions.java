@@ -42,11 +42,10 @@ public enum SemanticConventions {
 		if (!result.isBound()) {
 			return this.matchIfMissing;
 		}
-		return name().equalsIgnoreCase(result.get()) || getCanonicalName().equalsIgnoreCase(result.get());
+		return getCanonicalName(name()).equals(getCanonicalName(result.get()));
 	}
 
-	private String getCanonicalName() {
-		String name = name();
+	private static String getCanonicalName(String name) {
 		StringBuilder canonicalName = new StringBuilder(name.length());
 		name.chars()
 			.filter(Character::isLetterOrDigit)
