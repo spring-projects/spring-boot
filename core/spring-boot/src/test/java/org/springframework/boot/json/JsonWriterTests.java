@@ -960,6 +960,40 @@ class JsonWriterTests {
 			assertThat(paths).containsExactly("first", "last");
 		}
 
+		@Test // gh-52580
+		void processValueWhenClassImplementationOnlyProcessesValuesOfItsType() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("age", Person::age);
+				members.applyingValueProcessor(new UppercaseValueProcessor());
+			});
+			assertThat(writer.writeToString(PERSON)).isEqualTo("""
+					{"first":"SPRING","age":10}""");
+		}
+
+		@Test // gh-52580
+		void processValueWhenClassImplementationAndNullValue() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("last", Person::lastName);
+				members.applyingValueProcessor(new UppercaseValueProcessor());
+			});
+			assertThat(writer.writeToString(new Person("Spring", null, 10))).isEqualTo("""
+					{"last":"NONE"}""");
+		}
+
+		@Test
+		void processValueWhenClassImplementationForObjectProcessesAllValues() {
+			List<@Nullable Object> values = new ArrayList<>();
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("last", Person::lastName);
+				members.add("age", Person::age);
+				members.applyingValueProcessor(new RecordingValueProcessor(values));
+			});
+			writer.writeToString(new Person("Spring", null, 10));
+			assertThat(values).containsExactly("Spring", null, 10);
+		}
+
 		private static UnaryOperator<@Nullable String> stringToUppercase() {
 			return (string) -> (string != null) ? string.toUpperCase(Locale.ROOT) : null;
 		}
@@ -979,6 +1013,31 @@ class JsonWriterTests {
 						? string.toUpperCase(Locale.ROOT) : null;
 				members.applyingValueProcessor(ValueProcessor.of(String.class, toUpperCase));
 			});
+		}
+
+	}
+
+	static class UppercaseValueProcessor implements ValueProcessor<String> {
+
+		@Override
+		public String processValue(MemberPath path, @Nullable String value) {
+			return (value != null) ? value.toUpperCase(Locale.ROOT) : "NONE";
+		}
+
+	}
+
+	static class RecordingValueProcessor implements ValueProcessor<Object> {
+
+		private final List<@Nullable Object> values;
+
+		RecordingValueProcessor(List<@Nullable Object> values) {
+			this.values = values;
+		}
+
+		@Override
+		public @Nullable Object processValue(MemberPath path, @Nullable Object value) {
+			this.values.add(value);
+			return value;
 		}
 
 	}

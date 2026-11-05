@@ -23,6 +23,7 @@ import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
 import org.springframework.boot.util.LambdaSafe;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -350,8 +351,28 @@ class JsonValueWriter {
 	private <V> @Nullable V processValue(@Nullable V value, ValueProcessor<?> valueProcessor) {
 		return (V) LambdaSafe
 			.callback(ValueProcessor.class, valueProcessor, this.path, new @Nullable Object[] { value })
+			.withFilter(
+					(callbackType, callbackInstance, path, additionalArguments) -> appliesTo(callbackInstance, value))
 			.invokeAnd((call) -> call.processValue(this.path, value))
 			.get(value);
+	}
+
+	/**
+	 * Return if the given processor applies to the given value. The generic type of a
+	 * processor implemented as a class is resolved and checked against the value, rather
+	 * than against the path that is passed as the primary callback argument. A
+	 * {@code null} value, or a processor whose generic type can't be resolved (such as a
+	 * lambda), always applies.
+	 * @param valueProcessor the value processor
+	 * @param value the value
+	 * @return if the processor applies to the value
+	 */
+	private boolean appliesTo(ValueProcessor<?> valueProcessor, @Nullable Object value) {
+		if (value == null) {
+			return true;
+		}
+		Class<?> valueType = ResolvableType.forClass(ValueProcessor.class, valueProcessor.getClass()).resolveGeneric();
+		return valueType == null || valueType.isInstance(value);
 	}
 
 	/**
