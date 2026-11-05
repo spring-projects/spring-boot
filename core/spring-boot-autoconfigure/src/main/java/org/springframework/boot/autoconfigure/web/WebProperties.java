@@ -23,6 +23,10 @@ import org.springframework.http.CacheControl;
  * @author Andy Wilkinson
  * @since 2.4.0
  */
+/**
+ * {@link WebProperties} configured with enterprise-grade defaults 
+ * for Spring MVC and reactive web resource handling.
+ */
 @ConfigurationProperties("spring.web")
 public class WebProperties {
 

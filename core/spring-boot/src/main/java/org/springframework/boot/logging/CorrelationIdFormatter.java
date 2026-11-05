@@ -60,6 +60,8 @@ public final class CorrelationIdFormatter {
 	 */
 	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter.of("traceId(32),spanId(16)");
 
+	private static final ThreadLocal<StringBuilder> threadLocalBuilder = ThreadLocal.withInitial(() -> new StringBuilder(64));
+
 	private final List<Part> parts;
 
 	private final String blank;
@@ -75,7 +77,8 @@ public final class CorrelationIdFormatter {
 	 * @return a formatted correlation id
 	 */
 	public String format(UnaryOperator<@Nullable String> resolver) {
-		StringBuilder result = new StringBuilder(this.blank.length());
+		StringBuilder result = threadLocalBuilder.get();
+		result.setLength(0);
 		formatTo(resolver, result);
 		return result.toString();
 	}
