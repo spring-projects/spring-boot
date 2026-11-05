@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Raunak Kumar Pandey
  */
 class PostgresJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
@@ -52,8 +53,8 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		PostgresJdbcDockerComposeConnectionDetails(RunningService service, Environment environment) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
-			this.jdbcUrl = addApplicationNameIfNecessary(jdbcUrlBuilder.build(service, this.environment.getDatabase()),
-					environment);
+			String database = URLEncoder.encode(this.environment.getDatabase(), StandardCharsets.UTF_8);
+			this.jdbcUrl = addApplicationNameIfNecessary(jdbcUrlBuilder.build(service, database), environment);
 		}
 
 		@Override
