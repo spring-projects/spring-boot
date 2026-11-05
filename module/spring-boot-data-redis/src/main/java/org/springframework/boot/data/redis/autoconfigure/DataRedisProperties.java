@@ -331,7 +331,8 @@ public class DataRedisProperties {
 
 		/**
 		 * List of "host:port" pairs to bootstrap from. This represents an "initial" list
-		 * of cluster nodes and is required to have at least one entry.
+		 * of cluster nodes and is required to have at least one entry. If the port is
+		 * omitted, 6379 is used.
 		 */
 		private @Nullable List<String> nodes;
 
@@ -365,7 +366,8 @@ public class DataRedisProperties {
 	public static class Masterreplica {
 
 		/**
-		 * Static list of "host:port" pairs to use, at least one entry is required.
+		 * Static list of "host:port" pairs to use, at least one entry is required. If the
+		 * port is omitted, 6379 is used.
 		 */
 		private @Nullable List<String> nodes;
 
@@ -390,7 +392,7 @@ public class DataRedisProperties {
 		private @Nullable String master;
 
 		/**
-		 * List of "host:port" pairs.
+		 * List of "host:port" pairs. If the port is omitted, 26379 is used.
 		 */
 		private @Nullable List<String> nodes;
 
