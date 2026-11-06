@@ -35,6 +35,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
+import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -48,6 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Lasse Lindqvist
  * @author Lasse Wulff
  * @author Scott Frederick
+ * @author WooSeung Kim
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -94,7 +96,10 @@ class Saml2RelyingPartyRegistrationConfiguration {
 					.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
-		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
+		Saml2MessageBinding binding = properties.getSinglelogout().getBinding();
+		if (binding != null) {
+			builder.singleLogoutServiceBinding(binding);
+		}
 		builder.entityId(properties.getEntityId());
 		builder.nameIdFormat(properties.getNameIdFormat());
 		RelyingPartyRegistration registration = builder.build();
