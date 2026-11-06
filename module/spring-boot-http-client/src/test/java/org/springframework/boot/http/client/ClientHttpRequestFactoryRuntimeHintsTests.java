@@ -19,9 +19,11 @@ import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ClientHttpRequestFactoryRuntimeHints}.
@@ -123,6 +125,14 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		assertThat(reflection
 			.onMethodInvocation(method(JdkClientHttpRequestFactory.class, "setReadTimeout", Duration.class)))
 			.accepts(hints);
+	}
+
+	@Test
+	void findFieldWhenFieldDoesNotExistThrowsException() {
+		ClientHttpRequestFactoryRuntimeHints hints = new ClientHttpRequestFactoryRuntimeHints();
+		assertThatIllegalStateException()
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(hints, "findField", String.class, "missingField"))
+			.withMessage("Unable to find field 'missingField' on java.lang.String");
 	}
 
 	private static Method method(Class<?> target, String name, Class<?>... parameterTypes) {
