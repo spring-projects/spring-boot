@@ -23,6 +23,7 @@ dependencies {
 	optional(project(":module:spring-boot-jackson"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("org.testcontainers:testcontainers-couchbase")
+	optional("tools.jackson.core:jackson-databind")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))

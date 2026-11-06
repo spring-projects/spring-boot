@@ -19,12 +19,16 @@ import com.couchbase.client.core.env.CertificateAuthenticator;
 import com.couchbase.client.core.env.PasswordAuthenticator;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.java.codec.Jackson3JsonSerializer;
 import com.couchbase.client.java.codec.JacksonJsonSerializer;
+import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.env.ClusterEnvironment.Builder;
+import com.couchbase.client.java.json.Jackson3JsonValueModule;
 import com.couchbase.client.java.json.JsonValueModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -65,6 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Emilien Bevierre
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
@@ -173,30 +178,48 @@ public final class CouchbaseAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
 	static class JacksonConfiguration {
 
 		@Bean
-		@ConditionalOnSingleCandidate(ObjectMapper.class)
-		ClusterEnvironmentBuilderCustomizer jacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
-			return new JacksonClusterEnvironmentBuilderCustomizer(
-					objectMapper.copy().registerModule(new JsonValueModule()));
+		@ConditionalOnSingleCandidate(JsonMapper.class)
+		ClusterEnvironmentBuilderCustomizer jacksonClusterEnvironmentBuilderCustomizer(JsonMapper jsonMapper) {
+			JsonMapper couchbaseJsonMapper = jsonMapper.rebuild().addModule(new Jackson3JsonValueModule()).build();
+			return new JsonSerializerClusterEnvironmentBuilderCustomizer(
+					Jackson3JsonSerializer.create(couchbaseJsonMapper));
 		}
 
 	}
 
-	private static final class JacksonClusterEnvironmentBuilderCustomizer
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnMissingBean(type = "tools.jackson.databind.json.JsonMapper")
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class Jackson2Configuration {
+
+		@Bean
+		@ConditionalOnSingleCandidate(ObjectMapper.class)
+		ClusterEnvironmentBuilderCustomizer jackson2ClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
+			ObjectMapper couchbaseObjectMapper = objectMapper.copy().registerModule(new JsonValueModule());
+			return new JsonSerializerClusterEnvironmentBuilderCustomizer(
+					JacksonJsonSerializer.create(couchbaseObjectMapper));
+		}
+
+	}
+
+	private static final class JsonSerializerClusterEnvironmentBuilderCustomizer
 			implements ClusterEnvironmentBuilderCustomizer, Ordered {
 
-		private final ObjectMapper objectMapper;
+		private final JsonSerializer jsonSerializer;
 
-		private JacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
-			this.objectMapper = objectMapper;
+		private JsonSerializerClusterEnvironmentBuilderCustomizer(JsonSerializer jsonSerializer) {
+			this.jsonSerializer = jsonSerializer;
 		}
 
 		@Override
 		public void customize(Builder builder) {
-			builder.jsonSerializer(JacksonJsonSerializer.create(this.objectMapper));
+			builder.jsonSerializer(this.jsonSerializer);
 		}
 
 		@Override
