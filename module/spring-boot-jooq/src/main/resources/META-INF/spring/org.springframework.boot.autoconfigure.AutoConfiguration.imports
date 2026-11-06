@@ -1,1 +1,2 @@
 org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration
+org.springframework.boot.jooq.autoconfigure.R2dbcJooqAutoConfiguration

@@ -27,10 +27,10 @@ class NoDslContextBeanFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchBean
 	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause) {
 		if (DSLContext.class.equals(cause.getBeanType()) && hasR2dbcAutoConfiguration()) {
 			return new FailureAnalysis(
-					"jOOQ has not been auto-configured as R2DBC has been auto-configured in favor of JDBC and jOOQ "
-							+ "auto-configuration does not yet support R2DBC. ",
-					"To use jOOQ with JDBC, exclude R2dbcAutoConfiguration. To use jOOQ with R2DBC, define your own "
-							+ "jOOQ configuration.",
+					"jOOQ has not been auto-configured for the application's R2DBC connection factory.",
+					"To use jOOQ with R2DBC, add org.jooq:jooq-reactor-extensions and ensure that a single "
+							+ "ConnectionFactory candidate is available, or define your own jOOQ configuration. "
+							+ "To use jOOQ with JDBC, exclude R2dbcAutoConfiguration.",
 					cause);
 		}
 		return null;
