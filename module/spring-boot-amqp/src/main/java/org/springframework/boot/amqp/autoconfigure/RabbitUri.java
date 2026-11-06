@@ -4,6 +4,9 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.lang.Contract;
@@ -109,7 +112,12 @@ record RabbitUri(@Nullable Boolean secure, @Nullable String host, @Nullable Inte
 		String host = connection.substring(0, colonIndex);
 		Integer port = Integer.parseInt(connection.substring(colonIndex + 1));
 		Assert.state(StringUtils.hasText(host), "Missing RabbitMQ host");
-		return new RabbitUri(secure, host, port, username, password, virtualHost);
+		return new RabbitUri(secure, host, port, decode(username), decode(password), decode(virtualHost));
+	}
+
+	@Contract("null -> null; !null -> !null")
+	private static @Nullable String decode(@Nullable String value) {
+		return (value != null) ? URLDecoder.decode(value, StandardCharsets.UTF_8) : null;
 	}
 
 }
