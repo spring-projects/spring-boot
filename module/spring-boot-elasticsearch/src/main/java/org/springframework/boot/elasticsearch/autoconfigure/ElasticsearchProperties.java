@@ -17,6 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Elasticsearch.
  *
  * @author Andy Wilkinson
+ * @author WooSeung Kim
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.elasticsearch")
@@ -51,6 +52,12 @@ public class ElasticsearchProperties {
 	 * Socket timeout used when communicating with Elasticsearch.
 	 */
 	private Duration socketTimeout = Duration.ofSeconds(30);
+
+	/**
+	 * Response timeout used when communicating with Elasticsearch. When not set, the
+	 * client's default is used.
+	 */
+	private @Nullable Duration responseTimeout;
 
 	/**
 	 * Whether to enable socket keep alive between client and Elasticsearch.
@@ -110,6 +117,14 @@ public class ElasticsearchProperties {
 
 	public void setSocketTimeout(Duration socketTimeout) {
 		this.socketTimeout = socketTimeout;
+	}
+
+	public @Nullable Duration getResponseTimeout() {
+		return this.responseTimeout;
+	}
+
+	public void setResponseTimeout(@Nullable Duration responseTimeout) {
+		this.responseTimeout = responseTimeout;
 	}
 
 	public boolean isSocketKeepAlive() {
