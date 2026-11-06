@@ -20,8 +20,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.NumberUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -99,6 +101,17 @@ class ConversionServiceDeducerTests {
 		assertThat(conversionServices.get(0).convert(inputStream, String.class)).isEqualTo("test");
 	}
 
+	@Test
+	void getConversionServiceWhenHasConverterFactoryBeanConvertsToTargetSubtypes() {
+		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+				ConverterFactoryConfiguration.class);
+		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
+		List<ConversionService> conversionServices = deducer.getConversionServices();
+		assertThat(conversionServices).isNotNull();
+		assertThat(conversionServices.get(0).convert("42", Integer.class)).isEqualTo(42);
+		assertThat(conversionServices.get(0).convert("43", Long.class)).isEqualTo(43L);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomConverterServiceConfiguration {
 
@@ -161,6 +174,17 @@ class ConversionServiceDeducerTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	static class ConverterFactoryConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		static ConverterFactory<String, Number> numberConverterFactory() {
+			return new NumberConverterFactory<>();
+		}
+
+	}
+
 	private static final class TestApplicationConversionService extends ApplicationConversionService {
 
 	}
@@ -179,6 +203,15 @@ class ConversionServiceDeducerTests {
 		@Override
 		public InputStream convert(String source) {
 			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	private static final class NumberConverterFactory<N extends Number> implements ConverterFactory<String, N> {
+
+		@Override
+		public <T extends N> Converter<String, T> getConverter(Class<T> targetType) {
+			return (source) -> NumberUtils.parseNumber(source, targetType);
 		}
 
 	}

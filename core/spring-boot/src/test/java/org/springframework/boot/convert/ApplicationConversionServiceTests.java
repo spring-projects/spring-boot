@@ -35,6 +35,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.NumberUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -309,6 +310,19 @@ class ApplicationConversionServiceTests {
 			.withMessageContaining("Unable to determine");
 	}
 
+	@Test
+	@SuppressWarnings("rawtypes")
+	void addConverterFactoryBeanWithTypeConvertsToTargetSubtypes() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		ConverterFactory<?, ?> converterFactory = new NumberConverterFactory<>();
+		ApplicationConversionService.addBean(conversionService, converterFactory,
+				ResolvableType.forClassWithGenerics(ConverterFactory.class, String.class, Number.class));
+		assertThat(conversionService.convert("42", Integer.class)).isEqualTo(42);
+		assertThat(conversionService.convert("43", Long.class)).isEqualTo(43L);
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert("test", ExampleRecord.class));
+	}
+
 	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(throwingCallable)
 			.withMessage("This ApplicationConversionService cannot be modified");
@@ -413,6 +427,15 @@ class ApplicationConversionServiceTests {
 	}
 
 	interface ConditionalConverterConverter<S, T> extends Converter<S, T>, ConditionalConverter {
+
+	}
+
+	static class NumberConverterFactory<N extends Number> implements ConverterFactory<String, N> {
+
+		@Override
+		public <T extends N> Converter<String, T> getConverter(Class<T> targetType) {
+			return (source) -> NumberUtils.parseNumber(source, targetType);
+		}
 
 	}
 

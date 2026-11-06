@@ -411,6 +411,10 @@ public class ApplicationConversionService extends FormattingConversionService {
 			return this.bean;
 		}
 
+		protected final ResolvableTypePair types() {
+			return this.types;
+		}
+
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
 			return Set.of(new ConvertiblePair(this.types.source().toClass(), this.types.target().toClass()));
@@ -418,8 +422,17 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 		@Override
 		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-			return (this.types.target().toClass() == targetType.getObjectType()
-					&& matchesTargetType(targetType.getResolvableType()));
+			return (isTargetTypeCompatible(targetType) && matchesTargetType(targetType.getResolvableType()));
+		}
+
+		/**
+		 * Return if the given target type is compatible with the target type extracted
+		 * from the bean generics.
+		 * @param targetType the target type to check
+		 * @return if the target type is compatible
+		 */
+		protected boolean isTargetTypeCompatible(TypeDescriptor targetType) {
+			return this.types.target().toClass() == targetType.getObjectType();
 		}
 
 		private boolean matchesTargetType(ResolvableType targetType) {
@@ -540,6 +553,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 		ConverterFactoryBeanAdapter(ConverterFactory<?, ?> bean, ResolvableType beanType) {
 			super(bean, beanType);
+		}
+
+		@Override
+		protected boolean isTargetTypeCompatible(TypeDescriptor targetType) {
+			return types().target().toClass().isAssignableFrom(targetType.getObjectType());
 		}
 
 		@Override
