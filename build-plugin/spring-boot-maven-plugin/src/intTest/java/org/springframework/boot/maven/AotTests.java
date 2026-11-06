@@ -190,6 +190,15 @@ class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotTestRunsGeneratedResourcesAreCopiedToTestClasses(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test").goals("test").execute((project) -> {
+			Path testClassesDirectory = project.toPath().resolve("target/test-classes");
+			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("generated-resource"),
+					Path.of("META-INF", "spring", "generated-resource"));
+		});
+	}
+
+	@TestTemplate
 	void whenTestAotRunsWithTestSkipItIsAlsoSkipped(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-test-skip").goals("test").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
