@@ -242,17 +242,12 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	/**
 	 * Clear any caches. This method is called reflectively by
-	 * {@code ClearCachesApplicationListener}.
+	 * {@code ClearCachesApplicationListener}. The class loader's jar files are left open
+	 * since another thread may be loading a class from them.
 	 */
 	public void clearCache() {
 		Handler.clearCache();
 		org.springframework.boot.loader.net.protocol.nested.Handler.clearCache();
-		try {
-			clearJarFiles();
-		}
-		catch (IOException ex) {
-			// Ignore
-		}
 		for (URL url : urls()) {
 			if (isJarUrl(url)) {
 				clearCache(url);
