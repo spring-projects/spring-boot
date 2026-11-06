@@ -204,4 +204,10 @@ class RabbitUriTests {
 		assertThat(uri).isEqualTo(new RabbitUri(false, "localhost", 5672, "us:er", "p@ss", "my/vhost"));
 	}
 
+	@Test
+	void ofDecodesWithoutChangingPlus() {
+		RabbitUri uri = RabbitUri.of("amqp://user:pass+word@localhost:5672");
+		assertThat(uri).isEqualTo(new RabbitUri(false, "localhost", 5672, "user", "pass+word", null));
+	}
+
 }

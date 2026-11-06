@@ -4,7 +4,6 @@
 
 package org.springframework.boot.amqp.rabbitmq.autoconfigure;
 
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 import org.jspecify.annotations.Nullable;
@@ -117,7 +116,7 @@ record RabbitUri(@Nullable Boolean secure, @Nullable String host, @Nullable Inte
 
 	@Contract("null -> null; !null -> !null")
 	private static @Nullable String decode(@Nullable String value) {
-		return (value != null) ? URLDecoder.decode(value, StandardCharsets.UTF_8) : null;
+		return (value != null) ? StringUtils.uriDecode(value, StandardCharsets.UTF_8) : null;
 	}
 
 }
