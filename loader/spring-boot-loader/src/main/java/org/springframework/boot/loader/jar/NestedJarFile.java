@@ -684,6 +684,8 @@ public class NestedJarFile extends JarFile {
 
 		private final int uncompressedSize;
 
+		private final long compressedSize;
+
 		private final CloseableDataBlock content;
 
 		private long pos;
@@ -695,6 +697,7 @@ public class NestedJarFile extends JarFile {
 		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
 			this.uncompressedSize = entry.getUncompressedSize();
 			this.content = entry.openContent();
+			this.compressedSize = this.content.size();
 			this.remaining = this.uncompressedSize;
 		}
 
@@ -774,6 +777,10 @@ public class NestedJarFile extends JarFile {
 			return this.uncompressedSize;
 		}
 
+		long getCompressedSize() {
+			return this.compressedSize;
+		}
+
 	}
 
 	/**
@@ -791,7 +798,7 @@ public class NestedJarFile extends JarFile {
 
 		private JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources,
 				Inflater inflater) {
-			super(inputStream, inflater, inputStream.getUncompressedSize());
+			super(inputStream, inflater, inputStream.getUncompressedSize(), inputStream.getCompressedSize());
 			this.cleanup = NestedJarFile.this.cleaner.register(this, resources.createInflatorCleanupAction(inflater));
 		}
 
