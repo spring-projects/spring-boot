@@ -6,7 +6,6 @@ package org.springframework.boot.rabbitmq.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -21,6 +20,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.retry.RetryPolicySettings;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -46,10 +46,6 @@ import org.springframework.util.unit.DataSize;
  */
 @ConfigurationProperties("spring.rabbitmq")
 public class RabbitProperties {
-
-	private static final int DEFAULT_PORT = 5672;
-
-	private static final int DEFAULT_PORT_SECURE = 5671;
 
 	private static final int DEFAULT_STREAM_PORT = 5552;
 
@@ -89,6 +85,8 @@ public class RabbitProperties {
 	 * are ignored.
 	 */
 	private @Nullable List<String> addresses;
+
+	private @Nullable List<RabbitUri> uris;
 
 	/**
 	 * Mode used to shuffle configured addresses.
@@ -146,12 +144,6 @@ public class RabbitProperties {
 
 	private final Stream stream = new Stream();
 
-	private @Nullable List<Address> parsedAddresses;
-
-	public String getHost() {
-		return this.host;
-	}
-
 	/**
 	 * Returns the host from the first address, or the configured host if no addresses
 	 * have been set.
@@ -160,10 +152,11 @@ public class RabbitProperties {
 	 * @see #getHost()
 	 */
 	public String determineHost() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getHost();
-		}
-		return this.parsedAddresses.get(0).host;
+		return primaryUri().determineHost(getHost());
+	}
+
+	public String getHost() {
+		return this.host;
 	}
 
 	public void setHost(String host) {
@@ -182,14 +175,10 @@ public class RabbitProperties {
 	 * @see #getPort()
 	 */
 	public int determinePort() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			Integer port = getPort();
-			if (port != null) {
-				return port;
-			}
-			return shouldUseSsl() ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
+		if (CollectionUtils.isEmpty(this.uris) && this.port != null) {
+			return this.port;
 		}
-		return this.parsedAddresses.get(0).determinePort(shouldUseSsl());
+		return primaryUri().determineOrDefaultPort(this.ssl.enabledOrBundleConfigured());
 	}
 
 	public void setPort(@Nullable Integer port) {
@@ -206,35 +195,22 @@ public class RabbitProperties {
 	 * @return the addresses
 	 */
 	public List<String> determineAddresses() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+		if (CollectionUtils.isEmpty(this.uris)) {
 			if (this.host.contains(",")) {
 				throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.host", this.host,
 						"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.rabbitmq.addresses' instead.");
 			}
 			return List.of(this.host + ":" + determinePort());
 		}
-		List<String> addressStrings = new ArrayList<>();
-		for (Address parsedAddress : this.parsedAddresses) {
-			addressStrings.add(parsedAddress.host + ":" + parsedAddress.determinePort(shouldUseSsl()));
-		}
-		return addressStrings;
+		return this.uris.stream()
+			.map((rabbitUri) -> rabbitUri.host() + ":"
+					+ rabbitUri.determineOrDefaultPort(this.ssl.enabledOrBundleConfigured()))
+			.toList();
 	}
 
 	public void setAddresses(List<String> addresses) {
 		this.addresses = addresses;
-		this.parsedAddresses = parseAddresses(addresses);
-	}
-
-	private List<Address> parseAddresses(List<String> addresses) {
-		List<Address> parsedAddresses = new ArrayList<>();
-		for (String address : addresses) {
-			parsedAddresses.add(new Address(address));
-		}
-		return parsedAddresses;
-	}
-
-	public String getUsername() {
-		return this.username;
+		this.uris = addresses.stream().map(RabbitUri::of).toList();
 	}
 
 	/**
@@ -245,19 +221,17 @@ public class RabbitProperties {
 	 * @see #getUsername()
 	 */
 	public String determineUsername() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return this.username;
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.username != null) ? address.username : this.username;
+		String username = primaryUri().determineUsername(getUsername());
+		Assert.state(username != null, "Unable to determine username");
+		return username;
+	}
+
+	public String getUsername() {
+		return this.username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return this.password;
 	}
 
 	/**
@@ -268,11 +242,11 @@ public class RabbitProperties {
 	 * @see #getPassword()
 	 */
 	public @Nullable String determinePassword() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getPassword();
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.password != null) ? address.password : getPassword();
+		return primaryUri().determinePassword(getPassword());
+	}
+
+	public String getPassword() {
+		return this.password;
 	}
 
 	public void setPassword(String password) {
@@ -283,14 +257,6 @@ public class RabbitProperties {
 		return this.ssl;
 	}
 
-	private boolean shouldUseSsl() {
-		return this.ssl.enabledOrBundleConfigured();
-	}
-
-	public @Nullable String getVirtualHost() {
-		return this.virtualHost;
-	}
-
 	/**
 	 * If addresses have been set and the first address has a virtual host it is returned.
 	 * Otherwise returns the result of calling {@code getVirtualHost()}.
@@ -299,11 +265,11 @@ public class RabbitProperties {
 	 * @see #getVirtualHost()
 	 */
 	public @Nullable String determineVirtualHost() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getVirtualHost();
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.virtualHost != null) ? address.virtualHost : getVirtualHost();
+		return primaryUri().determineVirtualHost(getVirtualHost());
+	}
+
+	public @Nullable String getVirtualHost() {
+		return this.virtualHost;
 	}
 
 	public void setVirtualHost(@Nullable String virtualHost) {
@@ -390,6 +356,10 @@ public class RabbitProperties {
 		return this.stream;
 	}
 
+	private RabbitUri primaryUri() {
+		return (!CollectionUtils.isEmpty(this.uris)) ? this.uris.get(0) : RabbitUri.NONE;
+	}
+
 	public class Ssl {
 
 		private static final String SUN_X509 = "SunX509";
@@ -472,12 +442,7 @@ public class RabbitProperties {
 		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
-			boolean defaultEnabled = enabledOrBundleConfigured();
-			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
-				return defaultEnabled;
-			}
-			Address address = RabbitProperties.this.parsedAddresses.get(0);
-			return address.determineSslEnabled(defaultEnabled);
+			return primaryUri().determineSecure(enabledOrBundleConfigured());
 		}
 
 		private boolean enabledOrBundleConfigured() {
@@ -1185,98 +1150,6 @@ public class RabbitProperties {
 
 		public void setStateless(boolean stateless) {
 			this.stateless = stateless;
-		}
-
-	}
-
-	private static final class Address {
-
-		private static final String PREFIX_AMQP = "amqp://";
-
-		private static final String PREFIX_AMQP_SECURE = "amqps://";
-
-		private String host;
-
-		private @Nullable Integer port;
-
-		private @Nullable String username;
-
-		private @Nullable String password;
-
-		private @Nullable String virtualHost;
-
-		private @Nullable Boolean secureConnection;
-
-		private Address(String input) {
-			input = input.trim();
-			input = trimPrefix(input);
-			input = parseUsernameAndPassword(input);
-			input = parseVirtualHost(input);
-			parseHostAndPort(input);
-		}
-
-		private String trimPrefix(String input) {
-			if (input.startsWith(PREFIX_AMQP_SECURE)) {
-				this.secureConnection = true;
-				return input.substring(PREFIX_AMQP_SECURE.length());
-			}
-			if (input.startsWith(PREFIX_AMQP)) {
-				this.secureConnection = false;
-				return input.substring(PREFIX_AMQP.length());
-			}
-			return input;
-		}
-
-		private String parseUsernameAndPassword(String input) {
-			String[] splitInput = StringUtils.split(input, "@");
-			if (splitInput == null) {
-				return input;
-			}
-			String credentials = splitInput[0];
-			String[] splitCredentials = StringUtils.split(credentials, ":");
-			if (splitCredentials == null) {
-				this.username = credentials;
-			}
-			else {
-				this.username = splitCredentials[0];
-				this.password = splitCredentials[1];
-			}
-			return splitInput[1];
-		}
-
-		private String parseVirtualHost(String input) {
-			int hostIndex = input.indexOf('/');
-			if (hostIndex >= 0) {
-				this.virtualHost = input.substring(hostIndex + 1);
-				if (this.virtualHost.isEmpty()) {
-					this.virtualHost = "/";
-				}
-				input = input.substring(0, hostIndex);
-			}
-			return input;
-		}
-
-		private void parseHostAndPort(String input) {
-			int bracketIndex = input.lastIndexOf(']');
-			int colonIndex = input.lastIndexOf(':');
-			if (colonIndex == -1 || colonIndex < bracketIndex) {
-				this.host = input;
-			}
-			else {
-				this.host = input.substring(0, colonIndex);
-				this.port = Integer.parseInt(input.substring(colonIndex + 1));
-			}
-		}
-
-		private int determinePort(boolean sslEnabled) {
-			if (this.port != null) {
-				return this.port;
-			}
-			return (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
-		}
-
-		private boolean determineSslEnabled(boolean sslEnabled) {
-			return (this.secureConnection != null) ? this.secureConnection : sslEnabled;
 		}
 
 	}
