@@ -120,7 +120,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.rabbitProperties::getRequestedChannelMax).to(factory::setRequestedChannelMax);
 		SslBundle sslBundle = this.connectionDetails.getSslBundle();
 		RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
-		if (sslBundle != null || ssl.determineEnabled()) {
+		if (isSslEnabled(sslBundle, ssl)) {
 			factory.setUseSSL(true);
 			configureDeprecatedHostNameVerification(factory, map, ssl);
 			if (sslBundle != null) {
@@ -141,6 +141,11 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.rabbitProperties.getMaxInboundMessageBodySize())
 			.asInt(DataSize::toBytes)
 			.to(factory::setMaxInboundMessageBodySize);
+	}
+
+	@SuppressWarnings("removal")
+	private boolean isSslEnabled(@Nullable SslBundle sslBundle, RabbitProperties.Ssl ssl) {
+		return sslBundle != null || ssl.determineEnabled();
 	}
 
 	@SuppressWarnings("removal")

@@ -34,21 +34,25 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public String getUsername() {
 		return this.properties.determineUsername();
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public @Nullable String getPassword() {
 		return this.properties.determinePassword();
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public @Nullable String getVirtualHost() {
 		return this.properties.determineVirtualHost();
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public List<Address> getAddresses() {
 		List<Address> addresses = new ArrayList<>();
 		for (String address : this.properties.determineAddresses()) {
@@ -61,6 +65,7 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public @Nullable SslBundle getSslBundle() {
 		Ssl ssl = this.properties.getSsl();
 		if (!ssl.determineEnabled()) {

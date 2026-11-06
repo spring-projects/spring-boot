@@ -135,7 +135,7 @@ class RabbitStreamConfiguration {
 		if (sslBundle != null) {
 			builder.tls().sslContext(createSslContext(sslBundle));
 		}
-		else if (stream.getSsl().determineEnabled()) {
+		else if (stream.getSsl().enabledOrBundleConfigured()) {
 			builder.tls();
 		}
 		return builder;
@@ -196,7 +196,7 @@ class RabbitStreamConfiguration {
 		@Override
 		public @Nullable SslBundle getSslBundle() {
 			Ssl ssl = this.streamProperties.getSsl();
-			if (!ssl.determineEnabled()) {
+			if (!ssl.enabledOrBundleConfigured()) {
 				return null;
 			}
 			if (StringUtils.hasLength(ssl.getBundle())) {

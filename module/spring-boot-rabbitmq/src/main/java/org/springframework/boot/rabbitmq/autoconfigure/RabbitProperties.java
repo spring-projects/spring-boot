@@ -148,9 +148,11 @@ public class RabbitProperties {
 	 * Returns the host from the first address, or the configured host if no addresses
 	 * have been set.
 	 * @return the host
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getHost()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public String determineHost() {
 		return primaryUri().determineHost(getHost());
 	}
@@ -171,9 +173,11 @@ public class RabbitProperties {
 	 * Returns the port from the first address, or the configured port if no addresses
 	 * have been set.
 	 * @return the port
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getPort()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public int determinePort() {
 		if (CollectionUtils.isEmpty(this.uris) && this.port != null) {
 			return this.port;
@@ -193,7 +197,9 @@ public class RabbitProperties {
 	 * Returns the configured addresses or a single address ({@code host:port}) created
 	 * from the configured host and port if no addresses have been set.
 	 * @return the addresses
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public List<String> determineAddresses() {
 		if (CollectionUtils.isEmpty(this.uris)) {
 			if (this.host.contains(",")) {
@@ -217,9 +223,11 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a username it is returned.
 	 * Otherwise returns the result of calling {@code getUsername()}.
 	 * @return the username
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getUsername()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public String determineUsername() {
 		String username = primaryUri().determineUsername(getUsername());
 		Assert.state(username != null, "Unable to determine username");
@@ -238,9 +246,11 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a password it is returned.
 	 * Otherwise returns the result of calling {@code getPassword()}.
 	 * @return the password or {@code null}
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getPassword()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public @Nullable String determinePassword() {
 		return primaryUri().determinePassword(getPassword());
 	}
@@ -261,9 +271,11 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a virtual host it is returned.
 	 * Otherwise returns the result of calling {@code getVirtualHost()}.
 	 * @return the virtual host or {@code null}
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getVirtualHost()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public @Nullable String determineVirtualHost() {
 		return primaryUri().determineVirtualHost(getVirtualHost());
 	}
@@ -438,9 +450,11 @@ public class RabbitProperties {
 		 * Returns whether SSL is enabled from the first address, or the configured ssl
 		 * enabled flag if no addresses have been set.
 		 * @return whether ssl is enabled
+		 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 		 * @see #setAddresses(List)
 		 * @see #getEnabled() ()
 		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public boolean determineEnabled() {
 			return primaryUri().determineSecure(enabledOrBundleConfigured());
 		}
@@ -1263,7 +1277,17 @@ public class RabbitProperties {
 				return this.enabled;
 			}
 
+			/**
+			 * Determine if SSL is enabled.
+			 * @return if SSL is enabled
+			 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
+			 */
+			@Deprecated(since = "4.2.0", forRemoval = true)
 			public boolean determineEnabled() {
+				return enabledOrBundleConfigured();
+			}
+
+			boolean enabledOrBundleConfigured() {
 				return Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 			}
 
