@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -46,8 +45,6 @@ import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Apiversion;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Apiversion.Use;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Format;
-import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Forwardedheaders;
-import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.HeaderFormat;
 import org.springframework.boot.webflux.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -91,7 +88,6 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.WebSession;
-import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
@@ -403,17 +399,6 @@ public final class WebFluxAutoConfiguration {
 			webSessionManager.setSessionStore(sessionStore);
 			webSessionIdResolver.ifAvailable(webSessionManager::setSessionIdResolver);
 			return webSessionManager;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-		ForwardedHeaderTransformer forwardedHeaderTransformer() {
-			Forwardedheaders properties = this.webFluxProperties.getForwardedHeaders();
-			ForwardedHeaderTransformer transformer = new ForwardedHeaderTransformer(
-					properties.getHeaderFormat() == HeaderFormat.STANDARD);
-			transformer.setUseForwardedPrefix(properties.isUseForwardedPrefix());
-			return transformer;
 		}
 
 		@Override
