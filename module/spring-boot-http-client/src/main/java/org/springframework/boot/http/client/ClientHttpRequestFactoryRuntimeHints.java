@@ -93,7 +93,7 @@ class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 
 	private Field findField(Class<?> type, String name) {
 		Field field = ReflectionUtils.findField(type, name);
-		Assert.state(field != null, () -> "Unable to find field '%s' on %s".formatted(type.getName(), name));
+		Assert.state(field != null, () -> "Unable to find field '%s' on %s".formatted(name, type.getName()));
 		return field;
 	}
 
