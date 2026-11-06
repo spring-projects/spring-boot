@@ -4,6 +4,8 @@
 
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
+import java.net.InetAddress;
+
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link EmbeddedLdapConnectionDetails}.
  *
  * @author Moritz Halbritter
+ * @author Wan bin yu
  */
 class EmbeddedLdapConnectionDetailsTests {
 
@@ -38,6 +41,29 @@ class EmbeddedLdapConnectionDetailsTests {
 	void shouldUseLdapsUrlWhenEmbeddedSslIsEnabled() {
 		this.embeddedProperties.getSsl().setBundle("server");
 		assertThat(createConnectionDetails(null).getUrls()).containsExactly("ldaps://localhost:12345");
+	}
+
+	@Test
+	void shouldKeepLocalhostUrlForLoopbackAndWildcardAddresses() throws Exception {
+		this.embeddedProperties.setAddress(InetAddress.getByName("127.0.0.1"));
+		assertThat(createConnectionDetails(null).getUrls()).containsExactly("ldap://localhost:12345");
+		this.embeddedProperties.setAddress(InetAddress.getByName("0.0.0.0"));
+		assertThat(createConnectionDetails(null).getUrls()).containsExactly("ldap://localhost:12345");
+	}
+
+	@Test
+	void shouldUseConfiguredAddressInUrl() throws Exception {
+		InetAddress address = InetAddress.getByName("192.0.2.10");
+		this.embeddedProperties.setAddress(address);
+		assertThat(createConnectionDetails(null).getUrls()).containsExactly("ldap://192.0.2.10:12345");
+	}
+
+	@Test
+	void shouldBracketIpv6AddressInUrl() throws Exception {
+		InetAddress address = InetAddress.getByName("2001:db8::1");
+		this.embeddedProperties.setAddress(address);
+		assertThat(createConnectionDetails(null).getUrls())
+			.containsExactly("ldap://[" + address.getHostAddress() + "]:12345");
 	}
 
 	@Test
