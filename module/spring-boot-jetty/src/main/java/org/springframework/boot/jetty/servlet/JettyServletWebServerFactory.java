@@ -64,6 +64,7 @@ import org.springframework.boot.jetty.JettyWebServer;
 import org.springframework.boot.jetty.JettyWebServerFactory;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.Cookie.SameSite;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
@@ -164,11 +165,9 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
 		}
-		if (this.isUseForwardHeaders()) {
-			new ForwardHeadersCustomizer(true).customize(server);
-		}
-		else if (this.isUseRfcForwardHeader()) {
-			new ForwardHeadersCustomizer(false).customize(server);
+		ForwardedRequestHeaders forwardedHeaders = getForwardedRequestHeaders();
+		if (forwardedHeaders != null) {
+			new ForwardHeadersCustomizer(forwardedHeaders).customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
 			GracefulHandler gracefulHandler = new GracefulHandler();

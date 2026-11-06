@@ -8,7 +8,6 @@ import java.time.Duration;
 
 import io.netty.channel.ChannelOption;
 
-import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -27,15 +26,12 @@ import org.springframework.core.env.Environment;
 public class NettyReactiveWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<NettyReactiveWebServerFactory>, Ordered {
 
-	private final Environment environment;
-
 	private final ServerProperties serverProperties;
 
 	private final NettyServerProperties nettyProperties;
 
 	public NettyReactiveWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
 			NettyServerProperties nettyProperties) {
-		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.nettyProperties = nettyProperties;
 	}
@@ -47,9 +43,6 @@ public class NettyReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
-		if (getOrDeduceUseForwardHeaders()) {
-			configureForwardedSupport(factory);
-		}
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.nettyProperties::getConnectionTimeout)
 			.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
@@ -61,23 +54,6 @@ public class NettyReactiveWebServerFactoryCustomizer
 				.to((size) -> customizeHttp2MaxHeaderSize(factory, size.toBytes()));
 		}
 		customizeRequestDecoder(factory, map);
-	}
-
-	private boolean getOrDeduceUseForwardHeaders() {
-		if (this.serverProperties.getForwardHeadersStrategy() == null) {
-			CloudPlatform platform = CloudPlatform.getActive(this.environment);
-			return platform != null && platform.isUsingForwardHeaders();
-		}
-		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
-	}
-
-	private void configureForwardedSupport(NettyReactiveWebServerFactory factory) {
-		NettyServerProperties.Forwardedheaders forwardedHeaders = this.nettyProperties.getForwardedHeaders();
-		switch (forwardedHeaders.getHeaderFormat()) {
-			case X_FORWARDED -> factory.setUseForwardHeaders(true);
-			case STANDARD -> factory.setUseRfcForwardHeader(true);
-		}
-		factory.setUseForwardedPrefix(forwardedHeaders.isUseForwardedPrefix());
 	}
 
 	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {

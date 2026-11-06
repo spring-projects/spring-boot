@@ -18,6 +18,8 @@ import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -44,12 +46,6 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private final List<NettyRouteProvider> routeProviders = new ArrayList<>();
 
 	private @Nullable Duration lifecycleTimeout;
-
-	private boolean useForwardHeaders;
-
-	private boolean useRfcForwardHeader;
-
-	private boolean useForwardedPrefix;
 
 	private @Nullable ReactorResourceFactory resourceFactory;
 
@@ -126,32 +122,15 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set if x-forward-* headers should be processed.
 	 * @param useForwardHeaders if x-forward headers should be used
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #setForwardedRequestHeaders(ForwardedRequestHeaders)}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
-	}
-
-	/**
-	 * Set if the RFC "Forwarded" header should be processed.
-	 * <p>
-	 * {@link #setUseForwardHeaders(boolean)} will take precedence if enabled.
-	 * @param useRfcForwardHeader if the "Forwarded" header should be used
-	 * @since 4.2.0
-	 */
-	public void setUseRfcForwardHeader(boolean useRfcForwardHeader) {
-		this.useRfcForwardHeader = useRfcForwardHeader;
-	}
-
-	/**
-	 * Set if the "X-Forwarded-Prefix" header should be processed when forwarded headers
-	 * support is enabled.
-	 * @param useForwardedPrefix if the "X-Forwarded-Prefix" header should be used
-	 * @since 4.2.0
-	 * @see #setUseForwardHeaders(boolean)
-	 * @see #setUseRfcForwardHeader(boolean)
-	 */
-	public void setUseForwardedPrefix(boolean useForwardedPrefix) {
-		this.useForwardedPrefix = useForwardedPrefix;
+		ForwardedRequestHeaders existing = getForwardedRequestHeaders();
+		Assert.state(existing == null || ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX.equals(existing),
+				"Forwarded request headers have already been configured");
+		setForwardedRequestHeaders(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
 	}
 
 	/**
@@ -177,13 +156,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpServer configureForwardedHeaders(HttpServer server) {
-		if (this.useForwardHeaders) {
-			return server.forwarded(false, this.useForwardedPrefix);
-		}
-		if (this.useRfcForwardHeader) {
-			return server.forwarded(true, this.useForwardedPrefix);
-		}
-		return server.noForwarded();
+		ForwardedRequestHeaders forwardedHeaders = getForwardedRequestHeaders();
+		return (forwardedHeaders != null)
+				? server.forwarded(forwardedHeaders.naming() == Naming.RFC_7239, forwardedHeaders.usePrefix())
+				: server.noForwarded();
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer, Ssl ssl) {

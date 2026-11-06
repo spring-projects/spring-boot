@@ -36,8 +36,6 @@ public class WebFluxProperties {
 
 	private final Apiversion apiversion = new Apiversion();
 
-	private final Forwardedheaders forwardedHeaders = new Forwardedheaders();
-
 	/**
 	 * Path pattern used for static resources.
 	 */
@@ -87,10 +85,6 @@ public class WebFluxProperties {
 
 	public Apiversion getApiversion() {
 		return this.apiversion;
-	}
-
-	public Forwardedheaders getForwardedHeaders() {
-		return this.forwardedHeaders;
 	}
 
 	public String getStaticPathPattern() {
@@ -299,56 +293,6 @@ public class WebFluxProperties {
 			}
 
 		}
-
-	}
-
-	/**
-	 * Forwarded headers.
-	 */
-	public static class Forwardedheaders {
-
-		/**
-		 * Format of the forwarded headers to support.
-		 */
-		private HeaderFormat headerFormat = HeaderFormat.X_FORWARDED;
-
-		/**
-		 * Whether to use the "X-Forwarded-Prefix" header to determine the context path.
-		 */
-		private boolean useForwardedPrefix;
-
-		public HeaderFormat getHeaderFormat() {
-			return this.headerFormat;
-		}
-
-		public void setHeaderFormat(HeaderFormat headerFormat) {
-			this.headerFormat = headerFormat;
-		}
-
-		public boolean isUseForwardedPrefix() {
-			return this.useForwardedPrefix;
-		}
-
-		public void setUseForwardedPrefix(boolean useForwardedPrefix) {
-			this.useForwardedPrefix = useForwardedPrefix;
-		}
-
-	}
-
-	/**
-	 * Formats of forwarded headers supported by {@link Forwardedheaders}.
-	 */
-	public enum HeaderFormat {
-
-		/**
-		 * Use the standard "Forwarded" header, as defined by RFC 7239.
-		 */
-		STANDARD,
-
-		/**
-		 * Use the non-standard "X-Forwarded-*" headers.
-		 */
-		X_FORWARDED
 
 	}
 

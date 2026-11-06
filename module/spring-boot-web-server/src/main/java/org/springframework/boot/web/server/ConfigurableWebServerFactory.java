@@ -77,6 +77,14 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	void setServerHeader(@Nullable String serverHeader);
 
 	/**
+	 * Sets the forwarded request headers configuration.
+	 * @param forwardedRequestHeaders settings for forwarded request headers of
+	 * {@code null} if forwarded headers should not be considered.
+	 * @since 4.2.0
+	 */
+	void setForwardedRequestHeaders(@Nullable ForwardedRequestHeaders forwardedRequestHeaders);
+
+	/**
 	 * Sets the shutdown configuration that will be applied to the server.
 	 * @param shutdown the shutdown configuration
 	 * @since 2.3.0

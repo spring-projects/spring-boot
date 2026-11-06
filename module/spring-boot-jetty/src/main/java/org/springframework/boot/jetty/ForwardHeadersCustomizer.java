@@ -10,6 +10,10 @@ import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
+import org.springframework.util.Assert;
+
 /**
  * {@link JettyServerCustomizer} to add {@link ForwardedRequestCustomizer}.
  *
@@ -18,43 +22,45 @@ import org.eclipse.jetty.server.Server;
  */
 public class ForwardHeadersCustomizer implements JettyServerCustomizer {
 
-	private final boolean useXForwarded;
-
-	/**
-	 * Create a new customizer instance.
-	 * @param useXForwarded "X-Forwarded-*" headers are used if {@code true}, otherwise
-	 * standard "Forwarded" are used instead.
-	 * @since 4.2.0
-	 */
-	public ForwardHeadersCustomizer(boolean useXForwarded) {
-		this.useXForwarded = useXForwarded;
-	}
+	private final ForwardedRequestHeaders forwardedHeaders;
 
 	/**
 	 * Create a new customizer instance with "X-Forwarded-*" support.
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #ForwardHeadersCustomizer(ForwardedRequestHeaders)}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public ForwardHeadersCustomizer() {
-		this(true);
+		this(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
+	}
+
+	/**
+	 * Create a new customizer instance.
+	 * @param forwardedRequestHeaders the forward request headers configuration
+	 * @since 4.2.0
+	 */
+	public ForwardHeadersCustomizer(ForwardedRequestHeaders forwardedRequestHeaders) {
+		Assert.notNull(forwardedRequestHeaders, "'forwardedRequestHeaders' must not be null");
+		Assert.state(!forwardedRequestHeaders.usePrefix(), "Jetty does not support the 'prefix' forwarded header");
+		this.forwardedHeaders = forwardedRequestHeaders;
 	}
 
 	@Override
 	public void customize(Server server) {
-		ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
-		if (this.useXForwarded) {
-			// disable "Forwarded" support
-			customizer.setForwardedHeader(null);
-		}
-		else {
-			// disable "X-Forwarded-*" support
-			customizer.setForwardedOnly(true);
-		}
+		ForwardedRequestCustomizer requestCustomizer = createRequestCustomizer();
 		for (Connector connector : server.getConnectors()) {
 			for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory jettyConnectionFactory) {
-					jettyConnectionFactory.getHttpConfiguration().addCustomizer(customizer);
+					jettyConnectionFactory.getHttpConfiguration().addCustomizer(requestCustomizer);
 				}
 			}
 		}
+	}
+
+	private ForwardedRequestCustomizer createRequestCustomizer() {
+		ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
+		customizer.setForwardedOnly(this.forwardedHeaders.naming() == Naming.RFC_7239);
+		return customizer;
 	}
 
 }

@@ -67,6 +67,7 @@ import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -82,6 +83,7 @@ import org.springframework.boot.tomcat.TomcatEmbeddedContext;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.TomcatWebServerFactoryRemoteIpValveTests;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
@@ -103,6 +105,7 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
@@ -763,6 +766,22 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 	}
 
+	@Test
+	@Override
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc() throws Exception {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc())
+			.withMessageContaining("Tomcat does not support RFC 7239");
+	}
+
+	@Test
+	@Override
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded() throws Exception {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded())
+			.withMessageContaining("Tomcat does not support RFC 7239");
+	}
+
 	@Override
 	protected @Nullable JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
@@ -819,6 +838,22 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Override
 	protected String startedLogMessage() {
 		return TomcatAccess.getStartedLogMessage((TomcatWebServer) this.webServer);
+	}
+
+	@Nested
+	class TomcatServletWebServerFactoryRemoteIpValveTests
+			extends TomcatWebServerFactoryRemoteIpValveTests<TomcatServletWebServerFactory> {
+
+		@Override
+		protected TomcatServletWebServerFactory getFactory() {
+			return TomcatServletWebServerFactoryTests.this.getFactory();
+		}
+
+		@Override
+		protected TomcatWebServer getWebServer(TomcatServletWebServerFactory factory) {
+			return (TomcatWebServer) factory.getWebServer();
+		}
+
 	}
 
 	private static final class RememberingHostnameVerifier implements HostnameVerifier {

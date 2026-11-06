@@ -15,10 +15,13 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
@@ -72,7 +75,9 @@ public class ServerProperties {
 
 	/**
 	 * Strategy for handling X-Forwarded-* headers.
+	 * @deprecated since 4.2.0 for removal in 4.4.0
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	private @Nullable ForwardHeadersStrategy forwardHeadersStrategy;
 
 	/**
@@ -111,6 +116,8 @@ public class ServerProperties {
 	private final Servlet servlet = new Servlet();
 
 	private final Reactive reactive = new Reactive();
+
+	private final Request request = new Request();
 
 	public @Nullable Integer getPort() {
 		return this.port;
@@ -184,10 +191,17 @@ public class ServerProperties {
 		return this.reactive;
 	}
 
+	public Request getRequest() {
+		return this.request;
+	}
+
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(since = "4.2.0", replacement = "server.request.header.forwarded.strategy")
 	public @Nullable ForwardHeadersStrategy getForwardHeadersStrategy() {
 		return this.forwardHeadersStrategy;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public void setForwardHeadersStrategy(@Nullable ForwardHeadersStrategy forwardHeadersStrategy) {
 		this.forwardHeadersStrategy = forwardHeadersStrategy;
 	}
@@ -331,8 +345,85 @@ public class ServerProperties {
 	}
 
 	/**
-	 * Strategies for supporting forward headers.
+	 * Request server properties.
 	 */
+	public static class Request {
+
+		private final Header header = new Header();
+
+		public Header getHeader() {
+			return this.header;
+		}
+
+		/**
+		 * Request header server properties.
+		 */
+		public static class Header {
+
+			private final Forwarded forwarded = new Forwarded();
+
+			public Forwarded getForwarded() {
+				return this.forwarded;
+			}
+
+			/**
+			 * Forwarded request header server properties.
+			 */
+			public static class Forwarded {
+
+				/**
+				 * Strategy to use to process the forwarded headers. If not specified, the
+				 * strategy will be deduced based on the cloud platform.
+				 */
+				private @Nullable ForwardedHeaderStrategy strategy;
+
+				/**
+				 * Naming of forwarded headers.
+				 */
+				private ForwardedRequestHeaders.Naming naming = Naming.X_FORWARDED;
+
+				/**
+				 * If the 'prefix' forward header should be used.
+				 */
+				private boolean usePrefix;
+
+				public @Nullable ForwardedHeaderStrategy getStrategy() {
+					return this.strategy;
+				}
+
+				public void setStrategy(@Nullable ForwardedHeaderStrategy strategy) {
+					this.strategy = strategy;
+				}
+
+				public ForwardedRequestHeaders.Naming getNaming() {
+					return this.naming;
+				}
+
+				public void setNaming(ForwardedRequestHeaders.Naming naming) {
+					this.naming = naming;
+				}
+
+				public boolean isUsePrefix() {
+					return this.usePrefix;
+				}
+
+				public void setUsePrefix(boolean usePrefix) {
+					this.usePrefix = usePrefix;
+				}
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Strategies for supporting forward headers.
+	 *
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link ForwardedHeaderStrategy}
+	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public enum ForwardHeadersStrategy {
 
 		/**

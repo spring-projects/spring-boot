@@ -6,6 +6,7 @@ package org.springframework.boot.web.server.autoconfigure.servlet;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.Jsp;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +51,8 @@ class ServletWebServerFactoryCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
+		this.customizer = new ServletWebServerFactoryCustomizer(new MockEnvironment(), this.properties,
+				Collections.emptyList(), Collections.emptyList(), null);
 	}
 
 	@Test

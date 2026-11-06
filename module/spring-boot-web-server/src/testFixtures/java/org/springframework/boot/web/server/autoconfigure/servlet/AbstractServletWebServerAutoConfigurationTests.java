@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestHeadersSpec;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -142,6 +143,34 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void forwardedHeaderFilterShouldBeConfigured() {
+		this.mockServerRunner.withPropertyValues("server.request.header.forwarded.strategy=framework")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				assertThat(filter).extracting("relativeRedirects").isEqualTo(defaultRelativeRedirects());
+			});
+	}
+
+	protected boolean defaultRelativeRedirects() {
+		return false;
+	}
+
+	@Test
+	void forwardedHeaderFilterWhenStrategyNotFilterShouldNotBeConfigured() {
+		this.mockServerRunner.withPropertyValues("server.request.header.forwarded.strategy=web-server")
+			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void forwardedHeaderFilterWhenFilterAlreadyRegisteredShouldBackOff() {
+		this.mockServerRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
+			.withPropertyValues("server.request.header.forwarded.strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true")
 	static class MockWebServerConfiguration {
@@ -168,6 +197,17 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			return bean;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderFilterConfiguration {
+
+		@Bean
+		FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
+			ForwardedHeaderFilter filter = new ForwardedHeaderFilter(false);
+			return new FilterRegistrationBean<>(filter);
 		}
 
 	}

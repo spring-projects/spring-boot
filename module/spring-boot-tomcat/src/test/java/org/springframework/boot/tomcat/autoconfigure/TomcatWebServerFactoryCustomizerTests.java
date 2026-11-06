@@ -13,7 +13,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
-import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -27,11 +26,13 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.tomcat.RemoteIp;
+import org.springframework.boot.tomcat.RemoteIp.Header;
+import org.springframework.boot.tomcat.RemoteIp.Proxies;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.unit.DataSize;
@@ -298,7 +299,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customRemoteIpValve() {
+	void remoteIpWhenCustomized() {
 		bind("server.tomcat.remoteip.remote-ip-header=x-my-remote-ip-header",
 				"server.tomcat.remoteip.protocol-header=x-my-protocol-header",
 				"server.tomcat.remoteip.internal-proxies=192.168.0.1",
@@ -307,17 +308,46 @@ class TomcatWebServerFactoryCustomizerTests {
 				"server.tomcat.remoteip.protocol-header-https-value=On",
 				"server.tomcat.remoteip.trusted-proxies=proxy1|proxy2");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(1);
-		Valve valve = factory.getEngineValves().iterator().next();
-		assertThat(valve).isInstanceOf(RemoteIpValve.class);
-		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
-		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("On");
-		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
-		assertThat(remoteIpValve.getHostHeader()).isEqualTo("x-my-forward-host");
-		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
-		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
-		assertThat(remoteIpValve.getTrustedProxies()).isEqualTo("proxy1|proxy2");
+		Header expectedHeader = new Header("x-my-forward-host", "x-my-forward-port", "x-my-remote-ip-header",
+				"x-my-protocol-header", "On");
+		Proxies expectedProxies = new Proxies("192.168.0.1", "proxy1|proxy2");
+		RemoteIp expected = new RemoteIp(expectedHeader, expectedProxies, RemoteIp.Usage.ALWAYS);
+		assertThat(factory.getRemoteIp()).isEqualTo(expected);
+	}
+
+	@Test
+	void remoteIpWhenCustomizedProxies() {
+		bind("server.tomcat.remoteip.internal-proxies=192.168.0.1",
+				"server.tomcat.remoteip.trusted-proxies=proxy1|proxy2");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		Header expectedHeader = new Header("X-Forwarded-Host", "X-Forwarded-Port", null, null, "https");
+		Proxies expectedProxies = new Proxies("192.168.0.1", "proxy1|proxy2");
+		RemoteIp expected = new RemoteIp(expectedHeader, expectedProxies, RemoteIp.Usage.FOR_FORWARDED_REQUEST_HEADERS);
+		assertThat(factory.getRemoteIp()).isEqualTo(expected);
+	}
+
+	@Test
+	void remoteIpWhenOnlyProtocolHeader() {
+		bind("server.tomcat.remoteip.protocol-header=X-Forwarded-Proto");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		TomcatServerProperties defaultProperties = new TomcatServerProperties();
+		Header expectedHeader = new Header("X-Forwarded-Host", "X-Forwarded-Port", null, "X-Forwarded-Proto", "https");
+		Proxies expectedProxies = new Proxies(defaultProperties.getRemoteip().getInternalProxies(),
+				defaultProperties.getRemoteip().getTrustedProxies());
+		RemoteIp expected = new RemoteIp(expectedHeader, expectedProxies, RemoteIp.Usage.ALWAYS);
+		assertThat(factory.getRemoteIp()).isEqualTo(expected);
+	}
+
+	@Test
+	void remoteIpWhenOnlyRemoteIp() {
+		bind("server.tomcat.remoteip.remote-ip-header=X-Forwarded-For");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		TomcatServerProperties defaultProperties = new TomcatServerProperties();
+		Header expectedHeader = new Header("X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-For", null, "https");
+		Proxies expectedProxies = new Proxies(defaultProperties.getRemoteip().getInternalProxies(),
+				defaultProperties.getRemoteip().getTrustedProxies());
+		RemoteIp expected = new RemoteIp(expectedHeader, expectedProxies, RemoteIp.Usage.ALWAYS);
+		assertThat(factory.getRemoteIp()).isEqualTo(expected);
 	}
 
 	@Test
@@ -380,62 +410,6 @@ class TomcatWebServerFactoryCustomizerTests {
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
 					.getRelaxedQueryChars())
 			.isEqualTo("^|"));
-	}
-
-	@Test
-	void deduceUseForwardHeaders() {
-		this.environment.setProperty("DYNO", "-");
-		testRemoteIpValveConfigured();
-	}
-
-	@Test
-	void defaultUseForwardHeaders() {
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).isEmpty();
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
-		testRemoteIpValveConfigured();
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
-		this.environment.setProperty("DYNO", "-");
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).isEmpty();
-	}
-
-	@Test
-	void defaultRemoteIpValve() {
-		// Since 1.1.7 you need to specify at least the protocol
-		bind("server.tomcat.remoteip.protocol-header=X-Forwarded-Proto",
-				"server.tomcat.remoteip.remote-ip-header=X-Forwarded-For");
-		testRemoteIpValveConfigured();
-	}
-
-	@Test
-	void setUseNativeForwardHeadersStrategy() {
-		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
-		testRemoteIpValveConfigured();
-	}
-
-	private void testRemoteIpValveConfigured() {
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(1);
-		Valve valve = factory.getEngineValves().iterator().next();
-		assertThat(valve).isInstanceOf(RemoteIpValve.class);
-		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
-		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
-		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
-		assertThat(remoteIpValve.getHostHeader()).isEqualTo("X-Forwarded-Host");
-		assertThat(remoteIpValve.getPortHeader()).isEqualTo("X-Forwarded-Port");
-		String expectedInternalProxies = "10.0.0.0/8, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10, fc00::/7, "
-				+ "172.16.0.0/12, ::1/128, 127.0.0.0/8, fe80::/10";
-		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
 	@Test

@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ValidatorFactory;
@@ -650,58 +649,6 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void hiddenHttpMethodFilterDisabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
-	}
-
-	@Test
-	void forwardedHeaderFilterIsNotConfiguredByDefault() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
-	}
-
-	@Test
-	void forwardedHeaderFilterIsNotConfiguredWhenStrategyIsNotFramework() {
-		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
-			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
-	}
-
-	@Test
-	void forwardedHeaderFilterIsConfiguredWhenFrameworkStrategyIsUsed() {
-		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework").run((context) -> {
-			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-			assertThat(filter).extracting("useStandardHeader").isEqualTo(false);
-			assertThat(filter).extracting("useForwardedPrefix").isEqualTo(false);
-		});
-	}
-
-	@Test
-	void forwardedHeaderFilterAppliesConfiguredProperties() {
-		this.contextRunner
-			.withPropertyValues("server.forward-headers-strategy=framework",
-					"spring.mvc.forwarded-headers.header-format=standard",
-					"spring.mvc.forwarded-headers.use-forwarded-prefix=true")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).extracting("useStandardHeader").isEqualTo(true);
-				assertThat(filter).extracting("useForwardedPrefix").isEqualTo(true);
-			});
-	}
-
-	@Test
-	void forwardedHeaderFilterBacksOffWhenFilterBeanAlreadyRegistered() {
-		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
-			.withPropertyValues("server.forward-headers-strategy=framework")
-			.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
-	}
-
-	@Test
-	void forwardedHeaderFilterCustomizerFromDeprecatedTypeIsApplied() {
-		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterCustomizerConfiguration.class)
-			.withPropertyValues("server.forward-headers-strategy=framework")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).extracting("removeOnly").isEqualTo(true);
-			});
 	}
 
 	@Test

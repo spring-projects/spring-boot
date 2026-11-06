@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -124,6 +125,8 @@ import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie.SameSite;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
@@ -1473,6 +1476,65 @@ public abstract class AbstractServletWebServerFactoryTests {
 			.hasSize(1);
 	}
 
+	@Test
+	void forwardedRequestHeadersWhenXForwardedNamingAndAndActualHeaderXForwarded() throws Exception {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "X-Forwarded-Proto", "https"))
+			.isEqualTo("https");
+	}
+
+	@Test
+	void forwardedRequestHeadersWhenXForwardedNamingAndAndActualHeaderRfc() throws Exception {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "Forwarded", "proto=https"))
+			.isEqualTo("http");
+	}
+
+	@Test
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc() throws Exception {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.RFC_7239, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "Forwarded", "proto=https"))
+			.isEqualTo("https");
+	}
+
+	@Test
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded() throws Exception {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.RFC_7239, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "X-Forwarded-Proto", "https"))
+			.isEqualTo("http");
+	}
+
+	@Test // Currenly only Reactor Netty supports prefix forwarded header
+	void forwardedRequestHeadersWhenUsePrefixThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> getForwardedHeaderEchoResponse(new ForwardedRequestHeaders(Naming.X_FORWARDED, true),
+					"X-Forwarded-Proto:https", null))
+			.withMessageContaining("does not support")
+			.withMessageContaining("'prefix' forwarded header");
+	}
+
+	protected final String getForwardedHeaderEchoResponse(@Nullable ForwardedRequestHeaders forwardedRequestHeaders,
+			String headerName, String headerValue) throws IOException, URISyntaxException {
+		ConfigurableServletWebServerFactory factory = getFactory();
+		factory.setForwardedRequestHeaders(forwardedRequestHeaders);
+		return getForwardedHeaderEchoResponse(factory, headerName, headerValue);
+	}
+
+	protected final String getForwardedHeaderEchoResponse(ConfigurableServletWebServerFactory factory,
+			String headerName, String headerValue) throws IOException, URISyntaxException {
+		factory.addInitializers(new ServletRegistrationBean<>(new ForwardedHeaderEchoServlet(), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/"), headerName + ":" + headerValue);
+		try {
+			byte[] body = StreamUtils.copyToByteArray(response.getBody());
+			return new String(body, StandardCharsets.UTF_8);
+		}
+		finally {
+			response.close();
+		}
+	}
+
 	protected Future<Object> initiateGetRequest(int port, String path) {
 		return initiateGetRequest(HttpClients.createMinimal(), port, path);
 	}
@@ -1926,6 +1988,19 @@ public abstract class AbstractServletWebServerFactoryTests {
 				resp.addCookie(new Cookie("relaxed", "test"));
 				resp.addCookie(new Cookie("empty", "test"));
 				resp.addCookie(new Cookie("controlled", "test"));
+			}
+		}
+
+	}
+
+	static final class ForwardedHeaderEchoServlet extends HttpServlet {
+
+		@Override
+		protected void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException {
+			String scheme = request.getScheme();
+			try (OutputStream outputStream = response.getOutputStream()) {
+				outputStream.write(scheme.getBytes(StandardCharsets.UTF_8));
 			}
 		}
 

@@ -61,30 +61,6 @@ class NettyServerPropertiesTests {
 			.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
 	}
 
-	@Test
-	void forwardedHeadersDefaultToXForwarded() {
-		assertThat(this.properties.getForwardedHeaders().getHeaderFormat())
-			.isEqualTo(NettyServerProperties.Forwardedheaders.HeaderFormat.X_FORWARDED);
-	}
-
-	@Test
-	void testCustomizeNettyForwardedHeadersFormat() {
-		bind("server.netty.forwarded-headers.header-format", "standard");
-		assertThat(this.properties.getForwardedHeaders().getHeaderFormat())
-			.isEqualTo(NettyServerProperties.Forwardedheaders.HeaderFormat.STANDARD);
-	}
-
-	@Test
-	void forwardedPrefixIsDisabledByDefault() {
-		assertThat(this.properties.getForwardedHeaders().isUseForwardedPrefix()).isFalse();
-	}
-
-	@Test
-	void testCustomizeNettyForwardedHeadersUseForwardedPrefix() {
-		bind("server.netty.forwarded-headers.use-forwarded-prefix", "true");
-		assertThat(this.properties.getForwardedHeaders().isUseForwardedPrefix()).isTrue();
-	}
-
 	private void bind(String name, String value) {
 		bind(Collections.singletonMap(name, value));
 	}

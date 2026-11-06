@@ -31,7 +31,6 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
@@ -104,26 +103,19 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
-	void useForwardedHeaders() {
+	@SuppressWarnings("removal")
+	void deprecatedUseForwardedHeaders() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
-		assertForwardHeaderIsUsed(factory);
+		assertThat(getForwardedHeaderEchoResponse(factory, "X-Forwarded-Proto", "https")).isEqualTo("https");
 	}
 
 	@Test
-	void useRfcForwardHeader() {
-		JettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseRfcForwardHeader(true);
-		assertRfcForwardHeaderIsUsed(factory);
-	}
-
-	@Test
-	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() {
-		JettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseForwardHeaders(true);
-		factory.setUseRfcForwardHeader(true);
-		assertForwardHeaderIsUsed(factory);
-		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
+	@Override
+	protected void forwardedRequestHeadersWhenXForwardedNamingWithPrefix() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenXForwardedNamingWithPrefix())
+			.withMessage("Jetty does not support the 'prefix' forwarded header");
 	}
 
 	@Test

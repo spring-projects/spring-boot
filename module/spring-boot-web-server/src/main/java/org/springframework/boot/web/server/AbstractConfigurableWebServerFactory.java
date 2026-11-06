@@ -56,6 +56,8 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private @Nullable String serverHeader;
 
+	private @Nullable ForwardedRequestHeaders forwardedRequestHeaders;
+
 	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
@@ -168,6 +170,15 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	@Override
 	public void setServerHeader(@Nullable String serverHeader) {
 		this.serverHeader = serverHeader;
+	}
+
+	public @Nullable ForwardedRequestHeaders getForwardedRequestHeaders() {
+		return this.forwardedRequestHeaders;
+	}
+
+	@Override
+	public void setForwardedRequestHeaders(@Nullable ForwardedRequestHeaders forwardedRequestHeaders) {
+		this.forwardedRequestHeaders = forwardedRequestHeaders;
 	}
 
 	@Override

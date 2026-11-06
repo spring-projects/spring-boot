@@ -8,7 +8,6 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 
@@ -42,10 +41,7 @@ import org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServe
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -63,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Chris Bono
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -132,56 +129,11 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
-	void useForwardedHeaders() {
+	@SuppressWarnings("removal")
+	void deprecatedUseForwardedHeaders() {
 		NettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
-		assertForwardHeaderIsUsed(factory);
-	}
-
-	@Test
-	void useRfcForwardHeader() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseRfcForwardHeader(true);
-		assertRfcForwardHeaderIsUsed(factory);
-	}
-
-	@Test
-	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseForwardHeaders(true);
-		factory.setUseRfcForwardHeader(true);
-		assertForwardHeaderIsUsed(factory);
-		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
-	}
-
-	@Test
-	void forwardedPrefixIsIgnoredByDefault() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseForwardHeaders(true);
-		assertThat(echoContextPath(factory, "/api")).isEmpty();
-	}
-
-	@Test
-	void useForwardedPrefixWithForwardHeaders() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseForwardHeaders(true);
-		factory.setUseForwardedPrefix(true);
-		assertThat(echoContextPath(factory, "/api")).isEqualTo("/api");
-	}
-
-	@Test
-	void useForwardedPrefixWithRfcForwardHeader() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseRfcForwardHeader(true);
-		factory.setUseForwardedPrefix(true);
-		assertThat(echoContextPath(factory, "/api")).isEqualTo("/api");
-	}
-
-	@Test
-	void useForwardedPrefixHasNoEffectWhenForwardHeadersAreDisabled() {
-		NettyReactiveWebServerFactory factory = getFactory();
-		factory.setUseForwardedPrefix(true);
-		assertThat(echoContextPath(factory, "/api")).isEmpty();
+		assertThat(getForwardedHeaderEchoResponse(factory, "X-Forwarded-Proto", "https")).isEqualTo("https");
 	}
 
 	@Test
@@ -266,18 +218,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			.body(BodyInserters.fromValue("Hello World"))
 			.retrieve()
 			.bodyToMono(String.class);
-	}
-
-	private @Nullable String echoContextPath(NettyReactiveWebServerFactory factory, String XForwardedPrefix) {
-		this.webServer = factory.getWebServer(new ContextPathHandler());
-		this.webServer.start();
-		WebClient webClient = getWebClient(this.webServer.getPort()).build();
-		return webClient.get()
-			.header("X-Forwarded-Prefix", XForwardedPrefix)
-			.retrieve()
-			.bodyToMono(String.class)
-			.defaultIfEmpty("")
-			.block(Duration.ofSeconds(30));
 	}
 
 	@Override
@@ -389,16 +329,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		@Override
 		public DisposableChannel onDispose(Disposable onDispose) {
 			return this.delegate.onDispose(onDispose);
-		}
-
-	}
-
-	static class ContextPathHandler implements HttpHandler {
-
-		@Override
-		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
-			byte[] contextPath = request.getPath().contextPath().value().getBytes(StandardCharsets.UTF_8);
-			return response.writeWith(Mono.just(response.bufferFactory().wrap(contextPath)));
 		}
 
 	}

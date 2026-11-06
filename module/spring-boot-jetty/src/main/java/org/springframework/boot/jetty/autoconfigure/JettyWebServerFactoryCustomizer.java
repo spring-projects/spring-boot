@@ -20,7 +20,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.RequestLogWriter;
 
-import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.jetty.autoconfigure.JettyServerProperties.Accesslog;
@@ -47,15 +46,12 @@ public class JettyWebServerFactoryCustomizer
 
 	static final int ORDER = 0;
 
-	private final Environment environment;
-
 	private final ServerProperties serverProperties;
 
 	private final JettyServerProperties jettyProperties;
 
 	public JettyWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
 			JettyServerProperties jettyProperties) {
-		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.jettyProperties = jettyProperties;
 	}
@@ -67,9 +63,6 @@ public class JettyWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
-		if (getOrDeduceUseForwardHeaders()) {
-			configureForwardedSupport(factory);
-		}
 		JettyServerProperties.Threads threadProperties = this.jettyProperties.getThreads();
 		factory.setThreadPool(JettyThreadPool.create(this.jettyProperties.getThreads()));
 		PropertyMapper map = PropertyMapper.get();
@@ -101,21 +94,6 @@ public class JettyWebServerFactoryCustomizer
 
 	private boolean isPositive(Integer value) {
 		return value > 0;
-	}
-
-	private boolean getOrDeduceUseForwardHeaders() {
-		if (this.serverProperties.getForwardHeadersStrategy() == null) {
-			CloudPlatform platform = CloudPlatform.getActive(this.environment);
-			return platform != null && platform.isUsingForwardHeaders();
-		}
-		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
-	}
-
-	private void configureForwardedSupport(ConfigurableJettyWebServerFactory factory) {
-		switch (this.jettyProperties.getForwardedHeaders().getHeaderFormat()) {
-			case X_FORWARDED -> factory.setUseForwardHeaders(true);
-			case STANDARD -> factory.setUseRfcForwardHeader(true);
-		}
 	}
 
 	private <T> Consumer<T> customizeHttpConfigurations(ConfigurableJettyWebServerFactory factory,

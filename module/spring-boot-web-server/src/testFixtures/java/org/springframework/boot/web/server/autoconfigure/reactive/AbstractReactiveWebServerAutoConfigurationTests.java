@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -32,7 +33,6 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Scott Frederick
  */
-// @DirtiesUrlFactories
 public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner mockServerRunner;
@@ -100,6 +100,28 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 				.hasMessage("SSL bundle name 'test-bundle' cannot be found"));
 	}
 
+	@Test
+	void forwardedHeaderTransformerShouldBeConfigured() {
+		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+			.withPropertyValues("server.request.header.forwarded.strategy=framework", "server.port=0")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
+		this.mockServerRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+			.withPropertyValues("server.request.header.forwarded.strategy=web-server", "server.port=0")
+			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+	}
+
+	@Test
+	void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
+		this.mockServerRunner
+			.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
+			.withPropertyValues("server.request.header.forwarded.strategy=framework", "server.port=0")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HttpHandlerConfiguration {
 
@@ -136,6 +158,16 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 		@Bean
 		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ForwardedHeaderTransformerConfiguration {
+
+		@Bean
+		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
+			return new ForwardedHeaderTransformer(false);
 		}
 
 	}

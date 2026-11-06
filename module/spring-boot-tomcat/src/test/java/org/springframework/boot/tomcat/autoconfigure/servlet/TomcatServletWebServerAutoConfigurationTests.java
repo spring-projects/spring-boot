@@ -4,6 +4,7 @@
 
 package org.springframework.boot.tomcat.autoconfigure.servlet;
 
+import jakarta.servlet.Filter;
 import org.apache.catalina.Context;
 import org.apache.catalina.Server;
 import org.apache.catalina.connector.Connector;
@@ -16,8 +17,10 @@ import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.servlet.AbstractServletWebServerAutoConfigurationTests;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,6 +129,47 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 				assertThat(factory.getServerCustomizers()).contains(customizer);
 				then(customizer).should().customize(any(Server.class));
 			});
+	}
+
+	@Test
+	void whenUsingFrameworkForwardHeadersStrategyAndRelativeRedirectsAreEnabledThenFilterIsConfiguredToUseRelativeRedirects() {
+		this.serverRunner
+			.withPropertyValues("server.request.header.forwarded.strategy=framework",
+					"server.tomcat.servlet.use-relative-redirects=true", "server.port=0")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				assertThat(filter).extracting("relativeRedirects").isEqualTo(true);
+			});
+	}
+
+	@Test
+	void whenUsingFrameworkForwardHeadersStrategyAndNotUsingRelativeRedirectsThenFilterIsNotConfiguredToUseRelativeRedirects() {
+		this.serverRunner
+			.withPropertyValues("server.request.header.forwarded.strategy=framework",
+					"server.tomcat.servlet.use-relative-redirects=false", "server.port=0")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				assertThat(filter).extracting("relativeRedirects").isEqualTo(false);
+			});
+	}
+
+	@Test
+	void whenUsingFrameworkForwardHeadersStrategyAndDeprecateRelativeRedirectsAreEnabledThenFilterIsConfiguredToUseRelativeRedirects() {
+		this.serverRunner
+			.withPropertyValues("server.request.header.forwarded.strategy=framework",
+					"server.tomcat.use-relative-redirects=true", "server.port=0")
+			.run((context) -> {
+				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+				assertThat(filter).extracting("relativeRedirects").isEqualTo(true);
+			});
+	}
+
+	@Override
+	protected boolean defaultRelativeRedirects() {
+		return true;
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -46,6 +47,8 @@ import reactor.test.StepVerifier;
 import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Shutdown;
@@ -77,6 +80,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author Phillip Webb
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
@@ -659,6 +663,80 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\)");
 	}
 
+	@Test
+	void forwardedRequestHeadersWhenXForwardedNamingAndAndActualHeaderXForwarded() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "X-Forwarded-Proto", "https"))
+			.isEqualTo("https");
+	}
+
+	@Test
+	void forwardedRequestHeadersWhenXForwardedNamingAndAndActualHeaderRfc() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "Forwarded", "=protohttps"))
+			.isEqualTo("http");
+	}
+
+	@Test
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.RFC_7239, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "Forwarded", "proto=https"))
+			.isEqualTo("https");
+	}
+
+	@Test
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.RFC_7239, false);
+		assertThat(getForwardedHeaderEchoResponse(forwardedRequestHeaders, "X-Forwarded-Proto", "https"))
+			.isEqualTo("http");
+	}
+
+	@Test
+	void forwardedRequestHeadersWhenXForwardedNamingWithNoPrefix() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, false);
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setForwardedRequestHeaders(forwardedRequestHeaders);
+		assertThat(echoContextPath(factory, "X-Forwarded-Prefix", "/api")).isEmpty();
+	}
+
+	@Test
+	protected void forwardedRequestHeadersWhenXForwardedNamingWithPrefix() {
+		ForwardedRequestHeaders forwardedRequestHeaders = new ForwardedRequestHeaders(Naming.X_FORWARDED, true);
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setForwardedRequestHeaders(forwardedRequestHeaders);
+		assertThat(echoContextPath(factory, "X-Forwarded-Prefix", "/api")).isEqualTo("/api");
+	}
+
+	protected final String getForwardedHeaderEchoResponse(@Nullable ForwardedRequestHeaders forwardedRequestHeaders,
+			String headerName, String headerValue) {
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setForwardedRequestHeaders(forwardedRequestHeaders);
+		return getForwardedHeaderEchoResponse(factory, headerName, headerValue);
+	}
+
+	protected final String getForwardedHeaderEchoResponse(ConfigurableReactiveWebServerFactory factory,
+			String headerName, String headerValue) {
+		return getResponse(factory, new ForwardedHeaderEchoHandler(), headerName, headerValue);
+	}
+
+	private @Nullable String echoContextPath(ConfigurableReactiveWebServerFactory factory, String headerName,
+			String headerValue) {
+		return getResponse(factory, new ContextPathEchoHandler(), headerName, headerValue);
+	}
+
+	private String getResponse(ConfigurableReactiveWebServerFactory factory, HttpHandler httpHandler, String headerName,
+			String headerValue) {
+		this.webServer = factory.getWebServer(httpHandler);
+		this.webServer.start();
+		return getWebClient(this.webServer.getPort()).build()
+			.get()
+			.header(headerName, headerValue)
+			.retrieve()
+			.bodyToMono(String.class)
+			.defaultIfEmpty("")
+			.block(Duration.ofSeconds(30));
+	}
+
 	protected WebClient prepareCompressionTest() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
@@ -692,30 +770,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected void assertResponseIsNotCompressed(ResponseEntity<Void> response) {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().headerNames()).doesNotContain("X-Test-Compressed");
-	}
-
-	protected void assertForwardHeaderIsUsed(ConfigurableReactiveWebServerFactory factory) {
-		this.webServer = factory.getWebServer(new XForwardedHandler());
-		this.webServer.start();
-		String body = getWebClient(this.webServer.getPort()).build()
-			.get()
-			.header("X-Forwarded-Proto", "https")
-			.retrieve()
-			.bodyToMono(String.class)
-			.block(Duration.ofSeconds(30));
-		assertThat(body).isEqualTo("https");
-	}
-
-	protected void assertRfcForwardHeaderIsUsed(ConfigurableReactiveWebServerFactory factory) {
-		this.webServer = factory.getWebServer(new XForwardedHandler());
-		this.webServer.start();
-		String body = getWebClient(this.webServer.getPort()).build()
-			.get()
-			.header("Forwarded", "proto=https")
-			.retrieve()
-			.bodyToMono(String.class)
-			.block(Duration.ofSeconds(30));
-		assertThat(body).isEqualTo("https");
 	}
 
 	private <T> T doWithRetry(Callable<T> action) throws Exception {
@@ -848,7 +902,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	static class XForwardedHandler implements HttpHandler {
+	static class ForwardedHeaderEchoHandler implements HttpHandler {
 
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
@@ -856,6 +910,16 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 			DataBuffer buffer = bufferFactory.wrap(scheme.getBytes(StandardCharsets.UTF_8));
 			return response.writeWith(Mono.just(buffer));
+		}
+
+	}
+
+	static class ContextPathEchoHandler implements HttpHandler {
+
+		@Override
+		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
+			byte[] contextPath = request.getPath().contextPath().value().getBytes(StandardCharsets.UTF_8);
+			return response.writeWith(Mono.just(response.bufferFactory().wrap(contextPath)));
 		}
 
 	}

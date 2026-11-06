@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee11.servlet.ServletHolder;
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.GracefulHandler;
@@ -21,6 +22,7 @@ import org.springframework.boot.jetty.JettyServerCustomizer;
 import org.springframework.boot.jetty.JettyWebServer;
 import org.springframework.boot.jetty.JettyWebServerFactory;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -82,13 +84,7 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
-		if (this.resourceFactory == null) {
-			server.addConnector(createConnector(address, server));
-		}
-		else {
-			server.addConnector(createConnector(address, server, this.resourceFactory.getExecutor(),
-					this.resourceFactory.getScheduler(), this.resourceFactory.getByteBufferPool()));
-		}
+		server.addConnector(createConnector(address, server, this.resourceFactory));
 		server.setStopTimeout(0);
 		ServletHolder servletHolder = new ServletHolder(servlet);
 		servletHolder.setAsyncSupported(true);
@@ -105,11 +101,9 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
 		}
-		if (this.isUseForwardHeaders()) {
-			new ForwardHeadersCustomizer(true).customize(server);
-		}
-		else if (this.isUseRfcForwardHeader()) {
-			new ForwardHeadersCustomizer(false).customize(server);
+		ForwardedRequestHeaders forwardedHeaders = getForwardedRequestHeaders();
+		if (forwardedHeaders != null) {
+			new ForwardHeadersCustomizer(forwardedHeaders).customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
 			GracefulHandler gracefulHandler = new GracefulHandler();
@@ -117,6 +111,15 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 			server.setHandler(gracefulHandler);
 		}
 		return server;
+	}
+
+	private AbstractConnector createConnector(InetSocketAddress address, Server server,
+			@Nullable JettyResourceFactory resourceFactory) {
+		if (resourceFactory == null) {
+			return createConnector(address, server);
+		}
+		return createConnector(address, server, resourceFactory.getExecutor(), resourceFactory.getScheduler(),
+				resourceFactory.getByteBufferPool());
 	}
 
 }

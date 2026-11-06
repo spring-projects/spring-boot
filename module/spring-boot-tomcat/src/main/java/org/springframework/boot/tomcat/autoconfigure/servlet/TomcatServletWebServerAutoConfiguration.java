@@ -24,6 +24,10 @@ import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties;
 import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.autoconfigure.ConditionalOnForwardedHeaderStrategy;
+import org.springframework.boot.web.server.autoconfigure.ForwardedHeaderStrategy;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.servlet.ForwardedHeaderFilterCustomizer;
 import org.springframework.boot.web.server.autoconfigure.servlet.ServletWebServerConfiguration;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -68,6 +72,12 @@ public final class TomcatServletWebServerAutoConfiguration {
 	TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			TomcatServerProperties tomcatProperties) {
 		return new TomcatServletWebServerFactoryCustomizer(tomcatProperties);
+	}
+
+	@Bean
+	@ConditionalOnForwardedHeaderStrategy(ForwardedHeaderStrategy.FRAMEWORK)
+	ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
+		return (filter) -> filter.setRelativeRedirects(this.tomcatProperties.getServlet().isUseRelativeRedirects());
 	}
 
 }

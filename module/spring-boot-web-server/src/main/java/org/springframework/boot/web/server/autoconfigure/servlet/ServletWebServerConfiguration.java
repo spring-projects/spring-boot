@@ -4,6 +4,7 @@
 
 package org.springframework.boot.web.server.autoconfigure.servlet;
 
+import jakarta.servlet.DispatcherType;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -11,19 +12,28 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.error.ErrorPageRegistrarBeanPostProcessor;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.server.autoconfigure.ConditionalOnForwardedHeaderStrategy;
+import org.springframework.boot.web.server.autoconfigure.ForwardedHeaderStrategy;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties.Request.Header.Forwarded;
 import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
 import org.springframework.boot.web.server.servlet.WebListenerRegistrar;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 /**
  * {@link Configuration Configuration} for a servlet web server.
@@ -42,11 +52,27 @@ import org.springframework.util.ObjectUtils;
 public class ServletWebServerConfiguration {
 
 	@Bean
-	ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
-			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
+	ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(Environment environment,
+			ServerProperties serverProperties, ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
 			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers, ObjectProvider<SslBundles> sslBundles) {
-		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
-				cookieSameSiteSuppliers.orderedStream().toList(), sslBundles.getIfAvailable());
+		return new ServletWebServerFactoryCustomizer(environment, serverProperties,
+				webListenerRegistrars.orderedStream().toList(), cookieSameSiteSuppliers.orderedStream().toList(),
+				sslBundles.getIfAvailable());
+	}
+
+	@Bean
+	@ConditionalOnForwardedHeaderStrategy(ForwardedHeaderStrategy.FRAMEWORK)
+	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+	FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(ServerProperties serverProperties,
+			ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
+		Forwarded forwardedProperties = serverProperties.getRequest().getHeader().getForwarded();
+		ForwardedHeaderFilter filter = new ForwardedHeaderFilter(forwardedProperties.getNaming() == Naming.RFC_7239);
+		filter.setUseForwardedPrefix(forwardedProperties.isUsePrefix());
+		customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
+		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
+		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return registration;
 	}
 
 	/**

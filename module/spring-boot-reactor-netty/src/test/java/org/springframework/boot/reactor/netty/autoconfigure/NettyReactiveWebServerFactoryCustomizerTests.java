@@ -27,7 +27,6 @@ import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -59,88 +58,6 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 		ConfigurationPropertySources.attach(this.environment);
 		this.customizer = new NettyReactiveWebServerFactoryCustomizer(this.environment, this.serverProperties,
 				this.nettyProperties);
-	}
-
-	@Test
-	void deduceUseForwardHeaders() {
-		this.environment.setProperty("DYNO", "-");
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-	}
-
-	@Test
-	void defaultUseForwardHeaders() {
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
-		this.environment.setProperty("DYNO", "-");
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardedHeadersFormatXForwardedConfiguresUseForwardHeaders() {
-		this.environment.setProperty("DYNO", "-");
-		this.nettyProperties.getForwardedHeaders()
-			.setHeaderFormat(NettyServerProperties.Forwardedheaders.HeaderFormat.X_FORWARDED);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardedHeadersFormatStandardConfiguresUseRfcForwardHeader() {
-		this.environment.setProperty("DYNO", "-");
-		this.nettyProperties.getForwardedHeaders()
-			.setHeaderFormat(NettyServerProperties.Forwardedheaders.HeaderFormat.STANDARD);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseRfcForwardHeader(true);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
-	}
-
-	@Test
-	void forwardedPrefixIsDisabledByDefault() {
-		this.environment.setProperty("DYNO", "-");
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardedPrefix(false);
-	}
-
-	@Test
-	void useForwardedPrefixConfiguresFactory() {
-		this.environment.setProperty("DYNO", "-");
-		this.nettyProperties.getForwardedHeaders().setUseForwardedPrefix(true);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardedPrefix(true);
-	}
-
-	@Test
-	void useForwardedPrefixWhenStrategyIsNoneShouldNotConfigureFactory() {
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
-		this.nettyProperties.getForwardedHeaders().setUseForwardedPrefix(true);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should(never()).setUseForwardedPrefix(anyBoolean());
 	}
 
 	@Test

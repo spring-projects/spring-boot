@@ -13,10 +13,12 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerPropertyAdapters;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
 import org.springframework.boot.web.server.servlet.WebListenerRegistrar;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -34,6 +36,8 @@ import org.springframework.util.CollectionUtils;
 public class ServletWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
+	private final @Nullable Environment environment;
+
 	private final ServerProperties serverProperties;
 
 	private final List<WebListenerRegistrar> webListenerRegistrars;
@@ -42,13 +46,50 @@ public class ServletWebServerFactoryCustomizer
 
 	private final @Nullable SslBundles sslBundles;
 
+	/**
+	 * Create a new {@link ServletWebServerFactoryCustomizer} instance.
+	 * @param serverProperties the server properties
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #ServletWebServerFactoryCustomizer(Environment, ServerProperties, List, List, SslBundles)}
+	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this(serverProperties, Collections.emptyList(), Collections.emptyList(), null);
 	}
 
+	/**
+	 * Create a new {@link ServletWebServerFactoryCustomizer} instance.
+	 * @param serverProperties the server properties
+	 * @param webListenerRegistrars the web listener registrars
+	 * @param cookieSameSiteSuppliers the cookie same-site suppliers
+	 * @param sslBundles the SSL bundles
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #ServletWebServerFactoryCustomizer(Environment, ServerProperties, List, List, SslBundles)}
+	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			List<WebListenerRegistrar> webListenerRegistrars, List<CookieSameSiteSupplier> cookieSameSiteSuppliers,
 			@Nullable SslBundles sslBundles) {
+		this.environment = null;
+		this.serverProperties = serverProperties;
+		this.webListenerRegistrars = webListenerRegistrars;
+		this.cookieSameSiteSuppliers = cookieSameSiteSuppliers;
+		this.sslBundles = sslBundles;
+	}
+
+	/**
+	 * Create a new {@link ServletWebServerFactoryCustomizer} instance.
+	 * @param environment the environment.
+	 * @param serverProperties the server properties
+	 * @param webListenerRegistrars the web listener registrars
+	 * @param cookieSameSiteSuppliers the cookie same-site suppliers
+	 * @param sslBundles the SSL bundles
+	 * @since 4.2.0
+	 */
+	public ServletWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
+			List<WebListenerRegistrar> webListenerRegistrars, List<CookieSameSiteSupplier> cookieSameSiteSuppliers,
+			@Nullable SslBundles sslBundles) {
+		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.webListenerRegistrars = webListenerRegistrars;
 		this.cookieSameSiteSuppliers = cookieSameSiteSuppliers;
@@ -75,6 +116,9 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
+		map.from(this.serverProperties)
+			.as(ServerPropertyAdapters.webServerForwardedRequestHeaders(this.environment))
+			.to(factory::setForwardedRequestHeaders);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 		map.from(() -> this.sslBundles).to(factory::setSslBundles);
 		map.from(() -> this.cookieSameSiteSuppliers)

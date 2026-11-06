@@ -58,6 +58,8 @@ import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
+import org.springframework.boot.web.server.ForwardedRequestHeaders.Naming;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -424,26 +426,25 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void useForwardHeaders() throws Exception {
+	@SuppressWarnings("removal")
+	void deprecatedUseForwardHeaders() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void useForwardHeaders() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setForwardedRequestHeaders(new ForwardedRequestHeaders(Naming.X_FORWARDED, false));
 		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Test
 	void useRfcForwardHeader() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setUseRfcForwardHeader(true);
+		factory.setForwardedRequestHeaders(new ForwardedRequestHeaders(Naming.RFC_7239, false));
 		assertRfcForwardHeaderIsUsed(factory);
-	}
-
-	@Test
-	void useForwardHeadersTakesPrecedenceOverUseRfcForwardHeader() throws Exception {
-		JettyServletWebServerFactory factory = getFactory();
-		factory.setUseForwardHeaders(true);
-		factory.setUseRfcForwardHeader(true);
-		assertForwardHeaderIsUsed(factory);
-		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertRfcForwardHeaderIsUsed(factory));
 	}
 
 	@Test

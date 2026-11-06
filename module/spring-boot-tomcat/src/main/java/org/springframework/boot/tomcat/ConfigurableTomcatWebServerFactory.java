@@ -40,6 +40,13 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	void setBackgroundProcessorDelay(int delay);
 
 	/**
+	 * Sets the remote IP configuration.
+	 * @param remoteIp the remote IP configuration or {@code null} for defaults.
+	 * @since 4.2.0
+	 */
+	void setRemoteIp(@Nullable RemoteIp remoteIp);
+
+	/**
 	 * Add {@link Valve}s that should be applied to the Tomcat {@link Engine}.
 	 * @param engineValves the valves to add
 	 */

@@ -32,20 +32,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.jetty.JettyWebServer;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link JettyWebServerFactoryCustomizer}.
@@ -54,7 +48,6 @@ import static org.mockito.Mockito.never;
  * @author Phillip Webb
  * @author HaiTao Zhang
  */
-// @DirtiesUrlFactories
 class JettyWebServerFactoryCustomizerTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
@@ -70,60 +63,6 @@ class JettyWebServerFactoryCustomizerTests {
 		ConfigurationPropertySources.attach(this.environment);
 		this.customizer = new JettyWebServerFactoryCustomizer(this.environment, this.serverProperties,
 				this.jettyProperties);
-	}
-
-	@Test
-	void deduceUseForwardHeaders() {
-		this.environment.setProperty("DYNO", "-");
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-	}
-
-	@Test
-	void defaultUseForwardHeaders() {
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-	}
-
-	@Test
-	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
-		this.environment.setProperty("DYNO", "-");
-		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardedHeadersFormatXForwardedConfiguresUseForwardHeaders() {
-		this.environment.setProperty("DYNO", "-");
-		bind("server.jetty.forwarded-headers.header-format=x_forwarded");
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
-		then(factory).should(never()).setUseRfcForwardHeader(anyBoolean());
-	}
-
-	@Test
-	void forwardedHeadersFormatStandardConfiguresUseRfcForwardHeader() {
-		this.environment.setProperty("DYNO", "-");
-		bind("server.jetty.forwarded-headers.header-format=standard");
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseRfcForwardHeader(true);
-		then(factory).should(never()).setUseForwardHeaders(anyBoolean());
 	}
 
 	@Test
@@ -263,14 +202,6 @@ class JettyWebServerFactoryCustomizerTests {
 		RequestLog.Writer writer = requestLog.getWriter();
 		assertThat(writer).isInstanceOf(RequestLogWriter.class);
 		return (RequestLogWriter) requestLog.getWriter();
-	}
-
-	@Test
-	void setUseForwardHeaders() {
-		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
-		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
-		this.customizer.customize(factory);
-		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test

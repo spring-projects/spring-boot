@@ -41,17 +41,11 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	/**
 	 * Set if x-forward-* headers should be processed.
 	 * @param useForwardHeaders if x-forward headers should be used
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #setForwardedRequestHeaders(org.springframework.boot.web.server.ForwardedRequestHeaders)}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	void setUseForwardHeaders(boolean useForwardHeaders);
-
-	/**
-	 * Set if the RFC forwarded header should be processed.
-	 * <p>
-	 * {@link #setUseForwardHeaders(boolean)} will take precedence if enabled.
-	 * @param useRfcForwardHeader if forwarded header should be used
-	 * @since 4.2.0
-	 */
-	void setUseRfcForwardHeader(boolean useRfcForwardHeader);
 
 	/**
 	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}

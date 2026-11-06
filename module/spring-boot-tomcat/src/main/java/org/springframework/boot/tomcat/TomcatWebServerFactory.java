@@ -24,6 +24,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
@@ -32,9 +33,14 @@ import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.modeler.Registry;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.PropertyMapper.Source;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.tomcat.RemoteIp.Header;
+import org.springframework.boot.tomcat.RemoteIp.Proxies;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.NativeDetector;
 import org.springframework.util.Assert;
@@ -61,6 +67,8 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	private @Nullable File baseDirectory;
 
 	private int backgroundProcessorDelay;
+
+	private @Nullable RemoteIp remoteIp;
 
 	private List<Valve> engineValves = new ArrayList<>();
 
@@ -151,6 +159,15 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	@Override
 	public void setBackgroundProcessorDelay(int delay) {
 		this.backgroundProcessorDelay = delay;
+	}
+
+	public @Nullable RemoteIp getRemoteIp() {
+		return this.remoteIp;
+	}
+
+	@Override
+	public void setRemoteIp(@Nullable RemoteIp remoteIp) {
+		this.remoteIp = remoteIp;
 	}
 
 	public String getProtocol() {
@@ -421,6 +438,7 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
 		registerConnectorExecutor(tomcat, connector);
+		addRemoteIpValveIfNecessary(tomcat.getEngine());
 		tomcat.getHost().setAutoDeploy(false);
 		configureEngine(tomcat.getEngine());
 		for (Connector additionalConnector : this.getAdditionalConnectors()) {
@@ -494,6 +512,32 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
 		if (connector.getProtocolHandler().getExecutor() instanceof Executor executor) {
 			tomcat.getService().addExecutor(executor);
+		}
+	}
+
+	private void addRemoteIpValveIfNecessary(Engine engine) {
+		RemoteIp remoteIp = getRemoteIp();
+		ForwardedRequestHeaders forwardedHeaders = getForwardedRequestHeaders();
+		Assert.state(
+				forwardedHeaders == null || forwardedHeaders.equals(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX),
+				"Tomcat does not support RFC 7239 or 'prefix' forwarded header");
+		if (forwardedHeaders != null || (remoteIp != null && remoteIp.usage() == RemoteIp.Usage.ALWAYS)) {
+			RemoteIpValve valve = new RemoteIpValve();
+			if (forwardedHeaders != null) {
+				valve.setHostHeader("X-Forwarded-Host");
+				valve.setPortHeader("X-Forwarded-Port");
+			}
+			PropertyMapper map = PropertyMapper.get();
+			Source<Header> mapFromHeader = map.from(remoteIp).as(RemoteIp::header);
+			mapFromHeader.as(Header::host).to(valve::setHostHeader);
+			mapFromHeader.as(Header::port).to(valve::setPortHeader);
+			mapFromHeader.as(Header::remoteIp).to(valve::setRemoteIpHeader);
+			mapFromHeader.as(Header::protocol).to(valve::setProtocolHeader);
+			mapFromHeader.as(Header::protocolHttpsValue).to(valve::setProtocolHeaderHttpsValue);
+			Source<Proxies> mapFromProxies = map.from(remoteIp).as(RemoteIp::proxies);
+			mapFromProxies.as(Proxies::internal).to(valve::setInternalProxies);
+			mapFromProxies.as(Proxies::trusted).to(valve::setTrustedProxies);
+			engine.getPipeline().addValve(valve);
 		}
 	}
 

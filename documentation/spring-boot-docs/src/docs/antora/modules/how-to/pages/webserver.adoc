@@ -501,36 +501,85 @@ Your application may be running on `10.10.10.10:8080`, but HTTP clients should o
 There are two sets of HTTP headers that intermediaries can use to provide information about the original request:
 
 1. the well-known `"X-Forwarded-*"` headers (like `"X-Forwarded-Host"`, `"X-Forwarded-Port"`, `"X-Forwarded-Proto"`, `"X-Forwarded-For"`)
-2. the `"Forwarded"` header, as defined by https://tools.ietf.org/html/rfc7239[RFC7239 "Forwarded Headers"]
+2. the `"Forwarded"` header, as defined by https://tools.ietf.org/html/rfc7239[RFC 7239 "Forwarded Headers"]
 
-As a first step, application developers need to look up which set of headers is supported by their proxy, load-balancer or cloud platform.
-While RFC7239 is a standard, its adoption is quite low in the industry and the well-known `"X-Forwarded-*"` headers are probably the ones you will need.
-You can then configure your application to read those headers and automatically use that information when creating links and sending them to clients in HTTP 302 responses, JSON documents or HTML pages.
+As a first step, you need to look up which set of headers is supported by your proxy, load-balancer or cloud platform.
+Whilst RFC 7239 is a standard, its adoption is quite low in the industry and the well-known `"X-Forwarded-*"` headers are more likely to be used.
 
-If your web server of choice supports the set of HTTP headers you need, setting `server.forward-headers-strategy` to `NATIVE` is a good choice:
+Once you know the headers, you can configure your application to automatically use that information when creating links and sending them to clients in HTTP 302 responses, JSON documents or HTML pages.
+Supporting the common `"X-Forwarded-*"` headers can be acheived with the following configuration:
 
-|===
-| Server | Support | Also see
+[configprops,yaml]
+----
+server:
+  request:
+    header:
+      forwarded:
+        strategy: web-server
+----
 
-| Tomcat
-| `"X-Forwarded-*"`
-| xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.tomcat[]
+With this setup, the web servers themselves support this feature.
+You can check their documentation to learn more about their specific behavior.
 
-| Jetty
-| `"X-Forwarded-*"`, `"Forwarded"`
-| xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.jetty[]
+TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.servlet.redirect-context-root[] should be set to `false`.
+This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 
-| Reactor Netty
-| `"X-Forwarded-*"`, `"Forwarded"`
-| xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.reactor-netty[]
+NOTE: If your application runs javadoc:org.springframework.boot.cloud.CloudPlatform#enum-constant-summary[in a supported Cloud Platform], the configprop:server.request.header.forwarded.strategy[] property defaults to `web-server`.
+In all other instances, it defaults to `none`.
 
-|===
+If you need to switch from `"X-Forwarded-*"` headers to RFC 7239 headers you can use the following configuration:
 
-If this is not enough, Spring Framework provides a {url-spring-framework-docs}/web/webmvc/filters.html#filters-forwarded-headers[ForwardedHeaderFilter] for Spring MVC apps and a {url-spring-framework-docs}/web/webflux/reactive-spring.html#webflux-forwarded-headers[ForwardedHeaderTransformer] for WebFlux apps.
-You can use them in your application by setting configprop:server.forward-headers-strategy[] to `FRAMEWORK` and select the appropriate variant with configprop:spring.mvc.forwarded-headers.header-format[] or configprop:spring.webflux.forwarded-headers.header-format[].
+[configprops,yaml]
+----
+server:
+  request:
+    header:
+      forwarded:
+        naming: rfc-7239
+----
 
-NOTE: If your application runs javadoc:org.springframework.boot.cloud.CloudPlatform#enum-constant-summary[in a supported Cloud Platform], the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
-In all other instances, it defaults to `NONE`.
+TIP: If your web server does not support RFC 7239, you can switch to xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.prefix-header.framework-support[Spring Framework's forwarded header support].
+
+
+
+[[howto.webserver.use-behind-a-proxy-server.prefix-header]]
+=== Forwarded Prefix Header Support
+
+The `"X-Forwarded-Prefix"` header is supported by some proxies, load-balancers and cloud platforms.
+It tells your application the original URL path prefix that was stripped away before forwarding the request.
+
+By default, `"X-Forwarded-Prefix"` headers are ignored.
+If you want to enabled support for them, you can use the following configuration:
+
+[configprops,yaml]
+----
+server:
+  request:
+    header:
+      forwarded:
+        use-prefix: true
+----
+
+TIP: If your web server does not support forwarded prefix headers, you can switch to xref:how-to:webserver.adoc#howto.webserver.use-behind-a-proxy-server.prefix-header.framework-support[Spring Framework's forwarded header support].
+
+
+
+[[howto.webserver.use-behind-a-proxy-server.prefix-header.framework-support]]
+==== Spring Framework Forward Header Support
+
+If you're unable to use the forwarded header support provided by your web server, Spring Framework provides a {url-spring-framework-docs}/web/webmvc/filters.html#filters-forwarded-headers[ForwardedHeaderFilter] for the servlet stack and a {url-spring-framework-docs}/web/webflux/reactive-spring.html#webflux-forwarded-headers[ForwardedHeaderTransformer] for the reactive stack.
+You can use them in your application with the following configuration:
+
+[configprops,yaml]
+----
+server:
+  request:
+    header:
+      forwarded:
+        strategy: framework
+----
+
+TIP: We recommend using the `web-server` strategy whenever possible since it's more efficient than Spring Framework's generic support.
 
 
 
@@ -550,7 +599,7 @@ server:
 
 Tomcat is also configured with a regular expression that matches internal proxies that are to be trusted.
 See the xref:appendix:application-properties/index.adoc#application-properties.server.server.tomcat.remoteip.internal-proxies[configprop:server.tomcat.remoteip.internal-proxies[] entry in the appendix] for its default value.
-You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
+You can customize the valve's configuration using the configprop:server.tomcat.remoteip.internal-proxies[] configuration property, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -566,54 +615,7 @@ TIP: If you are using Tomcat, terminating SSL at the proxy, and have set configp
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 When relative redirects are in use, which is Tomcat's default, the context root redirect carries no scheme so there is nothing for the header to correct.
 
-You can take complete control of the configuration of Tomcat's javadoc:org.apache.catalina.valves.RemoteIpValve[] by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.
-
-
-
-[[howto.webserver.use-behind-a-proxy-server.jetty]]
-=== Customize Jetty's Proxy Configuration
-
-If you use Jetty, you can additionally configure the type of the headers used to carry "`forwarded`" information.
-By default, the `"X-Forwarded-*"` format is used, but you can opt into the standard RFC variant:
-
-[configprops,yaml]
-----
-server:
-  jetty:
-    forwarded-headers:
-      header-format: "standard"
-----
-
-For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use Jetty's javadoc:org.eclipse.jetty.server.ForwardedRequestCustomizer[] to change the HTTP configuration.
-
-
-
-[[howto.webserver.use-behind-a-proxy-server.reactor-netty]]
-=== Customize Reactor Netty's Proxy Configuration
-
-If you use Reactor Netty, you can additionally configure the type of the headers used to carry "`forwarded`" information.
-By default, the `"X-Forwarded-*"` format is used, but you can opt into the standard RFC variant:
-
-[configprops,yaml]
-----
-server:
-  netty:
-    forwarded-headers:
-      header-format: "standard"
-----
-
-The `"X-Forwarded-Prefix"` header is ignored by default, whichever header format is used.
-If your proxy sets it and you want it to determine the context path of the request, enable it as follows:
-
-[configprops,yaml]
-----
-server:
-  netty:
-    forwarded-headers:
-      use-forwarded-prefix: true
-----
-
-For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use `reactor.netty.http.server.HttpServer` forwarded header support to change the HTTP configuration.
+You can take complete control of the configuration of Tomcat's javadoc:org.apache.catalina.valves.RemoteIpValve[] by switching the automatic one off (to do so, set configprop:server.request.header.forwarded.strategy[] to `none` and adding a new valve instance using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.
 
 
 

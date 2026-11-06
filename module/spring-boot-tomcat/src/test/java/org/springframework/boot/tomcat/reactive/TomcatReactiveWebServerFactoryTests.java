@@ -19,13 +19,14 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.testsupport.junit.EnabledOnLocale;
 import org.springframework.boot.tomcat.TomcatAccess;
@@ -34,6 +35,7 @@ import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.TomcatWebServerFactoryRemoteIpValveTests;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServerException;
@@ -45,6 +47,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
@@ -241,15 +244,6 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
-	void useForwardedHeaders() {
-		TomcatReactiveWebServerFactory factory = getFactory();
-		RemoteIpValve valve = new RemoteIpValve();
-		valve.setProtocolHeader("X-Forwarded-Proto");
-		factory.addEngineValves(valve);
-		assertForwardHeaderIsUsed(factory);
-	}
-
-	@Test
 	void referenceClearingIsDisabled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
@@ -315,6 +309,30 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(webServerReference).hasValue(webServer);
 	}
 
+	@Test
+	@Override
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsRfc())
+			.withMessageContaining("Tomcat does not support RFC 7239 or 'prefix' forwarded header");
+	}
+
+	@Test
+	@Override
+	protected void forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenRfcForwardedNamingAndActualHeaderIsXForwarded())
+			.withMessageContaining("Tomcat does not support RFC 7239 or 'prefix' forwarded header");
+	}
+
+	@Test
+	@Override
+	protected void forwardedRequestHeadersWhenXForwardedNamingWithPrefix() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> super.forwardedRequestHeadersWhenXForwardedNamingWithPrefix())
+			.withMessageContaining("Tomcat does not support RFC 7239 or 'prefix' forwarded header");
+	}
+
 	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
@@ -330,6 +348,22 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.setPort(port);
 		((TomcatReactiveWebServerFactory) factory).addAdditionalConnectors(connector);
+	}
+
+	@Nested
+	class TomcatRectiveWebServerFactoryRemoteIpValveTests
+			extends TomcatWebServerFactoryRemoteIpValveTests<TomcatReactiveWebServerFactory> {
+
+		@Override
+		protected TomcatReactiveWebServerFactory getFactory() {
+			return TomcatReactiveWebServerFactoryTests.this.getFactory();
+		}
+
+		@Override
+		protected TomcatWebServer getWebServer(TomcatReactiveWebServerFactory factory) {
+			return (TomcatWebServer) factory.getWebServer((request, response) -> Mono.empty());
+		}
+
 	}
 
 }

@@ -29,6 +29,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -50,16 +51,11 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 
 	private List<Configuration> configurations = new ArrayList<>();
 
-	private boolean useForwardHeaders;
-
-	private boolean useRfcForwardHeader;
-
 	private Set<JettyServerCustomizer> jettyServerCustomizers = new LinkedHashSet<>();
 
 	private int maxConnections = -1;
 
 	public JettyWebServerFactory() {
-
 	}
 
 	public JettyWebServerFactory(int port) {
@@ -162,21 +158,17 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 	}
 
 	public boolean isUseForwardHeaders() {
-		return this.useForwardHeaders;
+		return getForwardedRequestHeaders() != null;
 	}
 
 	@Override
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
-	}
-
-	public boolean isUseRfcForwardHeader() {
-		return this.useRfcForwardHeader;
-	}
-
-	@Override
-	public void setUseRfcForwardHeader(boolean useRfcForwardHeader) {
-		this.useRfcForwardHeader = useRfcForwardHeader;
+		ForwardedRequestHeaders existing = getForwardedRequestHeaders();
+		Assert.state(existing == null || ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX.equals(existing),
+				"Forwarded request headers have already been configured");
+		setForwardedRequestHeaders(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
 	}
 
 	protected AbstractConnector createConnector(InetSocketAddress address, Server server) {

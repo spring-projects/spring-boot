@@ -10,8 +10,10 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerPropertyAdapters;
 import org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to reactive
@@ -25,6 +27,8 @@ import org.springframework.core.Ordered;
 public class ReactiveWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
 
+	private final @Nullable Environment environment;
+
 	private final ServerProperties serverProperties;
 
 	private final @Nullable SslBundles sslBundles;
@@ -32,7 +36,10 @@ public class ReactiveWebServerFactoryCustomizer
 	/**
 	 * Create a new {@link ReactiveWebServerFactoryCustomizer} instance.
 	 * @param serverProperties the server properties
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #ReactiveWebServerFactoryCustomizer(Environment, ServerProperties, SslBundles)}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this(serverProperties, null);
 	}
@@ -41,9 +48,26 @@ public class ReactiveWebServerFactoryCustomizer
 	 * Create a new {@link ReactiveWebServerFactoryCustomizer} instance.
 	 * @param serverProperties the server properties
 	 * @param sslBundles the SSL bundles
-	 * @since 4.0.0
+	 * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+	 * {@link #ReactiveWebServerFactoryCustomizer(Environment, ServerProperties, SslBundles)}
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties, @Nullable SslBundles sslBundles) {
+		this.environment = null;
+		this.serverProperties = serverProperties;
+		this.sslBundles = sslBundles;
+	}
+
+	/**
+	 * Create a new {@link ReactiveWebServerFactoryCustomizer} instance.
+	 * @param environment the environment
+	 * @param serverProperties the server properties
+	 * @param sslBundles the SSL bundles
+	 * @since 4.2.0
+	 */
+	public ReactiveWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
+			@Nullable SslBundles sslBundles) {
+		this.environment = null;
 		this.serverProperties = serverProperties;
 		this.sslBundles = sslBundles;
 	}
@@ -61,6 +85,9 @@ public class ReactiveWebServerFactoryCustomizer
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
+		map.from(this.serverProperties)
+			.as(ServerPropertyAdapters.webServerForwardedRequestHeaders(this.environment))
+			.to(factory::setForwardedRequestHeaders);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 		map.from(() -> this.sslBundles).to(factory::setSslBundles);
 	}

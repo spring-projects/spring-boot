@@ -15,6 +15,7 @@ import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.assertArg;
@@ -38,7 +39,8 @@ class ReactiveWebServerFactoryCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties, this.sslBundles);
+		this.customizer = new ReactiveWebServerFactoryCustomizer(new MockEnvironment(), this.properties,
+				this.sslBundles);
 	}
 
 	@Test

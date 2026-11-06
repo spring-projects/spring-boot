@@ -13,7 +13,6 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
-import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.UpgradeProtocol;
@@ -23,11 +22,10 @@ import org.apache.coyote.http2.Http2Protocol;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
+import org.springframework.boot.tomcat.RemoteIp;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties.Accesslog;
-import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties.Remoteip;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties.UseApr;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -60,8 +58,6 @@ public class TomcatWebServerFactoryCustomizer
 
 	static final int ORDER = 0;
 
-	private final Environment environment;
-
 	private final ServerProperties serverProperties;
 
 	private final TomcatServerProperties tomcatProperties;
@@ -70,7 +66,6 @@ public class TomcatWebServerFactoryCustomizer
 
 	public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
 			TomcatServerProperties tomcatProperties, WebProperties webProperties) {
-		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.tomcatProperties = tomcatProperties;
 		this.webProperties = webProperties;
@@ -82,7 +77,6 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	@Override
-	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.tomcatProperties::getBasedir).to(factory::setBaseDirectory);
@@ -90,7 +84,7 @@ public class TomcatWebServerFactoryCustomizer
 			.as(Duration::getSeconds)
 			.as(Long::intValue)
 			.to(factory::setBackgroundProcessorDelay);
-		customizeRemoteIpValve(factory);
+		map.from(this.tomcatProperties::getRemoteip).as(this::asRemoteIp).to(factory::setRemoteIp);
 		TomcatServerProperties.Threads threadProperties = this.tomcatProperties.getThreads();
 		map.from(threadProperties::getMax)
 			.when(this::isPositive)
@@ -157,6 +151,22 @@ public class TomcatWebServerFactoryCustomizer
 		customizeStaticResources(factory);
 		customizeErrorReportValve(this.webProperties.getError(), factory);
 		factory.setUseApr(getUseApr(this.tomcatProperties.getUseApr()));
+	}
+
+	private RemoteIp asRemoteIp(TomcatServerProperties.Remoteip properties) {
+		RemoteIp.Header header = new RemoteIp.Header(properties.getHostHeader(), properties.getPortHeader(),
+				properties.getRemoteIpHeader(), properties.getProtocolHeader(),
+				properties.getProtocolHeaderHttpsValue());
+		RemoteIp.Proxies proxies = new RemoteIp.Proxies(properties.getInternalProxies(),
+				properties.getTrustedProxies());
+		RemoteIp.Usage usage = RemoteIp.Usage.FOR_FORWARDED_REQUEST_HEADERS;
+		if (StringUtils.hasText(properties.getProtocolHeader())
+				|| StringUtils.hasText(properties.getRemoteIpHeader())) {
+			// For back-compatibility the valve is always enabled if the
+			// protocol-header or remote-ip-header values are set
+			usage = RemoteIp.Usage.ALWAYS;
+		}
+		return new RemoteIp(header, proxies, usage);
 	}
 
 	private boolean getUseApr(UseApr useApr) {
@@ -247,37 +257,6 @@ public class TomcatWebServerFactoryCustomizer
 
 	private String joinCharacters(List<Character> content) {
 		return content.stream().map(String::valueOf).collect(Collectors.joining());
-	}
-
-	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
-		Remoteip remoteIpProperties = this.tomcatProperties.getRemoteip();
-		String protocolHeader = remoteIpProperties.getProtocolHeader();
-		String remoteIpHeader = remoteIpProperties.getRemoteIpHeader();
-		// For back compatibility the valve is also enabled if protocol-header is set
-		if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
-				|| getOrDeduceUseForwardHeaders()) {
-			RemoteIpValve valve = new RemoteIpValve();
-			valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader : "X-Forwarded-Proto");
-			if (StringUtils.hasLength(remoteIpHeader)) {
-				valve.setRemoteIpHeader(remoteIpHeader);
-			}
-			valve.setTrustedProxies(remoteIpProperties.getTrustedProxies());
-			// The internal proxies default to a list of "safe" internal IP addresses
-			valve.setInternalProxies(remoteIpProperties.getInternalProxies());
-			valve.setHostHeader(remoteIpProperties.getHostHeader());
-			valve.setPortHeader(remoteIpProperties.getPortHeader());
-			valve.setProtocolHeaderHttpsValue(remoteIpProperties.getProtocolHeaderHttpsValue());
-			// ... so it's safe to add this valve by default.
-			factory.addEngineValves(valve);
-		}
-	}
-
-	private boolean getOrDeduceUseForwardHeaders() {
-		if (this.serverProperties.getForwardHeadersStrategy() == null) {
-			CloudPlatform platform = CloudPlatform.getActive(this.environment);
-			return platform != null && platform.isUsingForwardHeaders();
-		}
-		return this.serverProperties.getForwardHeadersStrategy() == ServerProperties.ForwardHeadersStrategy.NATIVE;
 	}
 
 	@SuppressWarnings("rawtypes")
