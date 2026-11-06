@@ -44,6 +44,17 @@ spring:
 
 If you want to take full control over the embedded broker, see https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ "Classic" documentation] for further information.
 
+To connect over SSL with your own key and trust material, use an `ssl://` broker URL and configure the xref:features/ssl.adoc[SSL bundle] to use by setting the configprop:spring.activemq.ssl.bundle[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  activemq:
+    broker-url: "ssl://192.168.1.210:61617"
+    ssl:
+      bundle: "example"
+----
+
 By default, a javadoc:org.springframework.jms.connection.CachingConnectionFactory[] wraps the native javadoc:jakarta.jms.ConnectionFactory[] with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
 [configprops,yaml]
