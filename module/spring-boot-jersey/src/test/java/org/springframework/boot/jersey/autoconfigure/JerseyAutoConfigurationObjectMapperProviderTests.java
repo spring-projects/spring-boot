@@ -10,9 +10,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jspecify.annotations.Nullable;
@@ -36,21 +38,24 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} with an ObjectMapper.
+ * Tests for {@link JerseyAutoConfiguration} with a JsonMapper.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
+ * @author Kristoffer Larsen Hopland
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson2.default-property-inclusion:non-null")
+		properties = { "spring.jackson.default-property-inclusion:non-null",
+				"spring.jersey.preferred-json-mapper=jackson" })
 @DirtiesContext
+@SuppressWarnings("removal")
 class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void responseIsSerializedUsingAutoConfiguredObjectMapper() {
+	void responseIsSerializedUsingAutoConfiguredJsonMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -91,6 +96,8 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 			this.body = body;
 		}
 
+		@JsonProperty("subject")
+		@XmlElement(name = "title")
 		public @Nullable String getSubject() {
 			return this.subject;
 		}
@@ -118,10 +125,11 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@SuppressWarnings("removal")
 	@Import({ TomcatServletWebServerAutoConfiguration.class,
+			org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.class,
 			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}
