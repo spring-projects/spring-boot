@@ -149,26 +149,26 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 
 	@Test
 	void getAddressWhenNoNothingConfiguredUsesLocalhostAndDefaultPort() {
-		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", Address.DEFAULT_PORT));
+		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", 5672));
 	}
 
 	@Test
 	void getAddressWhenHasSslBundleUsesLocalhostAndSecurePort() {
 		this.properties.getSsl().setBundle("test-bundle");
-		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", Address.DEFAULT_SECURE_PORT));
+		assertThat(this.details.getAddress()).isEqualTo(new Address("localhost", 5671));
 	}
 
 	@Test
 	void getAddressWhenHasSslBundleAndInsecureAddressUsesInsecurePort() {
 		this.properties.getSsl().setBundle("test-bundle");
 		this.properties.setAddress("amqp://localhost");
-		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_PORT);
+		assertThat(this.details.getAddress().port()).isEqualTo(5672);
 	}
 
 	@Test
 	void getAddressWhenHasNoSslBundleAndSecureAddressUsesSecurePort() {
 		this.properties.setAddress("amqps://localhost");
-		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_SECURE_PORT);
+		assertThat(this.details.getAddress().port()).isEqualTo(5671);
 	}
 
 	@Test
@@ -194,7 +194,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	@Test
 	void getAddressWhenHasNoSslBundleAndAddressWithoutPortUsesDefaultPort() {
 		this.properties.setAddress("rabbit.example.com");
-		assertThat(this.details.getAddress().port()).isEqualTo(Address.DEFAULT_PORT);
+		assertThat(this.details.getAddress().port()).isEqualTo(5672);
 	}
 
 	@Test
@@ -295,7 +295,7 @@ class PropertiesAmqpRabbitConnectionDetailsTests {
 	@Test
 	void getAddressWhenAddressIsIpv6AddressWithoutPort() {
 		this.properties.setAddress("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
-		assertThat(this.details.getAddress()).isEqualTo(new Address("[aaaa:bbbb:cccc::d]", Address.DEFAULT_PORT));
+		assertThat(this.details.getAddress()).isEqualTo(new Address("[aaaa:bbbb:cccc::d]", 5672));
 	}
 
 }

@@ -27,8 +27,8 @@ public class AmqpRabbitProperties {
 	private String host = "localhost";
 
 	/**
-	 * RabbitMQ port. Ignored if an address is set. Default to 5672, or 5671 if SSL is
-	 * enabled.
+	 * RabbitMQ port. Ignored if an address is set. Default to 5672, or 5671 if an SSL
+	 * bundle is used.
 	 */
 	private @Nullable Integer port;
 
