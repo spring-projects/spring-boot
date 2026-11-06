@@ -1,0 +1,5 @@
+services:
+  mailpit:
+    image: '{imageName}'
+    ports:
+      - '1025'
