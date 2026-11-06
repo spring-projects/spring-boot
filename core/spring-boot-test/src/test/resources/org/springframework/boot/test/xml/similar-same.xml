@@ -1,0 +1,6 @@
+<example>
+	<!-- The same content, reordered and indented -->
+	<age>100</age>
+	<name>Spring</name>
+	<active>true</active>
+</example>
