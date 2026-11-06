@@ -306,7 +306,14 @@ class LogbackConfigurationAotContributionTests {
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		contextCustomizer.accept(context);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(
-				new LoggingInitializationContext(null));
+				new LoggingInitializationContext(null)) {
+
+			@Override
+			boolean isTylerPresent() {
+				return false;
+			}
+
+		};
 		configurator.setContext(context);
 		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> configurator.processModel(model));
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
