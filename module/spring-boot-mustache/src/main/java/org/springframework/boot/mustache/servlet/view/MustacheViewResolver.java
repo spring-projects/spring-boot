@@ -75,6 +75,7 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 		MustacheView view = (MustacheView) super.buildView(viewName);
 		view.setCompiler(this.compiler);
 		view.setCharset(this.charset);
+		view.setCache(isCache());
 		return view;
 	}
 
