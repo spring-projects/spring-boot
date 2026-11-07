@@ -39,6 +39,8 @@ class JsonValueWriter {
 
 	private static final int DEFAULT_MAX_NESTING_DEPTH = 500;
 
+	private static final @Nullable String[] ESCAPES = createEscapes();
+
 	private final Appendable out;
 
 	private final int maxNestingDepth;
@@ -263,32 +265,46 @@ class JsonValueWriter {
 		try {
 			this.out.append('"');
 			String string = value.toString();
+			int start = 0;
 			for (int i = 0; i < string.length(); i++) {
-				char ch = string.charAt(i);
-				switch (ch) {
-					case '"' -> this.out.append("\\\"");
-					case '\\' -> this.out.append("\\\\");
-					case '\b' -> this.out.append("\\b");
-					case '\f' -> this.out.append("\\f");
-					case '\n' -> this.out.append("\\n");
-					case '\r' -> this.out.append("\\r");
-					case '\t' -> this.out.append("\\t");
-					default -> {
-						if (Character.isISOControl(ch)) {
-							this.out.append("\\u");
-							this.out.append(String.format("%04X", (int) ch));
-						}
-						else {
-							this.out.append(ch);
-						}
+				String escaped = escape(string.charAt(i));
+				if (escaped != null) {
+					if (i > start) {
+						this.out.append(string, start, i);
 					}
+					this.out.append(escaped);
+					start = i + 1;
 				}
+			}
+			if (start < string.length()) {
+				this.out.append(string, start, string.length());
 			}
 			this.out.append('"');
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private static @Nullable String escape(char ch) {
+		return (ch < ESCAPES.length) ? ESCAPES[ch] : null;
+	}
+
+	private static @Nullable String[] createEscapes() {
+		@Nullable String[] escapes = new String[0xA0];
+		for (char ch = 0; ch < escapes.length; ch++) {
+			if (Character.isISOControl(ch)) {
+				escapes[ch] = String.format("\\u%04X", (int) ch);
+			}
+		}
+		escapes['"'] = "\\\"";
+		escapes['\\'] = "\\\\";
+		escapes['\b'] = "\\b";
+		escapes['\f'] = "\\f";
+		escapes['\n'] = "\\n";
+		escapes['\r'] = "\\r";
+		escapes['\t'] = "\\t";
+		return escapes;
 	}
 
 	private void append(String value) {

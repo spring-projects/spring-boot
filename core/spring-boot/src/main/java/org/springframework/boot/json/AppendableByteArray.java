@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -34,6 +35,8 @@ class AppendableByteArray implements Appendable {
 
 	private static final int DEFAULT_EXPANSION_SIZE = 8192;
 
+	private static final int CHAR_BUFFER_SIZE = 1024;
+
 	private static final byte[] NO_BYTES = {};
 
 	private final Charset charset;
@@ -42,9 +45,13 @@ class AppendableByteArray implements Appendable {
 
 	private final int expansionSize;
 
-	private ByteBuffer out;
+	private final char[] chars = new char[CHAR_BUFFER_SIZE];
 
-	private char highSurrogate;
+	private final CharBuffer charBuffer = CharBuffer.wrap(this.chars);
+
+	private int charCount;
+
+	private ByteBuffer out;
 
 	AppendableByteArray(Charset charset) {
 		this(charset, DEFAULT_INITIAL_SIZE, DEFAULT_EXPANSION_SIZE);
@@ -61,56 +68,67 @@ class AppendableByteArray implements Appendable {
 
 	@Override
 	public AppendableByteArray append(@Nullable CharSequence charSequence, int start, int end) throws IOException {
-		return append(((charSequence != null) ? charSequence : "null").subSequence(start, end));
+		CharSequence source = (charSequence != null) ? charSequence : "null";
+		if (source instanceof String string) {
+			Objects.checkFromToIndex(start, end, string.length());
+			return bufferChars(string, start, end);
+		}
+		return append(source.subSequence(start, end).toString());
 	}
 
 	@Override
-	public AppendableByteArray append(CharSequence charSequence) throws IOException {
-		return append(String.valueOf(charSequence).toCharArray());
+	public AppendableByteArray append(@Nullable CharSequence charSequence) throws IOException {
+		String string = String.valueOf(charSequence);
+		return bufferChars(string, 0, string.length());
 	}
 
 	@Override
 	public AppendableByteArray append(char ch) throws IOException {
-		return append(new char[] { ch });
-	}
-
-	private AppendableByteArray append(char[] chars) throws IOException {
-		return (chars.length != 0) ? append(CharBuffer.wrap(chars)) : this;
-	}
-
-	private AppendableByteArray append(CharBuffer in) throws IOException {
-		if (this.highSurrogate != 0) {
-			CharBuffer pending = CharBuffer.allocate(in.remaining() + 1);
-			pending.put(this.highSurrogate).put(in).flip();
-			this.highSurrogate = 0;
-			in = pending;
+		if (this.charCount == this.chars.length) {
+			encodeChars(false);
 		}
-		return append(in, false);
-	}
-
-	private AppendableByteArray append(CharBuffer in, boolean endOfInput) throws IOException {
-		CoderResult result = this.encoder.encode(in, this.out, endOfInput);
-		if (result.isUnderflow()) {
-			this.highSurrogate = (in.hasRemaining()) ? in.get() : 0;
-			return this;
-		}
-		if (result.isOverflow()) {
-			ByteBuffer out = this.out;
-			this.out = ByteBuffer.allocate(out.capacity() + this.expansionSize);
-			out.flip();
-			this.out.put(out);
-			return append(in, endOfInput);
-		}
-		result.throwException();
+		this.chars[this.charCount++] = ch;
 		return this;
 	}
 
-	byte[] toByteArray() throws IOException {
-		if (this.highSurrogate != 0) {
-			CharBuffer in = CharBuffer.wrap(new char[] { this.highSurrogate });
-			this.highSurrogate = 0;
-			append(in, true);
+	private AppendableByteArray bufferChars(String string, int start, int end) throws IOException {
+		while (start < end) {
+			if (this.charCount == this.chars.length) {
+				encodeChars(false);
+			}
+			int length = Math.min(end - start, this.chars.length - this.charCount);
+			string.getChars(start, start + length, this.chars, this.charCount);
+			this.charCount += length;
+			start += length;
 		}
+		return this;
+	}
+
+	private void encodeChars(boolean endOfInput) throws IOException {
+		CharBuffer in = this.charBuffer.clear().limit(this.charCount);
+		CoderResult result = this.encoder.encode(in, this.out, endOfInput);
+		while (result.isOverflow()) {
+			grow();
+			result = this.encoder.encode(in, this.out, endOfInput);
+		}
+		if (result.isError()) {
+			result.throwException();
+		}
+		int remaining = in.remaining();
+		System.arraycopy(this.chars, in.position(), this.chars, 0, remaining);
+		this.charCount = remaining;
+	}
+
+	private void grow() {
+		ByteBuffer out = this.out;
+		int capacity = out.capacity();
+		this.out = ByteBuffer.allocate(capacity + Math.max(this.expansionSize, capacity >> 1));
+		out.flip();
+		this.out.put(out);
+	}
+
+	byte[] toByteArray() throws IOException {
+		encodeChars(true);
 		this.out.flip();
 		int limit = this.out.limit();
 		int position = this.out.position();
@@ -126,7 +144,7 @@ class AppendableByteArray implements Appendable {
 	private void reset() {
 		this.out.clear();
 		this.encoder.reset();
-		this.highSurrogate = 0;
+		this.charCount = 0;
 	}
 
 	static byte[] toByteArray(Charset charset, ThrowingConsumer<Appendable> appendable) throws IOException {
