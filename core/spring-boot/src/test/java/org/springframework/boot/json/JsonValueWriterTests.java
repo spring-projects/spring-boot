@@ -185,6 +185,21 @@ class JsonValueWriterTests {
 		assertThat(write("\r")).isEqualTo(quoted("\\r"));
 		assertThat(write("\t")).isEqualTo(quoted("\\t"));
 		assertThat(write("\u0000\u001F")).isEqualTo(quoted("\\u0000\\u001F"));
+		assertThat(write("\u007F\u009F")).isEqualTo(quoted("\\u007F\\u009F"));
+	}
+
+	@Test
+	void writeWhenStringRequiringEscapeSurroundedByText() {
+		assertThat(write("a\"b")).isEqualTo(quoted("a\\\"b"));
+		assertThat(write("x\n")).isEqualTo(quoted("x\\n"));
+		assertThat(write("\ty")).isEqualTo(quoted("\\ty"));
+		assertThat(write("ab\\cd\ne")).isEqualTo(quoted("ab\\\\cd\\ne"));
+		assertThat(write("a\u001Bb\u0085c")).isEqualTo(quoted("a\\u001Bb\\u0085c"));
+	}
+
+	@Test
+	void writeWhenStringHasCharactersNotRequiringEscape() {
+		assertThat(write("~ é€😀")).isEqualTo(quoted("~ é€😀"));
 	}
 
 	@Test
