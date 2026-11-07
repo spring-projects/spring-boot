@@ -32,7 +32,10 @@ import org.springframework.util.Assert;
 /**
  * Properties that can be used to customize structured logging JSON.
  *
- * @param include the paths that should be included. An empty set includes all names
+ * @param include the paths that should be included. An empty set includes all names.
+ * Nested paths, such as {@code service.name}, are supported. Ancestors of an included
+ * path are retained so that it can be reached, and all descendants of an included path
+ * are included as well
  * @param exclude the paths that should be excluded. An empty set excludes nothing
  * @param rename a map of path to replacement names
  * @param add a map of additional elements {@link StructuredLoggingJsonMembersCustomizer}
