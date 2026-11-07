@@ -38,7 +38,7 @@ class AnsiOutputTests {
 
 	@Test
 	void toStringWhenDisabledAndSingleStringReturnsString() {
-		withAnsiDisabled(() -> assertThat(AnsiOutput.toString(AnsiColor.RED, "A")).isEqualTo("A"));
+		withAnsiDisabled(() -> assertThat(AnsiOutput.toString(AnsiColor.RED, "A")).isSameAs("A"));
 	}
 
 	@Test
