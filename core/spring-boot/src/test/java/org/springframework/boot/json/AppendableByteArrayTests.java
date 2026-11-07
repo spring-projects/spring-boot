@@ -81,6 +81,15 @@ class AppendableByteArrayTests {
 	}
 
 	@Test
+	void writesSurrogatePairsAppendedAsIndividualCharsSpanningInternalBuffer() throws Exception {
+		for (int offset = 0; offset < 2; offset++) {
+			String value = "x".repeat(offset) + "\uD83D\uDE00".repeat(3000);
+			assertByteArray(StandardCharsets.UTF_8, (appendable) -> appendEachChar(appendable, value));
+			assertByteArray(StandardCharsets.UTF_16, (appendable) -> appendEachChar(appendable, value));
+		}
+	}
+
+	@Test
 	void writesVeryLargeStringWithSmallExpansionSize() throws Exception {
 		String value = "x".repeat(1024 * 1024);
 		assertByteArray(16, 16, StandardCharsets.UTF_8, (appendable) -> appendable.append(value));
@@ -130,6 +139,12 @@ class AppendableByteArrayTests {
 	@Test
 	void writesUnpairedHighSurrogate() throws Exception {
 		assertByteArray(StandardCharsets.UTF_8, (appendable) -> appendable.append('\uD83D'));
+	}
+
+	private static void appendEachChar(Appendable appendable, String value) throws IOException {
+		for (int i = 0; i < value.length(); i++) {
+			appendable.append(value.charAt(i));
+		}
 	}
 
 	private void assertByteArray(Charset charset, ThrowingConsumer<Appendable> action) throws Exception {
