@@ -103,6 +103,9 @@ record RabbitUri(@Nullable Boolean secure, @Nullable String host, @Nullable Inte
 			virtualHost = (!virtualHost.isEmpty()) ? virtualHost : DEFAULT_VIRTUAL_HOST;
 			connection = connection.substring(0, virtualHostIndex);
 		}
+		username = decode(username);
+		password = decode(password);
+		virtualHost = decode(virtualHost);
 		int bracketIndex = connection.lastIndexOf(']');
 		int colonIndex = connection.lastIndexOf(':');
 		if (colonIndex == -1 || colonIndex < bracketIndex) {
@@ -111,7 +114,7 @@ record RabbitUri(@Nullable Boolean secure, @Nullable String host, @Nullable Inte
 		String host = connection.substring(0, colonIndex);
 		Integer port = Integer.parseInt(connection.substring(colonIndex + 1));
 		Assert.state(StringUtils.hasText(host), "Missing RabbitMQ host");
-		return new RabbitUri(secure, host, port, decode(username), decode(password), decode(virtualHost));
+		return new RabbitUri(secure, host, port, username, password, virtualHost);
 	}
 
 	@Contract("null -> null; !null -> !null")
