@@ -217,6 +217,12 @@ class RabbitUriTests {
 	}
 
 	@Test
+	void ofDecodesWithoutChangingPlusWhenNoPortIsSpecified() {
+		RabbitUri uri = RabbitUri.of("amqp://user:pass+word@localhost");
+		assertThat(uri).isEqualTo(new RabbitUri(false, "localhost", null, "user", "pass+word", null));
+	}
+
+	@Test
 	void ofDecodesEncodedDefaultVirtualHostWhenNoPortIsSpecified() {
 		RabbitUri uri = RabbitUri.of("amqp://localhost/%2F");
 		assertThat(uri).isEqualTo(new RabbitUri(false, "localhost", null, null, null, "/"));
