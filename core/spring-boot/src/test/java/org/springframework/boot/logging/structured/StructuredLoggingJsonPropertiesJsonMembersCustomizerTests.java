@@ -95,6 +95,25 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	}
 
 	@Test
+	void customizeWhenHasOnlyAddDoesNotChangeOtherMembers() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
+				Collections.emptySet(), Collections.emptyMap(), Map.of("z", "z"), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer))
+			.isEqualTo("{\"a\":\"a\",\"d\":{\"e\":\"e\",\"f\":\"f\"},\"z\":\"z\"}");
+	}
+
+	@Test
+	void customizeWhenHasRenameRenamesNestedMember() {
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
+				Collections.emptySet(), Map.of("d.e", "g"), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties, false);
+		assertThat(writeNestedSampleJson(customizer)).isEqualTo("{\"a\":\"a\",\"d\":{\"g\":\"e\",\"f\":\"f\"}}");
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	void customizeWhenHasCustomizerCustomizesMember() {
 		StructuredLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
@@ -127,6 +146,18 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			members.add("a", "a");
 			members.add("b", "b");
 			members.add("c", "c");
+			customizer.customize(members);
+		}).writeToString(new Object());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private String writeNestedSampleJson(StructuredLoggingJsonMembersCustomizer customizer) {
+		return JsonWriter.of((members) -> {
+			members.add("a", "a");
+			members.add("d").usingMembers((d) -> {
+				d.add("e", "e");
+				d.add("f", "f");
+			});
 			customizer.customize(members);
 		}).writeToString(new Object());
 	}
