@@ -88,14 +88,37 @@ public abstract class AnsiOutput {
 	 * @return a string of the encoded elements
 	 */
 	public static String toString(Object... elements) {
+		boolean enabled = isEnabled();
+		if (!enabled) {
+			String single = getSingleString(elements);
+			if (single != null) {
+				return single;
+			}
+		}
 		StringBuilder sb = new StringBuilder();
-		if (isEnabled()) {
+		if (enabled) {
 			buildEnabled(sb, elements);
 		}
 		else {
 			buildDisabled(sb, elements);
 		}
 		return sb.toString();
+	}
+
+	private static @Nullable String getSingleString(@Nullable Object[] elements) {
+		String single = null;
+		for (Object element : elements) {
+			if (element instanceof String string) {
+				if (single != null) {
+					return null;
+				}
+				single = string;
+			}
+			else if (!(element instanceof AnsiElement)) {
+				return null;
+			}
+		}
+		return single;
 	}
 
 	private static void buildEnabled(StringBuilder sb, Object[] elements) {
