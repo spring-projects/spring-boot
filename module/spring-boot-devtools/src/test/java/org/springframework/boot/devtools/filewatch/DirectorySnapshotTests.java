@@ -6,8 +6,10 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -124,6 +126,42 @@ class DirectorySnapshotTests {
 		assertThat(getChangedFile(changedFiles, file1).getType()).isEqualTo(Type.MODIFY);
 		assertThat(getChangedFile(changedFiles, file2).getType()).isEqualTo(Type.DELETE);
 		assertThat(getChangedFile(changedFiles, newFile).getType()).isEqualTo(Type.ADD);
+	}
+
+	@Test
+	void getChangedFilesWhenAFileIsChangedThroughASymbolicLink() throws Exception {
+		File target = createTestDirectoryStructure();
+		File directoryLink = new File(this.directory, "directory-link");
+		File fileLink = new File(this.directory, "file-link");
+		createSymbolicLink(directoryLink, target);
+		createSymbolicLink(fileLink, new File(new File(target, "directory1"), "file2"));
+		DirectorySnapshot initialSnapshot = new DirectorySnapshot(this.directory);
+		File linkedFile1 = new File(new File(directoryLink, "directory1"), "file1");
+		FileCopyUtils.copy("updatedcontent".getBytes(), linkedFile1);
+		FileCopyUtils.copy("updatedcontent".getBytes(), fileLink);
+		DirectorySnapshot updatedSnapshot = new DirectorySnapshot(this.directory);
+		ChangedFiles changedFiles = initialSnapshot.getChangedFiles(updatedSnapshot, null);
+		assertThat(changedFiles.getFiles()).hasSize(3);
+		assertThat(getChangedFile(changedFiles, linkedFile1).getType()).isEqualTo(Type.MODIFY);
+		assertThat(getChangedFile(changedFiles, new File(new File(directoryLink, "directory1"), "file2")).getType())
+			.isEqualTo(Type.MODIFY);
+		assertThat(getChangedFile(changedFiles, fileLink).getType()).isEqualTo(Type.MODIFY);
+	}
+
+	@Test
+	void brokenSymbolicLinkIsIgnored() {
+		createSymbolicLink(new File(this.directory, "broken-link"), new File(this.tempDir, "does-not-exist"));
+		DirectorySnapshot updatedSnapshot = new DirectorySnapshot(this.directory);
+		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
+	}
+
+	private void createSymbolicLink(File link, File target) {
+		try {
+			Files.createSymbolicLink(link.toPath(), target.toPath());
+		}
+		catch (Exception ex) {
+			Assumptions.abort("Symlink creation not supported");
+		}
 	}
 
 	private ChangedFile getChangedFile(ChangedFiles changedFiles, File file) {

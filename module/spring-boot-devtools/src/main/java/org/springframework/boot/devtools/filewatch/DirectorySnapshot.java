@@ -6,10 +6,17 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Arrays;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -27,8 +34,6 @@ import org.springframework.util.Assert;
  */
 class DirectorySnapshot {
 
-	private static final Set<String> DOTS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
-
 	private final File directory;
 
 	private final Date time;
@@ -45,21 +50,18 @@ class DirectorySnapshot {
 		this.directory = directory;
 		this.time = new Date();
 		Set<FileSnapshot> files = new LinkedHashSet<>();
-		collectFiles(directory, files);
+		collectFiles(directory.toPath(), false, files);
 		this.files = Collections.unmodifiableSet(files);
 	}
 
-	private void collectFiles(File source, Set<FileSnapshot> result) {
-		File[] children = source.listFiles();
-		if (children != null) {
-			for (File child : children) {
-				if (child.isDirectory() && !DOTS.contains(child.getName())) {
-					collectFiles(child, result);
-				}
-				else if (child.isFile()) {
-					result.add(new FileSnapshot(child));
-				}
-			}
+	private static void collectFiles(Path source, boolean followLinks, Set<FileSnapshot> result) {
+		Set<FileVisitOption> options = (followLinks) ? EnumSet.of(FileVisitOption.FOLLOW_LINKS)
+				: EnumSet.noneOf(FileVisitOption.class);
+		try {
+			Files.walkFileTree(source, options, Integer.MAX_VALUE, new FileSnapshotCollector(followLinks, result));
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
 	}
 
@@ -155,6 +157,47 @@ class DirectorySnapshot {
 	@Override
 	public String toString() {
 		return this.directory + " snapshot at " + this.time;
+	}
+
+	/**
+	 * {@link SimpleFileVisitor} that collects a {@link FileSnapshot} for each file. The
+	 * attributes of each file are those returned when its directory is listed so that the
+	 * file system is not queried again for every file. Symbolic links are followed.
+	 */
+	private static final class FileSnapshotCollector extends SimpleFileVisitor<Path> {
+
+		private final boolean followLinks;
+
+		private final Set<FileSnapshot> result;
+
+		FileSnapshotCollector(boolean followLinks, Set<FileSnapshot> result) {
+			this.followLinks = followLinks;
+			this.result = result;
+		}
+
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
+			if (attributes.isSymbolicLink()) {
+				if (!this.followLinks) {
+					collectFiles(file, true, this.result);
+				}
+			}
+			else if (attributes.isRegularFile() || file.toFile().isFile()) {
+				this.result.add(new FileSnapshot(file.toFile(), attributes));
+			}
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException ex) {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException ex) {
+			return FileVisitResult.CONTINUE;
+		}
+
 	}
 
 }
