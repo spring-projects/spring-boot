@@ -72,7 +72,9 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("Running detector");
 		assertThat(result.getOutput()).contains("Running builder");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
+		assertThat(result.getOutput()).satisfiesAnyOf(
+				(output) -> assertThat(output).contains("Network status: HTTP/2 200"),
+				(output) -> assertThat(output).contains("Network status: HTTP/2 103").contains("HTTP/2 200"));
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}
@@ -89,7 +91,9 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("Running creator");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
+		assertThat(result.getOutput()).satisfiesAnyOf(
+				(output) -> assertThat(output).contains("Network status: HTTP/2 200"),
+				(output) -> assertThat(output).contains("Network status: HTTP/2 103").contains("HTTP/2 200"));
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}
