@@ -75,7 +75,6 @@ public class BomPlugin implements Plugin<Project> {
 			.create(API_ENFORCED_CONFIGURATION_NAME, (configuration) -> {
 				configuration.setCanBeConsumed(false);
 				configuration.setCanBeResolved(false);
-				configuration.setVisible(false);
 			});
 		project.getConfigurations()
 			.getByName(JavaPlatformPlugin.ENFORCED_API_ELEMENTS_CONFIGURATION_NAME)
