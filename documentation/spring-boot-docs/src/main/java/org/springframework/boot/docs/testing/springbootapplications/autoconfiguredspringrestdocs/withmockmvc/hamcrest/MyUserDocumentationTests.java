@@ -10,22 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureRestDocs
 class MyUserDocumentationTests {
 
 	@Autowired
-	private MockMvcTester mvc;
+	private MockMvc mvc;
 
 	@Test
-	void listUsers() {
-		assertThat(this.mvc.get().uri("/users").accept(MediaType.TEXT_PLAIN)).hasStatusOk()
-			.apply(document("list-users"));
+	void listUsers() throws Exception {
+		this.mvc.perform(get("/users").accept(MediaType.TEXT_PLAIN))
+			.andExpect(status().isOk())
+			.andDo(document("list-users"));
 	}
 
 }
