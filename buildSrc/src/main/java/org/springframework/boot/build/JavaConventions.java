@@ -319,7 +319,6 @@ class JavaConventions {
 	private void configureDependencyManagement(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration dependencyManagement = configurations.create("dependencyManagement", (configuration) -> {
-			configuration.setVisible(false);
 			configuration.setCanBeConsumed(false);
 			configuration.setCanBeResolved(false);
 		});
