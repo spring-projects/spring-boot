@@ -2,11 +2,12 @@
  * Copyright 2012-present the original author or authors.
  */
 
-package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc.assertj
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc.UserController
 import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
@@ -24,4 +25,3 @@ class MyUserDocumentationTests(@Autowired val mvc: MockMvcTester) {
 	}
 
 }
-
