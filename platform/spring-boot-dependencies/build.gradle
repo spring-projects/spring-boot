@@ -2206,7 +2206,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2025.0.8") {
+	library("Reactor Bom", "2025.0.9-SNAPSHOT") {
 		firstParty()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
