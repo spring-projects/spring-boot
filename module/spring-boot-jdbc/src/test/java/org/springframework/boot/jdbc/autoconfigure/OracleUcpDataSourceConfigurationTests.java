@@ -9,10 +9,12 @@ import java.time.Duration;
 
 import javax.sql.DataSource;
 
+import oracle.ucp.config.PoolProperties;
 import oracle.ucp.config.PoolPropertiesException;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import oracle.ucp.util.OpaqueString;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -112,16 +114,19 @@ class OracleUcpDataSourceConfigurationTests {
 				assertThat(dataSource).isInstanceOf(PoolDataSourceImpl.class);
 				PoolDataSourceImpl oracleUcp = (PoolDataSourceImpl) dataSource;
 				assertThat(oracleUcp.getUser()).isEqualTo("user-1");
-				assertThat(oracleUcp).extracting(this::getPassword).isEqualTo("password-1");
+				assertThat(oracleUcp).extracting("recentPoolProperties")
+					.asInstanceOf(InstanceOfAssertFactories.type(PoolProperties.class))
+					.extracting(this::getPassword)
+					.isEqualTo("password-1");
 				assertThat(oracleUcp.getConnectionFactoryClassName())
 					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 				assertThat(oracleUcp.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
 	}
 
-	private String getPassword(PoolDataSource target) {
+	private String getPassword(PoolProperties poolProperties) {
 		try {
-			return ((OpaqueString) target.getPoolProperties().getPoolProperty("password")).get();
+			return ((OpaqueString) poolProperties.getPoolProperty("password")).get();
 		}
 		catch (PoolPropertiesException ex) {
 			throw new IllegalStateException(ex);
