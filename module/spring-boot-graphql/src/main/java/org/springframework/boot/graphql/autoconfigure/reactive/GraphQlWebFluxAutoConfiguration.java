@@ -115,6 +115,7 @@ public final class GraphQlWebFluxAutoConfiguration {
 				httpHandler::handleRequest);
 		builder.route(GraphQlRequestPredicates.graphQlSse(path, sseHandler.getHttpMethods()),
 				sseHandler::handleRequest);
+		builder.route(GraphQlRequestPredicates.graphQlHttpOptions(path), httpHandler::handleOptionsRequest);
 		builder.POST(path, this::unsupportedMediaType);
 		builder.GET(path, (request) -> methodNotAllowed(allowedMethods));
 		if (properties.getGraphiql().isEnabled()) {

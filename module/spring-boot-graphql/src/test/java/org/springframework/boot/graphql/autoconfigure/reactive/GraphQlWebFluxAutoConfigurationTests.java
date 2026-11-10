@@ -162,6 +162,30 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void httpOptionsShouldAdvertiseAllowedMethods() {
+		testWithWebClient((client) -> client.options()
+			.uri("/graphql")
+			.exchange()
+			.expectStatus()
+			.isNoContent()
+			.expectHeader()
+			.valueEquals("Allow", "POST,OPTIONS"));
+	}
+
+	@Test
+	void httpOptionsShouldAdvertiseConfiguredMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST")
+			.run((context) -> testWithWebClient(context, (client) -> client.options()
+				.uri("/graphql")
+				.exchange()
+				.expectStatus()
+				.isNoContent()
+				.expectHeader()
+				.value("Allow",
+						(allow) -> assertThat(allow.split(",")).containsExactlyInAnyOrder("GET", "POST", "OPTIONS"))));
+	}
+
+	@Test
 	void shouldRejectMissingQuery() {
 		testWithWebClient(
 				(client) -> client.post().uri("/graphql").bodyValue("{}").exchange().expectStatus().isBadRequest());
