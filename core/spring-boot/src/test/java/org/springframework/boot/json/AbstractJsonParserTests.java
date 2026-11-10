@@ -62,6 +62,34 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void stringContainingColon() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar1:bar2\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map).containsEntry("foo", "bar1:bar2");
+	}
+
+	@Test
+	void keyContainingColon() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo:bar\":\"baz\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map).containsEntry("foo:bar", "baz");
+	}
+
+	@Test
+	void mapValueContainingStringWithColon() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":{\"a\":\"b:c\"}}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.MAP).containsEntry("a", "b:c");
+	}
+
+	@Test
+	void listValueContainingStringWithColon() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":[\"bar1:bar2\",\"baz\"]}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly("bar1:bar2", "baz");
+	}
+
+	@Test
 	void stringContainingOpeningBrace() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"{\",\"bar\":\"baz\"}");
 		assertThat(map).hasSize(2);

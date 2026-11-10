@@ -14,7 +14,6 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Really basic JSON parser for when you have nothing else available. Comes with some
@@ -62,7 +61,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return parseMapInternal(nesting + 1, json);
 		}
 		if (json.startsWith("\"")) {
-			return trimEdges(json, '"', '"');
+			return unescape(trimEdges(json, '"', '"'));
 		}
 		return parseNumber(json);
 	}
@@ -71,20 +70,40 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
-			String[] split = StringUtils.split(pair, ":");
-			Assert.state(split != null, () -> "Unable to parse '%s'".formatted(pair));
-			@Nullable String[] rawElement = StringUtils.trimArrayElements(split);
-			String rawKey = rawElement[0];
-			String rawValue = rawElement[1];
-			Assert.state(rawKey != null, () -> "rawKey is null in '%s'".formatted(pair));
+			int separator = indexOfKeySeparator(pair);
+			Assert.state(separator >= 0, () -> "Unable to parse '%s'".formatted(pair));
+			String rawKey = pair.substring(0, separator).trim();
+			String rawValue = pair.substring(separator + 1).trim();
 			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
-			String key = trimEdges(rawKey, '"', '"');
-			Assert.state(rawValue != null, () -> "rawValue is null in '%s'".formatted(pair));
+			String key = unescape(trimEdges(rawKey, '"', '"'));
 			Object value = parseInternal(nesting, rawValue);
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	/**
+	 * Return the index of the colon that separates a key-value pair, ignoring colons that
+	 * are part of a quoted string so that both the field name and the value may contain
+	 * colons themselves. Escaped characters are skipped, as an escaped quote does not
+	 * start or end a string.
+	 */
+	private static int indexOfKeySeparator(String pair) {
+		boolean inString = false;
+		for (int i = 0; i < pair.length(); i++) {
+			char ch = pair.charAt(i);
+			if (ch == '\\') {
+				i++;
+			}
+			else if (ch == '"') {
+				inString = !inString;
+			}
+			else if (ch == ':' && !inString) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private Object parseNumber(String json) {
@@ -132,7 +151,9 @@ public class BasicJsonParser extends AbstractJsonParser {
 					index++;
 				}
 				else {
-					index += unescape(json, index, build);
+					build.append('\\');
+					build.append(ch);
+					index++;
 				}
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
@@ -184,6 +205,25 @@ public class BasicJsonParser extends AbstractJsonParser {
 			default -> build.append(ch);
 		}
 		return 1;
+	}
+
+	/**
+	 * Resolve escape sequences of the given JSON string content.
+	 */
+	private static String unescape(String json) {
+		StringBuilder build = new StringBuilder(json.length());
+		int index = 0;
+		while (index < json.length()) {
+			char ch = json.charAt(index);
+			if (ch == '\\' && index + 1 < json.length()) {
+				index += unescape(json, index + 1, build) + 1;
+			}
+			else {
+				build.append(ch);
+				index++;
+			}
+		}
+		return build.toString();
 	}
 
 	private static final class Tracking {
