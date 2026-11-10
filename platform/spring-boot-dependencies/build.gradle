@@ -2888,7 +2888,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "4.2.0-RC1") {
+	library("Spring Kafka", "4.2.0-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.kafka") {
 			modules = [
