@@ -200,7 +200,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				try (Stream<Path> pathStream = Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile,
+				try (Stream<Path> pathStream = Files.find(sourceDirectory, MAX_DEPTH,
+						(path, attributes) -> isPropertyFile(sourceDirectory, path, attributes),
 						FileVisitOption.FOLLOW_LINKS)) {
 					pathStream.forEach((path) -> {
 						String name = getName(sourceDirectory.relativize(path));
@@ -219,12 +220,13 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 			}
 		}
 
-		private static boolean isPropertyFile(Path path, BasicFileAttributes attributes) {
-			return !hasHiddenPathElement(path) && (attributes.isRegularFile() || attributes.isSymbolicLink());
+		private static boolean isPropertyFile(Path sourceDirectory, Path path, BasicFileAttributes attributes) {
+			return !hasHiddenPathElement(sourceDirectory.relativize(path))
+					&& (attributes.isRegularFile() || attributes.isSymbolicLink());
 		}
 
-		private static boolean hasHiddenPathElement(Path path) {
-			for (Path element : path) {
+		private static boolean hasHiddenPathElement(Path relativePath) {
+			for (Path element : relativePath) {
 				if (element.toString().startsWith("..")) {
 					return true;
 				}

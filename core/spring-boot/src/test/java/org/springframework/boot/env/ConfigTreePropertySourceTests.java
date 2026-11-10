@@ -93,6 +93,15 @@ class ConfigTreePropertySourceTests {
 	}
 
 	@Test
+	void getPropertyNamesWhenSourceDirectoryIsReferencedViaDotDotReturnsPropertyNames() throws Exception {
+		addProperty("a", "A");
+		Path name = this.directory.getFileName();
+		Path viaDotDot = this.directory.resolveSibling(name + "/../" + name);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", viaDotDot);
+		assertThat(propertySource.getPropertyNames()).containsExactly("a");
+	}
+
+	@Test
 	void getPropertyNamesFromFlatWithSymlinksIgnoresHiddenFiles() throws Exception {
 		ConfigTreePropertySource propertySource = getSymlinkedFlatPropertySource();
 		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
