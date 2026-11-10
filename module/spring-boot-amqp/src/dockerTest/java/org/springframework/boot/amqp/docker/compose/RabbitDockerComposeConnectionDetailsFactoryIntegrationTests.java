@@ -6,6 +6,7 @@ package org.springframework.boot.amqp.docker.compose;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.SocketConfigurators;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
@@ -61,6 +62,7 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		if (sslBundle != null) {
 			connectionFactory.useSslProtocol(sslBundle.createSslContext());
+			connectionFactory.setSocketConfigurator(SocketConfigurators.defaultConfigurator());
 		}
 		try (Connection connection = connectionFactory.newConnection()) {
 			assertThat(connection.isOpen()).isTrue();

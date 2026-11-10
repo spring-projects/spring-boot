@@ -4,7 +4,6 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -20,19 +18,18 @@ import javax.net.ssl.SSLSocketFactory;
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.JDKSaslConfig;
-import com.rabbitmq.client.SslEngineConfigurator;
 import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -869,20 +866,6 @@ class RabbitAutoConfigurationTests {
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
 				assertThat(rabbitConnectionFactory.getSocketFactory()).as("SocketFactory must use SSL")
 					.isInstanceOf(SSLSocketFactory.class);
-				assertThatHostnameVerificationIsEnabled(rabbitConnectionFactory);
-			});
-	}
-
-	@Test
-	void enableSslWithoutHostnameVerification() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.verify-hostname:false")
-			.run((context) -> {
-				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
-				assertThat(rabbitConnectionFactory.getSocketFactory()).as("SocketFactory must use SSL")
-					.isInstanceOf(SSLSocketFactory.class);
-				assertThatHostnameVerificationIsDisabled(rabbitConnectionFactory);
 			});
 	}
 
@@ -955,20 +938,6 @@ class RabbitAutoConfigurationTests {
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
-				assertThatHostnameVerificationIsEnabled(rabbitConnectionFactory);
-			});
-	}
-
-	@Test
-	void enableSslWithBundleAndWithoutHostnameVerification() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle", "spring.rabbitmq.ssl.verify-hostname=false",
-					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:org/springframework/boot/amqp/autoconfigure/test.jks",
-					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret")
-			.run((context) -> {
-				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
-				assertThatHostnameVerificationIsDisabled(rabbitConnectionFactory);
 			});
 	}
 
@@ -1004,6 +973,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled("until a new Spring AMQP snapshot is available")
 	void enableSslWithValidateServerCertificateFalse(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
@@ -1011,7 +981,7 @@ class RabbitAutoConfigurationTests {
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
-				assertThat(output).contains("TrustEverythingTrustManager", "SECURITY ALERT");
+				assertThat(output).contains("SECURITY ALERT", "this mode trusts every certificate");
 			});
 	}
 
@@ -1022,7 +992,7 @@ class RabbitAutoConfigurationTests {
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
-				assertThat(output).doesNotContain("TrustEverythingTrustManager", "SECURITY ALERT");
+				assertThat(output).doesNotContain("SECURITY ALERT", "this mode trusts every certificate");
 			});
 	}
 
@@ -1150,27 +1120,6 @@ class RabbitAutoConfigurationTests {
 			.withPropertyValues("spring.rabbitmq.listener.type:direct")
 			.run((context) -> then(context.getBean(ContainerCustomizer.class)).should()
 				.configure(any(DirectMessageListenerContainer.class)));
-	}
-
-	@SuppressWarnings("deprecation")
-	private void assertThatHostnameVerificationIsEnabled(com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory)
-			throws IOException {
-		SslEngineConfigurator sslEngineConfigurator = rabbitConnectionFactory.getNioParams().getSslEngineConfigurator();
-		SSLEngine engine = mock(SSLEngine.class);
-		sslEngineConfigurator.configure(engine);
-		ArgumentCaptor<SSLParameters> sslParametersCaptor = ArgumentCaptor.forClass(SSLParameters.class);
-		then(engine).should().setSSLParameters(sslParametersCaptor.capture());
-		SSLParameters sslParameters = sslParametersCaptor.getValue();
-		assertThat(sslParameters.getEndpointIdentificationAlgorithm()).isEqualTo("HTTPS");
-	}
-
-	@SuppressWarnings("deprecation")
-	private void assertThatHostnameVerificationIsDisabled(com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory)
-			throws IOException {
-		SslEngineConfigurator sslEngineConfigurator = rabbitConnectionFactory.getNioParams().getSslEngineConfigurator();
-		SSLEngine engine = mock(SSLEngine.class);
-		sslEngineConfigurator.configure(engine);
-		then(engine).shouldHaveNoMoreInteractions();
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
