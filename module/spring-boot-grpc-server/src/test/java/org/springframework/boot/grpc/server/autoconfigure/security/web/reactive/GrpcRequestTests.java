@@ -4,13 +4,18 @@
 
 package org.springframework.boot.grpc.server.autoconfigure.security.web.reactive;
 
+import java.util.List;
+
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.grpc.server.autoconfigure.security.web.reactive.GrpcRequest.GrpcReactiveRequestMatcher;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.context.reactive.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.grpc.server.service.DefaultGrpcServiceDiscoverer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
@@ -34,48 +39,57 @@ import static org.mockito.Mockito.mock;
  */
 class GrpcRequestTests {
 
-	private GenericReactiveWebApplicationContext context = new GenericReactiveWebApplicationContext();
-
-	@BeforeEach
-	void setup() {
-		MockService service1 = mock();
-		given(service1.bindService()).willReturn(ServerServiceDefinition.builder("my-service").build());
-		MockService service2 = mock();
-		given(service2.bindService()).willReturn(ServerServiceDefinition.builder("my-other-service").build());
-		this.context.registerBean("s1", BindableService.class, () -> service1);
-		this.context.registerBean("s2", BindableService.class, () -> service2);
-		this.context.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(this.context));
-		this.context.refresh();
-	}
-
 	@Test
 	void whenToAnyService() {
-		GrpcReactiveRequestMatcher matcher = GrpcRequest.toAnyService();
-		assertThat(isMatch(matcher, "/my-service/Method")).isTrue();
-		assertThat(isMatch(matcher, "/my-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/my-other-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/notaservice")).isFalse();
+		run(List.of("my-service", "my-other-service"), (context) -> {
+			GrpcReactiveRequestMatcher matcher = GrpcRequest.toAnyService();
+			assertThat(isMatch(matcher, context, "/my-service/Method")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-other-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/notaservice")).isFalse();
+		});
 	}
 
 	@Test
 	void whenToAnyServiceWithExclude() {
-		GrpcReactiveRequestMatcher matcher = GrpcRequest.toAnyService().excluding("my-other-service");
-		assertThat(isMatch(matcher, "/my-service/Method")).isTrue();
-		assertThat(isMatch(matcher, "/my-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/my-other-service/Other")).isFalse();
-		assertThat(isMatch(matcher, "/notaservice")).isFalse();
+		run(List.of("my-service", "my-other-service"), (context) -> {
+			GrpcReactiveRequestMatcher matcher = GrpcRequest.toAnyService().excluding("my-other-service");
+			assertThat(isMatch(matcher, context, "/my-service/Method")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-other-service/Other")).isFalse();
+			assertThat(isMatch(matcher, context, "/notaservice")).isFalse();
+		});
 	}
 
-	private boolean isMatch(GrpcReactiveRequestMatcher matcher, String path) {
-		MockExchange request = mockRequest(path);
+	private boolean isMatch(GrpcReactiveRequestMatcher matcher, ReactiveWebApplicationContext context, String path) {
+		MockExchange request = mockRequest(context, path);
 		MatchResult result = matcher.matches(request).block();
 		return (result != null) && result.isMatch();
 	}
 
-	private MockExchange mockRequest(String path) {
+	private MockExchange mockRequest(ReactiveWebApplicationContext context, String path) {
 		MockServerHttpRequest servletContext = MockServerHttpRequest.get(path).build();
-		MockExchange request = new MockExchange(servletContext, this.context);
+		MockExchange request = new MockExchange(servletContext, context);
 		return request;
+	}
+
+	private void run(List<String> services, ContextConsumer<AssertableReactiveWebApplicationContext> consumer) {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				GenericReactiveWebApplicationContext::new);
+		for (int i = 0; i < services.size(); i++) {
+			MockService mockService = mockService(services.get(i));
+			runner = runner.withBean("s%d".formatted(i + 1), BindableService.class, () -> mockService);
+		}
+		runner
+			.withInitializer((context) -> ((GenericReactiveWebApplicationContext) context)
+				.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(context)))
+			.run(consumer);
+	}
+
+	private MockService mockService(String name) {
+		MockService service = mock();
+		given(service.bindService()).willReturn(ServerServiceDefinition.builder(name).build());
+		return service;
 	}
 
 	interface MockService extends BindableService {
