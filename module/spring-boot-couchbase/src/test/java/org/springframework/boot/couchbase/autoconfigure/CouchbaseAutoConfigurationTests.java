@@ -7,6 +7,7 @@ package org.springframework.boot.couchbase.autoconfigure;
 import java.time.Duration;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.couchbase.client.core.env.Authenticator;
 import com.couchbase.client.core.env.CertificateAuthenticator;
@@ -15,20 +16,26 @@ import com.couchbase.client.core.env.PasswordAuthenticator;
 import com.couchbase.client.core.env.SecurityConfig;
 import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.codec.Jackson3JsonSerializer;
 import com.couchbase.client.java.codec.JacksonJsonSerializer;
 import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.json.Jackson3JsonValueModule;
+import com.couchbase.client.java.json.JsonObject;
 import com.couchbase.client.java.json.JsonValueModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration.PropertiesCouchbaseConnectionDetails;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Emilien Bevierre
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -131,6 +139,78 @@ class CouchbaseAutoConfigurationTests {
 					.extracting("mapper", as(InstanceOfAssertFactories.type(ObjectMapper.class)))
 					.extracting(ObjectMapper::getRegisteredModuleIds)
 					.isEqualTo(expectedModuleIds);
+			});
+	}
+
+	@Test
+	void whenObjectMapperBeanIsDefinedAndJackson3IsNotPresentThenClusterEnvironmentObjectMapperIsDerivedFromIt() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class))
+			.withBean(ObjectMapper.class, ObjectMapper::new)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				assertThat(env.jsonSerializer()).extracting("wrapped").isInstanceOf(JacksonJsonSerializer.class);
+			});
+	}
+
+	@Test
+	void whenJsonMapperBeanIsDefinedThenClusterEnvironmentJsonMapperIsDerivedFromIt() {
+		JsonMapper jsonMapper = JsonMapper.builder()
+			.addModule(new tools.jackson.databind.module.SimpleModule("custom"))
+			.build();
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withBean(JsonMapper.class, () -> jsonMapper)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				Set<Object> expectedModuleIds = Set.of("custom", new Jackson3JsonValueModule().getRegistrationId());
+				JsonSerializer serializer = env.jsonSerializer();
+				assertThat(serializer).extracting("wrapped")
+					.isInstanceOf(Jackson3JsonSerializer.class)
+					.extracting("mapper", as(InstanceOfAssertFactories.type(JsonMapper.class)))
+					.extracting(this::registrationIds)
+					.isEqualTo(expectedModuleIds);
+			});
+	}
+
+	@Test
+	void whenJsonMapperBeanIsDefinedThenItIsNotModified() {
+		JsonMapper jsonMapper = new JsonMapper();
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withBean(JsonMapper.class, () -> jsonMapper)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				assertThat(env.jsonSerializer()).extracting("wrapped.mapper").isNotSameAs(jsonMapper);
+				assertThat(registrationIds(jsonMapper))
+					.doesNotContain(new Jackson3JsonValueModule().getRegistrationId());
+			});
+	}
+
+	@Test
+	void whenJsonMapperAndObjectMapperBeansAreDefinedThenClusterEnvironmentUsesJsonMapper() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withBean(JsonMapper.class, JsonMapper::new)
+			.withBean(ObjectMapper.class, ObjectMapper::new)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("jackson2ClusterEnvironmentBuilderCustomizer");
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				assertThat(env.jsonSerializer()).extracting("wrapped").isInstanceOf(Jackson3JsonSerializer.class);
+			});
+	}
+
+	@Test
+	void whenJsonMapperBeanIsDefinedThenJsonObjectFieldsCanBeSerializedAndDeserialized() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withBean(JsonMapper.class, JsonMapper::new)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				JsonSerializer serializer = context.getBean(ClusterEnvironment.class).jsonSerializer();
+				Document document = new Document("doc-1", JsonObject.create().put("count", 1));
+				byte[] json = serializer.serialize(document);
+				assertThat(serializer.deserialize(Document.class, json)).isEqualTo(document);
 			});
 	}
 
@@ -281,6 +361,13 @@ class CouchbaseAutoConfigurationTests {
 		});
 	}
 
+	private Set<Object> registrationIds(JsonMapper jsonMapper) {
+		return jsonMapper.registeredModules()
+			.stream()
+			.map(JacksonModule::getRegistrationId)
+			.collect(Collectors.toSet());
+	}
+
 	private CouchbaseConnectionDetails couchbaseConnectionDetails() {
 		return new CouchbaseConnectionDetails() {
 
@@ -311,6 +398,10 @@ class CouchbaseAutoConfigurationTests {
 				.kvTimeout(Duration.ofSeconds(5))
 				.connectTimeout(Duration.ofSeconds(2));
 		}
+
+	}
+
+	record Document(String id, JsonObject content) {
 
 	}
 
