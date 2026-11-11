@@ -1,21 +1,12 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.convert;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.Set;
 
@@ -24,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ConditionalGenericConverter} to convert {@link CharSequence} type by delegating
@@ -38,8 +30,6 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 	private static final TypeDescriptor BYTE_ARRAY = TypeDescriptor.valueOf(byte[].class);
 
 	private static final Set<ConvertiblePair> TYPES;
-
-	private final ThreadLocal<Boolean> disable = new ThreadLocal<>();
 
 	static {
 		TYPES = Collections.singleton(new ConvertiblePair(CharSequence.class, Object.class));
@@ -58,20 +48,15 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType.getType() == String.class || this.disable.get() == Boolean.TRUE) {
+		if (sourceType.getType() == String.class || sourceType instanceof ProtectedTypeDescriptor) {
 			return false;
 		}
-		this.disable.set(Boolean.TRUE);
-		try {
-			boolean canDirectlyConvertCharSequence = this.conversionService.canConvert(sourceType, targetType);
-			if (canDirectlyConvertCharSequence && !isStringConversionBetter(sourceType, targetType)) {
-				return false;
-			}
-			return this.conversionService.canConvert(STRING, targetType);
+		sourceType = new ProtectedTypeDescriptor(sourceType);
+		boolean canDirectlyConvertCharSequence = this.conversionService.canConvert(sourceType, targetType);
+		if (canDirectlyConvertCharSequence && !isStringConversionBetter(sourceType, targetType)) {
+			return false;
 		}
-		finally {
-			this.disable.remove();
-		}
+		return this.conversionService.canConvert(STRING, targetType);
 	}
 
 	/**
@@ -100,6 +85,34 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 	@Override
 	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return this.conversionService.convert((source != null) ? source.toString() : null, STRING, targetType);
+	}
+
+	/**
+	 * Wrapper for {@link TypeDescriptor} used to protect against infinite recursion and
+	 * cache pollution.
+	 */
+	@CacheProtected
+	static class ProtectedTypeDescriptor extends TypeDescriptor {
+
+		ProtectedTypeDescriptor(TypeDescriptor typeDescriptor) {
+			super(typeDescriptor.getResolvableType(), null, withCacheDisabled(typeDescriptor.getAnnotations()));
+		}
+
+		private static Annotation[] withCacheDisabled(Annotation[] annotations) {
+			Annotation[] disabledAnnotations = ProtectedTypeDescriptor.class.getDeclaredAnnotations();
+			return (annotations.length == 0) ? disabledAnnotations
+					: ObjectUtils.addObjectToArray(annotations, disabledAnnotations[0]);
+		}
+
+	}
+
+	/**
+	 * Annotation added to {@link ProtectedTypeDescriptor} to ensure a different cache key
+	 * is used.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface CacheProtected {
+
 	}
 
 }

@@ -1,21 +1,10 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jetty;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
@@ -49,7 +38,14 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
+		CountDownLatch shutdownInProgress = new CountDownLatch(1);
+		new Thread(() -> awaitShutdown(callback, shutdownInProgress), "jetty-shutdown").start();
+		try {
+			shutdownInProgress.await();
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 		for (Connector connector : this.server.getConnectors()) {
 			shutdown(connector);
 		}
@@ -59,11 +55,13 @@ final class GracefulShutdown {
 		connector.shutdown();
 	}
 
-	private void awaitShutdown(GracefulShutdownCallback callback) {
+	private void awaitShutdown(GracefulShutdownCallback callback, CountDownLatch shutdownInProgress) {
+		boolean seenActive = this.activeRequests.get() > 0;
+		shutdownInProgress.countDown();
 		while (!this.aborted && this.activeRequests.get() > 0) {
 			sleep(100);
 		}
-		if (this.aborted) {
+		if (this.aborted && seenActive) {
 			logger.info("Graceful shutdown aborted with one or more requests still active");
 			callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 		}
@@ -84,6 +82,10 @@ final class GracefulShutdown {
 
 	void abort() {
 		this.aborted = true;
+	}
+
+	void reset() {
+		this.aborted = false;
 	}
 
 }

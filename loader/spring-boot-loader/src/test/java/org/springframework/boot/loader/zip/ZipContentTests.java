@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.loader.zip;
@@ -45,6 +33,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
@@ -103,6 +93,34 @@ class ZipContentTests {
 		this.zipContent.close();
 		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.getComment())
 			.withMessage("Zip content closed");
+	}
+
+	@Test
+	void getCommentWhenNoCommentReturnsNull() throws Exception {
+		File file = createZipWithoutComment();
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.getComment()).isNull();
+		}
+	}
+
+	@Test
+	void getCommentWhenContentHasPrefixReturnsComment() throws Exception {
+		File file = new File(this.tempDir, "prefixed.zip");
+		ByteArrayOutputStream zipData = new ByteArrayOutputStream();
+		try (ZipOutputStream zipOutput = new ZipOutputStream(zipData)) {
+			zipOutput.setComment("prefixed");
+			zipOutput.putNextEntry(new ZipEntry("1.dat"));
+			zipOutput.write(new byte[] { (byte) 1 });
+			zipOutput.closeEntry();
+		}
+		ByteArrayOutputStream content = new ByteArrayOutputStream();
+		content.write("#!/bin/sh\n".getBytes(StandardCharsets.UTF_8));
+		content.write(zipData.toByteArray());
+		Files.write(file.toPath(), content.toByteArray());
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.getComment()).isEqualTo("prefixed");
+			assertThat(zip.getEntry("1.dat")).isNotNull();
+		}
 	}
 
 	@Test
@@ -237,10 +255,37 @@ class ZipContentTests {
 		}
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "special\u00EB/", "special\u20AC/", "special\uD83D\uDE00/" })
+	void nestedDirectoryWhenNameHasMultiByteCharactersReturnsRelativeNames(String directoryName) throws IOException {
+		File file = new File(this.tempDir, "multi-byte-directory.jar");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			out.putNextEntry(new ZipEntry(directoryName));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry(directoryName + "9.dat"));
+			out.write(9);
+			out.closeEntry();
+		}
+		try (ZipContent nested = ZipContent.open(file.toPath(), directoryName)) {
+			assertThat(nested.size()).isEqualTo(1);
+			assertThat(nested.getEntry(0).getName()).isEqualTo("9.dat");
+			assertThat(nested.getEntry("9.dat")).isNotNull();
+		}
+	}
+
 	@Test
 	void nestedDirectoryWhenNotEndingInSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ZipContent.open(this.file.toPath(), "d"))
 			.withMessage("Nested entry name must end with '/'");
+	}
+
+	@Test
+	void hasNameStartingWithWhenNestedDirectoryReturnsTrueForEntryName() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
+			Entry entry = nested.getEntry(0);
+			assertThat(entry.hasNameStartingWith("9.dat")).isTrue();
+			assertThat(entry.getName()).isEqualTo("9.dat");
+		}
 	}
 
 	@Test
@@ -281,6 +326,75 @@ class ZipContentTests {
 			assertThat(zip.getEntry(9).getName()).isEqualTo("another-nested.jar");
 			assertThat(zip.getEntry(10).getName()).isEqualTo("space nested.jar");
 			assertThat(zip.getEntry(11).getName()).isEqualTo("multi-release.jar");
+		}
+	}
+
+	@Test
+	void loadWhenHasTrailingBytesOpensZip() throws IOException {
+		File fileWithTrailingBytes = new File(this.tempDir, "withtrailingbytes.jar");
+		try (InputStream inputStream = new FileInputStream(this.file);
+				FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(inputStream, outputStream);
+			StreamUtils.copy("trailing-bytes", Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getComment()).isEqualTo("outer");
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry(11).getName()).isEqualTo("multi-release.jar");
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
+	void loadWhenCommentContainsRecordSignatureOpensZip() throws IOException {
+		File file = new File(this.tempDir, "signature-in-comment.jar");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			out.setComment("PK\u0005\u0006");
+			out.putNextEntry(new ZipEntry("a.txt"));
+			out.write("hello".getBytes(StandardCharsets.UTF_8));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry("d/"));
+			out.closeEntry();
+			out.putNextEntry(new ZipEntry("d/9.dat"));
+			out.write(9);
+			out.closeEntry();
+		}
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			assertThat(zip.size()).isEqualTo(3);
+			assertThat(zip.getComment()).isEqualTo("PK\u0005\u0006");
+			assertThat(zip.getEntry("a.txt")).isNotNull();
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
+	void loadWhenHasTrailingBytesLargerThanTheSearchBufferOpensZip() throws IOException {
+		File fileWithTrailingBytes = new File(this.tempDir, "withmanytrailingbytes.jar");
+		try (InputStream inputStream = new FileInputStream(this.file);
+				FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(inputStream, outputStream);
+			StreamUtils.copy("x".repeat(1024), Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getComment()).isEqualTo("outer");
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry("d/9.dat")).isNotNull();
+		}
+	}
+
+	@Test
+	void loadWhenZip64HasTrailingBytesOpensZip() throws Exception {
+		File fileWithTrailingBytes = new File(this.tempDir, "zip64withtrailingbytes.zip");
+		try (FileOutputStream outputStream = new FileOutputStream(fileWithTrailingBytes)) {
+			StreamUtils.copy(zip64Bytes(), outputStream);
+			StreamUtils.copy("trailing-bytes", Charset.defaultCharset(), outputStream);
+		}
+		try (ZipContent zip = ZipContent.open(fileWithTrailingBytes.toPath())) {
+			assertThat(zip.size()).isEqualTo(65537);
+			assertThat(zip.getEntry(0).getName()).isEqualTo("0.dat");
+			assertThat(zip.getEntry(65536).getName()).isEqualTo("65536.dat");
 		}
 	}
 
@@ -468,6 +582,16 @@ class ZipContentTests {
 		dataBlock.readFully(buffer, 0);
 		Files.write(file.toPath(), buffer.array());
 		dataBlock.close();
+	}
+
+	private File createZipWithoutComment() throws IOException {
+		File file = new File(this.tempDir, "no-comment.zip");
+		try (ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file))) {
+			zipOutput.putNextEntry(new ZipEntry("1.dat"));
+			zipOutput.write(new byte[] { (byte) 1 });
+			zipOutput.closeEntry();
+		}
+		return file;
 	}
 
 	private static class ZipInfo {

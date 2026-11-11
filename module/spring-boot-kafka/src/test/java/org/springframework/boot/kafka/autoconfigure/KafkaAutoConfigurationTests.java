@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.kafka.autoconfigure;
@@ -59,6 +47,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -100,6 +89,7 @@ import org.springframework.kafka.support.micrometer.KafkaTemplateObservationConv
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionExecutionListener;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,6 +113,7 @@ import static org.mockito.Mockito.never;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author WooSeung Kim
  */
 class KafkaAutoConfigurationTests {
 
@@ -969,6 +960,19 @@ class KafkaAutoConfigurationTests {
 				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
 				assertThat(factory).hasFieldOrPropertyWithValue("commonErrorHandler", context.getBean("errorHandler"));
+			});
+	}
+
+	@Test
+	void transactionManagerWithTransactionExecutionListenersIsConfigured() {
+		TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
+			.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
+			.withBean(TransactionExecutionListener.class, () -> listener)
+			.run((context) -> {
+				KafkaTransactionManager<?, ?> transactionManager = context.getBean(KafkaTransactionManager.class);
+				assertThat(transactionManager.getTransactionExecutionListeners()).containsExactly(listener);
 			});
 	}
 

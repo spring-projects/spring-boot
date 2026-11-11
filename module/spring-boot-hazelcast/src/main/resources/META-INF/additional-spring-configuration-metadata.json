@@ -1,0 +1,11 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.health.hazelcast.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Hazelcast health check.",
+      "defaultValue": true
+    }
+  ]
+}

@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.webmvc.actuate.endpoint.web;
@@ -59,6 +47,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.http.server.PathContainer;
+import org.springframework.http.server.PathContainer.Element;
+import org.springframework.http.server.PathContainer.PathSegment;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -395,11 +386,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		private Object getRemainingPathSegments(HttpServletRequest request) {
 			PathPattern pathPattern = getPathPattern(request);
 			if (pathPattern.hasPatternSyntax()) {
-				String remainingSegments = pathPattern
-					.extractPathWithinPattern(
-							ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication())
-					.value();
-				return tokenizePathSegments(remainingSegments);
+				List<String> segments = new ArrayList<>();
+				PathContainer container = pathPattern.extractPathWithinPattern(
+						ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication());
+				for (Element element : container.elements()) {
+					if (element instanceof PathSegment pathSegment
+							&& StringUtils.hasLength(pathSegment.valueToMatch())) {
+						segments.add(pathSegment.valueToMatch());
+					}
+				}
+				return segments.toArray(new String[0]);
 			}
 			return tokenizePathSegments(pathPattern.toString());
 		}

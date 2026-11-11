@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.amqp.docker.compose;
@@ -39,7 +27,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 	@Test
 	void getUsernameWhenNoRabbitMqDefaultUser() {
 		AmqpEnvironment environment = getAmqpEnvironment(Collections.emptyMap());
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -57,7 +45,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 	@Test
 	void getPasswordWhenNoRabbitMqDefaultPass() {
 		AmqpEnvironment environment = getAmqpEnvironment(Collections.emptyMap());
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
@@ -77,7 +65,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_USER", null);
 		AmqpEnvironment environment = getAmqpEnvironment(env);
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -85,7 +73,7 @@ class RabbitMqAmqpDockerComposeConnectionDetailsFactoryTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_PASS", null);
 		AmqpEnvironment environment = getAmqpEnvironment(env);
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test

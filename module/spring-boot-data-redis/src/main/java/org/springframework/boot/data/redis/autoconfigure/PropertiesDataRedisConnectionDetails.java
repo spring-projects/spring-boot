@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.data.redis.autoconfigure;
@@ -95,7 +83,8 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	@Override
 	public @Nullable MasterReplica getMasterReplica() {
 		DataRedisProperties.Masterreplica masterreplica = this.properties.getMasterreplica();
-		return (masterreplica != null) ? new PropertiesMasterReplica(masterreplica) : null;
+		return (masterreplica != null) ? new PropertiesMasterReplica(getStandalone().getDatabase(), masterreplica)
+				: null;
 	}
 
 	private @Nullable DataRedisUrl getRedisUrl() {
@@ -139,10 +128,18 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	 */
 	private static class PropertiesMasterReplica implements MasterReplica {
 
+		private final int database;
+
 		private final List<Node> nodes;
 
-		PropertiesMasterReplica(DataRedisProperties.Masterreplica properties) {
+		PropertiesMasterReplica(int database, DataRedisProperties.Masterreplica properties) {
+			this.database = database;
 			this.nodes = asNodes(properties.getNodes());
+		}
+
+		@Override
+		public int getDatabase() {
+			return this.database;
 		}
 
 		@Override

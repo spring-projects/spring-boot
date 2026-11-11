@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.web.server.autoconfigure.reactive;
@@ -64,16 +52,17 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 	void createFromConfigClass() {
 		this.mockServerRunner.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class)
 			.run((context) -> {
-				assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
-				assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class)).hasSizeGreaterThanOrEqualTo(1);
-				assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class)).hasSize(1);
+				assertThat(context).hasSingleBean(ReactiveWebServerFactory.class);
+				assertThat(context).getBeans(WebServerFactoryCustomizer.class).hasSizeGreaterThanOrEqualTo(1);
+				assertThat(context).hasSingleBean(ReactiveWebServerFactoryCustomizer.class);
 			});
 	}
 
 	@Test
 	void missingHttpHandler() {
 		this.mockServerRunner.withUserConfiguration(MockWebServerConfiguration.class)
-			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(ApplicationContextException.class)
 				.rootCause()
 				.hasMessageContaining("missing HttpHandler bean"));
 	}
@@ -83,7 +72,8 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 		this.mockServerRunner
 			.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 					TooManyHttpHandlers.class)
-			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(ApplicationContextException.class)
 				.rootCause()
 				.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
@@ -104,11 +94,10 @@ public abstract class AbstractReactiveWebServerAutoConfigurationTests {
 					() -> (WebServerFactoryCustomizer<ConfigurableWebServerFactory>) (factory) -> factory
 						.setSslBundles(new DefaultSslBundleRegistry()))
 			.withPropertyValues("server.ssl.bundle=test-bundle")
-			.run((context) -> {
-				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure().getCause()).isInstanceOf(NoSuchSslBundleException.class)
-					.hasMessage("SSL bundle name 'test-bundle' cannot be found");
-			});
+			.run((context) -> assertThat(context).getFailure()
+				.cause()
+				.isInstanceOf(NoSuchSslBundleException.class)
+				.hasMessage("SSL bundle name 'test-bundle' cannot be found"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

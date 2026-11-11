@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.batch.mongodb.autoconfigure;
@@ -31,6 +19,7 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfigur
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -38,6 +27,7 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoExceptionTranslator;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionExecutionListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -70,7 +60,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationUsesMainTransactionManager() {
+	void autoConfigurationUsesMainTransactionManager() {
 		PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(PlatformTransactionManager.class, () -> transactionManager)
@@ -80,7 +70,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationFavorsBatchTransactionManager() {
+	void autoConfigurationFavorsBatchTransactionManager() {
 		MongoTransactionManager transactionManager = mock(MongoTransactionManager.class);
 		this.contextRunner.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
 			.withBean(MongoTransactionManager.class, () -> transactionManager)
@@ -93,7 +83,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autConfigurationCreatesBatchTransactionManagerIfNecessary() {
+	void autoConfigurationCreatesBatchTransactionManagerIfNecessary() {
 		MongoDatabaseFactory mongoDatabaseFactory = mockMongoDatabaseFactory();
 		this.contextRunner.withBean(MongoDatabaseFactory.class, () -> mongoDatabaseFactory).run((context) -> {
 			assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
@@ -105,7 +95,7 @@ class BatchDataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void autoconfigurationBacksOffEntirelyIfSpringMongoDbAbsent() {
+	void autoConfigurationBacksOffEntirelyIfSpringMongoDbAbsent() {
 		this.contextRunner
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, DataMongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoOperations.class))
@@ -179,6 +169,22 @@ class BatchDataMongoAutoConfigurationTests {
 				.rootCause()
 				.hasMessageContaining("spring.batch.data.mongodb.schema.location")
 				.hasMessageContaining("resource does not exist"));
+	}
+
+	@Test
+	void mongoTransactionManagerWithTransactionExecutionListenersIsConfigured() {
+		TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
+			.withBean(MongoDatabaseFactory.class, this::mockMongoDatabaseFactory)
+			.withBean(TransactionExecutionListener.class, () -> listener)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(MongoTransactionManager.class);
+				PlatformTransactionManager transactionManager = context.getBean(SpringBootBatchMongoConfiguration.class)
+					.getTransactionManager();
+				assertThat(transactionManager).isInstanceOfSatisfying(MongoTransactionManager.class,
+						(mtm) -> assertThat(mtm.getTransactionExecutionListeners()).containsExactly(listener));
+			});
 	}
 
 	private MongoDatabaseFactory mockMongoDatabaseFactory() {

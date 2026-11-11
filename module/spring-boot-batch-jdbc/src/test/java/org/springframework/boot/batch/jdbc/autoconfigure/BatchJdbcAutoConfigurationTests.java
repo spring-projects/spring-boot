@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.batch.jdbc.autoconfigure;
@@ -42,6 +30,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
 import org.springframework.batch.core.repository.dao.JacksonExecutionContextStringSerializer;
 import org.springframework.batch.core.step.Step;
+import org.springframework.batch.infrastructure.support.DatabaseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -93,7 +82,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link BatchJdbcAutoConfiguration}.
@@ -289,6 +280,28 @@ class BatchJdbcAutoConfigurationTests {
 					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
 				JobRepository jobRepository = context.getBean(JobRepository.class);
 				assertThat(jobRepository.findRunningJobExecutions("test")).isEmpty();
+				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
+			});
+	}
+
+	@Test
+	void jobRepositoryDoesNotConnectToTheDatabaseWhenDatabaseTypeIsSet() {
+		DataSource dataSource = mock(DataSource.class);
+		this.contextRunner.withBean(DataSource.class, () -> dataSource)
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never", "spring.batch.jdbc.database-type=postgres")
+			.run((context) -> {
+				assertThat(context).hasNotFailed().hasSingleBean(JobRepository.class);
+				then(dataSource).should(never()).getConnection();
+			});
+	}
+
+	@Test
+	void jobRepositoryUsesCustomDatabaseType() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.batch.jdbc.database-type=hsql")
+			.run((context) -> {
+				assertThat(context.getBean(BatchJdbcProperties.class).getDatabaseType()).isEqualTo(DatabaseType.HSQL);
+				JobRepository jobRepository = context.getBean(JobRepository.class);
 				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
 			});
 	}
@@ -723,7 +736,7 @@ class BatchJdbcAutoConfigurationTests {
 
 		@Bean
 		Job job() {
-			AbstractJob job = new AbstractJob() {
+			AbstractJob job = new AbstractJob("job") {
 
 				@Override
 				public Collection<String> getStepNames() {

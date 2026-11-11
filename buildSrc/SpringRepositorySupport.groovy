@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 //
@@ -115,16 +103,17 @@ class SpringRepositoriesExtension {
 	private void addOssRepository(id, snapshot, path, action) {
 		def name = "spring-oss-" + id
 		def url = "https://repo.spring.io" + path
-		addRepository(name, snapshot, url, action)
+		addRepository(name, snapshot, url, false, action)
 	}
 
 	private void addCommercialRepositoryIfNecessary(id, snapshot, path, action) {
 		if (!"commercial".equalsIgnoreCase(this.buildType)) return
 		def name = "spring-commercial-" + id
 		def url = fromEnv("COMMERCIAL_%SREPO_URL", id, "https://usw1.packages.broadcom.com" + path)
+		def allowInsecureProtocol = (boolean) fromEnv("ALLOW_INSECURE_COMMERCIAL_REPO", id, "false")
 		def username = fromEnv("COMMERCIAL_%SREPO_USERNAME", id)
 		def password = fromEnv("COMMERCIAL_%SREPO_PASSWORD", id)
-		addRepository(name, snapshot, url, { maven ->
+		addRepository(name, snapshot, url, allowInsecureProtocol, { maven ->
 			maven.credentials { credentials ->
 				credentials.setUsername(username)
 				credentials.setPassword(password)
@@ -138,7 +127,7 @@ class SpringRepositoriesExtension {
 		if (url != null) {
 			def username = this.environment.apply("RELEASE_TRAIN_MAVEN_REPOSITORY_USERNAME")
 			def password = this.environment.apply("RELEASE_TRAIN_MAVEN_REPOSITORY_PASSWORD")
-			addRepository(id, false, url, { maven ->
+			addRepository(id, false, url, false, { maven ->
 				maven.credentials { credentials ->
 					credentials.setUsername(username)
 					credentials.setPassword(password)
@@ -148,10 +137,11 @@ class SpringRepositoriesExtension {
 		}
 	}
 
-	private void addRepository(name, snapshot, url, action) {
+	private void addRepository(name, snapshot, url, allowInsecureProtocol, action) {
 		this.repositories.maven { maven ->
 			maven.setName(name)
 			maven.setUrl(url)
+			maven.setAllowInsecureProtocol(allowInsecureProtocol)
 			maven.mavenContent { mavenContent ->
 				if (snapshot) {
 					mavenContent.snapshotsOnly()

@@ -10,6 +10,8 @@ The parent project provides the following features:
 * A dependency management section, inherited from the `spring-boot-dependencies` POM, that manages the versions of common dependencies.
 This dependency management lets you omit `<version>` tags for those dependencies when used in your own POM.
 * An execution of the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[`repackage` goal] with a `repackage` execution id.
+The execution is applied as soon as the plugin is declared in your build (see also xref:maven-plugin:using.adoc#using.customizing-repackage[customizing the execution]).
+* A `start-class` property that defines the xref:maven-plugin:using.adoc#using.main-class[main class] of your application.
 * A `native` profile that configures the build to be able to generate a Native image.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration ({url-git-commit-id-maven-plugin}[`Git Commit Id Plugin`], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
@@ -69,6 +71,46 @@ Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
 Overriding versions may cause compatibility issues and should be done with care.
+
+
+
+[[using.customizing-repackage]]
+== Customizing the Repackage Execution
+
+When you use the `spring-boot-starter-parent`, the `repackage` goal runs in an execution with the `repackage` id.
+Maven identifies an execution by its id, so you need to use the same id to customize it.
+The following example keeps the original jar and attaches the repackaged one with an `exec` classifier:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/customize-repackage-pom.xml[tags=customize-repackage]
+----
+
+There is no need to list the goal as the parent already does.
+If you use a different id, or no id at all (Maven then uses `default`), you add a second execution instead of customizing the existing one.
+The `repackage` goal then runs twice: the first time with the parent's configuration, replacing the main artifact, and the second time with yours.
+The same id lets you turn the execution off by setting `skip` to `true` in its configuration.
+
+See xref:packaging.adoc#packaging.examples.custom-classifier[custom classifier] for more details about the classifier.
+
+
+
+[[using.main-class]]
+== Specifying the Main Class
+
+The plugin needs to know the main class of your application, for instance to launch it with the `run` goal or to record it as the `Start-Class` of the archive created by the `repackage` goal.
+By default, it looks for a class with a `main` method in the compiled classes of your project, and prefers one that is annotated with `@SpringBootApplication`.
+If it cannot find a single main class, the build fails and you need to specify it yourself.
+
+If you use the `spring-boot-starter-parent`, set the `start-class` property:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/main-class-pom.xml[tags=main-class]
+----
+
+The parent passes the value of this property to the plugin, so it applies to every goal that needs a main class.
+If you do not use the parent, set the `mainClass` parameter in the plugin configuration instead.
 
 
 

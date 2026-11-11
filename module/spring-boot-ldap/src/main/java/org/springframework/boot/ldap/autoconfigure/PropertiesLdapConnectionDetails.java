@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.ldap.autoconfigure;
@@ -43,20 +31,6 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 	PropertiesLdapConnectionDetails(LdapProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
-		registerSslBundleUpdateHandler();
-	}
-
-	/**
-	 * Keeps {@link LdapSslSocketFactory} up-to-date when the configured bundle is
-	 * reloaded. Without this, the bundle resolved when the context source was created is
-	 * held on to and reloaded key or trust material is never used.
-	 */
-	private void registerSslBundleUpdateHandler() {
-		LdapProperties.Ssl ssl = this.properties.getSsl();
-		if (this.sslBundles == null || !ssl.isEnabled() || !StringUtils.hasLength(ssl.getBundle())) {
-			return;
-		}
-		this.sslBundles.addBundleUpdateHandler(ssl.getBundle(), LdapSslSocketFactory::updateSslBundle);
 	}
 
 	@Override

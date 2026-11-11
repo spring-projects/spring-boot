@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot;
@@ -128,7 +116,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableAutoConfiguration
- * public class MyApplication  {
+ * public class MyApplication {
  *
  *   // ... Bean definitions
  *
@@ -331,9 +319,7 @@ public class SpringApplication {
 			throw handleRunFailure(context, ex, listeners);
 		}
 		try {
-			if (context.isRunning()) {
-				listeners.ready(context, startup.ready());
-			}
+			listeners.ready(context, startup.ready());
 		}
 		catch (Throwable ex) {
 			throw handleRunFailure(context, ex, null);
@@ -406,7 +392,7 @@ public class SpringApplication {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
 		if (this.properties.isKeepAlive()) {
-			context.addApplicationListener(new KeepAlive());
+			context.addApplicationListener(new KeepAlive(context));
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		if (!AotDetector.useGeneratedArtifacts()) {
@@ -765,6 +751,9 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ConfigurableApplicationContext context, ApplicationArguments args) {
+		if (!context.isRunning()) {
+			return;
+		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] beanNames = beanFactory.getBeanNamesForType(Runner.class);
 		Map<Runner, String> instancesToBeanNames = new IdentityHashMap<>();
@@ -1698,10 +1687,19 @@ public class SpringApplication {
 	 */
 	private static final class KeepAlive implements ApplicationListener<ApplicationContextEvent> {
 
+		private final ApplicationContext applicationContext;
+
 		private final AtomicReference<@Nullable Thread> thread = new AtomicReference<>();
+
+		KeepAlive(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
 
 		@Override
 		public void onApplicationEvent(ApplicationContextEvent event) {
+			if (event.getApplicationContext() != this.applicationContext) {
+				return;
+			}
 			if (event instanceof ContextRefreshedEvent) {
 				startKeepAliveThread();
 			}

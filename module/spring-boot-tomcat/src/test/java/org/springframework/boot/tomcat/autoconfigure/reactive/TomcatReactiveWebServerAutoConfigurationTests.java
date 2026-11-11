@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.tomcat.autoconfigure.reactive;
@@ -20,6 +8,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.websocket.server.ServerContainer;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
+import org.apache.catalina.Server;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
@@ -27,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
@@ -120,6 +110,27 @@ class TomcatReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebS
 						TomcatProtocolHandlerCustomizer.class);
 				assertThat(factory.getProtocolHandlerCustomizers()).contains(customizer);
 				then(customizer).should().customize(any());
+			});
+	}
+
+	@Test
+	void tomcatServerCustomizerBeanIsAddedToFactory() {
+		this.serverRunner.withUserConfiguration(TomcatServerCustomizerConfiguration.class).run((context) -> {
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatServerCustomizer customizer = context.getBean("serverCustomizer", TomcatServerCustomizer.class);
+			assertThat(factory.getServerCustomizers()).contains(customizer);
+			then(customizer).should().customize(any(Server.class));
+		});
+	}
+
+	@Test
+	void tomcatServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		this.serverRunner.withUserConfiguration(DoubleRegistrationTomcatServerCustomizerConfiguration.class)
+			.run((context) -> {
+				TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
+				TomcatServerCustomizer customizer = context.getBean("serverCustomizer", TomcatServerCustomizer.class);
+				assertThat(factory.getServerCustomizers()).contains(customizer);
+				then(customizer).should().customize(any(Server.class));
 			});
 	}
 
@@ -221,6 +232,33 @@ class TomcatReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebS
 		@Bean
 		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addProtocolHandlerCustomizers(this.customizer);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TomcatServerCustomizerConfiguration {
+
+		@Bean
+		TomcatServerCustomizer serverCustomizer() {
+			return mock(TomcatServerCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatServerCustomizerConfiguration {
+
+		private final TomcatServerCustomizer customizer = mock(TomcatServerCustomizer.class);
+
+		@Bean
+		TomcatServerCustomizer serverCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addServerCustomizers(this.customizer);
 		}
 
 	}

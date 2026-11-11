@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.graphql.autoconfigure.servlet;
@@ -52,6 +40,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
@@ -217,6 +206,24 @@ class GraphQlWebMvcAutoConfigurationTests {
 				.hasStatus(HttpStatus.METHOD_NOT_ALLOWED)
 				.headers()
 				.hasValue("Allow", "POST");
+		});
+	}
+
+	@Test
+	void httpOptionsShouldAdvertiseAllowedMethods() {
+		withMockMvc((mvc) -> assertThat(mvc.options().uri("/graphql")).hasStatus(HttpStatus.NO_CONTENT)
+			.headers()
+			.hasValue("Allow", "POST,OPTIONS"));
+	}
+
+	@Test
+	void httpOptionsShouldAdvertiseConfiguredMethods() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.methods=GET,POST").run((context) -> {
+			MockMvcTester mvc = MockMvcTester.from(context);
+			MvcTestResult result = mvc.options().uri("/graphql").exchange();
+			assertThat(result).hasStatus(HttpStatus.NO_CONTENT);
+			assertThat(result.getResponse().getHeader("Allow")).isNotNull()
+				.satisfies((allow) -> assertThat(allow.split(",")).containsExactlyInAnyOrder("GET", "POST", "OPTIONS"));
 		});
 	}
 

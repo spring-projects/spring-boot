@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.context.config;
@@ -98,15 +86,17 @@ final class FileHint {
 	}
 
 	/**
-	 * Return the {@link FileHint} from the given value.
+	 * Return the {@link FileHint} from the given value. Only the bracketed groups at the
+	 * end of the value are considered, any other bracket is part of the value.
 	 * @param value the source value
 	 * @return the {@link FileHint}
 	 */
 	static FileHint from(String value) {
-		if (!hasBrackets(value)) {
+		int start = findHintStart(value);
+		if (start == -1) {
 			return NONE;
 		}
-		List<String> betweenBrackets = findBetweenBrackets(value);
+		List<String> betweenBrackets = findBetweenBrackets(value.substring(start));
 		Map<String, String> attributes = new HashMap<>();
 		for (String entry : betweenBrackets) {
 			String cleaned = entry.trim();
@@ -154,35 +144,40 @@ final class FileHint {
 	}
 
 	/**
-	 * Remove any hint from the given value.
+	 * Remove the hint at the end of the given value, if any. Brackets that are not part
+	 * of the trailing bracketed groups are kept.
 	 * @param value the source value
 	 * @return the value without any hint
 	 */
 	static String removeFrom(String value) {
-		if (!hasBrackets(value)) {
-			return value;
-		}
-		StringBuilder result = new StringBuilder();
-		int brackets = 0;
-		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			if (c == '[') {
-				brackets++;
-				continue;
-			}
-			if (c == ']') {
-				brackets--;
-				continue;
-			}
-			if (brackets <= 0) {
-				result.append(c);
-			}
-		}
-		return result.toString();
+		int start = findHintStart(value);
+		return (start != -1) ? value.substring(0, start) : value;
 	}
 
-	private static boolean hasBrackets(String value) {
-		return value.indexOf('[') != -1 && value.indexOf(']') != -1;
+	/**
+	 * Return the index of the first bracket of the hint at the end of the given value.
+	 * Brackets that are not part of the trailing bracketed groups are ignored.
+	 * @param value the source value
+	 * @return the index of the start of the hint or {@code -1} if there is no hint
+	 */
+	private static int findHintStart(String value) {
+		int start = -1;
+		int depth = 0;
+		for (int i = value.length() - 1; i >= 0; i--) {
+			char c = value.charAt(i);
+			if (c == ']') {
+				depth++;
+			}
+			else if (c == '[' && depth > 0) {
+				if (--depth == 0) {
+					start = i;
+				}
+			}
+			else if (depth == 0) {
+				break;
+			}
+		}
+		return start;
 	}
 
 }

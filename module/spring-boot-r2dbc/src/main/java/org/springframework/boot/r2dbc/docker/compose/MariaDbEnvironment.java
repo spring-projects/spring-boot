@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.r2dbc.docker.compose;
@@ -57,8 +45,11 @@ class MariaDbEnvironment {
 	}
 
 	private String extractPassword(Map<String, @Nullable String> env) {
-		Assert.state(!env.containsKey("MARIADB_RANDOM_ROOT_PASSWORD"), "MARIADB_RANDOM_ROOT_PASSWORD is not supported");
-		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+		boolean hasUserAndPassword = hasUserAndPassword(env);
+		Assert.state(!env.containsKey("MARIADB_RANDOM_ROOT_PASSWORD") || hasUserAndPassword,
+				"MARIADB_RANDOM_ROOT_PASSWORD is not supported without MARIADB_USER and MARIADB_PASSWORD");
+		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD") || hasUserAndPassword,
+				"MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
 		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_HASH"), "MARIADB_ROOT_PASSWORD_HASH is not supported");
 		boolean allowEmpty = env.containsKey("MARIADB_ALLOW_EMPTY_ROOT_PASSWORD")
 				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
@@ -74,6 +65,14 @@ class MariaDbEnvironment {
 		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MariaDB password found");
 		return (password != null) ? password : "";
+	}
+
+	private boolean hasUserAndPassword(Map<String, @Nullable String> env) {
+		String user = env.get("MARIADB_USER");
+		user = (user != null) ? user : env.get("MYSQL_USER");
+		String password = env.get("MARIADB_PASSWORD");
+		password = (password != null) ? password : env.get("MYSQL_PASSWORD");
+		return StringUtils.hasLength(user) && StringUtils.hasLength(password);
 	}
 
 	private String extractDatabase(Map<String, @Nullable String> env) {

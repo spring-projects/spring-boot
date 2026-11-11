@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.loader.zip;
@@ -179,6 +167,10 @@ public final class ZipContent implements Closeable {
 	 * @return the comment or {@code null}
 	 */
 	public String getComment() {
+		if (this.commentLength == 0) {
+			this.data.ensureOpen(() -> new IllegalStateException("Zip content closed"));
+			return null;
+		}
 		try {
 			return ZipString.readString(this.data, this.commentPos, this.commentLength);
 		}
@@ -469,7 +461,8 @@ public final class ZipContent implements Closeable {
 			this.nameHashLookups = new int[maxSize];
 			this.relativeCentralDirectoryOffsetLookups = new int[maxSize];
 			this.nameOffsetLookups = (directoryEntry != null)
-					? new NameOffsetLookups(directoryEntry.getName().length(), maxSize) : NameOffsetLookups.NONE;
+					? new NameOffsetLookups(directoryEntry.getName().getBytes(StandardCharsets.UTF_8).length, maxSize)
+					: NameOffsetLookups.NONE;
 		}
 
 		private void add(ZipCentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)
@@ -587,7 +580,9 @@ public final class ZipContent implements Closeable {
 			long eocdPos = locatedEocd.pos();
 			Zip64EndOfCentralDirectoryLocator zip64Locator = Zip64EndOfCentralDirectoryLocator.find(data, eocdPos);
 			Zip64EndOfCentralDirectoryRecord zip64Eocd = Zip64EndOfCentralDirectoryRecord.load(data, zip64Locator);
-			data = data.slice(getStartOfZipContent(data, eocd, zip64Eocd));
+			long startOfZipContent = getStartOfZipContent(eocdPos, eocd, zip64Eocd);
+			data = data.slice(startOfZipContent);
+			eocdPos -= startOfZipContent;
 			long centralDirectoryPos = (zip64Eocd != null) ? zip64Eocd.offsetToStartOfCentralDirectory()
 					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long numberOfEntries = (zip64Eocd != null) ? zip64Eocd.totalNumberOfCentralDirectoryEntries()
@@ -607,7 +602,7 @@ public final class ZipContent implements Closeable {
 				loader.add(centralRecord, pos, false);
 				pos += centralRecord.size();
 			}
-			long commentPos = locatedEocd.pos() + ZipEndOfCentralDirectoryRecord.COMMENT_OFFSET;
+			long commentPos = eocdPos + ZipEndOfCentralDirectoryRecord.COMMENT_OFFSET;
 			return loader.finish(kind, commentPos, eocd.commentLength(), signatureFiles.detected());
 		}
 
@@ -615,19 +610,20 @@ public final class ZipContent implements Closeable {
 		 * Returns the location in the data that the archive actually starts. For most
 		 * files the archive data will start at 0, however, it is possible to have
 		 * prefixed bytes (often used for startup scripts) at the beginning of the data.
-		 * @param data the source data
+		 * The end of the end of central directory record is used as the end of the
+		 * archive so that trailing bytes after the record are also supported.
+		 * @param eocdPos the position of the end of central directory record
 		 * @param eocd the end of central directory record
 		 * @param zip64Eocd the zip64 end of central directory record or {@code null}
 		 * @return the offset within the data where the archive begins
-		 * @throws IOException on I/O error
 		 */
-		private static long getStartOfZipContent(FileDataBlock data, ZipEndOfCentralDirectoryRecord eocd,
-				Zip64EndOfCentralDirectoryRecord zip64Eocd) throws IOException {
+		private static long getStartOfZipContent(long eocdPos, ZipEndOfCentralDirectoryRecord eocd,
+				Zip64EndOfCentralDirectoryRecord zip64Eocd) {
 			long specifiedOffsetToStartOfCentralDirectory = (zip64Eocd != null)
 					? zip64Eocd.offsetToStartOfCentralDirectory()
 					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long sizeOfCentralDirectoryAndEndRecords = getSizeOfCentralDirectoryAndEndRecords(eocd, zip64Eocd);
-			long actualOffsetToStartOfCentralDirectory = data.size() - sizeOfCentralDirectoryAndEndRecords;
+			long actualOffsetToStartOfCentralDirectory = eocdPos + eocd.size() - sizeOfCentralDirectoryAndEndRecords;
 			return actualOffsetToStartOfCentralDirectory - specifiedOffsetToStartOfCentralDirectory;
 		}
 
@@ -776,9 +772,10 @@ public final class ZipContent implements Closeable {
 			if (name != null) {
 				return name.startsWith(prefix.toString());
 			}
+			int offset = ZipContent.this.nameOffsetLookups.get(this.lookupIndex);
 			long pos = getCentralDirectoryFileHeaderRecordPos(this.lookupIndex)
-					+ ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-			return ZipString.startsWith(null, ZipContent.this.data, pos, this.centralRecord.fileNameLength(),
+					+ ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
+			return ZipString.startsWith(null, ZipContent.this.data, pos, this.centralRecord.fileNameLength() - offset,
 					prefix) != -1;
 		}
 

@@ -1,0 +1,11 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.health.r2dbc.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable R2DBC health check.",
+      "defaultValue": true
+    }
+  ]
+}

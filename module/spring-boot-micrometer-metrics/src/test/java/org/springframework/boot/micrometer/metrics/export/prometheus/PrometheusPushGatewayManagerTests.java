@@ -1,23 +1,15 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.micrometer.metrics.export.prometheus;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import io.prometheus.metrics.exporter.pushgateway.PushGateway;
 import org.junit.jupiter.api.Test;
@@ -32,19 +24,22 @@ import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusP
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link PrometheusPushGatewayManager}.
  *
  * @author Phillip Webb
+ * @author Rami Darras
  */
 @ExtendWith(MockitoExtension.class)
 class PrometheusPushGatewayManagerTests {
@@ -96,23 +91,46 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	void shutdownWhenOwnsSchedulerDoesShutDownScheduler() {
-		PushGatewayTaskScheduler ownedScheduler = givenScheduleAtFixedRateWillReturnFuture(
-				mock(PushGatewayTaskScheduler.class));
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, ownedScheduler,
-				this.pushRate, null);
-		manager.shutdown();
-		then(ownedScheduler).should().shutdown();
+	void shutdownWhenOwnsSchedulerDoesShutDownScheduler() throws Exception {
+		PushGatewayTaskScheduler ownedScheduler = spy(new PushGatewayTaskScheduler());
+		List<ScheduledExecutorService> executors = new ArrayList<>();
+		willAnswer((invocation) -> {
+			ScheduledExecutorService executor = (ScheduledExecutorService) invocation.callRealMethod();
+			executors.add(executor);
+			return executor;
+		}).given(ownedScheduler).getScheduledExecutor();
+		try {
+			PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, ownedScheduler,
+					Duration.ofDays(1), ShutdownOperation.NONE);
+			ScheduledExecutorService executor = executors.get(0);
+			assertThat(executor.submit(() -> Thread.currentThread().isDaemon()).get(10, TimeUnit.SECONDS)).isTrue();
+			then(this.pushGateway).should().pushAdd();
+			manager.shutdown();
+			then(ownedScheduler).should().shutdown();
+			assertThat(executor.isShutdown()).isTrue();
+			assertThat(executor.awaitTermination(10, TimeUnit.SECONDS)).isTrue();
+		}
+		finally {
+			executors.forEach(ScheduledExecutorService::shutdownNow);
+		}
 	}
 
 	@Test
-	void shutdownWhenDoesNotOwnSchedulerDoesNotShutDownScheduler() {
-		ThreadPoolTaskScheduler otherScheduler = givenScheduleAtFixedRateWillReturnFuture(
-				mock(ThreadPoolTaskScheduler.class));
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, otherScheduler,
-				this.pushRate, null);
-		manager.shutdown();
-		then(otherScheduler).should(never()).shutdown();
+	void shutdownWhenDoesNotOwnSchedulerDoesNotShutDownScheduler() throws Exception {
+		ThreadPoolTaskScheduler otherScheduler = spy(new ThreadPoolTaskScheduler());
+		otherScheduler.initialize();
+		try {
+			PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, otherScheduler,
+					Duration.ofDays(1), ShutdownOperation.NONE);
+			manager.shutdown();
+			then(otherScheduler).should(never()).shutdown();
+			ScheduledExecutorService executor = otherScheduler.getScheduledExecutor();
+			assertThat(executor.isShutdown()).isFalse();
+			assertThat(executor.submit(() -> "running").get(10, TimeUnit.SECONDS)).isEqualTo("running");
+		}
+		finally {
+			otherScheduler.shutdown();
+		}
 	}
 
 	@Test

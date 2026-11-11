@@ -18,7 +18,7 @@ You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.t
 * `MOCK`(Default) : Loads a web javadoc:org.springframework.context.ApplicationContext[] and provides a mock web environment.
 Embedded servers are not started when using this annotation.
 If a web environment is not available on your classpath, this mode transparently falls back to creating a regular non-web javadoc:org.springframework.context.ApplicationContext[].
-It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc`, javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation]], or javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation]] for mock-based testing of your web application.
+It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc`], javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation], or javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation] for mock-based testing of your web application.
 * `RANDOM_PORT`: Loads a javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] and provides a real web environment.
 Embedded servers are started and listen on a random port.
 * `DEFINED_PORT`: Loads a javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] and provides a real web environment.
@@ -231,6 +231,11 @@ include-code::MyJmxTests[]
 == Using Observations
 
 If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing[format=annotation] from `spring-boot-micrometer-tracing-test` or with javadoc:org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics[format=annotation] from `spring-boot-micrometer-metrics-test`, it auto-configures an javadoc:io.micrometer.observation.ObservationRegistry[].
+
+NOTE: The javadoc:org.springframework.test.web.servlet.client.RestTestClient[] and javadoc:org.springframework.test.web.reactive.server.WebTestClient[] that are auto-configured for injection in your tests are part of the test harness and are not instrumented.
+Only the observations of the application itself are recorded: test requests do not show up in client metrics and do not become the root of a trace.
+To test how your application handles an incoming trace, send the request with a known trace context, such as a https://www.w3.org/TR/trace-context/#traceparent-header[W3C `traceparent` header].
+The propagation formats that your application accepts are configured with configprop:management.tracing.propagation.consume[].
 
 
 

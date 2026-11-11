@@ -1,23 +1,12 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,29 +127,36 @@ public class BasicJsonParser extends AbstractJsonParser {
 		while (index < json.length()) {
 			char ch = json.charAt(index);
 			if (tracking.in(Tracked.ESCAPE)) {
-				build.append(ch);
-				index++;
+				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
+					build.append(ch);
+					index++;
+				}
+				else {
+					index += unescape(json, index, build);
+				}
 				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
-			switch (ch) {
-				case '{' -> tracking.update(Tracked.OBJECT, +1);
-				case '}' -> tracking.update(Tracked.OBJECT, -1);
-				case '[' -> tracking.update(Tracked.LIST, +1);
-				case ']' -> tracking.update(Tracked.LIST, -1);
-				case '"' -> tracking.toggle(Tracked.VALUE);
+			if (ch == '"') {
+				tracking.toggle(Tracked.VALUE);
+			}
+			else if (!tracking.in(Tracked.VALUE)) {
+				switch (ch) {
+					case '{' -> tracking.update(Tracked.OBJECT, +1);
+					case '}' -> tracking.update(Tracked.OBJECT, -1);
+					case '[' -> tracking.update(Tracked.LIST, +1);
+					case ']' -> tracking.update(Tracked.LIST, -1);
+				}
 			}
 			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
-				list.add(build.toString());
+				list.add(build.toString().trim());
 				build.setLength(0);
 			}
 			else if (ch == '\\') {
 				if (tracking.in(Tracked.OBJECT, Tracked.LIST)) {
 					build.append(ch);
 				}
-				else {
-					tracking.set(Tracked.ESCAPE, 1);
-				}
+				tracking.set(Tracked.ESCAPE, 1);
 			}
 			else {
 				build.append(ch);
@@ -171,6 +167,23 @@ public class BasicJsonParser extends AbstractJsonParser {
 			list.add(build.toString().trim());
 		}
 		return list;
+	}
+
+	private static int unescape(String json, int index, StringBuilder build) {
+		char ch = json.charAt(index);
+		switch (ch) {
+			case 'b' -> build.append('\b');
+			case 'f' -> build.append('\f');
+			case 'n' -> build.append('\n');
+			case 'r' -> build.append('\r');
+			case 't' -> build.append('\t');
+			case 'u' -> {
+				build.append((char) HexFormat.fromHexDigits(json, index + 1, index + 5));
+				return 5;
+			}
+			default -> build.append(ch);
+		}
+		return 1;
 	}
 
 	private static final class Tracking {

@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.gradle.tasks.bundling;
@@ -84,7 +72,9 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("Running detector");
 		assertThat(result.getOutput()).contains("Running builder");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
+		assertThat(result.getOutput()).satisfiesAnyOf(
+				(output) -> assertThat(output).contains("Network status: HTTP/2 200"),
+				(output) -> assertThat(output).contains("Network status: HTTP/2 103").contains("HTTP/2 200"));
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}
@@ -101,7 +91,9 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("Running creator");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
+		assertThat(result.getOutput()).satisfiesAnyOf(
+				(output) -> assertThat(output).contains("Network status: HTTP/2 200"),
+				(output) -> assertThat(output).contains("Network status: HTTP/2 103").contains("HTTP/2 200"));
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}

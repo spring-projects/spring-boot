@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.json;
@@ -152,6 +140,26 @@ class JsonValueWriterTests {
 		assertThat(write(Long.valueOf(123L))).isEqualTo("123");
 		assertThat(write(Double.valueOf(2.0))).isEqualTo("2.0");
 		assertThat(write(Float.valueOf(2.0f))).isEqualTo("2.0");
+	}
+
+	@Test
+	void writeWhenNotANumber() {
+		assertThat(write(Double.NaN)).isEqualTo(quoted("NaN"));
+		assertThat(write(Float.NaN)).isEqualTo(quoted("NaN"));
+		assertThat(write(new double[] { 1.0, Double.NaN })).isEqualTo("""
+				[1.0,"NaN"]""");
+	}
+
+	@Test
+	void writeWhenPositiveInfinity() {
+		assertThat(write(Double.POSITIVE_INFINITY)).isEqualTo(quoted("Infinity"));
+		assertThat(write(Float.POSITIVE_INFINITY)).isEqualTo(quoted("Infinity"));
+	}
+
+	@Test
+	void writeWhenNegativeInfinity() {
+		assertThat(write(Double.NEGATIVE_INFINITY)).isEqualTo(quoted("-Infinity"));
+		assertThat(write(Float.NEGATIVE_INFINITY)).isEqualTo(quoted("-Infinity"));
 	}
 
 	@Test

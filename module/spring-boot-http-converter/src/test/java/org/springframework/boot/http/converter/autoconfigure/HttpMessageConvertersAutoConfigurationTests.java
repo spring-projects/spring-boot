@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.http.converter.autoconfigure;
@@ -314,6 +302,47 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbIsAvailable() {
+		allOptionsRunner()
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.run((context) -> {
+				assertConverterIsRegistered(context, JsonbHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+			});
+	}
+
+	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbApiIsAvailable() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
+			.withBean(Json.class, () -> Json.Default)
+			.run((context) -> {
+				assertConverterIsNotRegistered(context, JsonbHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+			});
+	}
+
+	@Test
+	void kotlinSerializationUsesUnrestrictedPredicateWhenNoOtherJsonConverterIsAvailable() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName(),
+					Jsonb.class.getPackage().getName()))
+			.withBean(Json.class, () -> Json.Default)
+			.run((context) -> {
+				KotlinSerializationJsonHttpMessageConverter converter = findConverter(getServerConverters(context),
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isTrue();
+			});
+	}
+
+	@Test
 	void stringDefaultConverter() {
 		this.contextRunner.run((context) -> assertConverterIsRegistered(context, StringHttpMessageConverter.class));
 	}
@@ -328,6 +357,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 				.filteredOn((converter) -> converter instanceof StringHttpMessageConverter)
 				.hasSize(2);
 		});
+	}
+
+	@Test
+	void stringCustomConverterWithCustomizer() {
+		this.contextRunner.withUserConfiguration(CustomStringConverterConfig.class)
+			.run((context) -> assertConverterIsRegistered(context, CustomStringConverter.class));
 	}
 
 	@Test
@@ -442,6 +477,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void defaultClientConvertersCustomizerHasOrderZero() {
 		defaultConvertersCustomizerHasOrderZero(DefaultClientHttpMessageConvertersCustomizer.class);
+	}
+
+	@Test
+	void stringConvertersCustomizerHasOrderZero() {
+		defaultConvertersCustomizerHasOrderZero(
+				HttpMessageConvertersAutoConfiguration.StringHttpMessageConvertersCustomizer.class);
 	}
 
 	private <T> void defaultConvertersCustomizerHasOrderZero(Class<T> customizerType) {
@@ -683,6 +724,21 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomStringConverterConfig {
+
+		@Bean
+		ServerHttpMessageConvertersCustomizer stringServerCustomizer() {
+			return (configurer) -> configurer.withStringConverter(new CustomStringConverter());
+		}
+
+		@Bean
+		ClientHttpMessageConvertersCustomizer stringClientCustomizer() {
+			return (configurer) -> configurer.withStringConverter(new CustomStringConverter());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TypeConstrainedConverterConfiguration {
 
 		@Bean
@@ -715,6 +771,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 				throws IOException, HttpMessageNotWritableException {
 
 		}
+
+	}
+
+	static class CustomStringConverter extends StringHttpMessageConverter {
 
 	}
 

@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot;
@@ -660,6 +648,58 @@ class SpringApplicationTests {
 		InOrder commandLineRunnerOrder = Mockito.inOrder(eventListener, commandLineRunner);
 		commandLineRunnerOrder.verify(commandLineRunner).run();
 		commandLineRunnerOrder.verify(eventListener).onApplicationEvent(any(ApplicationReadyEvent.class));
+	}
+
+	@Test
+	void runnersAreCalledOnceWhenContextIsRefreshed() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isTrue();
+		assertThat(runnerCalls).hasValue(1);
+	}
+
+	@Test
+	void runnersAreNotCalledWhenContextIsClosedImmediatelyAfterRefresh() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class) {
+
+			@Override
+			protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
+				context.close();
+			}
+
+		};
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
+		application.addListeners(listener);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isFalse();
+		assertThat(runnerCalls).hasValue(0);
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+	}
+
+	@Test
+	void runnersAreNotCalledWhenContextIsClosedWhileHandlingApplicationStartedEvent() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.addListeners((ApplicationStartedEvent event) -> event.getApplicationContext().close());
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ApplicationListener<SpringApplicationEvent> listener = mock();
+		application.addListeners(listener);
+		AtomicInteger runnerCalls = registerCountingRunner(application);
+		this.context = application.run();
+		assertThat(this.context.isActive()).isFalse();
+		assertThat(runnerCalls).hasValue(0);
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+	}
+
+	private AtomicInteger registerCountingRunner(SpringApplication application) {
+		AtomicInteger calls = new AtomicInteger();
+		ApplicationRunner runner = (args) -> calls.incrementAndGet();
+		application.addInitializers((context) -> context.getBeanFactory().registerSingleton("runner", runner));
+		return calls;
 	}
 
 	@Test
@@ -1505,6 +1545,24 @@ class SpringApplicationTests {
 			.untilAsserted(
 					() -> assertThat(getCurrentThreads()).filteredOn((thread) -> thread.getName().equals("keep-alive"))
 						.isEmpty());
+	}
+
+	@Test
+	void shouldNotStopKeepAliveThreadIfChildContextIsClosed() throws InterruptedException {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setKeepAlive(true);
+		this.context = application.run();
+		Thread keepAlive = getCurrentThreads().stream()
+			.filter((thread) -> thread.getName().equals("keep-alive"))
+			.findFirst()
+			.orElseThrow();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(this.context);
+		child.refresh();
+		child.close();
+		keepAlive.join(250);
+		assertThat(keepAlive.isAlive()).isTrue();
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(

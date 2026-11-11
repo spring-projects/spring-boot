@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.logging.log4j2;
@@ -292,6 +280,24 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("doesnotexist");
 		assertThat(configuration).isNull();
+	}
+
+	@Test
+	void getLoggerConfigurationForRootLogger() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configuration)
+			.isEqualTo(new LoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.INFO, LogLevel.INFO));
+	}
+
+	@Test
+	void getLoggerConfigurationsShouldReturnRootLoggerWithConfiguredLevel() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
+		assertThat(configurations.get(0))
+			.isEqualTo(new LoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.INFO, LogLevel.INFO));
 	}
 
 	@Test

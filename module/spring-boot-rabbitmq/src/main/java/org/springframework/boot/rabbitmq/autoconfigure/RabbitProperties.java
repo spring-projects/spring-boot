@@ -1,24 +1,11 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.rabbitmq.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -33,6 +20,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.retry.RetryPolicySettings;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -58,10 +46,6 @@ import org.springframework.util.unit.DataSize;
  */
 @ConfigurationProperties("spring.rabbitmq")
 public class RabbitProperties {
-
-	private static final int DEFAULT_PORT = 5672;
-
-	private static final int DEFAULT_PORT_SECURE = 5671;
 
 	private static final int DEFAULT_STREAM_PORT = 5552;
 
@@ -101,6 +85,8 @@ public class RabbitProperties {
 	 * are ignored.
 	 */
 	private @Nullable List<String> addresses;
+
+	private @Nullable List<RabbitUri> uris;
 
 	/**
 	 * Mode used to shuffle configured addresses.
@@ -158,24 +144,21 @@ public class RabbitProperties {
 
 	private final Stream stream = new Stream();
 
-	private @Nullable List<Address> parsedAddresses;
-
-	public String getHost() {
-		return this.host;
-	}
-
 	/**
 	 * Returns the host from the first address, or the configured host if no addresses
 	 * have been set.
 	 * @return the host
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getHost()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public String determineHost() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getHost();
-		}
-		return this.parsedAddresses.get(0).host;
+		return primaryUri().determineHost(getHost());
+	}
+
+	public String getHost() {
+		return this.host;
 	}
 
 	public void setHost(String host) {
@@ -190,18 +173,16 @@ public class RabbitProperties {
 	 * Returns the port from the first address, or the configured port if no addresses
 	 * have been set.
 	 * @return the port
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getPort()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public int determinePort() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			Integer port = getPort();
-			if (port != null) {
-				return port;
-			}
-			return Boolean.TRUE.equals(getSsl().getEnabled()) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
+		if (CollectionUtils.isEmpty(this.uris) && this.port != null) {
+			return this.port;
 		}
-		return this.parsedAddresses.get(0).port;
+		return primaryUri().determineOrDefaultPort(this.ssl.enabledOrBundleConfigured());
 	}
 
 	public void setPort(@Nullable Integer port) {
@@ -216,75 +197,66 @@ public class RabbitProperties {
 	 * Returns the configured addresses or a single address ({@code host:port}) created
 	 * from the configured host and port if no addresses have been set.
 	 * @return the addresses
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public List<String> determineAddresses() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+		if (CollectionUtils.isEmpty(this.uris)) {
 			if (this.host.contains(",")) {
 				throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.host", this.host,
 						"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.rabbitmq.addresses' instead.");
 			}
 			return List.of(this.host + ":" + determinePort());
 		}
-		List<String> addressStrings = new ArrayList<>();
-		for (Address parsedAddress : this.parsedAddresses) {
-			addressStrings.add(parsedAddress.host + ":" + parsedAddress.port);
-		}
-		return addressStrings;
+		return this.uris.stream()
+			.map((rabbitUri) -> rabbitUri.host() + ":"
+					+ rabbitUri.determineOrDefaultPort(this.ssl.enabledOrBundleConfigured()))
+			.toList();
 	}
 
 	public void setAddresses(List<String> addresses) {
 		this.addresses = addresses;
-		this.parsedAddresses = parseAddresses(addresses);
-	}
-
-	private List<Address> parseAddresses(List<String> addresses) {
-		List<Address> parsedAddresses = new ArrayList<>();
-		for (String address : addresses) {
-			parsedAddresses.add(new Address(address, Boolean.TRUE.equals(getSsl().getEnabled())));
-		}
-		return parsedAddresses;
-	}
-
-	public String getUsername() {
-		return this.username;
+		this.uris = addresses.stream().map(RabbitUri::of).toList();
 	}
 
 	/**
 	 * If addresses have been set and the first address has a username it is returned.
 	 * Otherwise returns the result of calling {@code getUsername()}.
 	 * @return the username
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getUsername()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public String determineUsername() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return this.username;
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.username != null) ? address.username : this.username;
+		String username = primaryUri().determineUsername(getUsername());
+		Assert.state(username != null, "Unable to determine username");
+		return username;
+	}
+
+	public String getUsername() {
+		return this.username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return this.password;
-	}
-
 	/**
 	 * If addresses have been set and the first address has a password it is returned.
 	 * Otherwise returns the result of calling {@code getPassword()}.
 	 * @return the password or {@code null}
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getPassword()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public @Nullable String determinePassword() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getPassword();
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.password != null) ? address.password : getPassword();
+		return primaryUri().determinePassword(getPassword());
+	}
+
+	public String getPassword() {
+		return this.password;
 	}
 
 	public void setPassword(String password) {
@@ -295,23 +267,21 @@ public class RabbitProperties {
 		return this.ssl;
 	}
 
-	public @Nullable String getVirtualHost() {
-		return this.virtualHost;
-	}
-
 	/**
 	 * If addresses have been set and the first address has a virtual host it is returned.
 	 * Otherwise returns the result of calling {@code getVirtualHost()}.
 	 * @return the virtual host or {@code null}
+	 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 	 * @see #setAddresses(List)
 	 * @see #getVirtualHost()
 	 */
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public @Nullable String determineVirtualHost() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getVirtualHost();
-		}
-		Address address = this.parsedAddresses.get(0);
-		return (address.virtualHost != null) ? address.virtualHost : getVirtualHost();
+		return primaryUri().determineVirtualHost(getVirtualHost());
+	}
+
+	public @Nullable String getVirtualHost() {
+		return this.virtualHost;
 	}
 
 	public void setVirtualHost(@Nullable String virtualHost) {
@@ -398,6 +368,10 @@ public class RabbitProperties {
 		return this.stream;
 	}
 
+	private RabbitUri primaryUri() {
+		return (!CollectionUtils.isEmpty(this.uris)) ? this.uris.get(0) : RabbitUri.NONE;
+	}
+
 	public class Ssl {
 
 		private static final String SUN_X509 = "SunX509";
@@ -476,16 +450,17 @@ public class RabbitProperties {
 		 * Returns whether SSL is enabled from the first address, or the configured ssl
 		 * enabled flag if no addresses have been set.
 		 * @return whether ssl is enabled
+		 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
 		 * @see #setAddresses(List)
 		 * @see #getEnabled() ()
 		 */
+		@Deprecated(since = "4.2.0", forRemoval = true)
 		public boolean determineEnabled() {
-			boolean defaultEnabled = Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
-			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
-				return defaultEnabled;
-			}
-			Address address = RabbitProperties.this.parsedAddresses.get(0);
-			return address.determineSslEnabled(defaultEnabled);
+			return primaryUri().determineSecure(enabledOrBundleConfigured());
+		}
+
+		private boolean enabledOrBundleConfigured() {
+			return Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(@Nullable Boolean enabled) {
@@ -1193,92 +1168,6 @@ public class RabbitProperties {
 
 	}
 
-	private static final class Address {
-
-		private static final String PREFIX_AMQP = "amqp://";
-
-		private static final String PREFIX_AMQP_SECURE = "amqps://";
-
-		private String host;
-
-		private int port;
-
-		private @Nullable String username;
-
-		private @Nullable String password;
-
-		private @Nullable String virtualHost;
-
-		private @Nullable Boolean secureConnection;
-
-		private Address(String input, boolean sslEnabled) {
-			input = input.trim();
-			input = trimPrefix(input);
-			input = parseUsernameAndPassword(input);
-			input = parseVirtualHost(input);
-			parseHostAndPort(input, sslEnabled);
-		}
-
-		private String trimPrefix(String input) {
-			if (input.startsWith(PREFIX_AMQP_SECURE)) {
-				this.secureConnection = true;
-				return input.substring(PREFIX_AMQP_SECURE.length());
-			}
-			if (input.startsWith(PREFIX_AMQP)) {
-				this.secureConnection = false;
-				return input.substring(PREFIX_AMQP.length());
-			}
-			return input;
-		}
-
-		private String parseUsernameAndPassword(String input) {
-			String[] splitInput = StringUtils.split(input, "@");
-			if (splitInput == null) {
-				return input;
-			}
-			String credentials = splitInput[0];
-			String[] splitCredentials = StringUtils.split(credentials, ":");
-			if (splitCredentials == null) {
-				this.username = credentials;
-			}
-			else {
-				this.username = splitCredentials[0];
-				this.password = splitCredentials[1];
-			}
-			return splitInput[1];
-		}
-
-		private String parseVirtualHost(String input) {
-			int hostIndex = input.indexOf('/');
-			if (hostIndex >= 0) {
-				this.virtualHost = input.substring(hostIndex + 1);
-				if (this.virtualHost.isEmpty()) {
-					this.virtualHost = "/";
-				}
-				input = input.substring(0, hostIndex);
-			}
-			return input;
-		}
-
-		private void parseHostAndPort(String input, boolean sslEnabled) {
-			int bracketIndex = input.lastIndexOf(']');
-			int colonIndex = input.lastIndexOf(':');
-			if (colonIndex == -1 || colonIndex < bracketIndex) {
-				this.host = input;
-				this.port = (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
-			}
-			else {
-				this.host = input.substring(0, colonIndex);
-				this.port = Integer.parseInt(input.substring(colonIndex + 1));
-			}
-		}
-
-		private boolean determineSslEnabled(boolean sslEnabled) {
-			return (this.secureConnection != null) ? this.secureConnection : sslEnabled;
-		}
-
-	}
-
 	public static final class Stream {
 
 		/**
@@ -1388,7 +1277,17 @@ public class RabbitProperties {
 				return this.enabled;
 			}
 
+			/**
+			 * Determine if SSL is enabled.
+			 * @return if SSL is enabled
+			 * @deprecated since 4.2.0 for removal in 4.4.0 with no replacement
+			 */
+			@Deprecated(since = "4.2.0", forRemoval = true)
 			public boolean determineEnabled() {
+				return enabledOrBundleConfigured();
+			}
+
+			boolean enabledOrBundleConfigured() {
 				return Boolean.TRUE.equals(getEnabled()) || StringUtils.hasText(this.bundle);
 			}
 

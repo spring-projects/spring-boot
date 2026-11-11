@@ -79,25 +79,6 @@
   ],
   "hints": [
     {
-      "name": "spring.mvc.converters.preferred-json-mapper",
-      "values": [
-        {
-          "value": "gson"
-        },
-        {
-          "value": "jackson"
-        },
-        {
-          "value": "jsonb"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
       "name": "spring.mvc.format.date",
       "values": [
         {

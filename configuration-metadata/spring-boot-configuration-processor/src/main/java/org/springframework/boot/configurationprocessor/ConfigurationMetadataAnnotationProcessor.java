@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.configurationprocessor;
@@ -357,13 +345,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			.toString()
 			.toLowerCase(Locale.ENGLISH);
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
-		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
+		this.metadataCollector.addOrKeepEarliest(ItemMetadata.newGroup(endpointKey, type, type, null));
 		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
 				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
-		this.metadataCollector.add(accessProperty,
+		this.metadataCollector.addOrKeepEarliest(accessProperty,
 				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
 		if (hasMainReadOperation(element)) {
-			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
+			this.metadataCollector.addOrKeepEarliest(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
 					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
 		}
 	}

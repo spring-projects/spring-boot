@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jdbc.docker.compose;
@@ -39,14 +27,38 @@ class MariaDbEnvironmentTests {
 	void createWhenHasMariadbRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true")))
-			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported");
+			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported without MARIADB_USER and MARIADB_PASSWORD");
 	}
 
 	@Test
 	void createWhenHasMysqlRandomRootPasswordThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new MariaDbEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true")))
-			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+			.withMessage("MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
+	}
+
+	@Test
+	void createWhenHasMariadbRandomRootPasswordAndMariadbUserWithoutPasswordThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new MariaDbEnvironment(
+					Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true", "MARIADB_USER", "myself", "MARIADB_DATABASE", "db")))
+			.withMessage("MARIADB_RANDOM_ROOT_PASSWORD is not supported without MARIADB_USER and MARIADB_PASSWORD");
+	}
+
+	@Test
+	void getUsernameAndPasswordWhenHasMariadbRandomRootPasswordAndMariadbUserAndPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_RANDOM_ROOT_PASSWORD", "true",
+				"MARIADB_USER", "myself", "MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
+		assertThat(environment.getUsername()).isEqualTo("myself");
+		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getUsernameAndPasswordWhenHasMysqlRandomRootPasswordAndMysqlUserAndPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MYSQL_RANDOM_ROOT_PASSWORD", "true",
+				"MYSQL_USER", "myself", "MYSQL_PASSWORD", "secret", "MYSQL_DATABASE", "db"));
+		assertThat(environment.getUsername()).isEqualTo("myself");
+		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test

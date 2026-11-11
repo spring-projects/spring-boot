@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.tomcat.reactive;
@@ -25,6 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Server;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
@@ -43,6 +32,7 @@ import org.springframework.boot.tomcat.TomcatAccess;
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -165,6 +155,38 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
 			.withMessageContaining("'protocolHandlerCustomizers' must not be null");
+	}
+
+	@Test
+	@SuppressWarnings("NullAway") // Test null check
+	void setNullServerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
+			.withMessageContaining("'serverCustomizers' must not be null");
+	}
+
+	@Test
+	@SuppressWarnings("NullAway") // Test null check
+	void addNullServerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> factory.addServerCustomizers((TomcatServerCustomizer[]) null))
+			.withMessageContaining("'serverCustomizers' must not be null");
+	}
+
+	@Test
+	void tomcatServerCustomizersShouldBeInvoked() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		HttpHandler handler = mock(HttpHandler.class);
+		TomcatServerCustomizer[] customizers = new TomcatServerCustomizer[4];
+		Arrays.setAll(customizers, (i) -> mock(TomcatServerCustomizer.class));
+		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.addServerCustomizers(customizers[2], customizers[3]);
+		this.webServer = factory.getWebServer(handler);
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (TomcatServerCustomizer customizer : customizers) {
+			then(customizer).should(ordered).customize(any(Server.class));
+		}
 	}
 
 	@Test

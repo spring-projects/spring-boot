@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.rabbitmq.autoconfigure;
@@ -23,6 +11,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
@@ -947,6 +937,26 @@ class RabbitAutoConfigurationTests {
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
+			});
+	}
+
+	@Test
+	void enableSslWithBundleAppliesSslOptions() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:org/springframework/boot/rabbitmq/autoconfigure/test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers=TLS_AES_128_GCM_SHA256",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols=TLSv1.3")
+			.run((context) -> {
+				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+				SSLSocket socket = mock(SSLSocket.class);
+				SSLParameters socketParameters = new SSLParameters();
+				given(socket.getSSLParameters()).willReturn(socketParameters);
+				rabbitConnectionFactory.getSocketConfigurator().configure(socket);
+				assertThat(socketParameters.getCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+				assertThat(socketParameters.getProtocols()).containsExactly("TLSv1.3");
+				assertThat(socketParameters.getEndpointIdentificationAlgorithm()).isEqualTo("HTTPS");
 			});
 	}
 

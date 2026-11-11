@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.amqp.rabbitmq.autoconfigure;
@@ -19,6 +7,7 @@ package org.springframework.boot.amqp.rabbitmq.autoconfigure;
 import javax.net.ssl.SSLContext;
 
 import com.rabbitmq.client.amqp.Connection;
+import com.rabbitmq.client.amqp.ConnectionSettings.TlsSettings;
 import com.rabbitmq.client.amqp.CredentialsProvider;
 import com.rabbitmq.client.amqp.Environment;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
@@ -40,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -79,7 +69,11 @@ public final class AmqpRabbitAutoConfiguration {
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		if (sslBundle != null) {
 			SSLContext sslContext = sslBundle.createSslContext();
-			environmentConnectionSettings.tls().sslContext(sslContext);
+			TlsSettings<?> tls = environmentConnectionSettings.tls().sslContext(sslContext);
+			SslOptions options = sslBundle.getOptions();
+			map.from(options::getCiphers).to(tls::ciphers);
+			map.from(options::getEnabledProtocols)
+				.to((protocols) -> tls.sslEngineCustomizer((engine) -> engine.setEnabledProtocols(protocols)));
 		}
 		AmqpEnvironmentBuilder builder = environmentConnectionSettings.environmentBuilder();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));

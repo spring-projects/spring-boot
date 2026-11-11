@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.json;
@@ -74,6 +62,37 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void stringContainingOpeningBrace() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"{\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "{");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void stringContainingOpeningBracket() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"[\",\"bar\":\"baz\"}");
+		assertThat(map).hasSize(2);
+		assertThat(map).containsEntry("foo", "[");
+		assertThat(map).containsEntry("bar", "baz");
+	}
+
+	@Test
+	void listWithStringContainingOpeningBracket() {
+		List<Object> list = this.parser.parseList("[\"[\",\"baz\"]");
+		assertThat(list).containsExactly("[", "baz");
+	}
+
+	@Test
+	void stringContainingClosingBraceWithNestedMap() {
+		Map<String, Object> map = this.parser.parseMap("{\"a\":\"}\",\"b\":{\"c\":\"d\",\"e\":\"f\"}}");
+		assertThat(map).containsEntry("a", "}");
+		assertThat(map.get("b")).asInstanceOf(InstanceOfAssertFactories.MAP)
+			.containsEntry("c", "d")
+			.containsEntry("e", "f");
+	}
+
+	@Test
 	void emptyMap() {
 		Map<String, Object> map = this.parser.parseMap("{}");
 		assertThat(map).isEmpty();
@@ -92,32 +111,76 @@ abstract class AbstractJsonParserTests {
 		assertThat(list).isEmpty();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void listOfMaps() {
 		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertThat(list).hasSize(2);
-		assertThat(((Map<String, Object>) list.get(1))).hasSize(2);
+		assertThat(list.get(1)).asInstanceOf(InstanceOfAssertFactories.MAP).hasSize(2);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void mapOfLists() {
 		Map<String, Object> map = this.parser
 			.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void nestedLeadingAndTrailingWhitespace() {
 		Map<String, Object> map = this.parser
 			.parseMap(" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
 		assertThat(map).hasSize(1);
-		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST)
+			.hasSize(2)
+			.allMatch(Map.class::isInstance);
+	}
+
+	@Test
+	void listWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[\"foo\" ,\"bar\"]");
+		assertThat(list).containsExactly("foo", "bar");
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[1 ,2]");
+		assertThat(list).hasSize(2);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2]"));
+	}
+
+	@Test
+	void listOfNumbersWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[1, 2, 3]");
+		assertThat(list).hasSize(3);
+		assertThat(list).extracting((element) -> ((Number) element).longValue()).containsExactly(1L, 2L, 3L);
+		assertThat(list).isEqualTo(this.parser.parseList("[1,2,3]"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceAfterComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"}, {\"foo\":\"baz\"}, {\"foo\":\"qux\"}]");
+		assertThat(list).hasSize(3);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+		assertThat(list.get(2)).isEqualTo(Map.of("foo", "qux"));
+	}
+
+	@Test
+	void listOfMapsWithWhitespaceBeforeComma() {
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\"} ,{\"foo\":\"baz\"}]");
+		assertThat(list).hasSize(2);
+		assertThat(list.get(0)).isEqualTo(Map.of("foo", "bar"));
+		assertThat(list.get(1)).isEqualTo(Map.of("foo", "baz"));
+	}
+
+	@Test
+	void mapOfListsWithWhitespaceBeforeComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":[\"bar\" ,\"baz\"]}");
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly("bar", "baz");
 	}
 
 	@Test
@@ -197,6 +260,38 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void escapeControlCharacters() {
+		String input = """
+				{
+				  "a": "alpha\\b\\f\\n\\r\\tbravo"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).containsEntry("a", "alpha\b\f\n\r\tbravo");
+	}
+
+	@Test
+	void escapeUnicode() {
+		String input = """
+				{
+				  "a": "alpha\\u0026bravo"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).containsEntry("a", "alpha&bravo");
+	}
+
+	@Test
+	void escapeMalformedUnicodeThrowsJsonParseException() {
+		String input = """
+				{
+				  "a": "alpha\\u"
+				}
+				""";
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseMap(input));
+	}
+
+	@Test
 	void escapeBackslashInNestedMap() {
 		String input = """
 				{
@@ -223,6 +318,19 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void escapeUnicodeInNestedMap() {
+		String input = """
+				{
+				  "outer": {
+				    "a": "alpha\\u0026bravo"
+				  }
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("outer", InstanceOfAssertFactories.MAP).containsEntry("a", "alpha&bravo");
+	}
+
+	@Test
 	void escapeBackslashInNestedList() {
 		String input = """
 				{
@@ -246,6 +354,37 @@ abstract class AbstractJsonParserTests {
 				""";
 		Map<String, Object> map = this.parser.parseMap(input);
 		assertThat(map).extractingByKey("list", InstanceOfAssertFactories.LIST).containsExactly("alpha\"");
+	}
+
+	@Test
+	void escapeDoubleQuoteInNestedMapWithSiblingEntry() {
+		String input = """
+				{
+				  "a": {
+				    "x\\"y": "v"
+				  },
+				  "c": "d"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("a", InstanceOfAssertFactories.MAP).containsEntry("x\"y", "v");
+		assertThat(map).containsEntry("c", "d");
+	}
+
+	@Test
+	void escapeDoubleQuoteInNestedListWithSiblingEntry() {
+		String input = """
+				{
+				  "a": [
+				    "x\\"y",
+				    "z"
+				  ],
+				  "c": "d"
+				}
+				""";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map).extractingByKey("a", InstanceOfAssertFactories.LIST).containsExactly("x\"y", "z");
+		assertThat(map).containsEntry("c", "d");
 	}
 
 	@Test

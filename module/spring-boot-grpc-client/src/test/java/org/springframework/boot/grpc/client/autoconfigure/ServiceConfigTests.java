@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.grpc.client.autoconfigure;
@@ -151,6 +139,24 @@ class ServiceConfigTests {
 		assertThat(loadBalancingPolicySelection.getConfig()).extracting("weightUpdatePeriodNanos")
 			.isEqualTo(Duration.ofSeconds(2).toNanos());
 		assertThat(loadBalancingPolicySelection.getConfig()).extracting("errorUtilizationPenalty").isEqualTo(0.5f);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - grpc: {}
+			""")
+	void grpcLoadBalancingWhenNoChildren() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("grpclb");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("GrpclbLoadBalancerProvider");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("mode").hasToString("ROUND_ROBIN");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("serviceName").isNull();
 	}
 
 	@Test

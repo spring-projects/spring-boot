@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jdbc.autoconfigure;
@@ -73,6 +61,27 @@ class LazyConnectionDataSourceConfigurationTests {
 				ObjectName objectName = new ObjectName(
 						"%s:type=%s,name=dataSource".formatted(uniqueDomain, HikariDataSource.class.getSimpleName()));
 				assertThat(mBeanServer.isRegistered(objectName)).isTrue();
+			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "eager", "lazy" })
+	void autoConfigurationLeavesMBeanRegistrationToHikariWhenRegisterMbeansIsSet(String connectionFetchStrategy) {
+		String uniqueDomain = UUID.randomUUID().toString();
+		String poolName = "pool-" + UUID.randomUUID();
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
+			.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default-domain=" + uniqueDomain,
+					"spring.datasource.type=" + HikariDataSource.class.getName(),
+					"spring.datasource.hikari.register-mbeans=true", "spring.datasource.hikari.pool-name=" + poolName,
+					"spring.datasource.connection-fetch=" + connectionFetchStrategy)
+			.run((context) -> {
+				context.getBean(DataSource.class).getConnection().close();
+				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+				assertThat(mBeanServer.isRegistered(new ObjectName("com.zaxxer.hikari:type=Pool (" + poolName + ")")))
+					.isTrue();
+				assertThat(mBeanServer.isRegistered(new ObjectName(
+						"%s:type=%s,name=dataSource".formatted(uniqueDomain, HikariDataSource.class.getSimpleName()))))
+					.isFalse();
 			});
 	}
 

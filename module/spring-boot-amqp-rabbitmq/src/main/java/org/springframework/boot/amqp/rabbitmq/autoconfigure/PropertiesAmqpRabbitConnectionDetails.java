@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.amqp.rabbitmq.autoconfigure;
@@ -27,6 +15,8 @@ import org.springframework.util.StringUtils;
  * Adapts {@link AmqpRabbitProperties} to {@link AmqpRabbitConnectionDetails}.
  *
  * @author Eddú Meléndez
+ * @author Mohamed Aziz Hadjkacem
+ * @author Phillip Webb
  */
 class PropertiesAmqpRabbitConnectionDetails implements AmqpRabbitConnectionDetails {
 
@@ -41,26 +31,30 @@ class PropertiesAmqpRabbitConnectionDetails implements AmqpRabbitConnectionDetai
 
 	@Override
 	public Address getAddress() {
-		String address = this.properties.determineAddress();
-		int portSeparatorIndex = address.lastIndexOf(':');
-		String host = address.substring(0, portSeparatorIndex);
-		String port = address.substring(portSeparatorIndex + 1);
-		return new Address(host, Integer.parseInt(port));
+		RabbitUri primaryUri = primaryUri();
+		boolean secure = StringUtils.hasText(this.properties.getSsl().getBundle());
+		if (RabbitUri.NONE.equals(primaryUri)) {
+			String host = this.properties.getHost();
+			Integer port = this.properties.getPort();
+			Assert.state(host != null, "Missing RabbitMQ host");
+			return new Address(host, (port != null) ? port : RabbitUri.NONE.determineOrDefaultPort(secure));
+		}
+		return new Address(primaryUri.determineHost(null), primaryUri.determineOrDefaultPort(secure));
 	}
 
 	@Override
-	public String getUsername() {
-		return this.properties.determineUsername();
+	public @Nullable String getUsername() {
+		return primaryUri().determineUsername(this.properties.getUsername());
 	}
 
 	@Override
 	public @Nullable String getPassword() {
-		return this.properties.determinePassword();
+		return primaryUri().determinePassword(this.properties.getPassword());
 	}
 
 	@Override
 	public @Nullable String getVirtualHost() {
-		return this.properties.determineVirtualHost();
+		return primaryUri().determineVirtualHost(this.properties.getVirtualHost());
 	}
 
 	@Override
@@ -71,6 +65,10 @@ class PropertiesAmqpRabbitConnectionDetails implements AmqpRabbitConnectionDetai
 			return this.sslBundles.getBundle(bundle);
 		}
 		return null;
+	}
+
+	private RabbitUri primaryUri() {
+		return RabbitUri.of(this.properties.getAddress());
 	}
 
 }

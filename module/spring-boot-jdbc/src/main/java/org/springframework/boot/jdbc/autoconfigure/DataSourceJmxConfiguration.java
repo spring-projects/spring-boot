@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jdbc.autoconfigure;
@@ -37,6 +25,7 @@ import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.util.ClassUtils;
 
 /**
  * Configures DataSource related MBeans.
@@ -48,6 +37,19 @@ import org.springframework.jmx.export.MBeanExporter;
 class DataSourceJmxConfiguration {
 
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);
+
+	private static final boolean HIKARI_PRESENT = ClassUtils.isPresent("com.zaxxer.hikari.HikariDataSource",
+			DataSourceJmxConfiguration.class.getClassLoader());
+
+	/**
+	 * Return whether the given {@link DataSource} registers its own MBeans, in which case
+	 * it should not be exposed by the {@link MBeanExporter}.
+	 * @param dataSource the data source to check
+	 * @return {@code true} if the data source registers its own MBeans
+	 */
+	static boolean registersItsOwnMBeans(DataSource dataSource) {
+		return HIKARI_PRESENT && Hikari.registersItsOwnMBeans(dataSource);
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
@@ -65,11 +67,15 @@ class DataSourceJmxConfiguration {
 		}
 
 		private void validateMBeans() {
-			HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(this.dataSource, HikariConfigMXBean.class,
-					HikariDataSource.class);
-			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
+			if (registersItsOwnMBeans(this.dataSource)) {
 				this.mBeanExporter.ifUnique((exporter) -> exporter.addExcludedBean("dataSource"));
 			}
+		}
+
+		static boolean registersItsOwnMBeans(DataSource dataSource) {
+			HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
+					HikariDataSource.class);
+			return hikariDataSource != null && hikariDataSource.isRegisterMbeans();
 		}
 
 	}

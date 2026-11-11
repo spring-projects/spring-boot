@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.configurationprocessor.fieldvalues;
@@ -74,6 +62,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("integerObjectNone")).isNull();
 		assertThat(values.get("integerObjectConst")).isEqualTo(4);
 		assertThat(values.get("charset")).isEqualTo("US-ASCII");
+		assertThat(values.get("charsetQualified")).isEqualTo("UTF-16");
 		assertThat(values.get("charsetConst")).isEqualTo("UTF-8");
 		assertThat(values.get("mimeType")).isEqualTo("text/html");
 		assertThat(values.get("mimeTypeConst")).isEqualTo("text/plain");
@@ -97,18 +86,23 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
 		assertThat(values.get("durationZero")).isEqualTo(0);
+		assertThat(values.get("durationZeroQualified")).isEqualTo(0);
+		assertThat(values.get("durationQualified")).isEqualTo("60s");
 		assertThat(values.get("dataSizeNone")).isNull();
 		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
 		assertThat(values.get("dataSizeKilobytes")).isEqualTo("10KB");
 		assertThat(values.get("dataSizeMegabytes")).isEqualTo("20MB");
 		assertThat(values.get("dataSizeGigabytes")).isEqualTo("30GB");
 		assertThat(values.get("dataSizeTerabytes")).isEqualTo("40TB");
+		assertThat(values.get("dataSizeQualified")).isEqualTo("60MB");
 		assertThat(values.get("periodNone")).isNull();
 		assertThat(values.get("periodDays")).isEqualTo("3d");
 		assertThat(values.get("periodWeeks")).isEqualTo("2w");
 		assertThat(values.get("periodMonths")).isEqualTo("10m");
 		assertThat(values.get("periodYears")).isEqualTo("15y");
 		assertThat(values.get("periodZero")).isEqualTo(0);
+		assertThat(values.get("periodZeroQualified")).isEqualTo(0);
+		assertThat(values.get("periodQualified")).isEqualTo("6w");
 		assertThat(values.get("enumNone")).isNull();
 		assertThat(values.get("enumSimple")).isEqualTo("seconds");
 		assertThat(values.get("enumQualified")).isEqualTo("hour-of-day");

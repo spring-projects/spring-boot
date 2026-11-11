@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.amqp.rabbitmq.docker.compose;
@@ -38,7 +26,7 @@ class RabbitEnvironmentTests {
 	@Test
 	void getUsernameWhenNoRabbitmqDefaultUser() {
 		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -56,7 +44,7 @@ class RabbitEnvironmentTests {
 	@Test
 	void getPasswordWhenNoRabbitmqDefaultPass() {
 		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
@@ -76,7 +64,7 @@ class RabbitEnvironmentTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_USER", null);
 		RabbitEnvironment environment = new RabbitEnvironment(env);
-		assertThat(environment.getUsername()).isEqualTo("guest");
+		assertThat(environment.getUsername()).isNull();
 	}
 
 	@Test
@@ -84,7 +72,7 @@ class RabbitEnvironmentTests {
 		Map<String, @Nullable String> env = new HashMap<>();
 		env.put("RABBITMQ_DEFAULT_PASS", null);
 		RabbitEnvironment environment = new RabbitEnvironment(env);
-		assertThat(environment.getPassword()).isEqualTo("guest");
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
@@ -94,6 +82,32 @@ class RabbitEnvironmentTests {
 		env.put("RABBITMQ_USERNAME", "me");
 		RabbitEnvironment environment = new RabbitEnvironment(env);
 		assertThat(environment.getUsername()).isEqualTo("me");
+	}
+
+	@Test
+	void getVirtualHostWhenNoRabbitmqDefaultVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Collections.emptyMap());
+		assertThat(environment.getVirtualHost()).isEqualTo("/");
+	}
+
+	@Test
+	void getVirtualHostWhenHasRabbitmqDefaultVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_DEFAULT_VHOST", "app"));
+		assertThat(environment.getVirtualHost()).isEqualTo("app");
+	}
+
+	@Test
+	void getVirtualHostWhenHasRabbitmqVhost() {
+		RabbitEnvironment environment = new RabbitEnvironment(Map.of("RABBITMQ_VHOST", "app"));
+		assertThat(environment.getVirtualHost()).isEqualTo("app");
+	}
+
+	@Test
+	void getVirtualHostWhenRabbitmqDefaultVhostHasNoValue() {
+		Map<String, @Nullable String> env = new HashMap<>();
+		env.put("RABBITMQ_DEFAULT_VHOST", null);
+		RabbitEnvironment environment = new RabbitEnvironment(env);
+		assertThat(environment.getVirtualHost()).isEqualTo("/");
 	}
 
 }

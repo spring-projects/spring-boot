@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.data.redis.autoconfigure;
@@ -158,10 +146,24 @@ class PropertiesRedisConnectionDetailsTests {
 		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
 		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setMasterreplica(masterReplica);
+		this.properties.setDatabase(5);
 		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
 		assertThat(actualMasterReplica).isNotNull();
 		assertThat(actualMasterReplica.getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+		assertThat(actualMasterReplica.getDatabase()).isEqualTo(5);
+	}
+
+	@Test
+	void masterReplicaDatabaseIsConfiguredFromUrl() {
+		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
+		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
+		this.properties.setMasterreplica(masterReplica);
+		this.properties.setUrl("redis://example.com:1234/9999");
+		this.properties.setDatabase(5);
+		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
+		assertThat(actualMasterReplica).isNotNull();
+		assertThat(actualMasterReplica.getDatabase()).isEqualTo(9999);
 	}
 
 	@Test

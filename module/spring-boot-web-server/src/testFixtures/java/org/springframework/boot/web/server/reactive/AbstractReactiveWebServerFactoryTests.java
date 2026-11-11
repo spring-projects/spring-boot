@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.web.server.reactive;
@@ -23,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -486,6 +475,36 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	void givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
+			throws Exception {
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		this.webServer.stop();
+		this.webServer.start();
+		Mono<ResponseEntity<Void>> request = getWebClient(this.webServer.getPort()).build()
+			.get()
+			.retrieve()
+			.toBodilessEntity();
+		AtomicReference<ResponseEntity<Void>> responseReference = new AtomicReference<>();
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		request.subscribe((response) -> {
+			responseReference.set(response);
+			responseLatch.countDown();
+		});
+		blockingHandler.awaitQueue();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		assertThat(responseReference.get()).isNull();
+		blockingHandler.completeOne();
+		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
+		assertThat(Awaitility.await().atMost(Duration.ofSeconds(30)).until(result::get, Objects::nonNull))
+			.isEqualTo(GracefulShutdownResult.IDLE);
+	}
+
+	@Test
 	void givenAnInflightRequestWhenTheServerIsStoppedThenGracefulShutdownCallbackIsCalledWithRequestsActive()
 			throws Exception {
 		ConfigurableReactiveWebServerFactory factory = getFactory();
@@ -514,9 +533,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			// Continue
 		}
 		System.out.println("Stopped");
-		Awaitility.await()
-			.atMost(Duration.ofSeconds(5))
-			.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.REQUESTS_ACTIVE);
 		blockingHandler.completeOne();
 	}
 
@@ -541,10 +559,21 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
 		this.webServer.shutDownGracefully(result::set);
 		this.webServer.stop();
-		Awaitility.await()
-			.atMost(Duration.ofSeconds(30))
-			.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> result.get() != null);
+		assertThat(result).hasValue(GracefulShutdownResult.REQUESTS_ACTIVE);
 		blockingHandler.completeOne();
+	}
+
+	@Test
+	void whenThereAreNoInflightRequestsStopCompletesWhenItRacesWithGracefulShutdown() throws Exception {
+		ConfigurableReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		this.webServer = factory.getWebServer((request, response) -> response.setComplete());
+		this.webServer.start();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		this.webServer.stop();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test

@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp;
@@ -107,7 +95,7 @@ final class OtlpTracingConfigurations {
 			@Override
 			public String getUrl(Transport transport) {
 				Assert.state(transport == this.properties.getTransport(),
-						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+						() -> "Requested transport %s doesn't match configured transport %s".formatted(transport,
 								this.properties.getTransport()));
 				String path = (transport == Transport.HTTP) ? "v1/traces" : null;
 				String endpoint = this.otlpProperties.resolveEndpoint(this.properties.getEndpoint(), path);
@@ -183,6 +171,8 @@ final class OtlpTracingConfigurations {
 				SslContextConfigurer sslContextConfigurer) {
 			SslBundle sslBundle = connectionDetails.getSslBundle();
 			if (sslBundle != null) {
+				Assert.state(!sslBundle.getOptions().isSpecified(),
+						"SSL options cannot be specified with OTLP tracing");
 				SSLContext sslContext = sslBundle.createSslContext();
 				X509TrustManager trustManager = extractTrustManager(sslBundle);
 				sslContextConfigurer.configure(sslContext, trustManager);

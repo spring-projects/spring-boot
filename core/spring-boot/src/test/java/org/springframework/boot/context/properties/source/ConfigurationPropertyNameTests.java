@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.context.properties.source;
@@ -163,6 +151,20 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void ofNameWhenMissingCloseBracketAtEndOfName() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("foo["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
+	void ofNameWhenOnlyMissingCloseBracket() {
+		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
+			.isThrownBy(() -> ConfigurationPropertyName.of("["))
+			.withMessageContaining("is not valid");
+	}
+
+	@Test
 	void ofNameWhenMissingOpenBracket() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
 			.isThrownBy(() -> ConfigurationPropertyName.of("bar]"))
@@ -310,6 +312,18 @@ class ConfigurationPropertyNameTests {
 	void adaptUnderscoreShouldReturnEmpty() {
 		assertThat(ConfigurationPropertyName.adapt("_", '_').isEmpty()).isTrue();
 		assertThat(ConfigurationPropertyName.adapt("_", '.').isEmpty()).isTrue();
+	}
+
+	@Test
+	void adaptWhenNameEndsWithOpenBracketShouldNotAddEmptyElement() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo[", '.');
+		assertThat(name.getNumberOfElements()).isEqualTo(1);
+		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
+	}
+
+	@Test
+	void adaptWhenNameIsOnlyAnOpenBracketShouldReturnEmpty() {
+		assertThat(ConfigurationPropertyName.adapt("[", '.').isEmpty()).isTrue();
 	}
 
 	@Test
@@ -743,6 +757,7 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo[")).isFalse();
 	}
 
 	@Test

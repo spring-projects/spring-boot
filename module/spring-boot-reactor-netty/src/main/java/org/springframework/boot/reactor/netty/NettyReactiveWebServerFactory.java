@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.reactor.netty;
@@ -60,6 +48,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private boolean useForwardHeaders;
 
 	private boolean useRfcForwardHeader;
+
+	private boolean useForwardedPrefix;
 
 	private @Nullable ReactorResourceFactory resourceFactory;
 
@@ -153,6 +143,18 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
+	 * Set if the "X-Forwarded-Prefix" header should be processed when forwarded headers
+	 * support is enabled.
+	 * @param useForwardedPrefix if the "X-Forwarded-Prefix" header should be used
+	 * @since 4.2.0
+	 * @see #setUseForwardHeaders(boolean)
+	 * @see #setUseRfcForwardHeader(boolean)
+	 */
+	public void setUseForwardedPrefix(boolean useForwardedPrefix) {
+		this.useForwardedPrefix = useForwardedPrefix;
+	}
+
+	/**
 	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
 	 */
@@ -176,10 +178,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private HttpServer configureForwardedHeaders(HttpServer server) {
 		if (this.useForwardHeaders) {
-			return server.forwarded(false, false);
+			return server.forwarded(false, this.useForwardedPrefix);
 		}
 		if (this.useRfcForwardHeader) {
-			return server.forwarded(true, false);
+			return server.forwarded(true, this.useForwardedPrefix);
 		}
 		return server.noForwarded();
 	}

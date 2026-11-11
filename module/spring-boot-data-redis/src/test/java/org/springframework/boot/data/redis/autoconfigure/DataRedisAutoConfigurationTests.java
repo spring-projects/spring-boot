@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.data.redis.autoconfigure;
@@ -217,7 +205,7 @@ class DataRedisAutoConfigurationTests {
 	@Test
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.redis.data.user:alice",
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.username:alice",
 					"spring.data.redis.password:xyz", "spring.data.redis.port:1000",
 					"spring.data.redis.ssl.enabled:false", "spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
@@ -533,6 +521,19 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithMasterReplicaAndDatabase() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.database=1",
+					"spring.data.redis.masterreplica.nodes=127.0.0.1:28319,127.0.0.1:28320")
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.getDatabase()).isOne();
+				assertThat(connectionFactory).extracting("configuration")
+					.isInstanceOf(RedisStaticMasterReplicaConfiguration.class);
+			});
+	}
+
+	@Test
 	void testRedisConfigurationWithMasterAndAuthentication() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
@@ -573,6 +574,22 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithClusterRefreshPeriodAndCustomConnectionDetails() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsClusterConfiguration.class)
+			.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
+			.run(assertClientOptions(ClusterClientOptions.class,
+					(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod()).hasSeconds(30)));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterRefreshPeriodAndClusterConfigurationBean() {
+		this.contextRunner.withUserConfiguration(RedisClusterConfig.class)
+			.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
+			.run(assertClientOptions(ClusterClientOptions.class,
+					(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod()).hasSeconds(30)));
+	}
+
+	@Test
 	void testRedisConfigurationWithClusterAdaptiveRefresh() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
@@ -584,7 +601,7 @@ class DataRedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterRefreshPeriodHasNoEffectWithNonClusteredConfiguration() {
-		this.contextRunner.withPropertyValues("spring.data.redis.cluster.refresh.period=30s")
+		this.contextRunner.withPropertyValues("spring.data.redis.lettuce.cluster.refresh.period=30s")
 			.run(assertClientOptions(ClientOptions.class,
 					(options) -> assertThat(options.getClass()).isEqualTo(ClientOptions.class)));
 	}
@@ -609,9 +626,7 @@ class DataRedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterDynamicSourcesUnspecifiedUsesDefault() {
-		this.contextRunner
-			.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-					"spring.data.redis.lettuce.cluster.refresh.dynamic-sources=")
+		this.contextRunner.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
 			.run(assertClientOptions(ClusterClientOptions.class,
 					(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources()).isTrue()));
 	}
@@ -688,6 +703,7 @@ class DataRedisAutoConfigurationTests {
 							assertThat(masterReplicationConfiguration.getUsername()).isEqualTo("user-1");
 							assertThat(masterReplicationConfiguration.getPassword().get())
 								.isEqualTo("password-1".toCharArray());
+							assertThat(masterReplicationConfiguration.getDatabase()).isOne();
 							assertThat(masterReplicationConfiguration.getNodes())
 								.map((nodeConfiguration) -> new RedisNode(nodeConfiguration.getHostName(),
 										nodeConfiguration.getPort()))
@@ -816,6 +832,16 @@ class DataRedisAutoConfigurationTests {
 			RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 			config.setHostName("foo");
 			return config;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RedisClusterConfig {
+
+		@Bean
+		RedisClusterConfiguration clusterConfiguration() {
+			return new RedisClusterConfiguration(List.of("127.0.0.1:27379", "127.0.0.1:27380"));
 		}
 
 	}
@@ -972,6 +998,11 @@ class DataRedisAutoConfigurationTests {
 				@Override
 				public MasterReplica getMasterReplica() {
 					return new MasterReplica() {
+
+						@Override
+						public int getDatabase() {
+							return 1;
+						}
 
 						@Override
 						public List<Node> getNodes() {

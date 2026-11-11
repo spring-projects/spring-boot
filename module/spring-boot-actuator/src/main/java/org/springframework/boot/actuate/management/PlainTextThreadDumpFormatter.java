@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.actuate.management;
@@ -80,7 +68,7 @@ class PlainTextThreadDumpFormatter {
 		writer.printf("\tat %s%n", element.toString());
 		LockInfo lockInfo = info.getLockInfo();
 		if (firstElement && lockInfo != null) {
-			if (element.getClassName().equals(Object.class.getName()) && element.getMethodName().equals("wait")) {
+			if (isObjectWait(element)) {
 				writer.printf("\t- waiting on %s%n", format(lockInfo));
 			}
 			else {
@@ -95,6 +83,11 @@ class PlainTextThreadDumpFormatter {
 			}
 		}
 		writeMonitors(writer, lockedMonitors);
+	}
+
+	private boolean isObjectWait(StackTraceElement element) {
+		return element.getClassName().equals(Object.class.getName())
+				&& (element.getMethodName().equals("wait") || element.getMethodName().equals("wait0"));
 	}
 
 	private String format(LockInfo lockInfo) {

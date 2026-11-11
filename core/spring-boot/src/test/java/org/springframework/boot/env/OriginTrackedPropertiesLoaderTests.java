@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.env;
@@ -19,6 +7,7 @@ package org.springframework.boot.env;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.jspecify.annotations.Nullable;
@@ -188,6 +177,17 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	void getPropertyWithEscapedCommentPrefixCharacter() throws IOException {
+		String content = "\\#hash-prefixed=hash\n\\!bang-prefixed=bang";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
+		assertThat(loaded).hasSize(1);
+		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
+		assertThat(map).containsOnlyKeys("#hash-prefixed", "!bang-prefixed");
+		assertThat(getValue(map.get("#hash-prefixed"))).isEqualTo("hash");
+		assertThat(getValue(map.get("!bang-prefixed"))).isEqualTo("bang");
+	}
+
+	@Test
 	void getMultiline() {
 		OriginTrackedValue value = getFromFirst("test-multiline");
 		assertThat(getValue(value)).isEqualTo("ab\\c");
@@ -265,6 +265,32 @@ class OriginTrackedPropertiesLoaderTests {
 				.load(null);
 			assertThat(loaded).hasSize(2);
 		}
+	}
+
+	@Test
+	void loadWhenCommentEndsWithBackslashLoadsFollowingProperties() throws IOException {
+		String content = "#\\\nkey=value";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
+		assertThat(loaded).hasSize(1);
+		Map<String, OriginTrackedValue> map = loaded.get(0).asMap();
+		assertThat(map).containsOnlyKeys("key");
+		assertThat(getValue(map.get("key"))).isEqualTo("value");
+	}
+
+	@Test
+	void loadWhenCommentWithExclamationPrefixEndsWithBackslashLoadsFollowingProperties() throws IOException {
+		String content = "!\\\nkey=value";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
+		assertThat(loaded).hasSize(1);
+		assertThat(loaded.get(0).asMap()).containsOnlyKeys("key");
+	}
+
+	@Test
+	void loadWhenDocumentSeparatorEndsWithBackslashLoadsSingleDocument() throws IOException {
+		String content = "a=a\n#---\\\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
+		assertThat(loaded).hasSize(1);
+		assertThat(loaded.get(0).asMap()).containsOnlyKeys("a", "b");
 	}
 
 	@Test

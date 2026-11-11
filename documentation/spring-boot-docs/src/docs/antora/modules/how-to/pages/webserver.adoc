@@ -602,6 +602,17 @@ server:
       header-format: "standard"
 ----
 
+The `"X-Forwarded-Prefix"` header is ignored by default, whichever header format is used.
+If your proxy sets it and you want it to determine the context path of the request, enable it as follows:
+
+[configprops,yaml]
+----
+server:
+  netty:
+    forwarded-headers:
+      use-forwarded-prefix: true
+----
+
 For more specific options, you can switch off the forwarded configuration (using `server.forward-headers-strategy=NONE`) and directly use `reactor.netty.http.server.HttpServer` forwarded header support to change the HTTP configuration.
 
 

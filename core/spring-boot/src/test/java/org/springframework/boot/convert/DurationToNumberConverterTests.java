@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.convert;
@@ -31,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DurationToNumberConverter}.
  *
  * @author Phillip Webb
+ * @author Raunak
  */
 class DurationToNumberConverterTests {
 
@@ -52,6 +41,16 @@ class DurationToNumberConverterTests {
 		Byte converted = (Byte) conversionService.convert(Duration.ofSeconds(1),
 				MockDurationTypeDescriptor.get(ChronoUnit.SECONDS, null), TypeDescriptor.valueOf(Byte.class));
 		assertThat(converted).isEqualTo((byte) 1);
+	}
+
+	@ConversionServiceTest
+	void convertWithMicrosUnitShouldSupportFullLongRange(ConversionService conversionService) {
+		for (long micros : new long[] { Long.MIN_VALUE, Long.MAX_VALUE }) {
+			Duration duration = Duration.of(micros, ChronoUnit.MICROS);
+			Long converted = (Long) conversionService.convert(duration,
+					MockDurationTypeDescriptor.get(ChronoUnit.MICROS, null), TypeDescriptor.valueOf(Long.class));
+			assertThat(converted).isEqualTo(micros);
+		}
 	}
 
 	static Stream<? extends Arguments> conversionServices() {

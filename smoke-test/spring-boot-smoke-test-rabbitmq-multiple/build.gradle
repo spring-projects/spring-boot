@@ -1,0 +1,31 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ */
+
+plugins {
+	id "java"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot smoke test using RabbitMQ with both AMQP 0.9 and AMQP 1.0"
+
+dependencies {
+	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-amqp-rabbitmq"))
+	implementation(project(":starter:spring-boot-starter-rabbitmq"))
+
+	dockerTestImplementation(project(":starter:spring-boot-starter-actuator-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-amqp-rabbitmq-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-rabbitmq-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-rabbitmq")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}

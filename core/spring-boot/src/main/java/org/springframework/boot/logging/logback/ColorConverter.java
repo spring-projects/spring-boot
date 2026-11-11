@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.logging.logback;
@@ -33,6 +21,7 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Logback {@link CompositeConverter} to color output using the {@link AnsiOutput} class.
@@ -43,55 +32,65 @@ import org.springframework.boot.ansi.AnsiStyle;
  * {@code reverse}).
  *
  * @author Phillip Webb
+ * @author Jan Mohr
  * @since 1.0.0
  */
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
-	private static final Map<String, AnsiElement> ELEMENTS;
+	private static final Map<String, AnsiElement> ELEMENTS_BY_NAME;
 
 	static {
-		Map<String, AnsiElement> ansiElements = new HashMap<>();
+		Map<String, AnsiElement> elements = new HashMap<>();
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
-			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
+			.forEach((color) -> elements.put(color.name().toLowerCase(Locale.ROOT), color));
 		Arrays.stream(AnsiStyle.values())
-			.forEach((style) -> ansiElements.put(style.name().toLowerCase(Locale.ROOT), style));
+			.forEach((style) -> elements.put(style.name().toLowerCase(Locale.ROOT), style));
 		Arrays.stream(AnsiBackground.values())
-			.filter((bg) -> bg != AnsiBackground.DEFAULT)
-			.forEach((bg) -> ansiElements.put("bg_" + bg.name().toLowerCase(Locale.ROOT), bg));
-		ELEMENTS = Collections.unmodifiableMap(ansiElements);
+			.filter((background) -> background != AnsiBackground.DEFAULT)
+			.forEach((background) -> elements.put("bg_" + background.name().toLowerCase(Locale.ROOT), background));
+		ELEMENTS_BY_NAME = Collections.unmodifiableMap(elements);
 	}
 
-	private static final Map<Integer, AnsiElement> LEVELS;
+	private static final Map<Integer, AnsiElement> ELEMENTS_BY_LEVEL;
 
 	static {
-		Map<Integer, AnsiElement> ansiLevels = new HashMap<>();
-		ansiLevels.put(Level.ERROR_INTEGER, AnsiColor.RED);
-		ansiLevels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
-		LEVELS = Collections.unmodifiableMap(ansiLevels);
+		Map<Integer, AnsiElement> elements = new HashMap<>();
+		elements.put(Level.ERROR_INTEGER, AnsiColor.RED);
+		elements.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
+		ELEMENTS_BY_LEVEL = Collections.unmodifiableMap(elements);
 	}
 
+	private static final AnsiElement[] NO_ELEMENTS = {};
+
+	private AnsiElement[] elements = NO_ELEMENTS;
+
 	@Override
-	protected String transform(ILoggingEvent event, String in) {
+	public void start() {
 		List<String> options = getOptionList();
-		List<AnsiElement> elements = new ArrayList<>();
-		if (options != null) {
+		if (!CollectionUtils.isEmpty(options)) {
+			List<AnsiElement> elements = new ArrayList<>();
 			for (String option : options) {
-				String[] optionParts = option.split(",");
-				for (String optionPart : optionParts) {
-					AnsiElement element = ELEMENTS.get(optionPart.trim().toLowerCase(Locale.ROOT));
+				for (String optionPart : option.split(",")) {
+					AnsiElement element = ELEMENTS_BY_NAME.get(optionPart.trim().toLowerCase(Locale.ROOT));
 					if (element != null) {
 						elements.add(element);
 					}
 				}
 			}
+			this.elements = elements.toArray(AnsiElement[]::new);
 		}
-		if (elements.isEmpty()) {
+		super.start();
+	}
+
+	@Override
+	protected String transform(ILoggingEvent event, String in) {
+		if (this.elements.length == 0) {
 			// Assume highlighting
-			AnsiElement element = LEVELS.get(event.getLevel().toInteger());
-			elements.add((element != null) ? element : AnsiColor.GREEN);
+			AnsiElement element = ELEMENTS_BY_LEVEL.get(event.getLevel().toInteger());
+			return toAnsiString(in, (element != null) ? element : AnsiColor.GREEN);
 		}
-		return toAnsiString(in, elements.toArray(new AnsiElement[0]));
+		return toAnsiString(in, this.elements);
 	}
 
 	protected String toAnsiString(String in, AnsiElement element) {
@@ -106,7 +105,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	}
 
 	static String getName(AnsiElement element) {
-		return ELEMENTS.entrySet()
+		return ELEMENTS_BY_NAME.entrySet()
 			.stream()
 			.filter((entry) -> entry.getValue().equals(element))
 			.map(Map.Entry::getKey)

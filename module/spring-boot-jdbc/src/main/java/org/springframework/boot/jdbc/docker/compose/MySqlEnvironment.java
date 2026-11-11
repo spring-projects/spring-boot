@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jdbc.docker.compose;
@@ -54,7 +42,8 @@ class MySqlEnvironment {
 	}
 
 	private String extractPassword(Map<String, @Nullable String> env) {
-		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
+		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD") || hasUserAndPassword(env),
+				"MYSQL_RANDOM_ROOT_PASSWORD is not supported without MYSQL_USER and MYSQL_PASSWORD");
 		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
 		if (password == null) {
@@ -66,6 +55,10 @@ class MySqlEnvironment {
 		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MySQL password found");
 		return (password != null) ? password : "";
+	}
+
+	private boolean hasUserAndPassword(Map<String, @Nullable String> env) {
+		return StringUtils.hasLength(env.get("MYSQL_USER")) && StringUtils.hasLength(env.get("MYSQL_PASSWORD"));
 	}
 
 	private String extractDatabase(Map<String, @Nullable String> env) {

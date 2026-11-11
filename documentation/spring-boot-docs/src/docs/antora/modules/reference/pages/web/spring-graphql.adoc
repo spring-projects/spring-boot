@@ -98,6 +98,7 @@ The path can be customized with configprop:spring.graphql.http.path[].
 
 By default, the HTTP transport only allows HTTP POST requests but this can be configured with configprop:spring.graphql.http.methods[]
 and configprop:spring.graphql.http.sse.methods[], see {url-spring-graphql-docs}/transports.html[the transports section of the Spring GraphQL documentation] for more.
+HTTP OPTIONS requests on the GraphQL endpoint are answered with an `"Allow"` header listing the configured HTTP methods, so that clients such as GraphiQL can discover them.
 
 TIP: The HTTP endpoint for both Spring MVC and Spring WebFlux is provided by a `RouterFunction` bean with an javadoc:org.springframework.core.annotation.Order[format=annotation] of `0`.
 If you define your own `RouterFunction` beans, you may want to add appropriate javadoc:org.springframework.core.annotation.Order[format=annotation] annotations to ensure that they are sorted correctly.

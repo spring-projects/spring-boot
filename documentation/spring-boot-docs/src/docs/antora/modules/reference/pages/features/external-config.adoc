@@ -430,6 +430,10 @@ spring:
     import: "file:/etc/config/myconfig[extension=.yaml][encoding=utf-8]"
 ----
 
+NOTE: File attributes must be specified at the end of the location.
+Square brackets anywhere else are considered part of the path.
+For example, `file:/etc/config[prod]/myconfig[.yaml]` imports `/etc/config[prod]/myconfig` as yaml.
+
 
 
 [[features.external-config.files.env-variables]]

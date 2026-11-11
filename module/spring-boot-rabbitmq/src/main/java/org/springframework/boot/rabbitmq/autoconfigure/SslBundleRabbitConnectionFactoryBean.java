@@ -1,25 +1,18 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.rabbitmq.autoconfigure;
 
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 
 /**
  * A {@link RabbitConnectionFactoryBean} that can be configured with custom SSL trust
@@ -37,6 +30,7 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 	protected void setUpSSL() {
 		if (this.sslBundle != null) {
 			this.connectionFactory.useSslProtocol(this.sslBundle.createSslContext());
+			applySslOptions(this.sslBundle.getOptions());
 			if (this.enableHostnameVerification) {
 				this.connectionFactory.enableHostnameVerification();
 			}
@@ -44,6 +38,19 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 		else {
 			super.setUpSSL();
 		}
+	}
+
+	private void applySslOptions(SslOptions options) {
+		this.connectionFactory
+			.setSocketConfigurator(this.connectionFactory.getSocketConfigurator().andThen((socket) -> {
+				if (socket instanceof SSLSocket sslSocket) {
+					SSLParameters parameters = sslSocket.getSSLParameters();
+					PropertyMapper map = PropertyMapper.get();
+					map.from(options::getCiphers).to(parameters::setCipherSuites);
+					map.from(options::getEnabledProtocols).to(parameters::setProtocols);
+					sslSocket.setSSLParameters(parameters);
+				}
+			}));
 	}
 
 	void setSslBundle(@Nullable SslBundle sslBundle) {

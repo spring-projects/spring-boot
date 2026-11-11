@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.ldap.autoconfigure;
@@ -119,6 +107,7 @@ public final class LdapAutoConfiguration {
 						() -> "SSL bundle has been configured but '" + SOCKET_FACTORY_ENV_KEY
 								+ "' has also been set in the base environment. Use either an SSL bundle or your own socket factory, not both");
 			}
+			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with LDAP");
 			LdapSslSocketFactory.setSslBundle(sslBundle);
 			baseEnvironment.put(SOCKET_FACTORY_ENV_KEY, LdapSslSocketFactory.class.getName());
 		}

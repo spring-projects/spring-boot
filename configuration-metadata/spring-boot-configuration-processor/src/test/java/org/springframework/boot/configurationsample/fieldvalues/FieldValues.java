@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.configurationsample.fieldvalues;
@@ -68,6 +56,8 @@ public class FieldValues {
 
 	private Boolean boolObject = Boolean.TRUE;
 
+	private Boolean boolObjectQualified = java.lang.Boolean.TRUE;
+
 	private Boolean boolObjectNone;
 
 	private Boolean boolObjectConst = BOOLEAN_OBJ_CONST;
@@ -89,6 +79,8 @@ public class FieldValues {
 	private Integer integerObjectConst = INTEGER_OBJ_CONST;
 
 	private Charset charset = StandardCharsets.US_ASCII;
+
+	private Charset charsetQualified = java.nio.charset.StandardCharsets.UTF_16;
 
 	private Charset charsetConst = DEFAULT_CHARSET;
 
@@ -136,6 +128,10 @@ public class FieldValues {
 
 	private Duration durationZero = Duration.ZERO;
 
+	private Duration durationZeroQualified = java.time.Duration.ZERO;
+
+	private Duration durationQualified = java.time.Duration.ofSeconds(60);
+
 	private DataSize dataSizeNone;
 
 	private DataSize dataSizeBytes = DataSize.ofBytes(5);
@@ -148,6 +144,8 @@ public class FieldValues {
 
 	private DataSize dataSizeTerabytes = DataSize.ofTerabytes(40);
 
+	private DataSize dataSizeQualified = org.springframework.util.unit.DataSize.ofMegabytes(60);
+
 	private Period periodNone;
 
 	private Period periodDays = Period.ofDays(3);
@@ -159,6 +157,10 @@ public class FieldValues {
 	private Period periodYears = Period.ofYears(15);
 
 	private Period periodZero = Period.ZERO;
+
+	private Period periodZeroQualified = java.time.Period.ZERO;
+
+	private Period periodQualified = java.time.Period.ofWeeks(6);
 
 	private ChronoUnit enumNone;
 

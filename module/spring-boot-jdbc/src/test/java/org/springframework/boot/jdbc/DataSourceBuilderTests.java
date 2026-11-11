@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.jdbc;
@@ -34,10 +22,12 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OpaqueString;
 import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.config.PoolProperties;
 import oracle.ucp.config.PoolPropertiesException;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.util.introspection.FieldSupport;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
@@ -401,13 +391,16 @@ class DataSourceBuilderTests {
 		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
 		PoolDataSource built = (PoolDataSource) builder.username("test2").password("secret2").build();
 		assertThat(built.getUser()).isEqualTo("test2");
-		assertThat(built).extracting(this::getPassword).isEqualTo("secret2");
+		assertThat(built).extracting("recentPoolProperties")
+			.asInstanceOf(InstanceOfAssertFactories.type(PoolProperties.class))
+			.extracting(this::getPassword)
+			.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
 	}
 
-	private String getPassword(PoolDataSource target) {
+	private String getPassword(PoolProperties poolProperties) {
 		try {
-			return ((oracle.ucp.util.OpaqueString) target.getPoolProperties().getPoolProperty("password")).get();
+			return ((oracle.ucp.util.OpaqueString) poolProperties.getPoolProperty("password")).get();
 		}
 		catch (PoolPropertiesException ex) {
 			throw new IllegalStateException(ex);

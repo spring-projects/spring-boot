@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.tomcat;
@@ -66,16 +54,14 @@ final class GracefulShutdown {
 		try {
 			List<Connector> connectors = getConnectors();
 			connectors.forEach(this::close);
-			shutdownUnderway.countDown();
-			awaitInactiveOrAborted();
-			if (this.aborted) {
+			GracefulShutdownResult result = awaitInactiveOrAborted(shutdownUnderway);
+			if (result == GracefulShutdownResult.REQUESTS_ACTIVE) {
 				logger.info("Graceful shutdown aborted with one or more requests still active");
-				callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 			}
 			else {
 				logger.info("Graceful shutdown complete");
-				callback.shutdownComplete(GracefulShutdownResult.IDLE);
 			}
+			callback.shutdownComplete(result);
 		}
 		finally {
 			shutdownUnderway.countDown();
@@ -95,19 +81,33 @@ final class GracefulShutdown {
 		connector.getProtocolHandler().closeServerSocketGraceful();
 	}
 
-	private void awaitInactiveOrAborted() {
+	private GracefulShutdownResult awaitInactiveOrAborted(CountDownLatch shutdownUnderway) {
+		boolean active = isActive();
+		shutdownUnderway.countDown();
 		try {
-			for (Container host : this.tomcat.getEngine().findChildren()) {
-				for (Container context : host.findChildren()) {
-					while (!this.aborted && isActive(context)) {
-						Thread.sleep(50);
-					}
-				}
+			while (!this.aborted && isActive()) {
+				Thread.sleep(50);
 			}
+			if (this.aborted && active) {
+				return GracefulShutdownResult.REQUESTS_ACTIVE;
+			}
+			return GracefulShutdownResult.IDLE;
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
+			return GracefulShutdownResult.REQUESTS_ACTIVE;
 		}
+	}
+
+	private boolean isActive() {
+		for (Container host : this.tomcat.getEngine().findChildren()) {
+			for (Container context : host.findChildren()) {
+				if (isActive(context)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean isActive(Container context) {
@@ -129,6 +129,10 @@ final class GracefulShutdown {
 
 	void abort() {
 		this.aborted = true;
+	}
+
+	void reset() {
+		this.aborted = false;
 	}
 
 }

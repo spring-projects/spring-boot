@@ -1,17 +1,5 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.cli.json;
@@ -60,6 +48,11 @@ package org.springframework.boot.cli.json;
 public class JSONTokener {
 
 	/**
+	 * The maximum nesting depth of objects and arrays.
+	 */
+	private static final int MAX_DEPTH = 512;
+
+	/**
 	 * The input JSON.
 	 */
 	private final String in;
@@ -69,6 +62,11 @@ public class JSONTokener {
 	 * exhausted, this equals the input's length.
 	 */
 	private int pos;
+
+	/**
+	 * The current nesting depth of objects and arrays.
+	 */
+	private int depth;
 
 	/**
 	 * @param in JSON encoded string. Null is not permitted and will yield a tokener that
@@ -94,11 +92,18 @@ public class JSONTokener {
 			case -1:
 				throw syntaxError("End of input");
 
-			case '{':
-				return readObject();
-
-			case '[':
-				return readArray();
+			case '{', '[':
+				if (this.depth >= MAX_DEPTH) {
+					throw new JSONException(
+							"Maximum nesting depth of " + MAX_DEPTH + " exceeded at character " + this.pos);
+				}
+				this.depth++;
+				try {
+					return (c == '{') ? readObject() : readArray();
+				}
+				finally {
+					this.depth--;
+				}
 
 			case '\'', '"':
 				return nextString((char) c);

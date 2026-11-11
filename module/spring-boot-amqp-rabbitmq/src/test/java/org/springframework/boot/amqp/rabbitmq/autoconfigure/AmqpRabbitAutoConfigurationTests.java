@@ -1,21 +1,15 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.amqp.rabbitmq.autoconfigure;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import javax.net.ssl.SSLEngine;
+
+import com.rabbitmq.client.amqp.ConnectionSettings.TlsSettings;
 import com.rabbitmq.client.amqp.Environment;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
 import org.junit.jupiter.api.Test;
@@ -35,13 +29,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitConnectionDetails.Address;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -110,7 +108,7 @@ class AmqpRabbitAutoConfigurationTests {
 			AmqpRabbitConnectionDetails connectionDetails = context.getBean(AmqpRabbitConnectionDetails.class);
 			AmqpRabbitProperties properties = new AmqpRabbitProperties();
 			assertThat(connectionDetails.getAddress().host()).isEqualTo(properties.getHost());
-			assertThat(connectionDetails.getAddress().port()).isEqualTo(AmqpRabbitProperties.DEFAULT_PORT);
+			assertThat(connectionDetails.getAddress().port()).isEqualTo(5672);
 			assertThat(connectionDetails.getUsername()).isEqualTo(properties.getUsername());
 			assertThat(connectionDetails.getPassword()).isEqualTo(properties.getPassword());
 			assertThat(connectionDetails.getVirtualHost()).isNull();
@@ -128,6 +126,28 @@ class AmqpRabbitAutoConfigurationTests {
 				assertThat(connectionDetails.getAddress().port()).isEqualTo(1234);
 				assertThat(connectionDetails.getUsername()).isEqualTo("user");
 				assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+			});
+	}
+
+	@Test
+	void autoConfigurationConfiguresEnvironmentWithSslBundleOptions() {
+		SslOptions options = SslOptions.of(new String[] { "TLS_AES_128_GCM_SHA256" }, new String[] { "TLSv1.3" });
+		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE, options);
+		SslBundles sslBundles = mock(SslBundles.class);
+		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
+		AtomicReference<TlsSettings<?>> tls = new AtomicReference<>();
+		this.contextRunner.withPropertyValues("spring.amqp.rabbitmq.ssl.bundle=test-bundle")
+			.withBean(SslBundles.class, () -> sslBundles)
+			.withBean(AmqpEnvironmentCustomizer.class, () -> (builder) -> tls.set(builder.connectionSettings().tls()))
+			.run((context) -> {
+				assertThat(tls.get()).hasFieldOrPropertyWithValue("ciphers", new String[] { "TLS_AES_128_GCM_SHA256" });
+				@SuppressWarnings("unchecked")
+				Consumer<SSLEngine> engineCustomizer = (Consumer<SSLEngine>) ReflectionTestUtils.getField(tls.get(),
+						"sslEngineCustomizer");
+				assertThat(engineCustomizer).isNotNull();
+				SSLEngine engine = mock(SSLEngine.class);
+				engineCustomizer.accept(engine);
+				then(engine).should().setEnabledProtocols(new String[] { "TLSv1.3" });
 			});
 	}
 
@@ -197,7 +217,7 @@ class AmqpRabbitAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationConfiguresConnectionDetailsWithSslBundle() {
-		SslBundle sslBundle = mock(SslBundle.class);
+		SslBundle sslBundle = SslBundle.of(SslStoreBundle.NONE);
 		SslBundles sslBundles = mock(SslBundles.class);
 		given(sslBundles.getBundle("test-bundle")).willReturn(sslBundle);
 		this.contextRunner.withPropertyValues("spring.amqp.rabbitmq.ssl.bundle=test-bundle")
@@ -228,6 +248,18 @@ class AmqpRabbitAutoConfigurationTests {
 				assertThat(template).hasFieldOrPropertyWithValue("defaultExchange", "my-exchange");
 				assertThat(template).hasFieldOrPropertyWithValue("defaultRoutingKey", "my-routing-key");
 				assertThat(template).hasFieldOrPropertyWithValue("defaultReceiveQueue", "my-queue");
+			});
+	}
+
+	@Test
+	void autoConfigurationDoesNotConfigureRabbitAmqpTemplateExchangeAndRoutingKeyByDefault() {
+		this.contextRunner
+			.withBean(RabbitAmqpTemplateCustomizer.class, () -> (template) -> template.setQueue("test.queue"))
+			.run((context) -> {
+				RabbitAmqpTemplate template = context.getBean(RabbitAmqpTemplate.class);
+				assertThat(template).hasFieldOrPropertyWithValue("defaultQueue", "test.queue");
+				assertThat(template).hasFieldOrPropertyWithValue("defaultExchange", null);
+				assertThat(template).hasFieldOrPropertyWithValue("defaultRoutingKey", null);
 			});
 	}
 

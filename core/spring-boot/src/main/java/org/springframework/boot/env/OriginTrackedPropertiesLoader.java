@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.env;
@@ -177,14 +165,14 @@ class OriginTrackedPropertiesLoader {
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		if (!reader.isEndOfLine()) {
-			reader.read();
+			reader.read(false);
 			reader.skipWhitespace();
 		}
 		return result && reader.isEndOfLine();
 	}
 
 	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
-		reader.read();
+		reader.read(false);
 		return check.getAsBoolean();
 	}
 
@@ -217,13 +205,17 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		boolean read() throws IOException {
+			return read(true);
+		}
+
+		boolean read(boolean readEscaped) throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
 			if (this.columnNumber == 0) {
 				skipWhitespace();
 			}
-			if (this.character == '\\') {
+			if (readEscaped && this.character == '\\') {
 				this.escaped = true;
 				readEscaped();
 			}
@@ -318,7 +310,7 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		boolean isCommentPrefixCharacter() {
-			return this.character == '#' || this.character == '!';
+			return !this.escaped && (this.character == '#' || this.character == '!');
 		}
 
 		boolean isHyphenCharacter() {

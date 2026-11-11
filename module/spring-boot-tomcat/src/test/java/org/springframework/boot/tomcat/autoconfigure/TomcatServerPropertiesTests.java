@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.tomcat.autoconfigure;
@@ -142,6 +130,12 @@ class TomcatServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeTomcatMaxLocaleCount() {
+		bind("server.tomcat.max-locale-count", "20");
+		assertThat(this.properties.getMaxLocaleCount()).isEqualTo(20);
+	}
+
+	@Test
 	void testCustomizeTomcatMinSpareThreads() {
 		bind("server.tomcat.threads.min-spare", "10");
 		assertThat(this.properties.getThreads().getMinSpare()).isEqualTo(10);
@@ -175,6 +169,11 @@ class TomcatServerPropertiesTests {
 	@Test
 	void tomcatMaxParameterCountMatchesConnectorDefault() {
 		assertThat(this.properties.getMaxParameterCount()).isEqualTo(getDefaultConnector().getMaxParameterCount());
+	}
+
+	@Test
+	void tomcatMaxLocaleCountMatchesConnectorDefault() {
+		assertThat(this.properties.getMaxLocaleCount()).isEqualTo(getDefaultConnector().getMaxLocaleCount());
 	}
 
 	@Test

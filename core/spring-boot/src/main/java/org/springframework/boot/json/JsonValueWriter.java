@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.json;
@@ -112,10 +100,11 @@ class JsonValueWriter {
 	 * <li>A {@link WritableJson} instance</li>
 	 * <li>Any {@link Iterable} or Array (written as a JSON array)</li>
 	 * <li>A {@link Map} (written as a JSON object)</li>
-	 * <li>Any {@link Number}</li>
+	 * <li>Any finite {@link Number}</li>
 	 * <li>A {@link Boolean}</li>
 	 * </ul>
-	 * All other values are written as JSON strings.
+	 * All other values, including {@code NaN} and infinite {@link Double} or
+	 * {@link Float} values, are written as JSON strings.
 	 * @param <V> the value type
 	 * @param value the value to write
 	 */
@@ -141,7 +130,7 @@ class JsonValueWriter {
 		else if (value instanceof Map<?, ?> map) {
 			writeObject(map::forEach);
 		}
-		else if (value instanceof Number || value instanceof Boolean) {
+		else if ((value instanceof Number number && isFinite(number)) || value instanceof Boolean) {
 			append(value.toString());
 		}
 		else {
@@ -151,6 +140,16 @@ class JsonValueWriter {
 
 	private boolean canWriteAsArray(Iterable<?> iterable) {
 		return !(iterable instanceof Path);
+	}
+
+	private boolean isFinite(Number number) {
+		if (number instanceof Double doubleValue) {
+			return Double.isFinite(doubleValue);
+		}
+		if (number instanceof Float floatValue) {
+			return Float.isFinite(floatValue);
+		}
+		return true;
 	}
 
 	/**
@@ -333,7 +332,7 @@ class JsonValueWriter {
 
 	private String processName(String name, NameProcessor nameProcessor) {
 		name = nameProcessor.processName(this.path, name);
-		Assert.state(StringUtils.hasLength(name), "NameProcessor " + nameProcessor + " returned an empty result");
+		Assert.state(StringUtils.hasLength(name), () -> "NameProcessor " + nameProcessor + " returned an empty result");
 		return name;
 	}
 

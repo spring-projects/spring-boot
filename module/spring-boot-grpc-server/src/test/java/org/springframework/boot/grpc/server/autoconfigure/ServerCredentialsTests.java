@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.grpc.server.autoconfigure;
@@ -32,6 +20,7 @@ import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.S
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.boot.ssl.SslOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -57,6 +46,7 @@ class ServerCredentialsTests {
 		SslBundle bundle = mock();
 		SslManagerBundle managers = mock();
 		given(this.bundles.getBundle("test")).willReturn(bundle);
+		given(bundle.getOptions()).willReturn(SslOptions.NONE);
 		given(bundle.getManagers()).willReturn(managers);
 		given(managers.getTrustManagerFactory()).willReturn(this.bundleTrustManagerFactory);
 		given(managers.getKeyManagerFactory()).willReturn(this.bundleKeyManagerFactory);
@@ -123,6 +113,15 @@ class ServerCredentialsTests {
 		assertThat(credentials.keyManagerFactory()).isEqualTo(this.bundleKeyManagerFactory);
 		assertThat(credentials.trustManagerFactory()).isEqualTo(this.insecureTrustManagerFactory);
 		assertThat(credentials.clientAuth()).isEqualTo(ClientAuth.NONE);
+	}
+
+	@Test
+	void getWhenBundleHasOptionsThrowsException() {
+		given(this.bundles.getBundle("options"))
+			.willReturn(SslBundle.of(null, null, SslOptions.of(null, new String[] { "TLSv1.3" })));
+		assertThatIllegalStateException()
+			.isThrownBy(() -> get((properties) -> properties.put("spring.grpc.server.ssl.bundle", "options")))
+			.withMessage("SSL options cannot be specified with gRPC servers");
 	}
 
 	private ServerCredentials get(Consumer<Map<String, String>> properties) {

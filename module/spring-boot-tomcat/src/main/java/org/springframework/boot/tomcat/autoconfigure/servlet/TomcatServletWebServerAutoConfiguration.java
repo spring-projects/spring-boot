@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.tomcat.autoconfigure.servlet;
@@ -32,6 +20,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.TomcatServerCustomizer;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties;
 import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
@@ -65,11 +54,13 @@ public final class TomcatServletWebServerAutoConfiguration {
 	TomcatServletWebServerFactory tomcatServletWebServerFactory(
 			ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 			ObjectProvider<TomcatContextCustomizer> contextCustomizers,
-			ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
+			ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers,
+			ObjectProvider<TomcatServerCustomizer> serverCustomizers) {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		factory.getConnectorCustomizers().addAll(connectorCustomizers.orderedStream().toList());
 		factory.getContextCustomizers().addAll(contextCustomizers.orderedStream().toList());
 		factory.getProtocolHandlerCustomizers().addAll(protocolHandlerCustomizers.orderedStream().toList());
+		factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().toList());
 		return factory;
 	}
 

@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.webmvc.autoconfigure;
@@ -319,13 +307,14 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void resourceHandlerChainCustomized() {
-		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true",
-				"spring.web.resources.chain.cache:false", "spring.web.resources.chain.strategy.content.enabled:true",
-				"spring.web.resources.chain.strategy.content.paths:/**,/*.png",
-				"spring.web.resources.chain.strategy.fixed.enabled:true",
-				"spring.web.resources.chain.strategy.fixed.version:test",
-				"spring.web.resources.chain.strategy.fixed.paths:/**/*.js",
-				"spring.web.resources.chain.html-application-cache:true", "spring.web.resources.chain.compressed:true")
+		this.contextRunner
+			.withPropertyValues("spring.web.resources.chain.enabled:true", "spring.web.resources.chain.cache:false",
+					"spring.web.resources.chain.strategy.content.enabled:true",
+					"spring.web.resources.chain.strategy.content.paths:/**,/*.png",
+					"spring.web.resources.chain.strategy.fixed.enabled:true",
+					"spring.web.resources.chain.strategy.fixed.version:test",
+					"spring.web.resources.chain.strategy.fixed.paths:/**/*.js",
+					"spring.web.resources.chain.compressed:true")
 			.run((context) -> {
 				assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 				assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);

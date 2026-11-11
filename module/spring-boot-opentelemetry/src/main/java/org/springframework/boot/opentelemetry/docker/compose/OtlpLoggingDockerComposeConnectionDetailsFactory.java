@@ -1,23 +1,12 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.opentelemetry.docker.compose;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -30,6 +19,7 @@ import org.springframework.boot.ssl.SslBundle;
  * {@link OtlpLoggingConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
+ * @author WooSeung Kim
  */
 class OtlpLoggingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpLoggingConnectionDetails> {
@@ -56,28 +46,25 @@ class OtlpLoggingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int grpcPort;
-
-		private final int httpPort;
+		private final ConnectionPorts ports;
 
 		private final @Nullable SslBundle sslBundle;
 
 		private OtlpLoggingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
-			this.httpPort = source.ports().get(OTLP_HTTP_PORT);
+			this.ports = source.ports();
 			this.sslBundle = getSslBundle(source);
 		}
 
 		@Override
 		public String getUrl(Transport transport) {
 			int port = switch (transport) {
-				case HTTP -> this.httpPort;
-				case GRPC -> this.grpcPort;
+				case HTTP -> OTLP_HTTP_PORT;
+				case GRPC -> OTLP_GRPC_PORT;
 			};
 			String scheme = (this.sslBundle != null) ? "https" : "http";
-			return "%s://%s:%d/v1/logs".formatted(scheme, this.host, port);
+			return "%s://%s:%d/v1/logs".formatted(scheme, this.host, this.ports.get(port));
 		}
 
 		@Override

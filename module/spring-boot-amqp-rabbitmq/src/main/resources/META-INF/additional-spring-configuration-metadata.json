@@ -1,0 +1,11 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.health.amqprabbit.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable AMQP 1.0 RabbitMQ health check.",
+      "defaultValue": true
+    }
+  ]
+}

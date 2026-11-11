@@ -1,17 +1,5 @@
 /*
  * Copyright 2012-present the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.springframework.boot.logging.logback;
@@ -21,9 +9,13 @@ import java.util.Map;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.logging.structured.TestContextPairs;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -91,6 +83,25 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("version", "1.1", "host", "name", "timestamp",
 				1719910193.123, "level", 6, "_level_name", "INFO", "_process_pid", 1, "_process_thread_name", "main",
 				"_service_version", "1.0.0", "_log_logger", "org.example.Test", "short_message", "message"));
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	@ValueSource(strings = " ")
+	void shouldUseBlankPlaceholderWhenMessageHasNoText(@Nullable String message) {
+		LoggingEvent event = createEvent(message);
+		event.setMDCPropertyMap(Collections.emptyMap());
+		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
+		assertThat(deserialized).containsEntry("short_message", "(blank)");
+	}
+
+	@Test
+	void shouldUseBlankPlaceholderWhenMessageIsNullAndThereIsAnException() {
+		LoggingEvent event = createEvent(null, new RuntimeException());
+		event.setMDCPropertyMap(Collections.emptyMap());
+		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
+		assertThat(deserialized).containsEntry("short_message", "(blank)")
+			.containsEntry("_error_type", "java.lang.RuntimeException");
 	}
 
 	@Test
