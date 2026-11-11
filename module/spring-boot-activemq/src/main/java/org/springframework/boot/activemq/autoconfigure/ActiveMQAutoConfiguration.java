@@ -8,6 +8,8 @@ import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.activemq.autoconfigure.ActiveMQProperties.Ssl;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -16,9 +18,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.boot.jms.autoconfigure.JmsProperties;
 import org.springframework.boot.jms.autoconfigure.JndiConnectionFactoryAutoConfiguration;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.transaction.jta.autoconfigure.JtaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to integrate with an ActiveMQ
@@ -27,6 +33,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Armen Petrosyan
  * @since 4.0.0
  */
 @AutoConfiguration(before = JmsAutoConfiguration.class,
@@ -39,8 +46,9 @@ public final class ActiveMQAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ActiveMQConnectionDetails activemqConnectionDetails(ActiveMQProperties properties) {
-		return new PropertiesActiveMQConnectionDetails(properties);
+	ActiveMQConnectionDetails activemqConnectionDetails(ActiveMQProperties properties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesActiveMQConnectionDetails(properties, sslBundles.getIfAvailable());
 	}
 
 	/**
@@ -50,8 +58,11 @@ public final class ActiveMQAutoConfiguration {
 
 		private final ActiveMQProperties properties;
 
-		PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
+		private final @Nullable SslBundles sslBundles;
+
+		PropertiesActiveMQConnectionDetails(ActiveMQProperties properties, @Nullable SslBundles sslBundles) {
 			this.properties = properties;
+			this.sslBundles = sslBundles;
 		}
 
 		@Override
@@ -67,6 +78,19 @@ public final class ActiveMQAutoConfiguration {
 		@Override
 		public @Nullable String getPassword() {
 			return this.properties.getPassword();
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			Ssl ssl = this.properties.getSsl();
+			if (!ssl.isEnabled()) {
+				return null;
+			}
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(ssl.getBundle());
+			}
+			return SslBundle.systemDefault();
 		}
 
 	}
