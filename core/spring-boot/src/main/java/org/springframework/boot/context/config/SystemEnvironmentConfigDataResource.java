@@ -6,7 +6,6 @@ package org.springframework.boot.context.config;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -16,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -26,20 +26,34 @@ import org.springframework.util.StringUtils;
  */
 class SystemEnvironmentConfigDataResource extends ConfigDataResource {
 
+	/**
+	 * Charset used by Java then it loads environment variables.
+	 */
+	private static final Charset ENVIRONMENT_CONTENT_CHARSET = Charset.defaultCharset();
+
 	private final String variableName;
 
 	private final PropertySourceLoader loader;
 
 	private final Function<String, @Nullable String> environment;
 
-	private final @Nullable Charset encoding;
+	private final @Nullable Charset encodingHint;
+
+	private final Charset environmentContentCharset;
 
 	SystemEnvironmentConfigDataResource(String variableName, PropertySourceLoader loader,
-			Function<String, @Nullable String> environment, @Nullable Charset encoding) {
+			Function<String, @Nullable String> environment, @Nullable Charset encodingHint) {
+		this(variableName, loader, environment, encodingHint, ENVIRONMENT_CONTENT_CHARSET);
+	}
+
+	SystemEnvironmentConfigDataResource(String variableName, PropertySourceLoader loader,
+			Function<String, @Nullable String> environment, @Nullable Charset encodingHint,
+			Charset environmentContentCharset) {
 		this.variableName = variableName;
 		this.loader = loader;
 		this.environment = environment;
-		this.encoding = encoding;
+		this.encodingHint = encodingHint;
+		this.environmentContentCharset = environmentContentCharset;
 	}
 
 	String getVariableName() {
@@ -52,12 +66,14 @@ class SystemEnvironmentConfigDataResource extends ConfigDataResource {
 
 	@Nullable List<PropertySource<?>> load() throws IOException {
 		String content = this.environment.apply(this.variableName);
-		return (content != null)
-				? this.loader.load(StringUtils.capitalize(toString()), asResource(content), this.encoding) : null;
+		return (content != null) ? load(content) : null;
 	}
 
-	private ByteArrayResource asResource(String content) {
-		return new ByteArrayResource(content.getBytes(StandardCharsets.UTF_8));
+	private List<PropertySource<?>> load(String environmentVariableContent) throws IOException {
+		String name = StringUtils.capitalize(toString());
+		Resource resource = new ByteArrayResource(environmentVariableContent.getBytes(this.environmentContentCharset));
+		Charset encoding = (this.encodingHint != null) ? this.encodingHint : this.environmentContentCharset;
+		return this.loader.load(name, resource, encoding);
 	}
 
 	@Override

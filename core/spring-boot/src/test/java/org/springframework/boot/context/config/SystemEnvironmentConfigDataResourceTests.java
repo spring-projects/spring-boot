@@ -5,6 +5,8 @@
 package org.springframework.boot.context.config;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,14 @@ class SystemEnvironmentConfigDataResourceTests {
 	}
 
 	@Test
+	void loadUsesDefaultCharsetOfNoEncodingSpecified() throws IOException {
+		this.environment.put("VAR1", "smiley=😃");
+		List<PropertySource<?>> loaded = createResource("VAR1", this.propertiesLoader, StandardCharsets.UTF_8).load();
+		assertThat(loaded).hasSize(1);
+		assertThat(loaded.get(0).getProperty("smiley")).isEqualTo("😃");
+	}
+
+	@Test
 	void loadWhenNoContentReturnsNull() throws IOException {
 		List<PropertySource<?>> loaded = createResource("VAR1").load();
 		assertThat(loaded).isNull();
@@ -71,6 +81,12 @@ class SystemEnvironmentConfigDataResourceTests {
 	private SystemEnvironmentConfigDataResource createResource(String variableName,
 			PropertySourceLoader propertySourceLoader) {
 		return new SystemEnvironmentConfigDataResource(variableName, propertySourceLoader, this.environment::get, null);
+	}
+
+	private SystemEnvironmentConfigDataResource createResource(String variableName,
+			PropertySourceLoader propertySourceLoader, Charset environmentContentCharset) {
+		return new SystemEnvironmentConfigDataResource(variableName, propertySourceLoader, this.environment::get, null,
+				environmentContentCharset);
 	}
 
 }
