@@ -23,7 +23,6 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -973,7 +972,6 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("until a new Spring AMQP snapshot is available")
 	void enableSslWithValidateServerCertificateFalse(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",

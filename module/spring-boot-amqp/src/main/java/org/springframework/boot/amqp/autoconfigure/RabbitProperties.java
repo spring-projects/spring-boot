@@ -15,6 +15,7 @@ import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.Addr
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.convert.DurationUnit;
@@ -426,7 +427,9 @@ public class RabbitProperties {
 
 		/**
 		 * Whether to enable hostname verification.
+		 * @deprecated since 4.1.3 for removal in 4.4.0 without replacement
 		 */
+		@Deprecated(since = "4.1.3", forRemoval = true)
 		private boolean verifyHostname = true;
 
 		public @Nullable Boolean getEnabled() {
@@ -540,6 +543,9 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
+		@Deprecated(since = "4.1.3", forRemoval = true)
+		@DeprecatedConfigurationProperty(reason = "Hostname verification cannot be independently disabled",
+				since = "4.1.3")
 		public boolean isVerifyHostname() {
 			return this.verifyHostname;
 		}

@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
+import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Ssl;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -121,7 +122,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
 		if (sslBundle != null || ssl.determineEnabled()) {
 			factory.setUseSSL(true);
-			map.from(ssl::isVerifyHostname).to(factory::setEnableHostnameVerification);
+			configureDeprecatedHostNameVerification(factory, map, ssl);
 			if (sslBundle != null) {
 				applySslBundle(factory, sslBundle);
 			}
@@ -140,6 +141,12 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.rabbitProperties.getMaxInboundMessageBodySize())
 			.asInt(DataSize::toBytes)
 			.to(factory::setMaxInboundMessageBodySize);
+	}
+
+	@SuppressWarnings("removal")
+	private static void configureDeprecatedHostNameVerification(RabbitConnectionFactoryBean factory, PropertyMapper map,
+			Ssl ssl) {
+		map.from(ssl::isVerifyHostname).to(factory::setEnableHostnameVerification);
 	}
 
 	private void applySslBundle(RabbitConnectionFactoryBean factory, SslBundle bundle) {
