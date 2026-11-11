@@ -107,7 +107,7 @@ public final class JvmMetricsAutoConfiguration {
 		JvmThreadCountMeterConvention convention = jvmThreadCountMeterConvention.getIfAvailable();
 		if (deprecatedConventions != null && convention != null) {
 			throw new IllegalStateException(
-					"Either %s or %s should be set".formatted(JvmMemoryMeterConventions.class.getSimpleName(),
+					"Either %s or %s should be set".formatted(JvmThreadMeterConventions.class.getSimpleName(),
 							JvmThreadCountMeterConvention.class.getSimpleName()));
 		}
 		if (deprecatedConventions != null) {
