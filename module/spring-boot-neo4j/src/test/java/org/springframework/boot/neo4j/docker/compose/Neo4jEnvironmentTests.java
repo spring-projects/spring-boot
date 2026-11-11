@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.neo4j.driver.AuthTokens;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author MyungJoo Song
  */
 class Neo4jEnvironmentTests {
 
@@ -55,6 +58,22 @@ class Neo4jEnvironmentTests {
 	void whenNeo4jAuthFileIsSetThenThrowsException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> new Neo4jEnvironment(Map.of("NEO4J_AUTH_FILE", "/run/secrets/auth")))
+			.withMessage("NEO4J_AUTH_FILE is not supported");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "none", "neo4j/custom-password" })
+	void whenNeo4jAuthFileAndAuthAreSetThenThrowsException(String auth) {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new Neo4jEnvironment(Map.of("NEO4J_AUTH", auth, "NEO4J_AUTH_FILE", "/run/secrets/auth")))
+			.withMessage("NEO4J_AUTH_FILE is not supported");
+	}
+
+	@Test
+	void whenNeo4jAuthFileAndPasswordAreSetThenThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new Neo4jEnvironment(
+					Map.of("NEO4J_PASSWORD", "custom-password", "NEO4J_AUTH_FILE", "/run/secrets/auth")))
 			.withMessage("NEO4J_AUTH_FILE is not supported");
 	}
 

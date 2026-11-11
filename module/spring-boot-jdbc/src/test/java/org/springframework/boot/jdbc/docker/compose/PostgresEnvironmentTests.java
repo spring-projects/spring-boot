@@ -5,9 +5,13 @@
 package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -21,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Scott Frederick
  * @author Sidmar Theodoro
  * @author He Zean
+ * @author MyungJoo Song
  */
 class PostgresEnvironmentTests {
 
@@ -165,10 +170,21 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
-	void getPasswordWhenHasTrustHostAuthMethodAndPostgresPasswordFile() {
-		PostgresEnvironment environment = new PostgresEnvironment(
-				Map.of("POSTGRES_HOST_AUTH_METHOD", "trust", "POSTGRES_PASSWORD_FILE", "/run/secrets/password"));
-		assertThat(environment.getPassword()).isNull();
+	void createWhenHasTrustHostAuthMethodAndPostgresPasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PostgresEnvironment(
+					Map.of("POSTGRES_HOST_AUTH_METHOD", "trust", "POSTGRES_PASSWORD_FILE", "/run/secrets/password")))
+			.withMessage("POSTGRES_PASSWORD_FILE is not supported");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "POSTGRES_USER_FILE", "POSTGRES_PASSWORD_FILE", "POSTGRES_DB_FILE" })
+	void createWhenHasFileVariableAndPlainVariablesThrowsException(String fileVariable) {
+		Map<String, @Nullable String> env = new HashMap<>(
+				Map.of("POSTGRES_USER", "me", "POSTGRES_PASSWORD", "secret", "POSTGRES_DB", "db"));
+		env.put(fileVariable, "/run/secrets/value");
+		assertThatIllegalStateException().isThrownBy(() -> new PostgresEnvironment(env))
+			.withMessage(fileVariable + " is not supported");
 	}
 
 }

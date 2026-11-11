@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author MyungJoo Song
  */
 class MariaDbEnvironment {
 
@@ -28,6 +29,14 @@ class MariaDbEnvironment {
 	private final String database;
 
 	MariaDbEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("MARIADB_USER_FILE"), "MARIADB_USER_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_USER_FILE"), "MYSQL_USER_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_PASSWORD_FILE"), "MARIADB_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_PASSWORD_FILE"), "MYSQL_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_FILE"), "MARIADB_ROOT_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_ROOT_PASSWORD_FILE"), "MYSQL_ROOT_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_DATABASE_FILE"), "MARIADB_DATABASE_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_DATABASE_FILE"), "MYSQL_DATABASE_FILE is not supported");
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
@@ -37,9 +46,6 @@ class MariaDbEnvironment {
 		String user = env.get("MARIADB_USER");
 		if (user == null) {
 			user = env.get("MYSQL_USER");
-		}
-		if (user == null) {
-			assertNoFileVariant(env, "MARIADB_USER", "MYSQL_USER");
 		}
 		return (user != null) ? user : "root";
 	}
@@ -55,14 +61,8 @@ class MariaDbEnvironment {
 				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MARIADB_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_PASSWORD");
-		if (password == null) {
-			assertNoFileVariant(env, "MARIADB_PASSWORD", "MYSQL_PASSWORD");
-		}
 		password = (password != null) ? password : env.get("MARIADB_ROOT_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
-		if (password == null) {
-			assertNoFileVariant(env, "MARIADB_ROOT_PASSWORD", "MYSQL_ROOT_PASSWORD");
-		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MariaDB password found");
 		return (password != null) ? password : "";
 	}
@@ -78,18 +78,8 @@ class MariaDbEnvironment {
 	private String extractDatabase(Map<String, @Nullable String> env) {
 		String database = env.get("MARIADB_DATABASE");
 		database = (database != null) ? database : env.get("MYSQL_DATABASE");
-		if (database == null) {
-			assertNoFileVariant(env, "MARIADB_DATABASE", "MYSQL_DATABASE");
-		}
 		Assert.state(database != null, "No MARIADB_DATABASE defined");
 		return database;
-	}
-
-	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
-		for (String key : keys) {
-			String fileKey = key + "_FILE";
-			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
-		}
 	}
 
 	String getUsername() {

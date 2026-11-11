@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
  * ClickHouse environment details.
  *
  * @author Stephane Nicoll
+ * @author MyungJoo Song
  */
 class ClickHouseEnvironment {
 
@@ -25,6 +26,7 @@ class ClickHouseEnvironment {
 	private final String database;
 
 	ClickHouseEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("CLICKHOUSE_PASSWORD_FILE"), "CLICKHOUSE_PASSWORD_FILE is not supported");
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
@@ -43,18 +45,8 @@ class ClickHouseEnvironment {
 	private String extractPassword(Map<String, @Nullable String> env) {
 		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("CLICKHOUSE_PASSWORD");
-		if (password == null) {
-			assertNoFileVariant(env, "CLICKHOUSE_PASSWORD");
-		}
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No ClickHouse password found");
 		return (password != null) ? password : "";
-	}
-
-	private static void assertNoFileVariant(Map<String, @Nullable String> env, String... keys) {
-		for (String key : keys) {
-			String fileKey = key + "_FILE";
-			Assert.state(!env.containsKey(fileKey), () -> fileKey + " is not supported");
-		}
 	}
 
 	String getUsername() {

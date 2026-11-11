@@ -5,9 +5,13 @@
 package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -20,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Jinseong Hwang
  * @author Scott Frederick
+ * @author MyungJoo Song
  */
 class MariaDbEnvironmentTests {
 
@@ -217,11 +222,16 @@ class MariaDbEnvironmentTests {
 			.withMessage("MARIADB_DATABASE_FILE is not supported");
 	}
 
-	@Test
-	void getPasswordWhenHasMariadbPasswordAndMariadbRootPasswordFile() {
-		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MARIADB_PASSWORD",
-				"secret", "MARIADB_ROOT_PASSWORD_FILE", "/run/secrets/root", "MARIADB_DATABASE", "db"));
-		assertThat(environment.getPassword()).isEqualTo("secret");
+	@ParameterizedTest
+	@ValueSource(strings = { "MARIADB_USER_FILE", "MYSQL_USER_FILE", "MARIADB_PASSWORD_FILE", "MYSQL_PASSWORD_FILE",
+			"MARIADB_ROOT_PASSWORD_FILE", "MYSQL_ROOT_PASSWORD_FILE", "MARIADB_DATABASE_FILE", "MYSQL_DATABASE_FILE" })
+	void createWhenHasFileVariableAndPlainVariablesThrowsException(String fileVariable) {
+		Map<String, @Nullable String> env = new HashMap<>(Map.of("MARIADB_USER", "myself", "MYSQL_USER", "myself",
+				"MARIADB_PASSWORD", "secret", "MYSQL_PASSWORD", "secret", "MARIADB_ROOT_PASSWORD", "root",
+				"MYSQL_ROOT_PASSWORD", "root", "MARIADB_DATABASE", "db", "MYSQL_DATABASE", "db"));
+		env.put(fileVariable, "/run/secrets/value");
+		assertThatIllegalStateException().isThrownBy(() -> new MariaDbEnvironment(env))
+			.withMessage(fileVariable + " is not supported");
 	}
 
 }
