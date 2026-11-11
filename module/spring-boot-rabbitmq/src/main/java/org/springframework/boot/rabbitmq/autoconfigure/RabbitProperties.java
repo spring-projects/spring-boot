@@ -439,7 +439,9 @@ public class RabbitProperties {
 
 		/**
 		 * Whether to enable hostname verification.
+		 * @deprecated since 4.1.3 for removal in 4.4.0 without replacement
 		 */
+		@Deprecated(since = "4.1.3", forRemoval = true)
 		private boolean verifyHostname = true;
 
 		public @Nullable Boolean getEnabled() {
@@ -555,7 +557,9 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
-		@DeprecatedConfigurationProperty(reason = "Hostname verification is always enabled", since = "4.2.0")
+		@Deprecated(since = "4.1.3", forRemoval = true)
+		@DeprecatedConfigurationProperty(reason = "Hostname verification cannot be independently disabled",
+				since = "4.1.3")
 		public boolean isVerifyHostname() {
 			return this.verifyHostname;
 		}
