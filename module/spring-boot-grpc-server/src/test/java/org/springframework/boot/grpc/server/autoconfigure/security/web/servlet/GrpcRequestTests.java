@@ -4,12 +4,16 @@
 
 package org.springframework.boot.grpc.server.autoconfigure.security.web.servlet;
 
+import java.util.List;
+
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest.GrpcServletRequestMatcher;
+import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.grpc.server.service.DefaultGrpcServiceDiscoverer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -29,49 +33,57 @@ import static org.mockito.Mockito.mock;
  */
 class GrpcRequestTests {
 
-	private GenericWebApplicationContext context = new GenericWebApplicationContext();
-
-	@BeforeEach
-	void setup() {
-		MockService service1 = mock();
-		given(service1.bindService()).willReturn(ServerServiceDefinition.builder("my-service").build());
-		MockService service2 = mock();
-		given(service2.bindService()).willReturn(ServerServiceDefinition.builder("my-other-service").build());
-		this.context.registerBean("s1", BindableService.class, () -> service1);
-		this.context.registerBean("s2", BindableService.class, () -> service2);
-		this.context.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(this.context));
-		this.context.refresh();
-	}
-
 	@Test
 	void whenToAnyService() {
-		GrpcServletRequestMatcher matcher = GrpcRequest.toAnyService();
-		assertThat(isMatch(matcher, "/my-service/Method")).isTrue();
-		assertThat(isMatch(matcher, "/my-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/my-other-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/notaservice")).isFalse();
+		run(List.of("my-service", "my-other-service"), (context) -> {
+			GrpcServletRequestMatcher matcher = GrpcRequest.toAnyService();
+			assertThat(isMatch(matcher, context, "/my-service/Method")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-other-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/notaservice")).isFalse();
+		});
 	}
 
 	@Test
 	void whenToAnyServiceWithExclude() {
-		GrpcServletRequestMatcher matcher = GrpcRequest.toAnyService().excluding("my-other-service");
-		assertThat(isMatch(matcher, "/my-service/Method")).isTrue();
-		assertThat(isMatch(matcher, "/my-service/Other")).isTrue();
-		assertThat(isMatch(matcher, "/my-other-service/Other")).isFalse();
-		assertThat(isMatch(matcher, "/notaservice")).isFalse();
+		run(List.of("my-service", "my-other-service"), (context) -> {
+			GrpcServletRequestMatcher matcher = GrpcRequest.toAnyService().excluding("my-other-service");
+			assertThat(isMatch(matcher, context, "/my-service/Method")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-service/Other")).isTrue();
+			assertThat(isMatch(matcher, context, "/my-other-service/Other")).isFalse();
+			assertThat(isMatch(matcher, context, "/notaservice")).isFalse();
+		});
 	}
 
-	private boolean isMatch(GrpcServletRequestMatcher matcher, String path) {
-		MockHttpServletRequest request = mockRequest(path);
+	private boolean isMatch(GrpcServletRequestMatcher matcher, WebApplicationContext context, String path) {
+		MockHttpServletRequest request = mockRequest(context, path);
 		return matcher.matches(request);
 	}
 
-	private MockHttpServletRequest mockRequest(String path) {
+	private MockHttpServletRequest mockRequest(WebApplicationContext context, String path) {
 		MockServletContext servletContext = new MockServletContext();
-		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 		request.setRequestURI(path);
 		return request;
+	}
+
+	private void run(List<String> services, ContextConsumer<AssertableWebApplicationContext> consumer) {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(GenericWebApplicationContext::new);
+		for (int i = 0; i < services.size(); i++) {
+			MockService mockService = mockService(services.get(i));
+			runner = runner.withBean("s%d".formatted(i + 1), BindableService.class, () -> mockService);
+		}
+		runner
+			.withInitializer((context) -> ((GenericWebApplicationContext) context)
+				.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(context)))
+			.run(consumer);
+	}
+
+	private MockService mockService(String name) {
+		MockService service = mock();
+		given(service.bindService()).willReturn(ServerServiceDefinition.builder(name).build());
+		return service;
 	}
 
 	interface MockService extends BindableService {
