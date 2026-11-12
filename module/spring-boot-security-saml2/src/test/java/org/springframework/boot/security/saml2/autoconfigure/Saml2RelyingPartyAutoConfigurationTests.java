@@ -5,6 +5,7 @@
 package org.springframework.boot.security.saml2.autoconfigure;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.servlet.Filter;
@@ -31,6 +32,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.saml2.provider.service.metadata.OpenSaml5MetadataResolver;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
@@ -51,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Lasse Lindqvist
  * @author Scott Frederick
+ * @author WooSeung Kim
  */
 class Saml2RelyingPartyAutoConfigurationTests {
 
@@ -200,6 +203,20 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration).isNotNull();
 			assertThat(registration.getAssertingPartyMetadata().getSingleSignOnServiceBinding())
 				.isEqualTo(Saml2MessageBinding.REDIRECT);
+		});
+	}
+
+	@Test
+	@WithPackageResources({ "certificate-location", "private-key-location" })
+	void autoconfigurationWhenSingleLogoutBindingNotSetShouldUsePostBinding() {
+		this.contextRunner.withPropertyValues(getPropertyValuesWithoutSingleLogoutBinding()).run((context) -> {
+			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
+			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+			assertThat(registration).isNotNull();
+			assertThat(registration.getSingleLogoutServiceLocation()).isNotNull();
+			assertThat(registration.getSingleLogoutServiceBindings()).containsExactly(Saml2MessageBinding.POST);
+			assertThat(new OpenSaml5MetadataResolver().resolve(registration))
+				.contains("SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\"");
 		});
 	}
 
@@ -359,6 +376,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				assertThat(registration.getAssertingPartyMetadata().getEntityId()).isEqualTo(expected);
 			});
 		}
+	}
+
+	private String[] getPropertyValuesWithoutSingleLogoutBinding() {
+		return Arrays.stream(getPropertyValues())
+			.filter((property) -> !property.startsWith(PREFIX + ".foo.singlelogout.binding="))
+			.toArray(String[]::new);
 	}
 
 	private String[] getPropertyValuesWithoutSsoBinding() {
