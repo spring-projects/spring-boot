@@ -9,6 +9,7 @@ package org.springframework.boot.pulsar.autoconfigure;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PropertiesPulsarConnectionDetails implements PulsarConnectionDetails {
 
 	private final PulsarProperties pulsarProperties;

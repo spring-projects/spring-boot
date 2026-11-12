@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Chris Bono
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class DeadLetterPolicyMapperTests {
 
 	@Test

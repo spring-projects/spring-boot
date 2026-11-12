@@ -27,8 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.SchemaInfo;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.TypeMapping;
 import org.springframework.boot.thread.Threading;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.boot.util.LambdaSafe;
@@ -83,10 +81,14 @@ import org.springframework.util.Assert;
  * @author Jonas Geiregat
  * @author Yanming Zhou
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * <a href="https://github.com/apache/pulsar-spring">pulsar-spring</a>
  */
 @AutoConfiguration
 @ConditionalOnClass({ PulsarClient.class, PulsarTemplate.class })
 @EnableConfigurationProperties(PulsarProperties.class)
+@Deprecated(since = "4.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class PulsarAutoConfiguration {
 
 	private final PulsarProperties properties;
@@ -152,14 +154,15 @@ public final class PulsarAutoConfiguration {
 	}
 
 	private void addCustomSchemaMappings(DefaultSchemaResolver schemaResolver,
-			@Nullable List<TypeMapping> typeMappings) {
+			@Nullable List<PulsarProperties.Defaults.TypeMapping> typeMappings) {
 		if (typeMappings != null) {
 			typeMappings.forEach((typeMapping) -> addCustomSchemaMapping(schemaResolver, typeMapping));
 		}
 	}
 
-	private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver, TypeMapping typeMapping) {
-		SchemaInfo schemaInfo = typeMapping.schemaInfo();
+	private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver,
+			PulsarProperties.Defaults.TypeMapping typeMapping) {
+		PulsarProperties.Defaults.SchemaInfo schemaInfo = typeMapping.schemaInfo();
 		if (schemaInfo != null) {
 			Class<?> messageType = typeMapping.messageType();
 			SchemaType schemaType = schemaInfo.schemaType();
@@ -187,14 +190,15 @@ public final class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(TopicResolver.class)
 	DefaultTopicResolver pulsarTopicResolver() {
 		DefaultTopicResolver topicResolver = new DefaultTopicResolver();
-		List<TypeMapping> typeMappings = this.properties.getDefaults().getTypeMappings();
+		List<PulsarProperties.Defaults.TypeMapping> typeMappings = this.properties.getDefaults().getTypeMappings();
 		if (typeMappings != null) {
 			typeMappings.forEach((typeMapping) -> addCustomTopicMapping(topicResolver, typeMapping));
 		}
 		return topicResolver;
 	}
 
-	private void addCustomTopicMapping(DefaultTopicResolver topicResolver, TypeMapping typeMapping) {
+	private void addCustomTopicMapping(DefaultTopicResolver topicResolver,
+			PulsarProperties.Defaults.TypeMapping typeMapping) {
 		String topicName = typeMapping.topicName();
 		if (topicName != null) {
 			topicResolver.addCustomTopicMapping(typeMapping.messageType(), topicName);

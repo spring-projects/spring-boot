@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
  * @author Chris Bono
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 final class DeadLetterPolicyMapper {
 
 	private DeadLetterPolicyMapper() {

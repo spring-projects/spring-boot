@@ -17,6 +17,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PulsarContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<PulsarContainer, PulsarConnectionDetails> {
 

@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PropertiesPulsarConnectionDetailsTests {
 
 	@Test

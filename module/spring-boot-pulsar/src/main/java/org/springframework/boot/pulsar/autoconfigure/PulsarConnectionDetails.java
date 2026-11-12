@@ -11,7 +11,10 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  *
  * @author Chris Bono
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * <a href="https://github.com/apache/pulsar-spring">pulsar-spring</a>
  */
+@Deprecated(since = "4.2.0", forRemoval = true)
 public interface PulsarConnectionDetails extends ConnectionDetails {
 
 	/**

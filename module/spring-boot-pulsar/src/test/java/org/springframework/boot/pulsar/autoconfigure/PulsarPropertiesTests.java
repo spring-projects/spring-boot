@@ -26,10 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.SchemaInfo;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.TypeMapping;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Failover;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Failover.BackupCluster;
 import org.springframework.pulsar.core.PulsarTopicBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Swamy Mavuri
  * @author Vedran Pavic
  */
+@SuppressWarnings("removal")
 class PulsarPropertiesTests {
 
 	private PulsarProperties bindProperties(Map<String, String> map) {
@@ -104,8 +101,8 @@ class PulsarPropertiesTests {
 					"com.example.MyAuth2");
 			map.put("spring.pulsar.client.failover.backup-clusters[1].authentication.param.token", "5678");
 			PulsarProperties.Client properties = bindProperties(map).getClient();
-			Failover failoverProperties = properties.getFailover();
-			List<BackupCluster> backupClusters = properties.getFailover().getBackupClusters();
+			PulsarProperties.Failover failoverProperties = properties.getFailover();
+			List<PulsarProperties.Failover.BackupCluster> backupClusters = properties.getFailover().getBackupClusters();
 			assertThat(properties.getServiceUrl()).isEqualTo("my-service-url");
 			assertThat(failoverProperties.getDelay()).isEqualTo(Duration.ofMillis(30000));
 			assertThat(failoverProperties.getSwitchBackDelay()).isEqualTo(Duration.ofMillis(15000));
@@ -169,8 +166,10 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[1].message-type", String.class.getName());
 			map.put("spring.pulsar.defaults.type-mappings[1].topic-name", "string-topic");
 			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
-			TypeMapping expectedTopic1 = new TypeMapping(TestMessage.class, "foo-topic", null);
-			TypeMapping expectedTopic2 = new TypeMapping(String.class, "string-topic", null);
+			PulsarProperties.Defaults.TypeMapping expectedTopic1 = new PulsarProperties.Defaults.TypeMapping(
+					TestMessage.class, "foo-topic", null);
+			PulsarProperties.Defaults.TypeMapping expectedTopic2 = new PulsarProperties.Defaults.TypeMapping(
+					String.class, "string-topic", null);
 			assertThat(properties.getTypeMappings()).containsExactly(expectedTopic1, expectedTopic2);
 		}
 
@@ -180,7 +179,8 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].message-type", TestMessage.class.getName());
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "JSON");
 			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
-			TypeMapping expected = new TypeMapping(TestMessage.class, null, new SchemaInfo(SchemaType.JSON, null));
+			PulsarProperties.Defaults.TypeMapping expected = new PulsarProperties.Defaults.TypeMapping(
+					TestMessage.class, null, new PulsarProperties.Defaults.SchemaInfo(SchemaType.JSON, null));
 			assertThat(properties.getTypeMappings()).containsExactly(expected);
 		}
 
@@ -191,8 +191,8 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].topic-name", "foo-topic");
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "JSON");
 			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
-			TypeMapping expected = new TypeMapping(TestMessage.class, "foo-topic",
-					new SchemaInfo(SchemaType.JSON, null));
+			PulsarProperties.Defaults.TypeMapping expected = new PulsarProperties.Defaults.TypeMapping(
+					TestMessage.class, "foo-topic", new PulsarProperties.Defaults.SchemaInfo(SchemaType.JSON, null));
 			assertThat(properties.getTypeMappings()).containsExactly(expected);
 		}
 
@@ -203,8 +203,9 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "KEY_VALUE");
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
 			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
-			TypeMapping expected = new TypeMapping(TestMessage.class, null,
-					new SchemaInfo(SchemaType.KEY_VALUE, String.class));
+			PulsarProperties.Defaults.TypeMapping expected = new PulsarProperties.Defaults.TypeMapping(
+					TestMessage.class, null,
+					new PulsarProperties.Defaults.SchemaInfo(SchemaType.KEY_VALUE, String.class));
 			assertThat(properties.getTypeMappings()).containsExactly(expected);
 		}
 

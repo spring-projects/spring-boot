@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
+@SuppressWarnings("removal")
 class PulsarAutoConfigurationIntegrationTests {
 
 	@Container

@@ -20,6 +20,7 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PulsarContainerFactoryCustomizers {
 
 	private final List<PulsarContainerFactoryCustomizer<?>> customizers;

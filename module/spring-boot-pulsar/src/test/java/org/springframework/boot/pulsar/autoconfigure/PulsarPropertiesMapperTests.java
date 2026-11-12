@@ -27,8 +27,6 @@ import org.apache.pulsar.client.impl.AutoClusterFailover;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Consumer;
-import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Failover.BackupCluster;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -49,6 +47,7 @@ import static org.mockito.Mockito.never;
  * @author Swamy Mavuri
  * @author Vedran Pavic
  */
+@SuppressWarnings("removal")
 class PulsarPropertiesMapperTests {
 
 	@Test
@@ -119,12 +118,12 @@ class PulsarPropertiesMapperTests {
 
 	@Test
 	void customizeClientBuilderWhenHasFailover() {
-		BackupCluster backupCluster1 = new BackupCluster();
+		PulsarProperties.Failover.BackupCluster backupCluster1 = new PulsarProperties.Failover.BackupCluster();
 		backupCluster1.setServiceUrl("backup-cluster-1");
 		Map<String, String> params = Map.of("param", "name");
 		backupCluster1.getAuthentication().setPluginClassName(MockAuthentication.class.getName());
 		backupCluster1.getAuthentication().setParam(params);
-		BackupCluster backupCluster2 = new BackupCluster();
+		PulsarProperties.Failover.BackupCluster backupCluster2 = new PulsarProperties.Failover.BackupCluster();
 		backupCluster2.setServiceUrl("backup-cluster-2");
 		PulsarProperties properties = new PulsarProperties();
 		properties.getClient().setServiceUrl("https://used.example.com");
@@ -230,7 +229,7 @@ class PulsarPropertiesMapperTests {
 		properties.getConsumer().setTopicsPattern(topisPattern);
 		properties.getConsumer().setPriorityLevel(123);
 		properties.getConsumer().setReadCompacted(true);
-		Consumer.DeadLetterPolicy deadLetterPolicy = new Consumer.DeadLetterPolicy();
+		PulsarProperties.Consumer.DeadLetterPolicy deadLetterPolicy = new PulsarProperties.Consumer.DeadLetterPolicy();
 		deadLetterPolicy.setDeadLetterTopic("my-dlt");
 		deadLetterPolicy.setMaxRedeliverCount(1);
 		properties.getConsumer().setDeadLetterPolicy(deadLetterPolicy);

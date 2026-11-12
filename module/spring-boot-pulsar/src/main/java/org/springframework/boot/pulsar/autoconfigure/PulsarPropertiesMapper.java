@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Swamy Mavuri
  * @author Vedran Pavic
  */
+@SuppressWarnings("removal")
 final class PulsarPropertiesMapper {
 
 	private static final JsonWriter<Map<String, String>> jsonWriter = JsonWriter

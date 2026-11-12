@@ -97,6 +97,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Yanming Zhou
  */
+@SuppressWarnings("removal")
 class PulsarAutoConfigurationTests {
 
 	private static final String INTERNAL_PULSAR_LISTENER_ANNOTATION_PROCESSOR = "org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor";

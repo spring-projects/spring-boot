@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PulsarDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "pulsar-compose.yaml", image = TestImage.PULSAR)

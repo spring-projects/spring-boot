@@ -7,6 +7,9 @@ Spring Boot will auto-configure and register the Spring for Apache Pulsar compon
 
 There is the `spring-boot-starter-pulsar` starter for conveniently collecting the dependencies for use.
 
+NOTE: Apache Pulsar support for Spring  has moved to the Apache Software Foundation.
+Please follow https://pulsar.apache.org/pulsar-spring/reference/migration.html[the official migration guide] to update your application.
+
 
 
 [[messaging.pulsar.connecting]]
@@ -15,7 +18,7 @@ There is the `spring-boot-starter-pulsar` starter for conveniently collecting th
 When you use the Pulsar starter, Spring Boot will auto-configure and register a javadoc:org.apache.pulsar.client.api.PulsarClient[] bean.
 
 By default, the application tries to connect to a local Pulsar instance at `pulsar://localhost:6650`.
-This can be adjusted by setting the configprop:spring.pulsar.client.service-url[] property to a different value.
+This can be adjusted by setting the configprop:spring.pulsar.client.service-url[opts=deprecated] property to a different value.
 
 NOTE: The value must be a valid https://pulsar.apache.org/docs/client-libraries-java/#connection-urls[Pulsar Protocol] URL
 
@@ -32,7 +35,7 @@ To connect to a Pulsar cluster that requires authentication, you need to specify
 You can set the parameters as a map of parameter names to parameter values.
 The following example shows how to configure the `AuthenticationOAuth2` plugin.
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 spring:
   pulsar:
@@ -75,7 +78,7 @@ For complete details on the client and authentication see the Spring for Apache 
 Spring for Apache Pulsar's javadoc:org.springframework.pulsar.core.PulsarAdministration[] client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
-This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[] property to a different value in the form `(http|https)://<host>:<port>`.
+This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[opts=deprecated] property to a different value in the form `(http|https)://<host>:<port>`.
 
 If you need more control over the configuration, consider registering one or more javadoc:org.springframework.pulsar.core.PulsarAdminBuilderCustomizer[] beans.
 
@@ -159,7 +162,7 @@ TIP: For more details on any of the above components and to discover other avail
 
 Spring for Apache Pulsar supports transactions when using javadoc:org.springframework.pulsar.core.PulsarTemplate[] and javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation].
 
-Setting the configprop:spring.pulsar.transaction.enabled[] property to `true` will:
+Setting the configprop:spring.pulsar.transaction.enabled[opts=deprecated] property to `true` will:
 
 * Configure a javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] bean
 * Enable transaction support for javadoc:org.springframework.pulsar.core.PulsarTemplate[]

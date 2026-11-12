@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PulsarContainerFactoryCustomizersTests {
 
 	@Test

@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = { "spring.pulsar.consumer.subscription.initial-position=earliest" })
+@SuppressWarnings("removal")
 class PulsarContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container

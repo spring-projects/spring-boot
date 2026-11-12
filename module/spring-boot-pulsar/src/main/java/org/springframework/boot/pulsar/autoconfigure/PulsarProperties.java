@@ -24,6 +24,7 @@ import org.apache.pulsar.common.schema.SchemaType;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 
@@ -35,8 +36,11 @@ import org.springframework.util.Assert;
  * @author Swamy Mavuri
  * @author Vedran Pavic
  * @since 4.0.0
+ * @deprecated since 4.2.0 for removal in 4.4.0 in favor of
+ * <a href="https://github.com/apache/pulsar-spring">pulsar-spring</a>
  */
 @ConfigurationProperties("spring.pulsar")
+@Deprecated(since = "4.2.0", forRemoval = true)
 public class PulsarProperties {
 
 	private final Client client = new Client();
@@ -59,42 +63,52 @@ public class PulsarProperties {
 
 	private final Transaction transaction = new Transaction();
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Client getClient() {
 		return this.client;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Admin getAdmin() {
 		return this.admin;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Defaults getDefaults() {
 		return this.defaults;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Producer getProducer() {
 		return this.producer;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Consumer getConsumer() {
 		return this.consumer;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Listener getListener() {
 		return this.listener;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Reader getReader() {
 		return this.reader;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Function getFunction() {
 		return this.function;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Template getTemplate() {
 		return this.template;
 	}
 
+	@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 	public Transaction getTransaction() {
 		return this.transaction;
 	}
@@ -136,6 +150,7 @@ public class PulsarProperties {
 		 */
 		private final Failover failover = new Failover();
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
@@ -144,6 +159,7 @@ public class PulsarProperties {
 			this.serviceUrl = serviceUrl;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getOperationTimeout() {
 			return this.operationTimeout;
 		}
@@ -152,6 +168,7 @@ public class PulsarProperties {
 			this.operationTimeout = operationTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Duration getLookupTimeout() {
 			return this.lookupTimeout;
 		}
@@ -160,6 +177,7 @@ public class PulsarProperties {
 			this.lookupTimeout = lookupTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
@@ -168,14 +186,17 @@ public class PulsarProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Authentication getAuthentication() {
 			return this.authentication;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Threads getThreads() {
 			return this.threads;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Failover getFailover() {
 			return this.failover;
 		}
@@ -209,6 +230,7 @@ public class PulsarProperties {
 		 */
 		private final Authentication authentication = new Authentication();
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
@@ -217,6 +239,7 @@ public class PulsarProperties {
 			this.serviceUrl = serviceUrl;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
@@ -225,6 +248,7 @@ public class PulsarProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getReadTimeout() {
 			return this.readTimeout;
 		}
@@ -233,6 +257,7 @@ public class PulsarProperties {
 			this.readTimeout = readTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getRequestTimeout() {
 			return this.requestTimeout;
 		}
@@ -241,6 +266,7 @@ public class PulsarProperties {
 			this.requestTimeout = requestTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Authentication getAuthentication() {
 			return this.authentication;
 		}
@@ -320,6 +346,7 @@ public class PulsarProperties {
 			 */
 			private String namespace = "default";
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public String getTenant() {
 				return this.tenant;
 			}
@@ -328,6 +355,7 @@ public class PulsarProperties {
 				this.tenant = tenant;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public String getNamespace() {
 				return this.namespace;
 			}
@@ -360,6 +388,7 @@ public class PulsarProperties {
 		 */
 		private boolean propagateStopFailures;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isFailFast() {
 			return this.failFast;
 		}
@@ -368,6 +397,7 @@ public class PulsarProperties {
 			this.failFast = failFast;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isPropagateFailures() {
 			return this.propagateFailures;
 		}
@@ -376,6 +406,7 @@ public class PulsarProperties {
 			this.propagateFailures = propagateFailures;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isPropagateStopFailures() {
 			return this.propagateStopFailures;
 		}
@@ -436,6 +467,7 @@ public class PulsarProperties {
 
 		private final Cache cache = new Cache();
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getName() {
 			return this.name;
 		}
@@ -444,6 +476,7 @@ public class PulsarProperties {
 			this.name = name;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getTopicName() {
 			return this.topicName;
 		}
@@ -452,6 +485,7 @@ public class PulsarProperties {
 			this.topicName = topicName;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Duration getSendTimeout() {
 			return this.sendTimeout;
 		}
@@ -460,6 +494,7 @@ public class PulsarProperties {
 			this.sendTimeout = sendTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public MessageRoutingMode getMessageRoutingMode() {
 			return this.messageRoutingMode;
 		}
@@ -468,6 +503,7 @@ public class PulsarProperties {
 			this.messageRoutingMode = messageRoutingMode;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public HashingScheme getHashingScheme() {
 			return this.hashingScheme;
 		}
@@ -476,6 +512,7 @@ public class PulsarProperties {
 			this.hashingScheme = hashingScheme;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isBatchingEnabled() {
 			return this.batchingEnabled;
 		}
@@ -484,6 +521,7 @@ public class PulsarProperties {
 			this.batchingEnabled = batchingEnabled;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isChunkingEnabled() {
 			return this.chunkingEnabled;
 		}
@@ -492,6 +530,7 @@ public class PulsarProperties {
 			this.chunkingEnabled = chunkingEnabled;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable CompressionType getCompressionType() {
 			return this.compressionType;
 		}
@@ -500,6 +539,7 @@ public class PulsarProperties {
 			this.compressionType = compressionType;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public ProducerAccessMode getAccessMode() {
 			return this.accessMode;
 		}
@@ -508,6 +548,7 @@ public class PulsarProperties {
 			this.accessMode = accessMode;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Cache getCache() {
 			return this.cache;
 		}
@@ -529,6 +570,7 @@ public class PulsarProperties {
 			 */
 			private int initialCapacity = 50;
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public Duration getExpireAfterAccess() {
 				return this.expireAfterAccess;
 			}
@@ -537,6 +579,7 @@ public class PulsarProperties {
 				this.expireAfterAccess = expireAfterAccess;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public long getMaximumSize() {
 				return this.maximumSize;
 			}
@@ -545,6 +588,7 @@ public class PulsarProperties {
 				this.maximumSize = maximumSize;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public int getInitialCapacity() {
 				return this.initialCapacity;
 			}
@@ -601,6 +645,7 @@ public class PulsarProperties {
 		 */
 		private boolean retryEnable;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getName() {
 			return this.name;
 		}
@@ -609,10 +654,12 @@ public class PulsarProperties {
 			this.name = name;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Consumer.Subscription getSubscription() {
 			return this.subscription;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable List<String> getTopics() {
 			return this.topics;
 		}
@@ -621,6 +668,7 @@ public class PulsarProperties {
 			this.topics = topics;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Pattern getTopicsPattern() {
 			return this.topicsPattern;
 		}
@@ -629,6 +677,7 @@ public class PulsarProperties {
 			this.topicsPattern = topicsPattern;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public int getPriorityLevel() {
 			return this.priorityLevel;
 		}
@@ -637,6 +686,7 @@ public class PulsarProperties {
 			this.priorityLevel = priorityLevel;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isReadCompacted() {
 			return this.readCompacted;
 		}
@@ -645,6 +695,7 @@ public class PulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable DeadLetterPolicy getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
@@ -653,6 +704,7 @@ public class PulsarProperties {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isRetryEnable() {
 			return this.retryEnable;
 		}
@@ -697,6 +749,7 @@ public class PulsarProperties {
 				this.name = name;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public SubscriptionInitialPosition getInitialPosition() {
 				return this.initialPosition;
 			}
@@ -705,6 +758,7 @@ public class PulsarProperties {
 				this.initialPosition = initialPosition;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public SubscriptionMode getMode() {
 				return this.mode;
 			}
@@ -713,6 +767,7 @@ public class PulsarProperties {
 				this.mode = mode;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public RegexSubscriptionMode getTopicsMode() {
 				return this.topicsMode;
 			}
@@ -721,6 +776,7 @@ public class PulsarProperties {
 				this.topicsMode = topicsMode;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public SubscriptionType getType() {
 				return this.type;
 			}
@@ -757,6 +813,7 @@ public class PulsarProperties {
 			 */
 			private @Nullable String initialSubscriptionName;
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public int getMaxRedeliverCount() {
 				return this.maxRedeliverCount;
 			}
@@ -765,6 +822,7 @@ public class PulsarProperties {
 				this.maxRedeliverCount = maxRedeliverCount;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public @Nullable String getRetryLetterTopic() {
 				return this.retryLetterTopic;
 			}
@@ -773,6 +831,7 @@ public class PulsarProperties {
 				this.retryLetterTopic = retryLetterTopic;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public @Nullable String getDeadLetterTopic() {
 				return this.deadLetterTopic;
 			}
@@ -781,6 +840,7 @@ public class PulsarProperties {
 				this.deadLetterTopic = deadLetterTopic;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public @Nullable String getInitialSubscriptionName() {
 				return this.initialSubscriptionName;
 			}
@@ -819,6 +879,7 @@ public class PulsarProperties {
 			this.schemaType = schemaType;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Integer getConcurrency() {
 			return this.concurrency;
 		}
@@ -827,6 +888,7 @@ public class PulsarProperties {
 			this.concurrency = concurrency;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isObservationEnabled() {
 			return this.observationEnabled;
 		}
@@ -865,6 +927,7 @@ public class PulsarProperties {
 		 */
 		private boolean readCompacted;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getName() {
 			return this.name;
 		}
@@ -873,6 +936,7 @@ public class PulsarProperties {
 			this.name = name;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable List<String> getTopics() {
 			return this.topics;
 		}
@@ -881,6 +945,7 @@ public class PulsarProperties {
 			this.topics = topics;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getSubscriptionName() {
 			return this.subscriptionName;
 		}
@@ -889,6 +954,7 @@ public class PulsarProperties {
 			this.subscriptionName = subscriptionName;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getSubscriptionRolePrefix() {
 			return this.subscriptionRolePrefix;
 		}
@@ -897,6 +963,7 @@ public class PulsarProperties {
 			this.subscriptionRolePrefix = subscriptionRolePrefix;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isReadCompacted() {
 			return this.readCompacted;
 		}
@@ -914,6 +981,7 @@ public class PulsarProperties {
 		 */
 		private boolean observationsEnabled;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isObservationsEnabled() {
 			return this.observationsEnabled;
 		}
@@ -931,6 +999,7 @@ public class PulsarProperties {
 		 */
 		private boolean enabled;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -953,6 +1022,7 @@ public class PulsarProperties {
 		 */
 		private Map<String, String> param = new LinkedHashMap<>();
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable String getPluginClassName() {
 			return this.pluginClassName;
 		}
@@ -961,6 +1031,7 @@ public class PulsarProperties {
 			this.pluginClassName = pluginClassName;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public Map<String, String> getParam() {
 			return this.param;
 		}
@@ -983,6 +1054,7 @@ public class PulsarProperties {
 		 */
 		private @Nullable Integer listener;
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Integer getIo() {
 			return this.io;
 		}
@@ -991,6 +1063,7 @@ public class PulsarProperties {
 			this.io = io;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Integer getListener() {
 			return this.listener;
 		}
@@ -1032,6 +1105,7 @@ public class PulsarProperties {
 		 */
 		private List<BackupCluster> backupClusters = new ArrayList<>();
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public FailoverPolicy getPolicy() {
 			return this.policy;
 		}
@@ -1040,6 +1114,7 @@ public class PulsarProperties {
 			this.policy = policy;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Duration getDelay() {
 			return this.delay;
 		}
@@ -1048,6 +1123,7 @@ public class PulsarProperties {
 			this.delay = delay;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Duration getSwitchBackDelay() {
 			return this.switchBackDelay;
 		}
@@ -1056,6 +1132,7 @@ public class PulsarProperties {
 			this.switchBackDelay = switchBackDelay;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public @Nullable Duration getCheckInterval() {
 			return this.checkInterval;
 		}
@@ -1064,6 +1141,7 @@ public class PulsarProperties {
 			this.checkInterval = checkInterval;
 		}
 
+		@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 		public List<BackupCluster> getBackupClusters() {
 			return this.backupClusters;
 		}
@@ -1084,6 +1162,7 @@ public class PulsarProperties {
 			 */
 			private final Authentication authentication = new Authentication();
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public String getServiceUrl() {
 				return this.serviceUrl;
 			}
@@ -1092,6 +1171,7 @@ public class PulsarProperties {
 				this.serviceUrl = serviceUrl;
 			}
 
+			@DeprecatedConfigurationProperty(since = "4.2.", reason = "module deprecated in favor of pulsar-spring")
 			public Authentication getAuthentication() {
 				return this.authentication;
 			}

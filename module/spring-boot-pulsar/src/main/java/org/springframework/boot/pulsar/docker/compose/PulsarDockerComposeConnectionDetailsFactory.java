@@ -16,6 +16,7 @@ import org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("removal")
 class PulsarDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<PulsarConnectionDetails> {
 
