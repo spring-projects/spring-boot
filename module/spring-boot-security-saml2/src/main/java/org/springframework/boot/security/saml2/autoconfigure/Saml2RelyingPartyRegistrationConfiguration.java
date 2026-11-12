@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Lasse Lindqvist
  * @author Lasse Wulff
  * @author Scott Frederick
+ * @author WooSeung Kim
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
