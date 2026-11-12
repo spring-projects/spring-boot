@@ -147,6 +147,9 @@ spring:
             client-secret: "password"
 ----
 
+If the provider is configured with an `issuer-uri`, its details are discovered from the issuer.
+The default scopes of the common provider are still applied unless the registration's `scope` property is set.
+
 
 
 [[security.oauth2.server]]

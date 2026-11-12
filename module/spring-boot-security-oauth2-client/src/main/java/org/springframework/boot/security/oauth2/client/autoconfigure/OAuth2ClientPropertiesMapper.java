@@ -6,6 +6,7 @@ package org.springframework.boot.security.oauth2.client.autoconfigure;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -30,6 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author MyeongHyeon Lee
  * @author Andy Wilkinson
+ * @author Lee Taeho
  * @since 4.0.0
  */
 public final class OAuth2ClientPropertiesMapper {
@@ -85,6 +87,10 @@ public final class OAuth2ClientPropertiesMapper {
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
 				Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
+				CommonOAuth2Provider commonProvider = getCommonProvider(providerId);
+				if (commonProvider != null) {
+					builder.scope(getScopes(commonProvider, registrationId));
+				}
 				return getBuilder(builder, provider);
 			}
 		}
@@ -122,6 +128,17 @@ public final class OAuth2ClientPropertiesMapper {
 		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
 		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
 		return builder;
+	}
+
+	private static Set<String> getScopes(CommonOAuth2Provider provider, String registrationId) {
+		// Only the scopes are used, the other values are required to build the
+		// registration
+		return provider.getBuilder(registrationId)
+			.clientId(registrationId)
+			.authorizationUri("unused")
+			.tokenUri("unused")
+			.build()
+			.getScopes();
 	}
 
 	private static @Nullable CommonOAuth2Provider getCommonProvider(String providerId) {
