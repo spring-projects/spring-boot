@@ -18,7 +18,6 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	dockerTestRuntimeOnly("io.projectreactor:reactor-core")
 }
 
 tasks.named("compileTestJava") {
