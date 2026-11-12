@@ -78,6 +78,19 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test
+	void keyContainingColon() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo:bar\":\"baz\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map).containsEntry("foo:bar", "baz");
+	}
+
+	@Test
+	void keyContainingColonWithNestedMap() {
+		Map<String, Object> map = this.parser.parseMap("{\"a\":{\"b:c\":\"d\"}}");
+		assertThat(map.get("a")).asInstanceOf(InstanceOfAssertFactories.MAP).containsEntry("b:c", "d");
+	}
+
+	@Test
 	void listWithStringContainingOpeningBracket() {
 		List<Object> list = this.parser.parseList("[\"[\",\"baz\"]");
 		assertThat(list).containsExactly("[", "baz");

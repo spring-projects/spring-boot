@@ -10,6 +10,8 @@ import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jspecify.annotations.Nullable;
 
@@ -31,6 +33,8 @@ import org.springframework.util.StringUtils;
 public class BasicJsonParser extends AbstractJsonParser {
 
 	private static final int MAX_DEPTH = 1000;
+
+	private static final Pattern KEY_VALUE_SEPARATOR = Pattern.compile("\"\\s*:");
 
 	@Override
 	public Map<String, Object> parseMap(@Nullable String json) {
@@ -71,7 +75,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
-			String[] split = StringUtils.split(pair, ":");
+			String[] split = splitKeyAndValue(pair);
 			Assert.state(split != null, () -> "Unable to parse '%s'".formatted(pair));
 			@Nullable String[] rawElement = StringUtils.trimArrayElements(split);
 			String rawKey = rawElement[0];
@@ -85,6 +89,14 @@ public class BasicJsonParser extends AbstractJsonParser {
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	private static String @Nullable [] splitKeyAndValue(String pair) {
+		Matcher matcher = KEY_VALUE_SEPARATOR.matcher(pair);
+		if (matcher.find()) {
+			return new String[] { pair.substring(0, matcher.start() + 1), pair.substring(matcher.end()) };
+		}
+		return StringUtils.split(pair, ":");
 	}
 
 	private Object parseNumber(String json) {
