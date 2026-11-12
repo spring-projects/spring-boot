@@ -20,7 +20,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,6 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Dongliang Xie
  * @author Danish Nawab
+ * @author Xinwei Zhang
  */
 class ExtractCommand extends Command {
 
@@ -141,6 +141,9 @@ class ExtractCommand extends Command {
 
 	private void checkJarCompatibility() throws IOException {
 		File file = this.context.getArchiveFile();
+		if (file.isDirectory()) {
+			return;
+		}
 		try (ZipInputStream stream = new ZipInputStream(new FileInputStream(file))) {
 			ZipEntry entry = stream.getNextEntry();
 			if (entry == null) {
@@ -186,12 +189,28 @@ class ExtractCommand extends Command {
 
 	private File getDestination(Map<Option, @Nullable String> options) {
 		String value = options.get(DESTINATION_OPTION);
+		File source = this.context.getArchiveFile();
+		if (source.isDirectory() && value == null) {
+			throw new JarModeErrorException("The --destination option is required when extracting an unpacked archive");
+		}
 		if (value != null) {
 			File destination = new File(value);
-			if (destination.isAbsolute()) {
-				return destination;
+			if (!destination.isAbsolute()) {
+				destination = new File(this.context.getWorkingDir(), destination.getPath());
 			}
-			return new File(this.context.getWorkingDir(), destination.getPath());
+			if (source.isDirectory()) {
+				try {
+					Path destinationPath = destination.getCanonicalFile().toPath();
+					Path sourcePath = source.getCanonicalFile().toPath();
+					if (destinationPath.startsWith(sourcePath) || sourcePath.startsWith(destinationPath)) {
+						throw new JarModeErrorException("Destination must not overlap the source archive");
+					}
+				}
+				catch (IOException ex) {
+					throw new UncheckedIOException(ex);
+				}
+			}
+			return destination;
 		}
 		return new File(this.context.getWorkingDir(), stripExtension(this.context.getArchiveFile().getName()));
 	}
@@ -245,9 +264,8 @@ class ExtractCommand extends Command {
 		this.directories.create(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
 			Set<String> writtenEntries = new HashSet<>();
-			ManifestWriter manifestWriter = (sourceJarFile) -> {
-				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
-						sourceJarFile.getJarEntry(JarFile.MANIFEST_NAME));
+			ManifestWriter manifestWriter = (sourceManifestEntry) -> {
+				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME, sourceManifestEntry);
 				output.putNextEntry(createJarEntry(META_INF_DIRECTORY, entry));
 				output.closeEntry();
 				writtenEntries.add(META_INF_DIRECTORY);
@@ -308,7 +326,7 @@ class ExtractCommand extends Command {
 			return value;
 		}
 		File archiveFile = this.context.getArchiveFile();
-		if (ArchiveType.of(archiveFile) == ArchiveType.WAR) {
+		if (archiveFile.isDirectory() || ArchiveType.of(archiveFile) == ArchiveType.WAR) {
 			return stripExtension(archiveFile.getName()) + ".jar";
 		}
 		return archiveFile.getName();
@@ -333,12 +351,12 @@ class ExtractCommand extends Command {
 	}
 
 	private @Nullable JarEntry getManifestEntry() throws IOException {
-		try (JarFile jarFile = new JarFile(this.context.getArchiveFile())) {
-			return jarFile.getJarEntry(JarFile.MANIFEST_NAME);
+		try (ArchiveContent jarFile = new ArchiveContent(this.context.getArchiveFile())) {
+			return jarFile.getEntry(JarFile.MANIFEST_NAME);
 		}
 	}
 
-	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
+	private static JarEntry createJarEntry(String location, @Nullable JarEntry originalEntry) {
 		JarEntry entry = new JarEntry(location);
 		if (originalEntry != null) {
 			copyFileTime(getLastModifiedTime(originalEntry), entry::setLastModifiedTime);
@@ -372,19 +390,11 @@ class ExtractCommand extends Command {
 
 	private static void withJarEntries(File file, @Nullable ManifestWriter manifestWriter, ThrowingConsumer callback)
 			throws IOException {
-		try (JarFile jarFile = new JarFile(file)) {
+		try (ArchiveContent jarFile = new ArchiveContent(file)) {
 			if (manifestWriter != null) {
-				manifestWriter.writeManifest(jarFile);
+				manifestWriter.writeManifest(jarFile.getEntry(JarFile.MANIFEST_NAME));
 			}
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				if (StringUtils.hasLength(entry.getName())) {
-					try (InputStream stream = jarFile.getInputStream(entry)) {
-						callback.accept(stream, entry);
-					}
-				}
-			}
+			jarFile.forEach(callback::accept);
 		}
 	}
 
@@ -411,7 +421,7 @@ class ExtractCommand extends Command {
 	@FunctionalInterface
 	private interface ManifestWriter {
 
-		void writeManifest(JarFile sourceJarFile) throws IOException;
+		void writeManifest(@Nullable JarEntry sourceManifestEntry) throws IOException;
 
 	}
 
