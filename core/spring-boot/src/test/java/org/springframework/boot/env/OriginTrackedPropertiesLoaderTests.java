@@ -244,6 +244,22 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	void loadWhenMultiDocumentWithTrailingWhitespaceAndIndentedNextLineLoadsFollowingProperties() throws IOException {
+		String content = "a=a\n#--- \n  b=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(2);
+		assertThat(loaded.get(1).asMap()).containsOnlyKeys("b");
+		assertThat(getValue(loaded.get(1).asMap().get("b"))).isEqualTo("b");
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithTrailingWhitespaceTracksLocationOfFollowingProperties() throws IOException {
+		String content = "a=a\n#--- \nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(getLocation(loaded.get(1).asMap().get("b"))).isEqualTo("3:3");
+	}
+
+	@Test
 	void loadWhenMultiDocumentWithPoundPrefixAndTrailingCharsLoadsSingleDoc() throws IOException {
 		String content = "a=a\n#--- \tcomment\nb=b";
 		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load(null);
