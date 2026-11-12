@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.SchemaInfo;
 import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.TypeMapping;
 import org.springframework.boot.thread.Threading;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizers;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +81,7 @@ import org.springframework.util.Assert;
  * @author Alexander Preuß
  * @author Phillip Webb
  * @author Jonas Geiregat
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -303,8 +305,11 @@ public final class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PulsarAwareTransactionManager.class)
 	@ConditionalOnBooleanProperty("spring.pulsar.transaction.enabled")
-	PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
-		return new PulsarTransactionManager(pulsarClient);
+	PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		PulsarTransactionManager pulsarTransactionManager = new PulsarTransactionManager(pulsarClient);
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(pulsarTransactionManager));
+		return pulsarTransactionManager;
 	}
 
 	@SuppressWarnings("unchecked")
