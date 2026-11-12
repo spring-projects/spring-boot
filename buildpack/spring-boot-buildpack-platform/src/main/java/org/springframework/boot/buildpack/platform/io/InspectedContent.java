@@ -149,15 +149,14 @@ public class InspectedContent implements Content {
 
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
-			int size = len - off;
-			if (this.tempFile == null && (this.size + size) > MEMORY_LIMIT) {
+			if (this.tempFile == null && (this.size + len) > MEMORY_LIMIT) {
 				convertToTempFile();
 			}
 			this.delegate.write(b, off, len);
 			for (Inspector inspector : this.inspectors) {
 				inspector.update(b, off, len);
 			}
-			this.size += size;
+			this.size += len;
 		}
 
 		private void convertToTempFile() throws IOException {
