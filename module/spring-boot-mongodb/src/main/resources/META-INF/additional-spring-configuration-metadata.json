@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "management.health.mongo.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
         "replacement": "management.health.mongodb.enabled",
@@ -17,6 +18,7 @@
     },
     {
       "name": "management.metrics.mongo.command.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
         "replacement": "management.metrics.mongodb.command.enabled",
@@ -25,6 +27,7 @@
     },
     {
       "name": "management.metrics.mongo.connectionpool.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
         "replacement": "management.metrics.mongodb.connectionpool.enabled",
@@ -33,16 +36,19 @@
     },
     {
       "name": "management.metrics.mongodb.command.enabled",
+      "type": "java.lang.Boolean",
       "description": "Whether to enable Mongo client command metrics.",
       "defaultValue": true
     },
     {
       "name": "management.metrics.mongodb.connectionpool.enabled",
+      "type": "java.lang.Boolean",
       "description": "Whether to enable Mongo connection pool metrics.",
       "defaultValue": true
     },
     {
       "name": "spring.data.mongodb.additional-hosts",
+      "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.additional-hosts",
@@ -51,6 +57,7 @@
     },
     {
       "name": "spring.data.mongodb.authentication-database",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.authentication-database",
@@ -59,6 +66,7 @@
     },
     {
       "name": "spring.data.mongodb.database",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.database",
@@ -67,6 +75,7 @@
     },
     {
       "name": "spring.data.mongodb.host",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.host",
@@ -75,6 +84,7 @@
     },
     {
       "name": "spring.data.mongodb.password",
+      "type": "java.lang.Character[]",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.password",
@@ -83,6 +93,7 @@
     },
     {
       "name": "spring.data.mongodb.port",
+      "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.port",
@@ -91,6 +102,7 @@
     },
     {
       "name": "spring.data.mongodb.protocol",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.protocol",
@@ -99,6 +111,7 @@
     },
     {
       "name": "spring.data.mongodb.replica-set-name",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.replica-set-name",
@@ -107,6 +120,7 @@
     },
     {
       "name": "spring.data.mongodb.ssl.bundle",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.ssl.bundle",
@@ -115,6 +129,7 @@
     },
     {
       "name": "spring.data.mongodb.ssl.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.ssl.enabled",
@@ -123,6 +138,7 @@
     },
     {
       "name": "spring.data.mongodb.uri",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.uri",
@@ -131,6 +147,7 @@
     },
     {
       "name": "spring.data.mongodb.username",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.username",
@@ -139,6 +156,7 @@
     },
     {
       "name": "spring.data.mongodb.uuid-representation",
+      "type": "org.bson.UuidRepresentation",
       "deprecation": {
         "level": "error",
         "replacement": "spring.mongodb.representation.uuid",
