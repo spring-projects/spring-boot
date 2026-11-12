@@ -92,6 +92,26 @@ class InspectedContentTests {
 		assertThat(readBytes(content)).containsExactly('A', 'B', 'C');
 	}
 
+	@Test
+	void ofWritingRangeShouldWork() throws Exception {
+		byte[] bytes = "xxxxxtest".getBytes(StandardCharsets.UTF_8);
+		InspectedContent content = InspectedContent.of((outputStream) -> outputStream.write(bytes, 5, 4));
+		assertThat(content.size()).isEqualTo(4);
+		assertThat(readBytes(content)).containsExactly('t', 'e', 's', 't');
+	}
+
+	@Test
+	void ofWritingRangesThatExceedMemoryLimitShouldWork() throws Exception {
+		byte[] bytes = new byte[InspectedContent.MEMORY_LIMIT + 3];
+		System.arraycopy(new byte[] { 0, 1, 2 }, 0, bytes, 0, 3);
+		InspectedContent content = InspectedContent.of((outputStream) -> {
+			outputStream.write(bytes, 0, 3);
+			outputStream.write(bytes, 3, bytes.length - 3);
+		});
+		assertThat(content.size()).isEqualTo(bytes.length);
+		assertThat(readBytes(content)).isEqualTo(bytes);
+	}
+
 	private byte[] readBytes(InspectedContent content) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		content.writeTo(outputStream);
