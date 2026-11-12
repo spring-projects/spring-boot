@@ -1627,7 +1627,7 @@ bom {
 			}
 		}
 	}
-	library("Micrometer Tracing", "1.6.9-INTERNAL-SNAPSHOT") {
+	library("Micrometer Tracing", "1.6.9") {
 		firstParty()
 		alignWith {
 			dependencyManagementDeclaredIn("io.micrometer:micrometer-tracing-bom") {
