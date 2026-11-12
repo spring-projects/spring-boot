@@ -260,11 +260,11 @@ class JvmMetricsAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasFailed()
 				.getFailure()
 				.hasMessageContaining(
-						"Either JvmMemoryMeterConventions or JvmThreadCountMeterConvention should be set"));
+						"Either JvmThreadMeterConventions or JvmThreadCountMeterConvention should be set"));
 	}
 
 	@Test
-	void allowCustomJJvmThreadCountMeterConventionToBeUsed() {
+	void allowCustomJvmThreadCountMeterConventionToBeUsed() {
 		JvmThreadCountMeterConvention threadCountConvention = mock(JvmThreadCountMeterConvention.class);
 		this.contextRunner.withBean(JvmThreadCountMeterConvention.class, () -> threadCountConvention)
 			.run((context) -> assertThat(context).hasSingleBean(JvmThreadMetrics.class)
