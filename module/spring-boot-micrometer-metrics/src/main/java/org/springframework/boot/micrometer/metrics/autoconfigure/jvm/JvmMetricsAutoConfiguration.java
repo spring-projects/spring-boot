@@ -47,6 +47,7 @@ import org.springframework.boot.micrometer.observation.autoconfigure.condition.S
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -89,10 +90,9 @@ public final class JvmMetricsAutoConfiguration {
 				jvmMemoryCommittedMeterConvention.getIfAvailable(), jvmMemoryMaxMeterConvention.getIfAvailable(),
 				jvmMemoryUsedAfterLastGcMeterConvention.getIfAvailable());
 		JvmMemoryMeterConventions deprecatedConventions = jvmMemoryMeterConventions.getIfAvailable();
-		if (deprecatedConventions != null && factory.hasConvention()) {
-			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
-				.formatted(JvmMemoryMeterConventions.class.getSimpleName()));
-		}
+		Assert.state(deprecatedConventions == null || !factory.hasConvention(),
+				() -> "Either %s or the interfaces that supersede it should be set"
+					.formatted(JvmMemoryMeterConventions.class.getSimpleName()));
 		return (deprecatedConventions != null) ? new JvmMemoryMetrics(Collections.emptyList(), deprecatedConventions)
 				: factory.create(observationProperties);
 	}
@@ -105,11 +105,9 @@ public final class JvmMetricsAutoConfiguration {
 			ObjectProvider<JvmThreadCountMeterConvention> jvmThreadCountMeterConvention) {
 		JvmThreadMeterConventions deprecatedConventions = jvmThreadMeterConventions.getIfAvailable();
 		JvmThreadCountMeterConvention convention = jvmThreadCountMeterConvention.getIfAvailable();
-		if (deprecatedConventions != null && convention != null) {
-			throw new IllegalStateException(
-					"Either %s or %s should be set".formatted(JvmThreadMeterConventions.class.getSimpleName(),
-							JvmThreadCountMeterConvention.class.getSimpleName()));
-		}
+		Assert.state(deprecatedConventions == null || convention == null,
+				() -> "Either %s or %s should be set".formatted(JvmThreadMeterConventions.class.getSimpleName(),
+						JvmThreadCountMeterConvention.class.getSimpleName()));
 		if (deprecatedConventions != null) {
 			return new JvmThreadMetrics(Collections.emptyList(), deprecatedConventions);
 		}
@@ -133,10 +131,9 @@ public final class JvmMetricsAutoConfiguration {
 		ClassLoaderMetricsFactory factory = new ClassLoaderMetricsFactory(jvmClassCountMeterConvention.getIfAvailable(),
 				jvmClassLoadedMeterConvention.getIfAvailable(), jvmClassUnloadedMeterConvention.getIfAvailable());
 		JvmClassLoadingMeterConventions deprecatedConventions = jvmClassLoadingMeterConventions.getIfAvailable();
-		if (deprecatedConventions != null && factory.hasConvention()) {
-			throw new IllegalStateException("Either %s or the interfaces that supersede it should be set"
-				.formatted(JvmClassLoadingMeterConventions.class.getSimpleName()));
-		}
+		Assert.state(deprecatedConventions == null || !factory.hasConvention(),
+				() -> "Either %s or the interfaces that supersede it should be set"
+					.formatted(JvmClassLoadingMeterConventions.class.getSimpleName()));
 		return (deprecatedConventions != null) ? new ClassLoaderMetrics(deprecatedConventions)
 				: factory.create(observationProperties);
 	}
