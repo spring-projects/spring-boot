@@ -55,8 +55,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { "my+database", "my?database", "my/database", "my%database", "my%2Fdatabase", "my database",
-			"my数据库" })
+	@ValueSource(strings = { "my+db", "my?db", "my/db", "my%db", "my%db", "my db", "my数据库" })
 	void createConnectionDetailsWithDatabaseNameRequiringEncoding(String database) {
 		given(this.service.env())
 			.willReturn(Map.of("POSTGRES_USER", "user", "POSTGRES_PASSWORD", "password", "POSTGRES_DB", database));

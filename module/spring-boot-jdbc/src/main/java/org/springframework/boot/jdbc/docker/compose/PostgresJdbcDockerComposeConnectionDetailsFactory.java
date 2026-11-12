@@ -53,7 +53,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		PostgresJdbcDockerComposeConnectionDetails(RunningService service, Environment environment) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
-			String database = URLEncoder.encode(this.environment.getDatabase(), StandardCharsets.UTF_8);
+			String database = urlEncode(this.environment.getDatabase());
 			this.jdbcUrl = addApplicationNameIfNecessary(jdbcUrlBuilder.build(service, database), environment);
 		}
 
@@ -87,10 +87,11 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 			else if (!jdbcUrl.endsWith("&")) {
 				jdbcUrlBuilder.append("&");
 			}
-			return jdbcUrlBuilder.append("ApplicationName")
-				.append('=')
-				.append(URLEncoder.encode(applicationName, StandardCharsets.UTF_8))
-				.toString();
+			return jdbcUrlBuilder.append("ApplicationName").append('=').append(urlEncode(applicationName)).toString();
+		}
+
+		private static String urlEncode(String applicationName) {
+			return URLEncoder.encode(applicationName, StandardCharsets.UTF_8);
 		}
 
 	}
