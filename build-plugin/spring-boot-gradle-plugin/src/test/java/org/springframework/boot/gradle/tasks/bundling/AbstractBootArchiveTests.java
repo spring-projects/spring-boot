@@ -37,12 +37,12 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.internal.file.archive.ZipEntryConstants;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -739,7 +739,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	private ResolvedArtifactResult mockArtifact(String fileName, String group, String module, String version) {
-		ModuleComponentArtifactIdentifier moduleId = mock(ModuleComponentArtifactIdentifier.class);
+		ComponentArtifactIdentifier moduleId = mock(ComponentArtifactIdentifier.class);
 		ModuleComponentIdentifier componentId = mock(ModuleComponentIdentifier.class);
 		given(moduleId.getComponentIdentifier()).willReturn(componentId);
 		given(componentId.getGroup()).willReturn(group);
