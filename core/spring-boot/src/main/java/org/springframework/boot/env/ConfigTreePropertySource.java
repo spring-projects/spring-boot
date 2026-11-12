@@ -62,6 +62,7 @@ import org.springframework.util.StringUtils;
  * mounts.
  *
  * @author Phillip Webb
+ * @author Yu Xia
  * @since 2.4.0
  */
 public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
@@ -200,15 +201,14 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				try (Stream<Path> pathStream = Files.find(sourceDirectory, MAX_DEPTH,
-						(path, attributes) -> isPropertyFile(sourceDirectory, path, attributes),
-						FileVisitOption.FOLLOW_LINKS)) {
-					pathStream.forEach((path) -> {
-						String name = getName(sourceDirectory.relativize(path));
+				try (Stream<Path> paths = Files.find(sourceDirectory, MAX_DEPTH,
+						PropertyFile::isRegularFileOrSymbolicLink, FileVisitOption.FOLLOW_LINKS)) {
+					paths.forEach((path) -> {
+						Path relativePath = sourceDirectory.relativize(path);
+						String name = getName(relativePath);
 						if (StringUtils.hasText(name)) {
-							if (options.contains(Option.USE_LOWERCASE_NAMES)) {
-								name = name.toLowerCase(Locale.getDefault());
-							}
+							name = (options.contains(Option.USE_LOWERCASE_NAMES))
+									? name.toLowerCase(Locale.getDefault()) : name;
 							propertyFiles.put(name, new PropertyFile(path, options));
 						}
 					});
@@ -220,21 +220,16 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
 			}
 		}
 
-		private static boolean isPropertyFile(Path sourceDirectory, Path path, BasicFileAttributes attributes) {
-			return !hasHiddenPathElement(sourceDirectory.relativize(path))
-					&& (attributes.isRegularFile() || attributes.isSymbolicLink());
+		private static boolean isRegularFileOrSymbolicLink(Path path, BasicFileAttributes attributes) {
+			return attributes.isRegularFile() || attributes.isSymbolicLink();
 		}
 
-		private static boolean hasHiddenPathElement(Path relativePath) {
+		private static @Nullable String getName(Path relativePath) {
 			for (Path element : relativePath) {
 				if (element.toString().startsWith("..")) {
-					return true;
+					return null;
 				}
 			}
-			return false;
-		}
-
-		private static String getName(Path relativePath) {
 			int nameCount = relativePath.getNameCount();
 			if (nameCount == 1) {
 				return relativePath.toString();

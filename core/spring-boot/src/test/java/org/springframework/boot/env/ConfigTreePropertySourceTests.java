@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ConfigTreePropertySource}.
  *
  * @author Phillip Webb
+ * @author Yu Xia
  */
 class ConfigTreePropertySourceTests {
 
