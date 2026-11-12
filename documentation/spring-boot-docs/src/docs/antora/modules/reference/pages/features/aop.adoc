@@ -3,6 +3,11 @@
 
 Spring Boot provides auto-configuration for aspect-oriented programming (AOP).
 You can learn more about AOP with Spring in the {url-spring-framework-docs}/core/aop-api.html[Spring Framework reference documentation].
+Proxy-based AOP, including the support for `@Transactional` and caching, does not require AspectJ.
+If your application declares aspects of its own using AspectJ annotations, add the `spring-boot-starter-aspectj` starter, which provides `spring-aop` and `aspectjweaver`.
+
+NOTE: Prior to Spring Boot 4.0, `spring-boot-starter-aspectj` was named `spring-boot-starter-aop`.
+Review whether you need it at all: it is only required when your application itself uses AspectJ, such as an annotation in the `org.aspectj.lang.annotation` package.
 
 By default, Spring Boot's auto-configuration configures Spring AOP to use CGLib proxies.
 To use JDK proxies instead, set configprop:spring.aop.proxy-target-class[] to `false`.
