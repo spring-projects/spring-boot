@@ -106,7 +106,7 @@ record RabbitUri(@Nullable Boolean secure, @Nullable String host, @Nullable Inte
 		int bracketIndex = connection.lastIndexOf(']');
 		int colonIndex = connection.lastIndexOf(':');
 		if (colonIndex == -1 || colonIndex < bracketIndex) {
-			return new RabbitUri(secure, connection, null, username, password, virtualHost);
+			return new RabbitUri(secure, connection, null, decode(username), decode(password), decode(virtualHost));
 		}
 		String host = connection.substring(0, colonIndex);
 		Integer port = Integer.parseInt(connection.substring(colonIndex + 1));
