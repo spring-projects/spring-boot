@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ConfigTreePropertySource}.
  *
  * @author Phillip Webb
+ * @author Yu Xia
  */
 class ConfigTreePropertySourceTests {
 
@@ -90,6 +91,15 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", symlinkTempDir);
 		Files.delete(symlinkTempDir);
 		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
+	}
+
+	@Test
+	void getPropertyNamesWhenSourceDirectoryIsReferencedViaDotDotReturnsPropertyNames() throws Exception {
+		addProperty("a", "A");
+		Path name = this.directory.getFileName();
+		Path viaDotDot = this.directory.resolveSibling(name + "/../" + name);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", viaDotDot);
+		assertThat(propertySource.getPropertyNames()).containsExactly("a");
 	}
 
 	@Test
