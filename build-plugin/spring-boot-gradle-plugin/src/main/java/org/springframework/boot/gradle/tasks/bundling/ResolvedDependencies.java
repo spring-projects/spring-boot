@@ -22,7 +22,6 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
-import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LibraryCoordinates;
@@ -84,12 +83,11 @@ class ResolvedDependencies {
 		if (id == null) {
 			return null;
 		}
-		if (id instanceof ModuleComponentArtifactIdentifier moduleComponentId) {
-			ModuleComponentIdentifier moduleId = moduleComponentId.getComponentIdentifier();
+		ComponentIdentifier componentIdentifier = id.getComponentIdentifier();
+		if (componentIdentifier instanceof ModuleComponentIdentifier moduleId) {
 			return new DependencyDescriptor(
 					LibraryCoordinates.of(moduleId.getGroup(), moduleId.getModule(), moduleId.getVersion()), false);
 		}
-		ComponentIdentifier componentIdentifier = id.getComponentIdentifier();
 		if (componentIdentifier instanceof ProjectComponentIdentifier projectComponentId) {
 			String projectPath = projectComponentId.getProjectPath();
 			LibraryCoordinates projectCoordinates = this.projectCoordinatesByPath.get(projectPath);
