@@ -13,6 +13,7 @@
     },
     {
       "name": "spring.http.client.factory",
+      "type": "org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientsProperties$Factory",
       "description": "Default factory used for a client HTTP request.",
       "deprecated": true,
       "deprecation": {
@@ -32,6 +33,7 @@
     },
     {
       "name": "spring.http.client.redirects",
+      "type": "org.springframework.boot.http.client.HttpRedirects",
       "description": "Handling for HTTP redirects.",
       "deprecated": true,
       "deprecation": {
@@ -61,6 +63,7 @@
     },
     {
       "name": "spring.http.reactiveclient.connector",
+      "type": "org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientsProperties$Connector",
       "description": "Default connector used for a client HTTP request.",
       "deprecated": true,
       "deprecation": {

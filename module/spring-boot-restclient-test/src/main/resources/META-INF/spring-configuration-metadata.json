@@ -8,6 +8,7 @@
     },
     {
       "name": "spring.test.webclient.mockrestserviceserver.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level":"error",
         "replacement":"spring.test.restclient.mockrestserviceserver.enabled",

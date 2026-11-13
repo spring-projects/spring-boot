@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "management.otlp.tracing.compression",
+      "type": "org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingProperties$Compression",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.compression",
         "level": "error",
@@ -11,6 +12,7 @@
     },
     {
       "name": "management.otlp.tracing.connect-timeout",
+      "type": "java.time.Duration",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.connect-timeout",
         "level": "error",
@@ -19,6 +21,7 @@
     },
     {
       "name": "management.otlp.tracing.endpoint",
+      "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.endpoint",
         "level": "error",
@@ -27,6 +30,7 @@
     },
     {
       "name": "management.otlp.tracing.export.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.tracing.export.otlp.enabled",
         "level": "error",
@@ -35,6 +39,7 @@
     },
     {
       "name": "management.otlp.tracing.headers",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.headers",
         "level": "error",
@@ -43,6 +48,7 @@
     },
     {
       "name": "management.otlp.tracing.timeout",
+      "type": "java.time.Duration",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.timeout",
         "level": "error",
@@ -51,6 +57,7 @@
     },
     {
       "name": "management.otlp.tracing.transport",
+      "type": "org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.Transport",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.transport",
         "level": "error",
@@ -65,6 +72,7 @@
     },
     {
       "name": "management.tracing.opentelemetry.export.include-unsampled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.include-unsampled",
         "level": "error",
@@ -73,6 +81,7 @@
     },
     {
       "name": "management.tracing.opentelemetry.export.max-batch-size",
+      "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.max-batch-size",
         "level": "error",
@@ -81,6 +90,7 @@
     },
     {
       "name": "management.tracing.opentelemetry.export.max-queue-size",
+      "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.max-queue-size",
         "level": "error",
@@ -89,6 +99,7 @@
     },
     {
       "name": "management.tracing.opentelemetry.export.schedule-delay",
+      "type": "java.time.Duration",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.schedule-delay",
         "level": "error",
@@ -97,6 +108,7 @@
     },
     {
       "name": "management.tracing.opentelemetry.export.timeout",
+      "type": "java.time.Duration",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.timeout",
         "level": "error",

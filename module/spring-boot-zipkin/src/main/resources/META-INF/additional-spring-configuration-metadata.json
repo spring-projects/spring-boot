@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "management.zipkin.tracing.connect-timeout",
+      "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
         "replacement": "management.tracing.export.zipkin.connect-timeout",
@@ -11,6 +12,7 @@
     },
     {
       "name": "management.zipkin.tracing.encoding",
+      "type": "org.springframework.boot.zipkin.autoconfigure.ZipkinProperties$Encoding",
       "deprecation": {
         "level": "error",
         "replacement": "management.tracing.export.zipkin.encoding",
@@ -19,6 +21,7 @@
     },
     {
       "name": "management.zipkin.tracing.endpoint",
+      "type": "java.lang.String",
       "deprecation": {
         "level": "error",
         "replacement": "management.tracing.export.zipkin.endpoint",
@@ -27,6 +30,7 @@
     },
     {
       "name": "management.zipkin.tracing.read-timeout",
+      "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
         "replacement": "management.tracing.export.zipkin.read-timeout",
