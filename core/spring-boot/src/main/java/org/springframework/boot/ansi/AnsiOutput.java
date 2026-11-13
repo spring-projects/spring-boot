@@ -21,6 +21,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Yong-Hyun Kim
  * @author Philemon Hilscher
+ * @author Diego Magalhães
  * @since 1.0.0
  */
 public abstract class AnsiOutput {
@@ -88,8 +89,14 @@ public abstract class AnsiOutput {
 	 * @return a string of the encoded elements
 	 */
 	public static String toString(Object... elements) {
+		boolean enabled = isEnabled();
+		if (!enabled && elements != null && elements.length == 2 && elements[0] instanceof AnsiElement
+				&& elements[1] instanceof String string) {
+			// Only the text would be appended, so return it without copying
+			return string;
+		}
 		StringBuilder sb = new StringBuilder();
-		if (isEnabled()) {
+		if (enabled) {
 			buildEnabled(sb, elements);
 		}
 		else {
