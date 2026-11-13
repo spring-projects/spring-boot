@@ -9,6 +9,7 @@
     },
     {
       "name": "spring.jms.listener.acknowledge-mode",
+      "type": "org.springframework.boot.jms.autoconfigure.AcknowledgeMode",
       "deprecation": {
         "replacement": "spring.jms.listener.session.acknowledge-mode",
         "since": "3.2.0"

@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "management.tracing.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.tracing.export.enabled",
         "level": "error",

@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "management.tracing.brave.span-joining-supported",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.brave.tracing.span-joining-supported",
         "level": "error",
@@ -17,6 +18,7 @@
     },
     {
       "name": "management.zipkin.tracing.export.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.tracing.export.zipkin.enabled",
         "level": "error",
