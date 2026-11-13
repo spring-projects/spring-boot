@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.server.ForwardedRequestHeaders;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.mock;
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
+	private final MockEnvironment environment = new MockEnvironment();
+
 	private final ServerProperties properties = new ServerProperties();
 
 	private final SslBundles sslBundles = new DefaultSslBundleRegistry();
@@ -39,8 +42,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.customizer = new ReactiveWebServerFactoryCustomizer(new MockEnvironment(), this.properties,
-				this.sslBundles);
+		this.customizer = new ReactiveWebServerFactoryCustomizer(this.environment, this.properties, this.sslBundles);
 	}
 
 	@Test
@@ -76,6 +78,14 @@ class ReactiveWebServerFactoryCustomizerTests {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
+	}
+
+	@Test
+	void deduceForwardedRequestHeaders() {
+		this.environment.setProperty("DYNO", "-");
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setForwardedRequestHeaders(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
 	}
 
 }
