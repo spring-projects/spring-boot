@@ -6,6 +6,7 @@ package org.springframework.boot.grpc.server.autoconfigure;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -16,6 +17,7 @@ import org.mockito.verification.VerificationMode;
 
 import org.springframework.util.unit.DataSize;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -54,6 +56,61 @@ class PropertiesServerBuilderCustomizerTests {
 				getProperties());
 		customizer.customize(builder);
 		assertExpectedMapping(builder, never());
+	}
+
+	@Test
+	void customizeWhenMaxMessageSizeIsMinusOneUsesMaxValue() {
+		NettyServerBuilder builder = getBuilder(
+				(properties) -> properties.getInbound().getMessage().setMaxSize(DataSize.ofBytes(-1)));
+		then(builder).should().maxInboundMessageSize(Integer.MAX_VALUE);
+	}
+
+	@Test
+	void customizeWhenMaxMessageSizeIsTooBigUsesMaxValue() {
+		NettyServerBuilder builder = getBuilder((properties) -> properties.getInbound()
+			.getMessage()
+			.setMaxSize(DataSize.ofBytes((long) Integer.MAX_VALUE + 100)));
+		then(builder).should().maxInboundMessageSize(Integer.MAX_VALUE);
+	}
+
+	@Test
+	void customizeWhenMaxMessageSizeIsNegativeAndNotMinusOneThrowsException() {
+		assertThatIllegalStateException().isThrownBy(
+				() -> getBuilder((properties) -> properties.getInbound().getMessage().setMaxSize(DataSize.ofBytes(-2))))
+			.withMessage("Unsupported max size value -2B");
+	}
+
+	@Test
+	void customizeWhenMaxMetadataSizeIsMinusOneUsesMaxValue() {
+		NettyServerBuilder builder = getBuilder(
+				(properties) -> properties.getInbound().getMetadata().setMaxSize(DataSize.ofBytes(-1)));
+		then(builder).should().maxInboundMetadataSize(Integer.MAX_VALUE);
+	}
+
+	@Test
+	void customizeWhenMaxMetadataSizeIsTooBigUsesMaxValue() {
+		NettyServerBuilder builder = getBuilder((properties) -> properties.getInbound()
+			.getMetadata()
+			.setMaxSize(DataSize.ofBytes((long) Integer.MAX_VALUE + 100)));
+		then(builder).should().maxInboundMetadataSize(Integer.MAX_VALUE);
+	}
+
+	@Test
+	void customizeWhenMaxMetadataSizeIsNegativeAndNotMinusOneThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> getBuilder(
+					(properties) -> properties.getInbound().getMetadata().setMaxSize(DataSize.ofBytes(-2))))
+			.withMessage("Unsupported max size value -2B");
+	}
+
+	private NettyServerBuilder getBuilder(Consumer<GrpcServerProperties> setup) {
+		GrpcServerProperties properties = new GrpcServerProperties();
+		setup.accept(properties);
+		NettyServerBuilder builder = mock();
+		PropertiesServerBuilderCustomizer<NettyServerBuilder> customizer = new PropertiesServerBuilderCustomizer<>(
+				properties);
+		customizer.customize(builder);
+		return builder;
 	}
 
 	private GrpcServerProperties getProperties() {
