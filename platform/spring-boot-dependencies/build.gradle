@@ -2663,7 +2663,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.2.0-SNAPSHOT") {
+	library("Spring AMQP", "4.2.0-INTERNAL-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
@@ -2873,7 +2873,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "7.2.0-SNAPSHOT") {
+	library("Spring Integration", "7.2.0-INTERNAL-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
@@ -2888,7 +2888,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "4.2.0-SNAPSHOT") {
+	library("Spring Kafka", "4.2.0-INTERNAL-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.kafka") {
 			modules = [
@@ -2956,7 +2956,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "7.2.0-SNAPSHOT") {
+	library("Spring Security", "7.2.0-INTERNAL-SNAPSHOT") {
 		firstParty()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
@@ -2971,7 +2971,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "4.2.0-SNAPSHOT") {
+	library("Spring Session", "4.2.0-INTERNAL-SNAPSHOT") {
 		firstParty()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
