@@ -39,6 +39,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -136,6 +137,17 @@ class EmbeddedLdapAutoConfigurationTests {
 			.run((context) -> {
 				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 				assertThat(server.getSchema()).isNull();
+			});
+	}
+
+	@Test
+	void directoryServerConfigCustomizersAreAppliedInOrder() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+			.withUserConfiguration(DirectoryServerConfigCustomizersConfiguration.class)
+			.run((context) -> {
+				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				assertThat(server.getConfig().getMaxConnections()).isEqualTo(5);
+				assertThat(server.getConfig().getMaxSizeLimit()).isEqualTo(10);
 			});
 	}
 
@@ -534,6 +546,26 @@ class EmbeddedLdapAutoConfigurationTests {
 		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		propertyValues.addAll(List.of(additionalProperties));
 		return propertyValues.toArray(String[]::new);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DirectoryServerConfigCustomizersConfiguration {
+
+		@Bean
+		@Order(5)
+		InMemoryDirectoryServerConfigCustomizer configCustomizer() {
+			return (config) -> config.setMaxConnections(5);
+		}
+
+		@Bean
+		@Order(2)
+		InMemoryDirectoryServerConfigCustomizer anotherConfigCustomizer() {
+			return (config) -> {
+				config.setMaxConnections(2);
+				config.setMaxSizeLimit(10);
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
