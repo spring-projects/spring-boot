@@ -11,6 +11,7 @@
     },
     {
       "name": "server.error.include-binding-errors",
+      "type": "org.springframework.boot.autoconfigure.web.ErrorProperties$IncludeAttribute",
       "description": "When to include \"errors\" attribute.",
       "defaultValue": "never",
       "deprecation": {
@@ -21,6 +22,7 @@
     },
     {
       "name": "server.error.include-exception",
+      "type": "java.lang.Boolean",
       "description": "Include the \"exception\" attribute.",
       "defaultValue": false,
       "deprecation": {
@@ -31,6 +33,7 @@
     },
     {
       "name": "server.error.include-message",
+      "type": "org.springframework.boot.autoconfigure.web.ErrorProperties$IncludeAttribute",
       "description": "When to include the \"message\" attribute.",
       "defaultValue": "never",
       "deprecation": {
@@ -41,6 +44,7 @@
     },
     {
       "name": "server.error.include-path",
+      "type": "org.springframework.boot.autoconfigure.web.ErrorProperties$IncludeAttribute",
       "description": "When to include the \"path\" attribute.",
       "defaultValue": "always",
       "deprecation": {
@@ -51,6 +55,7 @@
     },
     {
       "name": "server.error.include-stacktrace",
+      "type": "org.springframework.boot.autoconfigure.web.ErrorProperties$IncludeAttribute",
       "description": "When to include the \"trace\" attribute.",
       "defaultValue": "never",
       "deprecation": {
@@ -61,6 +66,7 @@
     },
     {
       "name": "server.error.path",
+      "type": "java.lang.String",
       "description": "Path of the error controller",
       "defaultValue": "/error",
       "deprecation": {
@@ -71,6 +77,7 @@
     },
     {
       "name": "server.error.whitelabel.enabled",
+      "type": "java.lang.Boolean",
       "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
       "defaultValue": true,
       "deprecation": {

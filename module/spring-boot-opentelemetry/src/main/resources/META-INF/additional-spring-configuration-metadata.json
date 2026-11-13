@@ -53,6 +53,7 @@
     },
     {
       "name": "management.otlp.logging.export.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
         "replacement": "management.logging.export.otlp.enabled",
