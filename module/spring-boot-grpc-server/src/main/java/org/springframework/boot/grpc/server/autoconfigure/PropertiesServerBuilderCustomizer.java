@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.Inbound;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.Keepalive;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -26,6 +27,7 @@ import org.springframework.util.unit.DataSize;
  * @param properties the properties to map
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Amal Saidhanov
  */
 record PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>>(
 		GrpcServerProperties properties) implements ServerBuilderCustomizer<T> {
@@ -40,8 +42,8 @@ record PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>>(
 
 	private void mapInboundProperties(Inbound properties, T builder) {
 		PropertyMapper map = PropertyMapper.get();
-		map.from(properties.getMessage()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);
-		map.from(properties.getMetadata()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMetadataSize);
+		map.from(properties.getMessage()::getMaxSize).asInt(this::maxSize).to(builder::maxInboundMessageSize);
+		map.from(properties.getMetadata()::getMaxSize).asInt(this::maxSize).to(builder::maxInboundMetadataSize);
 	}
 
 	private void mapKeepaliveProperties(Keepalive properties, T builder) {
@@ -57,6 +59,12 @@ record PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>>(
 
 	private Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {
 		return (duration) -> setter.accept(duration.toNanos(), TimeUnit.NANOSECONDS);
+	}
+
+	private int maxSize(DataSize maxSize) {
+		long bytes = maxSize.toBytes();
+		Assert.state(bytes >= 0 || bytes == -1, () -> "Unsupported max size value " + maxSize);
+		return (bytes >= 0 && bytes <= Integer.MAX_VALUE) ? (int) bytes : Integer.MAX_VALUE;
 	}
 
 	private boolean supportsKeepAliveProperties(T builder) {
