@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -253,6 +255,43 @@ class JarUrlClassLoaderTests {
 	}
 
 	@Test
+	void clearCacheWhileLoadingClassFromNestedDoesNotFailLoading() throws Throwable {
+		byte[] nestedAppJarData = Files.readAllBytes(new File("src/test/resources/jars/app.jar").toPath());
+		URL[] urls = new URL[100];
+		for (int i = 0; i < urls.length; i++) {
+			urls[i] = JarUrl.create(createJarWithNestedAppJar("test" + i + ".jar", nestedAppJarData), "app.jar");
+		}
+		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(urls)) {
+			AtomicBoolean finished = new AtomicBoolean();
+			AtomicReference<Throwable> failure = new AtomicReference<>();
+			Thread thread = new Thread(() -> {
+				while (!finished.get()) {
+					loadMissingClass(loader);
+				}
+			});
+			thread.setUncaughtExceptionHandler((t, ex) -> failure.set(ex));
+			thread.start();
+			for (int i = 0; i < 100; i++) {
+				loader.clearCache();
+			}
+			finished.set(true);
+			thread.join();
+			Throwable throwable = failure.get();
+			if (throwable != null) {
+				throw throwable;
+			}
+		}
+	}
+
+	private void loadMissingClass(JarUrlClassLoader loader) {
+		try {
+			loader.loadClass("Missing");
+		}
+		catch (ClassNotFoundException ex) {
+		}
+	}
+
+	@Test
 	void loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest() throws Exception {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -281,7 +320,11 @@ class JarUrlClassLoaderTests {
 	}
 
 	private File createJarWithNestedAppJar(byte[] nestedAppJarData) throws Exception {
-		File jarFile = new File(this.tempDir, "test.jar");
+		return createJarWithNestedAppJar("test.jar", nestedAppJarData);
+	}
+
+	private File createJarWithNestedAppJar(String name, byte[] nestedAppJarData) throws Exception {
+		File jarFile = new File(this.tempDir, name);
 		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
 		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			JarEntry nestedEntry = new JarEntry("app.jar");
