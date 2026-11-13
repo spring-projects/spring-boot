@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Madhura Bhave
  * @author Thiago Hirata
  * @author HaiTao Zhang
+ * @author Lee Taeho
  */
 class OAuth2ClientPropertiesMapperTests {
 
@@ -202,7 +203,7 @@ class OAuth2ClientPropertiesMapperTests {
 		Registration login = new OAuth2ClientProperties.Registration();
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
-		testIssuerConfiguration(login, "okta", 0, 1);
+		testIssuerConfiguration(login, "okta", 0, 1, "openid", "profile", "email");
 	}
 
 	@Test
@@ -219,7 +220,7 @@ class OAuth2ClientPropertiesMapperTests {
 		OAuth2ClientProperties.Registration login = new Registration();
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
-		testIssuerConfiguration(login, "okta", 1, 2);
+		testIssuerConfiguration(login, "okta", 1, 2, "openid", "profile", "email");
 	}
 
 	@Test
@@ -227,7 +228,7 @@ class OAuth2ClientPropertiesMapperTests {
 		OAuth2ClientProperties.Registration login = new Registration();
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
-		testIssuerConfiguration(login, "okta", 2, 3);
+		testIssuerConfiguration(login, "okta", 2, 3, "openid", "profile", "email");
 	}
 
 	@Test
@@ -261,6 +262,50 @@ class OAuth2ClientPropertiesMapperTests {
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
+	@Test
+	void oidcProviderConfigurationWithCommonProviderAndCustomScopeUsesCustomScope() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		setupMockResponse(issuer);
+		OAuth2ClientProperties.Registration registration = createRegistration("okta");
+		Provider provider = new Provider();
+		provider.setIssuerUri(issuer);
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		properties.getProvider().put("okta", provider);
+		properties.getRegistration().put("okta", registration);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
+		ClientRegistration adapted = registrations.get("okta");
+		assertThat(adapted).isNotNull();
+		assertThat(adapted.getScopes()).containsOnly("user");
+	}
+
+	@Test
+	void oidcProviderConfigurationWhenCommonProviderSpecifiedOnRegistrationUsesCommonProviderScopes() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		setupMockResponse(issuer);
+		OAuth2ClientProperties.Registration registration = new Registration();
+		registration.setProvider("okta");
+		registration.setClientId("clientId");
+		registration.setClientSecret("clientSecret");
+		Provider provider = new Provider();
+		provider.setIssuerUri(issuer);
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		properties.getProvider().put("okta", provider);
+		properties.getRegistration().put("my-client", registration);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
+		ClientRegistration adapted = registrations.get("my-client");
+		assertThat(adapted).isNotNull();
+		assertThat(adapted.getRegistrationId()).isEqualTo("my-client");
+		assertThat(adapted.getScopes()).containsExactlyInAnyOrder("openid", "profile", "email");
+		assertThat(adapted.getProviderDetails().getAuthorizationUri())
+			.isEqualTo("https://example.com/o/oauth2/v2/auth");
+	}
+
 	private Provider createProvider() {
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("https://example.com/auth");
@@ -284,7 +329,7 @@ class OAuth2ClientPropertiesMapperTests {
 	}
 
 	private void testIssuerConfiguration(OAuth2ClientProperties.Registration registration, String providerId,
-			int errorResponseCount, int numberOfRequests) throws Exception {
+			int errorResponseCount, int numberOfRequests, String... expectedScopes) throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
@@ -303,7 +348,7 @@ class OAuth2ClientPropertiesMapperTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
 		assertThat(adapted.getClientName()).isEqualTo(issuer);
-		assertThat(adapted.getScopes()).isNullOrEmpty();
+		assertThat(adapted.getScopes()).containsExactlyInAnyOrder(expectedScopes);
 		assertThat(providerDetails.getAuthorizationUri()).isEqualTo("https://example.com/o/oauth2/v2/auth");
 		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/oauth2/v4/token");
 		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/oauth2/v3/certs");
