@@ -814,6 +814,14 @@ public final class ZipContent implements Closeable {
 		}
 
 		/**
+		 * Return the compressed size of this entry.
+		 * @return the compressed size
+		 */
+		public int getCompressedSize() {
+			return this.centralRecord.compressedSize();
+		}
+
+		/**
 		 * Open a {@link DataBlock} providing access to raw contents of the entry (not
 		 * including the local file header).
 		 * <p>

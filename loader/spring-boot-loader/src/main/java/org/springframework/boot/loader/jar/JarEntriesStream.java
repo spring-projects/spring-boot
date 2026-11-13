@@ -46,8 +46,8 @@ class JarEntriesStream implements Closeable {
 		return this.entry;
 	}
 
-	boolean matches(boolean directory, int size, int compressionMethod, InputStreamSupplier streamSupplier)
-			throws IOException {
+	boolean matches(boolean directory, int uncompressedSize, int compressedSize, int compressionMethod,
+			InputStreamSupplier streamSupplier) throws IOException {
 		if (this.entry.isDirectory() != directory) {
 			fail("directory");
 		}
@@ -58,16 +58,18 @@ class JarEntriesStream implements Closeable {
 			this.in.closeEntry();
 			return true;
 		}
-		try (DataInputStream expected = new DataInputStream(getInputStream(size, streamSupplier))) {
+		try (DataInputStream expected = new DataInputStream(
+				getInputStream(uncompressedSize, compressedSize, streamSupplier))) {
 			assertSameContent(expected);
 		}
 		return true;
 	}
 
-	private InputStream getInputStream(int size, InputStreamSupplier streamSupplier) throws IOException {
+	private InputStream getInputStream(int uncompressedSize, int compressedSize, InputStreamSupplier streamSupplier)
+			throws IOException {
 		InputStream inputStream = streamSupplier.get();
 		return (this.entry.getMethod() != ZipEntry.DEFLATED) ? inputStream
-				: new ZipInflaterInputStream(inputStream, this.inflater, size);
+				: new ZipInflaterInputStream(inputStream, this.inflater, uncompressedSize, compressedSize);
 	}
 
 	private void assertSameContent(DataInputStream expected) throws IOException {

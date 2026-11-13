@@ -189,6 +189,20 @@ class ZipContentTests {
 	}
 
 	@Test
+	void getSizesReturnsSizesCompatibleWithZipFile() throws IOException {
+		try (ZipFile zipFile = new ZipFile(this.file)) {
+			Iterator<? extends ZipEntry> expected = zipFile.entries().asIterator();
+			int i = 0;
+			while (expected.hasNext()) {
+				Entry actual = this.zipContent.getEntry(i++);
+				ZipEntry expectedEntry = expected.next();
+				assertThat(actual.getUncompressedSize()).isEqualTo(expectedEntry.getSize());
+				assertThat(actual.getCompressedSize()).isEqualTo(expectedEntry.getCompressedSize());
+			}
+		}
+	}
+
+	@Test
 	void getKindWhenZipReturnsZip() {
 		assertThat(this.zipContent.getKind()).isEqualTo(Kind.ZIP);
 	}
