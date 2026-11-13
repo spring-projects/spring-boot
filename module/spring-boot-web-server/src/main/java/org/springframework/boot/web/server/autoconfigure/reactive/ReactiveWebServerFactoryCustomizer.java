@@ -67,7 +67,7 @@ public class ReactiveWebServerFactoryCustomizer
 	 */
 	public ReactiveWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
 			@Nullable SslBundles sslBundles) {
-		this.environment = null;
+		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.sslBundles = sslBundles;
 	}
