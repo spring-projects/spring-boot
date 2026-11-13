@@ -51,21 +51,21 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 		private final List<Closeable> close = new ArrayList<>();
 
 		@Override
-		public void openedFileChannel(Path path) {
+		public synchronized void openedFileChannel(Path path) {
 			this.paths.add(path);
 		}
 
 		@Override
-		public void closedFileChannel(Path path) {
+		public synchronized void closedFileChannel(Path path) {
 			this.paths.remove(path);
 		}
 
-		void clear() {
+		synchronized void clear() {
 			this.paths.clear();
 			this.clean.clear();
 		}
 
-		void assertAllClosed() throws IOException {
+		synchronized void assertAllClosed() throws IOException {
 			for (Closeable closeable : this.close) {
 				closeable.close();
 			}
@@ -73,7 +73,7 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 			assertThat(this.paths).as("open paths").isEmpty();
 		}
 
-		private void addedCleanable(Object obj, Cleanable cleanable) {
+		synchronized void addedCleanable(Object obj, Cleanable cleanable) {
 			if (cleanable != null) {
 				this.clean.add(cleanable);
 			}

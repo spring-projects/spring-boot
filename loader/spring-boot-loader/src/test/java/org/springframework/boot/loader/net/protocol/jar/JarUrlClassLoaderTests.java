@@ -255,38 +255,39 @@ class JarUrlClassLoaderTests {
 	}
 
 	@Test
-	void clearCacheWhileLoadingClassFromNestedDoesNotFailLoading() throws Exception {
-		byte[] appJarData = Files.readAllBytes(new File("src/test/resources/jars/app.jar").toPath());
+	void clearCacheWhileLoadingClassFromNestedDoesNotFailLoading() throws Throwable {
+		byte[] nestedAppJarData = Files.readAllBytes(new File("src/test/resources/jars/app.jar").toPath());
 		URL[] urls = new URL[100];
 		for (int i = 0; i < urls.length; i++) {
-			urls[i] = JarUrl.create(createJarWithNestedAppJar("test" + i + ".jar", appJarData), "app.jar");
+			urls[i] = JarUrl.create(createJarWithNestedAppJar("test" + i + ".jar", nestedAppJarData), "app.jar");
 		}
 		try (JarUrlClassLoader loader = new TestJarUrlClassLoader(urls)) {
-			assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> loader.loadClass("demo.DoesNotExist"));
 			AtomicBoolean finished = new AtomicBoolean();
 			AtomicReference<Throwable> failure = new AtomicReference<>();
-			Thread loading = new Thread(() -> {
+			Thread thread = new Thread(() -> {
 				while (!finished.get()) {
-					try {
-						loader.loadClass("demo.DoesNotExist");
-					}
-					catch (ClassNotFoundException ex) {
-						// Expected, having looked through the jars
-					}
-					catch (Throwable ex) {
-						failure.set(ex);
-						return;
-					}
+					loadMissingClass(loader);
 				}
 			});
-			loading.start();
+			thread.setUncaughtExceptionHandler((t, ex) -> failure.set(ex));
+			thread.start();
 			for (int i = 0; i < 100; i++) {
 				loader.clearCache();
 			}
 			finished.set(true);
-			loading.join();
-			assertThat(failure).hasNullValue();
+			thread.join();
+			Throwable throwable = failure.get();
+			if (throwable != null) {
+				throw throwable;
+			}
+		}
+	}
+
+	private void loadMissingClass(JarUrlClassLoader loader) {
+		try {
+			loader.loadClass("Missing");
+		}
+		catch (ClassNotFoundException ex) {
 		}
 	}
 
