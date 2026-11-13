@@ -7,6 +7,7 @@ package org.springframework.boot.jarmode.tools;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
@@ -18,11 +19,10 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
-import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
 
 import org.jspecify.annotations.Nullable;
 
@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Xinwei Zhang
  */
 class IndexedJarStructure implements JarStructure {
 
@@ -207,13 +208,18 @@ class IndexedJarStructure implements JarStructure {
 
 	static @Nullable IndexedJarStructure get(File file) {
 		try {
-			try (JarFile jarFile = new JarFile(file)) {
+			try (ArchiveContent jarFile = new ArchiveContent(file)) {
 				Manifest manifest = jarFile.getManifest();
+				if (manifest == null) {
+					return null;
+				}
 				String location = getMandatoryAttribute(manifest, "Spring-Boot-Classpath-Index");
-				ZipEntry entry = jarFile.getEntry(location);
+				JarEntry entry = jarFile.getEntry(location);
 				if (entry != null) {
-					String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
-					return new IndexedJarStructure(manifest, indexFile, ArchiveType.of(file));
+					try (InputStream input = jarFile.getInputStream(entry)) {
+						String indexFile = StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+						return new IndexedJarStructure(manifest, indexFile, ArchiveType.of(file, manifest));
+					}
 				}
 			}
 			return null;
