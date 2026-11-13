@@ -189,12 +189,6 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	public void clearCache() {
 		Handler.clearCache();
 		org.springframework.boot.loader.net.protocol.nested.Handler.clearCache();
-		try {
-			clearJarFiles();
-		}
-		catch (IOException ex) {
-			// Ignore
-		}
 		for (URL url : this.urls) {
 			if (isJarUrl(url)) {
 				clearCache(url);
