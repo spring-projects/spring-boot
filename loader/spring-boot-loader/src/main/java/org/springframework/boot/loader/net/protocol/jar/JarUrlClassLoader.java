@@ -221,14 +221,8 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	}
 
 	private Connection connect(URL url) {
-		Connection connection = this.connections.computeIfPresent(url, (key, existing) -> existing.open());
-		return (connection != null) ? connection : createAndConnect(url);
-	}
-
-	private Connection createAndConnect(URL url) {
-		Connection connection = Connection.create(url);
 		return this.connections.compute(url, (key, existing) -> {
-			Connection.closeIfNotNull(existing);
+			Connection connection = (existing != null) ? existing : Connection.create(url);
 			return connection.open();
 		});
 	}
