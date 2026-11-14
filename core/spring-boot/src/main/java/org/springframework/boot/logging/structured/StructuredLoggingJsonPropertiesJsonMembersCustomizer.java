@@ -4,7 +4,10 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -24,13 +27,39 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 
 	private final StructuredLoggingJsonProperties properties;
 
+	private final Set<String> includedPaths;
+
+	private final Set<String> includedPathAncestors;
+
 	private final boolean nested;
 
 	StructuredLoggingJsonPropertiesJsonMembersCustomizer(Instantiator<?> instantiator,
 			StructuredLoggingJsonProperties properties, boolean nested) {
 		this.instantiator = instantiator;
 		this.properties = properties;
+		this.includedPaths = (!CollectionUtils.isEmpty(properties.include())) ? properties.include()
+				: Collections.emptySet();
+		this.includedPathAncestors = ancestorsOf(this.includedPaths);
 		this.nested = nested;
+	}
+
+	/**
+	 * Return the paths of all the ancestors of the given {@code paths}. Ancestors are
+	 * retained so that an included path can be reached.
+	 * @param paths the paths
+	 * @return the ancestor paths
+	 */
+	private static Set<String> ancestorsOf(Set<String> paths) {
+		Set<String> ancestors = new HashSet<>();
+		for (String path : paths) {
+			for (int i = path.length() - 1; i > 0; i--) {
+				char ch = path.charAt(i);
+				if (ch == '.' || ch == '[') {
+					ancestors.add(path.substring(0, i));
+				}
+			}
+		}
+		return Collections.unmodifiableSet(ancestors);
 	}
 
 	@Override
@@ -57,11 +86,45 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 	}
 
 	boolean filterPath(MemberPath path) {
-		boolean included = CollectionUtils.isEmpty(this.properties.include())
-				|| this.properties.include().contains(path.toUnescapedString());
+		String name = path.toUnescapedString();
+		boolean included = isIncluded(name);
 		boolean excluded = !CollectionUtils.isEmpty(this.properties.exclude())
-				&& this.properties.exclude().contains(path.toUnescapedString());
+				&& this.properties.exclude().contains(name);
 		return (!included || excluded);
+	}
+
+	private boolean isIncluded(String path) {
+		if (this.includedPaths.isEmpty()) {
+			return true;
+		}
+		return this.includedPaths.contains(path) || this.includedPathAncestors.contains(path)
+				|| isDescendantOfIncludedPath(path);
+	}
+
+	private boolean isDescendantOfIncludedPath(String path) {
+		for (String includedPath : this.includedPaths) {
+			if (isDescendantOf(includedPath, path)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return if the given {@code path} is a descendant of the given {@code candidate}
+	 * path. A path is only a descendant when it continues with a {@code '.'} or a
+	 * {@code '['} immediately after the candidate, so that an include of {@code x.y} does
+	 * not include a member named {@code x.yy}.
+	 * @param candidate the candidate ancestor path
+	 * @param path the path to test
+	 * @return {@code true} if {@code path} is a descendant of {@code candidate}
+	 */
+	private static boolean isDescendantOf(String candidate, String path) {
+		if (path.length() <= candidate.length() || !path.startsWith(candidate)) {
+			return false;
+		}
+		char next = path.charAt(candidate.length());
+		return next == '.' || next == '[';
 	}
 
 }
