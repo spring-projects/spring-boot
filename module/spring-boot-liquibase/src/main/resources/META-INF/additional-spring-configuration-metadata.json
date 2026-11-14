@@ -13,6 +13,7 @@
     },
     {
       "name": "spring.liquibase.labels",
+      "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "replacement": "spring.liquibase.label-filter",
         "level": "error",
