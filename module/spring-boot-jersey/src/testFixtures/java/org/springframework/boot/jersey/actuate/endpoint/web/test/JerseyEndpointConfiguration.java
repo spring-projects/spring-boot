@@ -19,6 +19,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDisco
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.jersey.actuate.endpoint.web.JerseyEndpointResourceFactory;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
+import org.springframework.boot.jersey.autoconfigure.JerseyJacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("removal")
 @Configuration(proxyBeanMethods = false)
 @ImportAutoConfiguration({ org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
-		JerseyAutoConfiguration.class })
+		JerseyAutoConfiguration.class, JerseyJacksonAutoConfiguration.class })
 class JerseyEndpointConfiguration {
 
 	private final ApplicationContext applicationContext;
