@@ -65,6 +65,7 @@
     },
     {
       "name": "spring.activemq.pool.maximum-active-session-per-connection",
+      "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.activemq.pool.max-sessions-per-connection",
         "since": "2.1.0"
