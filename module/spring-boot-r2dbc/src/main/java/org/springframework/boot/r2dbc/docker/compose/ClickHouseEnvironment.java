@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
  * ClickHouse environment details.
  *
  * @author Stephane Nicoll
+ * @author MyungJoo Song
  */
 class ClickHouseEnvironment {
 
@@ -25,6 +26,7 @@ class ClickHouseEnvironment {
 	private final String database;
 
 	ClickHouseEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("CLICKHOUSE_PASSWORD_FILE"), "CLICKHOUSE_PASSWORD_FILE is not supported");
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);

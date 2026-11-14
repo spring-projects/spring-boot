@@ -5,9 +5,13 @@
 package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -16,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ClickHouseEnvironment}.
  *
  * @author Stephane Nicoll
+ * @author MyungJoo Song
  */
 class ClickHouseEnvironmentTests {
 
@@ -67,6 +72,22 @@ class ClickHouseEnvironmentTests {
 		ClickHouseEnvironment environment = new ClickHouseEnvironment(
 				Map.of("CLICKHOUSE_DB", "db", "CLICKHOUSE_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
+	}
+
+	@Test
+	void createWhenHasClickHousePasswordFileThrowsException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new ClickHouseEnvironment(Map.of("CLICKHOUSE_PASSWORD_FILE", "/run/secrets/password")))
+			.withMessage("CLICKHOUSE_PASSWORD_FILE is not supported");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "CLICKHOUSE_PASSWORD_FILE" })
+	void createWhenHasFileVariableAndPlainVariablesThrowsException(String fileVariable) {
+		Map<String, @Nullable String> env = new HashMap<>(Map.of("CLICKHOUSE_PASSWORD", "secret"));
+		env.put(fileVariable, "/run/secrets/value");
+		assertThatIllegalStateException().isThrownBy(() -> new ClickHouseEnvironment(env))
+			.withMessage(fileVariable + " is not supported");
 	}
 
 }
