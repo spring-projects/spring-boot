@@ -4,8 +4,11 @@
 
 package org.springframework.boot.mustache.autoconfigure;
 
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.samskivert.mustache.Mustache;
@@ -13,23 +16,33 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.mustache.servlet.view.MustacheViewResolver;
 import org.springframework.boot.test.context.runner.AbstractApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.View;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link MustacheAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
+ * @author Van Vo
  */
 class MustacheAutoConfigurationTests {
 
@@ -127,6 +140,26 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	@WithResource(name = "templates/cache.mustache", content = "Hello {{World}}")
+	void servletCacheControlsTemplateCompilation(boolean cache) {
+		configure(new WebApplicationContextRunner()).withUserConfiguration(CustomCompilerConfiguration.class)
+			.withPropertyValues("spring.mustache.servlet.cache=" + cache,
+					"spring.mustache.servlet.expose-spring-macro-helpers=false")
+			.run((context) -> {
+				MustacheViewResolver resolver = context.getBean(MustacheViewResolver.class);
+				for (String world : new String[] { "Spring", "Boot" }) {
+					View view = resolver.resolveViewName("cache", Locale.ROOT);
+					assertThat(view).isNotNull();
+					MockHttpServletResponse response = new MockHttpServletResponse();
+					view.render(Map.of("World", world), new MockHttpServletRequest(), response);
+					assertThat(response.getContentAsString()).isEqualTo("Hello " + world);
+				}
+				then(context.getBean(Mustache.Compiler.class)).should(times(cache ? 1 : 2)).compile(any(Reader.class));
+			});
+	}
+
+	@ParameterizedTest
 	@EnumSource
 	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", StandardCharsets.UTF_16);
@@ -200,7 +233,7 @@ class MustacheAutoConfigurationTests {
 
 		@Bean
 		Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
-			return Mustache.compiler().standardsMode(true).withLoader(mustacheTemplateLoader);
+			return spy(Mustache.compiler().standardsMode(true).withLoader(mustacheTemplateLoader));
 		}
 
 	}
