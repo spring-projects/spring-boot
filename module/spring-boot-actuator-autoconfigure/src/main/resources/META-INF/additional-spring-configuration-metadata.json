@@ -168,6 +168,7 @@
     },
     {
       "name": "management.trace.http.enabled",
+      "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.enabled",
         "level": "error",
@@ -176,6 +177,7 @@
     },
     {
       "name": "management.trace.http.include",
+      "type": "java.util.Set<org.springframework.boot.actuate.web.exchanges.Include>",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
         "level": "error",
@@ -184,6 +186,7 @@
     },
     {
       "name": "management.trace.include",
+      "type": "java.util.Set<org.springframework.boot.actuate.web.exchanges.Include>",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
         "level": "error",

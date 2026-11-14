@@ -88,6 +88,7 @@
     },
     {
       "name": "server.max-http-header-size",
+      "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "level": "error",
         "replacement": "server.max-http-request-header-size",
