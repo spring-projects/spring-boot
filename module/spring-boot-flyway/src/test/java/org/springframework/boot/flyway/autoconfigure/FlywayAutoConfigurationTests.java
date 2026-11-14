@@ -23,6 +23,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
@@ -37,8 +38,11 @@ import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.postgresql.Driver;
 
@@ -61,6 +65,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
@@ -103,6 +108,7 @@ import static org.mockito.Mockito.mock;
  * @author Takaaki Shimbo
  * @author Chris Bono
  * @author Moritz Halbritter
+ * @author YeongJae Min
  */
 @ExtendWith(OutputCaptureExtension.class)
 class FlywayAutoConfigurationTests {
@@ -130,6 +136,163 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
 			.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
+	}
+
+	@Test
+	void configuresFlywayWithNativeConnectionUrl() {
+		String url = "cassandra://localhost:9042/flywaytest?localdatacenter=datacenter1";
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=" + url, "spring.flyway.user=flyway-user",
+					"spring.flyway.password=flyway-password", "spring.flyway.sql-migration-suffixes=.cql")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getUrl()).isEqualTo(url);
+				assertThat(flyway.getConfiguration().getUser()).isEqualTo("flyway-user");
+				assertThat(flyway.getConfiguration().getPassword()).isEqualTo("flyway-password");
+				assertThat(flyway.getConfiguration().getDataSource()).isNull();
+			});
+	}
+
+	@Test
+	void nativeConnectionUrlIsUsedOverApplicationDataSource() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest",
+					"spring.datasource.username=application-user", "spring.datasource.password=application-password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNull();
+				assertThat(context.getBean(Flyway.class).getConfiguration().getUser()).isNull();
+				assertThat(context.getBean(Flyway.class).getConfiguration().getPassword()).isNull();
+				assertThat(context.getBean(FlywaySchemaManagementProvider.class)
+					.getSchemaManagement(context.getBean(DataSource.class))).isEqualTo(SchemaManagement.UNMANAGED);
+			});
+	}
+
+	@Test
+	void flywayDataSourceIsUsedOverNativeConnectionUrl() {
+		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isSameAs(context.getBean("flywayDataSource"));
+			});
+	}
+
+	@Test
+	void nativeConnectionDetailsAreUsedOverFlywayProperties() {
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest")
+			.withBean(FlywayConnectionDetails.class, NativeFlywayConnectionDetails::new)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getUrl()).isEqualTo("cassandra://localhost:9042/flywaytest");
+				assertThat(flyway.getConfiguration().getUser()).isEqualTo("native-user");
+				assertThat(flyway.getConfiguration().getPassword()).isEqualTo("native-password");
+				assertThat(flyway.getConfiguration().getDataSource()).isNull();
+				assertThat(context.getBean(FlywayConnectionDetails.class).getDriverClassName()).isNull();
+			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "locations", "callback-locations" })
+	void nativeConnectionUrlWithVendorLocationFailsClearly(String property) {
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest",
+					"spring.flyway." + property + "=classpath:db/{vendor}")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.hasRootCauseMessage("Flyway locations containing {vendor} require a JDBC DataSource");
+			});
+	}
+
+	@Test
+	void nativeConnectionUrlWithJdbcDriverFailsClearly() {
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest",
+					"spring.flyway.driver-class-name=org.h2.Driver")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.hasRootCauseMessage("Flyway JDBC driver class name cannot be used with a non-JDBC URL");
+			});
+	}
+
+	@Test
+	@ClassPathExclusions("flyway-database-nc-cassandra-*.jar")
+	void nativeConnectionUrlWithoutConnectorFailsInFlyway() {
+		this.contextRunner.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.hasRootCauseInstanceOf(FlywayException.class)
+					.rootCause()
+					.hasMessageContaining(
+							"No Flyway database plugin found to handle cassandra://localhost:9042/flywaytest");
+			});
+	}
+
+	@Test
+	void backsOffWithNativeConnectionUrlAndNoSpringJdbc() {
+		this.contextRunner.withPropertyValues("spring.flyway.url=cassandra://localhost:9042/flywaytest")
+			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
+			.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
+	}
+
+	@Test
+	void jdbcPrefixedNativeVendorUrlUsesJdbcDataSource() {
+		String url = "jdbc:cassandra://localhost:9042/flywaytest";
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=" + url, "spring.flyway.driver-class-name=org.h2.Driver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isInstanceOf(SimpleDriverDataSource.class)
+					.extracting("url")
+					.isEqualTo(url);
+			});
+	}
+
+	@Test
+	void backsOffWithUnconfiguredFlywayConnectionDetails() {
+		this.contextRunner.withBean(FlywayConnectionDetails.class, () -> mock(FlywayConnectionDetails.class))
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(Flyway.class));
+	}
+
+	@Test
+	void jdbcUrlFromGeneralConnectionDetailsUsesJdbcDataSource() {
+		this.contextRunner.withUserConfiguration(MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest")
+			.withBean(FlywayConnectionDetails.class, () -> new NativeFlywayConnectionDetails() {
+
+				@Override
+				public String getUrl() {
+					return "jdbc:h2:mem:flywaytest";
+				}
+
+			})
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isInstanceOf(SimpleDriverDataSource.class)
+					.extracting("url")
+					.isEqualTo("jdbc:h2:mem:flywaytest");
+			});
+	}
+
+	@Test
+	void propertiesConnectionDetailsExposeNativeUrlWithoutJdbcUrl() {
+		FlywayProperties properties = new FlywayProperties();
+		properties.setUrl("cassandra://localhost:9042/flywaytest");
+		FlywayConnectionDetails details = new FlywayAutoConfiguration.PropertiesFlywayConnectionDetails(properties);
+		assertThat(details.getUrl()).isEqualTo(properties.getUrl());
+		assertThat(details.getJdbcUrl()).isNull();
+		assertThat(details.getDriverClassName()).isNull();
 	}
 
 	@Test
@@ -1285,6 +1448,30 @@ class FlywayAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	static class NativeFlywayConnectionDetails implements FlywayConnectionDetails {
+
+		@Override
+		public String getUrl() {
+			return "cassandra://localhost:9042/flywaytest";
+		}
+
+		@Override
+		public @Nullable String getJdbcUrl() {
+			return null;
+		}
+
+		@Override
+		public String getUsername() {
+			return "native-user";
+		}
+
+		@Override
+		public String getPassword() {
+			return "native-password";
 		}
 
 	}

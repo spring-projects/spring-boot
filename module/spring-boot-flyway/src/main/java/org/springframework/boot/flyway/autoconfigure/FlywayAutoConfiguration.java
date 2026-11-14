@@ -88,6 +88,7 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author YeongJae Min
  * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
@@ -151,16 +152,24 @@ public final class FlywayAutoConfiguration {
 
 		private void configureDataSource(FluentConfiguration configuration, @Nullable DataSource flywayDataSource,
 				@Nullable DataSource dataSource, FlywayConnectionDetails connectionDetails) {
-			DataSource migrationDataSource = getMigrationDataSource(flywayDataSource, dataSource, connectionDetails);
+			if (flywayDataSource != null) {
+				configuration.dataSource(flywayDataSource);
+				return;
+			}
+			String url = connectionDetails.getUrl();
+			if (url != null && !url.startsWith("jdbc:")) {
+				Assert.state(!StringUtils.hasText(connectionDetails.getDriverClassName()),
+						"Flyway JDBC driver class name cannot be used with a non-JDBC URL");
+				configuration.dataSource(url, connectionDetails.getUsername(), connectionDetails.getPassword());
+				return;
+			}
+			DataSource migrationDataSource = getMigrationDataSource(dataSource, connectionDetails);
 			configuration.dataSource(migrationDataSource);
 		}
 
-		private DataSource getMigrationDataSource(@Nullable DataSource flywayDataSource,
-				@Nullable DataSource dataSource, FlywayConnectionDetails connectionDetails) {
-			if (flywayDataSource != null) {
-				return flywayDataSource;
-			}
-			String url = connectionDetails.getJdbcUrl();
+		private DataSource getMigrationDataSource(@Nullable DataSource dataSource,
+				FlywayConnectionDetails connectionDetails) {
+			String url = connectionDetails.getUrl();
 			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
 				builder.url(url);
@@ -370,9 +379,9 @@ public final class FlywayAutoConfiguration {
 
 		private static final String VENDOR_PLACEHOLDER = "{vendor}";
 
-		private final DataSource dataSource;
+		private final @Nullable DataSource dataSource;
 
-		LocationResolver(DataSource dataSource) {
+		LocationResolver(@Nullable DataSource dataSource) {
 			this.dataSource = dataSource;
 		}
 
@@ -393,6 +402,7 @@ public final class FlywayAutoConfiguration {
 		}
 
 		private DatabaseDriver getDatabaseDriver() {
+			Assert.state(this.dataSource != null, "Flyway locations containing {vendor} require a JDBC DataSource");
 			try {
 				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, DatabaseMetaData::getURL);
 				return DatabaseDriver.fromJdbcUrl(url);
@@ -495,8 +505,14 @@ public final class FlywayAutoConfiguration {
 		}
 
 		@Override
-		public @Nullable String getJdbcUrl() {
+		public @Nullable String getUrl() {
 			return this.properties.getUrl();
+		}
+
+		@Override
+		public @Nullable String getJdbcUrl() {
+			String url = getUrl();
+			return (url != null && url.startsWith("jdbc:")) ? url : null;
 		}
 
 		@Override
