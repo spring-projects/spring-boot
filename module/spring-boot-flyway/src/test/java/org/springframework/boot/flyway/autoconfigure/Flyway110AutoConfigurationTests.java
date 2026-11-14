@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ClassPathExclusions({ "flyway-core-*.jar", "flyway-sqlserver-*.jar" })
+@ClassPathExclusions({ "flyway-core-*.jar", "flyway-sqlserver-*.jar", "flyway-database-nc-*.jar", "flyway-nc-*.jar" })
 @ClassPathOverrides({ "org.flywaydb:flyway-core:11.0.0" })
 class Flyway110AutoConfigurationTests {
 

@@ -51,6 +51,7 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
+	testRuntimeOnly("org.flywaydb:flyway-database-nc-cassandra")
 }
 
 tasks.named("compileTestJava") {

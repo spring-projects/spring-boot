@@ -10,9 +10,10 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 /**
- * Details required for Flyway to establish a connection to an SQL service using JDBC.
+ * Details required for Flyway to establish a connection to a database.
  *
  * @author Andy Wilkinson
+ * @author YeongJae Min
  * @since 4.0.0
  */
 public interface FlywayConnectionDetails extends ConnectionDetails {
@@ -30,6 +31,17 @@ public interface FlywayConnectionDetails extends ConnectionDetails {
 	 * @return the password for the database or {@code null}
 	 */
 	@Nullable String getPassword();
+
+	/**
+	 * URL for the database or {@code null} if no Flyway-specific configuration is
+	 * required. Defaults to the JDBC URL. Implementations for non-JDBC connections should
+	 * override this method and return {@code null} from {@link #getJdbcUrl()}.
+	 * @return the URL for the database or {@code null}
+	 * @since 4.2.0
+	 */
+	default @Nullable String getUrl() {
+		return getJdbcUrl();
+	}
 
 	/**
 	 * JDBC URL for the database or {@code null} if no Flyway-specific configuration is
