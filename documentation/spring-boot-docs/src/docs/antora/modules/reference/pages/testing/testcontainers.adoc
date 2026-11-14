@@ -158,6 +158,9 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.liquibase.autoconfigure.LiquibaseConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
+| javadoc:org.springframework.boot.mail.autoconfigure.MailConnectionDetails[]
+| Containers named "axllent/mailpit" using the default SMTP configuration (no encryption or authentication)
+
 | javadoc:org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBContainer[] or javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBAtlasLocalContainer[]
 
