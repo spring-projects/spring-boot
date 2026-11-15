@@ -434,6 +434,17 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	void deprecatedUseForwardHeadersWhenFalse() {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertThat(factory.isUseForwardHeaders()).isTrue();
+		factory.setUseForwardHeaders(false);
+		assertThat(factory.isUseForwardHeaders()).isFalse();
+		assertThat(factory.getForwardedRequestHeaders()).isNull();
+	}
+
+	@Test
 	void useForwardHeaders() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setForwardedRequestHeaders(new ForwardedRequestHeaders(Naming.X_FORWARDED, false));

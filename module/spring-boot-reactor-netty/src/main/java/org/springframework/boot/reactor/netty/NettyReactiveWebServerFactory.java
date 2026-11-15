@@ -130,7 +130,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		ForwardedRequestHeaders existing = getForwardedRequestHeaders();
 		Assert.state(existing == null || ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX.equals(existing),
 				"Forwarded request headers have already been configured");
-		setForwardedRequestHeaders(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
+		setForwardedRequestHeaders((useForwardHeaders) ? ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX : null);
 	}
 
 	/**

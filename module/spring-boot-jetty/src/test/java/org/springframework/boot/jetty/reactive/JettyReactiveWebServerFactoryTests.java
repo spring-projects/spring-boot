@@ -111,6 +111,18 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	void deprecatedUseForwardedHeadersWhenFalse() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertThat(factory.isUseForwardHeaders()).isTrue();
+		factory.setUseForwardHeaders(false);
+		assertThat(factory.isUseForwardHeaders()).isFalse();
+		assertThat(factory.getForwardedRequestHeaders()).isNull();
+		assertThat(getForwardedHeaderEchoResponse(factory, "X-Forwarded-Proto", "https")).isEqualTo("http");
+	}
+
+	@Test
 	@Override
 	protected void forwardedRequestHeadersWhenXForwardedNamingWithPrefix() {
 		assertThatIllegalStateException()

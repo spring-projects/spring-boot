@@ -157,6 +157,7 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 		this.threadPool = threadPool;
 	}
 
+	@Deprecated(since = "4.2.0", forRemoval = true)
 	public boolean isUseForwardHeaders() {
 		return getForwardedRequestHeaders() != null;
 	}
@@ -168,7 +169,7 @@ public class JettyWebServerFactory extends AbstractConfigurableWebServerFactory
 		ForwardedRequestHeaders existing = getForwardedRequestHeaders();
 		Assert.state(existing == null || ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX.equals(existing),
 				"Forwarded request headers have already been configured");
-		setForwardedRequestHeaders(ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX);
+		setForwardedRequestHeaders((useForwardHeaders) ? ForwardedRequestHeaders.X_FORWARDED_WITHOUT_PREFIX : null);
 	}
 
 	protected AbstractConnector createConnector(InetSocketAddress address, Server server) {
