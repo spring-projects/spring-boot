@@ -25,16 +25,17 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
  * Reactive OAuth2 Client configurations.
  *
  * @author Madhura Bhave
+ * @author WooSeung Kim
  */
 class ReactiveOAuth2ClientConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	@ConditionalOnOAuth2ClientRegistrationProperties
-	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveClientRegistrationRepositoryConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 		InMemoryReactiveClientRegistrationRepository reactiveClientRegistrationRepository(
 				OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
