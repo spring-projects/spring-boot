@@ -507,7 +507,7 @@ As a first step, you need to look up which set of headers is supported by your p
 Whilst RFC 7239 is a standard, its adoption is quite low in the industry and the well-known `"X-Forwarded-*"` headers are more likely to be used.
 
 Once you know the headers, you can configure your application to automatically use that information when creating links and sending them to clients in HTTP 302 responses, JSON documents or HTML pages.
-Supporting the common `"X-Forwarded-*"` headers can be acheived with the following configuration:
+Supporting the common `"X-Forwarded-*"` headers can be achieved with the following configuration:
 
 [configprops,yaml]
 ----
