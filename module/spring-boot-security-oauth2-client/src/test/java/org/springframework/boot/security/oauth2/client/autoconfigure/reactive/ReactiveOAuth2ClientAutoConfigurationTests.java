@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveOAuth2ClientAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author WooSeung Kim
  */
 class ReactiveOAuth2ClientAutoConfigurationTests {
 
@@ -83,6 +85,19 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 			.withBean(InMemoryReactiveClientRegistrationRepository.class,
 					() -> new InMemoryReactiveClientRegistrationRepository(getClientRegistration("test", "test")))
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class));
+	}
+
+	@Test
+	void propertiesBeanIsCreatedWithUserDefinedClientRegistrationRepository() {
+		this.contextRunner
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.withBean(ReactiveClientRegistrationRepository.class,
+					() -> new InMemoryReactiveClientRegistrationRepository(getClientRegistration("test", "test")))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OAuth2ClientProperties.class);
+				assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class);
+			});
 	}
 
 	@Test
