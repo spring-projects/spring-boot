@@ -4,6 +4,9 @@
 
 package org.springframework.boot.jdbc.docker.compose;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -45,7 +48,7 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 		MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new MySqlEnvironment(service.env());
-			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
+			this.jdbcUrl = jdbcUrlBuilder.build(service, urlEncode(this.environment.getDatabase()));
 		}
 
 		@Override
@@ -61,6 +64,17 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
+		}
+
+		/**
+		 * URL-encodes the database name so that names with characters that are
+		 * significant in a JDBC URL ('?', '%', '+', and others) survive Connector/J's URL
+		 * parsing, which percent-decodes the database segment.
+		 * @param database the database name to encode
+		 * @return the encoded database name
+		 */
+		private static String urlEncode(String database) {
+			return URLEncoder.encode(database, StandardCharsets.UTF_8);
 		}
 
 	}
