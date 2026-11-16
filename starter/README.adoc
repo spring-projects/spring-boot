@@ -104,9 +104,6 @@ do as they were designed before this was clarified.
 | Error Handling Spring Boot Starter
 | https://github.com/wimdeblauwe/error-handling-spring-boot-starter
 
-| https://societe-generale.github.io/failover/[Failover]
-| https://github.com/societe-generale/failover
-
 | https://www.flowable.org/[Flowable]
 | https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
 
@@ -156,10 +153,10 @@ do as they were designed before this was clarified.
 | https://github.com/joinfaces/joinfaces
 
 | https://kogito.kie.org/[Kogito]
-| https://github.com/kiegroup/kogito-runtimes/tree/main/springboot/starters
+| https://github.com/apache/incubator-kie-kogito-runtimes/tree/main/springboot/starters
 
 | https://github.com/langchain4j/langchain4j[LangChain for Java]
-| https://github.com/langchain4j/langchain4j/tree/main/langchain4j-spring-boot-starter
+| https://github.com/langchain4j/langchain4j-spring
 
 | https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
@@ -221,9 +218,6 @@ do as they were designed before this was clarified.
 | https://www.quickfixj.org/[quickfixj]
 | https://github.com/gevoulga/spring-boot-quickfixj
 
-| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
-| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
-
 | https://www.rabbitmq.com/[RabbitMQ] (Declarative configuration)
 | https://github.com/EugeneMsv/amqp-rabbit-spring-boot-autoconfigure
 
@@ -232,9 +226,6 @@ do as they were designed before this was clarified.
 
 | https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
-
-| https://github.com/rollbar/rollbar-java/[Rollbar]
-| https://github.com/olmero/rollbar-spring-boot-starter
 
 | https://sentry.io[Sentry]
 | https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
