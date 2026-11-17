@@ -23,6 +23,9 @@ Auto-configuration for Jackson 3 is provided and Jackson is part of `spring-boot
 When Jackson is on the classpath a javadoc:tools.jackson.databind.json.JsonMapper[] bean is automatically configured.
 Several configuration properties are provided for xref:how-to:spring-mvc.adoc#howto.spring-mvc.customize-jackson-jsonmapper[customizing the configuration of the javadoc:tools.jackson.databind.json.JsonMapper[]].
 
+Jersey uses Jackson 2 by default and can opt in to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[].
+See xref:web/servlet.adoc#web.servlet.jersey[] for details.
+
 
 
 [[features.json.jackson.custom-serializers-and-deserializers]]
@@ -70,6 +73,7 @@ When both Jackson 3 and Jackson 2 are present, various configuration properties 
 - configprop:spring.graphql.rsocket.preferred-json-mapper[]
 - configprop:spring.http.codecs.preferred-json-mapper[] (used by Spring WebFlux and reactive HTTP clients)
 - configprop:spring.http.converters.preferred-json-mapper[] (used by Spring MVC and imperative HTTP clients)
+- configprop:spring.jersey.preferred-json-mapper[] (defaults to Jackson 2)
 - configprop:spring.rsocket.preferred-mapper[]
 - configprop:spring.websocket.messaging.preferred-json-mapper[]
 
