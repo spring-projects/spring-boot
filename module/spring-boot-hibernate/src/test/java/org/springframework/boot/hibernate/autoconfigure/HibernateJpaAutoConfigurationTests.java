@@ -45,6 +45,8 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -589,6 +591,23 @@ class HibernateJpaAutoConfigurationTests {
 				Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
 					.getJpaPropertyMap();
 				assertThat(jpaProperties).doesNotContainKeys("hibernate.connection.provider_disables_autocommit");
+			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void providerDisablesAutoCommitUsesEntityManagerFactoryDataSource(boolean autoCommit) {
+		this.contextRunner
+			.withPropertyValues("spring.datasource.hikari.auto-commit=" + !autoCommit,
+					"spring.jpa.hibernate.ddl-auto=none")
+			.run((context) -> {
+				EntityManagerFactoryBuilder builder = context.getBean(EntityManagerFactoryBuilder.class);
+				try (HikariDataSource dataSource = new HikariDataSource()) {
+					dataSource.setAutoCommit(autoCommit);
+					assertThat(builder.dataSource(dataSource).build().getJpaPropertyMap())
+						.extractingByKey("hibernate.connection.provider_disables_autocommit")
+						.isEqualTo(autoCommit ? null : "true");
+				}
 			});
 	}
 
