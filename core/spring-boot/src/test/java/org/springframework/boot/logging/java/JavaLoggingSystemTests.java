@@ -180,6 +180,24 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void getLoggerConfigurationForRootLogger() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
+		this.loggingSystem.setLogLevel(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configuration)
+			.isEqualTo(new LoggerConfiguration(LoggingSystem.ROOT_LOGGER_NAME, LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	void getLoggerConfigurationForNonExistentLoggerShouldReturnNull() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(getInitializationContext(), null, null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("doesnotexist");
+		assertThat(configuration).isNull();
+	}
+
+	@Test
 	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(getInitializationContext(), null, null);

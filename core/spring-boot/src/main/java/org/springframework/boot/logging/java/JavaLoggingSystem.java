@@ -135,7 +135,10 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		Logger logger = Logger.getLogger(loggerName);
+		if (ROOT_LOGGER_NAME.equals(loggerName)) {
+			loggerName = "";
+		}
+		Logger logger = LogManager.getLogManager().getLogger(loggerName);
 		if (logger == null) {
 			return null;
 		}
