@@ -171,8 +171,8 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	/**
-	 * Return a {@link ConfigurationPropertiesBean @ConfigurationPropertiesBean} instance
-	 * for the given bean details or {@code null} if the bean is not a
+	 * Return a {@link ConfigurationPropertiesBean} instance for the given bean details or
+	 * {@code null} if the bean is not a
 	 * {@link ConfigurationProperties @ConfigurationProperties} object. Annotations are
 	 * considered both on the bean itself, as well as any factory method (for example a
 	 * {@link Bean @Bean} method).
