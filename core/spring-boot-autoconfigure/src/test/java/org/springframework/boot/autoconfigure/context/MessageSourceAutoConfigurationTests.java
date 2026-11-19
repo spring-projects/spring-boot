@@ -177,6 +177,17 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	@WithTestMessagesPropertiesResource
+	@WithResource(name = "test/common-messages.properties", content = "hello=Some text with some swedish öäå!")
+	void testCommonMessagesEncodingWorks() {
+		this.contextRunner
+			.withPropertyValues("spring.messages.basename=test/messages",
+					"spring.messages.common-messages=classpath:test/common-messages.properties")
+			.run((context) -> assertThat(context.getMessage("hello", null, "Hello!", Locale.UK))
+				.isEqualTo("Some text with some swedish öäå!"));
+	}
+
+	@Test
+	@WithTestMessagesPropertiesResource
 	void testCommonMessagesWhenNotFound() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename=test/messages",

@@ -15,6 +15,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.context.support.AbstractResourceBasedMessageSource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +28,7 @@ import org.springframework.util.CollectionUtils;
  * configuration is based upon that produced by auto-configuration.
  *
  * @author Henrique (henriquejsza)
+ * @author Tanishq Choudhary
  * @since 4.2.0
  */
 public class ResourceBasedMessageSourceConfigurer {
@@ -73,7 +75,8 @@ public class ResourceBasedMessageSourceConfigurer {
 		Properties properties = CollectionFactory.createSortedProperties(false);
 		for (Resource resource : resources) {
 			try {
-				PropertiesLoaderUtils.fillProperties(properties, resource);
+				PropertiesLoaderUtils.fillProperties(properties,
+						new EncodedResource(resource, this.properties.getEncoding()));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to load common messages from '%s'".formatted(resource), ex);
