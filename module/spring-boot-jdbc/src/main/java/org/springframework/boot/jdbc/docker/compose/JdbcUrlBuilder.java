@@ -4,6 +4,10 @@
 
 package org.springframework.boot.jdbc.docker.compose;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.function.UnaryOperator;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -16,6 +20,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yu Xia
  */
 class JdbcUrlBuilder {
 
@@ -25,15 +30,28 @@ class JdbcUrlBuilder {
 
 	private final int containerPort;
 
+	private final Encoding encoding;
+
 	/**
 	 * Create a new {@link JdbcUrlBuilder} instance.
 	 * @param driverProtocol the driver protocol
 	 * @param containerPort the source container port
 	 */
 	JdbcUrlBuilder(String driverProtocol, int containerPort) {
+		this(driverProtocol, containerPort, Encoding.NONE);
+	}
+
+	/**
+	 * Create a new {@link JdbcUrlBuilder} instance.
+	 * @param driverProtocol the driver protocol
+	 * @param containerPort the source container port
+	 * @param encoding the encoding to apply
+	 */
+	JdbcUrlBuilder(String driverProtocol, int containerPort, Encoding encoding) {
 		Assert.notNull(driverProtocol, "'driverProtocol' must not be null");
 		this.driverProtocol = driverProtocol;
 		this.containerPort = containerPort;
+		this.encoding = encoding;
 	}
 
 	/**
@@ -61,7 +79,7 @@ class JdbcUrlBuilder {
 				service.ports().get(this.containerPort)));
 		if (StringUtils.hasLength(database)) {
 			url.append("/");
-			url.append(database);
+			url.append(this.encoding.apply(database));
 		}
 		String parameters = getParameters(service);
 		if (StringUtils.hasLength(parameters)) {
@@ -83,6 +101,38 @@ class JdbcUrlBuilder {
 
 	private @Nullable String getParameters(RunningService service) {
 		return service.labels().get(PARAMETERS_LABEL);
+	}
+
+	/**
+	 * Encoding Strategies.
+	 */
+	enum Encoding {
+
+		/**
+		 * Do not apply any encoding.
+		 */
+		NONE((value) -> value),
+
+		/**
+		 * URL encode elements.
+		 */
+		URL((value) -> URLEncoder.encode(value, StandardCharsets.UTF_8)),
+
+		/**
+		 * URL encode elements and additionally encode {@code "+"} to {@code "%20"}.
+		 */
+		URL_PLUS((value) -> URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20"));
+
+		Encoding(UnaryOperator<String> encoder) {
+			this.encoder = encoder;
+		}
+
+		private final UnaryOperator<String> encoder;
+
+		String apply(String value) {
+			return this.encoder.apply(value);
+		}
+
 	}
 
 }
