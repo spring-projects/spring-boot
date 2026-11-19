@@ -8,6 +8,7 @@ import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
+import org.springframework.boot.jdbc.docker.compose.JdbcUrlBuilder.Encoding;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -36,7 +37,7 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 	static class MySqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mysql", 3306);
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mysql", 3306, Encoding.URL);
 
 		private final MySqlEnvironment environment;
 
