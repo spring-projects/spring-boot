@@ -55,6 +55,7 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-sql")))
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
+	testImplementation("com.mysql:mysql-connector-j")
 	testImplementation("io.r2dbc:r2dbc-spi")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
@@ -66,7 +67,6 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.clickhouse:clickhouse-jdbc")
-	testRuntimeOnly("com.mysql:mysql-connector-j")
 	testRuntimeOnly("net.sourceforge.jtds:jtds")
 	testRuntimeOnly("org.apache.derby:derby")
 	testRuntimeOnly("org.apache.derby:derbytools")
