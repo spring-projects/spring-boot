@@ -66,7 +66,7 @@ class PropertiesMigrationReporter {
 		properties.forEach((name, candidates) -> {
 			PropertySource<?> propertySource = mapPropertiesWithReplacement(report, name, candidates);
 			if (propertySource != null) {
-				this.environment.getPropertySources().addBefore(name, propertySource);
+				this.environment.getPropertySources().addAfter(name, propertySource);
 			}
 		});
 		return report;

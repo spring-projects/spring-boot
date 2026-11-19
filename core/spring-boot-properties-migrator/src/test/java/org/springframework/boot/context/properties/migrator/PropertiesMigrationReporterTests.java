@@ -57,12 +57,29 @@ class PropertiesMigrationReporterTests {
 		propertySources.addAfter("one", two);
 		assertThat(propertySources).hasSize(3);
 		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
-		assertThat(mapToNames(propertySources)).containsExactly("one", "migrate-two", "two", "mockProperties");
+		assertThat(mapToNames(propertySources)).containsExactly("one", "two", "migrate-two", "mockProperties");
 		PropertySource<?> migrateTwo = propertySources.get("migrate-two");
 		assertThat(migrateTwo).isNotNull();
 		assertMappedProperty(migrateTwo, "test.two", "another", getOrigin(two, "wrong.two"));
 		assertMappedProperty(migrateTwo, "custom.the-map-replacement.key", "value",
 				getOrigin(two, "custom.map-with-replacement.key"));
+	}
+
+	@Test
+	void replacementKeyInSameSourceTakesPrecedence() {
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("test", Map.of("wrong.two", "legacy", "test.two", "current")));
+		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
+		assertThat(this.environment.getProperty("test.two")).isEqualTo("current");
+	}
+
+	@Test
+	void migratedKeyRetainsPropertySourcePrecedence() {
+		MutablePropertySources propertySources = this.environment.getPropertySources();
+		propertySources.addFirst(new MapPropertySource("higher", Map.of("wrong.two", "higher")));
+		propertySources.addAfter("higher", new MapPropertySource("lower", Map.of("test.two", "lower")));
+		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
+		assertThat(this.environment.getProperty("test.two")).isEqualTo("higher");
 	}
 
 	@Test
@@ -120,7 +137,7 @@ class PropertiesMigrationReporterTests {
 		String report = createWarningReport(loadRepository("metadata/type-conversion-metadata.json"));
 		assertThat(report).contains("Property source 'test'", "test.cache-seconds", "test.cache",
 				"test.time-to-live-ms", "test.time-to-live", "test.ttl", "test.mapped.ttl");
-		assertThat(mapToNames(propertySources)).containsExactly("migrate-test", "test", "mockProperties");
+		assertThat(mapToNames(propertySources)).containsExactly("test", "migrate-test", "mockProperties");
 		PropertySource<?> propertySource = propertySources.get("migrate-test");
 		assertThat(propertySource).isNotNull();
 		assertMappedProperty(propertySource, "test.cache", 50, null);
