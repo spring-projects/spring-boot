@@ -53,8 +53,7 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests 
 				Map.of("CLICKHOUSE_USER", "user", "CLICKHOUSE_PASSWORD", "password", "CLICKHOUSE_DB", database));
 		JdbcConnectionDetails connectionDetails = getConnectionDetails();
 		// The driver percent-decodes the database segment; a '+' stays literal, so spaces
-		// must
-		// be encoded as %20 rather than the x-www-form-urlencoded '+'
+		// must be encoded as %20 rather than the x-www-form-urlencoded '+'
 		assertThat(connectionDetails.getJdbcUrl()).endsWith("/" + percentEncode(database));
 	}
 

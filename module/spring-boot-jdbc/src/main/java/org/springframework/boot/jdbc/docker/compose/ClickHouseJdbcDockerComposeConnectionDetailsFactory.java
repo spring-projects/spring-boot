@@ -4,13 +4,11 @@
 
 package org.springframework.boot.jdbc.docker.compose;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
+import org.springframework.boot.jdbc.docker.compose.JdbcUrlBuilder.Encoding;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -37,7 +35,7 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactory
 	static class ClickhouseJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("clickhouse", 8123);
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("clickhouse", 8123, Encoding.URL_PLUS);
 
 		private final ClickHouseEnvironment environment;
 
@@ -46,7 +44,7 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactory
 		ClickhouseJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ClickHouseEnvironment(service.env());
-			this.jdbcUrl = jdbcUrlBuilder.build(service, urlEncode(this.environment.getDatabase()));
+			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 
 		@Override
@@ -62,20 +60,6 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactory
 		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
-		}
-
-		/**
-		 * Percent-encodes the database name so that names with characters that are
-		 * significant in a JDBC URL ('?', '%', and others) survive the ClickHouse
-		 * driver's URL parsing, which percent-decodes the database segment. Unlike the
-		 * PostgreSQL and MySQL drivers, the ClickHouse driver leaves a literal '+'
-		 * untouched, so spaces are encoded as {@code %20} rather than the
-		 * x-www-form-urlencoded {@code '+'}.
-		 * @param database the database name to encode
-		 * @return the encoded database name
-		 */
-		private static String urlEncode(String database) {
-			return URLEncoder.encode(database, StandardCharsets.UTF_8).replace("+", "%20");
 		}
 
 	}
