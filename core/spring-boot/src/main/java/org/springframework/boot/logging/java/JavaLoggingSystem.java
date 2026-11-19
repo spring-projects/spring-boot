@@ -112,10 +112,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
-		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
-			loggerName = "";
-		}
-		Logger logger = Logger.getLogger(loggerName);
+		Logger logger = Logger.getLogger(loggerName(loggerName));
 		if (logger != null) {
 			this.configuredLoggers.add(logger);
 			logger.setLevel(LEVELS.convertSystemToNative(level));
@@ -135,10 +132,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		if (ROOT_LOGGER_NAME.equals(loggerName)) {
-			loggerName = "";
-		}
-		Logger logger = LogManager.getLogManager().getLogger(loggerName);
+		Logger logger = LogManager.getLogManager().getLogger(loggerName(loggerName));
 		if (logger == null) {
 			return null;
 		}
@@ -147,6 +141,10 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		String name = (StringUtils.hasLength(logger.getName()) ? logger.getName() : ROOT_LOGGER_NAME);
 		Assert.state(effectiveLevel != null, "effectiveLevel must not be null");
 		return new LoggerConfiguration(name, level, effectiveLevel);
+	}
+
+	private String loggerName(@Nullable String loggerName) {
+		return (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) ? "" : loggerName;
 	}
 
 	private Level getEffectiveLevel(Logger root) {
