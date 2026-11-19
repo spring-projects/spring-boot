@@ -25,6 +25,9 @@ The response contains general information about the application.
 Each section of the response is contributed by an `InfoContributor`.
 Spring Boot provides several contributors that are described below.
 
+NOTE: Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Different contributors have different defaults for this property, see xref:reference:actuator/endpoints.adoc#actuator.endpoints.info.auto-configured-info-contributors[Auto-configured InfoContributors] for more details.
+
 
 
 [[info.retrieving.response-structure.build]]
