@@ -9,6 +9,8 @@ import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -41,6 +43,18 @@ class ImageReferenceTests {
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
 		assertThat(reference).hasToString("docker.io/library/ubuntu-a");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "my.app", "my_app", "my__app", "my-app", "my--app", "my---app" })
+	void ofNameWithValidSeparator(String name) {
+		assertThat(ImageReference.of("team/" + name + ":1.0")).hasToString("docker.io/team/" + name + ":1.0");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "my..app", "my._app", "my-_app", "my___app" })
+	void ofNameWithInvalidSeparator(String name) {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference.of("team/" + name + ":1.0"));
 	}
 
 	@Test
