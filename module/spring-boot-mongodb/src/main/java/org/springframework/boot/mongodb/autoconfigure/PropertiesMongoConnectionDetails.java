@@ -63,7 +63,10 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append(String.join(",", this.properties.getAdditionalHosts()));
 		}
 		builder.append("/");
-		builder.append(this.properties.getMongoClientDatabase());
+		String database = this.properties.getMongoClientDatabase();
+		if (database != null) {
+			builder.append(encode(database));
+		}
 		List<String> options = getOptions();
 		if (!options.isEmpty()) {
 			builder.append("?");
