@@ -7,8 +7,11 @@ package org.springframework.boot.autoconfigure.context;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.WeakHashMap;
 
 import org.jspecify.annotations.Nullable;
 
@@ -100,23 +103,24 @@ public final class MessageSourceAutoConfiguration {
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {
 
-		private static final ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<>();
+		private static final Map<ClassLoader, Map<String, ConditionOutcome>> cache = Collections
+			.synchronizedMap(new WeakHashMap<>());
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
-			ConditionOutcome outcome = cache.get(basename);
-			if (outcome == null) {
-				outcome = getMatchOutcomeForBasename(context, basename);
-				cache.put(basename, outcome);
+			ClassLoader classLoader = context.getClassLoader();
+			if (classLoader == null) {
+				return getMatchOutcomeForBasename(null, basename);
 			}
-			return outcome;
+			return cache.computeIfAbsent(classLoader, (key) -> new ConcurrentReferenceHashMap<>())
+				.computeIfAbsent(basename, (name) -> getMatchOutcomeForBasename(classLoader, name));
 		}
 
-		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context, String basename) {
+		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(basename))) {
-				for (Resource resource : getResources(context.getClassLoader(), name)) {
+				for (Resource resource : getResources(classLoader, name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match(message.found("bundle").items(resource));
 					}
