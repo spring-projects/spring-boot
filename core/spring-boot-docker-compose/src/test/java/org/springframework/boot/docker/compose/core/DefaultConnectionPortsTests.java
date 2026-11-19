@@ -6,11 +6,18 @@ package org.springframework.boot.docker.compose.core;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DefaultConnectionPorts.ContainerPort;
+import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Config;
+import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.HostPort;
+import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.NetworkSettings;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +43,29 @@ class DefaultConnectionPortsTests {
 	void createWhenHostNetwork() throws Exception {
 		DefaultConnectionPorts ports = createForJson("docker-inspect-host-network.json");
 		assertThat(ports.getMappings()).containsExactly(entry(new ContainerPort(6379, "tcp"), 6379));
+	}
+
+	@Test
+	void getPrefersTcpWhenPortIsPublishedForBothProtocols() {
+		Map<String, List<HostPort>> mappings = new LinkedHashMap<>();
+		mappings.put("53/tcp", List.of(new HostPort("127.0.0.1", "10053")));
+		mappings.put("53/udp", List.of(new HostPort("127.0.0.1", "20053")));
+		DefaultConnectionPorts ports = createForPorts(mappings);
+		assertThat(ports.get(53)).isEqualTo(10053);
+		assertThat(ports.getAll("udp")).containsExactly(20053);
+	}
+
+	@Test
+	void getReturnsUdpPortWhenNoTcpPortIsPublished() {
+		DefaultConnectionPorts ports = createForPorts(Map.of("53/udp", List.of(new HostPort("127.0.0.1", "20053"))));
+		assertThat(ports.get(53)).isEqualTo(20053);
+	}
+
+	private DefaultConnectionPorts createForPorts(Map<String, List<HostPort>> mappings) {
+		DockerCliInspectResponse response = new DockerCliInspectResponse("id",
+				new Config("test", Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList()),
+				new NetworkSettings(mappings), null);
+		return new DefaultConnectionPorts(response);
 	}
 
 	private DefaultConnectionPorts createForJson(String path) throws IOException {

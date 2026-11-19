@@ -20,7 +20,8 @@ import org.jspecify.annotations.Nullable;
 public interface ConnectionPorts {
 
 	/**
-	 * Return the host port mapped to the given container port.
+	 * Return the host port mapped to the given container port. If the port is mapped for
+	 * multiple protocols, the TCP mapping is preferred.
 	 * @param containerPort the container port. This is usually the standard port for the
 	 * service (e.g. port 80 for HTTP)
 	 * @return the host port. This can be an ephemeral port that is different from the
