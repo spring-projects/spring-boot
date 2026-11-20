@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Kamil Patora
  * @see <a href=
  * "https://github.com/docker/distribution/blob/master/reference/reference.go">Docker
  * grammar reference</a>
@@ -38,7 +39,7 @@ final class Regex implements CharSequence {
 	private static final Regex PATH_COMPONENT;
 	static {
 		Regex segment = Regex.of("[a-z0-9]+");
-		Regex separator = Regex.group("[._-]{1,2}");
+		Regex separator = Regex.oneOf("[._]", "__", "-+");
 		Regex separatedSegment = Regex.group(separator, segment).oneOrMoreTimes();
 		PATH_COMPONENT = Regex.of(segment, Regex.group(separatedSegment).zeroOrOnce());
 	}
