@@ -37,6 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bootstrap.DefaultBootstrapContext;
@@ -561,6 +562,69 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	void cleanupOccursAfterBeansHaveBeenDestroyed() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
+		SpringApplication application = new SpringApplication(DestroyCallbackConfiguration.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ConfigurableApplicationContext context = application.run();
+		TestCleanupLoggingSystem loggingSystem = getLoggingSystem(application);
+		assertThat(loggingSystem.cleanedUp).isFalse();
+		DestroyCallback destroyCallback = context.getBean(DestroyCallback.class);
+		AtomicBoolean called = new AtomicBoolean();
+		AtomicBoolean cleanupOnDestroy = new AtomicBoolean();
+		destroyCallback.onDestroy = () -> {
+			called.set(true);
+			cleanupOnDestroy.set(loggingSystem.cleanedUp);
+		};
+		context.close();
+		assertThat(called).isTrue();
+		assertThat(cleanupOnDestroy).isFalse();
+		assertThat(loggingSystem.cleanedUp).isTrue();
+	}
+
+	@Test
+	void stoppingContextDoesNotCleanUpLoggingSystem() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
+		SpringApplication application = new SpringApplication(DestroyCallbackConfiguration.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ConfigurableApplicationContext context = application.run();
+		TestCleanupLoggingSystem loggingSystem = getLoggingSystem(application);
+		context.stop();
+		assertThat(loggingSystem.cleanedUp).isFalse();
+		context.close();
+		assertThat(loggingSystem.cleanedUp).isTrue();
+	}
+
+	@Test
+	void julLoggingDuringBeanDestructionIsBridged() {
+		// Remove the bridge handler installed during setup so that the application
+		// installs its own
+		multicastEvent(new ContextClosedEvent(this.context));
+		assertThat(bridgeHandlerInstalled()).isFalse();
+		SpringApplication application = new SpringApplication(DestroyCallbackConfiguration.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ConfigurableApplicationContext context = application.run();
+		assertThat(bridgeHandlerInstalled()).isTrue();
+		context.getBean(DestroyCallback.class).onDestroy = () -> Logger.getLogger("test")
+			.warning("Logged using JUL during bean destruction");
+		context.close();
+		assertThat(this.output).contains("Logged using JUL during bean destruction");
+		assertThat(bridgeHandlerInstalled()).isFalse();
+	}
+
+	private TestCleanupLoggingSystem getLoggingSystem(SpringApplication application) {
+		ApplicationListener<?> listener = application.getListeners()
+			.stream()
+			.filter(LoggingApplicationListener.class::isInstance)
+			.findFirst()
+			.get();
+		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils.getField(listener,
+				"loggingSystem");
+		assertThat(loggingSystem).isNotNull();
+		return loggingSystem;
+	}
+
+	@Test
 	void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() {
 		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
 		propertySources
@@ -795,6 +859,25 @@ class LoggingApplicationListenerTests {
 		@Override
 		public int getPhase() {
 			return Integer.MAX_VALUE - 1;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(DestroyCallback.class)
+	static class DestroyCallbackConfiguration {
+
+	}
+
+	static class DestroyCallback implements DisposableBean {
+
+		@Nullable Runnable onDestroy;
+
+		@Override
+		public void destroy() {
+			if (this.onDestroy != null) {
+				this.onDestroy.run();
+			}
 		}
 
 	}
