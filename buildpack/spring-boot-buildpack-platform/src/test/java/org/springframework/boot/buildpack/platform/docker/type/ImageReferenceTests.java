@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Kamil Patora
  */
 class ImageReferenceTests {
 

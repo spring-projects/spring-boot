@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Kamil Patora
  */
 class ImageReferenceTests {
 

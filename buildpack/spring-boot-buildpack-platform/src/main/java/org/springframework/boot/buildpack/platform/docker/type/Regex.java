@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Kamil Patora
  * @see <a href=
  * "https://github.com/docker/distribution/blob/master/reference/reference.go">Docker
  * grammar reference</a>
