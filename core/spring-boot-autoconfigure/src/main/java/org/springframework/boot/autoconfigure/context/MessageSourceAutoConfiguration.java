@@ -7,11 +7,10 @@ package org.springframework.boot.autoconfigure.context;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.WeakHashMap;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -43,6 +42,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Marc Becker
  * @author Misagh Moayyed
+ * @author Daniel Lykov
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -103,18 +104,12 @@ public final class MessageSourceAutoConfiguration {
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {
 
-		private static final Map<ClassLoader, Map<String, ConditionOutcome>> cache = Collections
-			.synchronizedMap(new WeakHashMap<>());
-
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
 			ClassLoader classLoader = context.getClassLoader();
-			if (classLoader == null) {
-				return getMatchOutcomeForBasename(null, basename);
-			}
-			return cache.computeIfAbsent(classLoader, (key) -> new ConcurrentReferenceHashMap<>())
-				.computeIfAbsent(basename, (name) -> getMatchOutcomeForBasename(classLoader, name));
+			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
+			return Cache.forClassLoader(classLoader)
+				.computeIfAbsent(basename, () -> getMatchOutcomeForBasename(classLoader, basename));
 		}
 
 		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
@@ -138,6 +133,31 @@ public final class MessageSourceAutoConfiguration {
 			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
+		}
+
+	}
+
+	static final class Cache {
+
+		private static final Cache none = new Cache(null);
+
+		private static final Map<ClassLoader, Cache> classloaderCaches = new ConcurrentReferenceHashMap<>(16,
+				ReferenceType.SOFT);
+
+		private final @Nullable Map<String, ConditionOutcome> outcomes;
+
+		private Cache(@Nullable Map<String, ConditionOutcome> outcomes) {
+			this.outcomes = outcomes;
+		}
+
+		ConditionOutcome computeIfAbsent(String basename, Supplier<ConditionOutcome> action) {
+			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basename, (key) -> action.get())
+					: action.get();
+		}
+
+		static Cache forClassLoader(@Nullable ClassLoader classLoader) {
+			return (classLoader != null) ? classloaderCaches.computeIfAbsent(classLoader,
+					(key) -> new Cache(new ConcurrentReferenceHashMap<>())) : none;
 		}
 
 	}
