@@ -5,6 +5,8 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -93,15 +95,18 @@ class SpringApplicationAdminClient {
 
 	/**
 	 * Create a connector for an {@link javax.management.MBeanServer} exposed on the
-	 * current machine and the current port. Security should be disabled.
+	 * current machine and the current port.
 	 * @param port the port on which the mbean server is exposed
+	 * @param password the password to use for authentication
 	 * @return a connection
 	 * @throws IOException if the connection to that server failed
 	 */
-	static JMXConnector connect(int port) throws IOException {
+	static JMXConnector connect(int port, String password) throws IOException {
 		String url = "service:jmx:rmi:///jndi/rmi://127.0.0.1:" + port + "/jmxrmi";
 		JMXServiceURL serviceUrl = new JMXServiceURL(url);
-		return JMXConnectorFactory.connect(serviceUrl, null);
+		Map<String, Object> env = new HashMap<>();
+		env.put("jmx.remote.credentials", new String[] { "maven-build", password });
+		return JMXConnectorFactory.connect(serviceUrl, env);
 	}
 
 }

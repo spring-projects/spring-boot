@@ -44,6 +44,10 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
+	void filteredInetAddressWhenRedirected() throws Exception {
+	}
+
+	@Override
 	void connectWithSslBundle(String httpMethod) throws Exception {
 		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))

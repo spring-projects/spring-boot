@@ -5,16 +5,11 @@
 package org.springframework.boot.http.client;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.List;
-import java.util.stream.Stream;
-
-import org.jspecify.annotations.Nullable;
 
 /**
  * JDK {@link ProxySelector} to check a URL is not filtered by a
@@ -26,34 +21,17 @@ class JdkFilteredProxySelector extends ProxySelector {
 
 	private final ProxySelector delegate;
 
-	private final InetAddressFilter filter;
+	private final UrlHostFilter urlHostFilter;
 
-	JdkFilteredProxySelector(ProxySelector delegate, InetAddressFilter filter) {
+	JdkFilteredProxySelector(ProxySelector delegate, UrlHostFilter urlHostFilter) {
 		this.delegate = delegate;
-		this.filter = filter;
+		this.urlHostFilter = urlHostFilter;
 	}
 
 	@Override
 	public List<Proxy> select(URI uri) {
-		String host = uri.getHost();
-		FilteredAddresses.of(Stream.of(host), this::matchesResolvedHost).get().orElseThrow(host, this.filter);
+		this.urlHostFilter.throwIfFiltered(uri);
 		return this.delegate.select(uri);
-	}
-
-	private boolean matchesResolvedHost(String host) {
-		InetAddress resolved = resolve(host);
-		return (resolved != null) && this.filter.matches(resolved);
-	}
-
-	private @Nullable InetAddress resolve(String host) {
-		try {
-			// We follow the same resolution logic as
-			// jdk.internal.net.http.HttpRequestImpl.getAddress()
-			return InetAddress.getByName(host);
-		}
-		catch (UnknownHostException ex) {
-			return null;
-		}
 	}
 
 	@Override

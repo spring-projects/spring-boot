@@ -55,6 +55,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -199,6 +200,18 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 							.block(Duration.ofSeconds(30));
 						assertThat(otherRequestMatches).isTrue();
 					});
+			});
+	}
+
+	@Test
+	void otherPathsAreProtectedByDefaultWebSecurity() {
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+			.run((context) -> {
+				WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
+				// 503 due to missing cloud controller URL
+				webTestClient.get().uri(BASE_PATH).exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+				// 401 due to default web security
+				webTestClient.get().uri("/elsewhere").exchange().expectStatus().isUnauthorized();
 			});
 	}
 
