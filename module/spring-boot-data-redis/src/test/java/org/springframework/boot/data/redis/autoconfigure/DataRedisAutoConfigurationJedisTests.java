@@ -258,7 +258,34 @@ class DataRedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+			assertThat(cf.getClientConfiguration().getSslParameters())
+				.hasValueSatisfying((sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm())
+					.isEqualTo("HTTPS"));
 		});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslEnabledAndVerifyHostnameDisabled() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.enabled:true", "spring.data.redis.ssl.verify-hostname:false")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying(
+						(sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm()).isNull());
+			});
+	}
+
+	@Test
+	void testRedisUrlWithSslVerifiesHostname() {
+		this.contextRunner.withPropertyValues("spring.data.redis.url:rediss://user:password@example:33")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying(
+						(sslParameters) -> assertThat(sslParameters.getEndpointIdentificationAlgorithm())
+							.isEqualTo("HTTPS"));
+			});
 	}
 
 	@Test
@@ -272,6 +299,50 @@ class DataRedisAutoConfigurationJedisTests {
 			.run((context) -> {
 				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 				assertThat(cf.isUseSsl()).isTrue();
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void testRedisUrlWithSslBundleKeepsBundleOptionsAndVerifiesHostname() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.url:rediss://user:password@example:33",
+					"spring.data.redis.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers:TLS_AES_128_GCM_SHA256",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols:TLSv1.3",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying((sslParameters) -> {
+					assertThat(sslParameters.getEndpointIdentificationAlgorithm()).isEqualTo("HTTPS");
+					assertThat(sslParameters.getCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+					assertThat(sslParameters.getProtocols()).containsExactly("TLSv1.3");
+				});
+			});
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void testRedisUrlWithSslBundleAndVerifyHostnameDisabledKeepsBundleOptions() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.url:rediss://user:password@example:33",
+					"spring.data.redis.ssl.bundle:test-bundle", "spring.data.redis.ssl.verify-hostname:false",
+					"spring.ssl.bundle.jks.test-bundle.options.ciphers:TLS_AES_128_GCM_SHA256",
+					"spring.ssl.bundle.jks.test-bundle.options.enabled-protocols:TLSv1.3",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+				assertThat(cf.getClientConfiguration().getSslParameters()).hasValueSatisfying((sslParameters) -> {
+					assertThat(sslParameters.getEndpointIdentificationAlgorithm()).isNull();
+					assertThat(sslParameters.getCipherSuites()).containsExactly("TLS_AES_128_GCM_SHA256");
+					assertThat(sslParameters.getProtocols()).containsExactly("TLSv1.3");
+				});
 			});
 	}
 

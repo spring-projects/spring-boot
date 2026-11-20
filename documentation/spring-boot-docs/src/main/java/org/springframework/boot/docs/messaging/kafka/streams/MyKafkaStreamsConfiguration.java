@@ -29,7 +29,7 @@ public class MyKafkaStreamsConfiguration {
 	}
 
 	private KeyValue<Integer, String> uppercaseValue(Integer key, String value) {
-		return new KeyValue<>(key, value.toUpperCase(Locale.getDefault()));
+		return new KeyValue<>(key, value.toUpperCase(Locale.ROOT));
 	}
 
 }

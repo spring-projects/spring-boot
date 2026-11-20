@@ -75,6 +75,17 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@Test
+	void toEndpointWhenPathMappedWithTrailingSlashShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e1=e1-mapped/")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e1-mapped").exchange().expectStatus().isOk();
+			});
+	}
+
+	@Test
 	void toAllEndpointsShouldMatch() {
 		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
@@ -86,6 +97,40 @@ abstract class AbstractEndpointRequestIntegrationTests {
 				.expectStatus()
 				.isOk();
 		});
+	}
+
+	@Test
+	void toAllEndpointsWhenPathMappedShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e2=e2-mapped")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e2-mapped").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/e2-mapped")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
+	}
+
+	@Test
+	void toAllEndpointsWhenPathMappedWithTrailingSlashShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e2=e2-mapped/")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e2-mapped").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/e2-mapped")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
 	}
 
 	@Test

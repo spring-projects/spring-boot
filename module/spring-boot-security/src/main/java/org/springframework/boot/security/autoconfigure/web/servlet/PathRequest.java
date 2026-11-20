@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
+import org.springframework.boot.security.autoconfigure.web.PathPattern;
 import org.springframework.boot.security.autoconfigure.web.StaticResourceLocation;
 import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
 import org.springframework.context.ApplicationContext;
@@ -70,7 +71,8 @@ public final class PathRequest {
 		protected void initialized(Supplier<ApplicationContext> context) {
 			String path = context.get().getBean(H2ConsoleProperties.class).getPath();
 			Assert.hasText(path, "'path' in H2ConsoleProperties must not be empty");
-			this.delegate = PathPatternRequestMatcher.withDefaults().matcher(path + "/**");
+			String pattern = PathPattern.of(path).withoutTrailingSlash() + "/**";
+			this.delegate = PathPatternRequestMatcher.withDefaults().matcher(pattern);
 		}
 
 		@Override

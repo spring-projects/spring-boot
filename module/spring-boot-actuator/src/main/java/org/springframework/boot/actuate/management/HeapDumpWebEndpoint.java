@@ -178,7 +178,7 @@ public class HeapDumpWebEndpoint {
 
 		private File createTempFile() throws IOException {
 			String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
-			File file = File.createTempFile("heap-" + date, ".hprof");
+			File file = Files.createTempFile("heap-" + date, ".hprof").toFile();
 			file.delete();
 			return file;
 		}

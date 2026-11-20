@@ -47,6 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link EndpointRequest}.
  *
  * @author Chris Bono
+ * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 class EndpointRequestIntegrationTests {
 
@@ -73,6 +75,28 @@ class EndpointRequestIntegrationTests {
 	}
 
 	@Test
+	void toEndpointWhenPathMappedShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e1=e1-mapped")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e1-mapped").exchange().expectStatus().isOk();
+			});
+	}
+
+	@Test
+	void toEndpointWhenPathMappedWithTrailingSlashShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e1=e1-mapped/")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e1-mapped").exchange().expectStatus().isOk();
+			});
+	}
+
+	@Test
 	void toAllEndpointsShouldMatch() {
 		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
@@ -84,6 +108,40 @@ class EndpointRequestIntegrationTests {
 				.expectStatus()
 				.isOk();
 		});
+	}
+
+	@Test
+	void toAllEndpointsWhenPathMappedShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e2=e2-mapped")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e2-mapped").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/e2-mapped")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
+	}
+
+	@Test
+	void toAllEndpointsWhenPathMappedWithTrailingSlashShouldMatch() {
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.path-mapping.e2=e2-mapped/")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/e2-mapped").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/e2-mapped")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
 	}
 
 	@Test
@@ -101,12 +159,11 @@ class EndpointRequestIntegrationTests {
 					AutoConfigurations.of(JacksonAutoConfiguration.class, ReactiveWebSecurityAutoConfiguration.class,
 							ReactiveUserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
 							WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
-
 	}
 
 	protected ReactiveWebApplicationContextRunner createContextRunner() {
 		return new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-			.withUserConfiguration(WebEndpointConfiguration.class)
+			.withUserConfiguration(WebFluxEndpointConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class, WebFluxAutoConfiguration.class));
 	}
@@ -182,17 +239,6 @@ class EndpointRequestIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(WebEndpointProperties.class)
-	static class WebEndpointConfiguration {
-
-		@Bean
-		TomcatReactiveWebServerFactory tomcat() {
-			return new TomcatReactiveWebServerFactory(0);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
 
 		@SuppressWarnings("deprecation")
@@ -224,6 +270,17 @@ class EndpointRequestIntegrationTests {
 			http.httpBasic(Customizer.withDefaults());
 			http.csrf(CsrfSpec::disable);
 			return http.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WebEndpointProperties.class)
+	static class WebFluxEndpointConfiguration {
+
+		@Bean
+		TomcatReactiveWebServerFactory tomcat() {
+			return new TomcatReactiveWebServerFactory(0);
 		}
 
 	}

@@ -65,6 +65,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @AutoConfiguration(after = InfoEndpointAutoConfiguration.class, afterName = {
 		"org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration",
+		"org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration",
 		"org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration" })
 @ConditionalOnBooleanProperty(name = "management.cloudfoundry.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = Type.SERVLET)

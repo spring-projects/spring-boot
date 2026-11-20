@@ -229,6 +229,18 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void otherPathsAreProtectedByDefaultWebSecurity() {
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+			.run((context) -> {
+				MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+				// 503 due to missing cloud controller URL
+				mockMvc.perform(get(BASE_PATH)).andExpect(status().isServiceUnavailable());
+				// 401 due to default web security
+				mockMvc.perform(get("/elsewhere")).andExpect(status().isUnauthorized());
+			});
+	}
+
 	private SecurityFilterChain getSecurityFilterChain(AssertableWebApplicationContext context) {
 		Filter springSecurityFilterChain = context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		FilterChainProxy filterChainProxy = getFilterChainProxy(springSecurityFilterChain);
