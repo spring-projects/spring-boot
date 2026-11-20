@@ -4,6 +4,9 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -30,6 +33,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Marc Becker
  * @author Misagh Moayyed
  * @author Henrique (henriquejsza)
+ * @author Daniel Lykov
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -69,23 +74,18 @@ public final class MessageSourceAutoConfiguration {
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {
 
-		private static final ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<>();
-
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ClassLoader classLoader = context.getClassLoader();
 			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
-			ConditionOutcome outcome = cache.get(basename);
-			if (outcome == null) {
-				outcome = getMatchOutcomeForBasename(context, basename);
-				cache.put(basename, outcome);
-			}
-			return outcome;
+			return Cache.forClassLoader(classLoader)
+				.computeIfAbsent(basename, () -> getMatchOutcomeForBasename(classLoader, basename));
 		}
 
-		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context, String basename) {
+		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(basename))) {
-				for (Resource resource : getResources(context.getClassLoader(), name)) {
+				for (Resource resource : getResources(classLoader, name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match(message.found("bundle").items(resource));
 					}
@@ -103,6 +103,31 @@ public final class MessageSourceAutoConfiguration {
 			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
+		}
+
+	}
+
+	static final class Cache {
+
+		private static final Cache none = new Cache(null);
+
+		private static final Map<ClassLoader, Cache> classloaderCaches = new ConcurrentReferenceHashMap<>(16,
+				ReferenceType.SOFT);
+
+		private final @Nullable Map<String, ConditionOutcome> outcomes;
+
+		private Cache(@Nullable Map<String, ConditionOutcome> outcomes) {
+			this.outcomes = outcomes;
+		}
+
+		ConditionOutcome computeIfAbsent(String basename, Supplier<ConditionOutcome> action) {
+			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basename, (key) -> action.get())
+					: action.get();
+		}
+
+		static Cache forClassLoader(@Nullable ClassLoader classLoader) {
+			return (classLoader != null) ? classloaderCaches.computeIfAbsent(classLoader,
+					(key) -> new Cache(new ConcurrentReferenceHashMap<>())) : none;
 		}
 
 	}

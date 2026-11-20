@@ -4,6 +4,7 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +19,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.MessageSourceRuntimeHints;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -112,6 +115,22 @@ class MessageSourceAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.messages.basename=test.messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
+		});
+	}
+
+	@Test
+	@WithResource(name = "test/isolated-messages.properties", content = "foo=bar")
+	void propertiesBundleIsDetectedAfterPreviousContextCouldNotLoadIt() throws IOException {
+		ApplicationContextRunner runner = this.contextRunner
+			.withPropertyValues("spring.messages.basename=test/isolated-messages");
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				new ClassPathResource("test/isolated-messages.properties"))) {
+			runner.withClassLoader(classLoader)
+				.run((context) -> assertThat(context).doesNotHaveBean(ResourceBundleMessageSource.class));
+		}
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(ResourceBundleMessageSource.class);
+			assertThat(context.getMessage("foo", null, Locale.UK)).isEqualTo("bar");
 		});
 	}
 
