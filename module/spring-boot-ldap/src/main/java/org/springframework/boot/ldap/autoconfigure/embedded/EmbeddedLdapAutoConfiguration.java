@@ -93,7 +93,8 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	@Bean
 	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext,
-			ObjectProvider<SslBundles> sslBundles) throws LDAPException {
+			ObjectProvider<SslBundles> sslBundles, ObjectProvider<InMemoryDirectoryServerConfigCustomizer> customizers)
+			throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		String username = this.embeddedProperties.getCredential().getUsername();
@@ -108,6 +109,7 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		}
 		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(config));
 		this.server = new InMemoryDirectoryServer(config);
 		importLdif(this.server, applicationContext);
 		this.server.startListening();
