@@ -55,7 +55,7 @@ jobs:
           java-version: 17
       - name: Set Up Homebrew
         if: ${{ !vars.COMMERCIAL }}
-        uses: Homebrew/actions/setup-homebrew@c262868c096d909fc278daa87ed9772967331ea3 # 2026.11.02.1
+        uses: Homebrew/actions/setup-homebrew@ceec4e8419bb3c97ce96e9dda7738499ed5f869d # 2026.11.14.1
         with:
           stable: true
       - name: Downgrade Homebrew
