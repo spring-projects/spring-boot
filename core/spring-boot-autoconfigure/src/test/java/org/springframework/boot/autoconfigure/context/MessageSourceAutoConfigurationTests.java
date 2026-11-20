@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Misagh Moayyed
  * @author Phillip Webb
  * @author Henrique (henriquejsza)
+ * @author Tanishq Choudhary
  */
 class MessageSourceAutoConfigurationTests {
 
@@ -173,6 +174,17 @@ class MessageSourceAutoConfigurationTests {
 			.withPropertyValues("spring.messages.basename=test/messages",
 					"spring.messages.common-messages=classpath:test/common-messages.properties")
 			.run((context) -> assertThat(context.getMessage("hello", null, "Hello!", Locale.UK)).isEqualTo("world"));
+	}
+
+	@Test
+	@WithTestMessagesPropertiesResource
+	@WithResource(name = "test/common-messages.properties", content = "hello=Some text with some swedish öäå!")
+	void testCommonMessagesEncodingWorks() {
+		this.contextRunner
+			.withPropertyValues("spring.messages.basename=test/messages",
+					"spring.messages.common-messages=classpath:test/common-messages.properties")
+			.run((context) -> assertThat(context.getMessage("hello", null, "Hello!", Locale.UK))
+				.isEqualTo("Some text with some swedish öäå!"));
 	}
 
 	@Test
