@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Sidmar Theodoro
  * @author He Zean
+ * @author MyungJoo Song
  */
 class PostgresEnvironment {
 
@@ -38,6 +39,9 @@ class PostgresEnvironment {
 	private final String database;
 
 	PostgresEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("POSTGRES_USER_FILE"), "POSTGRES_USER_FILE is not supported");
+		Assert.state(!env.containsKey("POSTGRES_PASSWORD_FILE"), "POSTGRES_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("POSTGRES_DB_FILE"), "POSTGRES_DB_FILE is not supported");
 		this.username = extract(env, USERNAME_KEYS, DEFAULT_USERNAME);
 		this.password = extractPassword(env);
 		this.database = extract(env, DATABASE_KEYS, this.username);

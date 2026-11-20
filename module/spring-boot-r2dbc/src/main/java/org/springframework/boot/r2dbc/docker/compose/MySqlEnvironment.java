@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author MyungJoo Song
  */
 class MySqlEnvironment {
 
@@ -28,6 +29,10 @@ class MySqlEnvironment {
 	private final String database;
 
 	MySqlEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("MYSQL_USER_FILE"), "MYSQL_USER_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_PASSWORD_FILE"), "MYSQL_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_ROOT_PASSWORD_FILE"), "MYSQL_ROOT_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_DATABASE_FILE"), "MYSQL_DATABASE_FILE is not supported");
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
