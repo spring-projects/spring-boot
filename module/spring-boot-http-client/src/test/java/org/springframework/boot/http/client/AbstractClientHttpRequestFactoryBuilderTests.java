@@ -5,6 +5,8 @@
 package org.springframework.boot.http.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +21,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -64,6 +67,11 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			ClientHttpRequestFactoryBuilder<T> builder) {
 		this.requestFactoryType = requestFactoryType;
 		this.builder = builder;
+	}
+
+	@BeforeEach
+	void cleanup() {
+		TestServlet.redirectUri = null;
 	}
 
 	@Test
@@ -193,7 +201,7 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		try {
 			webServer.start();
 			int port = webServer.getPort();
-			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/test");
 			ClientHttpRequestFactory requestFactory = this.builder
 				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
@@ -202,6 +210,46 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		}
 		finally {
 			webServer.stop();
+		}
+	}
+
+	@Test
+	void filteredInetAddressWhenRedirected() throws Exception {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		TomcatServletWebServerFactory blockedWebServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer blockedWebServer = blockedWebServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			blockedWebServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			int blockedPort = blockedWebServer.getPort();
+			TestServlet.redirectUri = new URI("http://localhost:%s".formatted(blockedPort) + "/test");
+			InetAddressFilter inetAddressFilter = new InetAddressFilter() {
+
+				@Override
+				public boolean matches(InetAddress address) {
+					throw new IllegalStateException("Need to use port variant to test");
+				}
+
+				@Override
+				public boolean matches(InetSocketAddress address) {
+					return address.getPort() != blockedPort;
+				}
+
+			};
+			ClientHttpRequestFactory requestFactory = this.builder
+				.build(HttpClientSettings.defaults().withInetAddressFilter(inetAddressFilter));
+			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
+			assertThatException().isThrownBy(request::execute)
+				.matches((ex) -> ex instanceof FilteredHostException || ex.getCause() instanceof FilteredHostException);
+		}
+		finally {
+			webServer.stop();
+			blockedWebServer.stop();
 		}
 	}
 
@@ -245,10 +293,12 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 
 	public static class TestServlet extends HttpServlet {
 
+		public static @Nullable URI redirectUri;
+
 		@Override
 		public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 			if ("/redirect".equals(req.getRequestURI())) {
-				res.sendRedirect("/redirected");
+				res.sendRedirect((redirectUri != null) ? redirectUri.toString() : "/redirected");
 				return;
 			}
 			res.getWriter().println("Received " + req.getMethod() + " request to " + req.getRequestURI());

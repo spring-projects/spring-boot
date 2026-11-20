@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -36,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperationInvocationArguments;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
@@ -50,6 +50,7 @@ import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.http.server.PathContainer;
 import org.springframework.http.server.PathContainer.Element;
 import org.springframework.http.server.PathContainer.PathSegment;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationResult;
@@ -411,22 +412,18 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, @Nullable Map<String, String> body) {
-			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(exchange));
-			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
-				.getMatchAllRemainingPathSegmentsVariable();
-			if (matchAllRemainingPathSegmentsVariable != null) {
-				arguments.put(matchAllRemainingPathSegmentsVariable, getRemainingPathSegments(exchange));
-			}
-			if (body != null) {
-				arguments.putAll(body);
-			}
-			exchange.getRequest()
-				.getQueryParams()
-				.forEach((name, values) -> arguments.put(name, (values.size() != 1) ? values : values.get(0)));
-			return arguments;
+			ServerHttpRequest request = exchange.getRequest();
+			return WebOperationInvocationArguments.get(this.operation, (invocationArguments) -> {
+				invocationArguments.queryParameters(request.getQueryParams());
+				invocationArguments.pathParameters(getTemplateVariables(exchange));
+				if (request.getMethod() == HttpMethod.POST) {
+					invocationArguments.body(body);
+				}
+				invocationArguments.remainPathSegments((variable) -> getRemainingPathSegments(exchange));
+			});
 		}
 
-		private Object getRemainingPathSegments(ServerWebExchange exchange) {
+		private String[] getRemainingPathSegments(ServerWebExchange exchange) {
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			Assert.state(pathPattern != null, "'pathPattern' must not be null");
 			if (pathPattern.hasPatternSyntax()) {

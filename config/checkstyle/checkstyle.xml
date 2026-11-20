@@ -96,6 +96,11 @@
 			<property name="maximum" value="0"/>
 			<property name="format" value="\w+\.class\.isInstance\(.+\)" />
 			<property name="message" value="Please use object instanceof type instead." />
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="to(?:Upper|Lower)Case\(Locale\.getDefault\(\)\)" />
+			<property name="message" value="Please use Locale.ROOT for case changes" />
 			<property name="ignoreComments" value="true" />
 		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">

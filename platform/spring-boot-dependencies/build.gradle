@@ -1675,7 +1675,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.17.3-SNAPSHOT") {
+	library("Micrometer", "1.17.3") {
 		firstParty()
 		group("io.micrometer") {
 			modules = [
@@ -1716,7 +1716,7 @@ bom {
 			}
 		}
 	}
-	library("Micrometer Tracing", "1.7.3-SNAPSHOT") {
+	library("Micrometer Tracing", "1.7.3") {
 		firstParty()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
@@ -2206,7 +2206,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2025.0.9-SNAPSHOT") {
+	library("Reactor Bom", "2025.0.9") {
 		firstParty()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
@@ -2641,7 +2641,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.1.3-SNAPSHOT") {
+	library("Spring AMQP", "4.1.3") {
 		firstParty()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
@@ -2671,7 +2671,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2026.0.3-SNAPSHOT") {
+	library("Spring Data Bom", "2026.0.3") {
 		firstParty()
 		group("org.springframework.data") {
 			bom("spring-data-bom")
@@ -2799,7 +2799,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "2.0.7-SNAPSHOT") {
+	library("Spring GraphQL", "2.0.7") {
 		firstParty()
 		group("org.springframework.graphql") {
 			modules = [
@@ -2834,7 +2834,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-grpc/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "3.1.4-SNAPSHOT") {
+	library("Spring HATEOAS", "3.1.4") {
 		firstParty()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -2851,7 +2851,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "7.1.3-SNAPSHOT") {
+	library("Spring Integration", "7.1.3") {
 		firstParty()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
@@ -2866,7 +2866,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "4.1.3-SNAPSHOT") {
+	library("Spring Kafka", "4.1.3") {
 		firstParty()
 		group("org.springframework.kafka") {
 			modules = [
@@ -2884,7 +2884,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "4.1.3-SNAPSHOT") {
+	library("Spring LDAP", "4.1.3") {
 		firstParty()
 		group("org.springframework.ldap") {
 			modules = [
@@ -2919,7 +2919,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
-	library("Spring RESTDocs", "4.0.3-SNAPSHOT") {
+	library("Spring RESTDocs", "4.0.3") {
 		firstParty()
 		group("org.springframework.restdocs") {
 			bom("spring-restdocs-bom")
@@ -2934,7 +2934,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "7.1.3-SNAPSHOT") {
+	library("Spring Security", "7.1.3") {
 		firstParty()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
@@ -2949,7 +2949,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "4.1.2-SNAPSHOT") {
+	library("Spring Session", "4.1.2") {
 		firstParty()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -2972,7 +2972,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
 		}
 	}
-	library("Spring WS", "5.0.4-SNAPSHOT") {
+	library("Spring WS", "5.0.4") {
 		firstParty()
 		group("org.springframework.ws") {
 			bom("spring-ws-bom")

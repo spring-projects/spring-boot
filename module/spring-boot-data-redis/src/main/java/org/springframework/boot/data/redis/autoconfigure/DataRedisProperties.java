@@ -451,6 +451,11 @@ public class DataRedisProperties {
 		 */
 		private @Nullable String bundle;
 
+		/**
+		 * Whether to perform hostname verification.
+		 */
+		private boolean verifyHostname = true;
+
 		public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
 		}
@@ -465,6 +470,14 @@ public class DataRedisProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
+		}
+
+		public boolean isVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}

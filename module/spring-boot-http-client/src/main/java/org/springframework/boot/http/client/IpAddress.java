@@ -44,7 +44,7 @@ final class IpAddress {
 				return this.address.equals(address);
 			}
 			if (this.maskBitSize == 0) {
-				return true;
+				return this.address.getClass() == address.getClass();
 			}
 			byte[] ours = this.address.getAddress();
 			byte[] theirs = address.getAddress();

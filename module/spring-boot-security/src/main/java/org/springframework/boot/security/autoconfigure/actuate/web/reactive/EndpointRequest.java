@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.security.autoconfigure.web.PathPattern;
 import org.springframework.boot.security.web.reactive.ApplicationContextServerWebExchangeMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -180,7 +181,8 @@ public final class EndpointRequest {
 		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path,
 				@Nullable HttpMethod httpMethod) {
 			Assert.notNull(path, "'path' must not be null");
-			return new PathPatternParserServerWebExchangeMatcher(path + "/**", httpMethod);
+			String pattern = PathPattern.of(path).withoutTrailingSlash() + "/**";
+			return new PathPatternParserServerWebExchangeMatcher(pattern, httpMethod);
 		}
 
 		@Override
@@ -227,7 +229,7 @@ public final class EndpointRequest {
 
 		protected final @Nullable String getLinksPath(String basePath) {
 			if (StringUtils.hasText(basePath)) {
-				return basePath;
+				return PathPattern.of(basePath).withoutTrailingSlash();
 			}
 			return (this.managementPortType == ManagementPortType.DIFFERENT) ? "/" : null;
 		}
@@ -443,7 +445,8 @@ public final class EndpointRequest {
 				.filter(Objects::nonNull)
 				.map(this::getEndpointId)
 				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
-				.map((path) -> new PathPatternParserServerWebExchangeMatcher(path, this.httpMethod))
+				.map((path) -> PathPattern.of(path).withoutTrailingSlash())
+				.map((pattern) -> new PathPatternParserServerWebExchangeMatcher(pattern, this.httpMethod))
 				.collect(Collectors.toCollection(ArrayList::new));
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrServerWebExchangeMatcher(delegateMatchers)
 					: EMPTY_MATCHER;
