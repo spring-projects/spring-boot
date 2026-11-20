@@ -6,11 +6,19 @@ package org.springframework.boot.rsocket.netty;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.handler.ssl.SslProvider;
@@ -48,6 +56,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithPackageResou
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketRequester;
@@ -285,6 +294,45 @@ class NettyRSocketServerFactoryTests {
 		NettyRSocketServerFactory.HttpServerSslCustomizer customizer = new NettyRSocketServerFactory.HttpServerSslCustomizer(
 				Ssl.ClientAuth.NONE, defaultBundle, Collections.emptyMap());
 		assertThat(customizer.getSslProvider(null)).isNotNull();
+	}
+
+	@Test
+	@WithPackageResources({ "test.jks", "test-cert.pem", "test-key.pem" })
+	void tcpTransportUsesServerNameSslBundle() throws Exception {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(Transport.TCP);
+		SslBundle defaultBundle = SslBundle.of(
+				new JksSslStoreBundle(JksSslStoreDetails.forLocation("classpath:test.jks"), null),
+				SslBundleKey.of("password", "spring-boot"));
+		DefaultSslBundleRegistry sslBundles = new DefaultSslBundleRegistry("default", defaultBundle);
+		sslBundles.registerBundle("sni", createBundle("test-cert.pem", "test-key.pem"));
+		Ssl ssl = Ssl.forBundle("default");
+		ssl.setServerNameBundles(List.of(new Ssl.ServerNameSslBundle("sni.example", "sni")));
+		factory.setSsl(ssl);
+		factory.setSslBundles(sslBundles);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		Certificate serverNameCertificate = CertificateFactory.getInstance("X.509")
+			.generateCertificate(new ClassPathResource("test-cert.pem").getInputStream());
+		assertThat(getServerCertificate("sni.example")).isEqualTo(serverNameCertificate);
+		assertThat(getServerCertificate(null)).isNotEqualTo(serverNameCertificate);
+	}
+
+	private Certificate getServerCertificate(@Nullable String serverName) throws Exception {
+		assertThat(this.server).isNotNull();
+		InetSocketAddress address = this.server.address();
+		assertThat(address).isNotNull();
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, InsecureTrustManagerFactory.INSTANCE.getTrustManagers(), null);
+		try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory()
+			.createSocket(address.getHostString(), address.getPort())) {
+			SSLParameters parameters = socket.getSSLParameters();
+			parameters
+				.setServerNames((serverName != null) ? List.of(new SNIHostName(serverName)) : Collections.emptyList());
+			socket.setSSLParameters(parameters);
+			socket.startHandshake();
+			return socket.getSession().getPeerCertificates()[0];
+		}
 	}
 
 	private void checkEchoRequest() {
