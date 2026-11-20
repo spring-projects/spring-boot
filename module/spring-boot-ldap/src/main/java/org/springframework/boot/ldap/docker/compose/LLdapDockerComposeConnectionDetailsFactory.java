@@ -51,7 +51,7 @@ class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			String ldapPort = usesTls ? getFromEnv(env, "LLDAP_LDAPS_OPTIONS__PORT", "6360")
 					: getFromEnv(env, "LLDAP_LDAP_PORT", "3890");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
-					service.ports().get(Integer.parseInt(ldapPort))) };
+					service.ports().getTcp(Integer.parseInt(ldapPort))) };
 			this.base = getFromEnv(env, "LLDAP_LDAP_BASE_DN", "dc=example,dc=com");
 			this.password = getFromEnv(env, "LLDAP_LDAP_USER_PASS", "password");
 			String userId = getFromEnv(env, "LLDAP_LDAP_USER_DN", "admin");

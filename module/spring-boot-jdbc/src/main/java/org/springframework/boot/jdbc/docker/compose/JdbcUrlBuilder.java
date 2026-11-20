@@ -76,7 +76,7 @@ class JdbcUrlBuilder {
 	private String urlFor(RunningService service, @Nullable String database) {
 		Assert.notNull(service, "'service' must not be null");
 		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
-				service.ports().get(this.containerPort)));
+				service.ports().getTcp(this.containerPort)));
 		if (StringUtils.hasLength(database)) {
 			url.append("/");
 			url.append(this.encoding.apply(database));

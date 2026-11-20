@@ -46,7 +46,7 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 		protected ActiveMQDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ActiveMQClassicEnvironment(service.env());
-			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
+			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().getTcp(ACTIVEMQ_PORT);
 		}
 
 		@Override

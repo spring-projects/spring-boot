@@ -49,7 +49,7 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			super(service);
 			Neo4jEnvironment neo4jEnvironment = new Neo4jEnvironment(service.env());
 			this.authToken = neo4jEnvironment.getAuthToken();
-			this.uri = URI.create("neo4j://%s:%d".formatted(service.host(), service.ports().get(BOLT_PORT)));
+			this.uri = URI.create("neo4j://%s:%d".formatted(service.host(), service.ports().getTcp(BOLT_PORT)));
 		}
 
 		@Override

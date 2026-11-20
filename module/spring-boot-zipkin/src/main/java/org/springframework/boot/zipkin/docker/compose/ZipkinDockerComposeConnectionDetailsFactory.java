@@ -44,7 +44,7 @@ class ZipkinDockerComposeConnectionDetailsFactory
 		ZipkinDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(ZIPKIN_PORT);
+			this.port = source.ports().getTcp(ZIPKIN_PORT);
 		}
 
 		@Override

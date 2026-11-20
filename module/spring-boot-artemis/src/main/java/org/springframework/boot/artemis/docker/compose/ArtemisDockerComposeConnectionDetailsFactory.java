@@ -47,7 +47,7 @@ class ArtemisDockerComposeConnectionDetailsFactory
 		protected ArtemisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ArtemisEnvironment(service.env());
-			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
+			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().getTcp(ACTIVEMQ_PORT);
 		}
 
 		@Override
