@@ -5,6 +5,7 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import org.jspecify.annotations.Nullable;
 
@@ -32,6 +33,13 @@ class FileSnapshot {
 		this.exists = file.exists();
 		this.length = file.length();
 		this.lastModified = file.lastModified();
+	}
+
+	FileSnapshot(File file, BasicFileAttributes attributes) {
+		this.file = file;
+		this.exists = true;
+		this.length = attributes.size();
+		this.lastModified = attributes.lastModifiedTime().toMillis();
 	}
 
 	File getFile() {
