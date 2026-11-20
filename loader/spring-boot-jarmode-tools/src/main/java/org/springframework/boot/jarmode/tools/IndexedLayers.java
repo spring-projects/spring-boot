@@ -6,6 +6,7 @@ package org.springframework.boot.jarmode.tools;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
@@ -15,9 +16,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
 
 import org.jspecify.annotations.Nullable;
 
@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Moritz Halbritter
  * @author Junggi Kim
+ * @author Xinwei Zhang
  */
 class IndexedLayers implements Layers {
 
@@ -101,7 +102,7 @@ class IndexedLayers implements Layers {
 	 * jar.
 	 */
 	static @Nullable IndexedLayers get(Context context) {
-		try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
+		try (ArchiveContent jarFile = new ArchiveContent(context.getArchiveFile())) {
 			Manifest manifest = jarFile.getManifest();
 			if (manifest == null) {
 				return null;
@@ -110,12 +111,14 @@ class IndexedLayers implements Layers {
 			if (indexFileLocation == null) {
 				return null;
 			}
-			ZipEntry entry = jarFile.getEntry(indexFileLocation);
+			JarEntry entry = jarFile.getEntry(indexFileLocation);
 			if (entry == null) {
 				return null;
 			}
-			String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
-			return new IndexedLayers(indexFile, indexFileLocation);
+			try (InputStream input = jarFile.getInputStream(entry)) {
+				String indexFile = StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+				return new IndexedLayers(indexFile, indexFileLocation);
+			}
 		}
 		catch (FileNotFoundException | NoSuchFileException ex) {
 			return null;
