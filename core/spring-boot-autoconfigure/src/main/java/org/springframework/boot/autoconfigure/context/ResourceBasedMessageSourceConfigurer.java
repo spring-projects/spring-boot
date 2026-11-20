@@ -6,12 +6,12 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
-import org.jspecify.annotations.Nullable;
-
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.support.AbstractResourceBasedMessageSource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.io.Resource;
@@ -52,37 +52,31 @@ public class ResourceBasedMessageSourceConfigurer {
 	 */
 	public void configure(AbstractResourceBasedMessageSource messageSource) {
 		Assert.notNull(messageSource, "'messageSource' must not be null");
-		if (!CollectionUtils.isEmpty(this.properties.getBasename())) {
-			messageSource.setBasenames(this.properties.getBasename().toArray(new String[0]));
-		}
-		if (this.properties.getEncoding() != null) {
-			messageSource.setDefaultEncoding(this.properties.getEncoding().name());
-		}
-		messageSource.setFallbackToSystemLocale(this.properties.isFallbackToSystemLocale());
-		Duration cacheDuration = this.properties.getCacheDuration();
-		if (cacheDuration != null) {
-			messageSource.setCacheMillis(cacheDuration.toMillis());
-		}
-		messageSource.setAlwaysUseMessageFormat(this.properties.isAlwaysUseMessageFormat());
-		messageSource.setUseCodeAsDefaultMessage(this.properties.isUseCodeAsDefaultMessage());
-		messageSource.setCommonMessages(loadCommonMessages(this.properties.getCommonMessages()));
+		PropertyMapper map = PropertyMapper.get();
+		map.from(this.properties::getBasename)
+			.whenNot(CollectionUtils::isEmpty)
+			.as((names) -> names.toArray(new String[0]))
+			.to(messageSource::setBasenames);
+		map.from(this.properties::getEncoding).as(Charset::name).to(messageSource::setDefaultEncoding);
+		map.from(this.properties::isFallbackToSystemLocale).to(messageSource::setFallbackToSystemLocale);
+		map.from(this.properties::getCacheDuration).as(Duration::toMillis).to(messageSource::setCacheMillis);
+		map.from(this.properties.isAlwaysUseMessageFormat()).to(messageSource::setAlwaysUseMessageFormat);
+		map.from(this.properties::isUseCodeAsDefaultMessage).to(messageSource::setUseCodeAsDefaultMessage);
+		map.from(this.properties::getCommonMessages).as(this::loadCommonMessages).to(messageSource::setCommonMessages);
 	}
 
-	private @Nullable Properties loadCommonMessages(@Nullable List<Resource> resources) {
-		if (CollectionUtils.isEmpty(resources)) {
-			return null;
-		}
-		Properties properties = CollectionFactory.createSortedProperties(false);
+	private Properties loadCommonMessages(List<Resource> resources) {
+		Properties commonMessages = CollectionFactory.createSortedProperties(false);
 		for (Resource resource : resources) {
 			try {
-				PropertiesLoaderUtils.fillProperties(properties,
-						new EncodedResource(resource, this.properties.getEncoding()));
+				EncodedResource encodedResource = new EncodedResource(resource, this.properties.getEncoding());
+				PropertiesLoaderUtils.fillProperties(commonMessages, encodedResource);
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to load common messages from '%s'".formatted(resource), ex);
 			}
 		}
-		return properties;
+		return commonMessages;
 	}
 
 }

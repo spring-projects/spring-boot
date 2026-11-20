@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Misagh Moayyed
  * @author Phillip Webb
  * @author Henrique (henriquejsza)
+ * @author Tanishq Choudhary
  */
 class MessageSourceAutoConfigurationTests {
 
