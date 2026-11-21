@@ -41,32 +41,35 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	@Override
 	public ConnectionString getConnectionString() {
 		// protocol://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
-		if (this.properties.getUri() != null) {
-			return new ConnectionString(this.properties.getUri());
-		}
+		String uri = this.properties.getUri();
+		return (uri != null) ? new ConnectionString(uri) : buildConnectionString();
+	}
+
+	private ConnectionString buildConnectionString() {
 		StringBuilder builder = new StringBuilder(getProtocol()).append("://");
-		if (this.properties.getUsername() != null) {
-			builder.append(encode(this.properties.getUsername()));
+		String username = this.properties.getUsername();
+		char[] password = this.properties.getPassword();
+		String host = this.properties.getHost();
+		Integer port = this.properties.getPort();
+		String database = this.properties.getMongoClientDatabase();
+		List<String> additionalHosts = this.properties.getAdditionalHosts();
+		if (username != null) {
+			builder.append(encode(username));
 			builder.append(":");
-			if (this.properties.getPassword() != null) {
-				builder.append(encode(this.properties.getPassword()));
-			}
+			builder.append((password != null) ? encode(new String(password)) : "");
 			builder.append("@");
 		}
-		builder.append((this.properties.getHost() != null) ? this.properties.getHost() : "localhost");
-		if (this.properties.getPort() != null) {
+		builder.append((host != null) ? host : "localhost");
+		if (port != null) {
 			builder.append(":");
-			builder.append(this.properties.getPort());
+			builder.append(port);
 		}
-		if (this.properties.getAdditionalHosts() != null) {
+		if (additionalHosts != null) {
 			builder.append(",");
-			builder.append(String.join(",", this.properties.getAdditionalHosts()));
+			builder.append(String.join(",", additionalHosts));
 		}
 		builder.append("/");
-		String database = this.properties.getMongoClientDatabase();
-		if (database != null) {
-			builder.append(encode(database));
-		}
+		builder.append((database != null) ? encode(database) : "");
 		List<String> options = getOptions();
 		if (!options.isEmpty()) {
 			builder.append("?");
@@ -87,10 +90,6 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		return URLEncoder.encode(input, StandardCharsets.UTF_8).replace("+", "%20");
 	}
 
-	private char[] encode(char[] input) {
-		return encode(new String(input)).toCharArray();
-	}
-
 	@Override
 	public @Nullable SslBundle getSslBundle() {
 		Ssl ssl = this.properties.getSsl();
@@ -105,12 +104,13 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	}
 
 	private List<String> getOptions() {
+		String replicaSetName = this.properties.getReplicaSetName();
+		String username = this.properties.getUsername();
+		String authenticationDatabase = this.properties.getAuthenticationDatabase();
 		List<String> options = new ArrayList<>();
-		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
-			options.add("replicaSet=" + this.properties.getReplicaSetName());
-		}
-		if (this.properties.getUsername() != null && this.properties.getAuthenticationDatabase() != null) {
-			options.add("authSource=" + this.properties.getAuthenticationDatabase());
+		options.add(StringUtils.hasText(replicaSetName) ? "replicaSet=" + replicaSetName : "");
+		if (username != null && authenticationDatabase != null) {
+			options.add("authSource=" + authenticationDatabase);
 		}
 		return options;
 	}
