@@ -37,6 +37,7 @@ import org.springframework.http.server.reactive.ServletHttpHandlerAdapter;
  *
  * @author Brian Clozel
  * @author Moritz Halbritter
+ * @author WooSeung Kim
  * @since 4.0.0
  */
 public class JettyReactiveWebServerFactory extends JettyWebServerFactory
@@ -92,11 +93,11 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		logger.info("Server initialized with port: " + port);
-		if (this.getMaxConnections() > -1) {
-			server.addBean(new NetworkConnectionLimit(this.getMaxConnections(), server));
-		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
+		}
+		if (this.getMaxConnections() > -1) {
+			server.addBean(new NetworkConnectionLimit(this.getMaxConnections(), server.getConnectors()));
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);

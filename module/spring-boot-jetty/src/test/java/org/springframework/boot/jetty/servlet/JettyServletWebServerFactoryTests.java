@@ -6,6 +6,7 @@ package org.springframework.boot.jetty.servlet;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
@@ -87,6 +88,7 @@ import static org.mockito.Mockito.mock;
  * @author Henri Kerola
  * @author Moritz Halbritter
  * @author Onur Kagan Ozcan
+ * @author WooSeung Kim
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -594,6 +596,31 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		assertThat(connectionLimit).extracting("_connectors")
 			.asInstanceOf(InstanceOfAssertFactories.list(AbstractConnector.class))
 			.hasSize(1);
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void shouldLimitConnectionsWhenMaxConnectionsIsSetAndSslIsEnabled(@ResourcePath("test.jks") String keyStore)
+			throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
+		AbstractConnector connector = (AbstractConnector) server.getConnectors()[0];
+		assertThat(connector.getBeans(NetworkConnectionLimit.class)).contains(connectionLimit);
+		try (Socket socket = new Socket("127.0.0.1", this.webServer.getPort())) {
+			Awaitility.await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+				assertThat(connectionLimit.getNetworkConnectionCount()).isOne();
+				assertThat(connector.isAccepting()).isFalse();
+			});
+		}
 	}
 
 	@Override
