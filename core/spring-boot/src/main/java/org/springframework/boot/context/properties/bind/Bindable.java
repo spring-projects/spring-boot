@@ -170,7 +170,7 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation @Nullable ... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations != null) ? annotations : NO_ANNOTATIONS, NO_BIND_RESTRICTIONS, this.bindMethod);
+				(annotations != null) ? annotations : NO_ANNOTATIONS, this.bindRestrictions, this.bindMethod);
 	}
 
 	/**
