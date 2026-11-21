@@ -8,9 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.activemq.autoconfigure.ActiveMQProperties.Packages;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -21,6 +24,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Venil Noronha
  * @author Eddú Meléndez
+ * @author Armen Petrosyan
  */
 class ActiveMQConnectionFactoryConfigurer {
 
@@ -57,6 +61,27 @@ class ActiveMQConnectionFactoryConfigurer {
 		for (ActiveMQConnectionFactoryCustomizer factoryCustomizer : this.factoryCustomizers) {
 			factoryCustomizer.customize(connectionFactory);
 		}
+	}
+
+	static ActiveMQConnectionFactory createConnectionFactory(ActiveMQConnectionDetails connectionDetails) {
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		if (sslBundle == null) {
+			return new ActiveMQConnectionFactory(connectionDetails.getUser(), connectionDetails.getPassword(),
+					connectionDetails.getBrokerUrl());
+		}
+		ActiveMQSslConnectionFactory connectionFactory = new ActiveMQSslConnectionFactory();
+		configureSslConnectionFactory(connectionFactory, connectionDetails, sslBundle);
+		return connectionFactory;
+	}
+
+	static void configureSslConnectionFactory(ActiveMQSslConnectionFactory connectionFactory,
+			ActiveMQConnectionDetails connectionDetails, SslBundle sslBundle) {
+		Assert.state(!sslBundle.getOptions().isSpecified(), "SSL Options cannot be specified with ActiveMQ");
+		connectionFactory.setUserName(connectionDetails.getUser());
+		connectionFactory.setPassword(connectionDetails.getPassword());
+		connectionFactory.setBrokerURL(connectionDetails.getBrokerUrl());
+		SslManagerBundle managers = sslBundle.getManagers();
+		connectionFactory.setKeyAndTrustManagers(managers.getKeyManagers(), managers.getTrustManagers(), null);
 	}
 
 }
