@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OpenTelemetryLoggingAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Abdullah Alqahtani
  */
 class OpenTelemetryLoggingAutoConfigurationTests {
 
@@ -162,6 +163,14 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 					.isInstanceOfSatisfying(ArrayBlockingQueue.class,
 							(queue) -> assertThat(queue.remainingCapacity()).isEqualTo(4096));
 			});
+	}
+
+	@Test
+	void shouldConfigureBatchLogRecordProcessorWithInfiniteExportTimeout() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.timeout=" + Duration.ofNanos(Long.MAX_VALUE))
+			.run((context) -> assertThat(context.getBean(BatchLogRecordProcessor.class)).extracting("worker")
+				.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Long.MAX_VALUE));
 	}
 
 	@Configuration(proxyBeanMethods = false)

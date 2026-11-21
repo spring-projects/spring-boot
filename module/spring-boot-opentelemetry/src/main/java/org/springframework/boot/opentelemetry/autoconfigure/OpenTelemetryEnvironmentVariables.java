@@ -22,8 +22,12 @@ import org.springframework.util.StringUtils;
  * Reads and transforms OpenTelemetry environment variables.
  *
  * @author Moritz Halbritter
+ * @author Abdullah Alqahtani
  */
 class OpenTelemetryEnvironmentVariables {
+
+	// The largest duration that can be converted to nanoseconds
+	private static final String MAX_TIMEOUT = Duration.ofNanos(Long.MAX_VALUE).toString();
 
 	private final Log logger;
 
@@ -113,7 +117,7 @@ class OpenTelemetryEnvironmentVariables {
 			return EnvVariable.none();
 		}
 		if (intValue == 0) {
-			return EnvVariable.of(name, Duration.ofSeconds(Long.MAX_VALUE).toString());
+			return EnvVariable.of(name, MAX_TIMEOUT);
 		}
 		return EnvVariable.of(name, Duration.ofMillis(intValue).toString());
 	}
