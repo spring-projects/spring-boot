@@ -172,6 +172,14 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureBatchLogRecordProcessorWithInfiniteExportTimeout() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.timeout=" + Duration.ofNanos(Long.MAX_VALUE))
+			.run((context) -> assertThat(context.getBean(BatchLogRecordProcessor.class)).extracting("worker")
+				.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Long.MAX_VALUE));
+	}
+
+	@Test
 	void shouldPreferSignalSpecificEndpointOverCommonEndpointForLogging() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class))
 			.withPropertyValues("management.opentelemetry.otlp.endpoint=http://common-host:4318",
