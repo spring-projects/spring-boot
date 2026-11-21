@@ -177,6 +177,16 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "test/my messages.properties", content = "foo=bar")
+	void testMultipleMessageSourceCreatedWithSpacesInBasename() {
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/my messages, test/messages2")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MessageSource.class);
+				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
+			});
+	}
+
+	@Test
 	@WithTestMessagesPropertiesResource
 	@Disabled("Expected to fail per gh-1075")
 	@WithResource(name = "application-switch-messages.properties", content = "spring.messages.basename:test/messages")
