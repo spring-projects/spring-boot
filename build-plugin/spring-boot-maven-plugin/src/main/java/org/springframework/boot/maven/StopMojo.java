@@ -86,8 +86,7 @@ public class StopMojo extends AbstractMojo {
 		try (FileInputStream input = new FileInputStream(
 				new File(this.buildDirectory, "org.springframework.boot.jmxremote.password"))) {
 			Properties properties = new Properties();
-			properties.load(
-					new FileInputStream(new File(this.buildDirectory, "org.springframework.boot.jmxremote.password")));
+			properties.load(input);
 			return properties.getProperty("maven-build");
 		}
 		catch (IOException ex) {
