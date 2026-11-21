@@ -124,8 +124,8 @@ include-code::MyBean[]
 If you have defined your own javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[], it will be used to auto-configure a suitable javadoc:org.springframework.data.mongodb.MongoDatabaseFactory[].
 
 The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] is created using a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] bean.
-If you have defined your own javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[], it will be used without modification and the `spring.data.mongodb` properties will be ignored.
-Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+If you have defined your own javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[], it will be used without modification and the `spring.mongodb` properties will be ignored.
+Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] will be auto-configured and will have the `spring.mongodb` properties applied to it.
 In either case, you can declare one or more javadoc:org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
 Each will be called in order with the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings$Builder[] that is used to build the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[].
 
