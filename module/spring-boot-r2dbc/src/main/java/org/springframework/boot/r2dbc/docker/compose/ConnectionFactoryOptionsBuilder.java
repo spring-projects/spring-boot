@@ -50,7 +50,7 @@ class ConnectionFactoryOptionsBuilder {
 		ConnectionFactoryOptions.Builder builder = ConnectionFactoryOptions.builder()
 			.option(ConnectionFactoryOptions.DRIVER, this.driver)
 			.option(ConnectionFactoryOptions.HOST, service.host())
-			.option(ConnectionFactoryOptions.PORT, service.ports().get(this.sourcePort))
+			.option(ConnectionFactoryOptions.PORT, service.ports().getTcp(this.sourcePort))
 			.option(ConnectionFactoryOptions.DATABASE, database);
 		if (StringUtils.hasLength(user)) {
 			builder.option(ConnectionFactoryOptions.USER, user);

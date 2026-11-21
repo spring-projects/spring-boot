@@ -65,7 +65,7 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 				case GRPC -> OTLP_GRPC_PORT;
 			};
 			String scheme = (this.sslBundle != null) ? "https" : "http";
-			return "%s://%s:%d/v1/traces".formatted(scheme, this.host, this.ports.get(port));
+			return "%s://%s:%d/v1/traces".formatted(scheme, this.host, this.ports.getTcp(port));
 		}
 
 		@Override

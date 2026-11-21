@@ -25,9 +25,57 @@ public interface ConnectionPorts {
 	 * service (e.g. port 80 for HTTP)
 	 * @return the host port. This can be an ephemeral port that is different from the
 	 * container port
-	 * @throws IllegalStateException if the container port is not mapped
+	 * @throws IllegalStateException if the container port is not mapped or if the port is
+	 * mapped for multiple protocols.
+	 * @deprecated since 4.0.11 for removal in 4.4.0 in favor of {@link #get(int, String)}
 	 */
+	@Deprecated(since = "4.0.11", forRemoval = true)
 	int get(int containerPort);
+
+	/**
+	 * Return the host port mapped to the given TCP container port.
+	 * @param containerPort the container port. This is usually the standard port for the
+	 * service (e.g. port 80 for HTTP)
+	 * @return the host port. This can be an ephemeral port that is different from the
+	 * container port
+	 * @throws IllegalStateException if the container port is not mapped or if the port is
+	 * mapped for a different protocol.
+	 * @since 4.0.11
+	 * @see #get(int, String)
+	 */
+	default int getTcp(int containerPort) {
+		return get(containerPort, "tcp");
+	}
+
+	/**
+	 * Return the host port mapped to the given UDP container port.
+	 * @param containerPort the container port. This is usually the standard port for the
+	 * service (e.g. port 80 for HTTP)
+	 * @return the host port. This can be an ephemeral port that is different from the
+	 * container port
+	 * @throws IllegalStateException if the container port is not mapped or if the port is
+	 * mapped for a different protocol.
+	 * @since 4.0.11
+	 * @see #get(int, String)
+	 */
+	default int getUdp(int containerPort) {
+		return get(containerPort, "udp");
+	}
+
+	/**
+	 * Return the host port mapped to the given container port.
+	 * @param containerPort the container port. This is usually the standard port for the
+	 * service (e.g. port 80 for HTTP)
+	 * @param protocol the connection protocol
+	 * @return the host port. This can be an ephemeral port that is different from the
+	 * container port
+	 * @throws IllegalStateException if the container port is not mapped or if the port is
+	 * mapped for a different protocol.
+	 * @since 4.0.11
+	 * @see #getTcp(int)
+	 * @see #getUdp(int)
+	 */
+	int get(int containerPort, String protocol);
 
 	/**
 	 * Return all host ports in use.

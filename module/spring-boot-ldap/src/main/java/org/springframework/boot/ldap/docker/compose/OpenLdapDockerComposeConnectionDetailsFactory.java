@@ -53,7 +53,7 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
 			String ldapPort = usesTls ? getFromEnv(env, "LDAPS_PORT", "636") : getFromEnv(env, "LDAP_PORT", "389");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
-					service.ports().get(Integer.parseInt(ldapPort))) };
+					service.ports().getTcp(Integer.parseInt(ldapPort))) };
 			String baseDn = env.get("LDAP_BASE_DN");
 			if (baseDn != null) {
 				this.base = baseDn;

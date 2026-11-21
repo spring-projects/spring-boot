@@ -49,7 +49,7 @@ abstract class OracleJdbcDockerComposeConnectionDetailsFactory
 		OracleJdbcDockerComposeConnectionDetails(RunningService service, String defaultDatabase) {
 			super(service);
 			this.environment = new OracleEnvironment(service.env(), defaultDatabase);
-			this.jdbcUrl = "jdbc:oracle:thin:@" + service.host() + ":" + service.ports().get(1521) + "/"
+			this.jdbcUrl = "jdbc:oracle:thin:@" + service.host() + ":" + service.ports().getTcp(1521) + "/"
 					+ this.environment.getDatabase() + getParameters(service);
 		}
 

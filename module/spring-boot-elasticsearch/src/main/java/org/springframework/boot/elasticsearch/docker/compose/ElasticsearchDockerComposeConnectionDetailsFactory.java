@@ -56,7 +56,7 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 			this.environment = new ElasticsearchEnvironment(service.env());
 			this.sslBundle = getSslBundle(service);
 			Protocol protocol = (this.sslBundle != null) ? Protocol.HTTPS : Protocol.HTTP;
-			this.nodes = List.of(new Node(service.host(), service.ports().get(ELASTICSEARCH_PORT), protocol,
+			this.nodes = List.of(new Node(service.host(), service.ports().getTcp(ELASTICSEARCH_PORT), protocol,
 					getUsername(), getPassword()));
 		}
 

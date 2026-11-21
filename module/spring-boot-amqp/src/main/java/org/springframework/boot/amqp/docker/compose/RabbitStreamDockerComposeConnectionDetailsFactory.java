@@ -65,7 +65,7 @@ class RabbitStreamDockerComposeConnectionDetailsFactory
 			this.environment = new RabbitEnvironment(service.env());
 			this.host = service.host();
 			this.sslBundle = getSslBundle(service);
-			this.port = service.ports().get((this.sslBundle != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
+			this.port = service.ports().getTcp((this.sslBundle != null) ? STREAMS_TLS_PORT : STREAMS_PORT);
 		}
 
 		@Override
