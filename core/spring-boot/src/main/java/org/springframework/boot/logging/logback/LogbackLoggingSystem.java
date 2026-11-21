@@ -64,6 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Ben Hale
  * @author Dhruv Rastogi
+ * @author Sunghwan Kwon
  * @since 1.0.0
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
@@ -100,7 +101,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private final StatusPrinter2 statusPrinter = new StatusPrinter2();
 
-	private boolean bridgeHandlerInstalled;
+	private @Nullable Runnable bridgeHandlerCleanup;
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
@@ -130,9 +131,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private void configureJdkLoggingBridgeHandler() {
 		try {
 			if (isBridgeJulIntoSlf4j()) {
-				removeJdkLoggingBridgeHandler();
-				SLF4JBridgeHandler.install();
-				this.bridgeHandlerInstalled = true;
+				removeDefaultRootHandler();
+				this.bridgeHandlerCleanup = BridgeHandlerInstaller.install();
 			}
 		}
 		catch (Throwable ex) {
@@ -152,16 +152,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
-	}
-
-	private void removeJdkLoggingBridgeHandler() {
-		try {
-			removeDefaultRootHandler();
-			SLF4JBridgeHandler.uninstall();
-		}
-		catch (Throwable ex) {
-			// Ignore and continue
-		}
 	}
 
 	private void removeDefaultRootHandler() {
@@ -326,9 +316,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext context = getLoggerContext();
 		markAsUninitialized(context);
 		super.cleanUp();
-		if (this.bridgeHandlerInstalled) {
-			removeJdkLoggingBridgeHandler();
-			this.bridgeHandlerInstalled = false;
+		if (this.bridgeHandlerCleanup != null) {
+			this.bridgeHandlerCleanup.run();
+			this.bridgeHandlerCleanup = null;
 		}
 		context.getStatusManager().clear();
 		context.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
@@ -507,6 +497,27 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				return new LogbackLoggingSystem(classLoader);
 			}
 			return null;
+		}
+
+	}
+
+	/**
+	 * Isolates the optional JUL bridge dependency.
+	 */
+	private static class BridgeHandlerInstaller {
+
+		static Runnable install() {
+			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+			Handler handler = new SLF4JBridgeHandler();
+			rootLogger.addHandler(handler);
+			return () -> {
+				try {
+					rootLogger.removeHandler(handler);
+				}
+				catch (Throwable ex) {
+					// Ignore and continue
+				}
+			};
 		}
 
 	}
