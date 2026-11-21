@@ -119,6 +119,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
@@ -154,8 +155,10 @@ import org.springframework.web.util.UrlPathHelper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -263,6 +266,31 @@ class WebMvcAutoConfigurationTests {
 			assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass")
 				.containsOnly(CachingResourceTransformer.class);
 		});
+	}
+
+	@Test
+	void shouldCustomizeResources() {
+		this.contextRunner.withUserConfiguration(ResourceHandlerRegistrationCustomizers.class).run((context) -> {
+			ResourceHandlerRegistrationCustomizer customizer1 = context
+				.getBean("firstResourceHandlerRegistrationCustomizer", ResourceHandlerRegistrationCustomizer.class);
+			ResourceHandlerRegistrationCustomizer customizer2 = context
+				.getBean("secondResourceHandlerRegistrationCustomizer", ResourceHandlerRegistrationCustomizer.class);
+			then(customizer1).should(times(2)).customize(any(ResourceHandlerRegistration.class));
+			then(customizer2).should(times(2)).customize(any(ResourceHandlerRegistration.class));
+		});
+	}
+
+	@Test
+	void shouldCustomizeResourcesWhenResourceChainIsEnabled() {
+		this.contextRunner.withUserConfiguration(ResourceHandlerRegistrationCustomizerConfiguration.class)
+			.withPropertyValues("spring.web.resources.chain.enabled:true")
+			.run((context) -> {
+				ResourceHandlerRegistrationCustomizer customizer = context.getBean(
+						"customResourceHandlerRegistrationCustomizer", ResourceHandlerRegistrationCustomizer.class);
+				then(customizer).should(times(2)).customize(any(ResourceHandlerRegistration.class));
+				assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass")
+					.containsOnly(CachingResourceResolver.class, PathResourceResolver.class);
+			});
 	}
 
 	@Test
@@ -1263,6 +1291,31 @@ class WebMvcAutoConfigurationTests {
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/**").addResourceLocations("classpath:/foo/");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceHandlerRegistrationCustomizers {
+
+		@Bean
+		ResourceHandlerRegistrationCustomizer firstResourceHandlerRegistrationCustomizer() {
+			return mock(ResourceHandlerRegistrationCustomizer.class);
+		}
+
+		@Bean
+		ResourceHandlerRegistrationCustomizer secondResourceHandlerRegistrationCustomizer() {
+			return mock(ResourceHandlerRegistrationCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceHandlerRegistrationCustomizerConfiguration {
+
+		@Bean
+		ResourceHandlerRegistrationCustomizer customResourceHandlerRegistrationCustomizer() {
+			return mock(ResourceHandlerRegistrationCustomizer.class);
 		}
 
 	}
