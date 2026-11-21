@@ -6,11 +6,13 @@ package org.springframework.boot.jetty.reactive;
 
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
@@ -43,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  * @author Moritz Halbritter
+ * @author WooSeung Kim
  */
 class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -141,6 +144,42 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxNetworkConnectionCount()).isOne();
+	}
+
+	@Test
+	void shouldLimitConnectionsWhenMaxConnectionsIsSet() throws Exception {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThatConnectionLimitApplies();
+	}
+
+	@Test
+	void shouldLimitConnectionsWhenMaxConnectionsIsSetAndSslIsEnabled() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:org/springframework/boot/jetty/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThatConnectionLimitApplies();
+	}
+
+	private void assertThatConnectionLimitApplies() throws Exception {
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		NetworkConnectionLimit connectionLimit = server.getBean(NetworkConnectionLimit.class);
+		AbstractConnector connector = (AbstractConnector) server.getConnectors()[0];
+		assertThat(connector.getBeans(NetworkConnectionLimit.class)).contains(connectionLimit);
+		try (Socket socket = new Socket("127.0.0.1", this.webServer.getPort())) {
+			Awaitility.await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+				assertThat(connectionLimit.getNetworkConnectionCount()).isOne();
+				assertThat(connector.isAccepting()).isFalse();
+			});
+		}
 	}
 
 	@Test
