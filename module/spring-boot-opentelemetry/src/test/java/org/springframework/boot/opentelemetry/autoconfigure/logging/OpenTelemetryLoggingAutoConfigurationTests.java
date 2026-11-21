@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OpenTelemetryLoggingAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Abdullah Alqahtani
  */
 class OpenTelemetryLoggingAutoConfigurationTests {
 

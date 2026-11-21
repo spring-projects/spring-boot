@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.fail;
  * Tests for {@link OpenTelemetryEnvironmentVariableEnvironmentPostProcessor}.
  *
  * @author Moritz Halbritter
+ * @author Abdullah Alqahtani
  */
 @ExtendWith(OutputCaptureExtension.class)
 class OpenTelemetryEnvironmentVariableEnvironmentPostProcessorTests {
@@ -718,20 +719,16 @@ class OpenTelemetryEnvironmentVariableEnvironmentPostProcessorTests {
 	@Test
 	void timeoutZeroShouldBeInterpretedAsInfinite() {
 		Environment environment = runProcessor(Map.of("OTEL_EXPORTER_OTLP_TRACES_TIMEOUT", "0"));
-		assertThat(environment.getProperty("management.opentelemetry.tracing.export.otlp.timeout"))
-			.isEqualTo(Duration.ofNanos(Long.MAX_VALUE).toString());
+		String max = Duration.ofNanos(Long.MAX_VALUE).toString();
+		assertThat(environment.getProperty("management.opentelemetry.tracing.export.otlp.timeout")).isEqualTo(max);
 		environment = runProcessor(Map.of("OTEL_EXPORTER_OTLP_LOGS_TIMEOUT", "0"));
-		assertThat(environment.getProperty("management.opentelemetry.logging.export.otlp.timeout"))
-			.isEqualTo(Duration.ofNanos(Long.MAX_VALUE).toString());
+		assertThat(environment.getProperty("management.opentelemetry.logging.export.otlp.timeout")).isEqualTo(max);
 		environment = runProcessor(Map.of("OTEL_EXPORTER_OTLP_METRICS_TIMEOUT", "0"));
-		assertThat(environment.getProperty("management.otlp.metrics.export.read-timeout"))
-			.isEqualTo(Duration.ofNanos(Long.MAX_VALUE).toString());
+		assertThat(environment.getProperty("management.otlp.metrics.export.read-timeout")).isEqualTo(max);
 		environment = runProcessor(Map.of("OTEL_BSP_EXPORT_TIMEOUT", "0"));
-		assertThat(environment.getProperty("management.opentelemetry.tracing.export.timeout"))
-			.isEqualTo(Duration.ofNanos(Long.MAX_VALUE).toString());
+		assertThat(environment.getProperty("management.opentelemetry.tracing.export.timeout")).isEqualTo(max);
 		environment = runProcessor(Map.of("OTEL_BLRP_EXPORT_TIMEOUT", "0"));
-		assertThat(environment.getProperty("management.opentelemetry.logging.export.timeout"))
-			.isEqualTo(Duration.ofNanos(Long.MAX_VALUE).toString());
+		assertThat(environment.getProperty("management.opentelemetry.logging.export.timeout")).isEqualTo(max);
 	}
 
 	@Test
