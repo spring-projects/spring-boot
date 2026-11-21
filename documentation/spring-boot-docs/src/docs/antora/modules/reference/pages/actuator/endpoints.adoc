@@ -693,7 +693,7 @@ TIP: You can disable them all by setting the configprop:management.health.defaul
 
 TIP: The `ssl` javadoc:org.springframework.boot.health.contributor.HealthIndicator[] has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
 You can use this threshold to give yourself enough lead time to rotate the soon-to-be-expired certificate.
-If an SSL certificate will become invalid within the period defined by this threshold, the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] will report this in the details section of its response where `details.validChains.certificates.[*].validity.status` will have the value `WILL_EXPIRE_SOON`.
+If an SSL certificate will become invalid within the period defined by this threshold, the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] will report this in the details section of its response where the certificate chain will be listed in `details.expiringChains`.
 
 Additional javadoc:org.springframework.boot.health.contributor.HealthIndicator[] beans are enabled by default:
 
