@@ -164,6 +164,14 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldConfigureBatchLogRecordProcessorWithInfiniteExportTimeout() {
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.timeout=" + Duration.ofNanos(Long.MAX_VALUE))
+			.run((context) -> assertThat(context.getBean(BatchLogRecordProcessor.class)).extracting("worker")
+				.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Long.MAX_VALUE));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class UserConfiguration {
 

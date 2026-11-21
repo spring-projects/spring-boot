@@ -113,7 +113,8 @@ class OpenTelemetryEnvironmentVariables {
 			return EnvVariable.none();
 		}
 		if (intValue == 0) {
-			return EnvVariable.of(name, Duration.ofSeconds(Long.MAX_VALUE).toString());
+			// The largest duration that can be converted to nanoseconds
+			return EnvVariable.of(name, Duration.ofNanos(Long.MAX_VALUE).toString());
 		}
 		return EnvVariable.of(name, Duration.ofMillis(intValue).toString());
 	}
