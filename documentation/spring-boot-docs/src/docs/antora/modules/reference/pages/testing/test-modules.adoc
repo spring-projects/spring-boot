@@ -28,11 +28,11 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |`spring-boot-data-ldap-test`
 |Testing applications that use Spring Data LDAP. Provides the `@DataLdapTest` test slice.
 
-|`spring-boot-mongodb-test`
+|`spring-boot-data-mongodb-test`
 |Testing applications that use Spring Data MongoDB. Provides the `@DataMongoTest` test slice.
 
 |`spring-boot-data-neo4j-test`
-|Testing applications that use Spring Data JPA. Provides the `@DataNeo4jTest` test slice.
+|Testing applications that use Spring Data Neo4j. Provides the `@DataNeo4jTest` test slice.
 
 |`spring-boot-data-r2dbc-test`
 |Testing applications that use Spring Data R2DBC. Provides the `@DataR2dbcTest` test slice.
@@ -67,8 +67,8 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |`spring-boot-security-test`
 |Testing applications that use Spring Security.
 
-|`spring-boot-webserver-test`
-|Testing applications that use `WebServer` implementations. Provides the `@AutoconfigureWebServer` annotation.
+|`spring-boot-web-server-test`
+|Testing applications that use `WebServer` implementations. Provides the `@AutoConfigureWebServer` annotation.
 
 |`spring-boot-webclient-test`
 |Testing applications that use `WebClient`. Provides the `@WebClientTest` test slice.
