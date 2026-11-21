@@ -114,7 +114,7 @@ public final class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
-			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(basename))) {
+			for (String name : StringUtils.tokenizeToStringArray(basename, ",")) {
 				for (Resource resource : getResources(classLoader, name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match(message.found("bundle").items(resource));
