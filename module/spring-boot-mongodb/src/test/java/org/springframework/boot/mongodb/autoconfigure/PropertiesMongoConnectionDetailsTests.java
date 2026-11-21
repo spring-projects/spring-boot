@@ -99,6 +99,14 @@ class PropertiesMongoConnectionDetailsTests {
 		assertThat(connectionString.getDatabase()).isEqualTo("db");
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "my?db", "my%db", "my#db", "my+db", "my@db", "my:db", "my数据库" })
+	void databaseCanBeConfiguredWithReservedCharacters(String database) {
+		this.properties.setDatabase(database);
+		ConnectionString connectionString = this.connectionDetails.getConnectionString();
+		assertThat(connectionString.getDatabase()).isEqualTo(database);
+	}
+
 	@Test
 	void databaseHasDefaultWhenNotConfigured() {
 		ConnectionString connectionString = this.connectionDetails.getConnectionString();

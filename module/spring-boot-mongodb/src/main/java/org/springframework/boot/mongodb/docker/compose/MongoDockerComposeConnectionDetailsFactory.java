@@ -58,21 +58,22 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private ConnectionString buildConnectionString(RunningService service) {
 			MongoEnvironment environment = new MongoEnvironment(service.env());
+			String username = environment.getUsername();
+			String password = environment.getPassword();
+			String database = environment.getDatabase();
 			StringBuilder builder = new StringBuilder("mongodb://");
-			if (environment.getUsername() != null) {
-				builder.append(encode(environment.getUsername()));
+			if (username != null) {
+				builder.append(encode(username));
 				builder.append(":");
-				builder.append((environment.getPassword() != null) ? encode(environment.getPassword()) : "");
+				builder.append((password != null) ? encode(password) : "");
 				builder.append("@");
 			}
 			builder.append(service.host());
 			builder.append(":");
 			builder.append(service.ports().getTcp(MONGODB_PORT));
 			builder.append("/");
-			builder.append((environment.getDatabase() != null) ? environment.getDatabase() : "test");
-			if (environment.getUsername() != null) {
-				builder.append("?authSource=admin");
-			}
+			builder.append((database != null) ? encode(database) : "test");
+			builder.append((username != null) ? "?authSource=admin" : "");
 			return new ConnectionString(builder.toString());
 		}
 
