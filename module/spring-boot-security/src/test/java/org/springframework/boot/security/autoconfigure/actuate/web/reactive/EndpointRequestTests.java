@@ -163,6 +163,7 @@ class EndpointRequestTests {
 		assertMatcher.doesNotMatch("/foo");
 	}
 
+	@Test
 	void toLinksWhenBasePathIsSlashShouldNotMatch() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/");
