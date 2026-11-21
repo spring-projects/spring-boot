@@ -10,6 +10,8 @@ import java.util.Map;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -55,6 +57,20 @@ class MongoDockerComposeConnectionDetailsFactoryTests {
 		assertThat(credential).isNotNull();
 		assertThat(credential.getUserName()).isEqualTo("us@r:name");
 		assertThat(credential.getPassword()).isEqualTo("p@ss:w/rd%?#[] +".toCharArray());
+		assertThat(credential.getSource()).isEqualTo("admin");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "my?db", "my%db", "my#db", "my+db", "my@db", "my:db", "my数据库" })
+	void createConnectionDetailsWhenDatabaseContainsReservedCharacters(String database) {
+		RunningService runningService = mockRunningService();
+		given(runningService.env()).willReturn(Map.of("MONGO_INITDB_ROOT_USERNAME", "root",
+				"MONGO_INITDB_ROOT_PASSWORD", "secret", "MONGO_INITDB_DATABASE", database));
+		ConnectionString connectionString = new MongoDockerComposeConnectionDetails(runningService)
+			.getConnectionString();
+		assertThat(connectionString.getDatabase()).isEqualTo(database);
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
 		assertThat(credential.getSource()).isEqualTo("admin");
 	}
 
