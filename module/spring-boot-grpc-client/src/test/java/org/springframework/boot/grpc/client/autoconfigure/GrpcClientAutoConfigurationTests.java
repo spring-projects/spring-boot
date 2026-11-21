@@ -32,12 +32,14 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.client.NettyGrpcChannelFactory;
 import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
+import org.springframework.grpc.client.VirtualTargets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,6 +56,7 @@ import static org.mockito.Mockito.times;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author WooSeung Kim
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class GrpcClientAutoConfigurationTests {
@@ -318,6 +321,39 @@ class GrpcClientAutoConfigurationTests {
 				.isInstanceOf(InProcessGrpcChannelFactory.class)
 				.extracting("credentials")
 				.isSameAs(ChannelCredentialsProvider.INSECURE));
+	}
+
+	@Test
+	void channelFactoryCustomizerCanReplaceInProcessTargets() {
+		this.contextRunner.withBean(GrpcChannelFactoryCustomizer.class, () -> (factory) -> {
+			if (factory instanceof InProcessGrpcChannelFactory inProcess) {
+				inProcess.setVirtualTargets((path) -> "custom".equals(path) ? "in-process:test" : path);
+			}
+		}).run((context) -> assertThat(context.getBean(InProcessGrpcChannelFactory.class).supports("custom")).isTrue());
+	}
+
+	@Test
+	void namedChannelWithInProcessTargetIsCreated() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(CompositeChannelFactoryAutoConfiguration.class))
+			.withPropertyValues("spring.grpc.client.channel.local.target=in-process:test")
+			.run((context) -> {
+				assertThat(context.getBean(InProcessGrpcChannelFactory.class))
+					.extracting("targets", InstanceOfAssertFactories.type(VirtualTargets.class))
+					.satisfies((targets) -> assertThat(targets.getTarget("local")).isEqualTo("in-process:test"));
+				assertThat(context.getBean(GrpcChannelFactory.class).createChannel("local")).isNotNull();
+			});
+	}
+
+	@Test
+	void inProcessTargetIsNotResolvedAsChannelName() {
+		this.contextRunner
+			.withInitializer((context) -> context.getEnvironment()
+				.getPropertySources()
+				.addFirst(new MapPropertySource("test",
+						Map.of("spring.grpc.client.channel[in-process:test].user-agent", "test"))))
+			.run((context) -> assertThat(context.getBean(InProcessGrpcChannelFactory.class))
+				.extracting("targets", InstanceOfAssertFactories.type(VirtualTargets.class))
+				.satisfies((targets) -> assertThat(targets.getTarget("in-process:test")).isEqualTo("in-process:test")));
 	}
 
 	@Test
