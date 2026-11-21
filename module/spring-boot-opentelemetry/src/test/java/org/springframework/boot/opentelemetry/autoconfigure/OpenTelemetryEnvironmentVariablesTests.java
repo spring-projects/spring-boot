@@ -209,7 +209,7 @@ class OpenTelemetryEnvironmentVariablesTests {
 		OpenTelemetryEnvironmentVariables env = createEnv(Map.of("VAR", "0"));
 		EnvVariable result = env.getTimeout("VAR");
 		assertThat(result.isPresent()).isTrue();
-		assertThat(result.value()).isEqualTo(Duration.ofSeconds(Long.MAX_VALUE).toString());
+		assertThat(Duration.parse(result.value()).toNanos()).isEqualTo(Long.MAX_VALUE);
 	}
 
 	@Test
