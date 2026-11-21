@@ -18,18 +18,24 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.gradle.api.UncheckedIOException;
 import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.logging.LogLevel;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 
@@ -66,6 +72,18 @@ public abstract class AggregatedJavadoc extends Javadoc {
 		IGNORED_PACKAGES = Collections.unmodifiableList(ignoredPackages);
 	}
 
+	private final FileSystemOperations fileSystemOperations;
+
+	private final ArchiveOperations archiveOperations;
+
+	@Inject
+	public AggregatedJavadoc(FileSystemOperations fileSystemOperations, ArchiveOperations archiveOperations,
+			ProjectLayout projectLayout) {
+		this.fileSystemOperations = fileSystemOperations;
+		this.archiveOperations = archiveOperations;
+		getJavadocListsDirectory().convention(projectLayout.getBuildDirectory().dir("docs/javadoclists"));
+	}
+
 	public void javadocJars(Provider<Set<ResolvedArtifactResult>> artifacts) {
 		getJavadocJarFiles().set(artifacts.map(this::asJavadocJarFiles));
 		getJavadocJarNames().set(artifacts.map(this::asJavadocJarNames));
@@ -97,6 +115,9 @@ public abstract class AggregatedJavadoc extends Javadoc {
 	@Input
 	abstract ListProperty<String> getJavadocJarNames();
 
+	@OutputDirectory
+	public abstract DirectoryProperty getJavadocListsDirectory();
+
 	@Override
 	protected void generate() {
 		StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) getOptions();
@@ -111,10 +132,10 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	private void configureOfflineLinks(StandardJavadocDocletOptions options) {
 		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
-		File javadocListsDir = getProject().getLayout().getBuildDirectory().get().dir("docs/javadoclists").getAsFile();
+		File javadocListsDir = getJavadocListsDirectory().getAsFile().get();
 		copyElementListResourceIfMissing(javadocListsDir, "javase");
 		extractJavdocListFiles(javadocListsDir);
-		if (getProject().getGradle().getStartParameter().getLogLevel() == LogLevel.DEBUG) {
+		if (getLogger().isDebugEnabled()) {
 			options.addBooleanOption("offlinelinks-debug", true);
 		}
 		options.addStringOption("-link-modularity-mismatch", "info");
@@ -167,9 +188,9 @@ public abstract class AggregatedJavadoc extends Javadoc {
 		List<File> files = getJavadocJarFiles().get();
 		List<String> names = getJavadocJarNames().get();
 		for (int i = 0; i < files.size(); i++) {
-			FileCollection source = getProject().zipTree(files.get(i)).filter(this::isJavadocListFile);
+			FileCollection source = this.archiveOperations.zipTree(files.get(i)).filter(this::isJavadocListFile);
 			File destination = new File(javadocListsDir, names.get(i));
-			getProject().copy((copy) -> copy.from(source).into(destination));
+			this.fileSystemOperations.copy((copy) -> copy.from(source).into(destination));
 		}
 	}
 
