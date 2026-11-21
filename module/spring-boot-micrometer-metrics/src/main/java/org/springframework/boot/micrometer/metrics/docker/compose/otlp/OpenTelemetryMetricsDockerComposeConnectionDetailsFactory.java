@@ -43,7 +43,7 @@ class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 		private OpenTelemetryMetricsDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.port = source.ports().getTcp(OTLP_PORT);
 		}
 
 		@Override

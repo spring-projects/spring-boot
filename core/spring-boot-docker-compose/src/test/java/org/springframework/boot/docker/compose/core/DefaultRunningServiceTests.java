@@ -84,7 +84,7 @@ class DefaultRunningServiceTests {
 	void portsReturnsPortsFromInspectResponse() {
 		ConnectionPorts ports = this.runningService.ports();
 		assertThat(ports.getAll("tcp")).containsExactly(9090);
-		assertThat(ports.get(8080)).isEqualTo(9090);
+		assertThat(ports.getTcp(8080)).isEqualTo(9090);
 	}
 
 	@Test

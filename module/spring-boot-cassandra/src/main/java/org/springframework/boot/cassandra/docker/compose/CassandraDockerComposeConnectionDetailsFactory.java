@@ -50,7 +50,7 @@ class CassandraDockerComposeConnectionDetailsFactory
 		CassandraDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			CassandraEnvironment cassandraEnvironment = new CassandraEnvironment(service.env());
-			this.contactPoints = List.of(new Node(service.host(), service.ports().get(CASSANDRA_PORT)));
+			this.contactPoints = List.of(new Node(service.host(), service.ports().getTcp(CASSANDRA_PORT)));
 			this.datacenter = cassandraEnvironment.getDatacenter();
 			this.sslBundle = getSslBundle(service);
 		}

@@ -42,7 +42,7 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests {
 		ConnectionPorts connectionPorts = mock(ConnectionPorts.class);
 		given(this.service.ports()).willReturn(connectionPorts);
 		given(this.service.host()).willReturn("localhost");
-		given(connectionPorts.get(5432)).willReturn(30001);
+		given(connectionPorts.getTcp(5432)).willReturn(30001);
 	}
 
 	@Test

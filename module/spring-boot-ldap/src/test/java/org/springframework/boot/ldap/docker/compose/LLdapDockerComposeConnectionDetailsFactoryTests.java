@@ -68,7 +68,7 @@ class LLdapDockerComposeConnectionDetailsFactoryTests {
 		ConnectionPorts connectionPorts = mock(ConnectionPorts.class);
 		given(service.ports()).willReturn(connectionPorts);
 		given(service.host()).willReturn("localhost");
-		given(connectionPorts.get(3890)).willReturn(30001);
+		given(connectionPorts.getTcp(3890)).willReturn(30001);
 		return service;
 	}
 

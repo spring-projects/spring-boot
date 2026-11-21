@@ -75,7 +75,7 @@ class MongoDockerComposeConnectionDetailsFactoryTests {
 		ConnectionPorts connectionPorts = mock(ConnectionPorts.class);
 		given(service.ports()).willReturn(connectionPorts);
 		given(service.host()).willReturn("localhost");
-		given(connectionPorts.get(27017)).willReturn(30001);
+		given(connectionPorts.getTcp(27017)).willReturn(30001);
 		return service;
 	}
 

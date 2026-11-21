@@ -57,7 +57,7 @@ class OtlpLoggingDockerComposeConnectionDetailsFactory
 				case HTTP -> OTLP_HTTP_PORT;
 				case GRPC -> OTLP_GRPC_PORT;
 			};
-			return "http://%s:%d/v1/logs".formatted(this.host, this.ports.get(port));
+			return "http://%s:%d/v1/logs".formatted(this.host, this.ports.getTcp(port));
 		}
 
 	}
