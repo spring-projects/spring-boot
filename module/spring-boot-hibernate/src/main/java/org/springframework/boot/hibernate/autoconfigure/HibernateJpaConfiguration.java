@@ -138,9 +138,15 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties(DataSource dataSource) {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(dataSource);
-		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
-				getProperties().getProperties(), new HibernateSettings().ddlAuto(defaultDdlMode)
-					.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+		Map<String, Object> vendorProperties = new LinkedHashMap<>(
+				this.hibernateProperties.determineHibernateProperties(getProperties().getProperties(),
+						new HibernateSettings().ddlAuto(defaultDdlMode)
+							.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT) && !isJta()
+				&& isDataSourceAutoCommitDisabled(dataSource)) {
+			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
+		}
+		return vendorProperties;
 	}
 
 	@Override
@@ -148,9 +154,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		super.customizeVendorProperties(vendorProperties);
 		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
 			configureJtaPlatform(vendorProperties);
-		}
-		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT)) {
-			configureProviderDisablesAutocommit(vendorProperties);
 		}
 	}
 
@@ -167,14 +170,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
-		if (isDataSourceAutoCommitDisabled() && !isJta()) {
-			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
-		}
-	}
-
-	private boolean isDataSourceAutoCommitDisabled() {
-		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(getDataSource());
+	private boolean isDataSourceAutoCommitDisabled(DataSource dataSource) {
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(dataSource);
 		return poolMetadata != null && Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
 	}
 
