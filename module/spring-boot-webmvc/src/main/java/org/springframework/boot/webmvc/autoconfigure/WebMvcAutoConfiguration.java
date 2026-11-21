@@ -196,7 +196,7 @@ public final class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<ServerHttpMessageConvertersCustomizer> httpMessageConvertersCustomizerProvider;
 
-		private final @Nullable ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		private final ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers;
 
 		private @Nullable ServletContext servletContext;
 
@@ -219,7 +219,7 @@ public final class WebMvcAutoConfiguration {
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.httpMessageConvertersCustomizerProvider = httpMessageConvertersCustomizerProvider;
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
+			this.resourceHandlerRegistrationCustomizers = resourceHandlerRegistrationCustomizerProvider;
 			this.dispatcherServletPath = dispatcherServletPath;
 			this.servletRegistrations = servletRegistrations;
 			this.apiVersionResolvers = apiVersionResolvers;
@@ -359,9 +359,8 @@ public final class WebMvcAutoConfiguration {
 		}
 
 		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
-			if (this.resourceHandlerRegistrationCustomizer != null) {
-				this.resourceHandlerRegistrationCustomizer.customize(registration);
-			}
+			this.resourceHandlerRegistrationCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(registration));
 		}
 
 		@Override
